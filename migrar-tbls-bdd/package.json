@@ -1,0 +1,15 @@
+{
+  "name": "migrar-tbls-bdd",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Migracion algoritmica CAPAC_*_OLD -> CAPAC_* en SQL Server",
+  "scripts": {
+    "analyze": "node src/index.js analyze",
+    "migrate": "node src/index.js migrate",
+    "ddl:capac": "node src/apply-capac-ddl.js"
+  },
+  "dependencies": {
+    "mssql": "^11.0.1"
+  }
+}

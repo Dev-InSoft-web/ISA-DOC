@@ -1,0 +1,1943 @@
+[
+  {
+    "name": "Drivers",
+    "item": [
+      {
+        "name": "GET - Listar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/drivers/:filtro",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "drivers",
+              ":filtro"
+            ],
+            "variable": [
+              {
+                "key": "filtro",
+                "value": "e30=",
+                "description": "Filtro de búsqueda en base64"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "GET - Obtener",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/driver/:idriver",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "driver",
+              ":idriver"
+            ],
+            "variable": [
+              {
+                "key": "idriver",
+                "value": "1",
+                "description": "Identificador idriver"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "POST - Crear",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/driver",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "driver"
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "PUT - Actualizar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/driver/:idriver",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "driver",
+              ":idriver"
+            ],
+            "variable": [
+              {
+                "key": "idriver",
+                "value": "1",
+                "description": "Identificador idriver"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "DELETE - Eliminar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/driver/:idriver",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "driver",
+              ":idriver"
+            ],
+            "variable": [
+              {
+                "key": "idriver",
+                "value": "1",
+                "description": "Identificador idriver"
+              }
+            ]
+          }
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Atributos Driver",
+    "item": [
+      {
+        "name": "GET - Listar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/driver/atributos/:filtro",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "driver",
+              "atributos",
+              ":filtro"
+            ],
+            "variable": [
+              {
+                "key": "filtro",
+                "value": "e30=",
+                "description": "Filtro de búsqueda en base64"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "GET - Obtener",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/driver/atributo/:idriver/:iatributo",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "driver",
+              "atributo",
+              ":idriver",
+              ":iatributo"
+            ],
+            "variable": [
+              {
+                "key": "idriver",
+                "value": "1",
+                "description": "Identificador idriver"
+              },
+              {
+                "key": "iatributo",
+                "value": "1",
+                "description": "Identificador iatributo"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "POST - Crear",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/driver/atributo",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "driver",
+              "atributo"
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "PUT - Actualizar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/driver/atributo/:idriver/:iatributo",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "driver",
+              "atributo",
+              ":idriver",
+              ":iatributo"
+            ],
+            "variable": [
+              {
+                "key": "idriver",
+                "value": "1",
+                "description": "Identificador idriver"
+              },
+              {
+                "key": "iatributo",
+                "value": "1",
+                "description": "Identificador iatributo"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "DELETE - Eliminar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/driver/atributo/:idriver/:iatributo",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "driver",
+              "atributo",
+              ":idriver",
+              ":iatributo"
+            ],
+            "variable": [
+              {
+                "key": "idriver",
+                "value": "1",
+                "description": "Identificador idriver"
+              },
+              {
+                "key": "iatributo",
+                "value": "1",
+                "description": "Identificador iatributo"
+              }
+            ]
+          }
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Estructura Curso",
+    "item": [
+      {
+        "name": "GET - Listar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/curso/estructuras/:filtro",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "curso",
+              "estructuras",
+              ":filtro"
+            ],
+            "variable": [
+              {
+                "key": "filtro",
+                "value": "e30=",
+                "description": "Filtro de búsqueda en base64"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "GET - Obtener",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/curso/estructura/:icurso/:inivel",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "curso",
+              "estructura",
+              ":icurso",
+              ":inivel"
+            ],
+            "variable": [
+              {
+                "key": "icurso",
+                "value": "CURSO001",
+                "description": "Identificador icurso"
+              },
+              {
+                "key": "inivel",
+                "value": "1",
+                "description": "Identificador inivel"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "POST - Crear",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/curso/estructura",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "curso",
+              "estructura"
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "PUT - Actualizar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/curso/estructura/:icurso/:inivel",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "curso",
+              "estructura",
+              ":icurso",
+              ":inivel"
+            ],
+            "variable": [
+              {
+                "key": "icurso",
+                "value": "CURSO001",
+                "description": "Identificador icurso"
+              },
+              {
+                "key": "inivel",
+                "value": "1",
+                "description": "Identificador inivel"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "DELETE - Eliminar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/curso/estructura/:icurso/:inivel",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "curso",
+              "estructura",
+              ":icurso",
+              ":inivel"
+            ],
+            "variable": [
+              {
+                "key": "icurso",
+                "value": "CURSO001",
+                "description": "Identificador icurso"
+              },
+              {
+                "key": "inivel",
+                "value": "1",
+                "description": "Identificador inivel"
+              }
+            ]
+          }
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Cursos",
+    "item": [
+      {
+        "name": "GET - Listar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/cursos/:filtro",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "cursos",
+              ":filtro"
+            ],
+            "variable": [
+              {
+                "key": "filtro",
+                "value": "e30=",
+                "description": "Filtro de búsqueda en base64"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "GET - Obtener",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/curso/:icurso",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "curso",
+              ":icurso"
+            ],
+            "variable": [
+              {
+                "key": "icurso",
+                "value": "CURSO001",
+                "description": "Identificador icurso"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "POST - Crear",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/curso",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "curso"
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "PUT - Actualizar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/curso/:icurso",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "curso",
+              ":icurso"
+            ],
+            "variable": [
+              {
+                "key": "icurso",
+                "value": "CURSO001",
+                "description": "Identificador icurso"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "DELETE - Eliminar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/curso/:icurso",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "curso",
+              ":icurso"
+            ],
+            "variable": [
+              {
+                "key": "icurso",
+                "value": "CURSO001",
+                "description": "Identificador icurso"
+              }
+            ]
+          }
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Temas",
+    "item": [
+      {
+        "name": "GET - Listar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/temas/:filtro",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "temas",
+              ":filtro"
+            ],
+            "variable": [
+              {
+                "key": "filtro",
+                "value": "e30=",
+                "description": "Filtro de búsqueda en base64"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "GET - Obtener",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/tema/:itema",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "tema",
+              ":itema"
+            ],
+            "variable": [
+              {
+                "key": "itema",
+                "value": "TEMA001",
+                "description": "Identificador itema"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "POST - Crear",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/tema",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "tema"
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "PUT - Actualizar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/tema/:itema",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "tema",
+              ":itema"
+            ],
+            "variable": [
+              {
+                "key": "itema",
+                "value": "TEMA001",
+                "description": "Identificador itema"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "DELETE - Eliminar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/tema/:itema",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "tema",
+              ":itema"
+            ],
+            "variable": [
+              {
+                "key": "itema",
+                "value": "TEMA001",
+                "description": "Identificador itema"
+              }
+            ]
+          }
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Planes de Estudio",
+    "item": [
+      {
+        "name": "GET - Listar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/planes/estudio/:filtro",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "planes",
+              "estudio",
+              ":filtro"
+            ],
+            "variable": [
+              {
+                "key": "filtro",
+                "value": "e30=",
+                "description": "Filtro de búsqueda en base64"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "GET - Obtener",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/plan/estudio/:iplanestudio",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "plan",
+              "estudio",
+              ":iplanestudio"
+            ],
+            "variable": [
+              {
+                "key": "iplanestudio",
+                "value": "PLAN001",
+                "description": "Identificador iplanestudio"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "POST - Crear",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/plan/estudio",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "plan",
+              "estudio"
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "PUT - Actualizar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/plan/estudio/:iplanestudio",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "plan",
+              "estudio",
+              ":iplanestudio"
+            ],
+            "variable": [
+              {
+                "key": "iplanestudio",
+                "value": "PLAN001",
+                "description": "Identificador iplanestudio"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "DELETE - Eliminar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/plan/estudio/:iplanestudio",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "plan",
+              "estudio",
+              ":iplanestudio"
+            ],
+            "variable": [
+              {
+                "key": "iplanestudio",
+                "value": "PLAN001",
+                "description": "Identificador iplanestudio"
+              }
+            ]
+          }
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Recursos",
+    "item": [
+      {
+        "name": "GET - Listar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/recursos/:filtro",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "recursos",
+              ":filtro"
+            ],
+            "variable": [
+              {
+                "key": "filtro",
+                "value": "e30=",
+                "description": "Filtro de búsqueda en base64"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "GET - Obtener",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/recurso/:irecurso",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "recurso",
+              ":irecurso"
+            ],
+            "variable": [
+              {
+                "key": "irecurso",
+                "value": "REC001",
+                "description": "Identificador irecurso"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "POST - Crear",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/recurso",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "recurso"
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "PUT - Actualizar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/recurso/:irecurso",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "recurso",
+              ":irecurso"
+            ],
+            "variable": [
+              {
+                "key": "irecurso",
+                "value": "REC001",
+                "description": "Identificador irecurso"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "DELETE - Eliminar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/recurso/:irecurso",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "recurso",
+              ":irecurso"
+            ],
+            "variable": [
+              {
+                "key": "irecurso",
+                "value": "REC001",
+                "description": "Identificador irecurso"
+              }
+            ]
+          }
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Mensajes",
+    "item": [
+      {
+        "name": "GET - Listar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/mensajes/:filtro",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "mensajes",
+              ":filtro"
+            ],
+            "variable": [
+              {
+                "key": "filtro",
+                "value": "e30=",
+                "description": "Filtro de búsqueda en base64"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "GET - Obtener",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/mensaje/:imensaje",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "mensaje",
+              ":imensaje"
+            ],
+            "variable": [
+              {
+                "key": "imensaje",
+                "value": "MSG001",
+                "description": "Identificador imensaje"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "POST - Crear",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/mensaje",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "mensaje"
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "PUT - Actualizar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/mensaje/:imensaje",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "mensaje",
+              ":imensaje"
+            ],
+            "variable": [
+              {
+                "key": "imensaje",
+                "value": "MSG001",
+                "description": "Identificador imensaje"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "DELETE - Eliminar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/mensaje/:imensaje",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "mensaje",
+              ":imensaje"
+            ],
+            "variable": [
+              {
+                "key": "imensaje",
+                "value": "MSG001",
+                "description": "Identificador imensaje"
+              }
+            ]
+          }
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Usuarios",
+    "item": [
+      {
+        "name": "GET - Listar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/usuarios/:filtro",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "usuarios",
+              ":filtro"
+            ],
+            "variable": [
+              {
+                "key": "filtro",
+                "value": "e30=",
+                "description": "Filtro de búsqueda en base64"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "GET - Obtener",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "GET",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/usuario/:iusuario",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "usuario",
+              ":iusuario"
+            ],
+            "variable": [
+              {
+                "key": "iusuario",
+                "value": "USER001",
+                "description": "Identificador iusuario"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "POST - Crear",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/usuario",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "usuario"
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "PUT - Actualizar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/api/usuario/:iusuario",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "usuario",
+              ":iusuario"
+            ],
+            "variable": [
+              {
+                "key": "iusuario",
+                "value": "USER001",
+                "description": "Identificador iusuario"
+              }
+            ]
+          }
+        },
+        "response": []
+      },
+      {
+        "name": "DELETE - Eliminar",
+        "request": {
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+              }
+            ]
+          },
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/usuario/:iusuario",
+            "host": [
+              "{{base_url}}"
+            ],
+            "path": [
+              "api",
+              "usuario",
+              ":iusuario"
+            ],
+            "variable": [
+              {
+                "key": "iusuario",
+                "value": "USER001",
+                "description": "Identificador iusuario"
+              }
+            ]
+          }
+        },
+        "response": []
+      }
+    ]
+  }
+]

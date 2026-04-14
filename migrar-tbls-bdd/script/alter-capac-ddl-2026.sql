@@ -1,0 +1,159 @@
+/*
+  Aplica en bases ya existentes columnas alineadas con init_capacitacion.sql:
+  - CAPAC_CURSOS_DE_PLANES_ESTUDIO: auditoría (IUSUARIOCRE … FHULT)
+  - CAPAC_TEMAS: auditoría completa (IUSUARIOCRE … FHULT)
+  - CAPAC_ATRIBUTOS_X_DRIVERS: TDATRIBUTO (TTDAtributo / enum 0–7)
+  Idempotente: solo ALTER si la columna no existe.
+*/
+USE CLIENTES;
+GO
+
+IF COL_LENGTH('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO', 'IUSUARIOCRE') IS NULL
+  ALTER TABLE dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO ADD IUSUARIOCRE VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO', 'IAPPCRE') IS NULL
+  ALTER TABLE dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO ADD IAPPCRE VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO', 'IPCRE') IS NULL
+  ALTER TABLE dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO ADD IPCRE VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO', 'FHCRE') IS NULL
+  ALTER TABLE dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO ADD FHCRE DATETIME2(7) NULL CONSTRAINT DF_CAPAC_CPE_FHCRE DEFAULT (GETDATE());
+IF COL_LENGTH('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO', 'IUSUARIOULT') IS NULL
+  ALTER TABLE dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO ADD IUSUARIOULT VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO', 'IAPPULT') IS NULL
+  ALTER TABLE dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO ADD IAPPULT VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO', 'IPULT') IS NULL
+  ALTER TABLE dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO ADD IPULT VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO', 'FHULT') IS NULL
+  ALTER TABLE dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO ADD FHULT DATETIME2(7) NULL CONSTRAINT DF_CAPAC_CPE_FHULT DEFAULT (GETDATE());
+GO
+
+IF COL_LENGTH('dbo.CAPAC_TEMAS', 'IUSUARIOCRE') IS NULL
+  ALTER TABLE dbo.CAPAC_TEMAS ADD IUSUARIOCRE VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_TEMAS', 'IAPPCRE') IS NULL
+  ALTER TABLE dbo.CAPAC_TEMAS ADD IAPPCRE VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_TEMAS', 'IPCRE') IS NULL
+  ALTER TABLE dbo.CAPAC_TEMAS ADD IPCRE VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_TEMAS', 'FHCRE') IS NULL
+  ALTER TABLE dbo.CAPAC_TEMAS ADD FHCRE DATETIME2(7) NULL CONSTRAINT DF_CAPAC_TEMAS_FHCRE DEFAULT (GETDATE());
+IF COL_LENGTH('dbo.CAPAC_TEMAS', 'IUSUARIOULT') IS NULL
+  ALTER TABLE dbo.CAPAC_TEMAS ADD IUSUARIOULT VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_TEMAS', 'IAPPULT') IS NULL
+  ALTER TABLE dbo.CAPAC_TEMAS ADD IAPPULT VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_TEMAS', 'IPULT') IS NULL
+  ALTER TABLE dbo.CAPAC_TEMAS ADD IPULT VARCHAR(255) NULL;
+IF COL_LENGTH('dbo.CAPAC_TEMAS', 'FHULT') IS NULL
+  ALTER TABLE dbo.CAPAC_TEMAS ADD FHULT DATETIME2(7) NULL CONSTRAINT DF_CAPAC_TEMAS_FHULT DEFAULT (GETDATE());
+GO
+
+IF COL_LENGTH('dbo.CAPAC_ATRIBUTOS_X_DRIVERS', 'TDATRIBUTO') IS NULL
+  ALTER TABLE dbo.CAPAC_ATRIBUTOS_X_DRIVERS ADD TDATRIBUTO TINYINT NOT NULL CONSTRAINT DF_CAPAC_AXD_TDATRIBUTO DEFAULT (0);
+GO
+
+IF COL_LENGTH('dbo.CAPAC_ESTRUCTURAS_CURSOS', 'QNIVEL') IS NOT NULL
+   AND EXISTS (
+     SELECT 1
+     FROM sys.columns c
+     INNER JOIN sys.types t ON t.user_type_id = c.user_type_id
+     WHERE c.object_id = OBJECT_ID('dbo.CAPAC_ESTRUCTURAS_CURSOS')
+       AND c.name = 'QNIVEL'
+       AND t.name IN ('varchar', 'nvarchar')
+   )
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM dbo.CAPAC_ESTRUCTURAS_CURSOS
+    WHERE QNIVEL IS NOT NULL
+      AND TRY_CONVERT(TINYINT, QNIVEL) IS NULL
+  )
+    THROW 50001, 'No se puede convertir CAPAC_ESTRUCTURAS_CURSOS.QNIVEL a TINYINT: existen valores no numericos.', 1;
+
+  DECLARE @PkNameQNivel SYSNAME;
+  SELECT @PkNameQNivel = kc.name
+  FROM sys.key_constraints kc
+  INNER JOIN sys.tables t ON t.object_id = kc.parent_object_id
+  INNER JOIN sys.schemas s ON s.schema_id = t.schema_id
+  WHERE kc.[type] = 'PK'
+    AND s.name = 'dbo'
+    AND t.name = 'CAPAC_ESTRUCTURAS_CURSOS';
+
+  IF @PkNameQNivel IS NOT NULL
+    EXEC(N'ALTER TABLE dbo.CAPAC_ESTRUCTURAS_CURSOS DROP CONSTRAINT [' + @PkNameQNivel + ']');
+
+  EXEC(N'ALTER TABLE dbo.CAPAC_ESTRUCTURAS_CURSOS ALTER COLUMN QNIVEL TINYINT NOT NULL');
+  ALTER TABLE dbo.CAPAC_ESTRUCTURAS_CURSOS ADD CONSTRAINT PK_CAPAC_ESTRUCTURAS_CURSOS PRIMARY KEY (ICURSO, QNIVEL);
+END
+GO
+
+IF EXISTS (
+  SELECT 1
+  FROM sys.check_constraints
+  WHERE name = 'CK_CAPAC_PLANES_CURSOS_DIFICULTAD'
+    AND parent_object_id = OBJECT_ID('dbo.CAPAC_PLANES_CURSOS')
+)
+  ALTER TABLE dbo.CAPAC_PLANES_CURSOS DROP CONSTRAINT CK_CAPAC_PLANES_CURSOS_DIFICULTAD;
+IF COL_LENGTH('dbo.CAPAC_PLANES_CURSOS', 'DIFICULTAD') IS NOT NULL
+  ALTER TABLE dbo.CAPAC_PLANES_CURSOS DROP COLUMN DIFICULTAD;
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_CAPAC_CURSOS_DE_PLANES_ESTUDIO_FHCRE' AND object_id = OBJECT_ID('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO'))
+  CREATE INDEX IX_CAPAC_CURSOS_DE_PLANES_ESTUDIO_FHCRE ON dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO(FHCRE);
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = 'IX_CAPAC_CURSOS_DE_PLANES_ESTUDIO_IUSUARIOCRE' AND object_id = OBJECT_ID('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO'))
+  CREATE INDEX IX_CAPAC_CURSOS_DE_PLANES_ESTUDIO_IUSUARIOCRE ON dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO(IUSUARIOCRE);
+GO
+
+DECLARE @Meta TABLE (
+  TableName SYSNAME NOT NULL,
+  [Description] NVARCHAR(4000) NOT NULL
+);
+
+INSERT INTO @Meta (TableName, [Description]) VALUES
+(N'CAPAC_CURSOS', N'Antes venia de CAPAC_CURSOS_OLD. Aqui se guardan los cursos en formato nuevo y ordenado. IRECURSO se toma del video viejo para mantener continuidad.'),
+(N'CAPAC_DRIVERS', N'Antes venia de drivers viejos y de DRIVERSTRUCT. Aqui se normalizan nombres para que el sistema nuevo use los mismos drivers: TRES_COLUMNAS, SEC_VIDEOS y SEC_RELACIONADOS.'),
+(N'CAPAC_PLANES_CURSOS', N'Antes venia de CAPAC_PLANDECURSO_OLD. IPLAN pasa de codigo compacto a ruta con puntos. IPLANPADRE se calcula para mantener el arbol jerarquico.'),
+(N'CAPAC_ATRIBUTOS_X_DRIVERS', N'Atributos base por driver. Se normalizan nombres en minuscula kebab-case: url-diapositivas, imagen-del-profesor, driver-de-video y dificultad.'),
+(N'CAPAC_ATRIBUTOS_PLANES', N'Detalles por plan y atributo. driver-de-video se carga desde DRIVERVIDEO y dificultad desde DATO1 (B, M, A).'),
+(N'CAPAC_SEGURIDADES_CURSOS', N'Antes venia de CAPAC_SEGURIDADPORCURSO_OLD. Se adapta al modelo nuevo de permisos por curso.'),
+(N'CAPAC_ESTRUCTURAS_CURSOS', N'Estructura de niveles por curso. Se puede regenerar segun QNIVELES del driver y se conserva con formato estable para UI y API.'),
+(N'CAPAC_CURSOS_DE_PLANES_ESTUDIO', N'Relacion entre planes y cursos. Se agregaron campos de auditoria para trazabilidad de creacion y cambios.'),
+(N'CAPAC_TEMAS', N'Catalogo de temas de capacitacion. Se completo con auditoria para seguimiento de creacion y actualizacion.');
+
+DECLARE @TableName SYSNAME, @Description NVARCHAR(4000), @Sql NVARCHAR(MAX);
+DECLARE cur CURSOR LOCAL FAST_FORWARD FOR
+  SELECT m.TableName, m.[Description]
+  FROM @Meta m
+  WHERE OBJECT_ID(N'dbo.' + m.TableName, N'U') IS NOT NULL;
+
+OPEN cur;
+FETCH NEXT FROM cur INTO @TableName, @Description;
+WHILE @@FETCH_STATUS = 0
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM sys.extended_properties ep
+    INNER JOIN sys.tables t ON t.object_id = ep.major_id
+    INNER JOIN sys.schemas s ON s.schema_id = t.schema_id
+    WHERE ep.name = N'MS_Description'
+      AND s.name = N'dbo'
+      AND t.name = @TableName
+      AND ep.minor_id = 0
+  )
+  BEGIN
+    EXEC sys.sp_updateextendedproperty
+      @name = N'MS_Description',
+      @value = @Description,
+      @level0type = N'SCHEMA', @level0name = N'dbo',
+      @level1type = N'TABLE',  @level1name = @TableName;
+  END
+  ELSE
+  BEGIN
+    EXEC sys.sp_addextendedproperty
+      @name = N'MS_Description',
+      @value = @Description,
+      @level0type = N'SCHEMA', @level0name = N'dbo',
+      @level1type = N'TABLE',  @level1name = @TableName;
+  END;
+
+  FETCH NEXT FROM cur INTO @TableName, @Description;
+END
+CLOSE cur;
+DEALLOCATE cur;
+GO
