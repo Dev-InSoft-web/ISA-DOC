@@ -56,7 +56,15 @@ async function actionReseed2Levels(pool) {
   await pool.request().query(`
     DELETE FROM dbo.CAPAC_ESTRUCTURAS_CURSOS;
     INSERT INTO dbo.CAPAC_ESTRUCTURAS_CURSOS (ICURSO, QNIVEL, NNIVEL, BACTIVO)
-    SELECT c.ICURSO, v.QNIVEL, NULL, 1
+    SELECT
+      c.ICURSO,
+      v.QNIVEL,
+      CASE v.QNIVEL
+        WHEN 1 THEN 'capitulo'
+        WHEN 2 THEN 'recurso'
+        ELSE NULL
+      END,
+      1
     FROM dbo.CAPAC_CURSOS c
     CROSS JOIN (VALUES (CAST(1 AS TINYINT)), (CAST(2 AS TINYINT))) v(QNIVEL)
     WHERE ISNULL(c.ICURSO, '') <> '';

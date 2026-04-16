@@ -50,7 +50,11 @@ async function main() {
         SELECT
           b.ICURSO,
           CAST(v.q AS TINYINT) AS QNIVEL,
-          NULL AS NNIVEL,
+          CASE v.q
+            WHEN 1 THEN 'capitulo'
+            WHEN 2 THEN 'recurso'
+            ELSE NULL
+          END AS NNIVEL,
           1 AS BACTIVO
         FROM base b
         CROSS APPLY (

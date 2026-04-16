@@ -1,0 +1,427 @@
+--- STARTING COMPREHENSIVE API VERIFICATION ---
+--- Report File: C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\test\out20260415_195013.txt ---
+--- Base URL: http://localhost:20040 ---
+[AUTH] Token cargado desde token.json. ✅
+
+===============================================================
+EVALUATING DOMAIN: Tema
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/tema Body (exacto): {"itema":"TEMATEST","ntema":"Tema Prueba"}
+   Result: HTTP 201 (Success) ✅
+   Response: {"itema":"TEMATEST","ntema":"Tema Prueba","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T00:50:20.132Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-15T00:50:20.132Z"}
+
+2. PROCESS: READ (Verification)
+   Result: HTTP 200 (Found) ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"itema":"TEMATEST","ntema":"Tema Prueba","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T00:50:20.132Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-15T00:50:20.132Z"}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/tema/TEMATEST Body (exacto): {"itema":"TEMATEST","ntema":"Tema Prueba Upd"}
+   Result: HTTP 202 (Accepted) ✅
+   Response: {"itema":"TEMATEST","ntema":"Tema Prueba Upd","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T00:50:22.192Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-15T00:50:20.132Z"}
+
+4. PROCESS: READ (Verify Update)
+   Result: HTTP 200 ✅
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"itema":"TEMATEST","ntema":"Tema Prueba Upd","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T00:50:22.192Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-15T00:50:20.132Z"}
+
+5. PROCESS: MASS CREATION (x3)
+   Input: POST /api/tema extra Body (exacto): {"ntema":"Tema Prueba TEMATEST_1","itema":"TEMATEST_1"}
+   Input: POST /api/tema extra Body (exacto): {"ntema":"Tema Prueba TEMATEST_2","itema":"TEMATEST_2"}
+   Input: POST /api/tema extra Body (exacto): {"ntema":"Tema Prueba TEMATEST_3","itema":"TEMATEST_3"}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (Check Presence)
+   List: 19 elemento(s) recibido(s) ✅
+   -> Coherence: true ✅
+
+===============================================================
+EVALUATING DOMAIN: Driver
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/driver Body (exacto): {"idriver":200,"ndriver":"Driver Prueba","qniveles":2,"descripcion":"Driver POST con atributos anidados","atributos":[{"idriver":200,"iatributo":901,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":902,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":903,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":904,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}}]}
+   Result: HTTP 201 (Success) ✅
+   Response: {"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}}]}
+
+2. PROCESS: READ (Verification)
+   Result: HTTP 200 (Found) ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}}]}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/driver/200 Body (exacto): {"idriver":200,"ndriver":"Driver Prueba Upd"}
+   Result: HTTP 202 (Accepted) ✅
+   Response: {"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}}]}
+
+4. PROCESS: READ (Verify Update)
+   Result: HTTP 200 ✅
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"qniveles":2}}]}
+
+5. PROCESS: MASS CREATION (x3)
+   Input: POST /api/driver extra Body (exacto): {"ndriver":"Driver Prueba 201","qniveles":2,"descripcion":"Driver POST con atributos anidados","idriver":201}
+   Input: POST /api/driver extra Body (exacto): {"ndriver":"Driver Prueba 202","qniveles":2,"descripcion":"Driver POST con atributos anidados","idriver":202}
+   Input: POST /api/driver extra Body (exacto): {"ndriver":"Driver Prueba 203","qniveles":2,"descripcion":"Driver POST con atributos anidados","idriver":203}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (Check Presence)
+   List: 7 elemento(s) recibido(s) ✅
+   -> Coherence: true ✅
+
+--- Smoke: listado driver/atributos tras POST driver con anidación ---
+   [driver/atributos] listado filtro idriver=200: 4 fila(s) idriver=200, iatributos OK ✅
+   List: 16 elemento(s) recibido(s) ✅
+
+===============================================================
+EVALUATING DOMAIN: Permiso
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/permiso Body (exacto): {"ipermiso":"PERMTEST","npermiso":"Permiso prueba"}
+   Result: HTTP 201 (Success) ✅
+   Response: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T00:50:47.512Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-15T00:50:47.512Z"}
+
+2. PROCESS: READ (Verification)
+   Result: HTTP 200 (Found) ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba","fhcre":"2026-04-15T00:50:47.512Z"}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/permiso/PERMTEST Body (exacto): {"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd"}
+   Result: HTTP 202 (Accepted) ✅
+   Response: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T00:50:49.624Z","fhcre":"2026-04-15T00:50:47.512Z"}
+
+4. PROCESS: READ (Verify Update)
+   Result: HTTP 200 ✅
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-15T00:50:47.512Z"}
+
+5. PROCESS: MASS CREATION (x3)
+   Input: POST /api/permiso extra Body (exacto): {"npermiso":"Permiso prueba PERMTEST_1","ipermiso":"PERMTEST_1"}
+   Input: POST /api/permiso extra Body (exacto): {"npermiso":"Permiso prueba PERMTEST_2","ipermiso":"PERMTEST_2"}
+   Input: POST /api/permiso extra Body (exacto): {"npermiso":"Permiso prueba PERMTEST_3","ipermiso":"PERMTEST_3"}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (Check Presence)
+   List: 7 elemento(s) recibido(s) ✅
+   -> Coherence: true ✅
+
+===============================================================
+EVALUATING DOMAIN: Curso
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/curso Body (exacto): {"icurso":"CURSOTEST","ncurso":"Curso Prueba","descripcion":"Desc — POST con tema, driver+atributos, estructuras, seguridades, planes+atributosplan (prueba ciclos / profundidad)","bactivo":true,"itema":"TEMATEST","idriver":200,"tema":{"itema":"TEMATEST","ntema":"Tema Prueba Upd"},"driver":{"idriver":200,"ndriver":"Driver Prueba","qniveles":2,"descripcion":"","atributos":[{"idriver":200,"iatributo":901,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":902,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":903,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":904,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}}]},"estructuras":[{"icurso":"CURSOTEST","qnivel":"1","nnivel":"Bloque anidado A"},{"icurso":"CURSOTEST","qnivel":"2","nnivel":"Bloque anidado B"}],"seguridades":[{"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd"}}],"planes":[{"iplan":"PLANCOMPLEX","icurso":"CURSOTEST","titulo":"Plan anidado en POST curso","itema":"TEMATEST","irecurso":"","iplanpadre":"","atributosplan":[{"iplan":"PLANCOMPLEX","iatributo":901,"icurso":"CURSOTEST","valor":"valor-atributo-plan-anidado-901"}]}]}
+   Result: HTTP 500 (FAILED) ⛔
+   Error Info: {"encabezado":{"resultado":false,"tiempo":2719,"fhentrada":"2026-04-15T00:50:59.956Z","fhsalida":"2026-04-15T00:51:02.675Z","imensaje":500000,"mensaje":""}}
+
+===============================================================
+EVALUATING DOMAIN: PlanEstudio
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/plan/estudio Body (exacto): {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Complex","bactivo":true,"descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false}
+   Result: POST HTTP 500 — cabecera no insertable en este entorno; resto del flujo capacitación sigue por FKs (VERIFY_API_RELAX_PLANESTUDIO_POST) ✅
+
+===============================================================
+EVALUATING DOMAIN: CursoDePlanDeEstudio (PK compuesta)
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/plan/estudio/curso Body (exacto): {"iplanestudio":"PE_APIVERIFY","icurso":"CURSOTEST","qorden":1,"brequerido":true}
+   Result: HTTP 500 (FAILED) ⛔
+   Error Info: {"encabezado":{"resultado":false,"tiempo":1126,"fhentrada":"2026-04-15T00:51:11.782Z","fhsalida":"2026-04-15T00:51:12.908Z","imensaje":500000,"mensaje":""}}
+
+===============================================================
+EVALUATING DOMAIN: PlanCurso (PK compuesta)
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/plan/curso Body (exacto): {"iplan":"PLANCOMPLEX","icurso":"CURSOTEST","titulo":"Nodo plan","itema":"TEMATEST","irecurso":"","iplanpadre":""}
+   Result: HTTP 500 (FAILED) ⛔
+   Error Info: {"encabezado":{"resultado":false,"tiempo":1029,"fhentrada":"2026-04-15T00:51:16.623Z","fhsalida":"2026-04-15T00:51:17.652Z","imensaje":500000,"mensaje":""}}
+
+===============================================================
+EVALUATING: Orden planescurso (iplan jerárquico) — CURSOTEST (planes PLANCOMPLEX + .1/.2/.3)
+===============================================================
+   GET con filtro todo HTTP 404 — probando GET sin filtro
+   ⛔ [plan order] GET curso CURSOTEST: HTTP 500
+
+===============================================================
+EVALUATING DOMAIN: CursoPrerequisito (PK compuesta)
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/curso/prerequisito Body (exacto): {"icurso":"CURSOTEST","icursorequerido":"CURSOTEST_1","iplanestudio":"PE_APIVERIFY"}
+   Result: HTTP 201 (Success) ✅
+   Response: {"icurso":"CURSOTEST","iplanestudio":"PE_APIVERIFY","icursorequerido":"CURSOTEST_1","cursorequerido":null}
+
+2. PROCESS: READ
+   Result: HTTP 200 ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"icurso":"CURSOTEST","iplanestudio":"PE_APIVERIFY","icursorequerido":"CURSOTEST_1","cursorequerido":null}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/curso/prerequisito/CURSOTEST/CURSOTEST_1/PE_APIVERIFY Body (exacto): {"icurso":"CURSOTEST","icursorequerido":"CURSOTEST_1","iplanestudio":"PE_APIVERIFY"}
+   Result: HTTP 202 ✅
+
+4. PROCESS: READ (Verify Update)
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"icurso":"CURSOTEST","iplanestudio":"PE_APIVERIFY","icursorequerido":"CURSOTEST_1","cursorequerido":null}
+
+5. PROCESS: MASS CREATION (extras)
+   Input: POST /api/curso/prerequisito extra Body (exacto): {"icurso":"CURSOTEST","icursorequerido":"CURSOTEST_2","iplanestudio":"PE_APIVERIFY"}
+   Input: POST /api/curso/prerequisito extra Body (exacto): {"icurso":"CURSOTEST","icursorequerido":"CURSOTEST_3","iplanestudio":"PE_APIVERIFY"}
+   Input: POST /api/curso/prerequisito extra Body (exacto): {"icurso":"CURSOTEST_1","icursorequerido":"CURSOTEST","iplanestudio":"PE_APIVERIFY"}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (empty filter e30=)
+   [list] reintento extra 1/3 (250ms) — GET /api/curso/prerequisitos/e30=
+   [list] reintento extra 2/3 (500ms) — GET /api/curso/prerequisitos/e30=
+   [list] reintento extra 3/3 (750ms) — GET /api/curso/prerequisitos/e30=
+   [list] HTTP 500 — fallback GET por PK compuesta
+   Result: 4 fila(s) verificadas por GET individual ⚠️ (listado HTTP 500 o red inestable)
+
+===============================================================
+EVALUATING DOMAIN: AtributosPlan (PK compuesta)
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/plan/estudio/atributo Body (exacto): {"iplan":"PLANCOMPLEX","iatributo":901,"icurso":"CURSOTEST","valor":"valor-atributo-plan"}
+   Result: HTTP 201 (Success) ✅
+   Response: {"iatributo":901,"icurso":"CURSOTEST","iplan":"PLANCOMPLEX","valor":"valor-atributo-plan","atributosdriver":null}
+
+2. PROCESS: READ
+   Result: HTTP 200 ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"iatributo":901,"icurso":"CURSOTEST","iplan":"PLANCOMPLEX","valor":"valor-atributo-plan","atributosdriver":null}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/plan/estudio/atributo/PLANCOMPLEX/901/CURSOTEST Body (exacto): {"iplan":"PLANCOMPLEX","iatributo":901,"icurso":"CURSOTEST","valor":"valor-atributo-plan-UPD"}
+   Result: HTTP 202 ✅
+
+4. PROCESS: READ (Verify Update)
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"iatributo":901,"icurso":"CURSOTEST","iplan":"PLANCOMPLEX","valor":"valor-atributo-plan-UPD","atributosdriver":null}
+
+5. PROCESS: MASS CREATION (extras)
+   Input: POST /api/plan/estudio/atributo extra Body (exacto): {"valor":"valor-atributo-plan_902","iatributo":902,"iplan":"PLANCOMPLEX","icurso":"CURSOTEST"}
+   Input: POST /api/plan/estudio/atributo extra Body (exacto): {"valor":"valor-atributo-plan_903","iatributo":903,"iplan":"PLANCOMPLEX","icurso":"CURSOTEST"}
+   Input: POST /api/plan/estudio/atributo extra Body (exacto): {"valor":"valor-atributo-plan_904","iatributo":904,"iplan":"PLANCOMPLEX","icurso":"CURSOTEST"}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (empty filter e30=)
+   List: no incluye todas las PKs (p. ej. jerarquía iplan) — comprobando GET por fila…
+   Result: 4 fila(s) verificadas por GET individual ✅
+
+===============================================================
+EVALUATING DOMAIN: EstructuraCurso (PK compuesta)
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/curso/estructura Body (exacto): {"icurso":"CURSOTEST","qnivel":"1","nnivel":"Nivel 1"}
+   Result: HTTP 201 (Success) ✅
+   Response: {"icurso":"CURSOTEST","qnivel":1,"nnivel":"Nivel 1"}
+
+2. PROCESS: READ
+   Result: HTTP 200 ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"icurso":"CURSOTEST","qnivel":1,"nnivel":"Nivel 1"}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/curso/estructura/CURSOTEST/1 Body (exacto): {"icurso":"CURSOTEST","qnivel":"1","nnivel":"Nivel 1 actualizado"}
+   Result: HTTP 202 ✅
+
+4. PROCESS: READ (Verify Update)
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"icurso":"CURSOTEST","qnivel":1,"nnivel":"Nivel 1 actualizado"}
+
+5. PROCESS: MASS CREATION (extras)
+   Input: POST /api/curso/estructura extra Body (exacto): {"nnivel":"Nivel 1 2","icurso":"CURSOTEST","qnivel":"2"}
+   Input: POST /api/curso/estructura extra Body (exacto): {"nnivel":"Nivel 1 3","icurso":"CURSOTEST","qnivel":"3"}
+   Input: POST /api/curso/estructura extra Body (exacto): {"nnivel":"Nivel 1 4","icurso":"CURSOTEST","qnivel":"4"}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (empty filter e30=)
+   List: 458 elemento(s) recibido(s) ✅
+
+===============================================================
+EVALUATING DOMAIN: SeguridadCurso (PK compuesta)
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/curso/seguridad Body (exacto): {"icurso":"CURSOTEST","ipermiso":"PERMTEST"}
+   Result: HTTP 201 (Success) ✅
+   Response: {"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-15T00:52:10.731Z"}}
+
+2. PROCESS: READ
+   Result: HTTP 200 ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-15T00:52:11.587Z"}}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/curso/seguridad/CURSOTEST/PERMTEST Body (exacto): {"icurso":"CURSOTEST","ipermiso":"PERMTEST"}
+   Result: HTTP 202 ✅
+
+4. PROCESS: READ (Verify Update)
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-15T00:52:14.033Z"}}
+
+5. PROCESS: MASS CREATION (extras)
+   Input: POST /api/curso/seguridad extra Body (exacto): {"icurso":"CURSOTEST","ipermiso":"PERMTEST_1"}
+   Input: POST /api/curso/seguridad extra Body (exacto): {"icurso":"CURSOTEST","ipermiso":"PERMTEST_2"}
+   Input: POST /api/curso/seguridad extra Body (exacto): {"icurso":"CURSOTEST","ipermiso":"PERMTEST_3"}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (empty filter e30=)
+   List: 327 elemento(s) recibido(s) ✅
+
+===============================================================
+EVALUATING: Driver con atributos anidados (idriver=200)
+===============================================================
+
+A. GET /api/driver/200/eyJ0b2RvIjp0cnVlfQ== (todo: expandir atributos)
+   HTTP 404 — probando GET sin filtro en path (solo /api/driver/200)
+   Result: atributos incluye los 4 iatributo de prueba. ✅
+   Atributos en respuesta: 4 elemento(s) ✅
+
+B. PUT /api/driver/200 con lista atributos (sync detalle; se conservan los existentes + uno nuevo)
+   Input: PUT /api/driver/200 Body (exacto): {"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"idriver":200,"iatributo":901,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":902,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":903,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":904,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":905,"qnivel":1,"natributo":"Atributo vía PUT driver","tdatributo":1,"brequerido":false,"jconfig":{"descripcion":"sync-via-driver","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}}]}
+   PUT driver: HTTP 400 — probando POST /api/driver/atributo (alta directa del detalle)
+   PUT/POST atributo extra no aplicó en BD; se acepta verificación de los 4 atributos base (VERIFY_API_RELAX_DRIVER_ATTR_SYNC) ✅
+
+###############################################################
+CAPACITACIÓN: Verificar / duplicar / consolidar / recodificar
+###############################################################
+   [Verificar tema] HTTP 200 ✅
+   [Verificar driver] HTTP 200 ✅
+   [Verificar permiso] HTTP 200 ✅
+   [Verificar curso] HTTP 200 ✅
+   [Verificar plan/estudio] HTTP 200 ✅
+   [Verificar plan/estudio/curso] HTTP 200 ✅
+   [Verificar plan/curso] HTTP 200 ✅
+   [Verificar curso/prerequisito] HTTP 200 ✅
+   [Verificar plan/estudio/atributo] HTTP 200 ✅
+   [Verificar curso/estructura] HTTP 200 ✅
+   [Verificar curso/seguridad] HTTP 200 ✅
+   [Verificar driver/atributo] HTTP 200 ✅
+
+--- Duplicar (smoke): tema TEMATEST_DUP_SRC → TEMATEST_APIVERIFY ---
+   Input: POST /api/tema/duplicar/TEMATEST_DUP_SRC Body (exacto): {"itema":"TEMATEST_APIVERIFY","ntema":"Tema verificación API"}
+   [Duplicar tema] HTTP 500 — SP auditoría (IUSUARIOCRE_OLD); smoke marcado OK (VERIFY_API_RELAX_DUPLICAR) ✅
+
+--- Duplicar (smoke): driver 200 → 299 ---
+   Input: POST /api/driver/duplicar/200 Body (exacto): {"idriver":299,"ndriver":"Driver dup API","descripcion":"","qniveles":1}
+   [Duplicar driver] HTTP 500 — SP auditoría (IUSUARIOCRE_OLD); smoke marcado OK (VERIFY_API_RELAX_DUPLICAR) ✅
+
+--- Consolidar / Recodificar (smoke): dos PK distintas (evita "mismo identificador") ---
+   POST tema TCA_mnzc5wn6: OK ✅
+   POST tema TCB_mnzc5wn6: OK ✅
+   POST tema TRA_mnzc5wn6: OK ✅
+   Input: PUT /api/tema/consolidar/TCA_mnzc5wn6 Body (exacto): {"itema":"TCB_mnzc5wn6","ntema":"Tema consolidar smoke"}
+   [Consolidar tema] HTTP 500 — SP auditoría; smoke OK (VERIFY_API_RELAX_CATALOG_MUTATIONS) ✅
+   Input: PUT /api/tema/recodificar/TRA_mnzc5wn6 Body (exacto): {"itema":"TRB_mnzc5wn6","ntema":"Tema recodificado smoke"}
+   [Recodificar tema] HTTP 500 — SP auditoría; smoke OK (VERIFY_API_RELAX_CATALOG_MUTATIONS) ✅
+
+###############################################################
+FINAL CLEANUP: DELETE ALL TEST ENTITIES
+###############################################################
+
+--- ✅ Deleting: TemaRecodificado ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 23 elemento(s) recibido(s) ✅
+   Result: None of the TemaRecodificado test items found. ✅
+
+--- ✅ Deleting: TemaConsolidarDestino ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 22 elemento(s) recibido(s) ✅
+   Result: None of the TemaConsolidarDestino test items found. ✅
+
+--- ✅ Deleting: TemaDupSrc ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 21 elemento(s) recibido(s) ✅
+   Result: None of the TemaDupSrc test items found. ✅
+
+--- ✅ Deleting: SeguridadCurso ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 323 elemento(s) recibido(s) ✅
+   Result: None of the SeguridadCurso test items found. ✅
+
+--- ✅ Deleting: EstructuraCurso ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 454 elemento(s) recibido(s) ✅
+   Result: None of the EstructuraCurso test items found. ✅
+
+--- ✅ Deleting: AtributosPlan ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 1000 elemento(s) recibido(s) ✅
+   Result: None of the AtributosPlan test items found. ✅
+
+--- ✅ Deleting: CursoPrerequisito ---
+   Action completed. ✅
+   Verifying deletion from list...
+   [list] reintento extra 1/3 (250ms) — GET /api/curso/prerequisitos/e30=
+   [list] reintento extra 2/3 (500ms) — GET /api/curso/prerequisitos/e30=
+   [list] reintento extra 3/3 (750ms) — GET /api/curso/prerequisitos/e30=
+   Result: Failed to list (HTTP 500) ⛔
+
+--- ✅ Deleting: PlanCurso ---
+   Action completed. ✅
+   Verifying deletion from list...
+   [list] reintento extra 1/3 (250ms) — GET /api/plan/cursos/e30=
+   [list] reintento extra 2/3 (500ms) — GET /api/plan/cursos/e30=
+   [list] reintento extra 3/3 (750ms) — GET /api/plan/cursos/e30=
+   Result: Failed to list (HTTP 500) ⛔
+
+--- ✅ Deleting: CursoDePlanDeEstudio ---
+   Action completed. ✅
+   Verifying deletion from list...
+   [list] reintento extra 1/3 (250ms) — GET /api/plan/estudio/cursos/e30=
+   [list] reintento extra 2/3 (500ms) — GET /api/plan/estudio/cursos/e30=
+   [list] reintento extra 3/3 (750ms) — GET /api/plan/estudio/cursos/e30=
+   Result: Failed to list (HTTP 500) ⛔
+
+--- ✅ Deleting: PlanEstudio ---
+   Action completed. ✅
+   Verifying deletion from list...
+   [list] reintento extra 1/3 (250ms) — GET /api/planes/estudio/e30=
+   [list] reintento extra 2/3 (500ms) — GET /api/planes/estudio/e30=
+   [list] reintento extra 3/3 (750ms) — GET /api/planes/estudio/e30=
+   Result: Failed to list (HTTP 500) ⛔
+
+--- ✅ Deleting: Curso ---
+   Action completed. ✅
+   Verifying deletion from list...
+   [list] reintento extra 1/3 (250ms) — GET /api/cursos/e30=
+   [list] reintento extra 2/3 (500ms) — GET /api/cursos/e30=
+   [list] reintento extra 3/3 (750ms) — GET /api/cursos/e30=
+   Result: Failed to list (HTTP 500) ⛔
+
+--- ✅ Deleting: Permiso ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 3 elemento(s) recibido(s) ✅
+   Result: None of the Permiso test items found. ✅
+
+--- ✅ Deleting: Driver ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 3 elemento(s) recibido(s) ✅
+   Result: None of the Driver test items found. ✅
+
+--- ✅ Deleting: Tema ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 17 elemento(s) recibido(s) ✅
+   Result: None of the Tema test items found. ✅
+
+--- Testing Finished ---

@@ -195,7 +195,7 @@ async function testDuplicarEndpoint(label, apiName, idPath, body, errorIcon = '�
 /**
  * PUT …/consolidar/{pk} — body hacia registro destino (merge).
  */
-async function testConsolidarEndpoint(label, apiName, idPath, body, errorIcon = '⚠️') {
+async function testConsolidarEndpoint(label, apiName, idPath, body, errorIcon = '⛔') {
 	const relax = process.env.VERIFY_API_RELAX_CATALOG_MUTATIONS !== '0';
 	console.log(`   Input: PUT /api/${apiName}/consolidar/${idPath} Body (exacto): ${JSON.stringify(body)}`);
 	const res = await request('PUT', `/api/${apiName}/consolidar/${idPath}`, body);
@@ -217,7 +217,7 @@ async function testConsolidarEndpoint(label, apiName, idPath, body, errorIcon = 
 /**
  * PUT …/recodificar/{pk} — body con nuevas claves/campos.
  */
-async function testRecodificarEndpoint(label, apiName, idPath, body, errorIcon = '⚠️') {
+async function testRecodificarEndpoint(label, apiName, idPath, body, errorIcon = '⛔') {
 	const relax = process.env.VERIFY_API_RELAX_CATALOG_MUTATIONS !== '0';
 	console.log(`   Input: PUT /api/${apiName}/recodificar/${idPath} Body (exacto): ${JSON.stringify(body)}`);
 	const res = await request('PUT', `/api/${apiName}/recodificar/${idPath}`, body);
@@ -578,7 +578,7 @@ async function cleanupAll() {
 				if (stillThere.length === 0) {
 					console.log(`   Result: None of the ${name} test items found. ✅`);
 				} else {
-					console.error(`   Result: Items still present: ${JSON.stringify(stillThere)} ⚠️`);
+					console.error(`   Result: Items still present: ${JSON.stringify(stillThere)} ⛔`);
 				}
 			}
 		} else {

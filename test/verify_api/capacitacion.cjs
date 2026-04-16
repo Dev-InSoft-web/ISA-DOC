@@ -18,7 +18,7 @@ async function testCapacitacionVerificarConsolidarRecodificar({
 	ICURSO,
 	iplanestudio,
 }) {
-	const err = '⚠️';
+	const err = '⛔';
 	console.log(`\n###############################################################`);
 	console.log(`CAPACITACIÓN: Verificar / duplicar / consolidar / recodificar`);
 	console.log(`###############################################################`);

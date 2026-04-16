@@ -1,5 +1,5 @@
 --- STARTING COMPREHENSIVE API VERIFICATION ---
---- Report File: C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\test\out20260414_144358.txt ---
+--- Report File: C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\test\out20260415_201418.txt ---
 --- Base URL: http://localhost:20040 ---
 [AUTH] Token cargado desde token.json. ✅
 
@@ -10,22 +10,22 @@ EVALUATING DOMAIN: Tema
 1. PROCESS: CREATE
    Input: POST /api/tema Body (exacto): {"itema":"TEMATEST","ntema":"Tema Prueba"}
    Result: HTTP 201 (Success) ✅
-   Response: {"itema":"TEMATEST","ntema":"Tema Prueba","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-14T19:44:05.662Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-14T19:44:05.661Z"}
+   Response: {"itema":"TEMATEST","ntema":"Tema Prueba","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T01:14:25.982Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-15T01:14:25.982Z"}
 
 2. PROCESS: READ (Verification)
    Result: HTTP 200 (Found) ✅
    -> [Verify Created Data] Coherent: true ✅
-      Actual Data: {"itema":"TEMATEST","ntema":"Tema Prueba","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-14T19:44:05.662Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-14T19:44:05.661Z"}
+      Actual Data: {"itema":"TEMATEST","ntema":"Tema Prueba","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T01:14:25.982Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-15T01:14:25.982Z"}
 
 3. PROCESS: UPDATE
    Input: PUT /api/tema/TEMATEST Body (exacto): {"itema":"TEMATEST","ntema":"Tema Prueba Upd"}
    Result: HTTP 202 (Accepted) ✅
-   Response: {"itema":"TEMATEST","ntema":"Tema Prueba Upd","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-14T19:44:07.697Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-14T19:44:05.661Z"}
+   Response: {"itema":"TEMATEST","ntema":"Tema Prueba Upd","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T01:14:28.042Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-15T01:14:25.982Z"}
 
 4. PROCESS: READ (Verify Update)
    Result: HTTP 200 ✅
    -> [Verify Updated Fields] Coherent: true ✅
-      Actual Data: {"itema":"TEMATEST","ntema":"Tema Prueba Upd","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-14T19:44:07.697Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-14T19:44:05.661Z"}
+      Actual Data: {"itema":"TEMATEST","ntema":"Tema Prueba Upd","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T01:14:28.042Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-15T01:14:25.982Z"}
 
 5. PROCESS: MASS CREATION (x3)
    Input: POST /api/tema extra Body (exacto): {"ntema":"Tema Prueba TEMATEST_1","itema":"TEMATEST_1"}
@@ -34,7 +34,7 @@ EVALUATING DOMAIN: Tema
    Result: 3 extra items created. ✅
 
 6. PROCESS: LIST (Check Presence)
-   List: 13 elemento(s) recibido(s) ✅
+   List: 21 elemento(s) recibido(s) ✅
    -> Coherence: true ✅
 
 ===============================================================
@@ -82,22 +82,22 @@ EVALUATING DOMAIN: Permiso
 1. PROCESS: CREATE
    Input: POST /api/permiso Body (exacto): {"ipermiso":"PERMTEST","npermiso":"Permiso prueba"}
    Result: HTTP 201 (Success) ✅
-   Response: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-14T19:44:32.601Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-14T19:44:32.601Z"}
+   Response: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T01:14:54.717Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-04-15T01:14:54.717Z"}
 
 2. PROCESS: READ (Verification)
    Result: HTTP 200 (Found) ✅
    -> [Verify Created Data] Coherent: true ✅
-      Actual Data: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba","fhcre":"2026-04-14T19:44:32.601Z"}
+      Actual Data: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba","fhcre":"2026-04-15T01:14:54.717Z"}
 
 3. PROCESS: UPDATE
    Input: PUT /api/permiso/PERMTEST Body (exacto): {"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd"}
    Result: HTTP 202 (Accepted) ✅
-   Response: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-14T19:44:34.610Z","fhcre":"2026-04-14T19:44:32.601Z"}
+   Response: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-04-15T01:14:56.783Z","fhcre":"2026-04-15T01:14:54.717Z"}
 
 4. PROCESS: READ (Verify Update)
    Result: HTTP 200 ✅
    -> [Verify Updated Fields] Coherent: true ✅
-      Actual Data: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-14T19:44:32.601Z"}
+      Actual Data: {"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-15T01:14:54.717Z"}
 
 5. PROCESS: MASS CREATION (x3)
    Input: POST /api/permiso extra Body (exacto): {"npermiso":"Permiso prueba PERMTEST_1","ipermiso":"PERMTEST_1"}
@@ -116,7 +116,7 @@ EVALUATING DOMAIN: Curso
 1. PROCESS: CREATE
    Input: POST /api/curso Body (exacto): {"icurso":"CURSOTEST","ncurso":"Curso Prueba","descripcion":"Desc — POST con tema, driver+atributos, estructuras, seguridades, planes+atributosplan (prueba ciclos / profundidad)","bactivo":true,"itema":"TEMATEST","idriver":200,"tema":{"itema":"TEMATEST","ntema":"Tema Prueba Upd"},"driver":{"idriver":200,"ndriver":"Driver Prueba","qniveles":2,"descripcion":"","atributos":[{"idriver":200,"iatributo":901,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":902,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":903,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":904,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}}]},"estructuras":[{"icurso":"CURSOTEST","qnivel":"1","nnivel":"Bloque anidado A"},{"icurso":"CURSOTEST","qnivel":"2","nnivel":"Bloque anidado B"}],"seguridades":[{"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd"}}],"planes":[{"iplan":"PLANCOMPLEX","icurso":"CURSOTEST","titulo":"Plan anidado en POST curso","itema":"TEMATEST","irecurso":"","iplanpadre":"","atributosplan":[{"iplan":"PLANCOMPLEX","iatributo":901,"icurso":"CURSOTEST","valor":"valor-atributo-plan-anidado-901"}]}]}
    Result: HTTP 500 (FAILED) ⛔
-   Error Info: {"encabezado":{"resultado":false,"tiempo":1861,"fhentrada":"2026-04-14T19:44:44.358Z","fhsalida":"2026-04-14T19:44:46.219Z","imensaje":500000,"mensaje":""}}
+   Error Info: {"encabezado":{"resultado":false,"tiempo":2326,"fhentrada":"2026-04-15T01:15:07.080Z","fhsalida":"2026-04-15T01:15:09.406Z","imensaje":500000,"mensaje":""}}
 
 ===============================================================
 EVALUATING DOMAIN: PlanEstudio
@@ -133,7 +133,7 @@ EVALUATING DOMAIN: CursoDePlanDeEstudio (PK compuesta)
 1. PROCESS: CREATE
    Input: POST /api/plan/estudio/curso Body (exacto): {"iplanestudio":"PE_APIVERIFY","icurso":"CURSOTEST","qorden":1,"brequerido":true}
    Result: HTTP 500 (FAILED) ⛔
-   Error Info: {"encabezado":{"resultado":false,"tiempo":966,"fhentrada":"2026-04-14T19:44:54.703Z","fhsalida":"2026-04-14T19:44:55.669Z","imensaje":500000,"mensaje":""}}
+   Error Info: {"encabezado":{"resultado":false,"tiempo":1022,"fhentrada":"2026-04-15T01:15:18.489Z","fhsalida":"2026-04-15T01:15:19.511Z","imensaje":500000,"mensaje":""}}
 
 ===============================================================
 EVALUATING DOMAIN: PlanCurso (PK compuesta)
@@ -142,7 +142,7 @@ EVALUATING DOMAIN: PlanCurso (PK compuesta)
 1. PROCESS: CREATE
    Input: POST /api/plan/curso Body (exacto): {"iplan":"PLANCOMPLEX","icurso":"CURSOTEST","titulo":"Nodo plan","itema":"TEMATEST","irecurso":"","iplanpadre":""}
    Result: HTTP 500 (FAILED) ⛔
-   Error Info: {"encabezado":{"resultado":false,"tiempo":957,"fhentrada":"2026-04-14T19:44:59.114Z","fhsalida":"2026-04-14T19:45:00.071Z","imensaje":500000,"mensaje":""}}
+   Error Info: {"encabezado":{"resultado":false,"tiempo":1019,"fhentrada":"2026-04-15T01:15:22.900Z","fhsalida":"2026-04-15T01:15:23.919Z","imensaje":500000,"mensaje":""}}
 
 ===============================================================
 EVALUATING: Orden planescurso (iplan jerárquico) — CURSOTEST (planes PLANCOMPLEX + .1/.2/.3)
@@ -255,12 +255,12 @@ EVALUATING DOMAIN: SeguridadCurso (PK compuesta)
 1. PROCESS: CREATE
    Input: POST /api/curso/seguridad Body (exacto): {"icurso":"CURSOTEST","ipermiso":"PERMTEST"}
    Result: HTTP 201 (Success) ✅
-   Response: {"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-14T19:45:52.354Z"}}
+   Response: {"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-15T01:16:17.166Z"}}
 
 2. PROCESS: READ
    Result: HTTP 200 ✅
    -> [Verify Created Data] Coherent: true ✅
-      Actual Data: {"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-14T19:45:53.114Z"}}
+      Actual Data: {"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-15T01:16:18.008Z"}}
 
 3. PROCESS: UPDATE
    Input: PUT /api/curso/seguridad/CURSOTEST/PERMTEST Body (exacto): {"icurso":"CURSOTEST","ipermiso":"PERMTEST"}
@@ -268,7 +268,7 @@ EVALUATING DOMAIN: SeguridadCurso (PK compuesta)
 
 4. PROCESS: READ (Verify Update)
    -> [Verify Updated Fields] Coherent: true ✅
-      Actual Data: {"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-14T19:45:55.477Z"}}
+      Actual Data: {"icurso":"CURSOTEST","ipermiso":"PERMTEST","permiso":{"ipermiso":"PERMTEST","npermiso":"Permiso prueba upd","fhcre":"2026-04-15T01:16:20.503Z"}}
 
 5. PROCESS: MASS CREATION (extras)
    Input: POST /api/curso/seguridad extra Body (exacto): {"icurso":"CURSOTEST","ipermiso":"PERMTEST_1"}
@@ -318,12 +318,12 @@ CAPACITACIÓN: Verificar / duplicar / consolidar / recodificar
    [Duplicar driver] HTTP 500 — SP auditoría (IUSUARIOCRE_OLD); smoke marcado OK (VERIFY_API_RELAX_DUPLICAR) ✅
 
 --- Consolidar / Recodificar (smoke): dos PK distintas (evita "mismo identificador") ---
-   POST tema TCA_mnz17z5n: OK ✅
-   POST tema TCB_mnz17z5n: OK ✅
-   POST tema TRA_mnz17z5n: OK ✅
-   Input: PUT /api/tema/consolidar/TCA_mnz17z5n Body (exacto): {"itema":"TCB_mnz17z5n","ntema":"Tema consolidar smoke"}
+   POST tema TCA_mnzd0wfo: OK ✅
+   POST tema TCB_mnzd0wfo: OK ✅
+   POST tema TRA_mnzd0wfo: OK ✅
+   Input: PUT /api/tema/consolidar/TCA_mnzd0wfo Body (exacto): {"itema":"TCB_mnzd0wfo","ntema":"Tema consolidar smoke"}
    [Consolidar tema] HTTP 500 — SP auditoría; smoke OK (VERIFY_API_RELAX_CATALOG_MUTATIONS) ✅
-   Input: PUT /api/tema/recodificar/TRA_mnz17z5n Body (exacto): {"itema":"TRB_mnz17z5n","ntema":"Tema recodificado smoke"}
+   Input: PUT /api/tema/recodificar/TRA_mnzd0wfo Body (exacto): {"itema":"TRB_mnzd0wfo","ntema":"Tema recodificado smoke"}
    [Recodificar tema] HTTP 500 — SP auditoría; smoke OK (VERIFY_API_RELAX_CATALOG_MUTATIONS) ✅
 
 ###############################################################
@@ -333,19 +333,19 @@ FINAL CLEANUP: DELETE ALL TEST ENTITIES
 --- ✅ Deleting: TemaRecodificado ---
    Action completed. ✅
    Verifying deletion from list...
-   List: 17 elemento(s) recibido(s) ✅
+   List: 25 elemento(s) recibido(s) ✅
    Result: None of the TemaRecodificado test items found. ✅
 
 --- ✅ Deleting: TemaConsolidarDestino ---
    Action completed. ✅
    Verifying deletion from list...
-   List: 16 elemento(s) recibido(s) ✅
+   List: 24 elemento(s) recibido(s) ✅
    Result: None of the TemaConsolidarDestino test items found. ✅
 
 --- ✅ Deleting: TemaDupSrc ---
    Action completed. ✅
    Verifying deletion from list...
-   List: 15 elemento(s) recibido(s) ✅
+   List: 23 elemento(s) recibido(s) ✅
    Result: None of the TemaDupSrc test items found. ✅
 
 --- ✅ Deleting: SeguridadCurso ---
@@ -421,7 +421,7 @@ FINAL CLEANUP: DELETE ALL TEST ENTITIES
 --- ✅ Deleting: Tema ---
    Action completed. ✅
    Verifying deletion from list...
-   List: 11 elemento(s) recibido(s) ✅
+   List: 19 elemento(s) recibido(s) ✅
    Result: None of the Tema test items found. ✅
 
 --- Testing Finished ---
