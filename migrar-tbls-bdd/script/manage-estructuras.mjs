@@ -60,8 +60,8 @@ async function actionReseed2Levels(pool) {
       c.ICURSO,
       v.QNIVEL,
       CASE v.QNIVEL
-        WHEN 1 THEN 'capitulo'
-        WHEN 2 THEN 'recurso'
+        WHEN 1 THEN N'Capítulo'
+        WHEN 2 THEN N'Título'
         ELSE NULL
       END,
       1

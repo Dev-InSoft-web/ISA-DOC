@@ -51,8 +51,8 @@ async function main() {
           b.ICURSO,
           CAST(v.q AS TINYINT) AS QNIVEL,
           CASE v.q
-            WHEN 1 THEN 'capitulo'
-            WHEN 2 THEN 'recurso'
+            WHEN 1 THEN N'Capítulo'
+            WHEN 2 THEN N'Título'
             ELSE NULL
           END AS NNIVEL,
           1 AS BACTIVO
