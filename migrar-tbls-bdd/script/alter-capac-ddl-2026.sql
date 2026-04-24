@@ -3,7 +3,7 @@
   doc/migrar-tbls-bdd/script/update-capac-atributos-x-drivers-natributo.sql
 
   Aplica en bases ya existentes columnas alineadas con init_capacitacion.sql:
-  - CAPAC_CURSOS: BGENERACERTIFICADO (BIT NOT NULL, default 0)
+  - CAPAC_CURSOS: BGENERACERTIFICADO (BIT NULL, default 0)
   - CAPAC_CURSOS_DE_PLANES_ESTUDIO: auditoría (IUSUARIOCRE … FHULT)
   - CAPAC_TEMAS: auditoría completa (IUSUARIOCRE … FHULT)
   - CAPAC_ATRIBUTOS_X_DRIVERS: TDATRIBUTO (TTDAtributo / enum 0–7); NATRIBUTO = etiqueta visible (texto legible en BDD, no mapeo en UI)
@@ -15,6 +15,23 @@ GO
 
 IF COL_LENGTH('dbo.CAPAC_CURSOS', 'BGENERACERTIFICADO') IS NULL
   ALTER TABLE dbo.CAPAC_CURSOS ADD BGENERACERTIFICADO BIT NOT NULL CONSTRAINT DF_CAPAC_CURSOS_BGENCERT DEFAULT (0);
+GO
+
+IF COL_LENGTH('dbo.CAPAC_CURSOS', 'BGENERACERTIFICADO') IS NOT NULL
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM sys.default_constraints dc
+    INNER JOIN sys.columns c ON c.default_object_id = dc.object_id
+    WHERE dc.parent_object_id = OBJECT_ID('dbo.CAPAC_CURSOS')
+      AND c.name = 'BGENERACERTIFICADO'
+  )
+  BEGIN
+    ALTER TABLE dbo.CAPAC_CURSOS ADD CONSTRAINT DF_CAPAC_CURSOS_BGENCERT DEFAULT (0) FOR BGENERACERTIFICADO;
+  END
+
+  ALTER TABLE dbo.CAPAC_CURSOS ALTER COLUMN BGENERACERTIFICADO BIT NULL;
+END
 GO
 
 IF COL_LENGTH('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO', 'IUSUARIOCRE') IS NULL
