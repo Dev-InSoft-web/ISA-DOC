@@ -1,11 +1,20 @@
 /*
+  Si NATRIBUTO sigue en kebab en CAPAC_ATRIBUTOS_X_DRIVERS, ejecutar además:
+  doc/migrar-tbls-bdd/script/update-capac-atributos-x-drivers-natributo.sql
+
   Aplica en bases ya existentes columnas alineadas con init_capacitacion.sql:
+  - CAPAC_CURSOS: BGENERACERTIFICADO (BIT NOT NULL, default 0)
   - CAPAC_CURSOS_DE_PLANES_ESTUDIO: auditoría (IUSUARIOCRE … FHULT)
   - CAPAC_TEMAS: auditoría completa (IUSUARIOCRE … FHULT)
-  - CAPAC_ATRIBUTOS_X_DRIVERS: TDATRIBUTO (TTDAtributo / enum 0–7)
+  - CAPAC_ATRIBUTOS_X_DRIVERS: TDATRIBUTO (TTDAtributo / enum 0–7); NATRIBUTO = etiqueta visible (texto legible en BDD, no mapeo en UI)
+  - CAPAC_PLANES_CURSOS: IPLANPADRE recalculado desde IPLAN con puntos
   Idempotente: solo ALTER si la columna no existe.
 */
 USE CLIENTES;
+GO
+
+IF COL_LENGTH('dbo.CAPAC_CURSOS', 'BGENERACERTIFICADO') IS NULL
+  ALTER TABLE dbo.CAPAC_CURSOS ADD BGENERACERTIFICADO BIT NOT NULL CONSTRAINT DF_CAPAC_CURSOS_BGENCERT DEFAULT (0);
 GO
 
 IF COL_LENGTH('dbo.CAPAC_CURSOS_DE_PLANES_ESTUDIO', 'IUSUARIOCRE') IS NULL
@@ -46,6 +55,47 @@ GO
 
 IF COL_LENGTH('dbo.CAPAC_ATRIBUTOS_X_DRIVERS', 'TDATRIBUTO') IS NULL
   ALTER TABLE dbo.CAPAC_ATRIBUTOS_X_DRIVERS ADD TDATRIBUTO TINYINT NOT NULL CONSTRAINT DF_CAPAC_AXD_TDATRIBUTO DEFAULT (0);
+GO
+
+IF OBJECT_ID('dbo.CAPAC_ATRIBUTOS_X_DRIVERS', 'U') IS NOT NULL
+BEGIN
+  /* Etiquetas para formularios: se persisten en NATRIBUTO (no kebab-case en esta columna). */
+  UPDATE dbo.CAPAC_ATRIBUTOS_X_DRIVERS
+  SET NATRIBUTO = CASE UPPER(LTRIM(RTRIM(NATRIBUTO)))
+    WHEN N'URL DIAPOSITIVAS' THEN N'URL diapositivas'
+    WHEN N'IMAGEN DEL PROFESOR' THEN N'Imagen del profesor'
+    WHEN N'DRIVER DE VÍDEO' THEN N'Driver de vídeo'
+    WHEN N'DRIVER DE VIDEO' THEN N'Driver de vídeo'
+    WHEN N'DIFICULTAD' THEN N'Dificultad'
+    ELSE NATRIBUTO
+  END
+  WHERE UPPER(LTRIM(RTRIM(NATRIBUTO))) IN (
+    N'URL DIAPOSITIVAS', N'IMAGEN DEL PROFESOR', N'DRIVER DE VÍDEO', N'DRIVER DE VIDEO', N'DIFICULTAD'
+  );
+
+  UPDATE dbo.CAPAC_ATRIBUTOS_X_DRIVERS
+  SET NATRIBUTO = CASE LOWER(LTRIM(RTRIM(NATRIBUTO)))
+    WHEN N'url-diapositivas' THEN N'URL diapositivas'
+    WHEN N'imagen-del-profesor' THEN N'Imagen del profesor'
+    WHEN N'driver-de-video' THEN N'Driver de vídeo'
+    WHEN N'dificultad' THEN N'Dificultad'
+    ELSE NATRIBUTO
+  END
+  WHERE LOWER(LTRIM(RTRIM(NATRIBUTO))) IN (
+    N'url-diapositivas', N'imagen-del-profesor', N'driver-de-video', N'dificultad'
+  );
+END
+GO
+
+IF OBJECT_ID('dbo.CAPAC_PLANES_CURSOS', 'U') IS NOT NULL
+BEGIN
+  UPDATE dbo.CAPAC_PLANES_CURSOS
+  SET IPLANPADRE = CASE
+    WHEN IPLAN IS NULL OR CHARINDEX(N'.', IPLAN) = 0 THEN NULL
+    ELSE LEFT(IPLAN, LEN(IPLAN) - CHARINDEX(N'.', REVERSE(IPLAN)))
+  END
+  WHERE IPLAN IS NOT NULL;
+END
 GO
 
 IF COL_LENGTH('dbo.CAPAC_ESTRUCTURAS_CURSOS', 'QNIVEL') IS NOT NULL
@@ -118,10 +168,10 @@ DECLARE @Meta TABLE (
 );
 
 INSERT INTO @Meta (TableName, [Description]) VALUES
-(N'CAPAC_CURSOS', N'Antes venia de CAPAC_CURSOS_OLD. Aqui se guardan los cursos en formato nuevo y ordenado. IRECURSO se toma del video viejo para mantener continuidad.'),
+(N'CAPAC_CURSOS', N'Antes venia de CAPAC_CURSOS_OLD. Cursos normalizados; IRECURSO desde IVIDEO. BGENERACERTIFICADO indica si el curso emite certificado (bit, default 0).'),
 (N'CAPAC_DRIVERS', N'Antes venia de drivers viejos y de DRIVERSTRUCT. Aqui se normalizan nombres para que el sistema nuevo use los mismos drivers: TRES_COLUMNAS, SEC_VIDEOS y SEC_RELACIONADOS.'),
 (N'CAPAC_PLANES_CURSOS', N'Antes venia de CAPAC_PLANDECURSO_OLD. IPLAN pasa de codigo compacto a ruta con puntos. IPLANPADRE se calcula para mantener el arbol jerarquico.'),
-(N'CAPAC_ATRIBUTOS_X_DRIVERS', N'Atributos base por driver. Se normalizan labels de presentacion en MAYUSCULAS y con espacios: URL DIAPOSITIVAS, IMAGEN DEL PROFESOR, DRIVER DE VÍDEO y DIFICULTAD.'),
+(N'CAPAC_ATRIBUTOS_X_DRIVERS', N'Atributos base por driver. NATRIBUTO: texto de etiqueta para UI (definido en datos; ej. URL diapositivas, Imagen del profesor).'),
 (N'CAPAC_ATRIBUTOS_PLANES', N'Detalles por plan y atributo. DRIVER DE VÍDEO se carga desde DRIVERVIDEO y DIFICULTAD desde DATO1 (B, M, A).'),
 (N'CAPAC_SEGURIDADES_CURSOS', N'Antes venia de CAPAC_SEGURIDADPORCURSO_OLD. Se adapta al modelo nuevo de permisos por curso.'),
 (N'CAPAC_ESTRUCTURAS_CURSOS', N'Estructura de niveles por curso. Se puede regenerar segun QNIVELES del driver y se conserva con formato estable para UI y API.'),

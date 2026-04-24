@@ -29,9 +29,11 @@ Migracion por codigo de tablas `CAPAC_*_OLD` (origen Firebird importado) hacia t
 
 Si la base ya existía antes de alinear `doc/init_capacitacion.sql` (auditoría en `CAPAC_CURSOS_DE_PLANES_ESTUDIO` y `TDATRIBUTO` en `CAPAC_ATRIBUTOS_X_DRIVERS`), ejecuta en SSMS o `sqlcmd`:
 
-`script/alter-capac-ddl-2026.sql`
+`script/alter-capac-ddl-2026.sql` (incluye `BGENERACERTIFICADO` en `CAPAC_CURSOS`, `TDATRIBUTO` en `CAPAC_ATRIBUTOS_X_DRIVERS`, actualización de `NATRIBUTO` a etiquetas legibles si aún hay mayúsculas/kebab, recálculo de `IPLANPADRE` en `CAPAC_PLANES_CURSOS`).
 
-Luego vuelve a correr `npm run analyze` / `npm run migrate` si aplica.
+Luego: `npm run ddl:capac` (aplica el SQL) y, si aplica, `npm run analyze` / `npm run migrate`.
+
+**Solo actualizar `NATRIBUTO`** (p. ej. kebab → texto UI) sin correr toda la DDL: `npm run ddl:capac-natributo` (usa `script/update-capac-atributos-x-drivers-natributo.sql` y `local.settings.json` vía `src/db.js`).
 
 ### Reglas cerradas (actualización)
 

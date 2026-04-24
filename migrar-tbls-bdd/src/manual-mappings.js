@@ -39,7 +39,8 @@ export const manualMappings = {
   /** Índice por niveles de 3 chars (001005) → 1.5 */
   CAPAC_PLANES_CURSOS: {
     IPLAN: sqlPaddedTripletPathToDotted("s.[IPLAN]"),
-    IPLANPADRE: sqlPaddedTripletPathToDotted("s.[DATO2]"),
+    /** Se recalcula tras el INSERT desde IPLAN con puntos (ver hierarchy-indices-sql / alter DDL). */
+    IPLANPADRE: "CAST(NULL AS VARCHAR(255))",
     IRECURSO: "IVIDEO",
   },
   /** Origen: ID en Firebird/_OLD equivale a IPERMISO en destino. */

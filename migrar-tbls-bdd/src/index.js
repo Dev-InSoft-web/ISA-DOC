@@ -298,7 +298,7 @@ async function runMigrate(pool, schema, onlyTable, dryRun, truncate) {
         await req.query(sqlSyncDificultadPlanAttributes);
         await req.query(sqlCleanupLegacy900PlanAttributes);
         console.log(" OK IPLAN en notación jerárquica (puntos); IPLANPADRE recalculado");
-        console.log(" OK atributos de detalle: nomenclatura kebab-case, carga desde DRIVERVIDEO/DATO1 y limpieza legacy 900+");
+        console.log(" OK atributos de detalle: NATRIBUTO (etiquetas UI), carga desde DRIVERVIDEO/DATO1 y limpieza legacy 900+");
       }
       await tx.commit();
       console.log(` OK filas insertadas: ${inserted}`);

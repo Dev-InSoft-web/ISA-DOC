@@ -7,7 +7,8 @@
   "scripts": {
     "analyze": "node src/index.js analyze",
     "migrate": "node src/index.js migrate",
-    "ddl:capac": "node src/apply-capac-ddl.js"
+    "ddl:capac": "node src/apply-capac-ddl.js",
+    "ddl:capac-natributo": "node src/apply-natributo-etiquetas.js"
   },
   "dependencies": {
     "mssql": "^11.0.1"
