@@ -18,6 +18,7 @@
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectGroupList from "./ProjectGroupList.svelte";
 	import ProjectActionCard from "./ProjectActionCard.svelte";
+	import DocsPanel from "./DocsPanel.svelte";
 
 	interface ProjectAction {
 		id: string;
@@ -346,25 +347,37 @@
 							{#each DERIVATIVES as deriv, di (deriv.key)}
 								<TabItem title={deriv.label} open={di === 0}>
 									<div class="tab-content">
-										{#each (projectsByGroup[deriv.key] ?? []) as proj (proj.id)}
-											<Text color="neutral"><small>{proj.cwd}</small></Text>
-											<GridLayout cells="3" items="stretch">
-												{#each proj.actions as action (action.id)}
-													<ProjectActionCard
-														{action}
-														projectName={proj.name}
-														projectIcon={proj.icon}
-														running={runningActions.has(action.id)}
-														host={hosts.get(action.id)}
-														output={outputs.get(action.id)}
-														onRun={() => execAction(action)}
-														onStop={() => killAction(action.id)}
-														onRestart={() => restartAction(action)}
-														onOpen={(url) => openIframe(url)}
-													/>
-												{/each}
-											</GridLayout>
-										{/each}
+										<!-- Documentación + Acciones por derivado -->
+										<Tabs>
+											<TabItem title="Documentación" open={true}>
+												<div class="tab-content">
+													<DocsPanel derivativeKey={deriv.key} />
+												</div>
+											</TabItem>
+											<TabItem title="Acciones">
+												<div class="tab-content">
+													{#each (projectsByGroup[deriv.key] ?? []) as proj (proj.id)}
+														<Text color="neutral"><small>{proj.cwd}</small></Text>
+														<GridLayout cells="3" items="stretch">
+															{#each proj.actions as action (action.id)}
+																<ProjectActionCard
+																	{action}
+																	projectName={proj.name}
+																	projectIcon={proj.icon}
+																	running={runningActions.has(action.id)}
+																	host={hosts.get(action.id)}
+																	output={outputs.get(action.id)}
+																	onRun={() => execAction(action)}
+																	onStop={() => killAction(action.id)}
+																	onRestart={() => restartAction(action)}
+																	onOpen={(url) => openIframe(url)}
+																/>
+															{/each}
+														</GridLayout>
+													{/each}
+												</div>
+											</TabItem>
+										</Tabs>
 									</div>
 								</TabItem>
 							{/each}

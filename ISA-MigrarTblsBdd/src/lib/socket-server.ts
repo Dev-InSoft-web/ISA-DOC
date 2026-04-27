@@ -5,7 +5,8 @@ import { SCRIPT_ACTIONS } from "./scripts-registry.js";
 import { openPool, resolveSettingsPath } from "./db.js";
 import {
 	loadCollectionMeta, loadEntity, saveEntity, saveCollectionVariables,
-	mergeCollection, splitCollection, type EntityFile,
+	mergeCollection, splitCollection, loadEnvironments, saveEnvironments,
+	type EntityFile, type EnvironmentsFile,
 } from "./postman/store.js";
 
 let io: Server | null = null;
@@ -169,6 +170,14 @@ function handleConnection(socket: Socket): void {
 	});
 	socket.on("postman:split", (cb: (r: unknown) => void) => {
 		cb(splitCollection());
+	});
+
+	// === Environments ===
+	socket.on("postman:envs", (cb: (data: unknown) => void) => {
+		cb(loadEnvironments());
+	});
+	socket.on("postman:envSave", (data: EnvironmentsFile, cb: (r: unknown) => void) => {
+		cb(saveEnvironments(data));
 	});
 }
 

@@ -30,6 +30,7 @@ const POSTMAN_FILE = resolveDoc("iss-postman.json");
 const POSTMAN_DIR = resolve(dirname(POSTMAN_FILE), "iss-postman");
 const COLLECTION_FILE = join(POSTMAN_DIR, "_collection.json");
 const ENTITIES_DIR = join(POSTMAN_DIR, "entities");
+const ENV_FILE = join(POSTMAN_DIR, "environments.json");
 
 export interface PostmanItem {
 	name: string;
@@ -205,4 +206,54 @@ export function mergeCollection(): { ok: true; path: string; entities: number } 
 
 export function getPaths(): { collection: string; entities: string; source: string } {
 	return { collection: COLLECTION_FILE, entities: ENTITIES_DIR, source: POSTMAN_FILE };
+}
+
+// === Environments ===
+export interface EnvVar {
+	key: string;
+	value: string;
+	type?: string;
+	enabled?: boolean;
+}
+export interface Environment {
+	id: string;
+	name: string;
+	values: EnvVar[];
+}
+export interface EnvironmentsFile {
+	active: string;
+	environments: Environment[];
+}
+
+const DEFAULT_ENVS: EnvironmentsFile = {
+	active: "default",
+	environments: [{ id: "default", name: "Default", values: [] }],
+};
+
+export function loadEnvironments(): EnvironmentsFile {
+	if (!existsSync(ENV_FILE)) {
+		ensureDir(POSTMAN_DIR);
+		writeFileSync(ENV_FILE, JSON.stringify(DEFAULT_ENVS, null, 2), "utf8");
+		return DEFAULT_ENVS;
+	}
+	try {
+		const raw = readFileSync(ENV_FILE, "utf8");
+		const data = JSON.parse(raw) as EnvironmentsFile;
+		if (!data.environments?.length) return DEFAULT_ENVS;
+		if (!data.active) data.active = data.environments[0].id;
+		return data;
+	} catch {
+		return DEFAULT_ENVS;
+	}
+}
+
+export function saveEnvironments(data: EnvironmentsFile): { ok: boolean; error?: string } {
+	try {
+		ensureDir(POSTMAN_DIR);
+		writeFileSync(ENV_FILE, JSON.stringify(data, null, 2), "utf8");
+		return { ok: true };
+	} catch (err) {
+		const msg = err instanceof Error ? err.message : String(err);
+		return { ok: false, error: msg };
+	}
 }

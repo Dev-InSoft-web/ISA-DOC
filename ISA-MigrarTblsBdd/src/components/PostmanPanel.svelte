@@ -2,7 +2,7 @@
 	import { onMount, onDestroy } from "svelte";
 	import { io, type Socket } from "socket.io-client";
 	import {
-		Card, Button, H2, H4, Text, Loading,
+		Card, Button, H2, H4, Text, Loading, Modal,
 		Toaster, toastError, toastSuccess,
 		FlexLayout, GridLayout, Iconify,
 	} from "@ingenieria_insoft/ispsveltecomponents";
@@ -61,6 +61,151 @@
 	let merging = false;
 	let expandedItem = -1;
 	let expandedResponse: Record<number, number> = {};
+
+	// === Environments / Runner ===
+	type EnvVar = { key: string; value: string; type?: string; enabled?: boolean };
+	type Environment = { id: string; name: string; values: EnvVar[] };
+	type EnvironmentsFile = { active: string; environments: Environment[] };
+	let envs: EnvironmentsFile | null = null;
+	let activeEnvId = "";
+	let showEnvEditor = false;
+	let envDirty = false;
+
+	type RunResult = {
+		status: number;
+		statusText: string;
+		ms: number;
+		size: number;
+		headers: Record<string, string>;
+		body: string;
+		bodyJson: unknown | null;
+		url: string;
+		method: string;
+		error?: string;
+	};
+	let showRunModal = false;
+	let runResult: RunResult | null = null;
+	let runningItemIdx = -1;
+	let runRequestPreview: { method: string; url: string; headers: Header[]; body: string } | null = null;
+
+	function loadEnvs(): void {
+		socket?.emit("postman:envs", (data: EnvironmentsFile) => {
+			envs = data;
+			activeEnvId = data.active;
+		});
+	}
+
+	function persistEnvs(): void {
+		if (!envs) return;
+		envs.active = activeEnvId;
+		socket?.emit("postman:envSave", envs, (r: { ok: boolean; error?: string }) => {
+			if (r.ok) { envDirty = false; toastSuccess("Environments guardados"); }
+			else toastError(r.error ?? "Error guardando environments");
+		});
+	}
+
+	function getActiveEnv(): Environment | null {
+		if (!envs) return null;
+		return envs.environments.find((e) => e.id === activeEnvId) ?? envs.environments[0] ?? null;
+	}
+
+	function buildVarMap(): Record<string, string> {
+		const map: Record<string, string> = {};
+		for (const v of meta?.variable ?? []) {
+			if (v?.key) map[v.key] = v.value ?? "";
+		}
+		const env = getActiveEnv();
+		for (const v of env?.values ?? []) {
+			if (v.enabled === false) continue;
+			if (v.key) map[v.key] = v.value ?? "";
+		}
+		return map;
+	}
+
+	function resolveVars(input: string, map: Record<string, string>): string {
+		if (!input) return input;
+		return input.replace(/\{\{\s*([^}\s]+)\s*\}\}/g, (m, key: string) => {
+			return Object.prototype.hasOwnProperty.call(map, key) ? map[key] : m;
+		});
+	}
+
+	async function runItem(idx: number): Promise<void> {
+		if (!entity) return;
+		const item = entity.item[idx];
+		if (!item?.request) { toastError("Request sin definir"); return; }
+		const map = buildVarMap();
+		const method = (item.request.method ?? "GET").toUpperCase();
+		const rawUrl = getUrlRaw(item.request);
+		const url = resolveVars(rawUrl, map);
+		const headers: Header[] = (item.request.header ?? []).map((h) => ({
+			key: resolveVars(h.key ?? "", map),
+			value: resolveVars(h.value ?? "", map),
+		})).filter((h) => h.key);
+		const bodyRaw = item.request.body?.raw ?? "";
+		const body = bodyRaw ? resolveVars(bodyRaw, map) : "";
+
+		runRequestPreview = { method, url, headers, body };
+		runningItemIdx = idx;
+		showRunModal = true;
+		runResult = null;
+
+		const headerObj: Record<string, string> = {};
+		for (const h of headers) headerObj[h.key] = h.value;
+		const t0 = performance.now();
+		try {
+			const init: RequestInit = { method, headers: headerObj };
+			if (body && method !== "GET" && method !== "HEAD") init.body = body;
+			const res = await fetch(url, init);
+			const text = await res.text();
+			const ms = Math.round(performance.now() - t0);
+			const respHeaders: Record<string, string> = {};
+			res.headers.forEach((v, k) => { respHeaders[k] = v; });
+			let bodyJson: unknown | null = null;
+			try { bodyJson = text ? JSON.parse(text) : null; } catch { bodyJson = null; }
+			runResult = {
+				status: res.status,
+				statusText: res.statusText,
+				ms,
+				size: text.length,
+				headers: respHeaders,
+				body: text,
+				bodyJson,
+				url,
+				method,
+			};
+		} catch (err) {
+			const msg = err instanceof Error ? err.message : String(err);
+			runResult = {
+				status: 0, statusText: "Error", ms: Math.round(performance.now() - t0),
+				size: 0, headers: {}, body: "", bodyJson: null, url, method, error: msg,
+			};
+		}
+	}
+
+	function saveAsExample(): void {
+		if (!entity || runningItemIdx < 0 || !runResult) return;
+		const item = entity.item[runningItemIdx];
+		if (!item) return;
+		if (!item.response) item.response = [];
+		const headerArr: Header[] = Object.entries(runResult.headers).map(([key, value]) => ({ key, value }));
+		const pretty = (() => {
+			if (runResult!.bodyJson != null) {
+				try { return JSON.stringify(runResult!.bodyJson, null, 2); } catch { /* noop */ }
+			}
+			return runResult!.body;
+		})();
+		item.response = [...item.response, {
+			name: `Run ${new Date().toLocaleString()}`,
+			status: runResult.statusText,
+			code: runResult.status,
+			_postman_previewlanguage: "json",
+			header: headerArr,
+			body: pretty,
+		}];
+		markDirty();
+		toastSuccess("Respuesta guardada como ejemplo");
+	}
+
 
 	function loadList(): void {
 		if (!socket?.connected) return;
@@ -199,7 +344,7 @@
 	onMount(() => {
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });
-		socket.on("connect", loadList);
+		socket.on("connect", () => { loadList(); loadEnvs(); });
 	});
 	onDestroy(() => { socket?.disconnect(); });
 </script>
@@ -218,6 +363,23 @@
 				<Text color="neutral">{meta.entities.length} entidades · {meta.entities.reduce((a, e) => a + e.count, 0)} endpoints</Text>
 			</div>
 			<FlexLayout items="center">
+				{#if envs}
+					<label class="env-select-label">
+						<Iconify icon="mdi:earth" />
+						<select
+							class="input-field env-select"
+							value={activeEnvId}
+							on:change={(e) => { activeEnvId = (e.currentTarget as HTMLSelectElement).value; envDirty = true; persistEnvs(); }}
+						>
+							{#each envs.environments as env}
+								<option value={env.id}>{env.name}</option>
+							{/each}
+						</select>
+					</label>
+					<Button variant="ghost" onClick={() => (showEnvEditor = true)}>
+						<Iconify icon="mdi:cog-outline" /> Vars
+					</Button>
+				{/if}
 				<Button variant="outlined" onClick={reSplit}>
 					<Iconify icon="mdi:source-branch-sync" /> Re-split desde origen
 				</Button>
@@ -282,18 +444,23 @@
 				<FlexLayout direction="column">
 					{#each entity.item as item, i (i)}
 						<Card variant="flat">
-							<button class="item-header" on:click={() => toggleItem(i)}>
-								<FlexLayout items="center" justify="between">
-									<FlexLayout items="center">
-										<span class="method method--{methodColor(item.request?.method)}">{item.request?.method ?? "?"}</span>
-										<Text><strong>{item.name}</strong></Text>
+							<div class="item-row">
+								<button class="item-header" on:click={() => toggleItem(i)}>
+									<FlexLayout items="center" justify="between">
+										<FlexLayout items="center">
+											<span class="method method--{methodColor(item.request?.method)}">{item.request?.method ?? "?"}</span>
+											<Text><strong>{item.name}</strong></Text>
+										</FlexLayout>
+										<FlexLayout items="center">
+											<Text color="neutral"><small>{(item.response?.length ?? 0)} ej.</small></Text>
+											<Iconify icon={expandedItem === i ? "mdi:chevron-up" : "mdi:chevron-down"} />
+										</FlexLayout>
 									</FlexLayout>
-									<FlexLayout items="center">
-										<Text color="neutral"><small>{(item.response?.length ?? 0)} ej.</small></Text>
-										<Iconify icon={expandedItem === i ? "mdi:chevron-up" : "mdi:chevron-down"} />
-									</FlexLayout>
-								</FlexLayout>
-							</button>
+								</button>
+								<Button color="success" variant="outlined" onClick={() => runItem(i)}>
+									<Iconify icon="mdi:play" /> Run
+								</Button>
+							</div>
 
 							{#if expandedItem === i}
 								<div class="item-body">
@@ -421,6 +588,126 @@
 	</section>
 {/if}
 
+<!-- Modal: Run resultado -->
+<Modal bind:bshow={showRunModal} onClose={() => (showRunModal = false)} style="width: 90dvw; height: 85dvh;">
+	<svelte:fragment slot="title">
+		{#if runRequestPreview}
+			<FlexLayout items="center" gap="0.4rem">
+				<span class="method method--{methodColor(runRequestPreview.method)}">{runRequestPreview.method}</span>
+				<Text><strong>Run</strong> <small style="opacity: 0.7;">{runRequestPreview.url}</small></Text>
+			</FlexLayout>
+		{:else}
+			<Text>Run</Text>
+		{/if}
+	</svelte:fragment>
+
+	<div class="run-body">
+		{#if !runResult}
+			<Loading bShow={true} />
+			<Text color="neutral">Ejecutando…</Text>
+		{:else}
+			<FlexLayout items="center" gap="0.6rem" style="flex-wrap: wrap;">
+				<span class="status status--{runResult.status === 0 ? 'err' : runResult.status < 300 ? 'ok' : runResult.status < 500 ? 'warn' : 'err'}">
+					{runResult.status} {runResult.statusText}
+				</span>
+				<Text color="neutral"><small>{runResult.ms} ms</small></Text>
+				<Text color="neutral"><small>{runResult.size} B</small></Text>
+				<span style="flex: 1;"></span>
+				<Button variant="outlined" onClick={saveAsExample}>
+					<Iconify icon="mdi:content-save-outline" /> Guardar como ejemplo
+				</Button>
+			</FlexLayout>
+
+			{#if runResult.error}
+				<Card variant="flat"><Text color="error">{runResult.error}</Text></Card>
+			{/if}
+
+			<H4>Body</H4>
+			<pre class="resp-pre">{runResult.bodyJson != null ? JSON.stringify(runResult.bodyJson, null, 2) : runResult.body}</pre>
+
+			<H4>Headers</H4>
+			<table class="kv-table">
+				<tbody>
+					{#each Object.entries(runResult.headers) as [k, v]}
+						<tr><th>{k}</th><td>{v}</td></tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+	</div>
+</Modal>
+
+<!-- Modal: Editor de Environments -->
+<Modal bind:bshow={showEnvEditor} onClose={() => { if (envDirty) persistEnvs(); showEnvEditor = false; }} style="width: 80dvw; height: 80dvh;">
+	<svelte:fragment slot="title">
+		<FlexLayout items="center" gap="0.4rem">
+			<Iconify icon="mdi:earth" />
+			<Text><strong>Environments</strong></Text>
+		</FlexLayout>
+	</svelte:fragment>
+
+	{#if envs}
+		<FlexLayout direction="column" gap="0.5rem">
+			<FlexLayout items="center" gap="0.5rem" style="flex-wrap: wrap;">
+				{#each envs.environments as env}
+					<Button
+						variant={env.id === activeEnvId ? "solid" : "outlined"}
+						onClick={() => { activeEnvId = env.id; envDirty = true; }}
+					>
+						{env.name}
+					</Button>
+				{/each}
+				<span style="flex: 1;"></span>
+				<Button color="success" disabled={!envDirty} onClick={persistEnvs}>
+					<Iconify icon="mdi:content-save" /> Guardar
+				</Button>
+			</FlexLayout>
+
+			{#each envs.environments as env (env.id)}
+				{#if env.id === activeEnvId}
+					<table class="env-table">
+						<thead>
+							<tr><th>Variable</th><th>Value</th><th>Type</th><th>Enabled</th><th></th></tr>
+						</thead>
+						<tbody>
+							{#each env.values as v, vi (vi)}
+								<tr>
+									<td><input class="input-field" type="text" bind:value={v.key} on:input={() => (envDirty = true)} /></td>
+									<td>
+										<input
+											class="input-field"
+											type={v.type === "secret" ? "password" : "text"}
+											bind:value={v.value}
+											on:input={() => (envDirty = true)}
+										/>
+									</td>
+									<td>
+										<select class="input-field" bind:value={v.type} on:change={() => (envDirty = true)}>
+											<option value="">default</option>
+											<option value="secret">secret</option>
+										</select>
+									</td>
+									<td><input type="checkbox" bind:checked={v.enabled} on:change={() => (envDirty = true)} /></td>
+									<td>
+										<Button color="danger" variant="ghost" onClick={() => { env.values = env.values.filter((_, i) => i !== vi); envDirty = true; envs = envs; }}>
+											<Iconify icon="mdi:trash-can" />
+										</Button>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+					<FlexLayout justify="start">
+						<Button variant="outlined" onClick={() => { env.values = [...env.values, { key: "", value: "", enabled: true }]; envDirty = true; envs = envs; }}>
+							<Iconify icon="mdi:plus" /> Variable
+						</Button>
+					</FlexLayout>
+				{/if}
+			{/each}
+		</FlexLayout>
+	{/if}
+</Modal>
+
 <style>
 	.layout {
 		display: grid;
@@ -535,4 +822,55 @@
 	.status--ok   { background: #1e7d3a; color: white; }
 	.status--warn { background: #b45309; color: white; }
 	.status--err  { background: #b91c1c; color: white; }
+
+	.item-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.item-row .item-header { flex: 1; }
+
+	.env-select-label {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+	.env-select { min-width: 11rem; }
+
+	.run-body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		max-height: calc(85dvh - 5rem);
+		overflow: auto;
+	}
+	.resp-pre {
+		background: #1117;
+		border: 1px solid var(--is-b-color);
+		border-radius: 4px;
+		padding: 0.6rem;
+		font-family: ui-monospace, Menlo, Consolas, monospace;
+		font-size: 0.8rem;
+		max-height: 40dvh;
+		overflow: auto;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+	.kv-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+	.kv-table th, .kv-table td {
+		text-align: left;
+		padding: 0.25rem 0.5rem;
+		border-bottom: 1px solid var(--is-b-color);
+		vertical-align: top;
+	}
+	.kv-table th { font-weight: 600; opacity: 0.85; width: 32%; }
+
+	.env-table { width: 100%; border-collapse: collapse; }
+	.env-table th, .env-table td {
+		text-align: left;
+		padding: 0.25rem;
+		border-bottom: 1px solid var(--is-b-color);
+		vertical-align: middle;
+	}
+	.env-table th { font-weight: 600; opacity: 0.85; }
 </style>

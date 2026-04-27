@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { tick } from "svelte";
-	import { Card, Button, Text, FlexLayout, Iconify, Modal } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, Card, FlexLayout, Iconify, Modal, Text } from "@ingenieria_insoft/ispsveltecomponents";
 
 	export let action: {
 		id: string;
@@ -38,10 +37,12 @@
 	$: typeIcon = TYPE_ICONS[action.type] ?? "mdi:cog-outline";
 
 	// --- ANSI -> HTML (subset suficiente para chalk/npm/azure-funcs) ---
+	// Paleta ajustada para fondo oscuro (#1117): evitamos negros puros y grises muy oscuros
+	// porque Astro/npm usan FG=30 y FG=90 + dim(2) para timestamps y se vuelven ilegibles.
 	const FG: Record<number, string> = {
-		30: "#000", 31: "#e06c75", 32: "#98c379", 33: "#e5c07b",
+		30: "#9aa3b2", 31: "#e06c75", 32: "#98c379", 33: "#e5c07b",
 		34: "#61afef", 35: "#c678dd", 36: "#56b6c2", 37: "#dcdcdc",
-		90: "#7f848e", 91: "#ff7b86", 92: "#b5e890", 93: "#ffe082",
+		90: "#a8b0bd", 91: "#ff7b86", 92: "#b5e890", 93: "#ffe082",
 		94: "#82c4ff", 95: "#e89bff", 96: "#7fdbe2", 97: "#ffffff",
 	};
 	const BG: Record<number, string> = {
@@ -66,7 +67,7 @@
 				if (c === 0) { html += close(); continue; }
 				let style = "";
 				if (c === 1) style = "font-weight:bold";
-				else if (c === 2) style = "opacity:0.75";
+				else if (c === 2) style = "opacity:0.9";
 				else if (c === 3) style = "font-style:italic";
 				else if (c === 4) style = "text-decoration:underline";
 				else if (FG[c]) style = `color:${FG[c]}`;
