@@ -1,0 +1,83 @@
+{
+  "info": {
+    "_postman_id": "bc0c866f-48c8-4fc3-bae9-ff3dec0e792f",
+    "name": "ISS-ContaPymeU",
+    "description": "Colección de endpoints para el sistema ContaPymeU",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "39296069"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:7071",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "entities": [
+    {
+      "slug": "cursos",
+      "name": "Cursos",
+      "count": 9
+    },
+    {
+      "slug": "planes-de-estudio",
+      "name": "Planes de Estudio",
+      "count": 9
+    },
+    {
+      "slug": "cursos-de-plan-de-estudio",
+      "name": "Cursos de Plan de Estudio",
+      "count": 9
+    },
+    {
+      "slug": "permisos",
+      "name": "Permisos",
+      "count": 8
+    },
+    {
+      "slug": "temas",
+      "name": "Temas",
+      "count": 6
+    },
+    {
+      "slug": "curso-prerrequisito",
+      "name": "Curso Prerrequisito",
+      "count": 9
+    },
+    {
+      "slug": "drivers",
+      "name": "Drivers",
+      "count": 9
+    },
+    {
+      "slug": "atributos-plan",
+      "name": "Atributos Plan",
+      "count": 9
+    },
+    {
+      "slug": "atributos-driver",
+      "name": "Atributos Driver",
+      "count": 9
+    },
+    {
+      "slug": "estructura-curso",
+      "name": "Estructura Curso",
+      "count": 9
+    },
+    {
+      "slug": "seguridad-curso",
+      "name": "Seguridad Curso",
+      "count": 9
+    },
+    {
+      "slug": "plan-curso",
+      "name": "Plan Curso",
+      "count": 9
+    }
+  ]
+}

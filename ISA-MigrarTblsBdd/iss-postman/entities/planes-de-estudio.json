@@ -1,0 +1,403 @@
+{
+  "name": "Planes de Estudio",
+  "item": [
+    {
+      "name": "GET - Listar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/planes/estudio/:filtro",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "planes",
+            "estudio",
+            ":filtro"
+          ],
+          "variable": [
+            {
+              "key": "filtro",
+              "value": "e30=",
+              "description": "Filtro de búsqueda en base64"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET - Obtener",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/plan/estudio/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "plan",
+            "estudio",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET - Verificar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/plan/estudio/verificar/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "plan",
+            "estudio",
+            "verificar",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST - Crear",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"iplanestudio\":\"PLAN001\",\"nombre\":\"Plan Demo\",\"descripcionplan\":\"Descripción\",\"bactivo\":true}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/plan/estudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "plan",
+            "estudio"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Actualizar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"iplanestudio\":\"PLAN001\",\"nombre\":\"Plan Demo\",\"descripcionplan\":\"Descripción\",\"bactivo\":true}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/plan/estudio/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "plan",
+            "estudio",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE - Eliminar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/plan/estudio/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "plan",
+            "estudio",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST - Duplicar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"iplanestudio\":\"NEW_VALUE\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/plan/estudio/duplicar/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "plan",
+            "estudio",
+            "duplicar",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Recodificar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"iplanestudio\":\"NEW_VALUE\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/plan/estudio/recodificar/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "plan",
+            "estudio",
+            "recodificar",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Consolidar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"iplanestudio\":\"NEW_VALUE\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/plan/estudio/consolidar/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "plan",
+            "estudio",
+            "consolidar",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

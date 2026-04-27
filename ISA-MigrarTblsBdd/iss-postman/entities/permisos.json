@@ -1,0 +1,348 @@
+{
+  "name": "Permisos",
+  "item": [
+    {
+      "name": "GET - Listar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/permisos/:filtro",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "permisos",
+            ":filtro"
+          ],
+          "variable": [
+            {
+              "key": "filtro",
+              "value": "e30=",
+              "description": "Filtro de búsqueda en base64"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET - Obtener",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/permiso/:ipermiso",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "permiso",
+            ":ipermiso"
+          ],
+          "variable": [
+            {
+              "key": "ipermiso",
+              "value": "PERM001",
+              "description": "Identificador del permiso"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET - Verificar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/permiso/verificar/:ipermiso",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "permiso",
+            "verificar",
+            ":ipermiso"
+          ],
+          "variable": [
+            {
+              "key": "ipermiso",
+              "value": "PERM001",
+              "description": "Identificador del permiso"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST - Crear",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"ipermiso\":\"PERM001\",\"npermiso\":\"Permiso Lectura\",\"descripcion\":\"Permite leer datos\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/permiso",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "permiso"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Actualizar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"ipermiso\":\"PERM001\",\"npermiso\":\"Permiso Lectura\",\"descripcion\":\"Permite leer datos\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/permiso/:ipermiso",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "permiso",
+            ":ipermiso"
+          ],
+          "variable": [
+            {
+              "key": "ipermiso",
+              "value": "PERM001",
+              "description": "Identificador del permiso"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE - Eliminar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/permiso/:ipermiso",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "permiso",
+            ":ipermiso"
+          ],
+          "variable": [
+            {
+              "key": "ipermiso",
+              "value": "PERM001",
+              "description": "Identificador del permiso"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Recodificar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"ipermiso\":\"NEW_VALUE\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/permiso/recodificar/:ipermiso",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "permiso",
+            "recodificar",
+            ":ipermiso"
+          ],
+          "variable": [
+            {
+              "key": "ipermiso",
+              "value": "PERM001",
+              "description": "Identificador del permiso"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Consolidar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"ipermiso\":\"NEW_VALUE\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/permiso/consolidar/:ipermiso",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "permiso",
+            "consolidar",
+            ":ipermiso"
+          ],
+          "variable": [
+            {
+              "key": "ipermiso",
+              "value": "PERM001",
+              "description": "Identificador del permiso"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

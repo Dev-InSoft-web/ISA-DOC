@@ -1,0 +1,36 @@
+{
+	"name": "isa-migrar-tbls-bdd",
+	"type": "module",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"iconify": "node ./config/downloadIconify.js",
+		"dev": "astro dev --port 4400",
+		"build": "npm run iconify && astro build",
+		"start": "node ./dist/server/entry.mjs",
+		"preview": "astro preview",
+		"typecheck": "tsc --noEmit",
+		"migrate:analyze": "tsx src/lib/migration/core/index.ts analyze",
+		"migrate:dry": "tsx src/lib/migration/core/index.ts migrate --dry-run",
+		"migrate": "tsx src/lib/migration/core/index.ts migrate",
+		"inspect": "tsx src/lib/migration/inspect/inspect-capac.ts",
+		"verify:legacy": "tsx src/lib/migration/verify/verify-legacy-900-cleanup.ts",
+		"verify:comments": "tsx src/lib/migration/verify/verify-table-comments.ts"
+	},
+	"dependencies": {
+		"@astrojs/node": "^9.x",
+		"@astrojs/svelte": "^7.x",
+		"@ingenieria_insoft/ispgen": "^1.0.x",
+		"@ingenieria_insoft/ispsveltecomponents": "^x",
+		"mssql": "^11.0.1",
+		"socket.io": "^4.8.3",
+		"socket.io-client": "^4.8.3",
+		"svelte": "^5.x"
+	},
+	"devDependencies": {
+		"@astrojs/ts-plugin": "^1.x",
+		"@types/mssql": "^12.3.0",
+		"astro": "^5.x",
+		"tsx": "^4.21.0"
+	}
+}

@@ -1,0 +1,156 @@
+<script lang="ts" context="module">
+	import type { HTMLAttributes } from "svelte/elements";
+	import type { ComponentColor } from "@ingenieria_insoft/ispsveltecomponents";
+
+	export interface AccordionProps extends HTMLAttributes<HTMLDivElement> {
+		title?: string;
+		titleIcon?: string;
+		color?: ComponentColor;
+		statusText?: string;
+		statusColor?: ComponentColor;
+		statusDots?: ComponentColor[];
+		open?: boolean;
+		inner?: boolean;
+		count?: number | null;
+	}
+</script>
+
+<script lang="ts">
+	import { slide } from "svelte/transition";
+	import {
+		Card,
+		Button,
+		H2,
+		Iconify,
+		Text,
+		FlexLayout,
+	} from "@ingenieria_insoft/ispsveltecomponents";
+
+	type $$Props = AccordionProps;
+
+	export let title: string = "Title";
+	export let titleIcon: string | undefined = undefined;
+	export let color: AccordionProps["color"] = "primary";
+	export let statusText: string | undefined = undefined;
+	export let statusColor: AccordionProps["statusColor"] = "success";
+	export let statusDots: AccordionProps["statusDots"] = [];
+	export let open = false;
+	export let inner = false;
+	export let count: number | null | undefined = undefined;
+
+	$: relieveAccordion = inner ? 75 : undefined;
+	$: statusDotsUnique = statusDots?.length ? [...new Set(statusDots)] : [];
+</script>
+
+<Card
+	{...$$restProps}
+	relieve={relieveAccordion}
+	class={["accordion", inner && "accordion--inner", $$restProps.class].filter(Boolean).join(" ")}
+	style={["padding: 0", $$restProps.style].filter(Boolean).join(";")}
+>
+	<Button
+		variant="text"
+		{color}
+		class="accordion-header"
+		onClick={() => (open = !open)}
+		style={[
+			"width: 100%; padding: 1rem; justify-content: space-between;",
+			open && "border-bottom-left-radius: 0;border-bottom-right-radius: 0;",
+		]
+			.filter(Boolean)
+			.join(";")}
+	>
+		<H2>
+			<FlexLayout justify="between" items="center" style="width: 100%;">
+				<FlexLayout items="center" class="head" style="min-width: 0; flex: 1;">
+					{#if titleIcon}
+						<Iconify icon={titleIcon} class="title-icon" />
+					{/if}
+					<Text class="title" lines={1}>
+						{title}
+						{#if count != null && count > 1}
+							<span style="opacity: 0.7;">({count})</span>
+						{/if}
+						{#if statusDotsUnique.length}
+							<span class="status-dots">
+								{#each statusDotsUnique as dotColor}
+									<span class="status-dot" style={`background: var(--is-${dotColor});`}></span>
+								{/each}
+							</span>
+						{/if}
+						{#if statusText}
+							<span style={`color: var(--is-${statusColor}); font-weight: 600;`}>({statusText})</span>
+						{/if}
+					</Text>
+				</FlexLayout>
+				<Iconify class="chevron" icon="mdi:chevron-down" flipv={open} style="font-size: 1.5em; flex-shrink: 0;" />
+			</FlexLayout>
+		</H2>
+	</Button>
+	{#if open}
+		<div transition:slide style="position: relative;">
+			<FlexLayout direction="column" style="padding: 1rem;">
+				<slot />
+			</FlexLayout>
+		</div>
+	{/if}
+</Card>
+
+<style>
+	:global(.accordion) {
+		box-sizing: border-box;
+		display: block;
+		margin: 0;
+		padding: 0;
+		width: 100%;
+	}
+
+	:global(.accordion .accordion-header) {
+		position: sticky;
+		top: 0;
+		z-index: 6;
+		background: var(--is-bg, var(--is-bg-secondary, #1e1e1e));
+	}
+
+	:global(.accordion.accordion--inner .accordion-header) {
+		z-index: 5;
+	}
+
+	:global(.accordion h2) {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+		width: 100%;
+	}
+
+	:global(.accordion .head .title-icon) {
+		flex-shrink: 0;
+		font-size: 1.35em;
+		opacity: 0.95;
+	}
+
+	:global(.accordion .head .title) {
+		flex: 1;
+		overflow: hidden;
+		text-align: start;
+	}
+
+	:global(.accordion .head .status-dots) {
+		display: inline-flex;
+		gap: 0.35rem;
+		margin-left: 0.45rem;
+		vertical-align: middle;
+	}
+
+	:global(.accordion .head .status-dot) {
+		border-radius: 999px;
+		display: inline-block;
+		height: 0.52rem;
+		width: 0.52rem;
+	}
+
+	:global(.accordion .chevron) {
+		flex-shrink: 0;
+		transition: transform 0.2s ease;
+	}
+</style>

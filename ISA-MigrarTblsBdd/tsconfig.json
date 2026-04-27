@@ -1,0 +1,25 @@
+{
+	"extends": "astro/tsconfigs/strict",
+	"compilerOptions": {
+		"target": "ES2022",
+		"moduleResolution": "bundler",
+		"skipLibCheck": true,
+		"checkJs": true,
+		"verbatimModuleSyntax": true,
+		"strict": true,
+		"noEmit": true,
+		"jsx": "preserve",
+		"isolatedModules": true,
+		"plugins": [
+			{ "name": "@astrojs/ts-plugin" },
+			{ "name": "typescript-svelte-plugin" }
+		],
+		"paths": {
+			"$components/*": ["./src/components/*"],
+			"$lib/*": ["./src/lib/*"]
+		},
+		"types": ["svelte", "astro/client"]
+	},
+	"include": [".astro/types.d.ts", "**/*"],
+	"exclude": ["dist"]
+}

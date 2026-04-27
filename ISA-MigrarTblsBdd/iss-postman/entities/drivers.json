@@ -1,0 +1,394 @@
+{
+  "name": "Drivers",
+  "item": [
+    {
+      "name": "GET - Listar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/drivers/:filtro",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "drivers",
+            ":filtro"
+          ],
+          "variable": [
+            {
+              "key": "filtro",
+              "value": "e30=",
+              "description": "Filtro de búsqueda en base64"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET - Obtener",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/driver/:idriver",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "driver",
+            ":idriver"
+          ],
+          "variable": [
+            {
+              "key": "idriver",
+              "value": "1",
+              "description": "Identificador idriver"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET - Verificar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/driver/verificar/:idriver",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "driver",
+            "verificar",
+            ":idriver"
+          ],
+          "variable": [
+            {
+              "key": "idriver",
+              "value": "1",
+              "description": "Identificador idriver"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST - Crear",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"idriver\":\"DRIVER01\",\"ndriver\":\"Conductor Principal\",\"descripcion\":\"Descripción del driver\",\"qniveles\":1}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/driver",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "driver"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Actualizar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"idriver\":\"DRIVER01\",\"ndriver\":\"Conductor Principal\",\"descripcion\":\"Descripción del driver\",\"qniveles\":1}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/driver/:idriver",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "driver",
+            ":idriver"
+          ],
+          "variable": [
+            {
+              "key": "idriver",
+              "value": "1",
+              "description": "Identificador idriver"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE - Eliminar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/driver/:idriver",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "driver",
+            ":idriver"
+          ],
+          "variable": [
+            {
+              "key": "idriver",
+              "value": "1",
+              "description": "Identificador idriver"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST - Duplicar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"idriver\":\"NEW_VALUE\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/driver/duplicar/:idriver",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "driver",
+            "duplicar",
+            ":idriver"
+          ],
+          "variable": [
+            {
+              "key": "idriver",
+              "value": "1",
+              "description": "Identificador idriver"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Recodificar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"idriver\":\"NEW_VALUE\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/driver/recodificar/:idriver",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "driver",
+            "recodificar",
+            ":idriver"
+          ],
+          "variable": [
+            {
+              "key": "idriver",
+              "value": "1",
+              "description": "Identificador idriver"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Consolidar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"idriver\":\"NEW_VALUE\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/driver/consolidar/:idriver",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "driver",
+            "consolidar",
+            ":idriver"
+          ],
+          "variable": [
+            {
+              "key": "idriver",
+              "value": "1",
+              "description": "Identificador idriver"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

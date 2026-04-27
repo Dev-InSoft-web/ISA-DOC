@@ -1,0 +1,483 @@
+{
+  "name": "Curso Prerrequisito",
+  "item": [
+    {
+      "name": "GET - Listar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/curso/prerequisitos/:filtro",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "curso",
+            "prerequisitos",
+            ":filtro"
+          ],
+          "variable": [
+            {
+              "key": "filtro",
+              "value": "e30=",
+              "description": "Filtro de búsqueda en base64"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET - Obtener",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/curso/prerequisito/:icurso/:icursorequerido/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "curso",
+            "prerequisito",
+            ":icurso",
+            ":icursorequerido",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "icurso",
+              "value": "CURSO001",
+              "description": "Identificador del curso"
+            },
+            {
+              "key": "icursorequerido",
+              "value": "CURSO0011",
+              "description": "Identificador del curso requerido"
+            },
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET - Verificar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/curso/prerequisito/verificar/:icurso/:icursorequerido/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "curso",
+            "prerequisito",
+            "verificar",
+            ":icurso",
+            ":icursorequerido",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "icurso",
+              "value": "CURSO001",
+              "description": "Identificador del curso"
+            },
+            {
+              "key": "icursorequerido",
+              "value": "CURSO002",
+              "description": "Identificador del curso requerido"
+            },
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST - Crear",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"icurso\": \"CURSO001\", \"icursorequerido\": \"CURSO002\", \"iplanestudio\": \"PLAN001\"}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/curso/prerequisito",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "curso",
+            "prerequisito"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Actualizar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/curso/prerequisito/:icurso/:icursorequerido/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "curso",
+            "prerequisito",
+            ":icurso",
+            ":icursorequerido",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "icurso",
+              "value": "CURSO001",
+              "description": "Identificador del curso"
+            },
+            {
+              "key": "icursorequerido",
+              "value": "CURSO002",
+              "description": "Identificador del curso requerido"
+            },
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DELETE - Eliminar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{host_contapymeu}}/api/curso/prerequisito/:icurso/:icursorequerido/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "curso",
+            "prerequisito",
+            ":icurso",
+            ":icursorequerido",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "icurso",
+              "value": "CURSO001",
+              "description": "Identificador del curso"
+            },
+            {
+              "key": "icursorequerido",
+              "value": "CURSO002",
+              "description": "Identificador del curso requerido"
+            },
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "POST - Duplicar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/curso/prerequisito/duplicar/:icurso/:icursorequerido/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "curso",
+            "prerequisito",
+            "duplicar",
+            ":icurso",
+            ":icursorequerido",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "icurso",
+              "value": "CURSO001",
+              "description": "Identificador del curso"
+            },
+            {
+              "key": "icursorequerido",
+              "value": "CURSO002",
+              "description": "Identificador del curso requerido"
+            },
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Recodificar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/curso/prerequisito/recodificar/:icurso/:icursorequerido/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "curso",
+            "prerequisito",
+            "recodificar",
+            ":icurso",
+            ":icursorequerido",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "icurso",
+              "value": "CURSO001",
+              "description": "Identificador del curso"
+            },
+            {
+              "key": "icursorequerido",
+              "value": "CURSO002",
+              "description": "Identificador del curso requerido"
+            },
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "PUT - Consolidar",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{host_contapymeu}}/api/curso/prerequisito/consolidar/:icurso/:icursorequerido/:iplanestudio",
+          "host": [
+            "{{host_contapymeu}}"
+          ],
+          "path": [
+            "api",
+            "curso",
+            "prerequisito",
+            "consolidar",
+            ":icurso",
+            ":icursorequerido",
+            ":iplanestudio"
+          ],
+          "variable": [
+            {
+              "key": "icurso",
+              "value": "CURSO001",
+              "description": "Identificador del curso"
+            },
+            {
+              "key": "icursorequerido",
+              "value": "CURSO002",
+              "description": "Identificador del curso requerido"
+            },
+            {
+              "key": "iplanestudio",
+              "value": "PLAN001",
+              "description": "Identificador del plan de estudio"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
