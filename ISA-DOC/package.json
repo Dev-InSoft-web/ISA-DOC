@@ -23,6 +23,7 @@
 	"dependencies": {
 		"@astrojs/node": "^9.x",
 		"@astrojs/svelte": "^7.x",
+		"@codemirror/lang-javascript": "^6.2.5",
 		"@codemirror/lang-json": "^6.0.2",
 		"@codemirror/lang-sql": "^6.10.0",
 		"@codemirror/language": "^6.12.3",

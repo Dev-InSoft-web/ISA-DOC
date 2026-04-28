@@ -2,7 +2,7 @@ import type { FieldDef, RelationDef, ResourceConfig } from "./types.js";
 
 const VAL_FN: Record<FieldDef["type"], string> = {
 	string: "val2Str",
-	int: "val2Int",
+	number: "val2Int",
 	bool: "val2Bool",
 	json: "val2JSON",
 	date: "val2Str",
@@ -11,7 +11,7 @@ const VAL_FN: Record<FieldDef["type"], string> = {
 
 const TS_TYPE: Record<FieldDef["type"], string> = {
 	string: "string",
-	int: "number",
+	number: "number",
 	bool: "boolean",
 	json: "Record<string, unknown>",
 	date: "string",
@@ -97,7 +97,7 @@ export function genDatos(cfg: ResourceConfig, all: ResourceConfig[]): string {
 		blocks.push(
 			[
 				`// Detalle: ${cfg.className}.${r.alias} (${r.kind}) → ${tgt.className} [${r.compareOn.join(",")}]`,
-				`// Insert effect: ${r.insertEffect ?? "ignore"} | propaga PK: ${(r.propagatePk ?? []).join(",") || "—"}`,
+				`// Insert effect: ${r.insertEffect ?? "ignore"} | propaga PK: ${r.compareOn.map((s) => s.toLowerCase()).join(",") || "—"}`,
 			].join("\n"),
 		);
 	}
@@ -222,25 +222,18 @@ ${customs}
 // ─────────────────────────────────────────────────────────────────────────────
 // 5) AZURE FUNCTION  (ISS-ClientesIS-ContaPymeU/src/functions/FN-<Modulo>.ts)
 // ─────────────────────────────────────────────────────────────────────────────
-export function genAzureFn(all: ResourceConfig[]): string {
-	if (all.length === 0) return "// (Sin recursos configurados.)\n";
-	const classes = Array.from(new Set(all.map((c) => c.className)));
-	const servers = Array.from(new Set(all.map((c) => `${c.className}Server`)));
-	const registers = all
-		.map((c) => {
-			const pks = c.fields.filter((f) => f.pk).map((f) => `"${f.name}"`).join(", ");
-			const omitir = (c.omitOps ?? []).map((o) => `"${o}"`).join(", ");
-			return `registerCatalogoGenAzureFunction(${c.className}Server, ${c.className}, { pk: [${pks}], nrecurso: "${c.singularApi}", nrecursos: "${c.pluralApi}", omitir: [${omitir}] });`;
-		})
-		.join("\n");
+function registerLine(c: ResourceConfig): string {
+	const pks = c.fields.filter((f) => f.pk).map((f) => `"${f.name}"`).join(", ");
+	const omitir = (c.omitOps ?? []).map((o) => `"${o}"`).join(", ");
+	return `registerCatalogoGenAzureFunction(${c.className}Server, ${c.className}, { pk: [${pks}], nrecurso: "${c.singularApi}", nrecursos: "${c.singularApi}", omitir: [${omitir}] });`;
+}
 
-	const customs = all
-		.flatMap((c) =>
-			c.customHooks
-				.filter((h) => h.clientPath)
-				.map((h) => {
-					const route = h.clientPath?.replace(/^\/api\//, "");
-					return `app.${(h.clientMethod ?? "GET").toLowerCase()}("API_${(h.clientMethod ?? "GET")}_${c.className}_${h.name}", {
+function customHandlers(c: ResourceConfig): string {
+	return c.customHooks
+		.filter((h) => h.clientPath)
+		.map((h) => {
+			const route = h.clientPath?.replace(/^\/api\//, "");
+			return `app.${(h.clientMethod ?? "GET").toLowerCase()}("API_${(h.clientMethod ?? "GET")}_${c.className}_${h.name}", {
 	route: "${route}",
 	handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
 		const Ctx = new ${c.className}Server(request, context);
@@ -254,9 +247,32 @@ export function genAzureFn(all: ResourceConfig[]): string {
 		return Ctx.SendResponse(ResponseData, false);
 	},
 });`;
-				}),
-		)
+		})
 		.join("\n\n");
+}
+
+export function genAzureFnSingle(cfg: ResourceConfig): string {
+	if (cfg.exposeInFn === false) return `// (Recurso "${cfg.id}" no se expone en FN-Módulo.)\n`;
+	return `import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
+import { registerCatalogoGenAzureFunction } from "@ingenieria_insoft/ispazureutils";
+import { ${cfg.className} } from "@ingenieria_insoft/ispclientesis";
+import { ${cfg.className}Server } from "@ingenieria_insoft/ispclientesisserver";
+import { TResponseData } from "@ingenieria_insoft/ispgen";
+import { RstError, RstExitosa } from "@ingenieria_insoft/ispserver";
+
+${registerLine(cfg)}
+
+${customHandlers(cfg)}
+`;
+}
+
+export function genAzureFn(all: ResourceConfig[]): string {
+	const expose = all.filter((c) => c.exposeInFn !== false);
+	if (expose.length === 0) return "// (Sin recursos configurados.)\n";
+	const classes = Array.from(new Set(expose.map((c) => c.className)));
+	const servers = Array.from(new Set(expose.map((c) => `${c.className}Server`)));
+	const registers = expose.map(registerLine).join("\n");
+	const customs = expose.map(customHandlers).filter(Boolean).join("\n\n");
 
 	return `import { app, HttpRequest, HttpResponseInit, InvocationContext } from "@azure/functions";
 import { registerCatalogoGenAzureFunction } from "@ingenieria_insoft/ispazureutils";
@@ -326,5 +342,6 @@ export function generateAll(cfg: ResourceConfig, all: ResourceConfig[]): Generat
 		{ id: "server", label: "Server", filename: `${cfg.className}Server.ts`, language: "ts", body: genServer(cfg, all) },
 		{ id: "client", label: "Client", filename: `${cfg.className}Client.ts`, language: "ts", body: genClient(cfg) },
 		{ id: "webctrl", label: "Web Controller", filename: `${cfg.id}.ts`, language: "ts", body: genWebController(cfg) },
+		{ id: "azurefn", label: "FN-M\u00f3dulo", filename: `FN-${cfg.id}.ts`, language: "ts", body: genAzureFnSingle(cfg) },
 	];
 }

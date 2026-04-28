@@ -10,7 +10,6 @@
 	import Panel from "./Panel.svelte";
 	import TablesPanel from "./TablesPanel.svelte";
 	import CodeGenPanel from "./CodeGenPanel.svelte";
-	import FloatingCard from "./_comps/containers/FloatingCard.svelte";
 	import AccordionActions from "./_comps/containers/AccordionActions.svelte";
 
 	type Kind = "table" | "index" | "fk" | "seed" | "raw";
@@ -34,7 +33,7 @@
 	let loading = true;
 	let saving = false;
 	let dirty = false;
-	let expanded = -1;
+	let openIds: Record<string, boolean> = {};
 	let filterKind: Kind | "all" = "all";
 	let filterText = "";
 
@@ -75,8 +74,8 @@
 			if (!r.ok) throw new Error(`HTTP ${r.status}`);
 			const data = (await r.json()) as { fragments: SqlFragment[] };
 			fragments = data.fragments ?? [];
+			openIds = {};
 			dirty = false;
-			expanded = -1;
 		} catch (err) {
 			toastError(`Error cargando SQL: ${err instanceof Error ? err.message : String(err)}`);
 		} finally {
@@ -117,16 +116,19 @@
 	}
 
 	function remove(idx: number): void {
-		if (!confirm(`Eliminar fragmento "${fragments[idx]?.name ?? ""}"?`)) return;
+		const f = fragments[idx];
+		if (!f) return;
+		if (!confirm(`Eliminar fragmento "${f.name ?? ""}"?`)) return;
+		delete openIds[f.id];
+		openIds = { ...openIds };
 		fragments = fragments.filter((_, i) => i !== idx);
-		if (expanded === idx) expanded = -1;
 		markDirty();
 	}
 
 	function add(): void {
 		const id = `nuevo-${Date.now()}`;
 		fragments = [...fragments, { id, name: "Nuevo fragmento", description: "", kind: "raw", body: "" }];
-		expanded = fragments.length - 1;
+		openIds = { ...openIds, [id]: true };
 		markDirty();
 	}
 
@@ -179,6 +181,8 @@
 
 	<TabItem title="Creación">
 		<section class="editor">
+			<CodeGenPanel />
+
 			<AccordionActions
 				title="SQL · Fragmentos"
 				icon="mdi:database"
@@ -216,74 +220,51 @@
 				{:else}
 					<FlexLayout direction="column">
 						{#each filtered as { f, i } (f.id)}
-							<Card>
-								<button class="frag-header" on:click={() => (expanded = expanded === i ? -1 : i)}>
-									<FlexLayout items="center" justify="between">
-										<FlexLayout items="center">
-											<span class="kind kind--{f.kind}"><Iconify icon={kindMeta(f.kind).icon} /> {kindMeta(f.kind).label}</span>
-											<Text><strong>{f.name || "(sin nombre)"}</strong></Text>
-											<Text color="neutral"><small>{f.body.length} chars</small></Text>
-										</FlexLayout>
-										<Iconify icon={expanded === i ? "mdi:chevron-up" : "mdi:chevron-down"} />
-									</FlexLayout>
-								</button>
+							<AccordionActions
+								inner
+								title={f.name || "(sin nombre)"}
+								titleIcon={kindMeta(f.kind).icon}
+								statusText={`${kindMeta(f.kind).label} · ${f.body.length} chars`}
+								open={openIds[f.id] === true}
+								actions={[
+									{ icon: "mdi:arrow-up",   title: "Subir",  onClick: () => move(i, -1), disabled: i === 0 },
+									{ icon: "mdi:arrow-down", title: "Bajar",  onClick: () => move(i, 1),  disabled: i === fragments.length - 1 },
+									{ icon: "mdi:trash-can",  title: "Eliminar", onClick: () => remove(i) },
+								]}
+							>
+								<GridLayout cells="2">
+									<label class="field">
+										<Text color="neutral">Nombre</Text>
+										<input class="input-field" type="text" bind:value={f.name} on:input={markDirty} />
+									</label>
+									<label class="field">
+										<Text color="neutral">Tipo</Text>
+										<select class="input-field" bind:value={f.kind} on:change={markDirty}>
+											{#each KIND_OPTIONS as o}
+												<option value={o.value}>{o.label}</option>
+											{/each}
+										</select>
+									</label>
+								</GridLayout>
 
-								{#if expanded === i}
-									<div class="frag-body">
-										<GridLayout cells="2">
-											<label class="field">
-												<Text color="neutral">Nombre</Text>
-												<input class="input-field" type="text" bind:value={f.name} on:input={markDirty} />
-											</label>
-											<label class="field">
-												<Text color="neutral">Tipo</Text>
-												<select class="input-field" bind:value={f.kind} on:change={markDirty}>
-													{#each KIND_OPTIONS as o}
-														<option value={o.value}>{o.label}</option>
-													{/each}
-												</select>
-											</label>
-										</GridLayout>
+								<label class="field">
+									<Text color="neutral">Descripción</Text>
+									<input class="input-field" type="text" bind:value={f.description} on:input={markDirty} />
+								</label>
 
-										<label class="field">
-											<Text color="neutral">Descripción</Text>
-											<input class="input-field" type="text" bind:value={f.description} on:input={markDirty} />
-										</label>
+								<FlexLayout items="center" justify="between">
+									<Text color="neutral"><small>Body (SQL)</small></Text>
+									<Button variant="outlined" onClick={() => openInModal(f)}>
+										<Iconify icon="mdi:fullscreen" /> Abrir en modal
+									</Button>
+								</FlexLayout>
 
-										<FlexLayout items="center" justify="between">
-											<Text color="neutral"><small>Body (SQL)</small></Text>
-											<Button variant="outlined" onClick={() => openInModal(f)}>
-												<Iconify icon="mdi:fullscreen" /> Abrir en modal
-											</Button>
-										</FlexLayout>
-
-										<SqlViewer bind:value={f.body} editable={true} height="280px" />
-
-										<FlexLayout justify="between">
-											<FloatingCard horizontal="left" vertical="center">
-												<Text color="neutral"><small>Reordenar</small></Text>
-												<FlexLayout slot="float" direction="column" gap="0.2rem">
-													<Button variant="outlined" onClick={() => move(i, -1)} disabled={i === 0}>
-														<Iconify icon="mdi:arrow-up" /> Subir
-													</Button>
-													<Button variant="outlined" onClick={() => move(i, 1)} disabled={i === fragments.length - 1}>
-														<Iconify icon="mdi:arrow-down" /> Bajar
-													</Button>
-												</FlexLayout>
-											</FloatingCard>
-											<Button color="danger" variant="ghost" onClick={() => remove(i)}>
-												<Iconify icon="mdi:trash-can" /> Eliminar
-											</Button>
-										</FlexLayout>
-									</div>
-								{/if}
-							</Card>
+								<SqlViewer bind:value={f.body} editable={true} height="280px" />
+							</AccordionActions>
 						{/each}
 					</FlexLayout>
 				{/if}
 			</AccordionActions>
-
-			<CodeGenPanel />
 		</section>
 	</TabItem>
 

@@ -1,7 +1,8 @@
 import type { APIRoute } from "astro";
 import { mkdir, readdir, readFile, writeFile, unlink } from "node:fs/promises";
 import path from "node:path";
-import { codegenDir, isValidId } from "../../../lib/codeGen/paths.ts";
+import { codegenDir } from "../../../lib/codeGen/paths.js";
+import { isValidId } from "../../../lib/codeGen/keys.js";
 
 async function ensureDir(): Promise<void> {
 	await mkdir(codegenDir, { recursive: true });

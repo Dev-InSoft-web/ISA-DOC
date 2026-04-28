@@ -1,7 +1,7 @@
 // Persistencia server-side de personalizaciones por recurso.
 // Cada recurso tiene su JSON con SOLO las personalizaciones (no los valores inferidos).
 import type { ResourceConfig } from "./types.js";
-import { RESOURCE_KEYS, diffShallow, pickDefined } from "./paths.js";
+import { RESOURCE_KEYS, diffShallow, pickDefined } from "./keys.js";
 
 const ENDPOINT = "/api/codegen/resources";
 

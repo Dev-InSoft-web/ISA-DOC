@@ -3,7 +3,7 @@
 
 export type FieldType =
 	| "string"
-	| "int"
+	| "number"
 	| "bool"
 	| "json"
 	| "date"
@@ -30,7 +30,6 @@ export interface RelationDef {
 	target: string;            // recurso destino (alias del recurso, no clase)
 	compareOn: string[];        // columnas de comparación (ej: ["ICURSO"])
 	insertEffect?: "syncDetails" | "ignore";  // efecto al insertar el padre
-	propagatePk?: string[];     // PKs a propagar al detalle (ej: ["icurso"])
 	customWhere?: string;       // SQL WHERE custom opcional
 }
 
@@ -61,6 +60,7 @@ export interface ResourceConfig {
 	relations: RelationDef[];
 	customHooks: CustomHookDef[];
 	omitOps?: string[];          // operaciones omitidas (ej: ["Verificar", "Duplicar"])
+	exposeInFn?: boolean;        // exponer en FN-Módulo (default true)
 }
 
 export const STORAGE_PREFIX = "isa-doc:codegen:";

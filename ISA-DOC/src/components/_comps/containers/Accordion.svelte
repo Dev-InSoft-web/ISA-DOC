@@ -21,6 +21,7 @@
 		Card,
 		Button,
 		H2,
+		H4,
 		Iconify,
 		Text,
 		FlexLayout,
@@ -60,7 +61,7 @@
 			.filter(Boolean)
 			.join(";")}
 	>
-		<H2>
+	<svelte:component this={inner ? H4 : H2}>
 			<FlexLayout justify="between" items="center" style="width: 100%;">
 				<FlexLayout items="center" class="head" style="min-width: 0; flex: 1;">
 					{#if titleIcon}
@@ -85,7 +86,7 @@
 				</FlexLayout>
 				<Iconify class="chevron" icon="mdi:chevron-down" flipv={open} style="font-size: 1.5em; flex-shrink: 0;" />
 			</FlexLayout>
-		</H2>
+		</svelte:component>
 	</Button>
 	{#if open}
 		<div transition:slide style="position: relative;">
@@ -116,7 +117,8 @@
 		z-index: 5;
 	}
 
-	:global(.accordion h2) {
+	:global(.accordion h2),
+	:global(.accordion h4) {
 		box-sizing: border-box;
 		margin: 0;
 		padding: 0;

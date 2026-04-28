@@ -134,7 +134,6 @@ function inferRelations(cfg: ResourceConfig, t: ParsedTable, tables: ParsedTable
 			target: targetId,
 			compareOn: sharedPk,
 			insertEffect: kind === "1-N" ? "syncDetails" : "ignore",
-			propagatePk: sharedPk.map((s) => s.toLowerCase()),
 		});
 	}
 	return rels;
@@ -190,7 +189,7 @@ function prettyCaption(col: string): string {
 function sqlTypeToFieldType(sqlType: string): FieldType {
 	const t = sqlType.toUpperCase();
 	if (/BIT|BOOL/.test(t)) return "bool";
-	if (/INT|NUMERIC|DECIMAL|FLOAT|REAL|MONEY/.test(t)) return "int";
+	if (/INT|NUMERIC|DECIMAL|FLOAT|REAL|MONEY/.test(t)) return "number";
 	if (/DATE|TIME/.test(t)) return "date";
 	if (/JSON/.test(t)) return "json";
 	return "string";

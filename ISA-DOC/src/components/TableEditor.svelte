@@ -88,13 +88,8 @@
 			</div>
 		</FlexLayout>
 		<FlexLayout items="center">
-			<Switch_
-				checked={table.hasIfNotExists}
-				label="IF NOT EXISTS"
-				on:change={(e) => { table.hasIfNotExists = !!(e as CustomEvent<{ checked: boolean }>).detail?.checked; emit(); }}
-			/>
-			<Button variant="outlined" style="width: fit-content;" onClick={() => onOpenSql(table)}>
-				<Iconify icon="mdi:fullscreen" /> SQL
+			<Button variant="outlined" style="width: fit-content; padding: 0.4rem 0.85rem;" onClick={() => onOpenSql(table)}>
+				<Iconify slot="icon" icon="mdi:eye-outline" /> SQL
 			</Button>
 		</FlexLayout>
 	</FlexLayout>
@@ -145,7 +140,7 @@
 						<option value="NULL">NULL</option>
 						<option value="NOT NULL">NOT NULL</option>
 					</select>
-					<FlexLayout items="center" gap="0.2rem">
+					<FlexLayout items="center">
 						<select
 							class="input-field"
 							value={defaultIsCustom(col.defaultValue) ? "__custom__" : col.defaultValue}
@@ -188,7 +183,7 @@
 						<Iconify icon="mdi:trash-can-outline" />
 					</button>
 				</div>
-				<FlexLayout slot="float" direction="column" gap="0.15rem">
+				<FlexLayout slot="float" direction="column">
 					<button class="icon-btn" title="Subir" on:click={() => moveColumn(idx, -1)} disabled={idx === 0}>
 						<Iconify icon="mdi:arrow-up" />
 					</button>

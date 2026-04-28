@@ -2,11 +2,12 @@
 	import { Modal, FlexLayout, Iconify, Text, Button } from "@ingenieria_insoft/ispsveltecomponents";
 	import JsonViewer from "./JsonViewer.svelte";
 	import SqlViewer from "./SqlViewer.svelte";
+	import TsViewer from "./TsViewer.svelte";
 
 	export let bshow: boolean = false;
 	export let title: string = "";
 	export let value: string = "";
-	export let language: "json" | "sql" = "json";
+	export let language: "json" | "sql" | "ts" = "json";
 
 	function copy(): void {
 		navigator.clipboard?.writeText(value ?? "");
@@ -19,14 +20,16 @@
 <Modal bind:bshow onClose={close} style="width: 90dvw; height: 85dvh;">
 	<svelte:fragment slot="title">
 		<FlexLayout items="center">
-			<Iconify icon={language === "sql" ? "mdi:database-outline" : "mdi:code-json"} />
-			<Text><strong>{title || (language === "sql" ? "SQL" : "JSON")}</strong></Text>
+			<Iconify icon={language === "sql" ? "mdi:database-outline" : language === "ts" ? "mdi:language-typescript" : "mdi:code-json"} />
+			<Text><strong>{title || (language === "sql" ? "SQL" : language === "ts" ? "TypeScript" : "JSON")}</strong></Text>
 		</FlexLayout>
 	</svelte:fragment>
 
 	<div class="cm-wrap">
 		{#if language === "sql"}
 			<SqlViewer {value} height="100%" />
+		{:else if language === "ts"}
+			<TsViewer {value} height="100%" />
 		{:else}
 			<JsonViewer {value} height="100%" />
 		{/if}
