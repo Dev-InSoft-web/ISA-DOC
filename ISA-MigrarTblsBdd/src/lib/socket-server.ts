@@ -6,6 +6,7 @@ import { openPool, resolveSettingsPath } from "./db.js";
 import {
 	loadCollectionMeta, loadEntity, saveEntity, saveCollectionVariables,
 	mergeCollection, splitCollection, loadEnvironments, saveEnvironments,
+	loadFullCollection,
 	type EntityFile, type EnvironmentsFile,
 } from "./postman/store.js";
 
@@ -153,7 +154,17 @@ function handleConnection(socket: Socket): void {
 
 	// === Postman docs ===
 	socket.on("postman:list", (cb: (data: unknown) => void) => {
-		cb(loadCollectionMeta() ?? { error: "No se pudo cargar metadata" });
+		try {
+			const meta = loadCollectionMeta();
+			if (!meta) {
+				cb({ error: "No se pudo cargar metadata: revisa que doc/ISA-MigrarTblsBdd/postman-collection.json exista." });
+				return;
+			}
+			cb(meta);
+		} catch (err) {
+			const msg = err instanceof Error ? err.message : String(err);
+			cb({ error: `loadCollectionMeta falló: ${msg}` });
+		}
 	});
 	socket.on("postman:get", (slug: string, cb: (data: unknown) => void) => {
 		const e = loadEntity(slug);
@@ -170,6 +181,10 @@ function handleConnection(socket: Socket): void {
 	});
 	socket.on("postman:split", (cb: (r: unknown) => void) => {
 		cb(splitCollection());
+	});
+	socket.on("postman:full", (cb: (data: unknown) => void) => {
+		const col = loadFullCollection();
+		cb(col ?? { error: "Sin colección" });
 	});
 
 	// === Environments ===

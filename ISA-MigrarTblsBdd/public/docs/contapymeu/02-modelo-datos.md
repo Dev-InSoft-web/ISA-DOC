@@ -1,9 +1,20 @@
 # Modelo de Datos
 
-Este documento resume las tablas SQL Server que sustentan el dominio
-ContaPymeU. Todas las tablas usan el prefijo `CAPAC_*`.
+Tablas SQL Server del módulo **Capacitación**. Todas usan el prefijo
+`CAPAC_*`. Las tablas de otros dominios (recursos, mensajería) **no** se
+documentan aquí; solo aparecen como FK externas cuando una tabla de
+Capacitación las referencia.
 
-## Tablas principales (Capacitación)
+## DER (diagrama oficial)
+
+![DER de Capacitación](/imgs/DER%20Capacitaci%C3%B3n.jpg)
+
+> El esquema completo se encuentra en
+> `public/imgs/DER Capacitación.jpg`. `RECURSO_EXTERNO` (cuando aparece)
+> representa una FK lógica al dominio de Recursos; no es una tabla
+> `CAPAC_*`.
+
+## Tablas
 
 ### `CAPAC_CURSOS`
 
@@ -17,25 +28,21 @@ Catálogo de cursos.
 | `IDRIVER` | `smallint` | FK → `CAPAC_DRIVERS`. |
 | `DESCRIPCION` | `varchar(max)` | Descripción larga. |
 | `BACTIVO` | `bit` | Activo / inactivo. |
-| `IUSUARIOCRE`, `IAPPCRE`, `IPCRE`, `FHCRE` | auditoría | Usuario / app / IP / fecha de creación. |
+| auditoría | `IUSUARIOCRE`, `IAPPCRE`, `IPCRE`, `FHCRE` | Usuario / app / IP / fecha de creación. |
 
 ### `CAPAC_PLANES_ESTUDIO`
-
-Planes de estudio (agrupan cursos y certificaciones).
 
 | Columna | Tipo | Notas |
 | --- | --- | --- |
 | `IPLANESTUDIO` (PK) | `varchar(255)` | |
 | `NOMBRE` | `varchar(255)` | |
 | `DESCRIPCIONPLAN` | `text` | |
-| `TTDVISUALIZACION` | `varchar(50)` | Modo de visualización (ARBOL, LINEAL, …). |
-| `BGENERACERTIFICADOG` | `bit` | Si el plan emite certificado. |
+| `TTDVISUALIZACION` | `varchar(50)` | `ARBOL`, `LINEAL`, … |
+| `BGENERACERTIFICADOG` | `bit` | Si emite certificado. |
 | `BACTIVO` | `int` | |
-| auditoría | … | `IUSUARIOCRE`, `IAPPCRE`, `IPCRE`, `FHCRE`, `IUSUARIOCULT`. |
+| auditoría | … | |
 
 ### `CAPAC_CURSOS_DE_PLANES_ESTUDIO`
-
-Relación N:M entre planes y cursos.
 
 | Columna | Tipo |
 | --- | --- |
@@ -46,8 +53,6 @@ Relación N:M entre planes y cursos.
 
 ### `CAPAC_CURSOS_PREREQUISITOS`
 
-Pre-requisitos entre cursos dentro de un plan de estudio.
-
 | Columna | Tipo |
 | --- | --- |
 | `IPLANESTUDIO` (PK) | `varchar(255)` |
@@ -56,18 +61,14 @@ Pre-requisitos entre cursos dentro de un plan de estudio.
 
 ### `CAPAC_DRIVERS`
 
-Drivers o fuentes que entregan los cursos.
-
 | Columna | Tipo |
 | --- | --- |
 | `IDRIVER` (PK) | `smallint` |
 | `NDRIVER` | `varchar(10)` |
 | `DESCRIPCION` | `varchar(max)` |
-| `QNIVELES` | `tinyint` — niveles jerárquicos |
+| `QNIVELES` | `tinyint` |
 
 ### `CAPAC_ATRIBUTOS_X_DRIVERS`
-
-Atributos definibles por cada driver.
 
 | Columna | Tipo |
 | --- | --- |
@@ -75,13 +76,11 @@ Atributos definibles por cada driver.
 | `IATRIBUTO` (PK) | `smallint` |
 | `QNIVEL` | `tinyint` |
 | `NATRIBUTO` | `varchar(50)` |
-| `TDATRIBUTO` | `varchar(50)` — tipo de dato |
+| `TDATRIBUTO` | `varchar(50)` |
 | `BREQUERIDO` | `bit` |
-| `JCONFIG` | `varchar(max)` — configuración JSON |
+| `JCONFIG` | `varchar(max)` (JSON) |
 
 ### `CAPAC_ATRIBUTOS_PLANES`
-
-Atributos por (plan, curso).
 
 | Columna | Tipo |
 | --- | --- |
@@ -92,33 +91,28 @@ Atributos por (plan, curso).
 
 ### `CAPAC_ESTRUCTURAS_CURSOS`
 
-Estructura jerárquica del curso (niveles).
-
 | Columna | Tipo |
 | --- | --- |
 | `ICURSO` (PK) | `varchar(10)` |
 | `QNIVEL` (PK) | `tinyint` |
 | `NNIVEL` | `varchar(250)` |
 
-> **Nota helper**: en URLs el helper traduce `qnivel` → `inivel` para mantener
-> coherencia con el patrón de PKs `i*`.
+> **Nota helper**: en URLs el helper traduce `qnivel` → `inivel` para
+> mantener coherencia con el patrón de PKs `i*`. El body sigue usando
+> `qnivel`.
 
 ### `CAPAC_PLANES_CURSOS`
-
-Vincula `IPLAN` con curso, tema, recurso y plan padre.
 
 | Columna | Tipo |
 | --- | --- |
 | `IPLAN` (PK) | `varchar(100)` |
 | `ICURSO` (PK) | `varchar(10)` |
 | `ITEMA` | `varchar(25)` |
-| `IRECURSO` | `bigint` |
+| `IRECURSO` | `bigint` (FK lógica — dominio externo) |
 | `IPLANPADRE` | `varchar(100)` |
 | `TITULO` | `varchar(255)` |
 
 ### `CAPAC_SEGURIDADES_CURSOS`
-
-Permisos por curso.
 
 | Columna | Tipo |
 | --- | --- |
@@ -127,8 +121,6 @@ Permisos por curso.
 
 ### `CAPAC_PERMISOS`
 
-Catálogo de permisos.
-
 | Columna | Tipo |
 | --- | --- |
 | `IPERMISO` (PK) | `varchar(25)` |
@@ -136,22 +128,11 @@ Catálogo de permisos.
 
 ### `CAPAC_TEMAS`
 
-Temas (clasificación transversal).
-
 | Columna | Tipo |
 | --- | --- |
 | `ITEMA` (PK) | `varchar(25)` |
 | `NTEMA` | `varchar(255)` |
 | auditoría | `IUSUARIOCRE`, `APPCRE`, `IPCRE`, `FHCRE` |
-
-## Tablas de Recursos
-
-`CAPAC_TDRECURSOS`, `CAPAC_RECURSOS`, `CAPAC_HISTORIAL_RECURSOS`,
-`CAPAC_MENSAJES_RECURSOS`, `CAPAC_MOVIMIENTOS_CONTACTO`,
-`CAPAC_CALIFICACIONES_RECURSOS`, `CAPAC_HISTORIAL_CALIFICACIONES`,
-`CAPAC_PERMISOS_CONTACTO`, etc. Ver el **DER ORM** en
-`public/imgs/Diagrama ORM (Mapeo Relacional de Objetos)1 (1).png` para el
-detalle visual completo.
 
 ## Reglas de integridad relevantes
 
@@ -162,6 +143,34 @@ detalle visual completo.
 - Borrado de un **Curso** debe cascar (lógicamente) en sus
   estructuras, atributos, planes-cursos y seguridades.
 
-Ver detalles de auditoría y reglas de migración en
-[`init_capacitacion.sql`](https://github.com/Dev-InSoft/ISS-ClientesIS-ContaPymeU)
-y los scripts de `doc/migrar-tbls-bdd/`.
+## DDL de referencia
+
+Los siguientes fragmentos se leen **en vivo** desde
+`doc/init_capacitacion.sql`; cualquier cambio en el script se refleja
+inmediatamente al recargar.
+
+### `CAPAC_DRIVERS`
+
+<!-- src path="doc/init_capacitacion.sql" lang="sql" from="^CREATE TABLE CAPAC_DRIVERS\b" to="^\);" -->
+
+### `CAPAC_CURSOS`
+
+<!-- src path="doc/init_capacitacion.sql" lang="sql" from="^CREATE TABLE CAPAC_CURSOS\b" to="^\);" -->
+
+### `CAPAC_PLANES_ESTUDIO`
+
+<!-- src path="doc/init_capacitacion.sql" lang="sql" from="^CREATE TABLE CAPAC_PLANES_ESTUDIO\b" to="^\);" -->
+
+### Tablas pivote (PKs compuestas)
+
+<!-- src path="doc/init_capacitacion.sql" lang="sql" from="^CREATE TABLE CAPAC_CURSOS_DE_PLANES_ESTUDIO\b" to="^\);" -->
+
+<!-- src path="doc/init_capacitacion.sql" lang="sql" from="^CREATE TABLE CAPAC_CURSOS_PREREQUISITOS\b" to="^\);" -->
+
+<!-- src path="doc/init_capacitacion.sql" lang="sql" from="^CREATE TABLE CAPAC_PLANES_CURSOS\b" to="^\);" -->
+
+<!-- src path="doc/init_capacitacion.sql" lang="sql" from="^CREATE TABLE CAPAC_ESTRUCTURAS_CURSOS\b" to="^\);" -->
+
+### Secuencias
+
+<!-- src path="doc/init_capacitacion.sql" lang="sql" from="^CREATE SEQUENCE CAPAC_SEQ_IDRIVER\b" to="^CREATE SEQUENCE CAPAC_SEQ_IHISTORIALPLANESTUDIO\b" -->

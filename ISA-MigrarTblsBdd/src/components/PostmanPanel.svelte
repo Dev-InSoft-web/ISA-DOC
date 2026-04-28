@@ -58,9 +58,13 @@
 	let entity: EntityFile | null = null;
 	let entityDirty = false;
 	let savingEntity = false;
-	let merging = false;
 	let expandedItem = -1;
 	let expandedResponse: Record<number, number> = {};
+
+	// Pestañas superiores (Editor / Resumen).
+	type TopTab = "editor" | "resumen";
+	let topTab: TopTab = "editor";
+	let fullCollection: unknown = null;
 
 	// === Environments / Runner ===
 	type EnvVar = { key: string; value: string; type?: string; enabled?: boolean };
@@ -70,23 +74,6 @@
 	let activeEnvId = "";
 	let showEnvEditor = false;
 	let envDirty = false;
-
-	type RunResult = {
-		status: number;
-		statusText: string;
-		ms: number;
-		size: number;
-		headers: Record<string, string>;
-		body: string;
-		bodyJson: unknown | null;
-		url: string;
-		method: string;
-		error?: string;
-	};
-	let showRunModal = false;
-	let runResult: RunResult | null = null;
-	let runningItemIdx = -1;
-	let runRequestPreview: { method: string; url: string; headers: Header[]; body: string } | null = null;
 
 	function loadEnvs(): void {
 		socket?.emit("postman:envs", (data: EnvironmentsFile) => {
@@ -107,103 +94,6 @@
 	function getActiveEnv(): Environment | null {
 		if (!envs) return null;
 		return envs.environments.find((e) => e.id === activeEnvId) ?? envs.environments[0] ?? null;
-	}
-
-	function buildVarMap(): Record<string, string> {
-		const map: Record<string, string> = {};
-		for (const v of meta?.variable ?? []) {
-			if (v?.key) map[v.key] = v.value ?? "";
-		}
-		const env = getActiveEnv();
-		for (const v of env?.values ?? []) {
-			if (v.enabled === false) continue;
-			if (v.key) map[v.key] = v.value ?? "";
-		}
-		return map;
-	}
-
-	function resolveVars(input: string, map: Record<string, string>): string {
-		if (!input) return input;
-		return input.replace(/\{\{\s*([^}\s]+)\s*\}\}/g, (m, key: string) => {
-			return Object.prototype.hasOwnProperty.call(map, key) ? map[key] : m;
-		});
-	}
-
-	async function runItem(idx: number): Promise<void> {
-		if (!entity) return;
-		const item = entity.item[idx];
-		if (!item?.request) { toastError("Request sin definir"); return; }
-		const map = buildVarMap();
-		const method = (item.request.method ?? "GET").toUpperCase();
-		const rawUrl = getUrlRaw(item.request);
-		const url = resolveVars(rawUrl, map);
-		const headers: Header[] = (item.request.header ?? []).map((h) => ({
-			key: resolveVars(h.key ?? "", map),
-			value: resolveVars(h.value ?? "", map),
-		})).filter((h) => h.key);
-		const bodyRaw = item.request.body?.raw ?? "";
-		const body = bodyRaw ? resolveVars(bodyRaw, map) : "";
-
-		runRequestPreview = { method, url, headers, body };
-		runningItemIdx = idx;
-		showRunModal = true;
-		runResult = null;
-
-		const headerObj: Record<string, string> = {};
-		for (const h of headers) headerObj[h.key] = h.value;
-		const t0 = performance.now();
-		try {
-			const init: RequestInit = { method, headers: headerObj };
-			if (body && method !== "GET" && method !== "HEAD") init.body = body;
-			const res = await fetch(url, init);
-			const text = await res.text();
-			const ms = Math.round(performance.now() - t0);
-			const respHeaders: Record<string, string> = {};
-			res.headers.forEach((v, k) => { respHeaders[k] = v; });
-			let bodyJson: unknown | null = null;
-			try { bodyJson = text ? JSON.parse(text) : null; } catch { bodyJson = null; }
-			runResult = {
-				status: res.status,
-				statusText: res.statusText,
-				ms,
-				size: text.length,
-				headers: respHeaders,
-				body: text,
-				bodyJson,
-				url,
-				method,
-			};
-		} catch (err) {
-			const msg = err instanceof Error ? err.message : String(err);
-			runResult = {
-				status: 0, statusText: "Error", ms: Math.round(performance.now() - t0),
-				size: 0, headers: {}, body: "", bodyJson: null, url, method, error: msg,
-			};
-		}
-	}
-
-	function saveAsExample(): void {
-		if (!entity || runningItemIdx < 0 || !runResult) return;
-		const item = entity.item[runningItemIdx];
-		if (!item) return;
-		if (!item.response) item.response = [];
-		const headerArr: Header[] = Object.entries(runResult.headers).map(([key, value]) => ({ key, value }));
-		const pretty = (() => {
-			if (runResult!.bodyJson != null) {
-				try { return JSON.stringify(runResult!.bodyJson, null, 2); } catch { /* noop */ }
-			}
-			return runResult!.body;
-		})();
-		item.response = [...item.response, {
-			name: `Run ${new Date().toLocaleString()}`,
-			status: runResult.statusText,
-			code: runResult.status,
-			_postman_previewlanguage: "json",
-			header: headerArr,
-			body: pretty,
-		}];
-		markDirty();
-		toastSuccess("Respuesta guardada como ejemplo");
 	}
 
 
@@ -251,21 +141,36 @@
 	}
 
 	function mergeAll(): void {
-		if (entityDirty && !confirm("Hay cambios sin guardar. ¿Generar collection sin esos cambios?")) return;
-		merging = true;
-		socket?.emit("postman:merge", (r: { ok: boolean; path?: string; entities?: number; error?: string }) => {
-			merging = false;
-			if (r.ok) toastSuccess(`Collection generado: ${r.entities} entidades`);
-			else toastError(r.error ?? "Error generando collection");
-		});
+		if (entityDirty && !confirm("Hay cambios sin guardar. ¿Descartar y recargar?")) return;
+		loadList();
+		loadFull();
+		toastSuccess("Colección recargada");
 	}
 
-	function reSplit(): void {
-		if (!confirm("Esto sobrescribirá los archivos por entidad con el contenido actual de iss-postman.json. ¿Continuar?")) return;
-		socket?.emit("postman:split", (r: { ok: boolean; error?: string }) => {
-			if (r.ok) { toastSuccess("Re-split exitoso"); loadList(); }
-			else toastError(r.error ?? "Error en split");
-		});
+	function loadFull(): void {
+		socket?.emit("postman:full", (data: unknown) => { fullCollection = data; });
+	}
+
+	async function setTopTab(t: TopTab): Promise<void> {
+		topTab = t;
+		if (t === "resumen") loadFull();
+	}
+
+	function copyFullCollection(): void {
+		if (!fullCollection) return;
+		navigator.clipboard.writeText(JSON.stringify(fullCollection, null, 2))
+			.then(() => toastSuccess("Colección copiada al portapapeles"))
+			.catch(() => toastError("No se pudo copiar"));
+	}
+
+	function downloadFullCollection(): void {
+		if (!fullCollection) return;
+		const blob = new Blob([JSON.stringify(fullCollection, null, 2)], { type: "application/json" });
+		const a = document.createElement("a");
+		a.href = URL.createObjectURL(blob);
+		a.download = "postman-collection.json";
+		a.click();
+		URL.revokeObjectURL(a.href);
 	}
 
 	function addRequest(): void {
@@ -351,6 +256,7 @@
 
 <Toaster />
 
+<div class="postman-panel">
 {#if loading}
 	<Loading bShow={true} />
 {:else if !meta}
@@ -380,16 +286,23 @@
 						<Iconify icon="mdi:cog-outline" /> Vars
 					</Button>
 				{/if}
-				<Button variant="outlined" onClick={reSplit}>
-					<Iconify icon="mdi:source-branch-sync" /> Re-split desde origen
-				</Button>
-				<Button color="success" loading={merging} onClick={mergeAll}>
-					<Iconify icon="mdi:export-variant" /> Generar collection
+				<Button variant="outlined" onClick={mergeAll}>
+					<Iconify icon="mdi:refresh" /> Recargar
 				</Button>
 			</FlexLayout>
 		</FlexLayout>
 	</Card>
 
+	<nav class="toptabs">
+		<button class="toptab" class:active={topTab === "editor"} on:click={() => setTopTab("editor")}>
+			<Iconify icon="mdi:form-textbox" /> Editor
+		</button>
+		<button class="toptab" class:active={topTab === "resumen"} on:click={() => setTopTab("resumen")}>
+			<Iconify icon="mdi:file-document-outline" /> Resumen
+		</button>
+	</nav>
+
+	{#if topTab === "editor"}
 	<section class="layout">
 		<aside class="sidebar">
 			<H4>Entidades</H4>
@@ -444,23 +357,18 @@
 				<FlexLayout direction="column">
 					{#each entity.item as item, i (i)}
 						<Card variant="flat">
-							<div class="item-row">
-								<button class="item-header" on:click={() => toggleItem(i)}>
-									<FlexLayout items="center" justify="between">
-										<FlexLayout items="center">
-											<span class="method method--{methodColor(item.request?.method)}">{item.request?.method ?? "?"}</span>
-											<Text><strong>{item.name}</strong></Text>
-										</FlexLayout>
-										<FlexLayout items="center">
-											<Text color="neutral"><small>{(item.response?.length ?? 0)} ej.</small></Text>
-											<Iconify icon={expandedItem === i ? "mdi:chevron-up" : "mdi:chevron-down"} />
-										</FlexLayout>
+							<button class="item-header" on:click={() => toggleItem(i)}>
+								<FlexLayout items="center" justify="between">
+									<FlexLayout items="center">
+										<span class="method method--{methodColor(item.request?.method)}">{item.request?.method ?? "?"}</span>
+										<Text><strong>{item.name}</strong></Text>
 									</FlexLayout>
-								</button>
-								<Button color="success" variant="outlined" onClick={() => runItem(i)}>
-									<Iconify icon="mdi:play" /> Run
-								</Button>
-							</div>
+									<FlexLayout items="center">
+										<Text color="neutral"><small>{(item.response?.length ?? 0)} ej.</small></Text>
+										<Iconify icon={expandedItem === i ? "mdi:chevron-up" : "mdi:chevron-down"} />
+									</FlexLayout>
+								</FlexLayout>
+							</button>
 
 							{#if expandedItem === i}
 								<div class="item-body">
@@ -586,56 +494,39 @@
 			{/if}
 		</div>
 	</section>
+	{/if}
+
+	{#if topTab === "resumen"}
+	<section class="resumen">
+		<Card>
+			<FlexLayout items="center" justify="between">
+				<H2>Resumen · resultado final</H2>
+				<FlexLayout items="center">
+					<Button variant="outlined" onClick={loadFull}>
+						<Iconify icon="mdi:refresh" /> Recargar
+					</Button>
+					<Button variant="outlined" onClick={copyFullCollection} disabled={!fullCollection}>
+						<Iconify icon="mdi:content-copy" /> Copiar
+					</Button>
+					<Button color="success" onClick={downloadFullCollection} disabled={!fullCollection}>
+						<Iconify icon="mdi:download" /> Descargar JSON
+					</Button>
+				</FlexLayout>
+			</FlexLayout>
+			<Text color="neutral"><small>Fuente: <code>doc/ISA-MigrarTblsBdd/postman-collection.json</code></small></Text>
+		</Card>
+
+		{#if !fullCollection}
+			<Card variant="flat"><Text color="neutral">Cargando…</Text></Card>
+		{:else}
+			<Card>
+				<pre class="resumen-pre">{JSON.stringify(fullCollection, null, 2)}</pre>
+			</Card>
+		{/if}
+	</section>
+	{/if}
 {/if}
-
-<!-- Modal: Run resultado -->
-<Modal bind:bshow={showRunModal} onClose={() => (showRunModal = false)} style="width: 90dvw; height: 85dvh;">
-	<svelte:fragment slot="title">
-		{#if runRequestPreview}
-			<FlexLayout items="center" gap="0.4rem">
-				<span class="method method--{methodColor(runRequestPreview.method)}">{runRequestPreview.method}</span>
-				<Text><strong>Run</strong> <small style="opacity: 0.7;">{runRequestPreview.url}</small></Text>
-			</FlexLayout>
-		{:else}
-			<Text>Run</Text>
-		{/if}
-	</svelte:fragment>
-
-	<div class="run-body">
-		{#if !runResult}
-			<Loading bShow={true} />
-			<Text color="neutral">Ejecutando…</Text>
-		{:else}
-			<FlexLayout items="center" gap="0.6rem" style="flex-wrap: wrap;">
-				<span class="status status--{runResult.status === 0 ? 'err' : runResult.status < 300 ? 'ok' : runResult.status < 500 ? 'warn' : 'err'}">
-					{runResult.status} {runResult.statusText}
-				</span>
-				<Text color="neutral"><small>{runResult.ms} ms</small></Text>
-				<Text color="neutral"><small>{runResult.size} B</small></Text>
-				<span style="flex: 1;"></span>
-				<Button variant="outlined" onClick={saveAsExample}>
-					<Iconify icon="mdi:content-save-outline" /> Guardar como ejemplo
-				</Button>
-			</FlexLayout>
-
-			{#if runResult.error}
-				<Card variant="flat"><Text color="error">{runResult.error}</Text></Card>
-			{/if}
-
-			<H4>Body</H4>
-			<pre class="resp-pre">{runResult.bodyJson != null ? JSON.stringify(runResult.bodyJson, null, 2) : runResult.body}</pre>
-
-			<H4>Headers</H4>
-			<table class="kv-table">
-				<tbody>
-					{#each Object.entries(runResult.headers) as [k, v]}
-						<tr><th>{k}</th><td>{v}</td></tr>
-					{/each}
-				</tbody>
-			</table>
-		{/if}
-	</div>
-</Modal>
+</div>
 
 <!-- Modal: Editor de Environments -->
 <Modal bind:bshow={showEnvEditor} onClose={() => { if (envDirty) persistEnvs(); showEnvEditor = false; }} style="width: 80dvw; height: 80dvh;">
@@ -709,6 +600,65 @@
 </Modal>
 
 <style>
+	/* Los Button de ISP usan width:100% y min-width:16px → en filas flex
+	   colapsan por debajo del contenido y el texto se sale del borde.
+	   Forzamos que cada botón ocupe lo que necesita y no se encoja. */
+	:global(.postman-panel button[data-variant]) {
+		width: auto;
+		min-width: max-content;
+		flex: 0 0 auto;
+		padding-inline: 0.85rem;
+		white-space: nowrap;
+	}
+
+	.toptabs {
+		display: flex;
+		gap: 0.25rem;
+		margin: 0.75rem 0 0.25rem;
+		border-bottom: 1px solid var(--is-b-color);
+	}
+	.toptab {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.55rem 0.95rem;
+		background: transparent;
+		border: 1px solid transparent;
+		border-bottom: none;
+		border-radius: 6px 6px 0 0;
+		color: inherit;
+		cursor: pointer;
+		font-size: 0.9rem;
+		opacity: 0.7;
+		transition: background 0.15s, opacity 0.15s, border-color 0.15s;
+	}
+	.toptab:hover { opacity: 1; background: var(--is-bg-secondary); }
+	.toptab.active {
+		opacity: 1;
+		background: var(--is-bg-secondary);
+		border-color: var(--is-b-color);
+		color: dodgerblue;
+	}
+
+	.resumen, .swagger {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin-top: 0.75rem;
+	}
+	.resumen-pre {
+		max-height: 70dvh;
+		overflow: auto;
+		padding: 0.75rem;
+		margin: 0;
+		background: #0f1117;
+		color: #d4d4d4;
+		border-radius: 6px;
+		font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+		font-size: 0.78rem;
+		line-height: 1.45;
+	}
+
 	.layout {
 		display: grid;
 		grid-template-columns: 260px 1fr;
@@ -823,47 +773,12 @@
 	.status--warn { background: #b45309; color: white; }
 	.status--err  { background: #b91c1c; color: white; }
 
-	.item-row {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-	.item-row .item-header { flex: 1; }
-
 	.env-select-label {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.3rem;
 	}
 	.env-select { min-width: 11rem; }
-
-	.run-body {
-		display: flex;
-		flex-direction: column;
-		gap: 0.6rem;
-		max-height: calc(85dvh - 5rem);
-		overflow: auto;
-	}
-	.resp-pre {
-		background: #1117;
-		border: 1px solid var(--is-b-color);
-		border-radius: 4px;
-		padding: 0.6rem;
-		font-family: ui-monospace, Menlo, Consolas, monospace;
-		font-size: 0.8rem;
-		max-height: 40dvh;
-		overflow: auto;
-		white-space: pre-wrap;
-		word-break: break-word;
-	}
-	.kv-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-	.kv-table th, .kv-table td {
-		text-align: left;
-		padding: 0.25rem 0.5rem;
-		border-bottom: 1px solid var(--is-b-color);
-		vertical-align: top;
-	}
-	.kv-table th { font-weight: 600; opacity: 0.85; width: 32%; }
 
 	.env-table { width: 100%; border-collapse: collapse; }
 	.env-table th, .env-table td {

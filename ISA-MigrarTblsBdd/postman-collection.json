@@ -1,0 +1,290 @@
+{
+	"info": {
+		"name": "ISS-ClientesIS-ContaPymeU",
+		"description": "# ISS · ClientesIS — ContaPymeU\n\n## Qué hace esta API\nMicroservicio Azure Functions que expone el dominio de **Capacitación** de ContaPymeU: **Cursos**, **Planes de Estudio** y **Drivers**.\n\n## URL base\n- Variable: `{{host_contapymeu}}`\n- Patrón: `{{host_contapymeu}}/api/<recurso>/<:pk?>`\n- Filtros de listado: `:filtro` es `btoa(JSON.stringify(filtro))` (`{}` → `e30=`).\n\n## Autenticación\nBearer token en header `Authorization: Bearer {{token}}`.\n\n## Variables\n| Variable | Uso | Ejemplo |\n|---|---|---|\n| `host_contapymeu` | URL base del Function App | `http://localhost:7071` |\n| `token` | JWT del usuario autenticado | `eyJhbGci...` |\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Cursos",
+			"description": "# Cursos\n\n## Alcance\nCRUD básico del catálogo de cursos del módulo de Capacitación, más la consulta del recurso/plan asociado.\n\n## Operaciones\n| Método | Endpoint | Descripción |\n|---|---|---|\n| GET | `/api/cursos/:filtro` | Listar |\n| GET | `/api/curso/:icurso` | Obtener |\n| GET | `/api/curso/recursoplan/:icurso` | Obtener recurso/plan |\n| POST | `/api/curso` | Crear |\n| PUT | `/api/curso/:icurso` | Actualizar |\n| DELETE | `/api/curso/:icurso` | Eliminar |\n\n## Modelo de datos\n| Campo | Tipo | Descripción |\n|---|---|---|\n| icurso | string | Identificador del curso (PK) |\n| ncurso | string | Nombre del curso |\n| itema | string | Tema asociado |\n| idriver | string | Driver al que pertenece |\n| descripcion | string | Descripción libre |\n| bactivo | boolean | Estado activo (1/0) |",
+			"item": [
+				{
+					"name": "GET - Listar",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "GET",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"description": "## Propósito\nObtiene un listado paginado de **cursos** aplicando el filtro Base64 indicado.\n\n## Ruta\n`GET /api/cursos/:filtro`\n\n## Autorización\nBearer token (`Authorization: Bearer {{token}}`).\n\n## Headers\n| Header | Valor | Requerido |\n|---|---|---|\n| Authorization | `Bearer {{token}}` | Sí |\n| Content-Type | `application/json` | Sí (si hay body) |\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `filtro` | string | Sí | Filtro de búsqueda en base64 (`btoa(JSON.stringify(filtro))`). Default `{}` → `e30=`. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Operación exitosa |\n| 400 | Bad Request | Filtro inválido |\n| 401 | Unauthorized | Token ausente o inválido |\n| 500 | Internal Server Error | Error inesperado del servidor |\n\n## Reglas de negocio y observaciones\n- El filtro se construye como `btoa(JSON.stringify(filtro))` (`{}` → `e30=`).\n- Las respuestas siguen el contrato de `ispserver`: `{ datos } | { mensaje } | { error }`.",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/cursos/:filtro",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "cursos", ":filtro"],
+							"variable": [{ "key": "filtro", "value": "e30=", "description": "Filtro de búsqueda en base64 (JSON.stringify -> btoa). Default `{}` -> `e30=`." }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Obtener",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "GET",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"description": "## Propósito\nObtiene un único **curso** por su clave primaria.\n\n## Ruta\n`GET /api/curso/:icurso`\n\n## Autorización\nBearer token (`Authorization: Bearer {{token}}`).\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | Identificador del curso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Curso encontrado |\n| 401 | Unauthorized | Token ausente o inválido |\n| 404 | Not Found | El curso no existe |\n| 500 | Internal Server Error | Error inesperado del servidor |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/curso/:icurso",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "curso", ":icurso"],
+							"variable": [{ "key": "icurso", "value": "CURSO001", "description": "Identificador de curso" }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Obtener Recurso/Plan",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "GET",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"description": "## Propósito\nObtiene el recurso/plan asociado al **curso** indicado.\n\n## Ruta\n`GET /api/curso/recursoplan/:icurso`\n\n## Autorización\nBearer token (`Authorization: Bearer {{token}}`).\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | Identificador del curso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Recurso/plan obtenido |\n| 401 | Unauthorized | Token ausente o inválido |\n| 404 | Not Found | El curso no existe o no tiene recurso/plan |\n| 500 | Internal Server Error | Error inesperado del servidor |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/curso/recursoplan/:icurso",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "curso", "recursoplan", ":icurso"],
+							"variable": [{ "key": "icurso", "value": "CURSO001", "description": "Identificador de curso" }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Crear",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": { "mode": "raw", "raw": "{\n    \"icurso\": \"CURSO001\",\n    \"ncurso\": \"Curso de ejemplo\",\n    \"itema\": \"TEMA001\",\n    \"idriver\": \"DRIVER001\",\n    \"descripcion\": \"Descripción del curso\",\n    \"bactivo\": 1\n}", "options": { "raw": { "language": "json" } } },
+						"description": "## Propósito\nCrea un nuevo **curso**.\n\n## Ruta\n`POST /api/curso`\n\n## Autorización\nBearer token (`Authorization: Bearer {{token}}`).\n\n## Body (`application/json`)\n| Campo | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | PK del curso |\n| `ncurso` | string | Sí | Nombre del curso |\n| `itema` | string | No | Tema asociado |\n| `idriver` | string | No | Driver al que pertenece |\n| `descripcion` | string | No | Descripción |\n| `bactivo` | boolean | No | Estado activo (1/0) |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 201 | Created | Curso creado correctamente |\n| 400 | Bad Request | Datos inválidos |\n| 401 | Unauthorized | Token ausente o inválido |\n| 409 | Conflict | Ya existe un curso con el mismo `icurso` |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/curso",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "curso"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT - Actualizar",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": { "mode": "raw", "raw": "{\n    \"icurso\": \"CURSO001\",\n    \"ncurso\": \"Curso de ejemplo\",\n    \"itema\": \"TEMA001\",\n    \"idriver\": \"DRIVER001\",\n    \"descripcion\": \"Descripción del curso\",\n    \"bactivo\": 1\n}", "options": { "raw": { "language": "json" } } },
+						"description": "## Propósito\nReemplaza los datos del **curso** indicado.\n\n## Ruta\n`PUT /api/curso/:icurso`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | Identificador del curso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Curso actualizado |\n| 400 | Bad Request | Datos inválidos |\n| 404 | Not Found | El curso no existe |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/curso/:icurso",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "curso", ":icurso"],
+							"variable": [{ "key": "icurso", "value": "CURSO001", "description": "Identificador de curso" }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Eliminar",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "DELETE",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"description": "## Propósito\nElimina el **curso** indicado.\n\n## Ruta\n`DELETE /api/curso/:icurso`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | Identificador del curso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Curso eliminado |\n| 404 | Not Found | El curso no existe |\n| 409 | Conflict | El curso tiene dependencias activas |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/curso/:icurso",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "curso", ":icurso"],
+							"variable": [{ "key": "icurso", "value": "CURSO001", "description": "Identificador de curso" }]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Planes de Estudio",
+			"description": "# Planes de Estudio\n\n## Alcance\nCRUD básico de planes de estudio que agrupan cursos.\n\n## Operaciones\n| Método | Endpoint | Descripción |\n|---|---|---|\n| GET | `/api/planes/estudio/:filtro` | Listar |\n| GET | `/api/plan/estudio/:iplanestudio` | Obtener |\n| POST | `/api/plan/estudio` | Crear |\n| PUT | `/api/plan/estudio/:iplanestudio` | Actualizar |\n| DELETE | `/api/plan/estudio/:iplanestudio` | Eliminar |\n\n## Modelo de datos\n| Campo | Tipo | Descripción |\n|---|---|---|\n| iplanestudio | string | Identificador del plan (PK) |\n| nombre | string | Nombre del plan |\n| descripcionplan | string | Descripción del plan |\n| ttdvisualizacion | string | Tipo de visualización (`ARBOL` / `LISTA`) |\n| bgeneracertificadog | boolean | Genera certificado global |\n| bactivo | boolean | Estado activo (1/0) |",
+			"item": [
+				{
+					"name": "GET - Listar",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "GET",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"description": "## Propósito\nObtiene un listado paginado de **planes de estudio** aplicando el filtro Base64 indicado.\n\n## Ruta\n`GET /api/planes/estudio/:filtro`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `filtro` | string | Sí | Filtro en base64 (`btoa(JSON.stringify(filtro))`). |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Operación exitosa |\n| 400 | Bad Request | Filtro inválido |\n| 401 | Unauthorized | Token ausente o inválido |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/planes/estudio/:filtro",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "planes", "estudio", ":filtro"],
+							"variable": [{ "key": "filtro", "value": "e30=", "description": "Filtro de búsqueda en base64. Default `{}` -> `e30=`." }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Obtener",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "GET",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"description": "## Propósito\nObtiene un único **plan de estudio** por su clave primaria.\n\n## Ruta\n`GET /api/plan/estudio/:iplanestudio`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `iplanestudio` | string | Sí | Identificador del plan de estudio. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Plan encontrado |\n| 404 | Not Found | El plan no existe |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/plan/estudio/:iplanestudio",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "plan", "estudio", ":iplanestudio"],
+							"variable": [{ "key": "iplanestudio", "value": "PLANESTUDIO001", "description": "Identificador de planestudio" }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Crear",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": { "mode": "raw", "raw": "{\n    \"iplanestudio\": \"PLANESTUDIO001\",\n    \"nombre\": \"Plan de Estudio Ejemplo\",\n    \"descripcionplan\": \"Descripción del plan\",\n    \"ttdvisualizacion\": \"ARBOL\",\n    \"bgeneracertificadog\": false,\n    \"bactivo\": 1\n}", "options": { "raw": { "language": "json" } } },
+						"description": "## Propósito\nCrea un nuevo **plan de estudio**.\n\n## Ruta\n`POST /api/plan/estudio`\n\n## Body (`application/json`)\n| Campo | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `iplanestudio` | string | Sí | PK del plan |\n| `nombre` | string | Sí | Nombre del plan |\n| `descripcionplan` | string | No | Descripción |\n| `ttdvisualizacion` | string | No | `ARBOL` o `LISTA` |\n| `bgeneracertificadog` | boolean | No | Genera certificado global |\n| `bactivo` | boolean | No | Estado activo |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 201 | Created | Plan creado |\n| 400 | Bad Request | Datos inválidos |\n| 409 | Conflict | Ya existe un plan con el mismo `iplanestudio` |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/plan/estudio",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "plan", "estudio"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT - Actualizar",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": { "mode": "raw", "raw": "{\n    \"iplanestudio\": \"PLANESTUDIO001\",\n    \"nombre\": \"Plan de Estudio Ejemplo\",\n    \"descripcionplan\": \"Descripción del plan\",\n    \"ttdvisualizacion\": \"ARBOL\",\n    \"bgeneracertificadog\": false,\n    \"bactivo\": 1\n}", "options": { "raw": { "language": "json" } } },
+						"description": "## Propósito\nReemplaza los datos del **plan de estudio** indicado.\n\n## Ruta\n`PUT /api/plan/estudio/:iplanestudio`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `iplanestudio` | string | Sí | Identificador del plan de estudio. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Plan actualizado |\n| 400 | Bad Request | Datos inválidos |\n| 404 | Not Found | El plan no existe |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/plan/estudio/:iplanestudio",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "plan", "estudio", ":iplanestudio"],
+							"variable": [{ "key": "iplanestudio", "value": "PLANESTUDIO001", "description": "Identificador de planestudio" }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Eliminar",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "DELETE",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"description": "## Propósito\nElimina el **plan de estudio** indicado.\n\n## Ruta\n`DELETE /api/plan/estudio/:iplanestudio`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `iplanestudio` | string | Sí | Identificador del plan de estudio. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Plan eliminado |\n| 404 | Not Found | El plan no existe |\n| 409 | Conflict | El plan tiene cursos asociados |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/plan/estudio/:iplanestudio",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "plan", "estudio", ":iplanestudio"],
+							"variable": [{ "key": "iplanestudio", "value": "PLANESTUDIO001", "description": "Identificador de planestudio" }]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Drivers",
+			"description": "# Drivers\n\n## Alcance\nCRUD básico de drivers de capacitación: definen la forma en que se evidencia y evalúa un curso.\n\n## Operaciones\n| Método | Endpoint | Descripción |\n|---|---|---|\n| GET | `/api/drivers/:filtro` | Listar |\n| GET | `/api/driver/:idriver` | Obtener |\n| POST | `/api/driver` | Crear |\n| PUT | `/api/driver/:idriver` | Actualizar |\n| DELETE | `/api/driver/:idriver` | Eliminar |\n\n## Modelo de datos\n| Campo | Tipo | Descripción |\n|---|---|---|\n| idriver | string | Identificador del driver (PK) |\n| ndriver | string | Nombre del driver |\n| descripcion | string | Descripción |\n| qniveles | number | Cantidad de niveles del driver |",
+			"item": [
+				{
+					"name": "GET - Listar",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "GET",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"description": "## Propósito\nObtiene un listado paginado de **drivers** aplicando el filtro Base64 indicado.\n\n## Ruta\n`GET /api/drivers/:filtro`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `filtro` | string | Sí | Filtro en base64 (`btoa(JSON.stringify(filtro))`). |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Operación exitosa |\n| 400 | Bad Request | Filtro inválido |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/drivers/:filtro",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "drivers", ":filtro"],
+							"variable": [{ "key": "filtro", "value": "e30=", "description": "Filtro de búsqueda en base64. Default `{}` -> `e30=`." }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET - Obtener",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "GET",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"description": "## Propósito\nObtiene un único **driver** por su clave primaria.\n\n## Ruta\n`GET /api/driver/:idriver`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `idriver` | string | Sí | Identificador del driver. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Driver encontrado |\n| 404 | Not Found | El driver no existe |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/driver/:idriver",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "driver", ":idriver"],
+							"variable": [{ "key": "idriver", "value": "DRIVER001", "description": "Identificador de driver" }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST - Crear",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": { "mode": "raw", "raw": "{\n    \"idriver\": \"DRIVER001\",\n    \"ndriver\": \"Driver Ejemplo\",\n    \"descripcion\": \"Descripción\",\n    \"qniveles\": 3\n}", "options": { "raw": { "language": "json" } } },
+						"description": "## Propósito\nCrea un nuevo **driver**.\n\n## Ruta\n`POST /api/driver`\n\n## Body (`application/json`)\n| Campo | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `idriver` | string | Sí | PK del driver |\n| `ndriver` | string | Sí | Nombre |\n| `descripcion` | string | No | Descripción |\n| `qniveles` | number | Sí | Cantidad de niveles |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 201 | Created | Driver creado |\n| 400 | Bad Request | Datos inválidos |\n| 409 | Conflict | Ya existe un driver con el mismo `idriver` |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/driver",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "driver"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT - Actualizar",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": { "mode": "raw", "raw": "{\n    \"idriver\": \"DRIVER001\",\n    \"ndriver\": \"Driver Ejemplo\",\n    \"descripcion\": \"Descripción\",\n    \"qniveles\": 3\n}", "options": { "raw": { "language": "json" } } },
+						"description": "## Propósito\nReemplaza los datos del **driver** indicado.\n\n## Ruta\n`PUT /api/driver/:idriver`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `idriver` | string | Sí | Identificador del driver. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Driver actualizado |\n| 400 | Bad Request | Datos inválidos |\n| 404 | Not Found | El driver no existe |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/driver/:idriver",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "driver", ":idriver"],
+							"variable": [{ "key": "idriver", "value": "DRIVER001", "description": "Identificador de driver" }]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE - Eliminar",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+						"method": "DELETE",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"description": "## Propósito\nElimina el **driver** indicado.\n\n## Ruta\n`DELETE /api/driver/:idriver`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `idriver` | string | Sí | Identificador del driver. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Driver eliminado |\n| 404 | Not Found | El driver no existe |\n| 409 | Conflict | El driver tiene dependencias activas |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/driver/:idriver",
+							"host": ["{{host_contapymeu}}"],
+							"path": ["api", "driver", ":idriver"],
+							"variable": [{ "key": "idriver", "value": "DRIVER001", "description": "Identificador de driver" }]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{ "key": "host_contapymeu", "value": "http://localhost:7071" },
+		{ "key": "token", "value": "" }
+	]
+}

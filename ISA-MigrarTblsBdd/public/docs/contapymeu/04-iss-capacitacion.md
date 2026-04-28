@@ -4,6 +4,34 @@ Endpoints generados por `FN-Capacitacion.ts`. Cada entidad expone los 9
 endpoints CRUD descritos en el [overview](#03-iss-overview), salvo los
 `omitir` indicados.
 
+## Mapa de entidades
+
+```mermaid
+flowchart LR
+  Curso((Curso))
+  Plan((Plan de Estudio))
+  Driver((Driver))
+  Permiso((Permiso))
+  Estructura((Estructura))
+  Atributo((Atributos Plan))
+  AtributoDrv((Atributos x Driver))
+  Seg((Seguridades))
+  PlanCurso((Plan-Curso))
+  CursoPlan((Curso-de-Plan-Estudio))
+  Prereq((Curso Prerequisito))
+
+  Curso --- Estructura
+  Curso --- Seg
+  Curso --- CursoPlan
+  Curso --- PlanCurso
+  Plan --- CursoPlan
+  Plan --- Prereq
+  Curso --- Prereq
+  Driver --- AtributoDrv
+  PlanCurso --- Atributo
+  Permiso --- Seg
+```
+
 ## Curso (`curso` / `cursos`)
 
 - **Tabla**: `CAPAC_CURSOS`
@@ -21,7 +49,7 @@ endpoints CRUD descritos en el [overview](#03-iss-overview), salvo los
 | Recodificar | PUT | `/api/curso/recodificar/{icurso}` |
 | Consolidar | PUT | `/api/curso/consolidar/{icurso}` |
 | Eliminar | DELETE | `/api/curso/{icurso}` |
-| **Custom** | GET | `/api/curso/recursoplan/{icurso}` — devuelve recursos asociados al plan del curso. |
+| **Custom** | GET | `/api/curso/recursoplan/{icurso}` — lee el recurso (dominio externo) asociado al plan del curso. |
 
 **Body de ejemplo** (Crear / Actualizar):
 
@@ -71,7 +99,7 @@ endpoints CRUD descritos en el [overview](#03-iss-overview), salvo los
 - **Tabla**: `CAPAC_DRIVERS`
 - **PK**: `IDRIVER` (`smallint`)
 
-Endpoints CRUD estándar bajo `/api/driver`, listado en `/api/drivers/{filtro}`.
+CRUD estándar bajo `/api/driver`, listado en `/api/drivers/{filtro}`.
 
 ```json
 {
@@ -104,10 +132,6 @@ Endpoints CRUD estándar bajo `/api/driver`, listado en `/api/drivers/{filtro}`.
 | Crear | POST | `/api/plan/curso` |
 | Actualizar | PUT | `/api/plan/curso/{iplan}/{icurso}` |
 | … | … | … |
-
-> **Nota**: el `POST` de Crear usa la ruta plana `/api/plan/curso`
-> (no `/api/plan/curso/duplicar/...`). Las demás operaciones siguen el patrón
-> con PK en la URL.
 
 ```json
 {
@@ -174,16 +198,13 @@ Endpoints CRUD estándar bajo `/api/driver`, listado en `/api/drivers/{filtro}`.
 
 ## Acciones especiales
 
-- **Duplicar**: clona la entidad creando un nuevo PK. El body puede sugerir
-  el nuevo identificador.
-- **Recodificar**: cambia el PK existente. Se acompaña de campos `nuevo_*`
-  (ver ejemplos en Postman).
-- **Consolidar**: confirma cambios pendientes (depende de la lógica del
-  controlador del lado servidor).
+- **Duplicar**: clona la entidad creando un nuevo PK.
+- **Recodificar**: cambia el PK existente. Se acompaña de campos `nuevo_*`.
+- **Consolidar**: confirma cambios pendientes (lógica del controlador).
 
 ## Errores frecuentes
 
-- `400` `BadRequest` — falta de campos requeridos en el body.
+- `400` — falta de campos requeridos en el body.
 - `401` — token ausente / inválido.
 - `404` — registro no encontrado.
 - `409` — violación de unicidad (PK duplicada).

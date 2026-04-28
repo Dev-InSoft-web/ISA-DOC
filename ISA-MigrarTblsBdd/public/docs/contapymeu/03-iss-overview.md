@@ -1,9 +1,14 @@
 # ISS · Backend (Azure Functions)
 
 `ISS-ClientesIS-ContaPymeU` es el microservicio que expone el dominio
-ContaPymeU como **Azure Functions v4** sobre Node.js + TypeScript.
+**Capacitación** como **Azure Functions v4** sobre Node.js + TypeScript.
 
-## Estructura del proyecto
+> Esta documentación cubre solo lo correspondiente a Capacitación
+> (`FN-Capacitacion.ts` y archivos auxiliares como `FN-Swagger.ts`,
+> `XXX-Info.ts`). Otras `FN-*` que viven en el mismo proceso no se
+> documentan aquí.
+
+## Estructura del proyecto (relevante)
 
 ```
 ISS-ClientesIS-ContaPymeU/
@@ -16,13 +21,10 @@ ISS-ClientesIS-ContaPymeU/
 │   ├── gen-openapi.ts           (genera swagger/openapi.yaml + parchea path params)
 │   └── postman-store.ts         (split/merge de la colección Postman)
 ├── src/
-│   ├── functions/
-│   │   ├── FN-Capacitacion.ts
-│   │   ├── FN-Recurso.ts
-│   │   ├── FN-Mensaje.ts
-│   │   ├── FN-Swagger.ts
-│   │   └── XXX-Info.ts
-│   └── …
+│   └── functions/
+│       ├── FN-Capacitacion.ts   ← módulo Capacitación
+│       ├── FN-Swagger.ts
+│       └── XXX-Info.ts
 └── swagger/
     └── openapi.yaml             (generado)
 ```
@@ -32,9 +34,12 @@ ISS-ClientesIS-ContaPymeU/
 | Script | Acción |
 | --- | --- |
 | `npm run start` | Levanta `func start` localmente. |
-| `npm run swagger:gen` | Encadena `postman:gen` → genera `openapi.yaml`. |
-| `npm run postman:gen` | Reescribe `doc/iss-postman.json` desde `FN-*.ts`. |
+| `npm run docs:gen` | Genera Postman + OpenAPI en una sola corrida. |
+| `npm run swagger:gen` / `postman:gen` / `postman:sync` | Aliases del anterior (compat). |
 | `npm run test` | Lint con `oxlint`. |
+
+> El script consolidado es `scripts/gen-docs.ts`, que importa los `main()`
+> de `gen-postman.ts` y `gen-openapi.ts`.
 
 ## Generador de endpoints CRUD
 
@@ -80,54 +85,41 @@ Default `{}` → `e30=`.
 ## Autenticación
 
 Todos los endpoints requieren `Authorization: Bearer {{token}}`.
-El token se genera por el flujo de seguridad del cliente; el dev local lo
-inyecta vía `host_seguridad` (entorno Postman) y los tests pueden usar
-`{{uuidtoken}}`.
 
-## Rutas custom
-
-Además de los CRUD generados, se declaran rutas explícitas con `app.get/...`:
-
-```ts
-app.get("API_GET_CursoRecursoPlan", {
-  route: "curso/recursoplan/{icurso}",
-  authLevel: "anonymous",
-  handler: handlerImpl,
-});
-```
+## Rutas custom (Capacitación)
 
 | Función | Método | Ruta |
 | --- | --- | --- |
 | `API_GET_CursoRecursoPlan` | GET | `/api/curso/recursoplan/{icurso}` |
-| `API_GET_RecursoMensajes` | GET | `/api/recurso/{irecurso?}/mensajes` |
-| `API_GET_RecursoMensajeRespuestas` | GET | `/api/recurso/mensaje/respuestas/{imensaje?}` |
-| `API_GET_RecursoCalificacionesExplorador` | GET | `/api/recursos/calificaciones/explorador` |
-| `API_GET_RecursoBuscador` | GET | `/api/recursos/buscar/{filtro?}` |
 
-## Generación de documentación
+> Esta ruta consulta el **recurso** asociado al plan del curso. El recurso
+> en sí mismo pertenece a otro dominio; aquí solo se realiza la lectura
+> de enlace.
 
-`npm run swagger:gen` ejecuta:
+## Registro de entidades · `FN-Capacitacion.ts`
 
-1. **`scripts/gen-postman.ts`** — escanea cada `FN-*.ts` con regex y detecta:
-   - Llamadas a `registerCatalogoGenAzureFunction` (lee `pk`, `nrecurso`,
-     `nrecursos`, `omitir`).
-   - Llamadas `app.{get,post,put,delete}(name, { route, … })` para endpoints
-     custom.
-2. Construye items Postman con auth Bearer, header `Content-Type`, URL
-   `{{host_contapymeu}}/api/...` y `variable[]` con valores y descripciones por
-   defecto.
-3. Para cada entidad mergea cuerpo de ejemplo (`BODY_EXTRAS`) con los PK,
-   genera 9 endpoints (menos `omitir`).
-4. Mergea `response[]` y `description` previos preservando ejemplos guardados.
-5. **`scripts/gen-openapi.ts`** — invoca `postman-to-openapi`, luego
-   post-procesa el YAML:
-   - Convierte `:var` → `{var}` (formato OpenAPI estándar).
-   - Inyecta `parameters: in: path` con `example`, `description` y
-     `required: true` por cada placeholder.
+Todas las entidades de Capacitación se registran en un único archivo. El
+código es declarativo y produce 9 endpoints CRUD por cada llamada. El
+fragmento se lee **en vivo** desde el repo `ISS-ClientesIS-ContaPymeU`,
+así que cualquier alta o cambio aparece aquí sin tocar la documentación.
+
+<!-- src path="ISS-ClientesIS-ContaPymeU/src/functions/FN-Capacitacion.ts" lang="typescript" from="^registerCatalogoGenAzureFunction\(TCursoServer" to="^registerCatalogoGenAzureFunction\(TEstructuraCursoServer" -->
+
+### Endpoint custom (recurso del plan)
+
+<!-- src path="ISS-ClientesIS-ContaPymeU/src/functions/FN-Capacitacion.ts" lang="typescript" symbol="API_GET_CursoRecursoPlan" -->
+
+## Pipeline de documentación
+
+```mermaid
+flowchart LR
+  src["FN-*.ts"] --> gd["scripts/gen-docs.ts<br/>(swagger:gen)"]
+  gd --> pj["swagger/postman-collection.json"]
+  gd --> oy["swagger/openapi.yaml"]
+  oy --> sw["FN-Swagger.ts<br/>(/api/swagger)"]
+```
 
 ## Variables de entorno
-
-Definir en `local.settings.json` para dev y en App Settings de Azure para prod:
 
 | Clave | Descripción |
 | --- | --- |

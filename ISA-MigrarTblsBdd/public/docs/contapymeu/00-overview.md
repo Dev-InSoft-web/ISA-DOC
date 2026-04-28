@@ -1,8 +1,11 @@
 # ContaPymeU — Visión General
 
-Este documento describe el módulo **ContaPymeU** dentro del ecosistema ClientesIS.
-ContaPymeU es el dominio de **Capacitación / Recursos / Mensajes**, expuesto como un
-microservicio de Azure Functions y consumido por la aplicación web ISW-ClientesIS.
+Este documento describe el módulo **Capacitación** del producto
+**ContaPymeU**.
+La documentación se centra **exclusivamente en Capacitación**: cursos,
+planes de estudio, drivers, atributos, estructura, permisos, temas y la
+relación plan-curso. Otros dominios del backend (recursos, mensajería)
+solo se mencionan como **puntos de contacto** cuando aplica.
 
 ## Stack
 
@@ -15,22 +18,25 @@ microservicio de Azure Functions y consumido por la aplicación web ISW-Clientes
 
 ## Topología
 
-```
-+-----------------+        +-------------------------+        +-------------------+
-|  ISW-ClientesIS | <----> |  ISS-ClientesIS-ContaP. | <----> |  GR-MSSQL Clientes|
-|  (Astro/Svelte) |  HTTP  |  (Azure Functions)      |  TDS   |  (CAPAC_*)        |
-+-----------------+        +-------------------------+        +-------------------+
-        ^                            ^
-        |                            |
-        +-----------+ ISP-ClientesIS / ISP-CLientesISServer (tipos & utilidades)
+```mermaid
+flowchart LR
+  ISW["ISW-ClientesIS<br/>(Astro / Svelte)"]
+  ISS["ISS-ClientesIS-ContaPymeU<br/>(Azure Functions)"]
+  DB[("GR-MSSQL · Clientes<br/>CAPAC_*")]
+  ISP["ISP-ClientesIS<br/>ISP-CLientesISServer<br/>(tipos &amp; utilidades)"]
+
+  ISW <-- HTTPS / JSON --> ISS
+  ISS <-- TDS --> DB
+  ISP -.compartido.-> ISW
+  ISP -.compartido.-> ISS
 ```
 
 ## Convenciones
 
-- **Naming SQL**: tablas con prefijo `CAPAC_*` (Capacitación), claves primarias con
+- **Naming SQL**: tablas con prefijo `CAPAC_*`, claves primarias con
   prefijo `i*` (ej. `ICURSO`, `IPLANESTUDIO`, `IDRIVER`).
-- **Endpoints CRUD genéricos**: cada entidad expone 9 acciones generadas por
-  `registerCatalogoGenAzureFunction`:
+- **Endpoints CRUD genéricos**: cada entidad expone hasta 9 acciones generadas
+  por `registerCatalogoGenAzureFunction`:
   `Listar`, `Obtener`, `Verificar`, `Crear`, `Duplicar`, `Actualizar`,
   `Recodificar`, `Consolidar`, `Eliminar`.
 - **Filtros**: el parámetro `:filtro` es un objeto JSON codificado en base64
@@ -39,15 +45,13 @@ microservicio de Azure Functions y consumido por la aplicación web ISW-Clientes
 - **Generación automática**: la colección Postman y el OpenAPI YAML se regeneran
   desde el código de las funciones con `npm run swagger:gen`.
 
-## Índice rápido
+## Puntos de contacto con otros dominios
 
-1. [Arquitectura](#01-arquitectura)
-2. [Modelo de Datos](#02-modelo-datos)
-3. [ISS · Backend (Azure Functions)](#03-iss-overview)
-4. [ISS · Capacitación](#04-iss-capacitacion)
-5. [ISS · Recursos](#05-iss-recurso)
-6. [ISS · Mensajes](#06-iss-mensaje)
-7. [ISP · Tipos compartidos](#07-isp-types)
-8. [ISW · Frontend](#08-isw-frontend)
-9. [Flujos](#09-flujos)
-10. [Postman / OpenAPI](#10-postman-openapi)
+Capacitación **lee** información de otros dominios para enriquecer la
+respuesta de un curso, pero **no implementa** su CRUD aquí:
+
+- **Recursos** — un curso puede vincular un `IRECURSO` por plan.
+  El endpoint `GET /api/curso/recursoplan/{icurso}` consulta el recurso
+  asociado.
+- **Mensajería** — los avisos del sistema se envían vía la mensajería
+  transversal de ClientesIS; Capacitación solo emite eventos.

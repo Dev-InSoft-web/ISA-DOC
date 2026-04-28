@@ -1,20 +1,25 @@
 # Postman · OpenAPI
 
 El microservicio mantiene **una sola fuente de verdad**: el código de las
-funciones (`src/functions/FN-*.ts`). Desde ahí se generan automáticamente la
-colección Postman y la especificación OpenAPI.
+funciones (`src/functions/FN-Capacitacion.ts`). Desde ahí se generan
+automáticamente la colección Postman y la especificación OpenAPI para
+Capacitación.
 
 ## Pipeline
 
-```
-FN-*.ts ─► gen-postman.ts ─► doc/iss-postman.json ─► gen-openapi.ts ─► swagger/openapi.yaml
+```mermaid
+flowchart LR
+  fn["FN-Capacitacion.ts"] --> gp["scripts/gen-postman.ts"]
+  gp --> pj["doc/iss-postman.json"]
+  pj --> go["scripts/gen-openapi.ts<br/>(postman-to-openapi + patch)"]
+  go --> oy["swagger/openapi.yaml"]
 ```
 
 ## Scripts npm
 
 | Comando | Resultado |
 | --- | --- |
-| `npm run postman:gen` | Reescribe `doc/iss-postman.json`. Preserva `description` y `response[]` previos por endpoint (no se pierden los ejemplos manuales). |
+| `npm run postman:gen` | Reescribe `doc/iss-postman.json`. Preserva `description` y `response[]` previos por endpoint. |
 | `npm run swagger:gen` | Encadena `postman:gen` y luego genera `swagger/openapi.yaml` con `postman-to-openapi`, post-procesado para convertir `:var → {var}` y enriquecer parámetros de path. |
 
 ## Detección automática
@@ -38,8 +43,8 @@ registerCatalogoGenAzureFunction(ServerType, ClientType, {
 ### 2. Endpoints custom
 
 ```ts
-app.get("API_GET_RecursoBuscador", {
-  route: "recursos/buscar/{filtro?}",
+app.get("API_GET_CursoRecursoPlan", {
+  route: "curso/recursoplan/{icurso}",
   authLevel: "anonymous",
   handler,
 });
@@ -50,18 +55,18 @@ app.get("API_GET_RecursoBuscador", {
 ## Cuerpos de ejemplo (`BODY_EXTRAS`)
 
 `gen-postman.ts` define un mapa `BODY_EXTRAS` por `nrecurso` con ejemplos
-representativos del body. Si una entidad nueva no está en ese mapa, el
-generador crea un body mínimo solo con las PKs y el script imprime un
-warning para que se complete manualmente.
+representativos del body para Capacitación. Si una entidad nueva no está
+en ese mapa, el generador crea un body mínimo solo con las PKs e imprime
+un warning para que se complete manualmente.
 
 ## Variables de path
 
 Para cada placeholder (`:var` / `{var}`) el generador inyecta:
 
 - **Postman**: `request.url.variable[]` con `key`, `value` (sample) y
-  `description` derivada del nombre.
+  `description`.
 - **OpenAPI**: `parameters[].in: path` con `required: true`, `example`,
-  `description` y `schema.type: string` (o el tipo inferido).
+  `description` y `schema.type: string`.
 
 ## Convenciones de samples
 
@@ -70,13 +75,12 @@ Para cada placeholder (`:var` / `{var}`) el generador inyecta:
 | `filtro` | `e30=` (base64 de `{}`) |
 | `qnivel` / `inivel` | `1` |
 | `i*` (PKs string) | `KEY001`, `CURSO001`, etc. |
-| `imensaje`, `irecurso` (numérico) | `1` |
 
-## Cómo agregar una nueva entidad
+## Cómo agregar una nueva entidad de Capacitación
 
 1. Crear los tipos en `ISP-ClientesIS`.
 2. Implementar el controlador y el cliente en `ISS-ClientesIS-ContaPymeU`.
-3. Registrar la entidad en `FN-*.ts`:
+3. Registrar la entidad en `FN-Capacitacion.ts`:
    ```ts
    registerCatalogoGenAzureFunction(MyServer, MyClient, {
      pk: ["imientidad"],
@@ -93,12 +97,12 @@ Para cada placeholder (`:var` / `{var}`) el generador inyecta:
 ## Cómo agregar un endpoint custom
 
 1. Declararlo con `app.get("API_GET_...", { route: "...", handler })`.
-2. Asegurar que el `route` use `{var}` o `{var?}` (Azure Functions accept
-   both) — el generador convierte ambos.
+2. Asegurar que el `route` use `{var}` o `{var?}` (Azure Functions acepta
+   ambos) — el generador convierte ambos.
 3. Ejecutar `npm run swagger:gen`.
 
 ## Visualización
 
 `FN-Swagger.ts` sirve la UI de Swagger en `/api/swagger`, leyendo
-`swagger/openapi.yaml`. El frontend ISA expone también una pestaña
-**Postman Docs** que renderiza la colección como tabla navegable.
+`swagger/openapi.yaml`. La pestaña **Postman Docs** de ISA renderiza la
+colección como tabla navegable.
