@@ -123,7 +123,10 @@ function inferRelations(cfg: ResourceConfig, t: ParsedTable, tables: ParsedTable
 		const otherPkCount = (other.compositePrimaryKey.length
 			? other.compositePrimaryKey
 			: other.columns.filter((c) => c.primaryKey).map((c) => c.name)).length;
-		const kind = otherPkCount > myPkCols.length ? "1-N" : "1-1";
+		// Solo emitimos relaciones direccionales padre → hijo (contenedor → contenido).
+		// Si el otro tiene PK más ancha (incluye la mía como prefijo), es mi hijo.
+		if (otherPkCount <= myPkCols.length) continue;
+		const kind: "1-N" = "1-N";
 		const alias = targetId.toLowerCase();
 		const key = `${alias}|${kind}`;
 		if (seen.has(key)) continue;
@@ -132,7 +135,8 @@ function inferRelations(cfg: ResourceConfig, t: ParsedTable, tables: ParsedTable
 			alias,
 			kind,
 			target: targetId,
-			compareOn: sharedPk,
+			versus: sharedPk.map((c) => ({ sub: c.toUpperCase(), parent: c.toUpperCase() })),
+			equals: [],
 			insertEffect: kind === "1-N" ? "syncDetails" : "ignore",
 		});
 	}

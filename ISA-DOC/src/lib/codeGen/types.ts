@@ -24,13 +24,27 @@ export interface FieldDef {
 
 export type RelationKind = "1-1" | "1-N";
 
+export interface VersusPair {
+	sub: string;               // columna del sub (recurso destino)
+	parent: string;            // columna del parent; si es igual a `sub` se emite simplificado
+}
+
+export type EqualValueType = "bool" | "number" | "string";
+
+export interface EqualPair {
+	col: string;               // columna del SUB (limitación actual del runtime)
+	value: string;             // valor literal
+	type: EqualValueType;
+}
+
 export interface RelationDef {
-	alias: string;             // ej: "tema", "planescurso"
+	alias: string;
 	kind: RelationKind;
-	target: string;            // recurso destino (alias del recurso, no clase)
-	compareOn: string[];        // columnas de comparación (ej: ["ICURSO"])
-	insertEffect?: "syncDetails" | "ignore";  // efecto al insertar el padre
-	customWhere?: string;       // SQL WHERE custom opcional
+	target: string;
+	versus: VersusPair[];
+	equals: EqualPair[];
+	insertEffect?: "syncDetails" | "ignore";
+	customWhere?: string;      // cuerpo de arrow fn (sub, parent) => <expr>
 }
 
 export interface CustomHookDef {
@@ -40,6 +54,16 @@ export interface CustomHookDef {
 	clientMethod?: "GET" | "POST" | "PUT" | "DELETE";
 	clientFnName?: string;      // ej: "recursoPlan"
 	notes?: string;
+}
+
+export type HelperKind = "get" | "fn";
+
+export interface HelperDef {
+	name: string;              // ej: "qnivel"
+	kind: HelperKind;
+	returnType?: string;       // ej: "number"
+	body: string;              // cuerpo (sin llaves), ej: "return this.iplan ? ... : 0"
+	params?: string;           // solo si kind="fn", ej: "(x: number)"
 }
 
 export interface ResourceConfig {
@@ -59,9 +83,14 @@ export interface ResourceConfig {
 	fields: FieldDef[];
 	relations: RelationDef[];
 	customHooks: CustomHookDef[];
-	omitOps?: string[];          // operaciones omitidas (ej: ["Verificar", "Duplicar"])
-	exposeInFn?: boolean;        // exponer en FN-Módulo (default true)
+	helpers?: HelperDef[];
+	omitOps?: string[];
+	exposeInFn?: boolean;
+	orderBy?: string;            // cuerpo de getOrderBy(Alias) => string
+	targetFiles?: Partial<Record<SnippetKind, string>>;
 }
+
+export type SnippetKind = "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn";
 
 export const STORAGE_PREFIX = "isa-doc:codegen:";
 export const STORAGE_INDEX = "isa-doc:codegen:_index";

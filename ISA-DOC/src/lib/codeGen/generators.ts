@@ -1,4 +1,4 @@
-import type { FieldDef, RelationDef, ResourceConfig } from "./types.js";
+import type { FieldDef, HelperDef, RelationDef, ResourceConfig } from "./types.js";
 
 const VAL_FN: Record<FieldDef["type"], string> = {
 	string: "val2Str",
@@ -56,6 +56,22 @@ function valImports(cfg: ResourceConfig): string[] {
 	return Array.from(used).sort();
 }
 
+function renderHelpers(helpers: HelperDef[] | undefined): string {
+	if (!helpers || helpers.length === 0) return "";
+	const lines: string[] = ["\n\t// helpers"];
+	for (const h of helpers) {
+		const body = (h.body ?? "").trim();
+		const ret = h.returnType ? `: ${h.returnType}` : "";
+		if (h.kind === "get") {
+			lines.push(`\tget ${h.name}()${ret} { ${body} }`);
+		} else {
+			const params = h.params ?? "()";
+			lines.push(`\t${h.name}${params}${ret} { ${body} }`);
+		}
+	}
+	return lines.join("\n");
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // 1) MODELO  (ISP-ClientesIS/.../010 Objetos/.../<Recurso>/01.Modelo.ts)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -79,7 +95,7 @@ export function genModelo(cfg: ResourceConfig, all: ResourceConfig[]): string {
 ${enumLine}${targetsLine}
 export class ${cfg.className} extends TObject {
 ${fieldsCode}
-${relsCode}
+${relsCode}${renderHelpers(cfg.helpers)}
 }
 `;
 }
@@ -90,18 +106,46 @@ ${relsCode}
 export function genDatos(cfg: ResourceConfig, all: ResourceConfig[]): string {
 	if (cfg.relations.length === 0) return "// (Sin relaciones complejas: archivo Datos no requerido.)\n";
 	const map = new Map(all.map((r) => [r.id, r]));
+	const enumImports = new Set<string>();
+	const seen = new Set<string>();
 	const blocks: string[] = [];
+	const usedVal = new Set<string>(["TObject"]);
+
 	for (const r of cfg.relations) {
 		const tgt = map.get(r.target);
-		if (!tgt) continue;
-		blocks.push(
-			[
-				`// Detalle: ${cfg.className}.${r.alias} (${r.kind}) → ${tgt.className} [${r.compareOn.join(",")}]`,
-				`// Insert effect: ${r.insertEffect ?? "ignore"} | propaga PK: ${r.compareOn.map((s) => s.toLowerCase()).join(",") || "—"}`,
-			].join("\n"),
-		);
+		if (!tgt) {
+			blocks.push(`// TODO: definir clase para ${r.target} (no encontrado en recursos cargados)`);
+			continue;
+		}
+		if (seen.has(tgt.id)) continue;
+		seen.add(tgt.id);
+
+		const vs = (r.versus ?? []).map((v) => v.sub === v.parent ? v.sub : `${v.sub}|${v.parent}`).join(",");
+		const eq = (r.equals ?? []).map((e) => `${e.col}=${e.value}`).join(",");
+		const header = [
+			`// ${cfg.className}.${r.alias} (${r.kind}) → ${tgt.className} [versus: ${vs || "—"}; equals: ${eq || "—"}]`,
+			`// Insert effect: ${r.insertEffect ?? "ignore"}`,
+		].join("\n");
+
+		for (const f of tgt.fields) usedVal.add(VAL_FN[f.type]);
+		for (const tr of tgt.relations) {
+			usedVal.add(tr.kind === "1-N" ? "val2TArray" : "val2TObject");
+			if (tr.kind === "1-N") usedVal.add("TArray");
+		}
+
+		const fieldsCode = tgt.fields.map((f) => fieldGetter(f, enumImports)).join("\n");
+		const relsCode = tgt.relations.map((rr) => relationGetter(rr, map)).join("\n");
+		const body = [fieldsCode, relsCode].filter(Boolean).join("\n");
+
+		blocks.push(`${header}\nexport class ${tgt.className} extends TObject {\n${body}${renderHelpers(tgt.helpers)}\n}`);
 	}
-	return `// Detalles para ${cfg.className}\n${blocks.join("\n\n")}\n`;
+
+	const importsLine = `import { ${Array.from(usedVal).sort().join(", ")} } from "@ingenieria_insoft/ispgen";`;
+	const enumLine = enumImports.size
+		? `import { ${Array.from(enumImports).sort().join(", ")} } from "../../../UlConst";\n`
+		: "";
+
+	return `${importsLine}\n${enumLine}\n// Detalles para ${cfg.className}\n${blocks.join("\n\n")}\n`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -126,14 +170,36 @@ ${cfg.relations
 	.map((r) => {
 		const tgt = map.get(r.target);
 		const tgtServer = tgt ? `${tgt.className}Server` : `T${r.target}Server`;
-		const cmp = r.compareOn.map((c) => `"${c}"`).join(", ");
+		const cmpItems: string[] = [
+			...(r.versus ?? []).map((v) => {
+				const sub = (v.sub ?? "").toUpperCase();
+				const par = (v.parent ?? "").toUpperCase();
+				if (!sub) return "";
+				return par && par !== sub ? `"${sub}|${par}"` : `"${sub}"`;
+			}),
+			...(r.equals ?? []).map((e) => {
+				const col = (e.col ?? "").toUpperCase();
+				if (!col) return "";
+				const v = e.type === "bool"
+					? (String(e.value).toLowerCase() === "true" || e.value === "1" ? "1" : "0")
+					: e.type === "number"
+						? String(Number(e.value || 0))
+						: `'${String(e.value).replace(/'/g, "''")}'`;
+				return `"${col}=${v}"`;
+			}),
+		].filter(Boolean);
+		const cmp = cmpItems.join(", ");
 		const esLista = r.kind === "1-N" ? ", esLista: true" : "";
-		const where = r.customWhere ? `, where: (sub, parent) => \`${r.customWhere}\`` : "";
+		const where = r.customWhere ? `, where: (sub, parent) => ${r.customWhere}` : "";
 		return `			{ consulta: [${tgtServer}, JData.${r.alias}], comparacion: [${cmp}]${esLista}${where}, as: "${r.alias}" },`;
 	})
 	.join("\n")}
 		];
 	}\n`
+		: "";
+
+	const orderByMethod = cfg.orderBy
+		? `	getOrderBy(Alias: string): string {\n${cfg.orderBy.split("\n").map((l) => "\t\t" + l).join("\n")}\n\t}\n`
 		: "";
 
 	const insertDetalles = cfg.relations.filter((r) => r.insertEffect === "syncDetails");
@@ -177,7 +243,7 @@ export class ${cfg.className}Server extends ${baseClass}<${cfg.className}> {
 	get Klass(): typeof ${cfg.className} { return ${cfg.className} }
 	get PrimaryKeys(): Array<string> { return [${pks.join(", ")}] }
 
-${todoStruct}${nestedConfig}${insertQryDetalle}${customMethods}
+${todoStruct}${nestedConfig}${orderByMethod}${insertQryDetalle}${customMethods}
 }
 `;
 }
@@ -335,13 +401,25 @@ export interface GeneratedSnippet {
 	body: string;
 }
 
+export function defaultFilename(cfg: ResourceConfig, kind: "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn"): string {
+	switch (kind) {
+		case "modelo": return `01.Modelo.${cfg.id}.ts`;
+		case "datos": return `02.Datos.${cfg.id}.ts`;
+		case "server": return `${cfg.className}Server.ts`;
+		case "client": return `${cfg.className}Client.ts`;
+		case "webctrl": return `${cfg.id}.ts`;
+		case "azurefn": return `FN-${cfg.id}.ts`;
+	}
+}
+
 export function generateAll(cfg: ResourceConfig, all: ResourceConfig[]): GeneratedSnippet[] {
+	const t = cfg.targetFiles ?? {};
 	return [
-		{ id: "modelo", label: "Modelo", filename: `01.Modelo.${cfg.id}.ts`, language: "ts", body: genModelo(cfg, all) },
-		{ id: "datos", label: "Datos / Detalles", filename: `02.Datos.${cfg.id}.ts`, language: "ts", body: genDatos(cfg, all) },
-		{ id: "server", label: "Server", filename: `${cfg.className}Server.ts`, language: "ts", body: genServer(cfg, all) },
-		{ id: "client", label: "Client", filename: `${cfg.className}Client.ts`, language: "ts", body: genClient(cfg) },
-		{ id: "webctrl", label: "Web Controller", filename: `${cfg.id}.ts`, language: "ts", body: genWebController(cfg) },
-		{ id: "azurefn", label: "FN-M\u00f3dulo", filename: `FN-${cfg.id}.ts`, language: "ts", body: genAzureFnSingle(cfg) },
+		{ id: "modelo", label: "Modelo", filename: t.modelo || defaultFilename(cfg, "modelo"), language: "ts", body: genModelo(cfg, all) },
+		{ id: "datos", label: "Datos / Detalles", filename: t.datos || defaultFilename(cfg, "datos"), language: "ts", body: genDatos(cfg, all) },
+		{ id: "server", label: "Server", filename: t.server || defaultFilename(cfg, "server"), language: "ts", body: genServer(cfg, all) },
+		{ id: "client", label: "Client", filename: t.client || defaultFilename(cfg, "client"), language: "ts", body: genClient(cfg) },
+		{ id: "webctrl", label: "Web Controller", filename: t.webctrl || defaultFilename(cfg, "webctrl"), language: "ts", body: genWebController(cfg) },
+		{ id: "azurefn", label: "FN-Módulo", filename: t.azurefn || defaultFilename(cfg, "azurefn"), language: "ts", body: genAzureFnSingle(cfg) },
 	];
 }

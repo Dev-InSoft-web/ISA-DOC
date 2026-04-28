@@ -2,14 +2,14 @@
 	import { onMount } from "svelte";
 	import {
 		Card, H2, H4, Text, Toaster, toastError, toastSuccess,
-		FlexLayout, GridLayout, Iconify,
+		FlexLayout, GridLayout, Iconify, Modal, ButtonIconify,
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import {
 		fetchAllOverrides, saveOverride, deleteOverride,
 		mergeWithOverride, computeOverride,
 		type OverrideMap,
 	} from "../lib/codeGen/storage.js";
-	import { generateAll, type GeneratedSnippet } from "../lib/codeGen/generators.js";
+	import { generateAll, defaultFilename, type GeneratedSnippet } from "../lib/codeGen/generators.js";
 	import { fetchSqlFragments, parseAllTables, generateResourcesFromTables } from "../lib/codeGen/autogen.js";
 	import type { RelationDef, RelationKind, ResourceConfig } from "../lib/codeGen/types.js";
 	import AccordionActions from "./_comps/containers/AccordionActions.svelte";
@@ -36,7 +36,94 @@
 	let codeModalTitle: string = "";
 	let codeModalValue: string = "";
 
-	onMount(() => { void initialLoad(); });
+	let exposeOn: boolean = true;
+	let exposeOnPrev: boolean = true;
+	$: if (current && exposeOn !== exposeOnPrev) {
+		current.exposeInFn = exposeOn ? undefined : false;
+		exposeOnPrev = exposeOn;
+		markDirty();
+	}
+
+	const PATHS_LS_KEY = "isa-doc:codegen:targetFilePaths";
+	let targetFilePaths: string[] = [];
+	let pathModalShow: boolean = false;
+	let pathModalMode: "add" | "edit" = "add";
+	let pathModalValue: string = "";
+	let pathModalIndex: number = -1;
+
+	const DEFAULT_TARGET_PATHS: string[] = [
+		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/01.Modelo.ts",
+		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/02.Datos.ts",
+		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/01.PlanDeEstudio.ts",
+		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/130_UlTema.ts",
+		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/150_UlPermiso.ts",
+		"ISP-ClientesIS/src/sources/020 Controllers/6.ContaPymeU/2.Capacitacion/UlCapacitacionClient.ts",
+		"ISP-CLientesISServer/src/sources/6.ContaPymeU/2.Capacitacion/01_PlanDeEstudio.ts",
+		"ISP-CLientesISServer/src/sources/6.ContaPymeU/2.Capacitacion/02_Cursos.ts",
+		"ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/Cursos.ts",
+		"ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/PlanDeEstudio.ts",
+	];
+
+	function loadTargetFilePaths(): void {
+		try {
+			const raw = localStorage.getItem(PATHS_LS_KEY);
+			if (raw === null) {
+				targetFilePaths = [...DEFAULT_TARGET_PATHS];
+				persistTargetFilePaths();
+				return;
+			}
+			const arr = JSON.parse(raw);
+			targetFilePaths = Array.isArray(arr) ? arr.filter((s): s is string => typeof s === "string") : [];
+		} catch {
+			targetFilePaths = [];
+		}
+	}
+	function persistTargetFilePaths(): void {
+		localStorage.setItem(PATHS_LS_KEY, JSON.stringify(targetFilePaths));
+	}
+	function basename(p: string): string {
+		const s = p.replace(/\\/g, "/");
+		const i = s.lastIndexOf("/");
+		return i >= 0 ? s.slice(i + 1) : s;
+	}
+	function openAddPath(): void {
+		pathModalMode = "add";
+		pathModalValue = "";
+		pathModalIndex = -1;
+		pathModalShow = true;
+	}
+	function openEditPath(idx: number): void {
+		pathModalMode = "edit";
+		pathModalIndex = idx;
+		pathModalValue = targetFilePaths[idx] ?? "";
+		pathModalShow = true;
+	}
+	function savePathModal(): void {
+		const v = pathModalValue.trim();
+		if (!v) { toastError("Ruta vacía."); return; }
+		if (pathModalMode === "add") {
+			if (targetFilePaths.includes(v)) { toastError("Ya existe esa ruta."); return; }
+			targetFilePaths = [...targetFilePaths, v];
+		} else {
+			const dup = targetFilePaths.findIndex((p, i) => p === v && i !== pathModalIndex);
+			if (dup >= 0) { toastError("Ya existe esa ruta."); return; }
+			const arr = [...targetFilePaths];
+			arr[pathModalIndex] = v;
+			targetFilePaths = arr;
+		}
+		persistTargetFilePaths();
+		pathModalShow = false;
+		toastSuccess("Ruta guardada.");
+	}
+	function removePathModal(): void {
+		if (pathModalMode !== "edit" || pathModalIndex < 0) return;
+		targetFilePaths = targetFilePaths.filter((_, i) => i !== pathModalIndex);
+		persistTargetFilePaths();
+		pathModalShow = false;
+		toastSuccess("Ruta eliminada.");
+	}
+
+	onMount(() => { loadTargetFilePaths(); void initialLoad(); });
 
 	async function initialLoad(): Promise<void> {
 		loading = true;
@@ -85,6 +172,8 @@
 	function selectInternal(id: string): void {
 		selectedId = id;
 		current = id ? (resources.find((r) => r.id === id) ?? null) : null;
+		exposeOn = current ? current.exposeInFn !== false : true;
+		exposeOnPrev = exposeOn;
 		dirty = false;
 		regenerate();
 	}
@@ -99,7 +188,20 @@
 		snippets = generateAll(current, resources);
 	}
 
-	function markDirty(): void { dirty = true; regenerate(); }
+	function markDirty(): void {
+		dirty = true;
+		if (current) current = current; // fuerza reactividad tras mutaciones profundas
+		regenerate();
+	}
+
+	function setTargetFile(kind: "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn", value: string): void {
+		if (!current) return;
+		const tf = { ...(current.targetFiles ?? {}) };
+		const v = value.trim();
+		if (v) tf[kind] = v; else delete tf[kind];
+		current.targetFiles = Object.keys(tf).length ? tf : undefined;
+		markDirty();
+	}
 
 	async function save(): Promise<void> {
 		if (!current) return;
@@ -144,7 +246,7 @@
 		const target = resources.find((r) => r.id !== current!.id)?.id ?? "";
 		current.relations = [
 			...current.relations,
-			{ alias: "rel", kind: "1-N", target, compareOn: [], insertEffect: "ignore" },
+			{ alias: "rel", kind: "1-N", target, versus: [], equals: [], insertEffect: "ignore" },
 		];
 		markDirty();
 	}
@@ -153,17 +255,53 @@
 		current.relations = current.relations.filter((_, k) => k !== i);
 		markDirty();
 	}
-	function toggleCompareCol(rel: RelationDef, col: string, on: boolean): void {
-		const u = col.toUpperCase();
-		const set = new Set(rel.compareOn);
-		if (on) set.add(u); else set.delete(u);
-		rel.compareOn = [...set];
+	function addVersus(rel: RelationDef): void {
+		const subCol = relTargetColumns(rel)[0] ?? "";
+		const parentCol = currentColumns()[0] ?? "";
+		rel.versus = [...(rel.versus ?? []), { sub: subCol, parent: parentCol }];
+		markDirty();
+	}
+	function removeVersus(rel: RelationDef, idx: number): void {
+		rel.versus = (rel.versus ?? []).filter((_, k) => k !== idx);
+		markDirty();
+	}
+	function addEqual(rel: RelationDef): void {
+		const tgtCols = relTargetColumns(rel);
+		const col = tgtCols[0] ?? "";
+		const type = relTargetFieldType(rel, col);
+		rel.equals = [...(rel.equals ?? []), { col, value: type === "bool" ? "1" : type === "number" ? "0" : "", type }];
+		markDirty();
+	}
+	function removeEqual(rel: RelationDef, idx: number): void {
+		rel.equals = (rel.equals ?? []).filter((_, k) => k !== idx);
+		markDirty();
+	}
+	function onEqualColChange(rel: RelationDef, idx: number, col: string): void {
+		const e = rel.equals[idx];
+		e.col = col;
+		const t = relTargetFieldType(rel, col);
+		if (t !== e.type) {
+			e.type = t;
+			e.value = t === "bool" ? "1" : t === "number" ? "0" : "";
+		}
 		markDirty();
 	}
 	function relTargetColumns(rel: RelationDef): string[] {
 		const tgt = resources.find((r) => r.id === rel.target);
 		if (!tgt) return [];
 		return tgt.fields.map((f) => (f.column ?? f.name).toUpperCase());
+	}
+	function currentColumns(): string[] {
+		if (!current) return [];
+		return current.fields.map((f) => (f.column ?? f.name).toUpperCase());
+	}
+	function relTargetFieldType(rel: RelationDef, col: string): "bool" | "number" | "string" {
+		const tgt = resources.find((r) => r.id === rel.target);
+		const f = tgt?.fields.find((x) => (x.column ?? x.name).toUpperCase() === col.toUpperCase());
+		if (!f) return "string";
+		if (f.type === "bool") return "bool";
+		if (f.type === "number") return "number";
+		return "string";
 	}
 
 	function toggleOmitOp(op: string, on: boolean): void {
@@ -225,7 +363,29 @@
 		</FlexLayout>
 	</Card>
 
-	<GridLayout cells="15fr 30fr 55fr" items="start">
+	<Card>
+		<FlexLayout items="center" justify="between">
+			<div>
+				<H4>Archivos destino</H4>
+				<Text color="neutral"><small>Rutas relativas (compartibles entre recursos). En cada fragmento sólo se podrá elegir entre estos archivos. Clic en un chip para editar.</small></Text>
+			</div>
+			<Button_ variant="outlined" onClick={openAddPath}><Iconify icon="mdi:plus" /> Añadir archivo</Button_>
+		</FlexLayout>
+		{#if targetFilePaths.length === 0}
+			<Text color="neutral"><small>Sin archivos definidos.</small></Text>
+		{:else}
+			<div class="chips">
+				{#each targetFilePaths as p, i (p)}
+					<button class="chip" type="button" on:click={() => openEditPath(i)} title={p}>
+						<Iconify icon="mdi:file-document-outline" />
+						<span>{basename(p)}</span>
+					</button>
+				{/each}
+			</div>
+		{/if}
+	</Card>
+
+	<GridLayout cells="30fr 30fr 50fr" items="start">
 		<Card class="col-resources">
 			<div class="resources-sticky">
 			<H4>Recursos</H4>
@@ -313,48 +473,101 @@
 						<Text color="neutral"><small>Sin relaciones. Añade para generar nestedConfig().</small></Text>
 					{/if}
 					{#each current.relations as r, i}
-						<div class="rel">
-							<div class="row">
-								<input class="input-field" placeholder="alias" bind:value={r.alias} on:input={markDirty} />
-								<select class="input-field" bind:value={r.kind} on:change={markDirty}>
-									{#each REL_KINDS as k}<option value={k}>{k}</option>{/each}
-								</select>
-								<select class="input-field" bind:value={r.target} on:change={markDirty}>
-									<option value="">— recurso destino —</option>
-									{#each resources as o (o.id)}
-										{#if o.id !== current.id}<option value={o.id}>{o.id}</option>{/if}
-									{/each}
-								</select>
-								<Button_ color="danger" variant="ghost" onClick={() => removeRelation(i)} title="Eliminar"><Iconify icon="mdi:close" /></Button_>
-							</div>
-							<div class="row">
-								<div class="field flex-1">
-									<Text color="neutral"><small>Columnas comparación</small></Text>
-									<div class="col-checks">
-										{#each relTargetColumns(r) as col (col)}
-											<label class="col-check">
-												<input
-													type="checkbox"
-													checked={r.compareOn.includes(col)}
-													on:change={(e) => toggleCompareCol(r, col, (e.target as HTMLInputElement).checked)}
-												/>
-												<span>{col}</span>
-											</label>
-										{:else}
-											<Text color="neutral"><small>(selecciona un recurso destino)</small></Text>
+						<FloatingCard variant="flat" horizontal="right" vertical="top" class="rel-fc" style="padding: 0; margin: 0.35rem 0;">
+							<div class="rel">
+								<div class="row">
+									<input class="input-field" placeholder="alias" bind:value={r.alias} on:input={markDirty} />
+									<select class="input-field" bind:value={r.kind} on:change={markDirty}>
+										{#each REL_KINDS as k}<option value={k}>{k}</option>{/each}
+									</select>
+									<select class="input-field" bind:value={r.target} on:change={markDirty}>
+										<option value="">— recurso destino —</option>
+										{#each resources as o (o.id)}
+											{#if o.id !== current.id}<option value={o.id}>{o.id}</option>{/if}
 										{/each}
-									</div>
+									</select>
 								</div>
-								<div class="field">
-									<Text color="neutral"><small>Insert</small></Text>
+
+								<div class="sub">
+									<FlexLayout items="center" justify="between">
+										<Text><small><strong>Versus</strong> — <code>sub.col</code> = <code>parent.col</code></small></Text>
+										<Button_ variant="outlined" onClick={() => addVersus(r)}><Iconify icon="mdi:plus" /> Versus</Button_>
+									</FlexLayout>
+									{#each (r.versus ?? []) as v, vi}
+										<div class="row">
+											<select class="input-field" bind:value={v.sub} on:change={markDirty}>
+												{#each relTargetColumns(r) as c (c)}<option value={c}>sub.{c}</option>{/each}
+											</select>
+											<span class="vs-eq">=</span>
+											<select class="input-field" bind:value={v.parent} on:change={markDirty}>
+												{#each currentColumns() as c (c)}<option value={c}>parent.{c}</option>{/each}
+											</select>
+											<ButtonIconify color="danger" icon="mdi:close" onClick={() => removeVersus(r, vi)} title="Eliminar" />
+										</div>
+									{:else}
+										<Text color="neutral"><small>Sin pares versus.</small></Text>
+									{/each}
+								</div>
+
+								<div class="sub">
+									<FlexLayout items="center" justify="between">
+										<Text><small><strong>Equals</strong> — <code>sub.col = valor</code></small></Text>
+										<Button_ variant="outlined" onClick={() => addEqual(r)}><Iconify icon="mdi:plus" /> Equal</Button_>
+									</FlexLayout>
+									{#each (r.equals ?? []) as eq, ei}
+										<div class="row">
+											<select class="input-field" value={eq.col} on:change={(e) => onEqualColChange(r, ei, (e.target as HTMLSelectElement).value)}>
+												{#each relTargetColumns(r) as c (c)}<option value={c}>sub.{c}</option>{/each}
+											</select>
+											<span class="vs-eq">=</span>
+											<select class="input-field input-type" bind:value={eq.type} on:change={markDirty}>
+												<option value="bool">bool</option>
+												<option value="number">number</option>
+												<option value="string">string</option>
+											</select>
+											{#if eq.type === "bool"}
+												<select class="input-field" bind:value={eq.value} on:change={markDirty}>
+													<option value="1">true (1)</option>
+													<option value="0">false (0)</option>
+												</select>
+											{:else if eq.type === "number"}
+												<input class="input-field" type="number" bind:value={eq.value} on:input={markDirty} />
+											{:else}
+												<input class="input-field" type="text" placeholder="valor" bind:value={eq.value} on:input={markDirty} />
+											{/if}
+											<ButtonIconify color="danger" icon="mdi:close" onClick={() => removeEqual(r, ei)} title="Eliminar" />
+										</div>
+									{:else}
+										<Text color="neutral"><small>Sin equals.</small></Text>
+									{/each}
+								</div>
+
+								<div class="sub">
+									<Text><small><strong>WHERE custom</strong> — cuerpo de <code>(sub, parent) =&gt; ...</code></small></Text>
+									<textarea
+										class="input-field code-area"
+										rows="2"
+										placeholder={'(parent.startsWith(pivot) ? `${sub}.IPLAN=${parent}.IPLANESTUDIO` : "")'}
+										value={r.customWhere ?? ""}
+										on:input={(e) => { r.customWhere = (e.target as HTMLTextAreaElement).value || undefined; markDirty(); }}
+									></textarea>
+								</div>
+
+								<div class="row">
+									<div class="field">
+										<Text color="neutral"><small>Insert</small></Text>
 										<Switch_
 											label="syncDetails"
 											checked={r.insertEffect === "syncDetails"}
 											on:change={(e) => { r.insertEffect = ((e.target as HTMLInputElement).checked ? "syncDetails" : "ignore"); markDirty(); }}
 										/>
+									</div>
 								</div>
 							</div>
-						</div>
+							<div slot="float" style="padding: 0;">
+								<ButtonIconify color="danger" icon="mdi:close" onClick={() => removeRelation(i)} title="Eliminar" />
+							</div>
+						</FloatingCard>
 					{/each}
 				</Card>
 
@@ -383,7 +596,7 @@
 								</div>
 							</div>
 							<div slot="float" style="padding: 0;">
-								<Button_ color="danger" variant="ghost" onClick={() => removeHook(i)} title="Eliminar"><Iconify icon="mdi:close" /></Button_>
+								<ButtonIconify color="danger" icon="mdi:close" onClick={() => removeHook(i)} title="Eliminar" />
 							</div>
 						</FloatingCard>
 					{/each}
@@ -394,8 +607,7 @@
 					<FlexLayout items="center">
 						<Switch_
 							label="Exponer driver en FN-Módulo"
-							checked={current.exposeInFn !== false}
-							on:change={(e) => { current!.exposeInFn = (e.target as HTMLInputElement).checked; markDirty(); }}
+							bind:checked={exposeOn}
 						/>
 					</FlexLayout>
 					<Text color="neutral"><small>Acciones a omitir en <code>registerCatalogoGenAzureFunction</code>:</small></Text>
@@ -411,6 +623,18 @@
 							</label>
 						{/each}
 					</div>
+				</Card>
+
+				<Card>
+					<H4>OrderBy</H4>
+					<Text color="neutral"><small>Cuerpo de <code>getOrderBy(Alias: string): string</code>. Recibe el alias SQL del recurso (ej: <code>SUB_TABLA_A</code>) y debe retornar la lista de columnas/expresiones para el <code>ORDER BY</code>.</small></Text>
+					<textarea
+						class="input-field code-area"
+						rows="6"
+						placeholder={'const A = `${Alias}.IPLAN`\nreturn `${A}`'}
+						value={current.orderBy ?? ""}
+						on:input={(e) => { current!.orderBy = (e.target as HTMLTextAreaElement).value || undefined; markDirty(); }}
+					></textarea>
 				</Card>
 			{/if}
 		</div>
@@ -440,8 +664,8 @@
 									<Card variant="flat">
 										<FlexLayout items="center" justify="between">
 											<div>
-												<Text><strong>{s.label}</strong></Text>
-												<Text color="neutral"><small><code>{s.filename}</code> · {s.body.length} chars</small></Text>
+												<Text><strong><code>{s.filename}</code></strong></Text>
+												<Text color="neutral"><small>{s.label} · {s.body.length} chars</small></Text>
 											</div>
 											<FlexLayout items="center">
 												<Button_ variant="outlined" onClick={() => openCodeModal(s.label, s.body)} title="Abrir en modal"><Iconify icon="mdi:fullscreen" /></Button_>
@@ -449,6 +673,19 @@
 												<Button_ variant="outlined" onClick={() => downloadText(s.filename, s.body)} title="Descargar"><Iconify icon="mdi:download" /></Button_>
 											</FlexLayout>
 										</FlexLayout>
+										<label class="field file-target">
+											<Text color="neutral"><small>Archivo destino</small></Text>
+											<select
+												class="input-field"
+												value={current?.targetFiles?.[s.id as keyof NonNullable<typeof current.targetFiles>] ?? ""}
+												on:change={(e) => setTargetFile(s.id as "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn", (e.target as HTMLSelectElement).value)}
+											>
+												<option value="">— (default: {defaultFilename(current!, s.id as "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn")}) —</option>
+												{#each targetFilePaths as p (p)}
+													<option value={p}>{basename(p)}</option>
+												{/each}
+											</select>
+										</label>
 										<TsViewer value={s.body} height="300px" />
 									</Card>
 								{/each}
@@ -462,6 +699,35 @@
 </section>
 
 <CodeModal bind:bshow={codeModalShow} title={codeModalTitle} value={codeModalValue} language="ts" />
+
+<Modal bind:bshow={pathModalShow} style="width: 60dvw; max-width: 720px;">
+	<svelte:fragment slot="title">
+		<FlexLayout items="center">
+			<Iconify icon="mdi:file-document-edit-outline" />
+			<Text><strong>{pathModalMode === "add" ? "Añadir archivo destino" : "Editar archivo destino"}</strong></Text>
+		</FlexLayout>
+	</svelte:fragment>
+	<div class="path-modal">
+		<Text color="neutral"><small>Ruta relativa al repositorio (ej: <code>ISP-ClientesIS/src/sources/010 Objetos/.../01.Modelo.ts</code>).</small></Text>
+		<input
+			class="input-field"
+			placeholder="ISP-ClientesIS/src/sources/.../Archivo.ts"
+			bind:value={pathModalValue}
+			on:keydown={(e) => { if (e.key === "Enter") savePathModal(); }}
+		/>
+		<FlexLayout justify="between">
+			<div>
+				{#if pathModalMode === "edit"}
+					<Button_ color="danger" variant="outlined" onClick={removePathModal}><Iconify icon="mdi:delete" /> Eliminar</Button_>
+				{/if}
+			</div>
+			<FlexLayout>
+				<Button_ variant="outlined" onClick={() => (pathModalShow = false)}>Cancelar</Button_>
+				<Button_ color="primary" onClick={savePathModal}><Iconify icon="mdi:content-save" /> Guardar</Button_>
+			</FlexLayout>
+		</FlexLayout>
+	</div>
+</Modal>
 
 <style>
 	.codegen { display: flex; flex-direction: column; gap: 0.75rem; }
@@ -480,8 +746,26 @@
 	.input-field[readonly] { opacity: 0.7; cursor: not-allowed; }
 	.row { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; margin: 0.35rem 0; }
 	.row .input-field { flex: 1 1 110px; min-width: 80px; }
+	.sub .row { flex-wrap: nowrap; }
+	.sub .row .input-field { flex: 1 1 0; min-width: 0; }
+	.sub .row > :global(button) { flex: 0 0 auto; width: auto; }
 	.flex-1 { flex: 1 1 auto; }
 	.rel { padding: 0.4rem 2rem 0.4rem 0.4rem; border: 1px dashed var(--is-b-color, #555); border-radius: 4px; }
+	.sub { padding: 0.35rem 0.45rem; margin: 0.35rem 0; border-left: 2px solid var(--is-b-color, #555); border-radius: 2px; }
+	.vs-eq { font-family: ui-monospace, Menlo, monospace; font-size: 0.85rem; opacity: 0.7; padding: 0 0.15rem; }
+	.input-type { flex: 0 0 6rem; }
+	.code-area { width: 100%; min-height: 2.5rem; font-family: ui-monospace, Menlo, monospace; font-size: 0.78rem; resize: vertical; white-space: pre; }
+	.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.45rem; }
+	.chip {
+		display: inline-flex; align-items: center; gap: 0.3rem;
+		padding: 0.25rem 0.6rem; border-radius: 999px;
+		border: 1px solid var(--is-b-color, #444);
+		background: var(--is-bg-readonly, #1e1e1e);
+		color: inherit; cursor: pointer;
+		font-family: ui-monospace, Menlo, monospace; font-size: 0.78rem;
+	}
+	.chip:hover { border-color: var(--is-primary, #4ea1ff); background: var(--is-bg-secondary, #2a2a2a); }
+	.path-modal { display: flex; flex-direction: column; gap: 0.6rem; padding: 0.5rem; }
 	.col-checks {
 		display: flex; flex-wrap: wrap; gap: 0.25rem 0.6rem;
 		padding: 0.25rem 0.45rem;

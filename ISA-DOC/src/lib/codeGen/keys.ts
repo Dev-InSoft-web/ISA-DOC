@@ -4,7 +4,7 @@ export const RESOURCE_KEYS = [
 	"id", "className", "tableName", "tableConst", "module",
 	"singularApi", "pluralApi", "singularCaption", "pluralCaption",
 	"isysRecurso", "parentBaseClass", "clientBaseClass", "uiBaseKind",
-	"fields", "relations", "customHooks", "omitOps", "exposeInFn",
+	"fields", "relations", "customHooks", "helpers", "omitOps", "exposeInFn", "orderBy", "targetFiles",
 ] as const satisfies readonly (keyof ResourceConfig)[];
 
 export type ResourceKey = (typeof RESOURCE_KEYS)[number];

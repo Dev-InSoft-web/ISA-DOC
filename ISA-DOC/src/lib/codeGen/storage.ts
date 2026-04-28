@@ -38,7 +38,34 @@ export async function deleteOverride(id: string): Promise<void> {
 
 /** Combina inferred + override; los campos del override priman sobre los inferidos. */
 export function mergeWithOverride(inferred: ResourceConfig, override: Partial<ResourceConfig>): ResourceConfig {
-	return { ...inferred, ...pickDefined(override, RESOURCE_KEYS as readonly (keyof ResourceConfig)[]) } as ResourceConfig;
+	const merged = { ...inferred, ...pickDefined(override, RESOURCE_KEYS as readonly (keyof ResourceConfig)[]) } as ResourceConfig;
+	merged.relations = (merged.relations ?? []).map(migrateRelation);
+	return merged;
+}
+
+function migrateRelation(r: any): import("./types.js").RelationDef {
+	if (Array.isArray(r.versus) || Array.isArray(r.equals)) {
+		return { versus: [], equals: [], ...r } as import("./types.js").RelationDef;
+	}
+	const versus: import("./types.js").VersusPair[] = [];
+	const equals: import("./types.js").EqualPair[] = [];
+	for (const raw of (r.compareOn ?? []) as string[]) {
+		const s = String(raw).trim();
+		if (!s) continue;
+		if (s.includes("=")) {
+			const [lhs, rhs] = s.split("=", 2).map((p) => p.trim());
+			const isNum = /^-?\d+(\.\d+)?$/.test(rhs);
+			const isBool = /^(0|1|true|false)$/i.test(rhs);
+			equals.push({ col: lhs.toUpperCase(), value: rhs, type: isBool ? "bool" : isNum ? "number" : "string" });
+		} else if (s.includes("|")) {
+			const [a, b] = s.split("|").map((p) => p.trim().toUpperCase());
+			versus.push({ sub: a, parent: b || a });
+		} else {
+			const u = s.toUpperCase();
+			versus.push({ sub: u, parent: u });
+		}
+	}
+	return { alias: r.alias, kind: r.kind, target: r.target, versus, equals, insertEffect: r.insertEffect, customWhere: r.customWhere };
 }
 
 /** Diff entre `edited` y `inferred`; sólo los campos que difieren se guardan como override. */
