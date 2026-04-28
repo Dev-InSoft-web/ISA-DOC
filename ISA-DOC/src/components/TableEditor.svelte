@@ -1,7 +1,22 @@
 <script lang="ts">
-	import { Button, FlexLayout, Iconify, Text, Switch } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, FlexLayout, Iconify, Text } from "@ingenieria_insoft/ispsveltecomponents";
+	import Switch_ from "./_comps/especial/_Switch.svelte";
+	import FloatingCard from "./_comps/containers/FloatingCard.svelte";
 	import type { ParsedTable, TableColumn } from "../lib/tableSchema.ts";
 	import { COMMON_COLUMN_TYPES } from "../lib/tableSchema.ts";
+
+	const DEFAULT_OPTIONS: { label: string; value: string }[] = [
+		{ label: "— (sin default)", value: "" },
+		{ label: "NULL", value: "NULL" },
+		{ label: "0", value: "0" },
+		{ label: "1", value: "1" },
+		{ label: "'' (cadena vacía)", value: "''" },
+		{ label: "GETDATE()", value: "GETDATE()" },
+		{ label: "NEWID()", value: "NEWID()" },
+	];
+	function defaultIsCustom(v: string): boolean {
+		return !!v && !DEFAULT_OPTIONS.some((o) => o.value === v);
+	}
 
 	export let table: ParsedTable;
 	export let prefix: string = "";
@@ -73,10 +88,11 @@
 			</div>
 		</FlexLayout>
 		<FlexLayout items="center">
-			<label class="inline-toggle">
-				<Switch checked={table.hasIfNotExists} on:change={(e) => { table.hasIfNotExists = !!(e as CustomEvent<{ checked: boolean }>).detail?.checked; emit(); }} />
-				<Text color="neutral"><small>IF NOT EXISTS</small></Text>
-			</label>
+			<Switch_
+				checked={table.hasIfNotExists}
+				label="IF NOT EXISTS"
+				on:change={(e) => { table.hasIfNotExists = !!(e as CustomEvent<{ checked: boolean }>).detail?.checked; emit(); }}
+			/>
 			<Button variant="outlined" style="width: fit-content;" onClick={() => onOpenSql(table)}>
 				<Iconify icon="mdi:fullscreen" /> SQL
 			</Button>
@@ -101,71 +117,86 @@
 			<span>Null</span>
 			<span>Default</span>
 			<span>PK</span>
-			<span>Extra</span>
 			<span></span>
 		</div>
 		{#each table.columns as col, idx}
-			<div class="col-row">
-				<span class="idx">{idx + 1}</span>
-				<input
-					class="input-field"
-					type="text"
-					value={col.name}
-					on:input={(e) => setColField(idx, "name", (e.currentTarget as HTMLInputElement).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"))}
-				/>
-				<input
-					class="input-field"
-					type="text"
-					list="col-types-{table.fragmentId}-{table.originalName}"
-					value={col.type}
-					on:input={(e) => setColField(idx, "type", (e.currentTarget as HTMLInputElement).value.toUpperCase().replace(/\s+/g, ""))}
-				/>
-				<select
-					class="input-field"
-					value={col.nullable}
-					on:change={(e) => setColField(idx, "nullable", (e.currentTarget as HTMLSelectElement).value as TableColumn["nullable"])}
-				>
-					<option value="">—</option>
-					<option value="NULL">NULL</option>
-					<option value="NOT NULL">NOT NULL</option>
-				</select>
-				<input
-					class="input-field"
-					type="text"
-					placeholder="0, GETDATE(), 'X'…"
-					value={col.defaultValue}
-					on:input={(e) => setColField(idx, "defaultValue", (e.currentTarget as HTMLInputElement).value)}
-				/>
-				<label class="pk-cell">
+			<FloatingCard horizontal="right" vertical="center">
+				<div class="col-row">
+					<span class="idx">{idx + 1}</span>
 					<input
-						type="checkbox"
-						checked={col.primaryKey || table.compositePrimaryKey.includes(col.name)}
-						on:change={(e) => {
-							const checked = (e.currentTarget as HTMLInputElement).checked;
-							if (table.compositePrimaryKey.length > 0) toggleCompositePk(col.name, checked);
-							else setColField(idx, "primaryKey", checked);
-						}}
+						class="input-field"
+						type="text"
+						value={col.name}
+						on:input={(e) => setColField(idx, "name", (e.currentTarget as HTMLInputElement).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"))}
 					/>
-				</label>
-				<input
-					class="input-field"
-					type="text"
-					placeholder="CONSTRAINT…"
-					value={col.extra}
-					on:input={(e) => setColField(idx, "extra", (e.currentTarget as HTMLInputElement).value)}
-				/>
-				<FlexLayout items="center">
+					<input
+						class="input-field"
+						type="text"
+						list="col-types-{table.fragmentId}-{table.originalName}"
+						value={col.type}
+						on:input={(e) => setColField(idx, "type", (e.currentTarget as HTMLInputElement).value.toUpperCase().replace(/\s+/g, ""))}
+					/>
+					<select
+						class="input-field"
+						value={col.nullable}
+						on:change={(e) => setColField(idx, "nullable", (e.currentTarget as HTMLSelectElement).value as TableColumn["nullable"])}
+					>
+						<option value="">—</option>
+						<option value="NULL">NULL</option>
+						<option value="NOT NULL">NOT NULL</option>
+					</select>
+					<FlexLayout items="center" gap="0.2rem">
+						<select
+							class="input-field"
+							value={defaultIsCustom(col.defaultValue) ? "__custom__" : col.defaultValue}
+							on:change={(e) => {
+								const v = (e.currentTarget as HTMLSelectElement).value;
+								if (v === "__custom__") {
+									if (!defaultIsCustom(col.defaultValue)) setColField(idx, "defaultValue", "");
+									return;
+								}
+								setColField(idx, "defaultValue", v);
+							}}
+						>
+							{#each DEFAULT_OPTIONS as opt}
+								<option value={opt.value}>{opt.label}</option>
+							{/each}
+							<option value="__custom__">Personalizado…</option>
+						</select>
+						{#if defaultIsCustom(col.defaultValue) || (col.defaultValue && !DEFAULT_OPTIONS.some((o) => o.value === col.defaultValue))}
+							<input
+								class="input-field"
+								type="text"
+								placeholder="expresión…"
+								value={col.defaultValue}
+								on:input={(e) => setColField(idx, "defaultValue", (e.currentTarget as HTMLInputElement).value)}
+							/>
+						{/if}
+					</FlexLayout>
+					<label class="pk-cell">
+						<input
+							type="checkbox"
+							checked={col.primaryKey || table.compositePrimaryKey.includes(col.name)}
+							on:change={(e) => {
+								const checked = (e.currentTarget as HTMLInputElement).checked;
+								if (table.compositePrimaryKey.length > 0) toggleCompositePk(col.name, checked);
+								else setColField(idx, "primaryKey", checked);
+							}}
+						/>
+					</label>
+					<button class="icon-btn danger" title="Eliminar" on:click={() => removeColumn(idx)}>
+						<Iconify icon="mdi:trash-can-outline" />
+					</button>
+				</div>
+				<FlexLayout slot="float" direction="column" gap="0.15rem">
 					<button class="icon-btn" title="Subir" on:click={() => moveColumn(idx, -1)} disabled={idx === 0}>
 						<Iconify icon="mdi:arrow-up" />
 					</button>
 					<button class="icon-btn" title="Bajar" on:click={() => moveColumn(idx, 1)} disabled={idx === table.columns.length - 1}>
 						<Iconify icon="mdi:arrow-down" />
 					</button>
-					<button class="icon-btn danger" title="Eliminar" on:click={() => removeColumn(idx)}>
-						<Iconify icon="mdi:trash-can-outline" />
-					</button>
 				</FlexLayout>
-			</div>
+			</FloatingCard>
 		{/each}
 	</div>
 
@@ -243,10 +274,10 @@
 	}
 	.col-row {
 		display: grid;
-		grid-template-columns: 2rem 1.4fr 1.2fr 0.9fr 1.4fr 0.5rem 1.4fr 7rem;
+		grid-template-columns: 2rem 1.4fr 1.2fr 0.9fr 1.4fr 0.5rem 7rem;
 		align-items: center;
 		gap: 0.35rem;
-		min-width: 56rem;
+		min-width: 48rem;
 	}
 	.col-head {
 		font-size: 0.7rem;

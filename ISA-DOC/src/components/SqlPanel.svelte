@@ -9,6 +9,9 @@
 	import CodeModal from "./CodeModal.svelte";
 	import Panel from "./Panel.svelte";
 	import TablesPanel from "./TablesPanel.svelte";
+	import CodeGenPanel from "./CodeGenPanel.svelte";
+	import FloatingCard from "./_comps/containers/FloatingCard.svelte";
+	import AccordionActions from "./_comps/containers/AccordionActions.svelte";
 
 	type Kind = "table" | "index" | "fk" | "seed" | "raw";
 	interface SqlFragment {
@@ -176,114 +179,111 @@
 
 	<TabItem title="Creación">
 		<section class="editor">
-			<Card>
-				<FlexLayout items="center" justify="between">
-					<div>
-						<H2>Editor de SQL por fragmentos</H2>
-						<Text color="neutral"><small>Fuente: <code>doc/ISA-DOC/public/db/init_capacitacion.sql</code></small></Text>
-					</div>
+			<AccordionActions
+				title="SQL · Fragmentos"
+				icon="mdi:database"
+				count={fragments.length}
+				open={true}
+				actions={[
+					{ icon: "mdi:refresh", label: "Recargar", onClick: load },
+					{ icon: "mdi:plus", label: "Nuevo fragmento", onClick: add },
+					{ icon: saving ? "mdi:loading" : "mdi:content-save", label: "Guardar", onClick: save, disabled: !dirty || saving },
+				]}
+			>
+				<Card variant="flat">
 					<FlexLayout items="center">
-						<Button variant="outlined" onClick={load}>
-							<Iconify icon="mdi:refresh" /> Recargar
-						</Button>
-						<Button onClick={add}>
-							<Iconify icon="mdi:plus" /> Nuevo fragmento
-						</Button>
-						<Button color="primary" disabled={!dirty || saving} onClick={save}>
-							<Iconify icon={saving ? "mdi:loading" : "mdi:content-save"} /> Guardar
-						</Button>
+						<label class="field flex-1">
+							<Text color="neutral"><small>Filtrar</small></Text>
+							<input class="input-field" type="text" placeholder="Buscar por nombre o contenido…" bind:value={filterText} />
+						</label>
+						<label class="field">
+							<Text color="neutral"><small>Tipo</small></Text>
+							<select class="input-field" bind:value={filterKind}>
+								<option value="all">Todos</option>
+								{#each KIND_OPTIONS as o}
+									<option value={o.value}>{o.label}</option>
+								{/each}
+							</select>
+						</label>
+						<Text color="neutral"><small>{filtered.length} / {fragments.length}</small></Text>
 					</FlexLayout>
-				</FlexLayout>
-			</Card>
+				</Card>
 
-			<Card variant="flat">
-				<FlexLayout items="center">
-					<label class="field flex-1">
-						<Text color="neutral"><small>Filtrar</small></Text>
-						<input class="input-field" type="text" placeholder="Buscar por nombre o contenido…" bind:value={filterText} />
-					</label>
-					<label class="field">
-						<Text color="neutral"><small>Tipo</small></Text>
-						<select class="input-field" bind:value={filterKind}>
-							<option value="all">Todos</option>
-							{#each KIND_OPTIONS as o}
-								<option value={o.value}>{o.label}</option>
-							{/each}
-						</select>
-					</label>
-					<Text color="neutral"><small>{filtered.length} / {fragments.length}</small></Text>
-				</FlexLayout>
-			</Card>
-
-			{#if loading}
-				<Card variant="flat"><Text color="neutral">Cargando…</Text></Card>
-			{:else if fragments.length === 0}
-				<Card variant="flat"><Text color="neutral">Sin fragmentos. Pulsa “Nuevo fragmento”.</Text></Card>
-			{:else}
-				<FlexLayout direction="column">
-					{#each filtered as { f, i } (f.id)}
-						<Card>
-							<button class="frag-header" on:click={() => (expanded = expanded === i ? -1 : i)}>
-								<FlexLayout items="center" justify="between">
-									<FlexLayout items="center">
-										<span class="kind kind--{f.kind}"><Iconify icon={kindMeta(f.kind).icon} /> {kindMeta(f.kind).label}</span>
-										<Text><strong>{f.name || "(sin nombre)"}</strong></Text>
-										<Text color="neutral"><small>{f.body.length} chars</small></Text>
-									</FlexLayout>
-									<Iconify icon={expanded === i ? "mdi:chevron-up" : "mdi:chevron-down"} />
-								</FlexLayout>
-							</button>
-
-							{#if expanded === i}
-								<div class="frag-body">
-									<GridLayout cells="2">
-										<label class="field">
-											<Text color="neutral">Nombre</Text>
-											<input class="input-field" type="text" bind:value={f.name} on:input={markDirty} />
-										</label>
-										<label class="field">
-											<Text color="neutral">Tipo</Text>
-											<select class="input-field" bind:value={f.kind} on:change={markDirty}>
-												{#each KIND_OPTIONS as o}
-													<option value={o.value}>{o.label}</option>
-												{/each}
-											</select>
-										</label>
-									</GridLayout>
-
-									<label class="field">
-										<Text color="neutral">Descripción</Text>
-										<input class="input-field" type="text" bind:value={f.description} on:input={markDirty} />
-									</label>
-
+				{#if loading}
+					<Card variant="flat"><Text color="neutral">Cargando…</Text></Card>
+				{:else if fragments.length === 0}
+					<Card variant="flat"><Text color="neutral">Sin fragmentos. Pulsa “Nuevo fragmento”.</Text></Card>
+				{:else}
+					<FlexLayout direction="column">
+						{#each filtered as { f, i } (f.id)}
+							<Card>
+								<button class="frag-header" on:click={() => (expanded = expanded === i ? -1 : i)}>
 									<FlexLayout items="center" justify="between">
-										<Text color="neutral"><small>Body (SQL)</small></Text>
-										<Button variant="outlined" onClick={() => openInModal(f)}>
-											<Iconify icon="mdi:fullscreen" /> Abrir en modal
-										</Button>
+										<FlexLayout items="center">
+											<span class="kind kind--{f.kind}"><Iconify icon={kindMeta(f.kind).icon} /> {kindMeta(f.kind).label}</span>
+											<Text><strong>{f.name || "(sin nombre)"}</strong></Text>
+											<Text color="neutral"><small>{f.body.length} chars</small></Text>
+										</FlexLayout>
+										<Iconify icon={expanded === i ? "mdi:chevron-up" : "mdi:chevron-down"} />
 									</FlexLayout>
+								</button>
 
-									<SqlViewer bind:value={f.body} editable={true} height="280px" />
+								{#if expanded === i}
+									<div class="frag-body">
+										<GridLayout cells="2">
+											<label class="field">
+												<Text color="neutral">Nombre</Text>
+												<input class="input-field" type="text" bind:value={f.name} on:input={markDirty} />
+											</label>
+											<label class="field">
+												<Text color="neutral">Tipo</Text>
+												<select class="input-field" bind:value={f.kind} on:change={markDirty}>
+													{#each KIND_OPTIONS as o}
+														<option value={o.value}>{o.label}</option>
+													{/each}
+												</select>
+											</label>
+										</GridLayout>
 
-									<FlexLayout justify="between">
-										<FlexLayout>
-											<Button variant="outlined" onClick={() => move(i, -1)} disabled={i === 0}>
-												<Iconify icon="mdi:arrow-up" /> Subir
-											</Button>
-											<Button variant="outlined" onClick={() => move(i, 1)} disabled={i === fragments.length - 1}>
-												<Iconify icon="mdi:arrow-down" /> Bajar
+										<label class="field">
+											<Text color="neutral">Descripción</Text>
+											<input class="input-field" type="text" bind:value={f.description} on:input={markDirty} />
+										</label>
+
+										<FlexLayout items="center" justify="between">
+											<Text color="neutral"><small>Body (SQL)</small></Text>
+											<Button variant="outlined" onClick={() => openInModal(f)}>
+												<Iconify icon="mdi:fullscreen" /> Abrir en modal
 											</Button>
 										</FlexLayout>
-										<Button color="danger" variant="ghost" onClick={() => remove(i)}>
-											<Iconify icon="mdi:trash-can" /> Eliminar
-										</Button>
-									</FlexLayout>
-								</div>
-							{/if}
-						</Card>
-					{/each}
-				</FlexLayout>
-			{/if}
+
+										<SqlViewer bind:value={f.body} editable={true} height="280px" />
+
+										<FlexLayout justify="between">
+											<FloatingCard horizontal="left" vertical="center">
+												<Text color="neutral"><small>Reordenar</small></Text>
+												<FlexLayout slot="float" direction="column" gap="0.2rem">
+													<Button variant="outlined" onClick={() => move(i, -1)} disabled={i === 0}>
+														<Iconify icon="mdi:arrow-up" /> Subir
+													</Button>
+													<Button variant="outlined" onClick={() => move(i, 1)} disabled={i === fragments.length - 1}>
+														<Iconify icon="mdi:arrow-down" /> Bajar
+													</Button>
+												</FlexLayout>
+											</FloatingCard>
+											<Button color="danger" variant="ghost" onClick={() => remove(i)}>
+												<Iconify icon="mdi:trash-can" /> Eliminar
+											</Button>
+										</FlexLayout>
+									</div>
+								{/if}
+							</Card>
+						{/each}
+					</FlexLayout>
+				{/if}
+			</AccordionActions>
+
+			<CodeGenPanel />
 		</section>
 	</TabItem>
 

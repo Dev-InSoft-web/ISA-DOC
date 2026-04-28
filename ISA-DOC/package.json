@@ -32,6 +32,7 @@
 		"@ingenieria_insoft/ispgen": "^1.0.x",
 		"@ingenieria_insoft/ispsveltecomponents": "^x",
 		"codemirror": "^6.0.2",
+		"flowbite-svelte": "^1.33.1",
 		"marked": "^18.0.2",
 		"mssql": "^11.0.1",
 		"socket.io": "^4.8.3",

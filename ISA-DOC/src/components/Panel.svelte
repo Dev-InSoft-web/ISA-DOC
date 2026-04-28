@@ -3,11 +3,12 @@
 	import { io, type Socket } from "socket.io-client";
 	import {
 		Card, Button, H4, Text, Loading, Modal,
-		Tabs, TabItem, Switch, Toaster, toastError, toastSuccess,
+		Tabs, TabItem, Toaster, toastError, toastSuccess,
 		FlexLayout, GridLayout, Iconify
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import CodeModal from "./CodeModal.svelte";
 	import SqlViewer from "./SqlViewer.svelte";
+	import Switch_ from "./_comps/especial/_Switch.svelte";
 
 	const LS_KEY = (id: string): string => `migration-sql:${id}`;
 
@@ -354,11 +355,11 @@
 												{#each action.params as param}
 													{#if param.type === "boolean"}
 														<FlexLayout items="center">
-															<Switch
+															<Switch_
 																checked={paramValues[action.id]?.[param.key] === "true"}
+																label={param.label}
 																on:change={(e) => setBoolParam(action.id, param.key, !!(e as CustomEvent<{ checked: boolean }>).detail?.checked)}
 															/>
-															<Text>{param.label}</Text>
 														</FlexLayout>
 													{:else}
 														<label class="param-field">
