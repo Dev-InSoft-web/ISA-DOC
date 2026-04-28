@@ -89,3 +89,17 @@ h4 {
 	font-size: 1em;
 	font-weight: 500;
 }
+
+/* ISP Button: el componente fija width:100% y min-width:16px. En filas
+   con varios botones queremos que respeten el ancho del contenedor y
+   que el texto no se salga; permitimos encoger y aplicamos ellipsis al
+   span interno si llegase a faltar espacio. */
+button[data-variant] {
+	min-width: 0;
+	white-space: nowrap;
+}
+button[data-variant] > span:not([data-element]) {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-width: 0;
+}

@@ -142,6 +142,26 @@ function handleConnection(socket: Socket): void {
 		});
 	});
 
+	// === Ejecutar SQL crudo persistido en localStorage ===
+	socket.on("sql:exec", async (payload: { sql: string }, cb: (data: unknown) => void) => {
+		const sql = (payload?.sql ?? "").trim();
+		if (!sql) { cb({ ok: false, error: "SQL vacío" }); return; }
+		try {
+			const pool = await openPool(resolveSettingsPath());
+			const result = await pool.request().batch(sql);
+			await pool.close();
+			const rs = (result.recordsets as unknown[][] | undefined) ?? [];
+			cb({
+				ok: true,
+				output: `OK · ${rs.length} recordset(s)\n${sql.split("\n").length} líneas ejecutadas.`,
+				rowsAffected: result.rowsAffected,
+			});
+		} catch (err: unknown) {
+			const msg = err instanceof Error ? err.message : String(err);
+			cb({ ok: false, error: msg });
+		}
+	});
+
 	socket.on("exec", (msg: ExecPayload) => {
 		execAction(msg.actionId, msg.command, msg.cwd, msg.needsPassword, msg.hostPattern);
 	});

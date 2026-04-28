@@ -174,7 +174,7 @@
 		</section>
 	</TabItem>
 
-	<TabItem title="Editor SQL">
+	<TabItem title="Creación">
 		<section class="editor">
 			<Card>
 				<FlexLayout items="center" justify="between">

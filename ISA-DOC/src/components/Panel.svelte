@@ -7,6 +7,12 @@
 		FlexLayout, GridLayout, Iconify
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import CodeModal from "./CodeModal.svelte";
+	import SqlViewer from "./SqlViewer.svelte";
+
+	const LS_KEY = (id: string): string => `migration-sql:${id}`;
+
+	// Categorías relevantes para extraer datos de tablas _OLD a nuevas tablas
+	const MIGRATION_CATEGORIES = new Set(["Análisis", "Migración"]);
 
 	type ActionParam = {
 		key: string;
@@ -62,6 +68,17 @@
 	let codeModalValue = "";
 	let codeModalLanguage: "json" | "sql" = "json";
 
+	// SQL generado y persistido por acción (localStorage)
+	let savedSql: Record<string, string> = {};
+	let generatingId: string | null = null;
+	let executingSqlId: string | null = null;
+
+	// Modal de ejecución de SQL guardado
+	let execModalShow = false;
+	let execModalTitle = "";
+	let execModalActionId = "";
+	let execModalSql = "";
+
 	function detectLanguage(text: string): "json" | "sql" | null {
 		const src = (text ?? "").trim();
 		if (!src) return null;
@@ -85,6 +102,7 @@
 			actions = data;
 			const g: Record<string, ScriptAction[]> = {};
 			for (const a of data) {
+				if (!MIGRATION_CATEGORIES.has(a.category)) continue;
 				if (!g[a.category]) g[a.category] = [];
 				g[a.category].push(a);
 				if (a.params) {
@@ -100,6 +118,105 @@
 	function loadDbStatus(): void {
 		socket?.emit("db:status", (data: DbStatus) => {
 			dbStatus = data;
+		});
+	}
+
+	function loadAllSavedSql(): void {
+		if (typeof localStorage === "undefined") return;
+		const next: Record<string, string> = {};
+		for (let i = 0; i < localStorage.length; i++) {
+			const k = localStorage.key(i);
+			if (!k || !k.startsWith("migration-sql:")) continue;
+			next[k.slice("migration-sql:".length)] = localStorage.getItem(k) ?? "";
+		}
+		savedSql = next;
+	}
+
+	function persistSql(actionId: string, sql: string): void {
+		if (typeof localStorage === "undefined") return;
+		localStorage.setItem(LS_KEY(actionId), sql);
+		savedSql = { ...savedSql, [actionId]: sql };
+	}
+
+	function extractSql(text: string): string {
+		// Mantiene el output completo — el usuario puede editarlo en el modal
+		// antes de ejecutar. Se quita prefijo común de logger "[xx] " si existe.
+		return (text ?? "").replace(/\r/g, "");
+	}
+
+	function generateSql(action: ScriptAction): void {
+		generatingId = action.id;
+		runningId = action.id;
+		const params: Record<string, string> = { ...(paramValues[action.id] ?? {}) };
+		// Forzar dry-run en acciones que modifican BD
+		if (action.severity !== "info") params["dry-run"] = "true";
+
+		socket?.emit("script:exec", { id: action.id, params }, (data: { ok: boolean; output?: string; error?: string }) => {
+			const ok = data.ok ?? false;
+			const output = data.output ?? data.error ?? "Sin salida";
+			logs = [{
+				id: action.id,
+				actionName: `Generar SQL · ${action.name}`,
+				timestamp: new Date().toLocaleTimeString(),
+				ok,
+				output,
+			}, ...logs];
+			runningId = null;
+			generatingId = null;
+			if (ok) {
+				const sql = extractSql(output);
+				persistSql(action.id, sql);
+				toastSuccess(`SQL generado y guardado · ${action.name}`);
+				codeModalTitle = `SQL generado · ${action.name}`;
+				codeModalValue = sql;
+				codeModalLanguage = "sql";
+				codeModalShow = true;
+			} else {
+				toastError(`Generación falló · ${action.name}`);
+			}
+		});
+	}
+
+	function openExecuteModal(action: ScriptAction): void {
+		const sql = savedSql[action.id] ?? localStorage.getItem(LS_KEY(action.id)) ?? "";
+		if (!sql.trim()) {
+			toastError(`Sin SQL guardado. Use «Generar SQL» primero.`);
+			return;
+		}
+		execModalActionId = action.id;
+		execModalTitle = `Ejecutar SQL guardado · ${action.name}`;
+		execModalSql = sql;
+		execModalShow = true;
+	}
+
+	function saveEditedExecModalSql(): void {
+		persistSql(execModalActionId, execModalSql);
+		toastSuccess("SQL actualizado en localStorage");
+	}
+
+	function confirmExecuteSavedSql(): void {
+		if (!execModalSql.trim()) { toastError("SQL vacío"); return; }
+		const confirmed = confirm(`⚠️ Se va a ejecutar el SQL guardado contra la BD.\n\n¿Continuar?`);
+		if (!confirmed) return;
+		executingSqlId = execModalActionId;
+		socket?.emit("sql:exec", { sql: execModalSql }, (data: { ok: boolean; output?: string; error?: string }) => {
+			const ok = data.ok ?? false;
+			const output = data.output ?? data.error ?? "Sin salida";
+			logs = [{
+				id: execModalActionId,
+				actionName: `Ejecutar SQL guardado · ${execModalActionId}`,
+				timestamp: new Date().toLocaleTimeString(),
+				ok,
+				output,
+			}, ...logs];
+			executingSqlId = null;
+			if (ok) {
+				toastSuccess("SQL ejecutado correctamente");
+				execModalShow = false;
+				loadDbStatus();
+			} else {
+				toastError("Ejecución SQL falló");
+			}
 		});
 	}
 
@@ -125,6 +242,7 @@
 			}, ...logs];
 			runningId = null;
 			if (ok) {
+				persistSql(action.id, extractSql(output));
 				const lang = detectLanguage(output);
 				if (lang) {
 					codeModalTitle = action.name;
@@ -159,6 +277,7 @@
 			loadActions();
 			loadDbStatus();
 		});
+		loadAllSavedSql();
 	});
 
 	onDestroy(() => {
@@ -171,6 +290,16 @@
 {#if loading}
 	<Loading bShow={true} />
 {:else}
+	<Card variant="flat">
+		<FlexLayout items="center">
+			<Iconify icon="mdi:database-arrow-right" />
+			<div>
+				<H4>Migración de datos · CAPAC_*_OLD → tablas nuevas</H4>
+				<Text color="neutral"><small>Extrae registros desde las tablas legacy <code>CAPAC_*_OLD</code> y los inserta en las tablas destino. Use «Análisis» para inspeccionar antes y «Migración» para generar y ejecutar el SQL.</small></Text>
+			</div>
+		</FlexLayout>
+	</Card>
+
 	<Card variant="flat">
 		<FlexLayout items="center">
 			<Iconify icon={dbStatus?.ok ? "mdi:database-check" : "mdi:database-alert"} />
@@ -249,14 +378,36 @@
 
 										<span class="spacer"></span>
 
-										<Button
-											color={severityColor(action.severity)}
-											disabled={runningId !== null}
-											loading={runningId === action.id}
-											onClick={() => executeAction(action)}
-										>
-											{runningId === action.id ? "Ejecutando..." : "Ejecutar"}
-										</Button>
+										{#if action.severity === "info"}
+											<Button
+												color={severityColor(action.severity)}
+												disabled={runningId !== null}
+												loading={runningId === action.id}
+												onClick={() => executeAction(action)}
+											>
+												{runningId === action.id ? "Ejecutando..." : "Ejecutar"}
+											</Button>
+										{:else}
+											<div class="btn-row">
+												<Button
+													variant="outlined"
+													disabled={runningId !== null}
+													loading={generatingId === action.id}
+													onClick={() => generateSql(action)}
+												>
+													<Iconify icon="mdi:script-text-outline" />
+													<span>{generatingId === action.id ? "Generando..." : "Generar SQL"}</span>
+												</Button>
+												<Button
+													color={severityColor(action.severity)}
+													disabled={runningId !== null || !(savedSql[action.id] && savedSql[action.id].trim())}
+													onClick={() => openExecuteModal(action)}
+												>
+													<Iconify icon="mdi:play" />
+													<span>Ejecutar SQL</span>
+												</Button>
+											</div>
+										{/if}
 
 										<Text color="neutral" lines={1}><small class="command-text">{action.command}</small></Text>
 									</FlexLayout>
@@ -304,6 +455,33 @@
 {/if}
 
 <CodeModal bind:bshow={codeModalShow} title={codeModalTitle} value={codeModalValue} language={codeModalLanguage} />
+
+<Modal bind:bshow={execModalShow} onClose={() => (execModalShow = false)} style="width: 90dvw; height: 80dvh;">
+	<svelte:fragment slot="title">
+		<FlexLayout items="center">
+			<Iconify icon="mdi:play-circle-outline" />
+			<Text><strong>{execModalTitle}</strong></Text>
+		</FlexLayout>
+	</svelte:fragment>
+
+	<div class="exec-wrap">
+		<Text color="neutral"><small>SQL persistido en <code>localStorage["migration-sql:{execModalActionId}"]</code>. Puédeslo editar antes de ejecutar.</small></Text>
+		<div class="exec-viewer">
+			<SqlViewer bind:value={execModalSql} editable={true} />
+		</div>
+		<FlexLayout justify="end" items="center">
+			<Button variant="outlined" onClick={() => (execModalShow = false)} disabled={executingSqlId !== null}>
+				<Iconify icon="mdi:close" /> <span>Cerrar</span>
+			</Button>
+			<Button variant="outlined" onClick={saveEditedExecModalSql} disabled={executingSqlId !== null}>
+				<Iconify icon="mdi:content-save-outline" /> <span>Guardar</span>
+			</Button>
+			<Button color="danger" onClick={confirmExecuteSavedSql} loading={executingSqlId !== null}>
+				<Iconify icon="mdi:play" /> <span>{executingSqlId ? "Ejecutando..." : "Confirmar y ejecutar"}</span>
+			</Button>
+		</FlexLayout>
+	</div>
+</Modal>
 
 <style>
 	.section {
@@ -360,5 +538,33 @@
 		font-family: monospace;
 		font-size: 0.75rem;
 		white-space: pre-wrap;
+	}
+
+	.exec-wrap {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		min-height: 0;
+		gap: 0.5rem;
+	}
+	.exec-viewer {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: hidden;
+		border: 1px solid var(--is-b-color);
+		border-radius: 4px;
+	}
+
+	.btn-row {
+		display: flex;
+		flex-direction: row;
+		gap: 0.4rem;
+		width: 100%;
+		min-width: 0;
+	}
+	.btn-row :global(button[data-variant]) {
+		flex: 1 1 0;
+		min-width: 0;
+		width: 100%;
 	}
 </style>

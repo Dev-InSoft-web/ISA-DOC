@@ -1,5 +1,26 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import sql from "mssql";
 import { openPool, resolveSettingsPath } from "../core/db.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+function loadToken(): string | null {
+  const env = process.env.VERIFY_API_TOKEN?.trim();
+  if (env) return env;
+  const tokenFile =
+    process.env.VERIFY_API_TOKEN_FILE ||
+    path.resolve(__dirname, "..", "..", "..", "..", "..", "test", "token.json");
+  if (!fs.existsSync(tokenFile)) return null;
+  try {
+    const data = JSON.parse(fs.readFileSync(tokenFile, "utf8")) as { token?: string };
+    return data.token?.trim() ?? null;
+  } catch {
+    return null;
+  }
+}
 
 async function checkDb() {
   const pool = await openPool(resolveSettingsPath(process.argv));
@@ -29,8 +50,12 @@ async function checkApi() {
   const url =
     "https://clientesis-contapymeu.azurewebsites.net/api/cursos/eyJwYWdpbmEiOjEsInFjYW50aWRhZCI6MTAwLCJjYW1wb3MiOltdLCJmaWx0cm8iOnsiaWRuZmlsdHJvIjoiIn0sIm9yZGVuIjp7fX0=";
   const start = Date.now();
+  const token = loadToken();
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  else console.log("[AUTH] Sin token: solicitud anónima (probablemente 401).");
   try {
-    const res = await fetch(url, { method: "GET" });
+    const res = await fetch(url, { method: "GET", headers });
     const ms = Date.now() - start;
     const body = await res.text();
     console.log("API status:", res.status, "ms:", ms, "len:", body.length);
