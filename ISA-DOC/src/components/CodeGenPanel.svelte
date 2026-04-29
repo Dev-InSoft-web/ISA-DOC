@@ -326,6 +326,18 @@
 		markDirty();
 	}
 
+	function addHelper(): void {
+		if (!current) return;
+		const helpers = current.helpers ?? [];
+		current.helpers = [...helpers, { name: "helper", kind: "get", returnType: "number", body: "return 0" }];
+		markDirty();
+	}
+	function removeHelper(i: number): void {
+		if (!current || !current.helpers) return;
+		current.helpers = current.helpers.filter((_, k) => k !== i);
+		markDirty();
+	}
+
 	async function copyText(text: string): Promise<void> {
 		try { await navigator.clipboard.writeText(text); toastSuccess("Copiado."); }
 		catch { toastError("No se pudo copiar."); }
@@ -449,19 +461,38 @@
 				</Card>
 
 				<Card>
-					<H4>Columnas (inferidas, sólo lectura)</H4>
-					<Text color="neutral"><small>Las columnas y sus tipos se sincronizan desde la definición SQL. Para editar nomenclaturas, edita la tabla en la pestaña <strong>Tablas</strong>.</small></Text>
-					<div class="cols-list">
-						{#each current.fields as f (f.name)}
-							<div class="col-row">
-								<span class="col-name">{f.name}</span>
-								<span class="col-type">{f.type}</span>
-								{#if f.pk}<span class="badge pk">PK</span>{/if}
-								{#if f.fk}<span class="badge fk">FK→{f.fk}</span>{/if}
-								{#if f.required}<span class="badge req">req</span>{/if}
+					<FlexLayout items="center" justify="between">
+						<H4>Helpers</H4>
+						<Button_ variant="outlined" onClick={addHelper}><Iconify icon="mdi:plus" /> Añadir</Button_>
+					</FlexLayout>
+					<Text color="neutral"><small>Métodos manuales que se anexan a la clase. Tipo <code>get</code> (computed) o <code>fn</code> (método).</small></Text>
+					{#each (current.helpers ?? []) as h, i}
+						<FloatingCard variant="flat" horizontal="right" vertical="top" class="rel-fc" style="padding: 0; margin: 0.35rem 0;">
+							<div class="rel">
+								<div class="row">
+									<select class="input-field" bind:value={h.kind} on:change={markDirty}>
+										<option value="get">get</option>
+										<option value="fn">fn</option>
+									</select>
+									<input class="input-field" placeholder="nombre" bind:value={h.name} on:input={markDirty} />
+									<input class="input-field" placeholder="tipo retorno (ej: number)" bind:value={h.returnType} on:input={markDirty} />
+								</div>
+								{#if h.kind === "fn"}
+									<input class="input-field" placeholder="params, ej: (x: number)" bind:value={h.params} on:input={markDirty} />
+								{/if}
+								<textarea
+									class="input-field code-area"
+									rows="3"
+									placeholder={'return this.iplan ? String(this.iplan).split(".").filter(Boolean).length : 0'}
+									bind:value={h.body}
+									on:input={markDirty}
+								></textarea>
 							</div>
-						{/each}
-					</div>
+							<div slot="float" style="padding: 0;">
+								<ButtonIconify color="danger" icon="mdi:close" onClick={() => removeHelper(i)} title="Eliminar" />
+							</div>
+						</FloatingCard>
+					{/each}
 				</Card>
 
 				<Card>
@@ -661,33 +692,33 @@
 								open={true}
 							>
 								{#each items as s (s.id)}
-									<Card variant="flat">
-										<FlexLayout items="center" justify="between">
-											<div>
-												<Text><strong><code>{s.filename}</code></strong></Text>
-												<Text color="neutral"><small>{s.label} · {s.body.length} chars</small></Text>
-											</div>
+									<FloatingCard variant="flat" horizontal="right" vertical="top" class="rel-fc" style="padding: 0; margin: 0.35rem 0;">
+										<Card variant="flat">
+											<Text><strong><code>{s.filename}</code></strong></Text>
+											<Text color="neutral"><small>{s.label} · {s.body.length} chars</small></Text>
+											<label class="field file-target">
+												<Text color="neutral"><small>Archivo destino</small></Text>
+												<select
+													class="input-field"
+													value={current?.targetFiles?.[s.id as keyof NonNullable<typeof current.targetFiles>] ?? ""}
+													on:change={(e) => setTargetFile(s.id as "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn", (e.target as HTMLSelectElement).value)}
+												>
+													<option value="">— (default: {defaultFilename(current!, s.id as "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn")}) —</option>
+													{#each targetFilePaths as p (p)}
+														<option value={p}>{basename(p)}</option>
+													{/each}
+												</select>
+											</label>
+											<TsViewer value={s.body} height="300px" />
+										</Card>
+										<div slot="float" style="padding: 0;">
 											<FlexLayout items="center">
-												<Button_ variant="outlined" onClick={() => openCodeModal(s.label, s.body)} title="Abrir en modal"><Iconify icon="mdi:fullscreen" /></Button_>
-												<Button_ variant="outlined" onClick={() => copyText(s.body)} title="Copiar"><Iconify icon="mdi:content-copy" /></Button_>
-												<Button_ variant="outlined" onClick={() => downloadText(s.filename, s.body)} title="Descargar"><Iconify icon="mdi:download" /></Button_>
+												<ButtonIconify icon="mdi:fullscreen" onClick={() => openCodeModal(s.label, s.body)} title="Abrir en modal" />
+												<ButtonIconify icon="mdi:content-copy" onClick={() => copyText(s.body)} title="Copiar" />
+												<ButtonIconify icon="mdi:download" onClick={() => downloadText(s.filename, s.body)} title="Descargar" />
 											</FlexLayout>
-										</FlexLayout>
-										<label class="field file-target">
-											<Text color="neutral"><small>Archivo destino</small></Text>
-											<select
-												class="input-field"
-												value={current?.targetFiles?.[s.id as keyof NonNullable<typeof current.targetFiles>] ?? ""}
-												on:change={(e) => setTargetFile(s.id as "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn", (e.target as HTMLSelectElement).value)}
-											>
-												<option value="">— (default: {defaultFilename(current!, s.id as "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn")}) —</option>
-												{#each targetFilePaths as p (p)}
-													<option value={p}>{basename(p)}</option>
-												{/each}
-											</select>
-										</label>
-										<TsViewer value={s.body} height="300px" />
-									</Card>
+										</div>
+									</FloatingCard>
 								{/each}
 							</AccordionActions>
 						{/each}
