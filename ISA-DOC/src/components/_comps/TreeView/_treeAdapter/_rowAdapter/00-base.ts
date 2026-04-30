@@ -1,12 +1,12 @@
 import type { ComponentColor, IconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
 import { resolveColor } from "@ingenieria_insoft/ispsveltecomponents";
-import { ComplexControl } from "../00-complex-control";
-import type { FlexOptionsAction } from "../../../Options/FlexOptions.svelte";
+import type { FlexOptionsInput } from "../../../Options/FlexOptions.svelte";
 import type { RowItemProps } from "../../_rowItem.svelte";
+import { ComplexControl } from "../00-complex-control";
 import type { TreeAdapter } from "../06-rows";
 import type { TreeRowAdapter } from "./02-events";
 
-type CascadeOptionsInput = FlexOptionsAction;
+type CascadeOptionsInput = FlexOptionsInput;
 
 export interface INode<T> {
 	id: string;
@@ -33,7 +33,7 @@ type TreeRowConfig = {
 	draggable?: boolean;
 	isFirst?: boolean;
 	isLast?: boolean;
-	actions?: FlexOptionsAction[];
+	actions?: FlexOptionsInput[];
 	cascadeOptions?: CascadeOptionsInput[];
 	events?: {
 		onopen?: () => void;
@@ -50,7 +50,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	public dragForbidden = false;
 	public dragEnterCount = 0;
 	public dragPlaceholderHeight = 0;
-	public filteredActions: FlexOptionsAction[] = [];
+	public filteredActions: FlexOptionsInput[] = [];
 	public hasRowTools = false;
 	public showActions = false;
 	public longPressTimer: ReturnType<typeof setTimeout> | undefined;
@@ -65,7 +65,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 		this.treeAdapter.unregisterRowAdapter(this as unknown as TreeRowAdapter<TStacker, TWorking>);
 	}
 
-	
+
 	applyBridge(bridge: RowItemProps<TWorking>): void {
 		for (const key of Reflect.ownKeys(bridge)) {
 			if (key === "__proto__") continue;
@@ -107,7 +107,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 		return selectedId.length > 0 && this.id === selectedId;
 	}
 
-	
+
 	get onLeadIconClick(): (() => void) | null {
 		return this.effectiveRowConfig?.events?.onleadiconclick ?? null;
 	}
@@ -281,7 +281,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 		const onMoveDown = async () => { const newId = await ta.move(node.id, "down"); ta.commitAndFlash(newId); };
 		const onEdit = () => ta.openEdit(node);
 		const onDelete = () => this.onrowdelete();
-		const actions: FlexOptionsAction[] = [
+		const actions: FlexOptionsInput[] = [
 			isLast ? { icon: "mdi:eye-outline", title: "Ver recurso", onClick: onView } : null,
 			[
 				{ icon: "mdi:arrow-up", title: "Mover arriba", onClick: onMoveUp },
@@ -300,7 +300,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 			isLast: this.siblingPos.isLast,
 		};
 	}
-	filterRowActions(cfg?: TreeRowConfig): FlexOptionsAction[] {
+	filterRowActions(cfg?: TreeRowConfig): FlexOptionsInput[] {
 		const keep = (item: unknown): boolean => {
 			if (!item || typeof item !== "object") return !!item;
 			const btn = item as { icon?: string; separator?: boolean };
@@ -309,7 +309,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 			if (cfg?.isLast && btn.icon === "mdi:arrow-down") return false;
 			return true;
 		};
-		const out: FlexOptionsAction[] = [];
+		const out: FlexOptionsInput[] = [];
 		for (const entry of cfg?.actions ?? []) {
 			if (!entry) continue;
 			if (Array.isArray(entry)) {

@@ -1,4 +1,3 @@
-import { TObject } from "@ingenieria_insoft/ispgen";
 import type { TreeViewProps } from "../../_comps/TreeView/TreeRowView.svelte";
 import { TreeAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
 import type { ParsedTable } from "../../../lib/tableSchema";
@@ -12,11 +11,11 @@ class SqlCatalogoStub {
 
 	private get adapter(): SqlTreeAdapter | null { return this.getAdapter(); }
 
-	Insertar = async (_o: TObject, item: TSqlNodeUX): Promise<boolean> => {
+	Insertar = async (_o: any, item: TSqlNodeUX): Promise<boolean> => {
 		const a = this.adapter; if (!a) return false;
 		return !!a.addNode(item);
 	};
-	Actualizar = async (_o: TObject, item: TSqlNodeUX): Promise<boolean> => {
+	Actualizar = async (_o: any, item: TSqlNodeUX): Promise<boolean> => {
 		const a = this.adapter; if (!a) return false;
 		return a.updateNode(item);
 	};
@@ -24,8 +23,8 @@ class SqlCatalogoStub {
 		const a = this.adapter; if (!a) return false;
 		return a.removeNode(item);
 	};
-	ActInsertar = (o: TObject, item: TSqlNodeUX) => this.Insertar(o, item);
-	ActActualizar = (o: TObject, item: TSqlNodeUX) => this.Actualizar(o, item);
+	ActInsertar = (o: any, item: TSqlNodeUX) => this.Insertar(o, item);
+	ActActualizar = (o: any, item: TSqlNodeUX) => this.Actualizar(o, item);
 	ActEliminar = (item: TSqlNodeUX) => this.Eliminar(item);
 	ActVisualizar = async (_item: TSqlNodeUX) => true;
 	ActModificar = async (_item: TSqlNodeUX) => true;
@@ -56,8 +55,8 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 	}
 
 	get stack(): TSqlTableUX { return this.obj; }
-	get stackList(): TObject[] { return this.obj.rows as unknown as TObject[]; }
-	set stackList(value: TObject[]) { this.obj.rows = value as unknown as TSqlNodeUX[]; }
+	get stackList(): any[] { return this.obj.rows as unknown as any[]; }
+	set stackList(value: any[]) { this.obj.rows = value as unknown as TSqlNodeUX[]; }
 
 	get istack(): string { return this.obj.tableId; }
 	get nistack(): string { return "tableId"; }
@@ -65,7 +64,7 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 	get nidNode(): string { return "rowId"; }
 	get ntitleNode(): string { return "rowName"; }
 
-	createNode(data: TObject): TSqlNodeUX {
+	createNode(data: any): TSqlNodeUX {
 		if (data instanceof TSqlNodeUX) {
 			data.stack = this.obj;
 			data.refreshUX();
@@ -75,16 +74,16 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 		return node;
 	}
 
-	getlevelname(nivel?: number, _record?: TObject): string {
+	getlevelname(nivel?: number, _record?: any): string {
 		return nivel === 1 ? "Sección" : "Columna";
 	}
 
-	getEditDriverAttrs(): TObject[] { return []; }
-	getEditAttrsForLevel(_d: TObject[], _p: TSqlNodeUX): TObject[] { return []; }
+	getEditDriverAttrs(): any[] { return []; }
+	getEditAttrsForLevel(_d: any[], _p: TSqlNodeUX): any[] { return []; }
 	canEditSelectResource(_p: TSqlNodeUX, _d: TSqlNodeUX): boolean { return false; }
 	getEditAtributoValor(_d: TSqlNodeUX, _i: number): string { return ""; }
 	setEditAtributoValor(d: TSqlNodeUX, _i: number, _v: string): TSqlNodeUX { return d; }
-	setEditRecursoSelected(d: TSqlNodeUX, _r: TObject): TSqlNodeUX { return d; }
+	setEditRecursoSelected(d: TSqlNodeUX, _r: any): TSqlNodeUX { return d; }
 
 	protected getNewNodeDefaults(referenceId: string): Partial<TSqlNodeUX> {
 		const ref = this.normalizeNodeId(referenceId);

@@ -1,15 +1,13 @@
-import { TObject } from "@ingenieria_insoft/ispgen";
 import type { ParsedTable, TableColumn, TableRow, TableSection } from "../../../lib/tableSchema";
 import { isSectionRow } from "../../../lib/tableSchema";
 import { TSqlNodeUX } from "./TSqlNodeUX.svelte";
 
-export class TSqlTableUX extends TObject {
+export class TSqlTableUX {
 	tableId: string = "";
 	rows: TSqlNodeUX[] = [];
 	parsed!: ParsedTable;
 
 	constructor(parsed?: ParsedTable) {
-		super();
 		if (parsed) {
 			this.parsed = parsed;
 			this.tableId = `${parsed.fragmentId}::${parsed.originalName || parsed.name}`;
@@ -17,7 +15,7 @@ export class TSqlTableUX extends TObject {
 		}
 	}
 
-	static buildRowsFromParsed(parsed: ParsedTable, stack: TObject): TSqlNodeUX[] {
+	static buildRowsFromParsed(parsed: ParsedTable, stack: any): TSqlNodeUX[] {
 		const tableId = `${parsed.fragmentId}::${parsed.originalName || parsed.name}`;
 		const out: TSqlNodeUX[] = [];
 		let sectionIdx = 0;
@@ -89,6 +87,13 @@ export class TSqlTableUX extends TObject {
 		};
 		this.parsed = next;
 		return next;
+	}
+
+	clone(): TSqlTableUX {
+		const c = Object.create(TSqlTableUX.prototype) as TSqlTableUX;
+		Object.assign(c, this);
+		c.rows = this.rows.map((r) => r.clone());
+		return c;
 	}
 }
 

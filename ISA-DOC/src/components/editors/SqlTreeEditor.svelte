@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
-	import { FlexLayout, Text } from "@ingenieria_insoft/ispsveltecomponents";
+	import { FlexLayout, Text, Iconify, Chip } from "@ingenieria_insoft/ispsveltecomponents";
 	import TreeView from "../_comps/TreeView/TreeRowView.svelte";
 	import type { ParsedTable } from "../../lib/tableSchema";
 	import { COMMON_COLUMN_TYPES } from "../../lib/tableSchema";
@@ -11,15 +11,17 @@
 	export let prefix: string = "";
 	export let onChange: (t: ParsedTable) => void = () => {};
 
-	let lastTableRef: ParsedTable | null = null;
+	function tableKey(t: ParsedTable): string { return `${t.fragmentId}::${t.originalName}`; }
+
+	let lastKey = tableKey(table);
 	let adapter: SqlTreeAdapter = createAdapter(table);
 
 	function createAdapter(t: ParsedTable): SqlTreeAdapter {
-		lastTableRef = t;
+		lastKey = tableKey(t);
 		return new SqlTreeAdapter(t, (next) => onChange(next));
 	}
 
-	$: if (table !== lastTableRef) {
+	$: if (tableKey(table) !== lastKey) {
 		adapter = createAdapter(table);
 	}
 
@@ -28,32 +30,23 @@
 	});
 
 	$: baseName = prefix && table.name.startsWith(prefix) ? table.name.slice(prefix.length) : table.name;
+	let baseNameDraft = baseName;
+	$: baseNameDraft = baseName;
+	let commentDraft = table.comment;
+	$: commentDraft = table.comment;
 
-	function setBaseName(v: string): void {
+	function commitBaseName(v: string): void {
 		const p = prefix && table.name.startsWith(prefix) ? prefix : "";
-		table.name = (p + v).toUpperCase().replace(/[^A-Z0-9_]/g, "_");
+		const next = (p + v).toUpperCase().replace(/[^A-Z0-9_]/g, "_");
+		if (next === table.name) return;
+		table.name = next;
 		onChange(table);
 	}
 
-	function setComment(v: string): void {
+	function commitComment(v: string): void {
+		if (v === table.comment) return;
 		table.comment = v;
 		onChange(table);
-	}
-
-	function patchNode(node: TSqlNodeUX, patch: Partial<TSqlNodeUX>): void {
-		adapter.commitInlineEdit(node, patch);
-	}
-
-	function togglePk(node: TSqlNodeUX, checked: boolean): void {
-		const composite = table.compositePrimaryKey;
-		if (composite.length > 0) {
-			const set = new Set(composite);
-			if (checked) set.add(node.rowName); else set.delete(node.rowName);
-			table.compositePrimaryKey = [...set];
-			onChange(table);
-		} else {
-			patchNode(node, { primaryKey: checked });
-		}
 	}
 
 	function isPk(node: TSqlNodeUX): boolean {
@@ -72,8 +65,8 @@
 			<input
 				class="input-field name-input"
 				type="text"
-				value={baseName}
-				on:input={(e) => setBaseName((e.currentTarget).value)}
+				bind:value={baseNameDraft}
+				on:change={(e) => commitBaseName((e.currentTarget).value)}
 			/>
 		</div>
 	</FlexLayout>
@@ -83,8 +76,8 @@
 		<input
 			class="input-field"
 			type="text"
-			value={table.comment}
-			on:input={(e) => setComment((e.currentTarget).value)}
+			bind:value={commentDraft}
+			on:change={(e) => commitComment((e.currentTarget).value)}
 		/>
 	</label>
 
@@ -94,103 +87,166 @@
 		{/each}
 	</datalist>
 
-	<TreeView
-		Obj={adapter.obj}
-		itdForm="edit"
-		brapido={true}
-		small={false}
-		readonly={false}
-		bdrag={true}
-		bAllowed={{ Crear: true, Modificar: true, Eliminar: true, Visualizar: true }}
-		showToolbar={true}
-		CatalogoController={adapter.catalogoController}
-		TreeController={adapter}
-		objWorking={adapter.objWorking}
-	>
-		<svelte:fragment slot="row" let:node>
-			{#if node.obj.kind === "section"}
-				<FlexLayout items="center" style="flex:1; min-width:0;">
-					<span class="badge badge-section">Sección</span>
-					<input
-						class="input-field section-name"
-						type="text"
-						value={node.obj.rowName}
-						on:input={(e) => patchNode(node.obj, { rowName: (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_") })}
-					/>
-				</FlexLayout>
-			{:else}
-				<FlexLayout items="center" style="flex:1; min-width:0; gap:0.4rem;">
-					<span class="idx">{node.id}</span>
-					<input
-						class="input-field col-name"
-						type="text"
-						value={node.obj.rowName}
-						placeholder="NOMBRE"
-						on:input={(e) => patchNode(node.obj, { rowName: (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_") })}
-					/>
-					<input
-						class="input-field col-type"
-						type="text"
-						list={dataListId()}
-						value={node.obj.colType}
-						placeholder="TIPO"
-						on:input={(e) => patchNode(node.obj, { colType: (e.currentTarget).value.toUpperCase().replace(/\s+/g, "") })}
-					/>
-					<label class="cell" title="NOT NULL">
-						<input
-							type="checkbox"
-							checked={node.obj.nullable === "NOT NULL"}
-							on:change={(e) => patchNode(node.obj, { nullable: (e.currentTarget).checked ? "NOT NULL" : "" })}
-						/>
-						<small>NN</small>
-					</label>
-					<input
-						class="input-field col-default"
-						type="text"
-						placeholder="DEFAULT…"
-						value={node.obj.defaultValue}
-						on:input={(e) => patchNode(node.obj, { defaultValue: (e.currentTarget).value })}
-					/>
-					<label class="cell" title="Primary Key">
-						<input
-							type="checkbox"
-							checked={isPk(node.obj)}
-							on:change={(e) => togglePk(node.obj, (e.currentTarget).checked)}
-						/>
-						<small>PK</small>
-					</label>
-				</FlexLayout>
-			{/if}
-		</svelte:fragment>
-		<svelte:fragment slot="Frm"></svelte:fragment>
-	</TreeView>
+	<div class="tree-host">
+		<TreeView
+			Obj={adapter.obj}
+			itdForm="edit"
+			brapido={true}
+			small={false}
+			readonly={false}
+			bdrag={true}
+			showToolbar={true}
+			CatalogoController={adapter.catalogoController}
+			TreeController={adapter}
+			objWorking={adapter.objWorking}
+		>
+			<svelte:fragment slot="row" let:node>
+				{#if node.obj.kind === "section"}
+					<FlexLayout items="center" style="flex:1; min-width:0;">
+						<Iconify icon="mdi:folder-outline" />
+						<span class="badge badge-section">Sección</span>
+						<Text style="font-weight:bold;" lines={1}>{node.obj.rowName || "(sin nombre)"}</Text>
+					</FlexLayout>
+				{:else}
+					<FlexLayout items="center" justify="between" style="flex:1; min-width:0; gap:0.5rem;">
+						<FlexLayout items="center" style="flex: 0 1 auto; min-width: 0; gap:0.4rem;">
+							<Chip style="min-width:2.5rem;">{node.id}</Chip>
+							<Text style="font-weight:600; min-width: 6rem;" lines={1}>{node.obj.rowName || "(columna)"}</Text>
+							<Text color="neutral" lines={1}><code>{node.obj.colType || "—"}</code></Text>
+							{#if node.obj.nullable === "NOT NULL"}
+								<span class="tag tag-nn">NN</span>
+							{/if}
+							{#if isPk(node.obj)}
+								<span class="tag tag-pk">PK</span>
+							{/if}
+							{#if node.obj.defaultValue}
+								<Text color="neutral" lines={1}><small>def: <code>{node.obj.defaultValue}</code></small></Text>
+							{/if}
+						</FlexLayout>
+					</FlexLayout>
+				{/if}
+			</svelte:fragment>
+
+			<svelte:fragment slot="Frm" let:frmObj>
+				{#if frmObj}
+					{#if frmObj.kind === "section"}
+						<div class="frm">
+							<label class="field">
+								<Text color="neutral"><small>Nombre de la sección</small></Text>
+								<input
+									class="input-field"
+									type="text"
+									bind:value={frmObj.rowName}
+									on:input={(e) => { frmObj.rowName = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_ ]/g, "_"); }}
+								/>
+							</label>
+						</div>
+					{:else}
+						<div class="frm">
+							<label class="field">
+								<Text color="neutral"><small>Nombre</small></Text>
+								<input
+									class="input-field"
+									type="text"
+									bind:value={frmObj.rowName}
+									on:input={(e) => { frmObj.rowName = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"); }}
+								/>
+							</label>
+							<label class="field">
+								<Text color="neutral"><small>Tipo</small></Text>
+								<input
+									class="input-field"
+									type="text"
+									list={dataListId()}
+									bind:value={frmObj.colType}
+									on:input={(e) => { frmObj.colType = (e.currentTarget).value.toUpperCase().replace(/\s+/g, ""); }}
+								/>
+							</label>
+							<label class="field row">
+								<input
+									type="checkbox"
+									checked={frmObj.nullable === "NOT NULL"}
+									on:change={(e) => { frmObj.nullable = (e.currentTarget).checked ? "NOT NULL" : ""; }}
+								/>
+								<Text>NOT NULL</Text>
+							</label>
+							<label class="field">
+								<Text color="neutral"><small>DEFAULT</small></Text>
+								<input
+									class="input-field"
+									type="text"
+									bind:value={frmObj.defaultValue}
+								/>
+							</label>
+							<label class="field row">
+								<input
+									type="checkbox"
+									checked={!!frmObj.primaryKey}
+									on:change={(e) => { frmObj.primaryKey = (e.currentTarget).checked; }}
+								/>
+								<Text>PRIMARY KEY</Text>
+							</label>
+							<label class="field">
+								<Text color="neutral"><small>Extra (IDENTITY, CHECK…)</small></Text>
+								<input
+									class="input-field"
+									type="text"
+									bind:value={frmObj.colExtra}
+								/>
+							</label>
+						</div>
+					{/if}
+				{/if}
+			</svelte:fragment>
+		</TreeView>
+	</div>
 </div>
 
 <style>
 	.sql-tree-card { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; }
+	.tree-host {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		min-height: 240px;
+		max-height: 60vh;
+		overflow: auto;
+		border: 1px solid var(--is-b-color);
+		border-radius: 0.25rem;
+		background: var(--is-bg-primary);
+		padding: 0.25rem;
+	}
 	.name-row { display: inline-flex; align-items: center; gap: 0.25rem; }
-	.prefix { color: var(--is-neutral); font-family: monospace; }
+	.prefix { color: var(--is-color); opacity: 0.7; font-family: monospace; }
 	.input-field {
 		padding: 0.2rem 0.4rem;
-		border: 1px solid var(--is-border, #ccc);
+		border: 1px solid var(--is-b-color);
 		border-radius: 0.25rem;
 		font-family: inherit;
 		font-size: 0.9rem;
-		background: var(--is-surface, #fff);
+		background: var(--is-bg-secondary);
+		color: var(--is-color);
+		outline: none;
 	}
+	.input-field:focus { border-color: var(--is-primary); }
 	.name-input { font-weight: bold; min-width: 12rem; }
-	.col-name { min-width: 8rem; }
-	.col-type { min-width: 9rem; }
-	.col-default { min-width: 8rem; flex: 1; }
-	.section-name { font-weight: bold; min-width: 14rem; flex: 1; }
-	.idx { font-family: monospace; min-width: 2.5rem; color: var(--is-neutral, #666); font-size: 0.8rem; }
-	.cell { display: inline-flex; align-items: center; gap: 0.2rem; }
+	.field { display: flex; flex-direction: column; gap: 0.15rem; }
+	.field.row { flex-direction: row; align-items: center; gap: 0.5rem; }
+	.frm { display: flex; flex-direction: column; gap: 0.6rem; padding: 1rem; }
+	.tag {
+		padding: 0 0.35rem;
+		border-radius: 0.2rem;
+		font-size: 0.7rem;
+		font-weight: bold;
+		line-height: 1.4;
+	}
+	.tag-nn { background: color-mix(in srgb, var(--is-info) 25%, transparent); color: var(--is-info); }
+	.tag-pk { background: color-mix(in srgb, var(--is-success) 25%, transparent); color: var(--is-success); }
 	.badge {
 		padding: 0.1rem 0.4rem;
 		border-radius: 0.2rem;
 		font-size: 0.75rem;
 		font-weight: bold;
 	}
-	.badge-section { background: var(--is-warning-soft, #fff3cd); color: var(--is-warning, #C9A227); }
-	.field { display: flex; flex-direction: column; gap: 0.15rem; }
+	.badge-section { background: color-mix(in srgb, var(--is-warning) 25%, transparent); color: var(--is-warning); }
 </style>

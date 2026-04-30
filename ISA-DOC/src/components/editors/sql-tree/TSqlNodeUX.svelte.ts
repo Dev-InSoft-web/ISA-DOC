@@ -1,10 +1,9 @@
-import { TObject } from "@ingenieria_insoft/ispgen";
 import { TreeNodeUX } from "../../_comps/TreeView/TreeRowView.svelte";
 import type { TableColumn, TableSection } from "../../../lib/tableSchema";
 
 export type SqlNodeKind = "section" | "column";
 
-export class TSqlNodeBase extends TObject {
+export class TSqlNodeBase {
 	rowId: string = "";
 	ireference: string = "";
 	tableId: string = "";
@@ -16,16 +15,12 @@ export class TSqlNodeBase extends TObject {
 	defaultValue: string = "";
 	primaryKey: boolean = false;
 	colExtra: string = "";
-
-	constructor() {
-		super();
-	}
 }
 
 export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
-	public declare stack: TObject;
+	public declare stack: any;
 
-	constructor(data?: Partial<TSqlNodeBase>, stack?: TObject) {
+	constructor(data?: Partial<TSqlNodeBase>, stack?: any) {
 		super();
 		if (data) Object.assign(this, data);
 		this.obj = this as unknown as TSqlNodeUX;
@@ -67,7 +62,14 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 		return { kind: "section", name: this.rowName };
 	}
 
-	static fromColumn(col: TableColumn, id: string, ireference: string, tableId: string, stack?: TObject): TSqlNodeUX {
+	clone(): TSqlNodeUX {
+		const c = Object.create(TSqlNodeUX.prototype) as TSqlNodeUX;
+		Object.assign(c, this);
+		c.children = [];
+		return c;
+	}
+
+	static fromColumn(col: TableColumn, id: string, ireference: string, tableId: string, stack?: any): TSqlNodeUX {
 		return new TSqlNodeUX({
 			rowId: id,
 			ireference,
@@ -82,7 +84,7 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 		}, stack);
 	}
 
-	static fromSection(sec: TableSection, id: string, tableId: string, stack?: TObject): TSqlNodeUX {
+	static fromSection(sec: TableSection, id: string, tableId: string, stack?: any): TSqlNodeUX {
 		return new TSqlNodeUX({
 			rowId: id,
 			ireference: "",

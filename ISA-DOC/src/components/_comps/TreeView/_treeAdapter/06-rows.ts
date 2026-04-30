@@ -1,11 +1,11 @@
 import type { ButtonIconifyProps, ComponentColor, IconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
-import type { FlexOptionsAction } from "../../Options/FlexOptions.svelte";
+import type { FlexOptionsAction, FlexOptionsInput } from "../../Options/FlexOptions.svelte";
 import { TreeRowAdapter } from "./_rowAdapter/02-events";
 import { type INode, type ITreeData } from "./_rowAdapter/00-base";
 import type { RowItemProps } from "../_rowItem.svelte";
 import { TAMutations } from "./05-mutations";
 
-type CascadeOptionsInput = FlexOptionsAction;
+type CascadeOptionsInput = FlexOptionsInput;
 
 export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>> extends TAMutations<Stacker, TWorking> {
 
@@ -127,7 +127,7 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 		draggable?: boolean;
 		isFirst?: boolean;
 		isLast?: boolean;
-		actions?: FlexOptionsAction[];
+		actions?: FlexOptionsInput[];
 		cascadeOptions?: CascadeOptionsInput[];
 		events?: {
 			onopen?: () => void;
@@ -157,7 +157,7 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 		const mutDisabled = this.isViewMode && !this.isReadOnly;
 		const rdTitle = (base: string) => mutDisabled ? `${base} (Modo lectura)` : base;
 
-		const actions: FlexOptionsAction[] = this.isReadOnly ? [] : [
+		const actions: FlexOptionsInput[] = this.isReadOnly ? [] : [
 			this.particularactionsrow(node),
 			...(this.bdrag ? [[
 				{
