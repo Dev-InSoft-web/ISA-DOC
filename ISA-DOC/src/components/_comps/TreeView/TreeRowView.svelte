@@ -24,6 +24,7 @@
       objWorking?: INode<TWorking> | null;
       showToolbar?: boolean;
       bdrag?: boolean;
+      bLostFocus?: boolean;
       addReferenceId?: string | null;
       resourceSelectorOpen?: boolean;
    }
@@ -54,6 +55,7 @@
    export let brapido: $$Props["brapido"] = false;
    export let small: $$Props["small"] = false;
    export let bdrag: $$Props["bdrag"] = true;
+   export let bLostFocus: $$Props["bLostFocus"] = false;
 
    let editRowShow = false;
    let bshowEliminar = false;
@@ -194,6 +196,7 @@
          small,
          brapido,
          bdrag,
+         bLostFocus,
          CatalogoController,
          TreeController,
          showToolbar,

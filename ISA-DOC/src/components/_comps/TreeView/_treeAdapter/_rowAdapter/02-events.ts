@@ -140,6 +140,10 @@ export class TreeRowAdapter<TStacker, TWorking extends ITreeData<TWorking>> exte
 	}
 	onsummaryfocus(e: FocusEvent) {
 		try {
+			if (this.treeAdapter.bLostFocus) {
+				this.effectiveRowConfig?.events?.onfocus?.();
+				return;
+			}
 			const summaryEl = e.currentTarget as HTMLElement;
 			this.treeAdapter.blurTreeSummariesExcept(summaryEl);
 			this.rowNode && this.onrowfocus(this.rowNode);

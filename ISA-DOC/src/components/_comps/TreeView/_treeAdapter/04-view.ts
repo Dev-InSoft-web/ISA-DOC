@@ -44,6 +44,7 @@ export abstract class TAView<Stacker, TWorking extends ITreeData<TWorking>> exte
 
 	
 	protected focusRowById(nodeId: string): void {
+		if (this.bLostFocus) return;
 		if (typeof window === "undefined" || !nodeId) return;
 		const attempt = () => {
 			const row = document.querySelector<HTMLElement>(`[data-idrow="${CSS.escape(nodeId)}"]`);
@@ -58,6 +59,7 @@ export abstract class TAView<Stacker, TWorking extends ITreeData<TWorking>> exte
 
 	
 	refocusFocusedRowSummary(): void {
+		if (this.bLostFocus) return;
 		if (typeof window === "undefined") return;
 		const id = this._focusedRowId;
 		if (!id) return;

@@ -63,6 +63,7 @@ export abstract class TTreeAdapterContext<Stacker, TWorking extends ITreeData<TW
 	get isViewMode(): boolean { return this.context.itdForm === "view" }
 	get isReadOnly(): boolean { return !!this.context.readonly }
 	get bdrag(): boolean { return this.context.bdrag !== false }
+	get bLostFocus(): boolean { return !!this.context.bLostFocus }
 	get isBrapido(): boolean { return !!this.context.brapido }
 
 	

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from "svelte";
+	import { BlockLayout } from "@ingenieria_insoft/ispsveltecomponents";
 	import { EditorView, lineNumbers } from "@codemirror/view";
 	import { EditorState, Compartment, type Extension } from "@codemirror/state";
 	import { sql } from "@codemirror/lang-sql";
@@ -76,11 +77,12 @@
 				extensions: [
 					lineNumbers(),
 					foldGutter(),
+					EditorView.lineWrapping,
 					vsCodeDark,
 					syntaxHighlighting(vsCodeHighlight),
 					syntaxHighlighting(defaultHighlightStyle),
 					langCompartment.of(langExt(lang)),
-					heightCompartment.of(EditorView.theme({ "&": { height, fontSize: "0.78rem" } })),
+					heightCompartment.of(EditorView.theme({ "&": { fontSize: "0.78rem" } })),
 					editableCompartment.of([
 						EditorView.editable.of(editable),
 						EditorState.readOnly.of(!editable),
@@ -100,7 +102,7 @@
 
 	$: if (view && (value ?? "") !== lastDispatchedText) dispatchUpdate();
 	$: if (view) view.dispatch({ effects: langCompartment.reconfigure(langExt(lang)) });
-	$: if (view) view.dispatch({ effects: heightCompartment.reconfigure(EditorView.theme({ "&": { height, fontSize: "0.78rem" } })) });
+	$: if (view) view.dispatch({ effects: heightCompartment.reconfigure(EditorView.theme({ "&": { fontSize: "0.78rem" } })) });
 	$: if (view) view.dispatch({ effects: editableCompartment.reconfigure([
 		EditorView.editable.of(editable),
 		EditorState.readOnly.of(!editable),
@@ -109,17 +111,27 @@
 	onDestroy(() => { view?.destroy(); view = null; });
 </script>
 
-<div class="cm-host" bind:this={host}></div>
+<BlockLayout class="cm-wrap" style="height: {height};">
+	<div class="cm-host" bind:this={host}></div>
+</BlockLayout>
 
 <style>
-	.cm-host {
-		height: 100%;
-		min-height: 0;
+	:global(.cm-wrap) {
 		border-radius: 6px;
 		overflow: hidden;
-		display: flex;
-		flex-direction: column;
+		min-height: 0;
+		width: 100%;
+		min-width: 0;
 	}
-	.cm-host :global(.cm-editor) { border-radius: 6px; flex: 1 1 auto; min-height: 0; max-height: 100%; }
-	.cm-host :global(.cm-scroller) { overflow: auto; }
+	.cm-host {
+		min-height: 0;
+		min-width: 0;
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
+	.cm-host :global(.cm-editor) { border-radius: 6px; height: 100%; max-width: 100%; }
+	.cm-host :global(.cm-scroller) { overflow: auto; max-width: 100%; }
+	.cm-host :global(.cm-content) { white-space: pre-wrap; word-break: break-word; }
+	.cm-host :global(.cm-line) { word-break: break-word; }
 </style>

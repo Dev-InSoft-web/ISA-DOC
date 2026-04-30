@@ -167,6 +167,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	}
 	focusSummary(summary?: HTMLElement) {
 		if (!summary) return;
+		if (this.treeAdapter.bLostFocus) return;
 		this.treeAdapter.blurTreeSummariesExcept(summary);
 		summary.focus();
 		if (document.activeElement !== summary) {

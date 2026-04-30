@@ -92,7 +92,7 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 	}
 
 	getlevelname(nivel?: number, _record?: any): string {
-		return nivel === 1 ? "Prefijo" : "Tabla";
+		return nivel === 1 ? "prefijo" : "tabla";
 	}
 
 	getEditDriverAttrs(): any[] { return []; }
@@ -114,7 +114,13 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 		}
 	}
 
-	override getToolsBarActions(): any[] { return []; }
+	protected override getNodeIcon(node: any) {
+		const obj = node?.obj as TTableNodeUX | undefined;
+		if (obj?.kind === "table") {
+			return { icon: "mdi:table", color: "info" as const };
+		}
+		return null;
+	}
 
 	protected getNewNodeDefaults(_referenceId: string): Partial<TTableNodeUX> {
 		return { kind: "prefix", rowName: "NUEVO_", prefix: "NUEVO_" } as Partial<TTableNodeUX>;

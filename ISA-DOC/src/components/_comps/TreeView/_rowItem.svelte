@@ -319,6 +319,7 @@
                min-height: 2em;
                flex: 1;
                min-width: 0;
+               gap: 0.6rem;
             }
          }
          & .trvwr-itm-lead--icon {

@@ -144,13 +144,15 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 		const isFolder = !isLastNode && (hasChildren || !node.isLeaf);
 		const isEmptyFolder = isFolder && !hasChildren;
 		const isExpanded = rowController?.isNodeOpen ?? this._expandedNodes.some((n) => n.id === node.id);
-		const icon = isLastNode
+		const defaultIcon = isLastNode
 			? "mdi:file-document-outline"
 			: hasChildren
 				? (isExpanded ? "mdi:folder-open-outline" : "mdi:folder-outline")
 				: isFolder
 					? "mdi:folder-plus-outline"
 					: "mdi:file-outline";
+		const iconOverride = this.getNodeIcon(node, { isLastNode, isFolder, hasChildren, isExpanded, isEmptyFolder });
+		const icon = iconOverride?.icon ?? defaultIcon;
 		const isFolderIcon = !isLastNode && icon.includes("folder");
 		const isFirstPos = rowController?.siblingPos.isFirst ?? false;
 		const isLastPos = rowController?.siblingPos.isLast ?? false;
@@ -217,8 +219,10 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 		return {
 			icono: {
 				icon,
-				color: isLastNode ? "info" : (!isFolderIcon ? "color" : undefined),
-				...(isFolderIcon ? { style: isEmptyFolder ? "color: #9e9e9e" : "color: #C9A227" } : {}),
+				color: iconOverride?.color ?? (isLastNode ? "info" : (!isFolderIcon ? "color" : undefined)),
+				...(iconOverride?.style !== undefined
+					? { style: iconOverride.style }
+					: (isFolderIcon ? { style: isEmptyFolder ? "color: #9e9e9e" : "color: #C9A227" } : {})),
 			},
 			actions,
 			cascadeOptions,
@@ -230,6 +234,8 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 			},
 		};
 	}
+
+	protected getNodeIcon(_node: INode<TWorking>, _ctx: { isLastNode: boolean; isFolder: boolean; hasChildren: boolean; isExpanded: boolean; isEmptyFolder: boolean }): { icon?: string; color?: ComponentColor; style?: string } | null { return null; }
 
 	protected isDirty(current: unknown, original: unknown): boolean { return original ? JSON.stringify(current) !== JSON.stringify(original) : false }
 }
