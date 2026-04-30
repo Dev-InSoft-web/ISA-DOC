@@ -35,6 +35,8 @@
 	let modalTitle = "";
 	let modalValue = "";
 	let modalLanguage: "sql" | "ts" = "sql";
+	let modalCompare: string | null = null;
+	let modalCompareLabel = "Prod";
 
 	const adapter = new TablesBrowserAdapter([], onAdapterChange);
 	adapter.onTableSelect = (key) => { selectedKey = key; };
@@ -136,10 +138,12 @@
 		}
 	}
 
-	function openCodeModal(title: string, value: string, language: "sql" | "ts" = "ts"): void {
+	function openCodeModal(title: string, value: string, language: "sql" | "ts" = "ts", compareValue: string | null = null, compareLabel: string = "Prod"): void {
 		modalTitle = title;
 		modalValue = value;
 		modalLanguage = language;
+		modalCompare = compareValue;
+		modalCompareLabel = compareLabel;
 		modalShow = true;
 	}
 
@@ -255,109 +259,61 @@
 				{@const prodClient = prodFrags.filter((p: any) => p.role === "client")}
 
 				{#key tableKey(t)}
-					<Card variant="flat">
+					<div class="code-card">
 						<FlexLayout items="center" justify="between">
 							<FlexLayout items="center">
 								<Iconify icon="mdi:database" />
 								<Text color="neutral"><small>SQL · DROP + CREATE</small></Text>
 							</FlexLayout>
 							<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${t.name} · SQL`, `${emitDropTable(t)}\n\n${emitTable(t)}`, "sql")}>
-								<Iconify icon="mdi:eye-outline" /> Ver
+								<Iconify icon="mdi:open-in-new" /> Abrir
 							</Button>
 						</FlexLayout>
 						<CodeViewer value={`${emitDropTable(t)}\n\n${emitTable(t)}`} lang="sql" height="180px" />
-					</Card>
+					</div>
 
 					{#if cfg}
 						{@const modelCode = genModelo(cfg, autogen.resources)}
 						{@const serverCode = genServer(cfg, autogen.resources)}
 						{@const clientCode = genClient(cfg)}
 
-						<Card variant="flat">
-							<FlexLayout items="center"><Iconify icon="mdi:cube-outline" /><Text color="neutral"><small>Modelo</small></Text></FlexLayout>
-							<div class="cmp-row">
-								<div class="cmp-col cmp-local">
-									<FlexLayout items="center" justify="between">
-										<Text color="neutral"><small>Local</small></Text>
-										<Button variant="outlined" style="width:fit-content;" onClick={() => openCodeModal(`${cfg.className} · Local`, modelCode)}><Iconify icon="mdi:eye-outline" /></Button>
-									</FlexLayout>
-									<CodeViewer value={modelCode} lang="ts" height="180px" />
-								</div>
-								<div class="cmp-col cmp-prod">
-									{#if prodPojo.length === 0}
-										<Text color="neutral"><small>Prod — sin fragmento</small></Text>
-										<CodeViewer value="" lang="ts" height="180px" />
-									{:else}
-										{@const pf = prodPojo[0]}
-										<FlexLayout items="center" justify="between">
-											<Text color="neutral"><small>Prod · <code>{pf.sourceFile}</code></small></Text>
-											<Button variant="outlined" style="width:fit-content;" onClick={() => openCodeModal(`${t.name} · Prod Modelo`, pf.body)}><Iconify icon="mdi:eye-outline" /></Button>
-										</FlexLayout>
-										<CodeViewer value={pf.body} lang="ts" height="180px" />
-									{/if}
-								</div>
-							</div>
-						</Card>
+						<div class="code-card">
+							<FlexLayout items="center" justify="between">
+								<FlexLayout items="center"><Iconify icon="mdi:cube-outline" /><Text color="neutral"><small>Modelo</small></Text></FlexLayout>
+								<Button variant="outlined" style="width:fit-content;" onClick={() => openCodeModal(`${cfg.className} · Modelo`, modelCode, "ts", prodPojo[0]?.body ?? "", prodPojo[0] ? `Prod · ${prodPojo[0].sourceFile}` : "Prod — sin fragmento")}>
+									<Iconify icon="mdi:open-in-new" /> Abrir
+								</Button>
+							</FlexLayout>
+							<CodeViewer value={modelCode} lang="ts" height="180px" />
+						</div>
 
-						<Card variant="flat">
-							<FlexLayout items="center"><Iconify icon="mdi:server" /><Text color="neutral"><small>Server</small></Text></FlexLayout>
-							<div class="cmp-row">
-								<div class="cmp-col cmp-local">
-									<FlexLayout items="center" justify="between">
-										<Text color="neutral"><small>Local</small></Text>
-										<Button variant="outlined" style="width:fit-content;" onClick={() => openCodeModal(`${cfg.className} · Server`, serverCode)}><Iconify icon="mdi:eye-outline" /></Button>
-									</FlexLayout>
-									<CodeViewer value={serverCode} lang="ts" height="180px" />
-								</div>
-								<div class="cmp-col cmp-prod">
-									{#if prodServer.length === 0}
-										<Text color="neutral"><small>Prod — sin fragmento</small></Text>
-										<CodeViewer value="" lang="ts" height="180px" />
-									{:else}
-										{@const pf = prodServer[0]}
-										<FlexLayout items="center" justify="between">
-											<Text color="neutral"><small>Prod · <code>{pf.sourceFile}</code></small></Text>
-											<Button variant="outlined" style="width:fit-content;" onClick={() => openCodeModal(`${t.name} · Prod Server`, pf.body)}><Iconify icon="mdi:eye-outline" /></Button>
-										</FlexLayout>
-										<CodeViewer value={pf.body} lang="ts" height="180px" />
-									{/if}
-								</div>
-							</div>
-						</Card>
+						<div class="code-card">
+							<FlexLayout items="center" justify="between">
+								<FlexLayout items="center"><Iconify icon="mdi:server" /><Text color="neutral"><small>Server</small></Text></FlexLayout>
+								<Button variant="outlined" style="width:fit-content;" onClick={() => openCodeModal(`${cfg.className} · Server`, serverCode, "ts", prodServer[0]?.body ?? "", prodServer[0] ? `Prod · ${prodServer[0].sourceFile}` : "Prod — sin fragmento")}>
+									<Iconify icon="mdi:open-in-new" /> Abrir
+								</Button>
+							</FlexLayout>
+							<CodeViewer value={serverCode} lang="ts" height="180px" />
+						</div>
 
-						<Card variant="flat">
-							<FlexLayout items="center"><Iconify icon="mdi:monitor" /><Text color="neutral"><small>Client</small></Text></FlexLayout>
-							<div class="cmp-row">
-								<div class="cmp-col cmp-local">
-									<FlexLayout items="center" justify="between">
-										<Text color="neutral"><small>Local</small></Text>
-										<Button variant="outlined" style="width:fit-content;" onClick={() => openCodeModal(`${cfg.className} · Client`, clientCode)}><Iconify icon="mdi:eye-outline" /></Button>
-									</FlexLayout>
-									<CodeViewer value={clientCode} lang="ts" height="180px" />
-								</div>
-								<div class="cmp-col cmp-prod">
-									{#if prodClient.length === 0}
-										<Text color="neutral"><small>Prod — sin fragmento</small></Text>
-										<CodeViewer value="" lang="ts" height="180px" />
-									{:else}
-										{@const pf = prodClient[0]}
-										<FlexLayout items="center" justify="between">
-											<Text color="neutral"><small>Prod · <code>{pf.sourceFile}</code></small></Text>
-											<Button variant="outlined" style="width:fit-content;" onClick={() => openCodeModal(`${t.name} · Prod Client`, pf.body)}><Iconify icon="mdi:eye-outline" /></Button>
-										</FlexLayout>
-										<CodeViewer value={pf.body} lang="ts" height="180px" />
-									{/if}
-								</div>
-							</div>
-						</Card>
+						<div class="code-card">
+							<FlexLayout items="center" justify="between">
+								<FlexLayout items="center"><Iconify icon="mdi:monitor" /><Text color="neutral"><small>Client</small></Text></FlexLayout>
+								<Button variant="outlined" style="width:fit-content;" onClick={() => openCodeModal(`${cfg.className} · Client`, clientCode, "ts", prodClient[0]?.body ?? "", prodClient[0] ? `Prod · ${prodClient[0].sourceFile}` : "Prod — sin fragmento")}>
+									<Iconify icon="mdi:open-in-new" /> Abrir
+								</Button>
+							</FlexLayout>
+							<CodeViewer value={clientCode} lang="ts" height="180px" />
+						</div>
 					{/if}
 				{/key}
 			{/if}
-		</section>
+		</BlockLayout>
 	</div>
 </section>
 
-<CodeModal bind:bshow={modalShow} title={modalTitle} value={modalValue} language={modalLanguage} />
+<CodeModal bind:bshow={modalShow} title={modalTitle} value={modalValue} language={modalLanguage} compareValue={modalCompare} compareLabel={modalCompareLabel} valueLabel="Local" />
 
 <style>
 	.browser {
@@ -371,9 +327,9 @@
 		grid-template-columns: minmax(140px, 12rem) minmax(0, 1.4fr) minmax(0, 1fr);
 		gap: 0.5rem;
 		min-height: 0;
-		max-height: calc(100vh - 14rem);
+		height: calc(100vh - 14rem);
 	}
-	.tree-pane {
+	:global(.tree-pane) {
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
@@ -389,7 +345,10 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 280px;
-		font-size: 0.85rem;
+		font-size: 0.6em;
+	}
+	.tables-tree-host :global(.trvwr-itm-children) {
+		padding-inline-start: 0.6rem !important;
 	}
 	.tree-row {
 		display: inline-flex;
@@ -409,7 +368,7 @@
 		margin-left: auto;
 		padding-left: 0.5rem;
 	}
-	.form-pane, .code-pane {
+	:global(.form-pane), :global(.code-pane) {
 		min-width: 0;
 		min-height: 0;
 		display: flex;
@@ -418,26 +377,13 @@
 		overflow: auto;
 		height: 100%;
 	}
-	.cmp-row {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 0.5rem;
-		margin-top: 0.4rem;
-	}
-	.cmp-col {
-		border-radius: 6px;
-		padding: 0.4rem;
+	.code-card {
 		display: flex;
 		flex-direction: column;
 		gap: 0.35rem;
-		border: 2px solid;
-		min-width: 0;
-		background: var(--is-bg-primary);
 	}
-	.cmp-local { border-color: var(--is-success, #2e7d32); }
-	.cmp-prod { border-color: var(--is-neutral, #9e9e9e); }
 	@media (max-width: 900px) {
 		.layout { grid-template-columns: 1fr; max-height: none; }
-		.tree-pane, .form-pane, .code-pane { height: auto; max-height: none; }
+		:global(.tree-pane), :global(.form-pane), :global(.code-pane) { height: auto; max-height: none; }
 	}
 </style>
