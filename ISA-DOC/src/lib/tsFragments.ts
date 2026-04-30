@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const REPO_BASE = path.resolve(__dirname, "..", "..", "..", "..");
-const REGIONS_MAP_PATH = path.resolve(__dirname, "..", "..", "public", "db", "regionsMap.json");
+const REGIONS_MAP_PATH = path.resolve(__dirname, "..", "..", "public", "bd", "regionsMap.json");
 
 export type TsFragmentRole = "pojo" | "server" | "client";
 

@@ -1,18 +1,39 @@
 ﻿<svelte:options accessors={true} />
 
 <script context="module" lang="ts">
-   import type { TControllerCatalogoGen, TObject } from "@ingenieria_insoft/ispgen";
-   import { AccionesGen, ActionDrawer, Button, FlexLayout, Iconify, Input, Modal, Text, type ICtxGrid } from "@ingenieria_insoft/ispsveltecomponents";
+   import type { TControllerCatalogoGen, TDAction, TObject } from "@ingenieria_insoft/ispgen";
+   import { AccionesGen, ActionDrawer, Button, FlexLayout, Iconify, Input, Modal, Text, type ICtxAction, type ICtxGrid, type TDForm } from "@ingenieria_insoft/ispsveltecomponents";
+   import type { HTMLAttributes } from "svelte/elements";
    import type { FlexOptionsAction } from "../Options/FlexOptions.svelte";
    import FlexOptions from "../Options/FlexOptions.svelte";
    import RowItem from "./_rowItem.svelte";
    import { ComplexControl } from "./_treeAdapter/00-complex-control";
    import { type INode, type ITreeData, groupedWithSeparators, objRootsToNodes, TreeRowAdapter, TreeNodeUX } from "./_treeAdapter/_rowAdapter";
    import { TreeAdapter } from "./_treeAdapter/06-rows";
-   import type { MainFormLayoutProps } from "../containers/form/MainFormLayout.svelte";
-   import type { CatalogoController, ActionSecurityProps } from "../containers/form/Security/SecurityLayout.svelte";
    export { ComplexControl, TreeAdapter, TreeRowAdapter, TreeNodeUX, groupedWithSeparators, objRootsToNodes };
    export type { INode, ITreeData };
+
+   /** Mapa de permisos por acción. ISA no requiere JWT: por defecto se autoriza todo. */
+   export type TBAllowed = { [K in TDAction]?: boolean };
+   export interface ISeguridadBase {
+      isysrecurso?: string;
+      bAllowed?: TBAllowed;
+      jwtLoaded?: boolean;
+      onPermissionError?: (msg: string) => void;
+   }
+   export interface CatalogoController<TObj extends TObject> extends ISeguridadBase, ICtxAction<TObj> {}
+   export interface ActionSecurityProps<TObj extends TObject> {
+      CatalogoController: CatalogoController<TObj>;
+      bAllowed?: TBAllowed;
+   }
+   export interface MainFormLayoutProps<T extends TObject> extends HTMLAttributes<HTMLDivElement> {
+      Obj: T;
+      itdForm: TDForm;
+      bAllowed?: TBAllowed;
+      brapido?: boolean;
+      readonly?: boolean;
+      small?: boolean;
+   }
    export interface TreeViewProps<Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObject>
       extends MainFormLayoutProps<Stacker>, ActionSecurityProps<TWorking> {
       CatalogoController: TControllerCatalogoGen<TWorking> & ICtxGrid<TWorking> & CatalogoController<TWorking>;

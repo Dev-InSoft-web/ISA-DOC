@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+?<script lang="ts">
 	import { onMount } from "svelte";
 	import {
 		Card, Button, H2, H4, Text, Modal,
@@ -20,7 +20,7 @@
 
 	const KIND_OPTIONS: { value: Kind; label: string; icon: string }[] = [
 		{ value: "table", label: "Tabla", icon: "mdi:table" },
-		{ value: "index", label: "Ãndice", icon: "mdi:format-list-bulleted-square" },
+		{ value: "index", label: "Índice", icon: "mdi:format-list-bulleted-square" },
 		{ value: "fk", label: "FK", icon: "mdi:link-variant" },
 		{ value: "seed", label: "Datos (seed)", icon: "mdi:database-arrow-down" },
 		{ value: "raw", label: "Otro / Raw", icon: "mdi:code-tags" },
@@ -63,7 +63,7 @@
 		const sep = "-- " + "=".repeat(76);
 		const parts: string[] = [];
 		for (const f of list) {
-			const isPreamble = f.id.startsWith("preambulo-") || /^pre[Ã¡a]mbulo$/i.test(f.name);
+			const isPreamble = f.id.startsWith("preambulo-") || /^pre[áa]mbulo$/i.test(f.name);
 			if (isPreamble) { parts.push((f.body ?? "").trim()); continue; }
 			parts.push([sep, `-- ${f.name}`, sep, "", (f.body ?? "").trim()].join("\n"));
 		}
@@ -138,7 +138,7 @@
 	}
 
 	function openFullInModal(): void {
-		modalTitle = "init_capacitacion.sql Â· Resumen";
+		modalTitle = "init_capacitacion.sql · Resumen";
 		modalValue = fullSql;
 		modalLanguage = "sql";
 		modalShow = true;
@@ -181,12 +181,12 @@
 		</section>
 	</TabItem>
 
-	<TabItem title="CreaciÃ³n">
+	<TabItem title="Creación">
 		<section class="editor">
 			<CodeGenPanel />
 
 			<AccordionActions
-				title="SQL Â· Fragmentos"
+				title="SQL · Fragmentos"
 				icon="mdi:database"
 				count={fragments.length}
 				open={true}
@@ -200,7 +200,7 @@
 					<FlexLayout items="center">
 						<label class="field flex-1">
 							<Text color="neutral"><small>Filtrar</small></Text>
-							<input class="input-field" type="text" placeholder="Buscar por nombre o contenidoâ€¦" bind:value={filterText} />
+							<input class="input-field" type="text" placeholder="Buscar por nombre o contenido…" bind:value={filterText} />
 						</label>
 						<label class="field">
 							<Text color="neutral"><small>Tipo</small></Text>
@@ -216,9 +216,9 @@
 				</Card>
 
 				{#if loading}
-					<Card variant="flat"><Text color="neutral">Cargandoâ€¦</Text></Card>
+					<Card variant="flat"><Text color="neutral">Cargando…</Text></Card>
 				{:else if fragments.length === 0}
-					<Card variant="flat"><Text color="neutral">Sin fragmentos. Pulsa â€œNuevo fragmentoâ€.</Text></Card>
+					<Card variant="flat"><Text color="neutral">Sin fragmentos. Pulsa “Nuevo fragmento”.</Text></Card>
 				{:else}
 					<FlexLayout direction="column">
 						{#each filtered as { f, i } (f.id)}
@@ -226,7 +226,7 @@
 								inner
 								title={f.name || "(sin nombre)"}
 								titleIcon={kindMeta(f.kind).icon}
-								statusText={`${kindMeta(f.kind).label} Â· ${f.body.length} chars`}
+								statusText={`${kindMeta(f.kind).label} · ${f.body.length} chars`}
 								open={openIds[f.id] === true}
 								actions={[
 									{ icon: "mdi:arrow-up",   title: "Subir",  onClick: () => move(i, -1), disabled: i === 0 },
@@ -250,7 +250,7 @@
 								</GridLayout>
 
 								<label class="field">
-									<Text color="neutral">DescripciÃ³n</Text>
+									<Text color="neutral">Descripción</Text>
 									<input class="input-field" type="text" bind:value={f.description} on:input={markDirty} />
 								</label>
 
@@ -275,8 +275,8 @@
 			<Card>
 				<FlexLayout items="center" justify="between">
 					<div>
-						<H2>Resumen Â· SQL completo</H2>
-						<Text color="neutral"><small>ConcatenaciÃ³n de los fragmentos. Refleja el archivo final.</small></Text>
+						<H2>Resumen · SQL completo</H2>
+						<Text color="neutral"><small>Concatenación de los fragmentos. Refleja el archivo final.</small></Text>
 					</div>
 					<FlexLayout items="center">
 						<Button variant="outlined" onClick={openFullInModal}>

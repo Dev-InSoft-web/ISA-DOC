@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+?<script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { io, type Socket } from "socket.io-client";
 	import { marked } from "marked";
@@ -65,7 +65,7 @@
 	let expandedItem = -1;
 	let expandedResponse: Record<number, number> = {};
 
-	// PestaÃ±as superiores (Editor / Resumen / Pruebas).
+	// Pestañas superiores (Editor / Resumen / Pruebas).
 	let fullCollection: unknown = null;
 
 	// === Environments / Runner ===
@@ -112,7 +112,7 @@
 		showVerifyConsole = true;
 		socket?.emit("verifyApi:run", { host: verifyHost.trim() }, (r: { ok: boolean; error?: string }) => {
 			if (!r?.ok) {
-				toastError(r?.error ?? "No se pudo iniciar la verificaciÃ³n");
+				toastError(r?.error ?? "No se pudo iniciar la verificación");
 				verifyRunning = false;
 			}
 		});
@@ -124,7 +124,7 @@
 	function openMdPreview(title: string, md: string | undefined): void {
 		mdPreviewTitle = title;
 		const src = (md ?? "").trim();
-		mdPreviewHtml = src ? (marked.parse(src, { async: false }) as string) : "<em>Sin descripciÃ³n.</em>";
+		mdPreviewHtml = src ? (marked.parse(src, { async: false }) as string) : "<em>Sin descripción.</em>";
 		showMdPreview = true;
 	}
 
@@ -141,7 +141,7 @@
 		socket?.emit("postman:envSave", envs, (r: { ok: boolean; error?: string }) => {
 			if (r.ok) {
 				envDirty = false;
-				toastSuccess("Environments guardados Â· colecciÃ³n regenerada");
+				toastSuccess("Environments guardados · colección regenerada");
 				loadFull();
 			} else toastError(r.error ?? "Error guardando environments");
 		});
@@ -159,7 +159,7 @@
 		const timer = window.setTimeout(() => {
 			if (answered) return;
 			loading = false;
-			toastError("El servidor no respondiÃ³ a postman:list (Â¿reiniciar dev?)");
+			toastError("El servidor no respondió a postman:list (¿reiniciar dev?)");
 		}, 5000);
 		socket.emit("postman:list", (data: CollectionMeta | { error: string }) => {
 			answered = true;
@@ -172,7 +172,7 @@
 	}
 
 	function selectSlug(slug: string): void {
-		if (entityDirty && !confirm("Hay cambios sin guardar. Â¿Descartar?")) return;
+		if (entityDirty && !confirm("Hay cambios sin guardar. ¿Descartar?")) return;
 		selectedSlug = slug;
 		entity = null;
 		entityDirty = false;
@@ -193,7 +193,7 @@
 			savingEntity = false;
 			if (r.ok) {
 				entityDirty = false;
-				toastSuccess("Entidad guardada Â· colecciÃ³n regenerada");
+				toastSuccess("Entidad guardada · colección regenerada");
 				loadList();
 				loadFull();
 			} else toastError(r.error ?? "Error guardando");
@@ -201,10 +201,10 @@
 	}
 
 	function mergeAll(): void {
-		if (entityDirty && !confirm("Hay cambios sin guardar. Â¿Descartar y recargar?")) return;
+		if (entityDirty && !confirm("Hay cambios sin guardar. ¿Descartar y recargar?")) return;
 		loadList();
 		loadFull();
-		toastSuccess("ColecciÃ³n recargada");
+		toastSuccess("Colección recargada");
 	}
 
 	function loadFull(): void {
@@ -214,7 +214,7 @@
 	function copyFullCollection(): void {
 		if (!fullCollection) return;
 		navigator.clipboard.writeText(JSON.stringify(fullCollection, null, 2))
-			.then(() => toastSuccess("ColecciÃ³n copiada al portapapeles"))
+			.then(() => toastSuccess("Colección copiada al portapapeles"))
 			.catch(() => toastError("No se pudo copiar"));
 	}
 
@@ -322,13 +322,13 @@
 {#if loading}
 	<Loading bShow={true} />
 {:else if !meta}
-	<Card variant="flat"><Text color="error">No se pudo cargar la colecciÃ³n Postman.</Text></Card>
+	<Card variant="flat"><Text color="error">No se pudo cargar la colección Postman.</Text></Card>
 {:else}
 	<Card variant="flat">
 		<FlexLayout items="center" justify="between">
 			<div>
 				<H4>{meta.info.name}</H4>
-				<Text color="neutral">{meta.entities.length} entidades Â· {meta.entities.reduce((a, e) => a + e.count, 0)} endpoints</Text>
+				<Text color="neutral">{meta.entities.length} entidades · {meta.entities.reduce((a, e) => a + e.count, 0)} endpoints</Text>
 			</div>
 			<FlexLayout items="center">
 				{#if envs}
@@ -385,14 +385,14 @@
 
 		<div class="content">
 			{#if !entity}
-				<Card variant="flat"><Text color="neutral">Selecciona una entidadâ€¦</Text></Card>
+				<Card variant="flat"><Text color="neutral">Selecciona una entidad…</Text></Card>
 			{:else}
 				<Card>
 					<FlexLayout direction="column">
 						<FlexLayout items="center" justify="between">
 							<H2>Entidad</H2>
 							<FlexLayout items="center">
-								{#if entityDirty}<Text color="warning">â— sin guardar</Text>{/if}
+								{#if entityDirty}<Text color="warning">● sin guardar</Text>{/if}
 								<Button variant="outlined" onClick={addRequest}>
 									<Iconify icon="mdi:plus" /> Endpoint
 								</Button>
@@ -440,7 +440,7 @@
 											<input class="input-field" type="text" bind:value={item.name} on:input={markDirty} />
 										</label>
 										<label class="field">
-											<Text color="neutral">MÃ©todo</Text>
+											<Text color="neutral">Método</Text>
 											<select
 												class="input-field"
 												value={item.request?.method ?? "GET"}
@@ -467,7 +467,7 @@
 									</label>
 
 									<label class="field">
-										<Text color="neutral">DescripciÃ³n</Text>
+										<Text color="neutral">Descripción</Text>
 										<textarea
 											class="input-field textarea"
 											rows="2"
@@ -488,7 +488,7 @@
 
 									<FlexLayout items="center" justify="between">
 										<Text color="neutral">Body (raw JSON)</Text>
-										<Button variant="outlined" onClick={() => openCodeModal(`${item.name} Â· Body`, item.request?.body?.raw ?? "")}>
+										<Button variant="outlined" onClick={() => openCodeModal(`${item.name} · Body`, item.request?.body?.raw ?? "")}>
 											<Iconify icon="mdi:eye-outline" /> Abrir en modal
 										</Button>
 									</FlexLayout>
@@ -518,7 +518,7 @@
 											<button class="resp-header" on:click={() => toggleResponse(i, ri)}>
 												<FlexLayout items="center" justify="between">
 													<FlexLayout items="center">
-														<span class="status status--{(resp.code ?? 0) < 300 ? 'ok' : (resp.code ?? 0) < 500 ? 'warn' : 'err'}">{resp.code ?? "â€”"}</span>
+														<span class="status status--{(resp.code ?? 0) < 300 ? 'ok' : (resp.code ?? 0) < 500 ? 'warn' : 'err'}">{resp.code ?? "—"}</span>
 														<Text><strong>{resp.name ?? "(sin nombre)"}</strong></Text>
 														<Text color="neutral"><small>{resp.status ?? ""}</small></Text>
 													</FlexLayout>
@@ -542,7 +542,7 @@
 														</label>
 													</GridLayout>
 													<Text color="neutral"><small>Body (JSON)</small></Text>														<FlexLayout justify="end">
-															<Button variant="outlined" onClick={() => openCodeModal(`${item.name} Â· ${resp.name ?? "Ejemplo"}`, resp.body ?? "")}>
+															<Button variant="outlined" onClick={() => openCodeModal(`${item.name} · ${resp.name ?? "Ejemplo"}`, resp.body ?? "")}>
 														<Iconify icon="mdi:eye-outline" /> Abrir en modal
 															</Button>
 														</FlexLayout>													<JsonViewer value={resp.body ?? ""} height="260px" />
@@ -570,12 +570,12 @@
 		<TabItem title="Resumen">
 	<section class="resumen">
 		<Card>
-			<H2>Resumen Â· resultado final</H2>
-			<Text color="neutral"><small>Fuente: <code>doc/ISA-DOC/postman-collection.json</code> Â· usa los botones del encabezado para Recargar / Copiar / Descargar.</small></Text>
+			<H2>Resumen · resultado final</H2>
+			<Text color="neutral"><small>Fuente: <code>doc/ISA-DOC/postman-collection.json</code> · usa los botones del encabezado para Recargar / Copiar / Descargar.</small></Text>
 		</Card>
 
 		{#if !fullCollection}
-			<Card variant="flat"><Text color="neutral">Cargandoâ€¦</Text></Card>
+			<Card variant="flat"><Text color="neutral">Cargando…</Text></Card>
 		{:else}
 			<Card>
 				<JsonViewer value={JSON.stringify(fullCollection, null, 2)} height="70dvh" />
@@ -590,7 +590,7 @@
 			<FlexLayout items="center" justify="between">
 				<div>
 					<H2>Pruebas en secuencia</H2>
-					<Text color="neutral"><small>Ejecuta el flujo completo de verificaciÃ³n de la API (catÃ¡logos, drivers, cursos, planes, etc.).</small></Text>
+					<Text color="neutral"><small>Ejecuta el flujo completo de verificación de la API (catálogos, drivers, cursos, planes, etc.).</small></Text>
 				</div>
 				<FlexLayout items="center">
 					{#if verifyRunning}
@@ -618,7 +618,7 @@
 				/>
 			</label>
 			<Text color="neutral"><small>
-				Por defecto <code>http://localhost:20040</code>. Token leÃ­do desde <code>doc/test/token.json</code> (o <code>VERIFY_API_TOKEN</code>).
+				Por defecto <code>http://localhost:20040</code>. Token leído desde <code>doc/test/token.json</code> (o <code>VERIFY_API_TOKEN</code>).
 				Script: <code>scripts/run-verify-api.ts</code>.
 			</small></Text>
 		</Card>
@@ -714,8 +714,8 @@
 	<svelte:fragment slot="title">
 		<FlexLayout items="center" gap="0.4rem">
 			<Iconify icon="mdi:console-line" />
-			<Text><strong>Pruebas API Â· {verifyHost}</strong></Text>
-			{#if verifyRunning}<Text color="success"><small>Â· en ejecuciÃ³n</small></Text>{/if}
+			<Text><strong>Pruebas API · {verifyHost}</strong></Text>
+			{#if verifyRunning}<Text color="success"><small>· en ejecución</small></Text>{/if}
 		</FlexLayout>
 	</svelte:fragment>
 	<FlexLayout items="center" justify="end" gap="0.4rem">
@@ -734,9 +734,9 @@
 <CodeModal bind:bshow={codeModalShow} title={codeModalTitle} value={codeModalValue} language="json" />
 
 <style>
-	/* Los Button de ISP usan width:100% y min-width:16px â†’ en filas flex
+	/* Los Button de ISP usan width:100% y min-width:16px → en filas flex
 	   colapsan por debajo del contenido y el texto se sale del borde.
-	   Forzamos que cada botÃ³n ocupe lo que necesita y no se encoja. */
+	   Forzamos que cada botón ocupe lo que necesita y no se encoja. */
 	:global(.postman-panel button[data-variant]) {
 		width: auto;
 		min-width: max-content;

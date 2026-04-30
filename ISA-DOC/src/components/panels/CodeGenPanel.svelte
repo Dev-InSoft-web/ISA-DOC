@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+?<script lang="ts">
 	import { onMount } from "svelte";
 	import {
 		Card, H2, H4, Text, Toaster, toastError, toastSuccess,
@@ -100,7 +100,7 @@
 	}
 	function savePathModal(): void {
 		const v = pathModalValue.trim();
-		if (!v) { toastError("Ruta vacÃ­a."); return; }
+		if (!v) { toastError("Ruta vacía."); return; }
 		if (pathModalMode === "add") {
 			if (targetFilePaths.includes(v)) { toastError("Ya existe esa ruta."); return; }
 			targetFilePaths = [...targetFilePaths, v];
@@ -179,7 +179,7 @@
 	}
 
 	function select(id: string): void {
-		if (dirty && current && !confirm(`Hay cambios sin guardar en "${current.id}". Â¿Descartar?`)) return;
+		if (dirty && current && !confirm(`Hay cambios sin guardar en "${current.id}". ¿Descartar?`)) return;
 		selectInternal(id);
 	}
 
@@ -213,7 +213,7 @@
 				await deleteOverride(current.id);
 				delete overrides[current.id];
 				overrides = { ...overrides };
-				toastSuccess(`"${current.id}" sin personalizaciÃ³n (eliminada).`);
+				toastSuccess(`"${current.id}" sin personalización (eliminada).`);
 			} else {
 				await saveOverride(current.id, ov);
 				overrides = { ...overrides, [current.id]: ov };
@@ -365,7 +365,7 @@
 		<FlexLayout items="center" justify="between">
 			<div>
 				<H2>Generador de objetos y controladores</H2>
-				<Text color="neutral"><small>Sincronizado con las tablas SQL. Los valores por defecto se infieren de la tabla; sÃ³lo se persiste lo personalizado (JSON por recurso en <code>public/codegen/</code>).</small></Text>
+				<Text color="neutral"><small>Sincronizado con las tablas SQL. Los valores por defecto se infieren de la tabla; sólo se persiste lo personalizado (JSON por recurso en <code>public/bd/codegen/</code>).</small></Text>
 			</div>
 			<FlexLayout items="center">
 				<Button_ color="primary" loading={syncing} disabled={syncing || loading} onClick={sync}>
@@ -379,9 +379,9 @@
 		<FlexLayout items="center" justify="between">
 			<div>
 				<H4>Archivos destino</H4>
-				<Text color="neutral"><small>Rutas relativas (compartibles entre recursos). En cada fragmento sÃ³lo se podrÃ¡ elegir entre estos archivos. Clic en un chip para editar.</small></Text>
+				<Text color="neutral"><small>Rutas relativas (compartibles entre recursos). En cada fragmento sólo se podrá elegir entre estos archivos. Clic en un chip para editar.</small></Text>
 			</div>
-			<Button_ variant="outlined" onClick={openAddPath}><Iconify icon="mdi:plus" /> AÃ±adir archivo</Button_>
+			<Button_ variant="outlined" onClick={openAddPath}><Iconify icon="mdi:plus" /> Añadir archivo</Button_>
 		</FlexLayout>
 		{#if targetFilePaths.length === 0}
 			<Text color="neutral"><small>Sin archivos definidos.</small></Text>
@@ -402,7 +402,7 @@
 			<div class="resources-sticky">
 			<H4>Recursos</H4>
 			{#if loading}
-				<Text color="neutral"><small>Cargandoâ€¦</small></Text>
+				<Text color="neutral"><small>Cargando…</small></Text>
 			{:else if resources.length === 0}
 				<Text color="neutral"><small>Sin tablas. Sincroniza para inferir desde el SQL.</small></Text>
 			{/if}
@@ -412,7 +412,7 @@
 						<Iconify icon="mdi:cube-outline" />
 						<span class="resource-name">{r.id}</span>
 						{#if overrides[r.id]}<Iconify icon="mdi:pencil" title="Personalizado" />{/if}
-						<small>{r.fields.length}f Â· {r.relations.length}r</small>
+						<small>{r.fields.length}f · {r.relations.length}r</small>
 					</button>
 				{/each}
 			</FlexLayout>
@@ -425,7 +425,7 @@
 			{:else}
 					<Card>
 					<FlexLayout items="center" justify="between">
-						<H4>{current.id} Â· personalizaciÃ³n</H4>
+						<H4>{current.id} · personalización</H4>
 						<FlexLayout items="center">
 							<Button_ color="primary" disabled={!dirty} onClick={save}>
 								<Iconify icon="mdi:content-save" /> Guardar
@@ -463,9 +463,9 @@
 				<Card>
 					<FlexLayout items="center" justify="between">
 						<H4>Helpers</H4>
-						<Button_ variant="outlined" onClick={addHelper}><Iconify icon="mdi:plus" /> AÃ±adir</Button_>
+						<Button_ variant="outlined" onClick={addHelper}><Iconify icon="mdi:plus" /> Añadir</Button_>
 					</FlexLayout>
-					<Text color="neutral"><small>MÃ©todos manuales que se anexan a la clase. Tipo <code>get</code> (computed) o <code>fn</code> (mÃ©todo).</small></Text>
+					<Text color="neutral"><small>Métodos manuales que se anexan a la clase. Tipo <code>get</code> (computed) o <code>fn</code> (método).</small></Text>
 					{#each (current.helpers ?? []) as h, i}
 						<FloatingCard variant="flat" horizontal="right" vertical="top" class="rel-fc" style="padding: 0; margin: 0.35rem 0;">
 							<div class="rel">
@@ -498,10 +498,10 @@
 				<Card>
 					<FlexLayout items="center" justify="between">
 						<H4>Relaciones (conceptuales)</H4>
-						<Button_ variant="outlined" onClick={addRelation}><Iconify icon="mdi:plus" /> AÃ±adir</Button_>
+						<Button_ variant="outlined" onClick={addRelation}><Iconify icon="mdi:plus" /> Añadir</Button_>
 					</FlexLayout>
 					{#if current.relations.length === 0}
-						<Text color="neutral"><small>Sin relaciones. AÃ±ade para generar nestedConfig().</small></Text>
+						<Text color="neutral"><small>Sin relaciones. Añade para generar nestedConfig().</small></Text>
 					{/if}
 					{#each current.relations as r, i}
 						<FloatingCard variant="flat" horizontal="right" vertical="top" class="rel-fc" style="padding: 0; margin: 0.35rem 0;">
@@ -512,7 +512,7 @@
 										{#each REL_KINDS as k}<option value={k}>{k}</option>{/each}
 									</select>
 									<select class="input-field" bind:value={r.target} on:change={markDirty}>
-										<option value="">â€” recurso destino â€”</option>
+										<option value="">— recurso destino —</option>
 										{#each resources as o (o.id)}
 											{#if o.id !== current.id}<option value={o.id}>{o.id}</option>{/if}
 										{/each}
@@ -521,7 +521,7 @@
 
 								<div class="sub">
 									<FlexLayout items="center" justify="between">
-										<Text><small><strong>Versus</strong> â€” <code>sub.col</code> = <code>parent.col</code></small></Text>
+										<Text><small><strong>Versus</strong> — <code>sub.col</code> = <code>parent.col</code></small></Text>
 										<Button_ variant="outlined" onClick={() => addVersus(r)}><Iconify icon="mdi:plus" /> Versus</Button_>
 									</FlexLayout>
 									{#each (r.versus ?? []) as v, vi}
@@ -542,7 +542,7 @@
 
 								<div class="sub">
 									<FlexLayout items="center" justify="between">
-										<Text><small><strong>Equals</strong> â€” <code>sub.col = valor</code></small></Text>
+										<Text><small><strong>Equals</strong> — <code>sub.col = valor</code></small></Text>
 										<Button_ variant="outlined" onClick={() => addEqual(r)}><Iconify icon="mdi:plus" /> Equal</Button_>
 									</FlexLayout>
 									{#each (r.equals ?? []) as eq, ei}
@@ -574,7 +574,7 @@
 								</div>
 
 								<div class="sub">
-									<Text><small><strong>WHERE custom</strong> â€” cuerpo de <code>(sub, parent) =&gt; ...</code></small></Text>
+									<Text><small><strong>WHERE custom</strong> — cuerpo de <code>(sub, parent) =&gt; ...</code></small></Text>
 									<textarea
 										class="input-field code-area"
 										rows="2"
@@ -605,7 +605,7 @@
 				<Card>
 					<FlexLayout items="center" justify="between">
 						<H4>Hooks personalizados</H4>
-						<Button_ variant="outlined" onClick={addHook}><Iconify icon="mdi:plus" /> AÃ±adir</Button_>
+						<Button_ variant="outlined" onClick={addHook}><Iconify icon="mdi:plus" /> Añadir</Button_>
 					</FlexLayout>
 					{#if current.customHooks.length === 0}
 						<Text color="neutral"><small>Sin hooks. Ej: <code>Get_Recurso_PlanCurso</code>.</small></Text>
@@ -634,10 +634,10 @@
 				</Card>
 
 				<Card>
-					<H4>FN-MÃ³dulo</H4>
+					<H4>FN-Módulo</H4>
 					<FlexLayout items="center">
 						<Switch_
-							label="Exponer driver en FN-MÃ³dulo"
+							label="Exponer driver en FN-Módulo"
 							bind:checked={exposeOn}
 						/>
 					</FlexLayout>
@@ -674,13 +674,13 @@
 			<Card>
 				<H4>Snippets generados</H4>
 				{#if !current}
-					<Text color="neutral"><small>â€”</small></Text>
+					<Text color="neutral"><small>—</small></Text>
 				{:else}
 					{@const groups = [
 						{ id: "obj", title: "Objetos",                  icon: "mdi:cube-outline", ids: ["modelo", "datos"] },
-						{ id: "srv", title: "Controladores Â· Server",   icon: "mdi:server",       ids: ["server"] },
-						{ id: "cli", title: "Controladores Â· Cliente",  icon: "mdi:web",          ids: ["client"] },
-						{ id: "acc", title: "Controladores Â· Acciones", icon: "mdi:flash",        ids: ["webctrl", "azurefn"] },
+						{ id: "srv", title: "Controladores · Server",   icon: "mdi:server",       ids: ["server"] },
+						{ id: "cli", title: "Controladores · Cliente",  icon: "mdi:web",          ids: ["client"] },
+						{ id: "acc", title: "Controladores · Acciones", icon: "mdi:flash",        ids: ["webctrl", "azurefn"] },
 					]}
 					<FlexLayout direction="column">
 						{#each groups as g (g.id)}
@@ -695,7 +695,7 @@
 									<FloatingCard variant="flat" horizontal="right" vertical="top" class="rel-fc" style="padding: 0; margin: 0.35rem 0;">
 										<Card variant="flat">
 											<Text><strong><code>{s.filename}</code></strong></Text>
-											<Text color="neutral"><small>{s.label} Â· {s.body.length} chars</small></Text>
+											<Text color="neutral"><small>{s.label} · {s.body.length} chars</small></Text>
 											<label class="field file-target">
 												<Text color="neutral"><small>Archivo destino</small></Text>
 												<select
@@ -703,7 +703,7 @@
 													value={current?.targetFiles?.[s.id as keyof NonNullable<typeof current.targetFiles>] ?? ""}
 													on:change={(e) => setTargetFile(s.id as "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn", (e.target as HTMLSelectElement).value)}
 												>
-													<option value="">â€” (default: {defaultFilename(current!, s.id as "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn")}) â€”</option>
+													<option value="">— (default: {defaultFilename(current!, s.id as "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn")}) —</option>
 													{#each targetFilePaths as p (p)}
 														<option value={p}>{basename(p)}</option>
 													{/each}
@@ -735,7 +735,7 @@
 	<svelte:fragment slot="title">
 		<FlexLayout items="center">
 			<Iconify icon="mdi:file-document-edit-outline" />
-			<Text><strong>{pathModalMode === "add" ? "AÃ±adir archivo destino" : "Editar archivo destino"}</strong></Text>
+			<Text><strong>{pathModalMode === "add" ? "Añadir archivo destino" : "Editar archivo destino"}</strong></Text>
 		</FlexLayout>
 	</svelte:fragment>
 	<div class="path-modal">

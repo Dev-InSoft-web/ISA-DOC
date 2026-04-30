@@ -72,7 +72,7 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 			data.refreshUX();
 			return data;
 		}
-		const node = new TSqlNodeUX(data as Partial<TSqlNodeUX>, this.obj);
+		const node = new TSqlNodeUX(data as unknown as Partial<TSqlNodeUX>, this.obj);
 		return node;
 	}
 

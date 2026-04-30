@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+?<script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { io, type Socket } from "socket.io-client";
 	import {
@@ -42,12 +42,12 @@
 		actions: ProjectAction[];
 	}
 
-	// DefiniciÃ³n de derivados (sub-proyectos que crecen como pestaÃ±as dentro de ClientesIS).
+	// Definición de derivados (sub-proyectos que crecen como pestañas dentro de ClientesIS).
 	const DERIVATIVES: { key: "contapymeu"; label: string }[] = [
 		{ key: "contapymeu", label: "ContaPymeU" },
 	];
 
-	// Proyectos que componen ContaPymeU (orden de pestaÃ±as).
+	// Proyectos que componen ContaPymeU (orden de pestañas).
 	const CONTAPYMEU_PROJECTS: { id: string; label: string }[] = [
 		{ id: "isp-sc", label: "ISP-SvelteComponents" },
 		{ id: "isp-cli", label: "ISP-ClientesIS" },
@@ -68,7 +68,7 @@
 	let projects: ProjectEntry[] = [];
 	let projectsByGroup: Record<string, ProjectEntry[]> = { clientesis: [], contapymeu: [], shared: [] };
 
-	// AcciÃ³n general "Descargar iconos" que encadena los iconify de ISP-SC, ISW e ISA.
+	// Acción general "Descargar iconos" que encadena los iconify de ISP-SC, ISW e ISA.
 	const base = "C:/Users/JAGUDELOE/Documents/Contapyme";
 	const ICONIFY_ALL: ProjectAction = {
 		id: "iconify-all",
@@ -122,9 +122,9 @@
 		runningActions = next;
 	}
 
-	const OUTPUT_BUFFER_LIMIT = 200_000; // ~200KB por acciÃ³n para no inflar memoria con stdout muy ruidoso
-	// Bateo de chunks: al cerrarse procesos como `func`/`astro`, stdout/stderr se flushean en rÃ¡fagas
-	// muy rÃ¡pidas. Acumulamos los chunks y publicamos a lo sumo una vez por frame para evitar miles
+	const OUTPUT_BUFFER_LIMIT = 200_000; // ~200KB por acción para no inflar memoria con stdout muy ruidoso
+	// Bateo de chunks: al cerrarse procesos como `func`/`astro`, stdout/stderr se flushean en ráfagas
+	// muy rápidas. Acumulamos los chunks y publicamos a lo sumo una vez por frame para evitar miles
 	// de re-renders en cadena que congelaban la UI al finalizar.
 	const pendingChunks = new Map<string, string>();
 	let flushScheduled = false;
@@ -235,7 +235,7 @@
 		socket.on("exited", ({ actionId, code }: { actionId: string; code: number | null }) => {
 			setRunning(actionId, false);
 			if (code === 0) toastSuccess(`${actionId} finalizado`);
-			else toastError(`${actionId} saliÃ³ con cÃ³digo ${code}`);
+			else toastError(`${actionId} salió con código ${code}`);
 		});
 		socket.on("error", ({ actionId, message }: { actionId?: string; message: string }) => {
 			if (actionId) setRunning(actionId, false);
@@ -251,9 +251,9 @@
 		});
 		socket.on("password-accepted", () => {
 			passwordActionId = null;
-			toastSuccess("ContraseÃ±a aceptada");
+			toastSuccess("Contraseña aceptada");
 		});
-		socket.on("password-rejected", () => toastError("ContraseÃ±a incorrecta"));
+		socket.on("password-rejected", () => toastError("Contraseña incorrecta"));
 	});
 
 	onDestroy(() => {
@@ -284,10 +284,10 @@
 					{:else}
 						<!-- 3 columnas planas (CSS grid directo, sin envoltorios que recorten ancho) -->
 						<div class="general-grid">
-							<!-- COL 1: ISPs (un card con un botÃ³n por cada ISP) -->
+							<!-- COL 1: ISPs (un card con un botón por cada ISP) -->
 							<Card variant="flat" class="group-card">
 								<FlexLayout direction="column" items="stretch">
-									<H4>ISPs Â· Publicar</H4>
+									<H4>ISPs · Publicar</H4>
 									{#each ispActions as entry (entry.action.id)}
 										<ProjectActionCard
 											action={{ ...entry.action, label: `Publicar ${entry.project.name}` }}
@@ -402,7 +402,7 @@
 				<div class="iframe-bar">
 					<Iconify icon="mdi:open-in-new" />
 					<Text class="iframe-url" lines={1}>{iframeUrl}</Text>
-					<Button variant="ghost" onClick={() => window.open(iframeUrl!, "_blank")}>Abrir en pestaÃ±a</Button>
+					<Button variant="ghost" onClick={() => window.open(iframeUrl!, "_blank")}>Abrir en pestaña</Button>
 					<Button color="danger" variant="ghost" onClick={() => (iframeUrl = null)}>Cerrar</Button>
 				</div>
 				<iframe src={iframeUrl} title="App preview" class="iframe-frame" referrerpolicy="no-referrer"></iframe>
@@ -414,13 +414,13 @@
 		<div class="password-overlay">
 			<Card>
 				<FlexLayout direction="column">
-					<H4>ContraseÃ±a requerida</H4>
-					<Text color="neutral">AcciÃ³n: <strong>{passwordActionId}</strong></Text>
+					<H4>Contraseña requerida</H4>
+					<Text color="neutral">Acción: <strong>{passwordActionId}</strong></Text>
 					<input
 						type="password"
 						bind:value={passwordInput}
 						class="input-field"
-						placeholder="ContraseÃ±a"
+						placeholder="Contraseña"
 						on:keydown={onPasswordKey}
 					/>
 					<FlexLayout justify="end">
@@ -496,7 +496,7 @@
 		height: 100%;
 	}
 
-	/* Sub-tabs anidados: anular margen superior duplicado y dar respiraciÃ³n. */
+	/* Sub-tabs anidados: anular margen superior duplicado y dar respiración. */
 	.tab-content :global(.tabs-ul) {
 		margin-top: 0;
 		margin-bottom: 0.25rem;
@@ -512,7 +512,7 @@
 		padding: 0.25rem 0 0;
 	}
 
-	/* Estilo mÃ¡s sutil para las pestaÃ±as internas. */
+	/* Estilo más sutil para las pestañas internas. */
 	.tab-content :global(.tab-item button) {
 		font-size: 0.875rem;
 		padding: 0.4rem 0.85rem;

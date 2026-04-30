@@ -1,8 +1,6 @@
 import { Server, type Socket } from "socket.io";
 import { spawn, type ChildProcess } from "node:child_process";
 import { PROJECTS } from "./projects-registry.js";
-import { SCRIPT_ACTIONS } from "./scripts-registry.js";
-import { openPool, resolveSettingsPath } from "./db.js";
 import {
 	loadCollectionMeta, loadEntity, saveEntity, saveCollectionVariables,
 	mergeCollection, splitCollection, loadEnvironments, saveEnvironments,
@@ -41,11 +39,6 @@ interface ExecPayload {
 	cwd: string;
 	needsPassword?: boolean;
 	hostPattern?: string;
-}
-
-interface ScriptExecPayload {
-	id: string;
-	params?: Record<string, string>;
 }
 
 interface PasswordPayload {
@@ -110,61 +103,6 @@ function handleConnection(socket: Socket): void {
 	}
 
 	socket.on("projects:list", (cb: (data: unknown) => void) => cb(PROJECTS));
-	socket.on("scripts:list", (cb: (data: unknown) => void) => cb(SCRIPT_ACTIONS));
-
-	socket.on("db:status", async (cb: (data: unknown) => void) => {
-		try {
-			const pool = await openPool(resolveSettingsPath());
-			const rs = await pool.request().query(`
-				SELECT DB_NAME() AS db_name, GETDATE() AS server_time;
-				SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
-				WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME LIKE 'CAPAC%'
-				ORDER BY TABLE_NAME;
-			`);
-			await pool.close();
-			const sets = rs.recordsets as Record<string, unknown>[][];
-			cb({
-				ok: true,
-				database: sets[0]?.[0]?.db_name,
-				serverTime: sets[0]?.[0]?.server_time,
-				tables: sets[1]?.map((r) => r.TABLE_NAME) ?? [],
-			});
-		} catch (err: unknown) {
-			const msg = err instanceof Error ? err.message : String(err);
-			cb({ ok: false, error: msg });
-		}
-	});
-
-	socket.on("script:exec", (payload: ScriptExecPayload, cb: (data: unknown) => void) => {
-		const action = SCRIPT_ACTIONS.find((a) => a.id === payload.id);
-		if (!action) {
-			cb({ ok: false, error: `Acción no encontrada: ${payload.id}` });
-			return;
-		}
-		runScript(action, payload.params ?? {}).then(cb).catch((err: Error) => {
-			cb({ ok: false, error: err.message });
-		});
-	});
-
-	// === Ejecutar SQL crudo persistido en localStorage ===
-	socket.on("sql:exec", async (payload: { sql: string }, cb: (data: unknown) => void) => {
-		const sql = (payload?.sql ?? "").trim();
-		if (!sql) { cb({ ok: false, error: "SQL vacío" }); return; }
-		try {
-			const pool = await openPool(resolveSettingsPath());
-			const result = await pool.request().batch(sql);
-			await pool.close();
-			const rs = (result.recordsets as unknown[][] | undefined) ?? [];
-			cb({
-				ok: true,
-				output: `OK · ${rs.length} recordset(s)\n${sql.split("\n").length} líneas ejecutadas.`,
-				rowsAffected: result.rowsAffected,
-			});
-		} catch (err: unknown) {
-			const msg = err instanceof Error ? err.message : String(err);
-			cb({ ok: false, error: msg });
-		}
-	});
 
 	socket.on("exec", (msg: ExecPayload) => {
 		execAction(msg.actionId, msg.command, msg.cwd, msg.needsPassword, msg.hostPattern);
@@ -258,40 +196,6 @@ function handleConnection(socket: Socket): void {
 		if (!child) { cb?.({ ok: false, error: "No hay proceso" }); return; }
 		killProcessTree(child);
 		cb?.({ ok: true });
-	});
-}
-
-async function runScript(
-	action: typeof SCRIPT_ACTIONS[number],
-	params: Record<string, string>,
-): Promise<{ ok: boolean; output?: string; error?: string }> {
-	const parts = action.command.split(/\s+/);
-	const cmd = parts[0];
-	const args = [...parts.slice(1), ...(action.args ?? [])];
-	for (const [key, value] of Object.entries(params)) {
-		if (!value || value === "false") continue;
-		if (value === "true") args.push(`--${key}`);
-		else args.push(`--${key}`, value);
-	}
-
-	return new Promise((resolve) => {
-		const child = spawn(cmd, args, {
-			cwd: process.cwd(),
-			shell: true,
-			stdio: ["ignore", "pipe", "pipe"],
-			timeout: 120_000,
-		});
-		let stdout = "";
-		let stderr = "";
-		child.stdout.on("data", (d: Buffer) => { stdout += d.toString(); });
-		child.stderr.on("data", (d: Buffer) => { stderr += d.toString(); });
-		child.on("close", (code: number | null) => {
-			const combined = stdout + (stderr ? `\n[STDERR]\n${stderr}` : "");
-			resolve({ ok: code === 0, output: combined, error: code !== 0 ? `Exit ${code}` : undefined });
-		});
-		child.on("error", (e: Error) => {
-			resolve({ ok: false, output: stdout + stderr, error: e.message });
-		});
 	});
 }
 

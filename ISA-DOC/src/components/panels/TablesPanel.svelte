@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+?<script lang="ts">
 	import { onMount } from "svelte";
 	import {
 		Card, Button, H2, H4, Text, Toaster, toastError, toastSuccess,
@@ -56,7 +56,7 @@
 				toastSuccess(`${label} OK`);
 				return true;
 			}
-			toastError(`${label} fallÃ³: ${res.error ?? "error desconocido"}`);
+			toastError(`${label} falló: ${res.error ?? "error desconocido"}`);
 			return false;
 		} finally {
 			executing = { ...executing, [key]: false };
@@ -173,7 +173,7 @@
 		const detected = Array.from(new Set(tables.map((t) => detectPrefix(t.name))));
 		detected.sort();
 		const byKey = new Map(prefixEntries.map((e) => [e.detected, e]));
-		// Mantener cualquier entrada que el usuario haya aÃ±adido manualmente aunque no haya tablas todavÃ­a.
+		// Mantener cualquier entrada que el usuario haya añadido manualmente aunque no haya tablas todavía.
 		const manual = prefixEntries.filter((e) => !detected.includes(e.detected) && e.current !== e.detected);
 		prefixEntries = [...detected.map((d) => byKey.get(d) ?? { detected: d, current: d }), ...manual];
 	}
@@ -238,7 +238,7 @@
 		const entry = prefixEntries[idx];
 		if (!entry) return;
 		if (tables.some((t) => detectPrefix(t.name) === entry.detected)) {
-			toastError(`No se puede eliminar: hay tablas con prefijo "${entry.detected || '(vacÃ­o)'}".`);
+			toastError(`No se puede eliminar: hay tablas con prefijo "${entry.detected || '(vacío)'}".`);
 			return;
 		}
 		prefixEntries = prefixEntries.filter((_, i) => i !== idx);
@@ -306,7 +306,7 @@
 			const data = await res.json();
 			if (data && data.ok && data.map) prodTsMap = data.map as Record<string, ProdTsFragment[]>;
 		} catch {
-			// ignorar â€” la comparativa simplemente no se mostrarÃ¡
+			// ignorar — la comparativa simplemente no se mostrará
 		}
 	}
 
@@ -350,7 +350,7 @@
 				<Button variant="outlined" style="width: fit-content;" disabled={syncingRegions} onClick={syncRegions}>
 					<Iconify icon={syncingRegions ? "mdi:loading" : "mdi:sync"} /> Sincronizar regiones
 				</Button>
-				<Button color="primary" style="width: fit-content;" disabled={!dirty || saving} onClick={save}>
+				<Button color="primary" style="width: fit-content;" disabled={!dirty || saving} onClick={() => save()}>
 					<Iconify icon={saving ? "mdi:loading" : "mdi:content-save"} /> Guardar
 				</Button>
 			</FlexLayout>
@@ -361,13 +361,13 @@
 		<FlexLayout direction="column">
 			<label class="field">
 				<Text color="neutral"><small>Filtrar tabla / columna</small></Text>
-				<input class="input-field" type="text" placeholder="Buscarâ€¦" bind:value={filterText} />
+				<input class="input-field" type="text" placeholder="Buscar…" bind:value={filterText} />
 			</label>
 		</FlexLayout>
 	</Card>
 
 	{#if loading}
-		<Card variant="flat"><Text color="neutral">Cargandoâ€¦</Text></Card>
+		<Card variant="flat"><Text color="neutral">Cargando…</Text></Card>
 	{:else if tables.length === 0}
 		<Card variant="flat"><Text color="neutral">No se detectaron fragmentos <code>kind=table</code>.</Text></Card>
 	{:else}
@@ -379,7 +379,7 @@
 			{@const pEntry = pIdx >= 0 ? prefixEntries[pIdx] : null}
 			{#if items.length > 0}
 				<AccordionActions
-					title={pkey ? `Prefijo Â· ${pkey}` : "Sin prefijo"}
+					title={pkey ? `Prefijo · ${pkey}` : "Sin prefijo"}
 					icon={pkey ? "mdi:label" : "mdi:label-off-outline"}
 					count={items.length}
 					open={false}
@@ -397,7 +397,7 @@
 										on:input={(e) => onPrefixInput(pIdx, (e.currentTarget as HTMLInputElement).value)}
 										placeholder="(sin prefijo)"
 									/>
-									<Text color="neutral"><small>actual: <code>{pEntry.detected || '(vacÃ­o)'}</code></small></Text>
+									<Text color="neutral"><small>actual: <code>{pEntry.detected || '(vacío)'}</code></small></Text>
 								{/if}
 							</FlexLayout>
 
@@ -442,7 +442,7 @@
 												<FlexLayout items="center" justify="between">
 													<FlexLayout items="center">
 														<Iconify icon="mdi:database-refresh" />
-														<Text color="neutral"><small>Recrear tabla Â· DROP + CREATE</small></Text>
+														<Text color="neutral"><small>Recrear tabla · DROP + CREATE</small></Text>
 													</FlexLayout>
 													<ConfirmExecuteButton
 														color="primary"
@@ -475,9 +475,9 @@
 															<FlexLayout items="center" justify="between">
 																<FlexLayout items="center">
 																	<Iconify icon="mdi:cube-outline" />
-																	<Text color="neutral"><small>Modelo Â· Local (ISA)</small></Text>
+																	<Text color="neutral"><small>Modelo · Local (ISA)</small></Text>
 																</FlexLayout>
-																<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${cfg.className} Â· Local`, modelCode)}>
+																<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${cfg.className} · Local`, modelCode)}>
 																	<Iconify icon="mdi:eye-outline" /> Ver
 																</Button>
 															</FlexLayout>
@@ -487,7 +487,7 @@
 															{#if prodPojo.length === 0}
 																<FlexLayout items="center">
 																	<Iconify icon="mdi:alert-outline" />
-																	<Text color="neutral"><small>Modelo Â· Prod ISP â€” sin fragmento</small></Text>
+																	<Text color="neutral"><small>Modelo · Prod ISP — sin fragmento</small></Text>
 																</FlexLayout>
 																<CodeViewer value="" lang="ts" height="260px" />
 															{:else}
@@ -495,9 +495,9 @@
 																<FlexLayout items="center" justify="between">
 																	<FlexLayout items="center">
 																		<Iconify icon="mdi:source-branch" />
-																		<Text color="neutral"><small>Modelo Â· Prod ISP Â· <code>{pf.sourceFile}</code></small></Text>
+																		<Text color="neutral"><small>Modelo · Prod ISP · <code>{pf.sourceFile}</code></small></Text>
 																	</FlexLayout>
-																	<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${entry.table.name} Â· Prod Modelo`, pf.body)}>
+																	<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${entry.table.name} · Prod Modelo`, pf.body)}>
 																		<Iconify icon="mdi:eye-outline" /> Ver
 																	</Button>
 																</FlexLayout>
@@ -511,9 +511,9 @@
 															<FlexLayout items="center" justify="between">
 																<FlexLayout items="center">
 																	<Iconify icon="mdi:server" />
-																	<Text color="neutral"><small>Server Â· Local (ISA)</small></Text>
+																	<Text color="neutral"><small>Server · Local (ISA)</small></Text>
 																</FlexLayout>
-																<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${cfg.className} Â· Server`, serverCode)}>
+																<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${cfg.className} · Server`, serverCode)}>
 																	<Iconify icon="mdi:eye-outline" /> Ver
 																</Button>
 															</FlexLayout>
@@ -523,7 +523,7 @@
 															{#if prodServer.length === 0}
 																<FlexLayout items="center">
 																	<Iconify icon="mdi:alert-outline" />
-																	<Text color="neutral"><small>Server Â· Prod ISP â€” sin fragmento</small></Text>
+																	<Text color="neutral"><small>Server · Prod ISP — sin fragmento</small></Text>
 																</FlexLayout>
 																<CodeViewer value="" lang="ts" height="260px" />
 															{:else}
@@ -531,9 +531,9 @@
 																<FlexLayout items="center" justify="between">
 																	<FlexLayout items="center">
 																		<Iconify icon="mdi:source-branch" />
-																		<Text color="neutral"><small>Server Â· Prod ISP Â· <code>{pf.sourceFile}</code></small></Text>
+																		<Text color="neutral"><small>Server · Prod ISP · <code>{pf.sourceFile}</code></small></Text>
 																	</FlexLayout>
-																	<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${entry.table.name} Â· Prod Server`, pf.body)}>
+																	<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${entry.table.name} · Prod Server`, pf.body)}>
 																		<Iconify icon="mdi:eye-outline" /> Ver
 																	</Button>
 																</FlexLayout>
@@ -547,9 +547,9 @@
 															<FlexLayout items="center" justify="between">
 																<FlexLayout items="center">
 																	<Iconify icon="mdi:monitor" />
-																	<Text color="neutral"><small>Client Â· Local (ISA)</small></Text>
+																	<Text color="neutral"><small>Client · Local (ISA)</small></Text>
 																</FlexLayout>
-																<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${cfg.className} Â· Client`, clientCode)}>
+																<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${cfg.className} · Client`, clientCode)}>
 																	<Iconify icon="mdi:eye-outline" /> Ver
 																</Button>
 															</FlexLayout>
@@ -559,7 +559,7 @@
 															{#if prodClient.length === 0}
 																<FlexLayout items="center">
 																	<Iconify icon="mdi:alert-outline" />
-																	<Text color="neutral"><small>Client Â· Prod ISP â€” sin fragmento</small></Text>
+																	<Text color="neutral"><small>Client · Prod ISP — sin fragmento</small></Text>
 																</FlexLayout>
 																<CodeViewer value="" lang="ts" height="260px" />
 															{:else}
@@ -567,9 +567,9 @@
 																<FlexLayout items="center" justify="between">
 																	<FlexLayout items="center">
 																		<Iconify icon="mdi:source-branch" />
-																		<Text color="neutral"><small>Client Â· Prod ISP Â· <code>{pf.sourceFile}</code></small></Text>
+																		<Text color="neutral"><small>Client · Prod ISP · <code>{pf.sourceFile}</code></small></Text>
 																	</FlexLayout>
-																	<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${entry.table.name} Â· Prod Client`, pf.body)}>
+																	<Button variant="outlined" style="width: fit-content;" onClick={() => openCodeModal(`${entry.table.name} · Prod Client`, pf.body)}>
 																		<Iconify icon="mdi:eye-outline" /> Ver
 																	</Button>
 																</FlexLayout>
@@ -643,7 +643,10 @@
 		min-width: 0;
 	}
 	.cmp-local { border-color: var(--is-success, #2e7d32); }
-	.cmp-prod { border-color: var(--is-danger, #c62828); }
+	.cmp-prod {
+		border-color: var(--is-neutral, #9e9e9e);
+		background-color: var(--is-neutral-soft, #f5f5f5);
+	}
 	@media (max-width: 1100px) {
 		.cmp-row { grid-template-columns: 1fr; }
 	}

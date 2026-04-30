@@ -320,12 +320,25 @@ function parseInnerWithSections(inner: string): {
 	return { rows, extraStatements, compositePrimaryKey };
 }
 
+export function stripConstraints(input: string): string {
+	if (!input) return "";
+	let s = input;
+	// 1) Strip "CONSTRAINT <name> [ ( ... ) ]" anywhere.
+	const constraintRe = /\bCONSTRAINT\s+[A-Za-z_][\w]*\s*(\([^()]*\))?/gi;
+	let prev = "";
+	while (prev !== s) { prev = s; s = s.replace(constraintRe, ""); }
+	// 2) Strip stray region/endregion markers that may have leaked into column extras.
+	s = s.replace(/--\s*#(?:end)?region\b[^\n]*/gi, "");
+	return s.replace(/\s+/g, " ").trim();
+}
+
 export function emitColumn(col: TableColumn): string {
 	const parts: string[] = [col.name, col.type];
 	if (col.primaryKey) parts.push("PRIMARY KEY");
 	if (col.nullable) parts.push(col.nullable);
 	if (col.defaultValue) parts.push("DEFAULT", col.defaultValue);
-	if (col.extra) parts.push(col.extra);
+	const cleanExtra = stripConstraints(col.extra);
+	if (cleanExtra) parts.push(cleanExtra);
 	return parts.join(" ").replace(/\s+/g, " ").trim();
 }
 
@@ -359,7 +372,10 @@ export function emitTable(t: ParsedTable): string {
 	}
 	closeSection();
 
-	for (const s of t.extraStatements) innerLines.push({ text: "    " + s, isStmt: true });
+	for (const s of t.extraStatements) {
+		const cleaned = stripConstraints(s);
+		if (cleaned) innerLines.push({ text: "    " + cleaned, isStmt: true });
+	}
 	if (t.compositePrimaryKey.length > 0) {
 		innerLines.push({ text: `    PRIMARY KEY (${t.compositePrimaryKey.join(", ")})`, isStmt: true });
 	}
