@@ -1,19 +1,18 @@
-import type { TObject } from "@ingenieria_insoft/ispgen";
 import type { ComponentColor, IconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
 import { resolveColor } from "@ingenieria_insoft/ispsveltecomponents";
 import { ComplexControl } from "../00-complex-control";
-import type { FlexOptionsInput } from "../../../Options/FlexOptions.svelte";
+import type { FlexOptionsAction } from "../../../Options/FlexOptions.svelte";
 import type { RowItemProps } from "../../_rowItem.svelte";
 import type { TreeAdapter } from "../06-rows";
 import type { TreeRowAdapter } from "./02-events";
 
-type CascadeOptionsInput = FlexOptionsInput;
+type CascadeOptionsInput = FlexOptionsAction;
 
-export interface INode<T extends TObject> {
+export interface INode<T> {
 	id: string;
 	ireference: string;
 	obj: T;
-	stack: TObject;
+	stack: any;
 	label: string;
 	children: INode<T>[];
 	istack: string;
@@ -24,8 +23,8 @@ export interface INode<T extends TObject> {
 	isLast: boolean;
 }
 
-export interface ITreeData<T extends ITreeData<T> & TObject> extends INode<T> {
-	children: T[];
+export interface ITreeData<T> {
+	[k: string]: any;
 }
 
 type TreeRowConfig = {
@@ -34,7 +33,7 @@ type TreeRowConfig = {
 	draggable?: boolean;
 	isFirst?: boolean;
 	isLast?: boolean;
-	actions?: FlexOptionsInput[];
+	actions?: FlexOptionsAction[];
 	cascadeOptions?: CascadeOptionsInput[];
 	events?: {
 		onopen?: () => void;
@@ -46,12 +45,12 @@ type TreeRowConfig = {
 	};
 };
 
-export abstract class TRABase<TStacker extends TObject, TWorking extends ITreeData<TWorking> & TObject> extends ComplexControl<RowItemProps<TWorking> & Record<string, unknown>> {
+export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> extends ComplexControl<RowItemProps<TWorking> & Record<string, unknown>> {
 	public dragOver: "before" | "after" | null = null;
 	public dragForbidden = false;
 	public dragEnterCount = 0;
 	public dragPlaceholderHeight = 0;
-	public filteredActions: FlexOptionsInput[] = [];
+	public filteredActions: FlexOptionsAction[] = [];
 	public hasRowTools = false;
 	public showActions = false;
 	public longPressTimer: ReturnType<typeof setTimeout> | undefined;
@@ -282,7 +281,7 @@ export abstract class TRABase<TStacker extends TObject, TWorking extends ITreeDa
 		const onMoveDown = async () => { const newId = await ta.move(node.id, "down"); ta.commitAndFlash(newId); };
 		const onEdit = () => ta.openEdit(node);
 		const onDelete = () => this.onrowdelete();
-		const actions: FlexOptionsInput[] = [
+		const actions: FlexOptionsAction[] = [
 			isLast ? { icon: "mdi:eye-outline", title: "Ver recurso", onClick: onView } : null,
 			[
 				{ icon: "mdi:arrow-up", title: "Mover arriba", onClick: onMoveUp },
@@ -301,7 +300,7 @@ export abstract class TRABase<TStacker extends TObject, TWorking extends ITreeDa
 			isLast: this.siblingPos.isLast,
 		};
 	}
-	filterRowActions(cfg?: TreeRowConfig): FlexOptionsInput[] {
+	filterRowActions(cfg?: TreeRowConfig): FlexOptionsAction[] {
 		const keep = (item: unknown): boolean => {
 			if (!item || typeof item !== "object") return !!item;
 			const btn = item as { icon?: string; separator?: boolean };
@@ -310,7 +309,7 @@ export abstract class TRABase<TStacker extends TObject, TWorking extends ITreeDa
 			if (cfg?.isLast && btn.icon === "mdi:arrow-down") return false;
 			return true;
 		};
-		const out: FlexOptionsInput[] = [];
+		const out: FlexOptionsAction[] = [];
 		for (const entry of cfg?.actions ?? []) {
 			if (!entry) continue;
 			if (Array.isArray(entry)) {
@@ -342,7 +341,7 @@ export function groupedWithSeparators<T>(groups: ReadonlyArray<T | T[] | false |
 	return result;
 }
 
-export function objRootsToNodes<T extends ITreeData<T> & TObject>(
+export function objRootsToNodes<T extends ITreeData<T>>(
 	roots: readonly T[],
 	labelFn?: (obj: T) => string,
 ): INode<T>[] {

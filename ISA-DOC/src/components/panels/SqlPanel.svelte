@@ -7,7 +7,6 @@
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import SqlViewer from "../viewers/SqlViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
-	import Panel from "./Panel.svelte";
 	import TablesPanel from "./TablesPanel.svelte";
 	import CodeGenPanel from "./CodeGenPanel.svelte";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
@@ -169,12 +168,6 @@
 <Toaster />
 
 <Tabs>
-	<TabItem title="Migrar">
-		<section class="migrar">
-			<Panel />
-		</section>
-	</TabItem>
-
 	<TabItem title="Tablas">
 		<section class="editor">
 			<TablesPanel />
@@ -301,7 +294,7 @@
 <CodeModal bind:bshow={modalShow} title={modalTitle} value={modalValue} language={modalLanguage} />
 
 <style>
-	.editor, .resumen, .migrar {
+	.editor, .resumen {
 		display: flex;
 		flex-direction: column;
 		gap: 0.75rem;
@@ -318,36 +311,4 @@
 		border-radius: 4px;
 		font-size: 0.85rem;
 	}
-	.frag-header {
-		display: block;
-		width: 100%;
-		text-align: left;
-		background: transparent;
-		border: none;
-		color: inherit;
-		padding: 0.25rem 0;
-		cursor: pointer;
-	}
-	.frag-body {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		margin-top: 0.5rem;
-	}
-	.kind {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.25rem;
-		padding: 0.1rem 0.45rem;
-		border-radius: 999px;
-		font-size: 0.7rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.04em;
-	}
-	.kind--table { background: rgba(86, 156, 214, 0.18); color: #569cd6; }
-	.kind--index { background: rgba(220, 220, 170, 0.18); color: #dcdcaa; }
-	.kind--fk    { background: rgba(78, 201, 176, 0.18); color: #4ec9b0; }
-	.kind--seed  { background: rgba(206, 145, 120, 0.18); color: #ce9178; }
-	.kind--raw   { background: rgba(212, 212, 212, 0.14); color: #d4d4d4; }
 </style>

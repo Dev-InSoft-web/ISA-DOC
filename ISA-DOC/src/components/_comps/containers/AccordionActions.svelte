@@ -2,11 +2,10 @@
 	import FloatingCard from "./FloatingCard.svelte";
 	import Accordion, { type AccordionProps } from "./Accordion.svelte";
 	import FlexOptions, { type FlexOptionsAction } from "../Options/FlexOptions.svelte";
-	import type { CascadeOptionsAction } from "../Options/CascadeOptions.svelte";
 
 	export interface AccordionActionsProps extends AccordionProps {
 		actions?: FlexOptionsAction[];
-		more?: CascadeOptionsAction[];
+		more?: FlexOptionsAction[];
 		showfloat?: boolean;
 		horizontal?: "left" | "center" | "right";
 		vertical?: "top" | "center" | "bottom";

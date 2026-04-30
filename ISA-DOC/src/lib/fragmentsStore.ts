@@ -119,14 +119,4 @@ export function startFragmentsSocket(): void {
 	socket.on("fragments:invalidated", () => { void refreshFragments(); });
 }
 
-export function executeSqlViaSocket(sql: string): Promise<{ ok: boolean; output?: string; error?: string }> {
-	return new Promise((resolve) => {
-		startFragmentsSocket();
-		if (!socket) { resolve({ ok: false, error: "Sin conexión al servidor" }); return; }
-		socket.emit("sql:exec", { sql }, (data: { ok: boolean; output?: string; error?: string }) => {
-			resolve(data ?? { ok: false, error: "Sin respuesta" });
-		});
-	});
-}
-
 export const fragmentsStore: Readable<FragmentsState> = store;

@@ -10,12 +10,6 @@
 		"start": "node ./dist/server/entry.mjs",
 		"preview": "astro preview",
 		"typecheck": "tsc --noEmit",
-		"migrate:analyze": "tsx src/lib/migration/core/index.ts analyze",
-		"migrate:dry": "tsx src/lib/migration/core/index.ts migrate --dry-run",
-		"migrate": "tsx src/lib/migration/core/index.ts migrate",
-		"inspect": "tsx src/lib/migration/inspect/inspect-capac.ts",
-		"verify:legacy": "tsx src/lib/migration/verify/verify-legacy-900-cleanup.ts",
-		"verify:comments": "tsx src/lib/migration/verify/verify-table-comments.ts",
 		"verify:api": "tsx scripts/verify-api/verify_api.ts",
 		"verify:plan-order": "tsx scripts/verify-api/runs/run_plan_order.ts",
 		"postman:gen": "tsx scripts/verify-api/postman/generate_postman_items.ts"
@@ -35,14 +29,12 @@
 		"codemirror": "^6.0.2",
 		"flowbite-svelte": "^1.33.1",
 		"marked": "^18.0.2",
-		"mssql": "^11.0.1",
 		"socket.io": "^4.8.3",
 		"socket.io-client": "^4.8.3",
 		"svelte": "^5.x"
 	},
 	"devDependencies": {
 		"@astrojs/ts-plugin": "^1.x",
-		"@types/mssql": "^12.3.0",
 		"astro": "^5.x",
 		"tsx": "^4.21.0"
 	}

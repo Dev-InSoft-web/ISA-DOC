@@ -1,14 +1,13 @@
 <script context="module" lang="ts">
-   import { ButtonIconify, Card, Dialog, FlexLayout, Iconify, Text, bordercolor, resolveColor, type ButtonProps, type DialogProps } from "@ingenieria_insoft/ispsveltecomponents";
+   import { Button, ButtonIconify, Card, Dialog, FlexLayout, Iconify, Text, bordercolor, resolveColor, type ButtonProps, type DialogProps } from "@ingenieria_insoft/ispsveltecomponents";
    import type { ButtonOptionProps } from "./_ButtonOption.svelte";
-   import { tick } from "svelte";
-	import { cubicOut } from "svelte/easing";
-	import { scale } from "svelte/transition";
-
-   export type CascadeOptionsAction = ButtonOptionProps & { separator?: boolean };
+   import type { FlexOptionsAction as CascadeOptionsAction, FlexOptionsInput as CascadeOptionsInput } from "./FlexOptions.svelte";
+   import { onDestroy, tick } from "svelte";
+   import { cubicOut } from "svelte/easing";
+   import { scale } from "svelte/transition";
 
    export interface CascadeOptionsProps extends DialogProps {
-      items?: CascadeOptionsAction[];
+      actions?: CascadeOptionsInput[];
       disabled?: boolean;
    }
 
@@ -20,13 +19,14 @@
          open: boolean;
       };
    }
+
 </script>
 
 <script lang="ts">
    type $$Props = CascadeOptionsProps;
    interface $$Slots extends CascadeOptionsSlots {}
 
-   export let items: $$Props["items"] = [];
+   export let actions: $$Props["actions"] = [];
    export let open: $$Props["open"] = false;
    export let disabled: $$Props["disabled"] = false;
 
@@ -36,26 +36,30 @@
 
    $: cascadeZoomWrapStyle = ["position: absolute", "pointer-events: auto", `top: ${top}px`, `left: ${left}px`, "transform-origin: left top"].join("; ");
 
-   async function schedulecascadeposition() {
-      await tick();
-      await tick();
-      await new Promise<void>((r) => requestAnimationFrame(() => r()));
-      self.positionandshow();
-      await new Promise<void>((r) => requestAnimationFrame(() => r()));
-      self.positionandshow();
-      await new Promise<void>((r) => requestAnimationFrame(() => r()));
-      self.positionandshow();
-   }
-
    const self = {
+      infercascadeseparators(input: CascadeOptionsInput[]) {
+         const out: CascadeOptionsAction[] = [];
+         for (const group of input) {
+            if (!group) continue;
+            const itemslist = Array.isArray(group) ? group : [group];
+            const validItems: CascadeOptionsAction[] = [];
+            for (const item of itemslist) {
+               if (item) validItems.push(item);
+            }
+            if (validItems.length === 0) continue;
+            if (out.length > 0) out.push({ separator: true } as CascadeOptionsAction);
+            out.push(...validItems);
+         }
+         return out;
+      },
       get isopen() {
          return !!open;
       },
       get itemscount() {
-         return items?.length ?? 0;
+         return normalizedItems?.length ?? 0;
       },
       get empty() {
-         return !(items && items.length > 0);
+         return !(normalizedItems && normalizedItems.length > 0);
       },
       get blocked() {
          return disabled || self.empty;
@@ -73,6 +77,11 @@
             const rest = { ...$$restProps } as Record<string, unknown>;
             delete rest.open;
             return rest;
+         },
+      },
+      panel: {
+         get style() {
+            return ["padding: 0", "min-width: 10em", "max-width: min(22em, 90dvw)", "max-height: min(80dvh, 600px)", "overflow-y: auto", `--cod-separator-border: ${resolveColor("border")}`].join("; ");
          },
       },
       openmenu() {
@@ -111,7 +120,8 @@
       },
       onanchorkeydown(e: KeyboardEvent) {
          e.stopPropagation();
-         if (e.currentTarget !== e.target) return;
+         if (!(e.target instanceof HTMLElement)) return;
+         if (!e.target.closest("button")) return;
          if (e.key !== "Enter" && e.key !== " ") return;
          e.preventDefault();
          if (!self.blocked) self.openmenu();
@@ -124,96 +134,115 @@
          void Promise.resolve(itemonclick(ev as MouseEvent & { currentTarget: HTMLButtonElement }));
          open = false;
       },
+      getmenuitemonclick(itemonclick: ButtonProps["onClick"]) {
+         return (event: MouseEvent) => self.oncascademenuitemclick(event, itemonclick);
+      },
+      async schedulecascadeposition() {
+         await tick();
+         await tick();
+         for (let i = 0; i < 3; i++) {
+            await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+            self.positionandshow();
+         }
+      },
+      schedulereposition() {
+         if (!open || !anchorEl) return;
+         cancelAnimationFrame(repositionRaf);
+         repositionRaf = requestAnimationFrame(() => {
+            repositionRaf = 0;
+            self.positionandshow();
+         });
+      },
+      attachviewportreposition(anchor: HTMLElement) {
+         const scrollTargets = new Set<EventTarget>();
+         scrollTargets.add(window);
+         const vv = window.visualViewport;
+         if (vv) scrollTargets.add(vv);
+
+         let el: HTMLElement | null = anchor;
+         while (el) {
+            const st = getComputedStyle(el);
+            if (/(auto|scroll|overlay)/.test(st.overflowY + st.overflowX + st.overflow)) {
+               scrollTargets.add(el);
+            }
+            el = el.parentElement;
+         }
+
+         for (const target of scrollTargets) {
+            target.addEventListener("scroll", self.schedulereposition, true);
+         }
+         window.addEventListener("resize", self.schedulereposition);
+         if (vv) vv.addEventListener("resize", self.schedulereposition);
+
+         return () => {
+            cancelAnimationFrame(repositionRaf);
+            repositionRaf = 0;
+            for (const target of scrollTargets) {
+               target.removeEventListener("scroll", self.schedulereposition, true);
+            }
+            window.removeEventListener("resize", self.schedulereposition);
+            if (vv) vv.removeEventListener("resize", self.schedulereposition);
+         };
+      },
    };
+
+   $: normalizedItems = self.infercascadeseparators(actions ?? []);
 
    let removeViewportReposition: (() => void) | undefined;
    let repositionRaf = 0;
 
-   function schedulereposition() {
-      if (!open || !anchorEl) return;
-      cancelAnimationFrame(repositionRaf);
-      repositionRaf = requestAnimationFrame(() => {
-         repositionRaf = 0;
-         self.positionandshow();
-      });
-   }
-
-   function attachviewportreposition(anchor: HTMLElement) {
-      const scrollTargets = new Set<EventTarget>();
-      scrollTargets.add(window);
-      const vv = window.visualViewport;
-      if (vv) scrollTargets.add(vv);
-
-      let el: HTMLElement | null = anchor;
-      while (el) {
-         const st = getComputedStyle(el);
-         if (/(auto|scroll|overlay)/.test(st.overflowY + st.overflowX + st.overflow)) {
-            scrollTargets.add(el);
-         }
-         el = el.parentElement;
-      }
-
-      for (const t of scrollTargets) {
-         t.addEventListener("scroll", schedulereposition, true);
-      }
-      window.addEventListener("resize", schedulereposition);
-      if (vv) {
-         vv.addEventListener("resize", schedulereposition);
-      }
-
-      return () => {
-         cancelAnimationFrame(repositionRaf);
-         repositionRaf = 0;
-         for (const t of scrollTargets) {
-            t.removeEventListener("scroll", schedulereposition, true);
-         }
-         window.removeEventListener("resize", schedulereposition);
-         if (vv) {
-            vv.removeEventListener("resize", schedulereposition);
-         }
-      };
-   }
-
    $: if (disabled && !!open) open = false;
-   $: if (!!open && anchorEl) void schedulecascadeposition();
+   $: if (!!open && anchorEl) void self.schedulecascadeposition();
 
    $: {
       removeViewportReposition?.();
       removeViewportReposition = undefined;
       if (!!open && anchorEl) {
-         removeViewportReposition = attachviewportreposition(anchorEl);
+         removeViewportReposition = self.attachviewportreposition(anchorEl);
       }
    }
+
+   onDestroy(() => {
+      removeViewportReposition?.();
+      removeViewportReposition = undefined;
+      cancelAnimationFrame(repositionRaf);
+      repositionRaf = 0;
+   });
 </script>
 
 <FlexLayout class="cascade-options" inline items="center" style="vertical-align: middle">
    <FlexLayout class={self.anchor.class} inline items="center" role="presentation">
-      <button type="button" bind:this={anchorEl} style="min-width: 0; border: none; background: transparent; padding: 0;" on:click={self.onanchorclick} on:keydown={self.onanchorkeydown}>
-         <slot open={self.isopen}>
-            <ButtonIconify icon="mdi:dots-vertical" title="Más opciones" disabled={self.blocked} />
-         </slot>
-      </button>
+      <span bind:this={anchorEl}>
+         <Button variant="text" shape="rect" style="padding: 0;" onkeydown={self.onanchorkeydown} on:click={self.onanchorclick}>
+            <slot open={self.isopen}>
+               <ButtonIconify icon="mdi:dots-vertical" title="Más opciones" disabled={self.blocked} />
+            </slot>
+         </Button>
+      </span>
    </FlexLayout>
 
    <Dialog {...self.dialog.resume} class={self.dialog.class} bind:open backeffect="none" lockViewportScroll={false}>
       <div class="cascade-options-zoom-wrap" style={cascadeZoomWrapStyle} transition:scale={{ start: 0.88, duration: 120, easing: cubicOut }}>
-         <Card class="cascade-options-panel blockCloseClick" role="menu" style={["padding: 0", "min-width: 10em", "max-width: min(22em, 90dvw)", "max-height: min(80dvh, 600px)", "overflow-y: auto", `--cod-separator-border: ${resolveColor("border")}`].join("; ")}>
+         <Card class="cascade-options-panel blockCloseClick" role="menu" style={self.panel.style}>
             <FlexLayout direction="column" gap="0">
-               {#each items as item}
-                  {#if item.separator}
-                     <div class="cod-separator" style="border-top: 1px solid {bordercolor};"></div>
+               {#each normalizedItems as item}
+                  {#if "separator" in item && item.separator}
+                     <div class="cod-separator" style={"border-top: 1px solid " + bordercolor + ";"}></div>
                   {:else}
-                     {@const { separator: _sep, onClick: itemOnClick, ...rest } = item}
-                     <ButtonIconify role="menuitem" {...rest} shape="rect" disabled={disabled ? true : rest.disabled} class={item.class || ""} style={["justify-content: start", item.style].filter(Boolean).join("; ")} on:click={(e) => self.oncascademenuitemclick(e, itemOnClick)}>
-                        {#if item.label}
-                           <Iconify icon={item.icon!} />
-                           {item.label}
+                     {@const action = item as ButtonOptionProps}
+                     {@const { onClick: itemOnClick, ...rest } = action}
+                     <ButtonIconify role="menuitem" {...rest} shape="rect" disabled={disabled ? true : action.disabled} class={action.class || ""} style={["justify-content: start", action.style].filter(Boolean).join("; ")} on:click={self.getmenuitemonclick(itemOnClick)}>
+                        {#if action.label}
+                           {#if action.icon}
+                              <Iconify icon={action.icon} />
+                           {/if}
+                           {action.label}
                         {/if}
                      </ButtonIconify>
                   {/if}
                {/each}
                {#if self.itemscount === 0}
-                  <FlexLayout inline items="center" justify="center" gap="0.35em" style="text-align: center; width: 100%">
+                  <FlexLayout inline items="center" justify="center" style="text-align: center; width: 100%">
                      <Iconify icon="mdi:inbox-outline" style="font-size: 1.1em; flex-shrink: 0" />
                      <Text color="neutral">Sin acciones</Text>
                   </FlexLayout>
@@ -236,15 +265,12 @@
    :global {
       .cascade-options {
          vertical-align: middle;
-
          .cascade-options-panel {
             z-index: 9999;
          }
-
          .wrap.anchor {
             cursor: pointer;
             min-width: 0;
-
             &.anchor--disabled {
                opacity: 0.45;
                cursor: not-allowed;

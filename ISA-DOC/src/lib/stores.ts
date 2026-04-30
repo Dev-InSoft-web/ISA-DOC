@@ -32,5 +32,3 @@ export function toastInfo(text: string, timeout?: number): void {
 export function toastWarning(text: string, timeout?: number): void {
 	pushToast({ type: "warning", text, timeout });
 }
-
-export const JWTContactoAuth = writable<unknown>(null);

@@ -46,7 +46,6 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 			disabled: false,
 			showToolbar: true,
 			bdrag: true,
-			bAllowed: { Crear: true, Modificar: true, Eliminar: true, Visualizar: true },
 			CatalogoController: stub as unknown as TreeViewProps<TSqlTableUX, TSqlNodeUX>["CatalogoController"],
 			TreeController: undefined as unknown as TreeAdapter<TSqlTableUX, TSqlNodeUX>,
 		} as TreeViewProps<TSqlTableUX, TSqlNodeUX>);

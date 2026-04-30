@@ -1,9 +1,8 @@
-import { TObject } from "@ingenieria_insoft/ispgen";
 import type { TreeViewProps } from "../TreeRowView.svelte";
 import { objRootsToNodes, type INode, type ITreeData } from "./_rowAdapter/00-base";
 import { TAModel } from "./02-model";
 
-export abstract class TATree<Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObject> extends TAModel<Stacker, TWorking> {
+export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> extends TAModel<Stacker, TWorking> {
 
 	protected prepareGetNode(data: Partial<TWorking>): Partial<TWorking> {
 		if (this.nistack && this.istack) {
@@ -27,17 +26,17 @@ export abstract class TATree<Stacker extends TObject, TWorking extends ITreeData
 		return out as Partial<TWorking>;
 	}
 
-	protected prepareLastLevelNodeData(baseData: Partial<TWorking>, _record: TObject): Partial<TWorking> { return baseData }
+	protected prepareLastLevelNodeData(baseData: Partial<TWorking>, _record: any): Partial<TWorking> { return baseData }
 
 	protected getNewNodeDefaults(_referenceId: string): Partial<TWorking> { return {} }
 
 	toNode(data: any, clone = false): TWorking {
 		const src = clone
-			? (data instanceof TObject ? (data.clone() as TWorking) : structuredClone(data) as Partial<TWorking>)
+			? (typeof (data as any)?.clone === "function" ? ((data as any).clone() as TWorking) : structuredClone(data) as Partial<TWorking>)
 			: data;
 		if (!clone && this.isNodeInstance(src as Partial<TWorking>)) return src as TWorking;
 		const prepared = this.prepareGetNode(src as Partial<TWorking>);
-		return this.createNode(Object.assign(new TObject(), prepared));
+		return this.createNode({ ...prepared });
 	}
 
 	normalizeNodeId(id: unknown): string {
@@ -121,7 +120,7 @@ export abstract class TATree<Stacker extends TObject, TWorking extends ITreeData
 		return out;
 	}
 
-	buildTree(planes: TObject[]): TWorking[] {
+	buildTree(planes: any[]): TWorking[] {
 		const map = new Map<string, TWorking>();
 		const roots: TWorking[] = [];
 		const uxList: TWorking[] = [];
@@ -258,8 +257,8 @@ export abstract class TATree<Stacker extends TObject, TWorking extends ITreeData
 	protected commitFlatList(_flat: TWorking[]): void { }
 
 	protected serializeRowToJSON(row: TWorking): Record<string, unknown> {
-		if (row instanceof TObject) {
-			const j = { ...(row.toJSON(false) as Record<string, unknown>) };
+		if (typeof (row as any)?.toJSON === "function") {
+			const j = { ...((row as any).toJSON(false) as Record<string, unknown>) };
 			delete j.children;
 			return j;
 		}

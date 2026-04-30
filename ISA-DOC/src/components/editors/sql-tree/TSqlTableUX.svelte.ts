@@ -10,7 +10,6 @@ export class TSqlTableUX extends TObject {
 
 	constructor(parsed?: ParsedTable) {
 		super();
-		(this as { f?: Record<string, unknown> }).f ??= {};
 		if (parsed) {
 			this.parsed = parsed;
 			this.tableId = `${parsed.fragmentId}::${parsed.originalName || parsed.name}`;

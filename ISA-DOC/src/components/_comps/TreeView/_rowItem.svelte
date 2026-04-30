@@ -1,5 +1,4 @@
 <script context="module" lang="ts">
-   import type { TObject } from "@ingenieria_insoft/ispgen";
    import { ButtonIconify, Card, colorMix, FlexLayout, Iconify, mkAlpha, resolveColor, Text } from "@ingenieria_insoft/ispsveltecomponents";
    import type { HTMLAttributes } from "svelte/elements";
    import { slide } from "svelte/transition";
@@ -8,23 +7,23 @@
    import type { INode, ITreeData } from "./TreeRowView.svelte";
    import type { TreeAdapter } from "./TreeRowView.svelte";
 
-   export interface RowItemProps<TWorking extends ITreeData<TWorking> & TObject> extends HTMLAttributes<HTMLDivElement> {
+   export interface RowItemProps<TWorking extends ITreeData<TWorking>> extends HTMLAttributes<HTMLDivElement> {
       treeController: TreeAdapter<any, TWorking>;
       nodes: INode<TWorking>[];
       rowLayoutEpoch: number;
    }
 
-   export interface RowItemSlots<TWorking extends ITreeData<TWorking> & TObject> {
+   export interface RowItemSlots<TWorking extends ITreeData<TWorking>> {
       row: { node: INode<TWorking> };
    }
 
-   export type RowItemAdapterBridge<TWorking extends ITreeData<TWorking> & TObject> = RowItemProps<TWorking> & {
+   export type RowItemAdapterBridge<TWorking extends ITreeData<TWorking>> = RowItemProps<TWorking> & {
       node: INode<TWorking>;
       onuitouch?: () => void;
    };
 </script>
 
-<script lang="ts" generics="TWorking extends ITreeData<TWorking> & TObject">
+<script lang="ts" generics="TWorking extends ITreeData<TWorking>">
    interface $$Props extends RowItemProps<TWorking> {}
    interface $$Slots extends RowItemSlots<TWorking> {}
 

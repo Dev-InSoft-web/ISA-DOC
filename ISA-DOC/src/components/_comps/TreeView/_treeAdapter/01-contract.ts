@@ -1,12 +1,11 @@
-import { TObject } from "@ingenieria_insoft/ispgen";
 import { writable, type Writable } from "svelte/store";
 import { TreeRowAdapter } from "./_rowAdapter/02-events";
 import { type INode, type ITreeData } from "./_rowAdapter/00-base";
 import { TTreeAdapterContext } from "./00-context";
 
 export abstract class TTreeAdapterContract<
-	Stacker extends TObject,
-	TWorking extends ITreeData<TWorking> & TObject,
+	Stacker,
+	TWorking extends ITreeData<TWorking>,
 > extends TTreeAdapterContext<Stacker, TWorking> {
 	disabledNodes: string[] = [];
 	flashIds: string[] = [];
@@ -37,26 +36,26 @@ export abstract class TTreeAdapterContract<
 		return ids;
 	}
 
-	abstract createNode(data: TObject): TWorking;
+	abstract createNode(data: any): TWorking;
 	abstract get nodeCtor(): new (...args: any[]) => TWorking;
 	abstract get nidNode(): string;
 	abstract get stack(): Stacker;
 	abstract get istack(): string;
 	abstract get nistack(): string;
-	abstract get stackList(): TObject[];
-	abstract set stackList(value: TObject[]);
+	abstract get stackList(): any[];
+	abstract set stackList(value: any[]);
 
 	abstract toNode(obj: unknown, isCopy?: boolean): TWorking;
 	abstract onrefresh(): void;
 	abstract applySelection(obj: TWorking | null): void;
 	abstract resyncExpandedToCurrentTree(): void;
 	abstract syncAllRowAdapters(): void;
-	abstract getlevelname(nivel?: number, record?: TObject): string;
+	abstract getlevelname(nivel?: number, record?: any): string;
 
-	abstract getEditDriverAttrs(): TObject[];
-	abstract getEditAttrsForLevel(driverAttrs: TObject[], plan: TWorking): TObject[];
+	abstract getEditDriverAttrs(): any[];
+	abstract getEditAttrsForLevel(driverAttrs: any[], plan: TWorking): any[];
 	abstract canEditSelectResource(plan: TWorking, draft: TWorking): boolean;
 	abstract getEditAtributoValor(draft: TWorking, iatributo: number): string;
 	abstract setEditAtributoValor(draft: TWorking, iatributo: number, valor: string): TWorking;
-	abstract setEditRecursoSelected(draft: TWorking, record: TObject): TWorking;
+	abstract setEditRecursoSelected(draft: TWorking, record: any): TWorking;
 }

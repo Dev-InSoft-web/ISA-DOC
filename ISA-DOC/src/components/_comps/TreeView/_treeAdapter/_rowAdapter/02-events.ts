@@ -1,8 +1,7 @@
-import type { TObject } from "@ingenieria_insoft/ispgen";
 import { TRADrag } from "./01-drag";
 import type { ITreeData } from "./00-base";
 
-export class TreeRowAdapter<TStacker extends TObject, TWorking extends ITreeData<TWorking> & TObject> extends TRADrag<TStacker, TWorking> {
+export class TreeRowAdapter<TStacker, TWorking extends ITreeData<TWorking>> extends TRADrag<TStacker, TWorking> {
 	onsummaryclick(e: MouseEvent) {
 		try {
 			const summaryEl = e.currentTarget as HTMLElement;

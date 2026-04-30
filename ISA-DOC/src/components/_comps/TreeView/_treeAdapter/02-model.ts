@@ -1,8 +1,7 @@
-import { TObject } from "@ingenieria_insoft/ispgen";
 import { type ITreeData } from "./_rowAdapter/00-base";
 import { TTreeAdapterContract } from "./01-contract";
 
-export abstract class TAModel<Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObject> extends TTreeAdapterContract<Stacker, TWorking> {
+export abstract class TAModel<Stacker, TWorking extends ITreeData<TWorking>> extends TTreeAdapterContract<Stacker, TWorking> {
 
 	showFrmModificar: (Obj: TWorking) => void = () => undefined;
 

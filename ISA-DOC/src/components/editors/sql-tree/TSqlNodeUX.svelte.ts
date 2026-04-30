@@ -19,7 +19,6 @@ export class TSqlNodeBase extends TObject {
 
 	constructor() {
 		super();
-		(this as { f?: Record<string, unknown> }).f ??= {};
 	}
 }
 
@@ -28,7 +27,6 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 
 	constructor(data?: Partial<TSqlNodeBase>, stack?: TObject) {
 		super();
-		(this as { f?: Record<string, unknown> }).f ??= {};
 		if (data) Object.assign(this, data);
 		this.obj = this as unknown as TSqlNodeUX;
 		if (stack) this.stack = stack;
@@ -41,9 +39,6 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 	get istack(): string { return String(this.tableId || ""); }
 	get nistack(): string { return "tableId"; }
 
-	get label(): string { return this.rowName || ""; }
-	set label(value: string) { this.rowName = value; }
-
 	public refreshUX(): void {
 		const raw = String(this.rowId || "").trim();
 		const dotCount = raw ? (raw.match(/\./g) || []).length : 0;
@@ -53,6 +48,7 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 		this.isPenultimate = this.kind === "section";
 		this.levelTitle = this.kind === "section" ? "Sección" : "Columna";
 		this.nextLevelTitle = "Columna";
+		this.label = this.rowName || "";
 	}
 
 	toColumn(): TableColumn {

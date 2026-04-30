@@ -1,8 +1,7 @@
-import { TObject } from "@ingenieria_insoft/ispgen";
 import { type INode, type ITreeData } from "./_rowAdapter/00-base";
 import { TAView } from "./04-view";
 
-export abstract class TAMutations<Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObject> extends TAView<Stacker, TWorking> {
+export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>> extends TAView<Stacker, TWorking> {
 
 	onaddroot(): void {
 		if (this.isReadOnly) return;
@@ -123,10 +122,10 @@ export abstract class TAMutations<Stacker extends TObject, TWorking extends ITre
 		});
 	}
 
-	async onselectlastlevel(records: TObject | TObject[]): Promise<void> {
+	async onselectlastlevel(records: any | any[]): Promise<void> {
 		const referenceId = this.addReferenceId;
-		const rawItems: TObject[] = Array.isArray(records) ? records : records ? [records] : [];
-		const items: TObject[] = rawItems.filter((r): r is TObject => !!r);
+		const rawItems: any[] = Array.isArray(records) ? records : records ? [records] : [];
+		const items: any[] = rawItems.filter((r): r is any => !!r);
 		if (!referenceId || !items.length) return;
 		const baseParts = this.getNextNodeId(referenceId).split(".");
 		const idPrefix = baseParts.slice(0, -1).join(".");

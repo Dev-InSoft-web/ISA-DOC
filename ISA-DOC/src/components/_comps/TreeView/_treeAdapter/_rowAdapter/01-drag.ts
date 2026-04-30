@@ -1,7 +1,6 @@
-import type { TObject } from "@ingenieria_insoft/ispgen";
 import { TRABase, type ITreeData } from "./00-base";
 
-export abstract class TRADrag<TStacker extends TObject, TWorking extends ITreeData<TWorking> & TObject> extends TRABase<TStacker, TWorking> {
+export abstract class TRADrag<TStacker, TWorking extends ITreeData<TWorking>> extends TRABase<TStacker, TWorking> {
 	ondragstart(e: DragEvent) {
 		try {
 			if (!this.isDraggable) return;

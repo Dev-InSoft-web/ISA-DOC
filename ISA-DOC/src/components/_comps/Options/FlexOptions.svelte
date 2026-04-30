@@ -1,24 +1,18 @@
 <script context="module" lang="ts">
-   import { FlexLayout } from "@ingenieria_insoft/ispsveltecomponents";
-   import CascadeOptions, { type CascadeOptionsAction } from "./CascadeOptions.svelte";
+   import { FlexLayout, type FlexLayoutProps } from "@ingenieria_insoft/ispsveltecomponents";
+   import CascadeOptions from "./CascadeOptions.svelte";
    import ButtonOption, { type ButtonOptionProps } from "./_ButtonOption.svelte";
 
    /** Ítem de barra: botón o separador vertical (`{ separator: true }`). */
-   export type FlexOptionsAction = ButtonOptionProps | { separator: true };
+   export type FlexOptionsAction = ButtonOptionProps & { separator?: boolean };
+   /** Entrada admitida: ítem suelto, grupo (array), o falsy. Los grupos no vacíos se separan automáticamente. */
+   export type FlexOptionsInput = FlexOptionsAction | FlexOptionsAction[] | false | null | undefined;
    export type FlexOptionsBreakpoint = "xs" | "sm" | "md" | "lg" | "xl";
 
-   export interface FlexOptionsProps {
-      actions: FlexOptionsAction[];
-      more?: CascadeOptionsAction[];
+   export interface FlexOptionsProps extends FlexLayoutProps {
+      actions: FlexOptionsInput[];
+      more?: FlexOptionsInput[];
       sizew?: FlexOptionsBreakpoint;
-      cscroll?: boolean;
-      inline?: boolean;
-      items?: string;
-      gap?: string;
-      "class"?: string;
-      style?: string;
-      role?: string;
-      "aria-label"?: string;
    }
 </script>
 
@@ -32,29 +26,62 @@
    export let style: $$Props["style"] = "";
    export let actions: $$Props["actions"] = [];
    export let more: $$Props["more"] = [];
-
    export let sizew: $$Props["sizew"] = "md";
 
-   const _obj_ = {
+   const self = {
+      inferflexseparators(input: FlexOptionsInput[]) {
+         const out: FlexOptionsAction[] = [];
+         const isSeparator = (item: FlexOptionsAction | undefined) => !!item && "separator" in item && item.separator;
+         for (const group of input) {
+            if (!group) continue;
+            const items = Array.isArray(group) ? group : [group];
+            const validItems: FlexOptionsAction[] = [];
+            for (const item of items) {
+               if (!item) continue;
+               if (isSeparator(item) && (validItems.length === 0 || isSeparator(validItems[validItems.length - 1]))) continue;
+               validItems.push(item);
+            }
+            if (isSeparator(validItems[validItems.length - 1])) validItems.pop();
+            if (validItems.length === 0) continue;
+            if (out.length > 0 && !isSeparator(out[out.length - 1])) out.push({ separator: true });
+            out.push(...validItems);
+         }
+         if (isSeparator(out[out.length - 1])) out.pop();
+         return out;
+      },
+      get hasmore() {
+         return !!more?.length;
+      },
+      get hasactions() {
+         return normalizedActions.length > 0;
+      },
+      get class() {
+         return [klass, $$restProps.class].filter(Boolean).join(" ");
+      },
       get style() {
          return ["flex-shrink: 0", style, $$restProps.style].filter(Boolean).join("; ");
       },
       get resume() {
-         return { ...$$restProps, class: klass || $$restProps.class, style: this.style };
+         return { ...$$restProps, class: self.class, style: self.style };
       },
    };
+
+   $: normalizedActions = self.inferflexseparators(actions ?? []);
 </script>
 
-<FlexLayout gap="0" {..._obj_.resume} bind:sizew role="toolbar">
-   {#each actions as item}
+<FlexLayout gap="0" {...self.resume} bind:sizew role="toolbar">
+   {#each normalizedActions as item}
       {#if "separator" in item && item.separator}
          <span class="flex-options-vsep" role="separator" aria-orientation="vertical"></span>
       {:else}
          <ButtonOption {...item} />
       {/if}
    {/each}
-   {#if more?.length}
-      <CascadeOptions items={more} />
+   {#if self.hasmore}
+      {#if self.hasactions}
+         <span class="flex-options-vsep" role="separator" aria-orientation="vertical"></span>
+      {/if}
+      <CascadeOptions actions={more} />
    {/if}
 </FlexLayout>
 

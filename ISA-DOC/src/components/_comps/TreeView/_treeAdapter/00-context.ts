@@ -1,9 +1,8 @@
-import { TObject } from "@ingenieria_insoft/ispgen";
-import type { TreeViewProps } from "../TreeView.svelte";
+import type { TreeViewProps } from "../TreeRowView.svelte";
 import { ComplexControl } from "./00-complex-control";
 import { type INode, type ITreeData } from "./_rowAdapter/00-base";
 
-export abstract class TTreeAdapterContext<Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObject,> extends ComplexControl<TreeViewProps<Stacker, TWorking>> {
+export abstract class TTreeAdapterContext<Stacker, TWorking extends ITreeData<TWorking>> extends ComplexControl<TreeViewProps<Stacker, TWorking>> {
 	bshowFrm = false;
 
 	protected _selectedId = "";
@@ -63,10 +62,6 @@ export abstract class TTreeAdapterContext<Stacker extends TObject, TWorking exte
 	get itdForm() { return this.context.itdForm }
 	get isViewMode(): boolean { return this.context.itdForm === "view" }
 	get isReadOnly(): boolean { return !!this.context.readonly }
-	get puedeCrear(): boolean { return this.context.bAllowed?.Crear ?? true }
-	get puedeModificar(): boolean { return this.context.bAllowed?.Modificar ?? true }
-	get puedeEliminar(): boolean { return this.context.bAllowed?.Eliminar ?? true }
-	get puedeVisualizar(): boolean { return this.context.bAllowed?.Visualizar ?? true }
 	get bdrag(): boolean { return this.context.bdrag !== false }
 	get isBrapido(): boolean { return !!this.context.brapido }
 

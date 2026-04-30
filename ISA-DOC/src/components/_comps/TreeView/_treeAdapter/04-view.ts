@@ -1,8 +1,7 @@
-import { TObject } from "@ingenieria_insoft/ispgen";
 import { type INode, type ITreeData } from "./_rowAdapter/00-base";
 import { TATree } from "./03-tree";
 
-export abstract class TAView<Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObject> extends TATree<Stacker, TWorking> {
+export abstract class TAView<Stacker, TWorking extends ITreeData<TWorking>> extends TATree<Stacker, TWorking> {
 
 	
 	applySelection(edit: TWorking | null): void {

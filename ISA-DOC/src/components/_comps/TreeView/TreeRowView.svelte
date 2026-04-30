@@ -1,8 +1,7 @@
 ﻿<svelte:options accessors={true} />
 
 <script context="module" lang="ts">
-   import type { TControllerCatalogoGen, TDAction, TObject } from "@ingenieria_insoft/ispgen";
-   import { AccionesGen, ActionDrawer, Button, FlexLayout, Iconify, Input, Modal, Text, type ICtxAction, type ICtxGrid, type TDForm } from "@ingenieria_insoft/ispsveltecomponents";
+   import { AccionesGen, ActionDrawer, Button, FlexLayout, Iconify, Input, Modal, Text, type TDForm } from "@ingenieria_insoft/ispsveltecomponents";
    import type { HTMLAttributes } from "svelte/elements";
    import type { FlexOptionsAction } from "../Options/FlexOptions.svelte";
    import FlexOptions from "../Options/FlexOptions.svelte";
@@ -13,30 +12,13 @@
    export { ComplexControl, TreeAdapter, TreeRowAdapter, TreeNodeUX, groupedWithSeparators, objRootsToNodes };
    export type { INode, ITreeData };
 
-   /** Mapa de permisos por acción. ISA no requiere JWT: por defecto se autoriza todo. */
-   export type TBAllowed = { [K in TDAction]?: boolean };
-   export interface ISeguridadBase {
-      isysrecurso?: string;
-      bAllowed?: TBAllowed;
-      jwtLoaded?: boolean;
-      onPermissionError?: (msg: string) => void;
-   }
-   export interface CatalogoController<TObj extends TObject> extends ISeguridadBase, ICtxAction<TObj> {}
-   export interface ActionSecurityProps<TObj extends TObject> {
-      CatalogoController: CatalogoController<TObj>;
-      bAllowed?: TBAllowed;
-   }
-   export interface MainFormLayoutProps<T extends TObject> extends HTMLAttributes<HTMLDivElement> {
-      Obj: T;
+   export interface TreeViewProps<Stacker, TWorking extends ITreeData<TWorking>> extends HTMLAttributes<HTMLDivElement> {
+      Obj: Stacker;
       itdForm: TDForm;
-      bAllowed?: TBAllowed;
       brapido?: boolean;
       readonly?: boolean;
       small?: boolean;
-   }
-   export interface TreeViewProps<Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObject>
-      extends MainFormLayoutProps<Stacker>, ActionSecurityProps<TWorking> {
-      CatalogoController: TControllerCatalogoGen<TWorking> & ICtxGrid<TWorking> & CatalogoController<TWorking>;
+      CatalogoController: Record<string, any>;
       TreeController: TreeAdapter<Stacker, TWorking>;
       disabled?: boolean;
       objWorking?: INode<TWorking> | null;
@@ -46,7 +28,7 @@
       resourceSelectorOpen?: boolean;
    }
 
-   export interface TreeViewSlots<Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObject> {
+   export interface TreeViewSlots<Stacker, TWorking extends ITreeData<TWorking>> {
       default: { treeToolbar: TreeAdapter<Stacker, TWorking>; sizew: any; showEliminar: (Obj: TWorking) => void };
       pre: { treeToolbar: TreeAdapter<Stacker, TWorking>; sizew: any; showEliminar: (Obj: TWorking) => void };
       row: { node: INode<TWorking> };
@@ -54,7 +36,7 @@
    }
 </script>
 
-<script lang="ts" generics="Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObject">
+<script lang="ts" generics="Stacker, TWorking extends ITreeData<TWorking>">
    import { toastError } from "$lib/stores";
    import TouchGestures from "../containers/TouchGestures.svelte";
 
@@ -71,7 +53,6 @@
    export let itdForm: $$Props["itdForm"];
    export let brapido: $$Props["brapido"] = false;
    export let small: $$Props["small"] = false;
-   export let bAllowed: $$Props["bAllowed"] = undefined;
    export let bdrag: $$Props["bdrag"] = true;
 
    let editRowShow = false;
@@ -218,7 +199,6 @@
          showToolbar,
          disabled,
          readonly,
-         bAllowed,
          get objWorking() {
             return objWorking;
          },
@@ -274,11 +254,7 @@
          <ActionDrawer bind:bshow={editRowShow} onclose={closeTreePlanDrawer} style="width: 580px; max-width: 90vw;">
             <FlexLayout direction="column" style="height: 100%; background-color: var(--is-bg-primary);">
                <FlexLayout direction="column" class="isp-tree-frm-body custom-scrollbar" cscroll style="overflow: hidden; flex: 1 1 auto; min-height: 0;">
-                  {#if itdFormResolved === "view" && !TreeController.puedeVisualizar}
-                     <FlexLayout direction="column" items="center" justify="center" style="padding: 2rem; flex: 1;">
-                        <Text color="neutral">No tiene permisos para visualizar este registro.</Text>
-                     </FlexLayout>
-                  {:else if currentWorking}
+                  {#if currentWorking}
                      <AccionesGen bind:itdForm={localItdForm} bRapido={true} {postSubmit} {onError} onCancel={closeTreePlanDrawer} Controller={CatalogoController as any} Obj={currentWorking as any} onNewObject={async () => currentWorking}>
                         <slot name="Frm" slot="Frm" let:Obj={frmObj} let:small let:itdForm {frmObj} {small} {itdForm} {brapido}>
                            <Text style="padding: 1rem;" color="neutral">Implemente el slot "Frm" para las acciones sobre el objeto {currentWorking?.id ?? "---"}.</Text>

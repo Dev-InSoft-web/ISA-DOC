@@ -1,14 +1,13 @@
-import { TObject } from "@ingenieria_insoft/ispgen";
 import type { ButtonIconifyProps, ComponentColor, IconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
-import type { FlexOptionsAction, FlexOptionsInput } from "../../Options/FlexOptions.svelte";
+import type { FlexOptionsAction } from "../../Options/FlexOptions.svelte";
 import { TreeRowAdapter } from "./_rowAdapter/02-events";
 import { type INode, type ITreeData } from "./_rowAdapter/00-base";
 import type { RowItemProps } from "../_rowItem.svelte";
 import { TAMutations } from "./05-mutations";
 
-type CascadeOptionsInput = FlexOptionsInput;
+type CascadeOptionsInput = FlexOptionsAction;
 
-export abstract class TreeAdapter<Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObject> extends TAMutations<Stacker, TWorking> {
+export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>> extends TAMutations<Stacker, TWorking> {
 
 	onrowclick(node: INode<TWorking>): void {
 		this._selectedId = this.normalizeNodeId(node.id);
@@ -112,7 +111,7 @@ export abstract class TreeAdapter<Stacker extends TObject, TWorking extends ITre
 				icon: "mdi:plus-circle-outline",
 				title: addTitle,
 				label: addLabel,
-				disabled: addDisabled || !this.puedeCrear,
+				disabled: addDisabled,
 				onClick: () => { if (!addDisabled) this.onaddroot(); },
 			}]),
 			{ icon: "mdi:unfold-less-horizontal", title: "Colapsar todo", onClick: () => this.collapseAll?.() },
@@ -128,7 +127,7 @@ export abstract class TreeAdapter<Stacker extends TObject, TWorking extends ITre
 		draggable?: boolean;
 		isFirst?: boolean;
 		isLast?: boolean;
-		actions?: FlexOptionsInput[];
+		actions?: FlexOptionsAction[];
 		cascadeOptions?: CascadeOptionsInput[];
 		events?: {
 			onopen?: () => void;
@@ -158,9 +157,9 @@ export abstract class TreeAdapter<Stacker extends TObject, TWorking extends ITre
 		const mutDisabled = this.isViewMode && !this.isReadOnly;
 		const rdTitle = (base: string) => mutDisabled ? `${base} (Modo lectura)` : base;
 
-		const actions: FlexOptionsInput[] = this.isReadOnly ? [] : [
+		const actions: FlexOptionsAction[] = this.isReadOnly ? [] : [
 			this.particularactionsrow(node),
-			...(this.puedeModificar && this.bdrag ? [[
+			...(this.bdrag ? [[
 				{
 					icon: "mdi:arrow-up",
 					title: rdTitle("Mover arriba (Ctrl+Up)"),
@@ -175,28 +174,28 @@ export abstract class TreeAdapter<Stacker extends TObject, TWorking extends ITre
 				},
 			]] : []),
 			[
-				...((this.puedeModificar || this.isViewMode) ? [
+				...([
 					this.isViewMode
 						? { icon: "mdi:form-textbox", title: "Ver formulario (Enter)", onClick: () => rowController?.onrowdblclick() }
 						: { icon: "mdi:pencil-outline", title: "Editar (Enter)", onClick: () => rowController?.onrowdblclick() },
-				] : []),
-				...(isFolder && this.puedeCrear && !this.isBrapido ? [{
+				]),
+				...(isFolder && !this.isBrapido ? [{
 					icon: "mdi:plus-circle-outline",
 					title: rdTitle(node.isPenultimate ? "Agregar recurso (Ins)" : `Agregar ${node.nextLevelTitle || "hijo"} (Ins)`),
 					disabled: mutDisabled || undefined,
 					onClick: () => { if (!mutDisabled) void this.handleaddchild(node.id); },
 				}] : []),
-				...(this.puedeEliminar ? [{
+				...([{
 					icon: "mdi:delete-outline",
 					title: rdTitle("Eliminar (Supr)"),
 					color: "danger" as const,
 					disabled: mutDisabled || undefined,
 					onClick: () => { if (!mutDisabled) this.onrowdelete(node); },
-				}] : []),
+				}]),
 			]
 		];
 
-		const cascadeOptions: CascadeOptionsInput[] = (this.isReadOnly || !this.puedeCrear || this.isBrapido) ? [] : [
+		const cascadeOptions: CascadeOptionsInput[] = (this.isReadOnly || this.isBrapido) ? [] : [
 			[
 				{
 					icon: "mdi:table-row-plus-before",

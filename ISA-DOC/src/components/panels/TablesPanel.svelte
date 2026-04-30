@@ -7,16 +7,13 @@
 	import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
 	import CodeViewer from "../viewers/CodeViewer.svelte";
-	import PermisosCsvMigration from "../migration/PermisosCsvMigration.svelte";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
 	import type { ParsedTable } from "../../lib/tableSchema.ts";
 	import { parseTableFragment, emitTable, emitDropTable, emitTablesAsBody } from "../../lib/tableSchema.ts";
 	import { generateResourcesFromTables } from "../../lib/codeGen/autogen.ts";
 	import { genModelo, genServer, genClient } from "../../lib/codeGen/generators.ts";
-	import ConfirmExecuteButton from "../_comps/especial/ConfirmExecuteButton.svelte";
 	import {
 		fragmentsStore, refreshFragments, setFragmentsAfterSave, startFragmentsSocket,
-		executeSqlViaSocket,
 		type SqlFragment, type SqlFragmentKind,
 	} from "../../lib/fragmentsStore.ts";
 
@@ -42,48 +39,6 @@
 	let modalTitle = "";
 	let modalValue = "";
 	let modalLanguage: "sql" | "ts" = "sql";
-
-	let executing: Record<string, boolean> = {};
-
-	function tableKey(t: ParsedTable): string { return t.fragmentId + "::" + t.originalName; }
-
-	async function runSql(label: string, sql: string, key: string): Promise<boolean> {
-		if (executing[key]) return false;
-		executing = { ...executing, [key]: true };
-		try {
-			const res = await executeSqlViaSocket(sql);
-			if (res.ok) {
-				toastSuccess(`${label} OK`);
-				return true;
-			}
-			toastError(`${label} falló: ${res.error ?? "error desconocido"}`);
-			return false;
-		} finally {
-			executing = { ...executing, [key]: false };
-		}
-	}
-
-	async function execRecreateOne(t: ParsedTable): Promise<void> {
-		const k = tableKey(t);
-		const dropOk = await runSql(`DROP ${t.name}`, emitDropTable(t), `recreate:${k}`);
-		if (!dropOk) return;
-		await runSql(`CREATE ${t.name}`, emitTable(t), `recreate:${k}`);
-	}
-
-	async function execSeqRecreate(_pkey: string, list: ParsedTable[]): Promise<void> {
-		const dropOrder = [...list].reverse();
-		let dropOk = 0;
-		for (const t of dropOrder) {
-			const ok = await runSql(`DROP ${t.name}`, emitDropTable(t), `recreate:${tableKey(t)}`);
-			if (ok) dropOk++;
-		}
-		let createOk = 0;
-		for (const t of list) {
-			const ok = await runSql(`CREATE ${t.name}`, emitTable(t), `recreate:${tableKey(t)}`);
-			if (ok) createOk++;
-		}
-		toastSuccess(`Secuencia DROP+CREATE: ${dropOk}/${list.length} dropped, ${createOk}/${list.length} created`);
-	}
 
 	function prefixEntryIndex(pkey: string): number {
 		return prefixEntries.findIndex((e) => e.detected === pkey);
@@ -400,17 +355,6 @@
 									<Text color="neutral"><small>actual: <code>{pEntry.detected || '(vacío)'}</code></small></Text>
 								{/if}
 							</FlexLayout>
-
-							<FlexLayout items="center">
-								<Text color="neutral"><small>Recrear en serie ({items.length}): DROP (orden inverso) + CREATE</small></Text>
-								<span class="flex-grow"></span>
-								<ConfirmExecuteButton
-									color="primary"
-									icon="mdi:database-refresh"
-									label="Recrear tablas"
-									onExecute={() => execSeqRecreate(pkey, items.map((it) => it.table))}
-								/>
-							</FlexLayout>
 						</FlexLayout>
 					</Card>
 
@@ -425,7 +369,6 @@
 								</FlexLayout>
 								<FlexLayout direction="column">
 									{#each catItems as entry (entry.table.fragmentId + "::" + entry.table.originalName)}
-										{@const tk = tableKey(entry.table)}
 										<AccordionActions
 											inner
 											title={entry.table.name}
@@ -439,19 +382,6 @@
 											/>
 
 											<div class="sql-block">
-												<FlexLayout items="center" justify="between">
-													<FlexLayout items="center">
-														<Iconify icon="mdi:database-refresh" />
-														<Text color="neutral"><small>Recrear tabla · DROP + CREATE</small></Text>
-													</FlexLayout>
-													<ConfirmExecuteButton
-														color="primary"
-														icon="mdi:database-refresh"
-														label="Recrear tabla"
-														busy={executing[`recreate:${tk}`]}
-														onExecute={() => execRecreateOne(entry.table)}
-													/>
-												</FlexLayout>
 												<CodeViewer value={`${emitDropTable(entry.table)}\n\n${emitTable(entry.table)}`} lang="sql" height="220px" />
 											</div>
 
@@ -579,10 +509,6 @@
 													</div>
 												</AccordionActions>
 											{/if}
-
-											{#if entry.table.name.toUpperCase() === "PERMISOS"}
-												<PermisosCsvMigration executeSql={executeSqlViaSocket} tableName={entry.table.name} />
-											{/if}
 										</AccordionActions>
 									{/each}
 								</FlexLayout>
@@ -604,7 +530,6 @@
 		gap: 0.75rem;
 	}
 	.field { display: flex; flex-direction: column; gap: 0.2rem; }
-	.flex-grow { flex: 1; }
 	.input-field {
 		background: var(--is-bg-secondary);
 		border: 1px solid var(--is-b-color);
