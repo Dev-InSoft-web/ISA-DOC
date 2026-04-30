@@ -1,4 +1,4 @@
-?<script lang="ts">
+<script lang="ts">
 	import { onMount } from "svelte";
 	import {
 		Card, H2, H4, Text, Toaster, toastError, toastSuccess,

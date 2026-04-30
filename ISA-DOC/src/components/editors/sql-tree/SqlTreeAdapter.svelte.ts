@@ -81,16 +81,45 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 	getEditDriverAttrs(): any[] { return []; }
 	getEditAttrsForLevel(_d: any[], _p: TSqlNodeUX): any[] { return []; }
 	canEditSelectResource(_p: TSqlNodeUX, _d: TSqlNodeUX): boolean { return false; }
+
+	override getToolsBarActions(): any[] {
+		const addDisabled = this.isViewMode || this.isReadOnly || undefined;
+		const addLabel = this.getAddRootLabel();
+		const addTitle = addDisabled ? `${addLabel} — No disponible en modo lectura` : addLabel;
+		return [
+			{
+				icon: "mdi:plus-circle-outline",
+				title: addTitle,
+				label: addLabel,
+				disabled: addDisabled,
+				onClick: () => { if (!addDisabled) this.onaddroot(); },
+			},
+			{ icon: "mdi:unfold-less-horizontal", title: "Colapsar todo", onClick: () => this.collapseAll?.() },
+			{ icon: "mdi:unfold-more-horizontal", title: "Expandir todo", onClick: () => this.expandAll?.() },
+		];
+	}
 	getEditAtributoValor(_d: TSqlNodeUX, _i: number): string { return ""; }
 	setEditAtributoValor(d: TSqlNodeUX, _i: number, _v: string): TSqlNodeUX { return d; }
 	setEditRecursoSelected(d: TSqlNodeUX, _r: any): TSqlNodeUX { return d; }
 
+	private _siblingKindHint: "section" | "column" | null = null;
+
+	protected override async openSiblingDrawer(ref: TSqlNodeUX, pos: "above" | "below"): Promise<void> {
+		this._siblingKindHint = ref.kind;
+		try {
+			await super.openSiblingDrawer(ref, pos);
+		} finally {
+			this._siblingKindHint = null;
+		}
+	}
+
 	protected getNewNodeDefaults(referenceId: string): Partial<TSqlNodeUX> {
 		const ref = this.normalizeNodeId(referenceId);
 		const refNode = ref ? this.findNodeById(ref)?.obj : null;
-		const isUnderSection = refNode?.kind === "section";
+		const hint = this._siblingKindHint;
+		const wantColumn = hint === "column" || (hint === null && refNode?.kind === "section");
 		const tableId = this.obj.tableId;
-		if (isUnderSection) {
+		if (wantColumn) {
 			return {
 				tableId,
 				kind: "column",

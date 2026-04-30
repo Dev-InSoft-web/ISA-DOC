@@ -1,4 +1,4 @@
-?<script lang="ts">
+<script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { io, type Socket } from "socket.io-client";
 	import { marked } from "marked";

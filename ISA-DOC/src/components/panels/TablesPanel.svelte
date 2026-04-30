@@ -300,7 +300,7 @@
    }
 </script>
 
-?<Toaster />
+<Toaster />
 
 <section class="tables-section">
    <Card>

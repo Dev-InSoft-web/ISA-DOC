@@ -1,4 +1,4 @@
-?<script lang="ts">
+<script lang="ts">
 	import { onMount } from "svelte";
 	import {
 		Card, Button, H2, H4, Text, Modal,
@@ -8,6 +8,7 @@
 	import SqlViewer from "../viewers/SqlViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
 	import TablesPanel from "./TablesPanel.svelte";
+	import TablesBrowserPanel from "./TablesBrowserPanel.svelte";
 	import CodeGenPanel from "./CodeGenPanel.svelte";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
 	import {
@@ -171,6 +172,12 @@
 	<TabItem title="Tablas">
 		<section class="editor">
 			<TablesPanel />
+		</section>
+	</TabItem>
+
+	<TabItem title="Tablas 2">
+		<section class="editor">
+			<TablesBrowserPanel />
 		</section>
 	</TabItem>
 

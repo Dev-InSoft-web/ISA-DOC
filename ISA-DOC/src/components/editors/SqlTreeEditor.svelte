@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
-	import { FlexLayout, Text, Iconify, Chip } from "@ingenieria_insoft/ispsveltecomponents";
+	import { FlexLayout, Text, Iconify } from "@ingenieria_insoft/ispsveltecomponents";
+	import Chip from "../_comps/Chip.svelte";
 	import TreeView from "../_comps/TreeView/TreeRowView.svelte";
 	import type { ParsedTable } from "../../lib/tableSchema";
 	import { COMMON_COLUMN_TYPES } from "../../lib/tableSchema";
@@ -56,6 +57,34 @@
 	function dataListId(): string {
 		return `sql-tree-types-${table.fragmentId}-${table.originalName}`;
 	}
+
+	function autoSize(host: HTMLElement) {
+		let raf = 0;
+		const measure = () => {
+			if (raf) cancelAnimationFrame(raf);
+			raf = requestAnimationFrame(() => {
+				const inner = host.querySelector<HTMLElement>(".isp-tree");
+				if (!inner) return;
+				const h = Math.max(inner.scrollHeight, 240);
+				host.style.minHeight = `${h + 16}px`;
+			});
+		};
+		const ro = new ResizeObserver(measure);
+		const mo = new MutationObserver(measure);
+		requestAnimationFrame(() => {
+			const inner = host.querySelector<HTMLElement>(".isp-tree");
+			if (inner) ro.observe(inner);
+			mo.observe(host, { childList: true, subtree: true });
+			measure();
+		});
+		return {
+			destroy() {
+				ro.disconnect();
+				mo.disconnect();
+				if (raf) cancelAnimationFrame(raf);
+			},
+		};
+	}
 </script>
 
 <div class="sql-tree-card">
@@ -87,7 +116,7 @@
 		{/each}
 	</datalist>
 
-	<div class="tree-host">
+	<div class="tree-host" use:autoSize>
 		<TreeView
 			Obj={adapter.obj}
 			itdForm="edit"
@@ -110,7 +139,7 @@
 				{:else}
 					<FlexLayout items="center" justify="between" style="flex:1; min-width:0; gap:0.5rem;">
 						<FlexLayout items="center" style="flex: 0 1 auto; min-width: 0; gap:0.4rem;">
-							<Chip style="min-width:2.5rem;">{node.id}</Chip>
+							<Chip>{node.id}</Chip>
 							<Text style="font-weight:600; min-width: 6rem;" lines={1}>{node.obj.rowName || "(columna)"}</Text>
 							<Text color="neutral" lines={1}><code>{node.obj.colType || "—"}</code></Text>
 							{#if node.obj.nullable === "NOT NULL"}
@@ -118,9 +147,6 @@
 							{/if}
 							{#if isPk(node.obj)}
 								<span class="tag tag-pk">PK</span>
-							{/if}
-							{#if node.obj.defaultValue}
-								<Text color="neutral" lines={1}><small>def: <code>{node.obj.defaultValue}</code></small></Text>
 							{/if}
 						</FlexLayout>
 					</FlexLayout>
@@ -208,14 +234,14 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		min-height: 240px;
-		max-height: 60vh;
-		overflow: auto;
+		min-height: 320px;
 		border: 1px solid var(--is-b-color);
 		border-radius: 0.25rem;
 		background: var(--is-bg-primary);
 		padding: 0.25rem;
+		font-size: 0.85rem;
 	}
+	.tree-host :global(.trvwr-itm > summary) { padding-top: 0.1rem; padding-bottom: 0.1rem; }
 	.name-row { display: inline-flex; align-items: center; gap: 0.25rem; }
 	.prefix { color: var(--is-color); opacity: 0.7; font-family: monospace; }
 	.input-field {
