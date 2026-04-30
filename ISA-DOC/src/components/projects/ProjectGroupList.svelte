@@ -1,6 +1,6 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { Text, FlexLayout, GridLayout } from "@ingenieria_insoft/ispsveltecomponents";
-	import Accordion from "./_comps/containers/Accordion.svelte";
+	import Accordion from "../_comps/containers/Accordion.svelte";
 	import ProjectActionCard from "./ProjectActionCard.svelte";
 
 	interface ProjectAction {

@@ -489,7 +489,7 @@
 									<FlexLayout items="center" justify="between">
 										<Text color="neutral">Body (raw JSON)</Text>
 										<Button variant="outlined" onClick={() => openCodeModal(`${item.name} · Body`, item.request?.body?.raw ?? "")}>
-											<Iconify icon="mdi:fullscreen" /> Abrir en modal
+											<Iconify icon="mdi:eye-outline" /> Abrir en modal
 										</Button>
 									</FlexLayout>
 									<label class="field">
@@ -543,7 +543,7 @@
 													</GridLayout>
 													<Text color="neutral"><small>Body (JSON)</small></Text>														<FlexLayout justify="end">
 															<Button variant="outlined" onClick={() => openCodeModal(`${item.name} · ${resp.name ?? "Ejemplo"}`, resp.body ?? "")}>
-																<Iconify icon="mdi:fullscreen" /> Abrir en modal
+														<Iconify icon="mdi:eye-outline" /> Abrir en modal
 															</Button>
 														</FlexLayout>													<JsonViewer value={resp.body ?? ""} height="260px" />
 													<FlexLayout justify="end">

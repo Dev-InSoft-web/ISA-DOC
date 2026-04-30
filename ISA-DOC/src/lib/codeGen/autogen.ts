@@ -1,5 +1,5 @@
 // Auto-generación de ResourceConfig a partir de fragmentos SQL parseados.
-import { parseTableFragment, type ParsedTable, type TableColumn } from "../tableSchema.js";
+import { parseTableFragment, tableColumns, type ParsedTable, type TableColumn } from "../tableSchema.js";
 import type { FieldDef, FieldType, RelationDef, ResourceConfig } from "./types.js";
 
 interface SqlFragment { id: string; name: string; body: string; kind?: string; description?: string; }
@@ -56,10 +56,11 @@ export function generateResourcesFromTables(tables: ParsedTable[]): AutogenResul
 }
 
 function buildResource(id: string, t: ParsedTable, idByTable: Map<string, string>, warnings: string[]): ResourceConfig {
-	const fields: FieldDef[] = t.columns.map((c) => columnToField(c, t, idByTable));
+	const cols = tableColumns(t);
+	const fields: FieldDef[] = cols.map((c) => columnToField(c, t, idByTable));
 	const pkCols = t.compositePrimaryKey.length
 		? t.compositePrimaryKey
-		: t.columns.filter((c) => c.primaryKey).map((c) => c.name);
+		: cols.filter((c) => c.primaryKey).map((c) => c.name);
 	for (const f of fields) {
 		const colName = (f.column ?? f.name).toUpperCase();
 		if (pkCols.some((p) => p.toUpperCase() === colName)) f.pk = true;
@@ -112,17 +113,17 @@ function inferRelations(cfg: ResourceConfig, t: ParsedTable, tables: ParsedTable
 		if (other.name.toUpperCase() === t.name.toUpperCase()) continue;
 		const myPkCols = (t.compositePrimaryKey.length
 			? t.compositePrimaryKey
-			: t.columns.filter((c) => c.primaryKey).map((c) => c.name)
+			: tableColumns(t).filter((c) => c.primaryKey).map((c) => c.name)
 		).map((s) => s.toUpperCase());
 		if (!myPkCols.length) continue;
-		const otherCols = other.columns.map((c) => c.name.toUpperCase());
+		const otherCols = tableColumns(other).map((c) => c.name.toUpperCase());
 		const sharedPk = myPkCols.filter((p) => otherCols.includes(p));
 		if (sharedPk.length === 0) continue;
 		const targetId = idByTable.get(other.name.toUpperCase());
 		if (!targetId) continue;
 		const otherPkCount = (other.compositePrimaryKey.length
 			? other.compositePrimaryKey
-			: other.columns.filter((c) => c.primaryKey).map((c) => c.name)).length;
+			: tableColumns(other).filter((c) => c.primaryKey).map((c) => c.name)).length;
 		// Solo emitimos relaciones direccionales padre → hijo (contenedor → contenido).
 		// Si el otro tiene PK más ancha (incluye la mía como prefijo), es mi hijo.
 		if (otherPkCount <= myPkCols.length) continue;

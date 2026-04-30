@@ -11,15 +11,12 @@
 	import TablesPanel from "./TablesPanel.svelte";
 	import CodeGenPanel from "./CodeGenPanel.svelte";
 	import AccordionActions from "./_comps/containers/AccordionActions.svelte";
+	import {
+		fragmentsStore, refreshFragments, setFragmentsAfterSave, startFragmentsSocket,
+		type SqlFragment, type SqlFragmentKind,
+	} from "../lib/fragmentsStore.ts";
 
-	type Kind = "table" | "index" | "fk" | "seed" | "raw";
-	interface SqlFragment {
-		id: string;
-		name: string;
-		description: string;
-		kind: Kind;
-		body: string;
-	}
+	type Kind = SqlFragmentKind;
 
 	const KIND_OPTIONS: { value: Kind; label: string; icon: string }[] = [
 		{ value: "table", label: "Tabla", icon: "mdi:table" },
@@ -36,6 +33,12 @@
 	let openIds: Record<string, boolean> = {};
 	let filterKind: Kind | "all" = "all";
 	let filterText = "";
+
+	const unsubFragments = fragmentsStore.subscribe((s) => {
+		if (dirty) return; // no pisar ediciones locales
+		fragments = s.fragments;
+		loading = !s.loaded;
+	});
 
 	let modalShow = false;
 	let modalTitle = "";
@@ -68,18 +71,12 @@
 	}
 
 	async function load(): Promise<void> {
-		loading = true;
 		try {
-			const r = await fetch("/api/sql/fragments");
-			if (!r.ok) throw new Error(`HTTP ${r.status}`);
-			const data = (await r.json()) as { fragments: SqlFragment[] };
-			fragments = data.fragments ?? [];
-			openIds = {};
 			dirty = false;
+			await refreshFragments();
+			openIds = {};
 		} catch (err) {
 			toastError(`Error cargando SQL: ${err instanceof Error ? err.message : String(err)}`);
-		} finally {
-			loading = false;
 		}
 	}
 
@@ -96,6 +93,7 @@
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			toastSuccess(`SQL guardado (${fragments.length} fragmentos)`);
 			dirty = false;
+			setFragmentsAfterSave(fragments);
 		} catch (err) {
 			toastError(`Error guardando: ${err instanceof Error ? err.message : String(err)}`);
 		} finally {
@@ -161,7 +159,11 @@
 		URL.revokeObjectURL(url);
 	}
 
-	onMount(load);
+	onMount(() => {
+		startFragmentsSocket();
+		void refreshFragments();
+		return () => { unsubFragments(); };
+	});
 </script>
 
 <Toaster />
@@ -255,7 +257,7 @@
 								<FlexLayout items="center" justify="between">
 									<Text color="neutral"><small>Body (SQL)</small></Text>
 									<Button variant="outlined" onClick={() => openInModal(f)}>
-										<Iconify icon="mdi:fullscreen" /> Abrir en modal
+										<Iconify icon="mdi:eye-outline" /> Abrir en modal
 									</Button>
 								</FlexLayout>
 
@@ -278,7 +280,7 @@
 					</div>
 					<FlexLayout items="center">
 						<Button variant="outlined" onClick={openFullInModal}>
-							<Iconify icon="mdi:fullscreen" /> Abrir en modal
+							<Iconify icon="mdi:eye-outline" /> Abrir en modal
 						</Button>
 						<Button variant="outlined" onClick={copyAll}>
 							<Iconify icon="mdi:content-copy" /> Copiar

@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { Modal, FlexLayout, Iconify, Text, Button } from "@ingenieria_insoft/ispsveltecomponents";
-	import JsonViewer from "./JsonViewer.svelte";
-	import SqlViewer from "./SqlViewer.svelte";
-	import TsViewer from "./TsViewer.svelte";
+	import CodeViewer from "./CodeViewer.svelte";
 
 	export let bshow: boolean = false;
 	export let title: string = "";
@@ -26,13 +24,7 @@
 	</svelte:fragment>
 
 	<div class="cm-wrap">
-		{#if language === "sql"}
-			<SqlViewer {value} height="100%" />
-		{:else if language === "ts"}
-			<TsViewer {value} height="100%" />
-		{:else}
-			<JsonViewer {value} height="100%" />
-		{/if}
+		<CodeViewer {value} lang={language} height="100%" />
 	</div>
 
 	<div class="cm-footer">

@@ -2,12 +2,11 @@
 	import { Button, FlexLayout, Iconify, Text } from "@ingenieria_insoft/ispsveltecomponents";
 	import Switch_ from "./_comps/especial/_Switch.svelte";
 	import FloatingCard from "./_comps/containers/FloatingCard.svelte";
-	import type { ParsedTable, TableColumn } from "../lib/tableSchema.ts";
-	import { COMMON_COLUMN_TYPES } from "../lib/tableSchema.ts";
+	import type { ParsedTable, TableColumn, TableRow, TableSection } from "../lib/tableSchema.ts";
+	import { COMMON_COLUMN_TYPES, isSectionRow } from "../lib/tableSchema.ts";
 
 	const DEFAULT_OPTIONS: { label: string; value: string }[] = [
-		{ label: "— (sin default)", value: "" },
-		{ label: "NULL", value: "NULL" },
+		{ label: "—", value: "" },
 		{ label: "0", value: "0" },
 		{ label: "1", value: "1" },
 		{ label: "'' (cadena vacía)", value: "''" },
@@ -21,7 +20,6 @@
 	export let table: ParsedTable;
 	export let prefix: string = "";
 	export let onChange: (t: ParsedTable) => void = () => {};
-	export let onOpenSql: (t: ParsedTable) => void = () => {};
 
 	$: baseName = prefix && table.name.startsWith(prefix) ? table.name.slice(prefix.length) : table.name;
 
@@ -36,15 +34,39 @@
 	function addColumn(): void {
 		table.columns = [
 			...table.columns,
-			{ name: "NUEVA_COLUMNA", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ name: "NUEVA_COLUMNA", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" } satisfies TableColumn,
 		];
 		emit();
 	}
 
-	function removeColumn(idx: number): void {
-		if (!confirm(`Eliminar columna "${table.columns[idx]?.name}"?`)) return;
+	function addSection(): void {
+		table.columns = [
+			...table.columns,
+			{ kind: "section", name: "NUEVA_SECCION" } satisfies TableSection,
+		];
+		emit();
+	}
+
+	function removeRow(idx: number): void {
+		const row = table.columns[idx];
+		if (!row) return;
+		if (isSectionRow(row)) {
+			table.columns = table.columns.filter((_, i) => i !== idx);
+			emit();
+			return;
+		}
+		if (!confirm(`Eliminar columna "${row.name}"?`)) return;
 		table.columns = table.columns.filter((_, i) => i !== idx);
-		table.compositePrimaryKey = table.compositePrimaryKey.filter((c) => table.columns.some((cc) => cc.name === c));
+		table.compositePrimaryKey = table.compositePrimaryKey.filter((c) => table.columns.some((cc) => !isSectionRow(cc) && cc.name === c));
+		emit();
+	}
+
+	function setSectionName(idx: number, value: string): void {
+		const row = table.columns[idx];
+		if (!row || !isSectionRow(row)) return;
+		const next = table.columns.slice();
+		next[idx] = { kind: "section", name: value.toUpperCase().replace(/[^A-Z0-9_]/g, "_") };
+		table.columns = next;
 		emit();
 	}
 
@@ -59,8 +81,10 @@
 	}
 
 	function setColField<K extends keyof TableColumn>(idx: number, key: K, value: TableColumn[K]): void {
+		const row = table.columns[idx];
+		if (!row || isSectionRow(row)) return;
 		const next = table.columns.slice();
-		next[idx] = { ...next[idx], [key]: value };
+		next[idx] = { ...(row as TableColumn), [key]: value };
 		table.columns = next;
 		emit();
 	}
@@ -87,11 +111,6 @@
 				/>
 			</div>
 		</FlexLayout>
-		<FlexLayout items="center">
-			<Button variant="outlined" style="width: fit-content; padding: 0.4rem 0.85rem;" onClick={() => onOpenSql(table)}>
-				<Iconify slot="icon" icon="mdi:eye-outline" /> SQL
-			</Button>
-		</FlexLayout>
 	</FlexLayout>
 
 	<label class="field">
@@ -109,12 +128,34 @@
 			<span>#</span>
 			<span>Nombre</span>
 			<span>Tipo</span>
-			<span>Null</span>
+			<span>Not null</span>
 			<span>Default</span>
 			<span>PK</span>
 			<span></span>
 		</div>
-		{#each table.columns as col, idx}
+		{#each table.columns as row, idx}
+			{#if isSectionRow(row)}
+				<div class="section-row">
+					<Iconify icon="mdi:folder-outline" />
+					<span class="section-label"><small>Sección</small></span>
+					<input
+						class="input-field section-name"
+						type="text"
+						value={row.name}
+						on:input={(e) => setSectionName(idx, (e.currentTarget as HTMLInputElement).value)}
+					/>
+					<button class="icon-btn" title="Subir" on:click={() => moveColumn(idx, -1)} disabled={idx === 0}>
+						<Iconify icon="mdi:arrow-up" />
+					</button>
+					<button class="icon-btn" title="Bajar" on:click={() => moveColumn(idx, 1)} disabled={idx === table.columns.length - 1}>
+						<Iconify icon="mdi:arrow-down" />
+					</button>
+					<button class="icon-btn danger" title="Eliminar sección" on:click={() => removeRow(idx)}>
+						<Iconify icon="mdi:trash-can-outline" />
+					</button>
+				</div>
+			{:else}
+				{@const col = row as TableColumn}
 			<FloatingCard horizontal="right" vertical="center">
 				<div class="col-row">
 					<span class="idx">{idx + 1}</span>
@@ -131,15 +172,13 @@
 						value={col.type}
 						on:input={(e) => setColField(idx, "type", (e.currentTarget as HTMLInputElement).value.toUpperCase().replace(/\s+/g, ""))}
 					/>
-					<select
-						class="input-field"
-						value={col.nullable}
-						on:change={(e) => setColField(idx, "nullable", (e.currentTarget as HTMLSelectElement).value as TableColumn["nullable"])}
-					>
-						<option value="">—</option>
-						<option value="NULL">NULL</option>
-						<option value="NOT NULL">NOT NULL</option>
-					</select>
+					<label class="notnull-cell" title="NOT NULL">
+						<input
+							type="checkbox"
+							checked={col.nullable === "NOT NULL"}
+							on:change={(e) => setColField(idx, "nullable", (e.currentTarget as HTMLInputElement).checked ? "NOT NULL" : "")}
+						/>
+					</label>
 					<FlexLayout items="center">
 						<select
 							class="input-field"
@@ -179,7 +218,7 @@
 							}}
 						/>
 					</label>
-					<button class="icon-btn danger" title="Eliminar" on:click={() => removeColumn(idx)}>
+					<button class="icon-btn danger" title="Eliminar" on:click={() => removeRow(idx)}>
 						<Iconify icon="mdi:trash-can-outline" />
 					</button>
 				</div>
@@ -192,6 +231,7 @@
 					</button>
 				</FlexLayout>
 			</FloatingCard>
+			{/if}
 		{/each}
 	</div>
 
@@ -202,9 +242,14 @@
 	</datalist>
 
 	<FlexLayout items="center" justify="between">
-		<Button variant="outlined" style="width: fit-content;" onClick={addColumn}>
-			<Iconify icon="mdi:plus" /> Agregar columna
-		</Button>
+		<FlexLayout items="center">
+			<Button variant="outlined" style="width: fit-content;" onClick={addColumn}>
+				<Iconify icon="mdi:plus" /> Agregar columna
+			</Button>
+			<Button variant="outlined" style="width: fit-content;" onClick={addSection}>
+				<Iconify icon="mdi:folder-plus-outline" /> Agregar sección
+			</Button>
+		</FlexLayout>
 		{#if table.compositePrimaryKey.length > 0}
 			<Text color="neutral"><small>PK compuesta: {table.compositePrimaryKey.join(", ")}</small></Text>
 		{/if}
@@ -281,8 +326,26 @@
 		padding: 0 0.25rem;
 	}
 	.col-head span { letter-spacing: 0.04em; }
+	.section-row {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0.3rem 0.4rem;
+		border-radius: 4px;
+		background: color-mix(in srgb, var(--is-primary, #3b82f6) 12%, transparent);
+		border: 1px dashed color-mix(in srgb, var(--is-primary, #3b82f6) 50%, transparent);
+		margin: 0.25rem 0;
+	}
+	.section-label { opacity: 0.7; text-transform: uppercase; letter-spacing: 0.04em; }
+	.section-name {
+		font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+		font-weight: 600;
+		flex: 1;
+		min-width: 8rem;
+	}
 	.idx { opacity: 0.5; font-family: ui-monospace, Menlo, monospace; font-size: 0.75rem; text-align: center; }
 	.pk-cell { display: flex; justify-content: center; align-items: center; }
+	.notnull-cell { display: flex; justify-content: center; align-items: center; }
 	.icon-btn {
 		background: transparent;
 		border: 1px solid transparent;
@@ -296,13 +359,6 @@
 	.icon-btn:hover:not([disabled]) { background: var(--is-bg-readonly); border-color: var(--is-b-color); }
 	.icon-btn[disabled] { opacity: 0.35; cursor: not-allowed; }
 	.icon-btn.danger:hover { color: var(--is-danger); }
-
-	.inline-toggle {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
-		padding: 0.1rem 0.35rem;
-	}
 
 	.extra-list {
 		margin: 0.35rem 0 0 1rem;

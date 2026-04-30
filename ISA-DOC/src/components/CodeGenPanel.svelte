@@ -713,7 +713,7 @@
 										</Card>
 										<div slot="float" style="padding: 0;">
 											<FlexLayout items="center">
-												<ButtonIconify icon="mdi:fullscreen" onClick={() => openCodeModal(s.label, s.body)} title="Abrir en modal" />
+												<ButtonIconify icon="mdi:eye-outline" onClick={() => openCodeModal(s.label, s.body)} title="Abrir en modal" />
 												<ButtonIconify icon="mdi:content-copy" onClick={() => copyText(s.body)} title="Copiar" />
 												<ButtonIconify icon="mdi:download" onClick={() => downloadText(s.filename, s.body)} title="Descargar" />
 											</FlexLayout>

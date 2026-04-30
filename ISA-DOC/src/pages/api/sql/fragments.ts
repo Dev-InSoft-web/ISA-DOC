@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { readFile, writeFile } from "node:fs/promises";
 import { sqlFilePath, parseSql, joinFragments, type SqlFragment, type SqlFragmentKind } from "../../../lib/sqlFragments.ts";
+import { broadcastFragmentsInvalidated } from "../../../lib/socket-server.ts";
 
 const VALID_KINDS: readonly SqlFragmentKind[] = ["table", "index", "fk", "seed", "raw"] as const;
 
@@ -46,6 +47,7 @@ export const PUT: APIRoute = async ({ request }) => {
 		}
 		const full = joinFragments(list as SqlFragment[]);
 		await writeFile(sqlFilePath, full, "utf8");
+		broadcastFragmentsInvalidated();
 		return new Response(JSON.stringify({ ok: true, full, count: list.length }), {
 			status: 200,
 			headers: { "content-type": "application/json; charset=utf-8" },

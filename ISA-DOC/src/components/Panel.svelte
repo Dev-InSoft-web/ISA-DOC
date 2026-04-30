@@ -271,6 +271,23 @@
 		expandedLog = expandedLog === idx ? null : idx;
 	}
 
+	function execSqlViaSocket(sql: string): Promise<{ ok: boolean; output?: string; error?: string }> {
+		return new Promise((resolve) => {
+			if (!socket) { resolve({ ok: false, error: "Sin conexión al servidor" }); return; }
+			socket.emit("sql:exec", { sql }, (data: { ok: boolean; output?: string; error?: string }) => {
+				logs = [{
+					id: "permisos-csv",
+					actionName: "Migración PERMISOS desde CSV",
+					timestamp: new Date().toLocaleTimeString(),
+					ok: data.ok ?? false,
+					output: data.output ?? data.error ?? "Sin salida",
+				}, ...logs];
+				if (data.ok) loadDbStatus();
+				resolve(data);
+			});
+		});
+	}
+
 	onMount(() => {
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });

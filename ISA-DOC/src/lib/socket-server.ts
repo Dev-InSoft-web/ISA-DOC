@@ -99,6 +99,10 @@ function broadcast(event: string, payload: Record<string, unknown>): void {
 	state.io.current?.emit(event, payload);
 }
 
+export function broadcastFragmentsInvalidated(): void {
+	state.io.current?.emit("fragments:invalidated", { at: Date.now() });
+}
+
 function handleConnection(socket: Socket): void {
 	socket.emit("status", { running: [...runningProcesses.keys()] });
 	for (const [actionId, host] of detectedHosts.entries()) {

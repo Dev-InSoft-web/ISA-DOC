@@ -1,0 +1,345 @@
+<script context="module" lang="ts">
+   import type { TObject } from "@ingenieria_insoft/ispgen";
+   import { ButtonIconify, Card, colorMix, FlexLayout, Iconify, mkAlpha, resolveColor, Text } from "@ingenieria_insoft/ispsveltecomponents";
+   import type { HTMLAttributes } from "svelte/elements";
+   import { slide } from "svelte/transition";
+   import FlexOptions from "../Options/FlexOptions.svelte";
+   import FloatingComponent from "../containers/FloatingComponent.svelte";
+   import type { INode, ITreeData } from "./TreeRowView.svelte";
+   import type { TreeAdapter } from "./TreeRowView.svelte";
+
+   export interface RowItemProps<TWorking extends ITreeData<TWorking> & TObject> extends HTMLAttributes<HTMLDivElement> {
+      treeController: TreeAdapter<any, TWorking>;
+      nodes: INode<TWorking>[];
+      rowLayoutEpoch: number;
+   }
+
+   export interface RowItemSlots<TWorking extends ITreeData<TWorking> & TObject> {
+      row: { node: INode<TWorking> };
+   }
+
+   export type RowItemAdapterBridge<TWorking extends ITreeData<TWorking> & TObject> = RowItemProps<TWorking> & {
+      node: INode<TWorking>;
+      onuitouch?: () => void;
+   };
+</script>
+
+<script lang="ts" generics="TWorking extends ITreeData<TWorking> & TObject">
+   interface $$Props extends RowItemProps<TWorking> {}
+   interface $$Slots extends RowItemSlots<TWorking> {}
+
+   export let treeController: $$Props["treeController"];
+   export let nodes: $$Props["nodes"];
+   export let rowLayoutEpoch: $$Props["rowLayoutEpoch"] = 0;
+
+   const self = {
+      touchui() {
+         nodes = nodes;
+      },
+      get class() {
+         return ["trvwr-row-host", $$restProps.class].filter(Boolean).join(" ");
+      },
+      get style() {
+         return $$restProps.style;
+      },
+      get resume() {
+         return {
+            ...$$restProps,
+            class: self.class,
+            style: self.style,
+         };
+      },
+      summaryClass(rc: ReturnType<typeof treeController.getOrCreateRowAdapter>) {
+         const drg = rc.dragOver;
+         const forbidden = rc.dragForbidden && drg !== null;
+         return ["trvwr-itm-sum", rc.isHighlighted && "trvwr-itm-sum--focused", rc.mergedDisabled && "trvwr-itm-sum--disabled", !forbidden && drg === "before" && "trvwr-itm-sum--drg-bf", !forbidden && drg === "after" && "trvwr-itm-sum--drg-aftr", forbidden && drg === "before" && "trvwr-itm-sum--drg-forbidden-bf", forbidden && drg === "after" && "trvwr-itm-sum--drg-forbidden-aftr"].filter(Boolean).join(" ");
+      },
+      summaryResume(rc: ReturnType<typeof treeController.getOrCreateRowAdapter>) {
+         return {
+            class: self.summaryClass(rc),
+            "aria-selected": rc.isSelected,
+            "aria-expanded": rc.hasChildren ? rc.isNodeOpen : undefined,
+         };
+      },
+      detailsStyle(rc: ReturnType<typeof treeController.getOrCreateRowAdapter>) {
+         const colorPrimary80 = mkAlpha("primary", 80);
+         return [`--trvwr-hvr-dflt: ${mkAlpha("color", 92)}`, `--trvwr-ctv-dflt: ${mkAlpha("color", 86)}`, `--trvwr-hghlght-bg: ${mkAlpha("primary", 88)}`, `--trvwr-hghlght-hvr-bg: ${colorPrimary80}`, `--trvwr-swp-bg: ${mkAlpha("success", 70)}`, `--trvwr-fcs-rng: ${mkAlpha("primary", 45)}`, `--trvwr-drp-ndctr-bg: ${colorPrimary80}`, `--trvwr-drp-ndctr-hght: ${Math.max(24, rc.dragPlaceholderHeight || 24)}px`, `--trvwr-sel-brd: ${resolveColor("border")}`].join("; ");
+      },
+      get floatBtnColor() {
+         return colorMix("card", "primary", 30) as unknown as "primary";
+      },
+   };
+</script>
+
+{#if nodes?.length}
+   {#each nodes as node (node.id)}
+      {@const rowController = treeController.getOrCreateRowAdapter({
+         ...$$props,
+         ...$$restProps,
+         treeController,
+         get onuitouch() {
+            return self.touchui;
+         },
+         get rowLayoutEpoch() {
+            return rowLayoutEpoch;
+         },
+         set rowLayoutEpoch(value: number) {
+            rowLayoutEpoch = value;
+         },
+         get node() {
+            return node;
+         },
+         get nodes() {
+            return nodes;
+         },
+         set nodes(value: INode<TWorking>[]) {
+            nodes = value;
+         },
+      })}
+      <div {...self.resume} data-tree-row-id={rowController.id} data-idrow={rowController.id}>
+         <details class="trvwr-itm" class:highlight={rowController.isHighlighted} class:should-flash={rowController.shouldFlash} class:trvwr-itm--folder-selected={rowController.isSelected && rowController.hasChildren} class:trvwr-itm--active={rowController.showActions || rowController.isHighlighted} data-testid="tree-item" open={rowController.isNodeOpen} aria-disabled={rowController.mergedDisabled} on:toggle={(e) => rowController.ondetailstoggle(e)} style={self.detailsStyle(rowController)}>
+            <summary {...self.summaryResume(rowController)} role="treeitem" draggable={rowController.isDraggable} on:click={(e) => rowController.onsummaryclick(e)} on:dblclick={(e) => rowController.onsummarydblclick(e)} on:keydown={(e) => rowController.onkeydown(e)} on:focus={(e) => rowController.onsummaryfocus(e)} on:blur={() => rowController.onsummaryblur()} on:pointerenter={() => rowController.onsummarypointerenter()} on:pointerleave={() => rowController.onsummarypointerleave()} on:dragstart={(e) => rowController.ondragstart(e)} on:dragend={(e) => rowController.ondragend(e)} on:dragenter={() => rowController.onsummarydragenter()} on:dragover={(e) => rowController.onsummarydragover(e)} on:dragleave={() => rowController.onsummarydragleave()} on:drop={(e) => rowController.ondrop(e)} on:pointerdown={(e) => rowController.onpointerdown(e)} on:pointerup={() => rowController.onpointerup()} on:pointermove={() => rowController.onpointerup()} on:pointercancel={() => rowController.onpointerup()}>
+               <FloatingComponent showfloat={rowController.floatVisible && rowController.hasRowTools} horizontal="right" vertical="top+50">
+                  <FloatingComponent showfloat={rowController.floatVisible && rowController.canAddSibling} horizontal="center" vertical="top+50">
+                     <FloatingComponent showfloat={rowController.floatVisible && rowController.canAddSibling} horizontal="center" vertical="bottom+50">
+                        <FlexLayout items="center" class="trvwr-sum-row">
+                           <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
+                           <span class="trvwr-drag-handle" title="Arrastrar para reordenar" draggable={true} on:dragstart={(e) => rowController.ondragstart(e)} on:dragend={(e) => rowController.ondragend(e)}>
+                              <Iconify icon="mdi:dots-grid" style="font-size: 1rem; opacity: 0.45" />
+                           </span>
+                           {#if rowController.hasChildren}
+                              <FlexLayout items="center" class="trvwr-itm-symb">
+                                 <Iconify icon="mdi:chevron-down" style="font-size: 1rem" rotate={rowController.isNodeOpen ? 0 : -90} />
+                                 {#if rowController.rowIcono}
+                                    <Iconify icon={rowController.rowIcono.icon} {...rowController.rowIcono.rest} style={rowController.rowIcono.mergedStyle} />
+                                 {/if}
+                              </FlexLayout>
+                           {/if}
+                           {#if !rowController.hasChildren && rowController.rowIcono}
+                              <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
+                              <span class="trvwr-itm-lead trvwr-itm-lead--icon" class:trvwr-itm-lead--add={!!rowController.onLeadIconClick} title={rowController.onLeadIconClick ? "Agregar hijo" : undefined} on:click|stopPropagation={rowController.onLeadIconClick ? () => rowController.onLeadIconClick?.() : undefined}>
+                                 <Iconify icon={rowController.rowIcono.icon} {...rowController.rowIcono.rest} style={rowController.rowIcono.mergedStyle} />
+                              </span>
+                           {/if}
+                           <FlexLayout items="center" class="trvwr-itm-content" style="flex: 1; min-width: 0">
+                              {#if $$slots.row}
+                                 <slot name="row" {node} />
+                              {:else}
+                                 <Text lines={1}>{@html node.label ?? ""}</Text>
+                              {/if}
+                           </FlexLayout>
+                        </FlexLayout>
+                        <svelte:fragment slot="float">
+                           {#if rowController.canAddSibling}
+                              <ButtonIconify
+                                 class="trvwr-float-btn"
+                                 icon="mdi:table-row-plus-after"
+                                 title="Añadir abajo (Ctrl+Shift+↓)"
+                                 variant="solid"
+                                 color={self.floatBtnColor}
+                                 on:click={(e) => {
+                                    e.stopPropagation();
+                                    rowController.addSiblingBelow();
+                                 }}
+                              />
+                           {/if}
+                        </svelte:fragment>
+                     </FloatingComponent>
+                     <ButtonIconify
+                        slot="float"
+                        class="trvwr-float-btn"
+                        icon="mdi:table-row-plus-before"
+                        title="Añadir arriba (Ctrl+Shift+↑)"
+                        variant="solid"
+                        color={self.floatBtnColor}
+                        on:click={(e) => {
+                           e.stopPropagation();
+                           rowController.addSiblingAbove();
+                        }}
+                     />
+                  </FloatingComponent>
+                  <Card slot="float">
+                     <FlexOptions actions={rowController.filteredActions} />
+                  </Card>
+               </FloatingComponent>
+            </summary>
+            {#if rowController.hasChildren && rowController.isNodeOpen}
+               <div class="trvwr-itm-children-wrap" transition:slide={{ duration: 200 }}>
+                  <FlexLayout direction="column" gap="0" role="group" class="trvwr-itm-children" style="padding-inline-start: 1.6rem">
+                     <svelte:self {treeController} {rowLayoutEpoch} nodes={node.children!}>
+                        <div slot="row" style="display: contents" let:node={childNode}>
+                           <slot name="row" node={childNode} />
+                        </div>
+                     </svelte:self>
+                  </FlexLayout>
+               </div>
+            {/if}
+         </details>
+      </div>
+   {/each}
+{/if}
+
+<style>
+   .trvwr-row-host {
+      display: contents;
+      .trvwr-itm {
+         overflow: visible;
+         list-style: none;
+         width: 100%;
+         min-width: 0;
+         & > .trvwr-itm-sum {
+            list-style: none;
+            display: block;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            padding: 0.35rem 0.5rem;
+            border-radius: 0;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.15s ease;
+
+            :global(.trvwr-float-btn) {
+               scale: 0.7;
+            }
+            &:hover:not(.trvwr-itm-sum--disabled) {
+               background-color: var(--trvwr-hvr-dflt);
+            }
+            &:active:not(.trvwr-itm-sum--disabled) {
+               background-color: var(--trvwr-ctv-dflt);
+            }
+            &.trvwr-itm-sum--focused {
+               outline: 2px solid var(--trvwr-fcs-rng);
+               outline-offset: -1px;
+            }
+            &:focus-visible {
+               outline: 2px solid var(--trvwr-fcs-rng);
+               outline-offset: -1px;
+            }
+            &.trvwr-itm-sum--disabled {
+               opacity: 0.5;
+               cursor: not-allowed;
+            }
+            &::-webkit-details-marker {
+               display: none;
+            }
+            &.trvwr-itm-sum--drg-bf::before,
+            &.trvwr-itm-sum--drg-aftr::after {
+               content: "";
+               display: block;
+               width: 100%;
+               height: var(--trvwr-drp-ndctr-hght);
+               background-color: var(--trvwr-drp-ndctr-bg);
+               border: 1px dashed var(--is-primary);
+               border-radius: 0.25rem;
+               box-sizing: border-box;
+            }
+            &.trvwr-itm-sum--drg-bf::before {
+               margin-bottom: 0.35rem;
+            }
+            &.trvwr-itm-sum--drg-aftr::after {
+               margin-top: 0.35rem;
+            }
+            &.trvwr-itm-sum--drg-forbidden-bf::before,
+            &.trvwr-itm-sum--drg-forbidden-aftr::after {
+               content: "";
+               display: block;
+               width: 100%;
+               height: var(--trvwr-drp-ndctr-hght);
+               background-color: color-mix(in srgb, var(--is-danger, #e53935) 18%, transparent);
+               border: 1px dashed var(--is-danger, #e53935);
+               border-radius: 0.25rem;
+               box-sizing: border-box;
+            }
+            &.trvwr-itm-sum--drg-forbidden-bf::before {
+               margin-bottom: 0.35rem;
+            }
+            &.trvwr-itm-sum--drg-forbidden-aftr::after {
+               margin-top: 0.35rem;
+            }
+            :global {
+               .trvwr-itm-symb {
+                  flex-shrink: 0;
+                  border-radius: 0;
+                  padding: 0.1em 0.2em;
+                  cursor: pointer;
+                  color: var(--is-color);
+                  transition: background-color 0.15s ease;
+               }
+               .trvwr-itm-symb:hover {
+                  background-color: var(--trvwr-ctv-dflt);
+               }
+               .trvwr-itm-lead {
+                  flex-shrink: 0;
+               }
+               .trvwr-itm-lead--add {
+                  cursor: pointer;
+                  border-radius: 0.2em;
+                  transition: background-color 0.15s ease;
+                  &:hover {
+                     background-color: var(--trvwr-ctv-dflt);
+                  }
+               }
+            }
+         }
+         &:is(details.highlight) > .trvwr-itm-sum {
+            background-color: var(--trvwr-hghlght-bg);
+         }
+         &:is(details.highlight) > .trvwr-itm-sum:hover:not(.trvwr-itm-sum--disabled) {
+            background-color: var(--trvwr-hghlght-hvr-bg);
+         }
+         &.trvwr-itm--dragging {
+            opacity: 0.4;
+         }
+         &.trvwr-itm--folder-selected {
+            border: 1px solid var(--trvwr-sel-brd);
+            background-color: #8881;
+            border-radius: 0.25rem;
+         }
+         &.trvwr-itm--active {
+            border: 1px solid var(--trvwr-sel-brd);
+            border-radius: 0.25rem;
+         }
+         & :global {
+            .trvwr-drag-handle {
+               display: inline-flex;
+               align-items: center;
+               justify-content: center;
+               vertical-align: middle;
+               width: 1.25em;
+               height: 100%;
+               cursor: grab;
+               flex-shrink: 0;
+               color: var(--is-color);
+               &:active {
+                  cursor: grabbing;
+               }
+            }
+            .trvwr-sum-row {
+               width: 100%;
+               min-height: 2em;
+               flex: 1;
+               min-width: 0;
+            }
+         }
+         & .trvwr-itm-lead--icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.25em;
+            flex-shrink: 0;
+         }
+         &:is(details.should-flash) > .trvwr-itm-sum {
+            animation: trvwr-swap-flash 0.6s ease-out;
+         }
+      }
+   }
+   @keyframes trvwr-swap-flash {
+      0% {
+         background-color: var(--trvwr-swp-bg);
+      }
+      100% {
+         background-color: transparent;
+      }
+   }
+</style>

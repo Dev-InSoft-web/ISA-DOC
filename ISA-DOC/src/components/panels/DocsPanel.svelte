@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import {
 		Card,
 		Button,
@@ -11,7 +11,7 @@
 		Iconify,
 		Modal,
 	} from "@ingenieria_insoft/ispsveltecomponents";
-	import { getDocsForProject, type DocCategory, type DocItem } from "../lib/docs-registry";
+	import { getDocsForProject, type DocCategory, type DocItem } from "../../lib/docs-registry";
 
 	export let projectKey: string;
 
@@ -44,7 +44,7 @@
 	<Card variant="flat">
 		<FlexLayout items="center" gap="0.5rem">
 			<Iconify icon="mdi:file-document-outline" />
-			<Text color="neutral">Aún no hay documentación registrada para este proyecto.</Text>
+			<Text color="neutral">AÃºn no hay documentaciÃ³n registrada para este proyecto.</Text>
 		</FlexLayout>
 	</Card>
 {:else}
@@ -106,7 +106,7 @@
 			<span style="flex: 1;"></span>
 			{#if zoomItem}
 				<Button variant="ghost" onClick={() => window.open(zoomItem!.src, "_blank")}>
-					<Iconify icon="mdi:open-in-new" /> <span>Pestaña nueva</span>
+					<Iconify icon="mdi:open-in-new" /> <span>PestaÃ±a nueva</span>
 				</Button>
 			{/if}
 		</FlexLayout>

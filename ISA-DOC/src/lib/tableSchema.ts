@@ -29,12 +29,32 @@ export const COMMON_COLUMN_TYPES: string[] = [
 ];
 
 export interface TableColumn {
+	kind?: "col";
 	name: string;
 	type: string;
 	nullable: "" | "NULL" | "NOT NULL";
 	defaultValue: string;
 	primaryKey: boolean;
 	extra: string;
+}
+
+export interface TableSection {
+	kind: "section";
+	name: string;
+}
+
+export type TableRow = TableColumn | TableSection;
+
+export function isSectionRow(r: TableRow): r is TableSection {
+	return (r as TableSection).kind === "section";
+}
+
+export function isColumnRow(r: TableRow): r is TableColumn {
+	return !isSectionRow(r);
+}
+
+export function tableColumns(t: ParsedTable): TableColumn[] {
+	return t.columns.filter(isColumnRow);
 }
 
 export interface ParsedTable {
@@ -46,7 +66,8 @@ export interface ParsedTable {
 	hasIfNotExists: boolean;
 	originalName: string;
 	name: string;
-	columns: TableColumn[];
+	/** Filas de la tabla: columnas reales y secciones (`kind: "section"`). */
+	columns: TableRow[];
 	compositePrimaryKey: string[];
 	/** Texto que aparece dentro del paréntesis pero no se pudo parsear como columna. */
 	extraStatements: string[];
@@ -200,20 +221,7 @@ export function parseTableFragment(fragmentId: string, fragmentName: string, bod
 			i++;
 		}
 		const inner = buf.join("\n").trim();
-		const stmts = splitTopLevelCommas(inner);
-		const columns: TableColumn[] = [];
-		const extraStatements: string[] = [];
-		let compositePrimaryKey: string[] = [];
-		for (const s of stmts) {
-			const pkm = PK_COMPOSITE_RE.exec(s);
-			if (pkm) {
-				compositePrimaryKey = pkm[1].split(",").map((c) => c.trim()).filter(Boolean);
-				continue;
-			}
-			const col = parseColumn(s);
-			if (col) columns.push(col);
-			else extraStatements.push(s);
-		}
+		const parsedRows = parseInnerWithSections(inner);
 
 		tables.push({
 			fragmentId,
@@ -222,13 +230,94 @@ export function parseTableFragment(fragmentId: string, fragmentName: string, bod
 			hasIfNotExists,
 			originalName: tableName,
 			name: tableName,
-			columns,
-			compositePrimaryKey,
-			extraStatements,
+			columns: parsedRows.rows,
+			compositePrimaryKey: parsedRows.compositePrimaryKey,
+			extraStatements: parsedRows.extraStatements,
 			trailing: "",
 		});
 	}
 	return tables;
+}
+
+const REGION_LINE_RE = /^--\s*#region\s+(.+?)\s*$/i;
+const ENDREGION_LINE_RE = /^--\s*#endregion\b/i;
+
+function parseInnerWithSections(inner: string): {
+	rows: TableRow[];
+	extraStatements: string[];
+	compositePrimaryKey: string[];
+} {
+	const lines = inner.split(/\r?\n/);
+	const columns: TableColumn[] = [];
+	const extraStatements: string[] = [];
+	const sectionMarks: { idx: number; name: string }[] = [];
+	let compositePrimaryKey: string[] = [];
+	let bufStmt = "";
+	let depth = 0;
+	let inStr = false;
+
+	const finalize = (): void => {
+		const s = bufStmt.trim();
+		bufStmt = "";
+		if (!s) return;
+		const pkm = PK_COMPOSITE_RE.exec(s);
+		if (pkm) {
+			compositePrimaryKey = pkm[1].split(",").map((c) => c.trim()).filter(Boolean);
+			return;
+		}
+		const col = parseColumn(s);
+		if (col) columns.push(col);
+		else extraStatements.push(s);
+	};
+
+	for (const raw of lines) {
+		if (!inStr && depth === 0 && bufStmt.trim() === "") {
+			const trimmed = raw.trim();
+			const region = REGION_LINE_RE.exec(trimmed);
+			if (region) {
+				sectionMarks.push({ idx: columns.length, name: region[1] });
+				continue;
+			}
+			if (ENDREGION_LINE_RE.test(trimmed)) continue;
+			if (/^--/.test(trimmed)) continue;
+		}
+		for (let i = 0; i < raw.length; i++) {
+			const ch = raw[i];
+			if (inStr) {
+				bufStmt += ch;
+				if (ch === "'") {
+					if (raw[i + 1] === "'") { bufStmt += raw[++i]; continue; }
+					inStr = false;
+				}
+				continue;
+			}
+			if (ch === "'") { inStr = true; bufStmt += ch; continue; }
+			if (ch === "(") { depth++; bufStmt += ch; continue; }
+			if (ch === ")") { depth--; bufStmt += ch; continue; }
+			if (ch === "," && depth === 0) { finalize(); continue; }
+			bufStmt += ch;
+		}
+		bufStmt += "\n";
+	}
+	finalize();
+
+	// Splice sections at recorded column indices
+	const rows: TableRow[] = [];
+	let cIdx = 0;
+	const sorted = sectionMarks.slice().sort((a, b) => a.idx - b.idx);
+	let sIdx = 0;
+	while (cIdx < columns.length || sIdx < sorted.length) {
+		while (sIdx < sorted.length && sorted[sIdx].idx <= cIdx) {
+			rows.push({ kind: "section", name: sorted[sIdx].name });
+			sIdx++;
+		}
+		if (cIdx < columns.length) { rows.push(columns[cIdx]); cIdx++; }
+	}
+	while (sIdx < sorted.length) {
+		rows.push({ kind: "section", name: sorted[sIdx].name });
+		sIdx++;
+	}
+	return { rows, extraStatements, compositePrimaryKey };
 }
 
 export function emitColumn(col: TableColumn): string {
@@ -245,15 +334,56 @@ export function emitTable(t: ParsedTable): string {
 	if (t.comment) out.push(`-- ${t.comment}`);
 	if (t.hasIfNotExists) out.push(`IF OBJECT_ID('${t.name}', 'U') IS NULL`);
 	out.push(`CREATE TABLE ${t.name} (`);
-	const lines: string[] = [];
-	for (const c of t.columns) lines.push("    " + emitColumn(c));
-	for (const s of t.extraStatements) lines.push("    " + s);
-	if (t.compositePrimaryKey.length > 0) {
-		lines.push(`    PRIMARY KEY (${t.compositePrimaryKey.join(", ")})`);
+
+	// Build inner lines with explicit comma logic.
+	// Sections become `-- #region NAME` … `-- #endregion NAME` wrapping their columns.
+	type InnerLine = { text: string; isStmt: boolean };
+	const innerLines: InnerLine[] = [];
+
+	let openSection: string | null = null;
+	const closeSection = (): void => {
+		if (openSection) {
+			innerLines.push({ text: `    -- #endregion ${openSection}`, isStmt: false });
+			openSection = null;
+		}
+	};
+
+	for (const r of t.columns) {
+		if (isSectionRow(r)) {
+			closeSection();
+			innerLines.push({ text: `    -- #region ${r.name}`, isStmt: false });
+			openSection = r.name;
+		} else {
+			innerLines.push({ text: "    " + emitColumn(r), isStmt: true });
+		}
 	}
-	out.push(lines.join(",\n"));
+	closeSection();
+
+	for (const s of t.extraStatements) innerLines.push({ text: "    " + s, isStmt: true });
+	if (t.compositePrimaryKey.length > 0) {
+		innerLines.push({ text: `    PRIMARY KEY (${t.compositePrimaryKey.join(", ")})`, isStmt: true });
+	}
+
+	const lastStmtIdx = (() => {
+		for (let i = innerLines.length - 1; i >= 0; i--) {
+			if (innerLines[i].isStmt) return i;
+		}
+		return -1;
+	})();
+
+	const rendered: string[] = [];
+	for (let i = 0; i < innerLines.length; i++) {
+		const ln = innerLines[i];
+		const needsComma = ln.isStmt && i < lastStmtIdx;
+		rendered.push(needsComma ? ln.text + "," : ln.text);
+	}
+	out.push(rendered.join("\n"));
 	out.push(");");
 	return out.join("\n");
+}
+
+export function emitDropTable(t: ParsedTable): string {
+	return `IF OBJECT_ID('${t.name}', 'U') IS NOT NULL DROP TABLE ${t.name};`;
 }
 
 /**
