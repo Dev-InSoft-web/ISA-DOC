@@ -39,10 +39,8 @@
 	let auditarChecked: boolean = adapter.auditEnabled;
 	$: { void table; auditarChecked = adapter.auditEnabled; }
 
-	function onAuditarChange(e: Event): void {
-		const v = (e.currentTarget as HTMLInputElement).checked;
-		adapter.setAuditEnabled(v);
-		auditarChecked = adapter.auditEnabled;
+	$: if (typeof auditarChecked === "boolean" && auditarChecked !== adapter.auditEnabled) {
+		adapter.setAuditEnabled(auditarChecked);
 	}
 
 	function commitBaseName(v: string): void {
@@ -108,7 +106,7 @@
 		</div>
 		<FlexLayout items="center" inline>
 			<Text lines={1}>Auditar</Text>
-			<Switch checked={auditarChecked} color="primary" colorFalse="neutral" on:change={onAuditarChange} />
+			<Switch bind:checked={auditarChecked} color="primary" colorFalse="neutral" />
 		</FlexLayout>
 	</FlexLayout>
 

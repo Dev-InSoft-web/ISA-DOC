@@ -395,6 +395,124 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		this.setDomains(createEmptyDomainFn(this._domains, name));
 	}
 
+	/**
+	 * Resuelve el anclaje del nodo enfocado: bajo qué contenedor ("" raiz | "prefix:.." | "domain:..")
+	 * y, si está en raiz, el índice del ancestro raiz dentro de `_topOrder` para insertar después.
+	 */
+	private resolveCascadeAnchor(): { parentKey: string; insertAfterTop: number } {
+		// Sincroniza _topOrder con el orden visual actual para que el anclaje incluya tablas.
+		this.syncTopOrderFromVisible();
+		const f = this.lastFocusedNode;
+		if (!f) return { parentKey: "", insertAfterTop: this._topOrder.length - 1 };
+		const upper = (s: string) => s.toUpperCase();
+		// Sube hasta encontrar el ancestro de nivel raiz (ireference vacío).
+		let cur: any = f;
+		while (cur && String(cur.ireference || "").trim()) {
+			cur = this.findNodeById(String(cur.ireference || "").trim());
+			if (!cur) break;
+		}
+		const rootObj = (cur?.obj ?? f.obj) as TTableNodeUX;
+		const rootIdx = this._topOrder.findIndex((e) =>
+			(e.kind === "domain" && rootObj.kind === "domain" && e.key === rootObj.domainId) ||
+			(e.kind === "prefix" && rootObj.kind === "prefix" && e.key === (rootObj.prefix ?? "")) ||
+			(e.kind === "table" && rootObj.kind === "table" && upper(e.key) === upper(rootObj.rowName)),
+		);
+		// Determina el contenedor inmediato del foco.
+		const parentId = String(f.ireference || "").trim();
+		let parentKey = "";
+		if (parentId) {
+			const parent = this.findNodeById(parentId);
+			const pObj = parent?.obj as TTableNodeUX | undefined;
+			if (pObj?.kind === "domain") parentKey = `domain:${pObj.domainId ?? ""}`;
+			else if (pObj?.kind === "prefix") parentKey = `prefix:${pObj.prefix ?? ""}`;
+		}
+		return { parentKey, insertAfterTop: rootIdx >= 0 ? rootIdx : this._topOrder.length - 1 };
+	}
+
+	/** Materializa el orden actual en `_topOrder` (incluye tablas raíz) para insertar relativamente. */
+	private syncTopOrderFromVisible(): void {
+		const upper = (s: string) => s.toUpperCase();
+		const visible: TopLevelEntry[] = [];
+		for (const r of this.obj.rows) {
+			if (String(r.ireference || "").trim()) continue;
+			if (r.kind === "domain" && r.domainId) visible.push({ kind: "domain", key: r.domainId });
+			else if (r.kind === "prefix") visible.push({ kind: "prefix", key: r.prefix ?? "" });
+			else if (r.kind === "table") visible.push({ kind: "table", key: r.rowName });
+		}
+		// Sólo persiste si hay entradas visibles (evita borrar el orden si rows está vacío en una transición).
+		if (visible.length) {
+			this._topOrder = visible;
+			saveTopLevelOrder(this._topOrder);
+			void upper;
+		}
+	}
+
+	/** Genera un nombre único tipo `${base}` o `${base} N` que no choque con dominios existentes. */
+	private uniqueDomainName(base: string): string {
+		const names = new Set(Object.values(this._domains).map((d) => d.name));
+		if (!names.has(base)) return base;
+		let i = 2;
+		while (names.has(`${base} ${i}`)) i += 1;
+		return `${base} ${i}`;
+	}
+
+	/** Genera un prefijo único tipo `NUEVO_` o `NUEVO2_` que no choque con prefijos detectados o vacíos. */
+	private uniquePrefixName(parentKey: string, base: string = "NUEVO"): string {
+		const upper = (s: string) => s.toUpperCase();
+		const declared = new Set<string>(this._emptyPrefixes.get(parentKey) ?? []);
+		const detected = new Set<string>();
+		for (const t of this._tables) detected.add(upper(detectPrefix(t.name)));
+		const exists = (n: string) => declared.has(n) || detected.has(n);
+		let candidate = `${base}_`;
+		let i = 2;
+		while (exists(candidate)) {
+			candidate = `${base}${i}_`;
+			i += 1;
+		}
+		return candidate;
+	}
+
+	/** Crea un dominio vacío en el contenedor del nodo enfocado, justo debajo del foco. */
+	addDomainAtFocus(): void {
+		const anchor = this.resolveCascadeAnchor();
+		const name = this.uniqueDomainName("Nuevo dominio");
+		const before = new Set(Object.keys(this._domains));
+		let next: DomainsMap;
+		if (anchor.parentKey.startsWith("domain:")) {
+			next = createEmptyDomainFn(this._domains, name, anchor.parentKey.slice(7), undefined);
+		} else if (anchor.parentKey.startsWith("prefix:")) {
+			next = createEmptyDomainFn(this._domains, name, undefined, anchor.parentKey.slice(7));
+		} else {
+			next = createEmptyDomainFn(this._domains, name);
+			const newId = Object.keys(next).find((k) => !before.has(k));
+			if (newId) {
+				const at = anchor.insertAfterTop + 1;
+				this._topOrder = [...this._topOrder.slice(0, at), { kind: "domain", key: newId }, ...this._topOrder.slice(at)];
+				saveTopLevelOrder(this._topOrder);
+			}
+		}
+		this.setDomains(next);
+	}
+
+	/** Crea un prefijo vacío en el contenedor del nodo enfocado, justo debajo del foco. */
+	addPrefixAtFocus(): void {
+		const anchor = this.resolveCascadeAnchor();
+		const name = this.uniquePrefixName(anchor.parentKey);
+		if (anchor.parentKey === "") {
+			const arr = this._emptyPrefixes.get("") ?? [];
+			arr.push(name);
+			this._emptyPrefixes.set("", arr);
+			const at = anchor.insertAfterTop + 1;
+			this._topOrder = [...this._topOrder.slice(0, at), { kind: "prefix", key: name }, ...this._topOrder.slice(at)];
+			saveTopLevelOrder(this._topOrder);
+		} else {
+			const arr = this._emptyPrefixes.get(anchor.parentKey) ?? [];
+			arr.push(name);
+			this._emptyPrefixes.set(anchor.parentKey, arr);
+		}
+		this.rebuildRows();
+	}
+
 	/** Crea un dominio vacío como hijo de otro dominio. */
 	createChildDomainOfDomain(parentDomainId: string, name: string = "Nuevo dominio"): void {
 		this.setDomains(createEmptyDomainFn(this._domains, name, parentDomainId, undefined));
@@ -409,9 +527,9 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	 * Crea un prefijo vacío bajo un padre. parentKey: "" para raíz, "prefix:<name>" o "domain:<id>".
 	 * Si ya existe un prefijo con ese nombre detectado en tablas o declarado vacío, no lo duplica.
 	 */
-	addEmptyPrefix(parentKey: string, name: string): void {
-		const clean = (name || "").trim().toUpperCase();
-		if (!clean) return;
+	addEmptyPrefix(parentKey: string, name?: string): void {
+		const clean = name ? (name.trim().toUpperCase().replace(/_+$/, "") + "_") : this.uniquePrefixName(parentKey);
+		if (!clean || clean === "_") return;
 		const arr = this._emptyPrefixes.get(parentKey) ?? [];
 		if (arr.includes(clean)) return;
 		arr.push(clean);

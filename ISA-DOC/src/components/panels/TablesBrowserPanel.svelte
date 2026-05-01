@@ -114,27 +114,21 @@
 	adapter.onTableSelect = (key) => { selectedKey = key; };
 	adapter.onDomainsChange = (d) => { domains = d; };
 	adapter.onCascadeAddDomain = () => {
-		adapter.createDomain("Nuevo dominio");
+		adapter.addDomainAtFocus();
 		toastSuccess(`Dominio creado. Marca una tabla como master desde el árbol.`);
 	};
 	adapter.onCascadeAddPrefix = () => {
-		const raw = typeof window !== "undefined" ? window.prompt("Nombre del prefijo (sin guión bajo final):", "NUEVO") : null;
-		if (!raw) return;
-		const name = raw.trim().toUpperCase().replace(/_+$/, "") + "_";
-		adapter.addEmptyPrefix("", name);
-		toastSuccess(`Prefijo "${name}" creado. Agrega tablas o subgrupos.`);
+		adapter.addPrefixAtFocus();
+		toastSuccess(`Prefijo creado. Renómbralo y agrega tablas o subgrupos.`);
 	};
 	adapter.onCascadeAddChildPrefix = (parent) => {
-		const raw = typeof window !== "undefined" ? window.prompt("Nombre del prefijo (sin guión bajo final):", "NUEVO") : null;
-		if (!raw) return;
-		const name = raw.trim().toUpperCase().replace(/_+$/, "") + "_";
 		const parentKey = parent.kind === "domain"
 			? `domain:${parent.domainId ?? ""}`
 			: parent.kind === "prefix"
 				? `prefix:${parent.prefix ?? ""}`
 				: "";
-		adapter.addEmptyPrefix(parentKey, name);
-		toastSuccess(`Prefijo "${name}" creado como hijo.`);
+		adapter.addEmptyPrefix(parentKey);
+		toastSuccess(`Prefijo creado como hijo. Renómbralo desde el árbol.`);
 	};
 	adapter.onGenerateSql = () => { void generateSql(); };
 	domains = adapter.domains;

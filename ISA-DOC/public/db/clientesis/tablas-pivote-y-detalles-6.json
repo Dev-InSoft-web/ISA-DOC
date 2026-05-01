@@ -75,9 +75,10 @@
       "comment": "Tabla CAPAC_PLANES_CURSOS",
       "hasIfNotExists": true,
       "originalName": "CAPAC_PLANES_CURSOS",
-      "name": "CAPAC_PLANES_CURSOS",
+      "name": "HISTORIAL_PLANES_CURSOS",
       "columns": [
         {
+          "kind": "col",
           "name": "IPLAN",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -86,6 +87,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "ICURSO",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -94,6 +96,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "TITULO",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -102,6 +105,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "ITEMA",
           "type": "VARCHAR(25)",
           "nullable": "",
@@ -110,6 +114,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "IRECURSO",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -118,6 +123,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "IPLANPADRE",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -126,6 +132,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "BACTIVO",
           "type": "BIT",
           "nullable": "",
@@ -134,6 +141,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "IUSUARIOCRE",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -142,6 +150,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "IAPPCRE",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -150,6 +159,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "IPCRE",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -158,6 +168,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "FHCRE",
           "type": "DATETIME2",
           "nullable": "",
@@ -166,6 +177,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "IUSUARIOULT",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -174,6 +186,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "IAPPULT",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -182,6 +195,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "IPULT",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -190,7 +204,84 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "FHULT",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "section",
+          "name": "AUDITORIA"
+        },
+        {
+          "kind": "col",
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "FHCRE",
           "type": "DATETIME2",
           "nullable": "",
           "defaultValue": "GETDATE()",

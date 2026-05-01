@@ -39,6 +39,19 @@ export interface TreeRowViewAdapterConfig {
  */
 export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> extends TARoles<Stacker, TWorking> {
 	protected _adapterConfig: TreeRowViewAdapterConfig = {};
+	/**
+	 * Último id enfocado por el usuario; persiste aunque el highlight visual
+	 * se haya limpiado (p.ej. al abrir una cascada que dispara
+	 * `ontreeoutsidepointerdown`). Lo usan flujos que necesitan saber la
+	 * última intención del usuario, como inserciones relativas al foco.
+	 */
+	protected _lastFocusedNodeId: string = "";
+
+	get lastFocusedNode(): INode<TWorking> | null {
+		if (this._focusedNodeId) return this.findNodeById(this._focusedNodeId);
+		if (this._lastFocusedNodeId) return this.findNodeById(this._lastFocusedNodeId);
+		return null;
+	}
 
 	applyAdapterConfig(cfg: TreeRowViewAdapterConfig | undefined): void {
 		if (!cfg) return;
@@ -190,6 +203,7 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 
 	onrowfocus(node: INode<TWorking>): void {
 		this.focusedNode = node;
+		this._lastFocusedNodeId = String(node?.id ?? "");
 		this.syncAllRowAdapters();
 	}
 
