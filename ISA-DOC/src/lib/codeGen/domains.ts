@@ -15,6 +15,8 @@ export interface DomainDef {
 	masterTable: string;
 	members: string[];
 	parentId?: string;
+	/** Si el dominio cuelga directamente de un agrupador de prefijo, su clave. */
+	parentPrefix?: string;
 	/** Orden visual explícito de hijos (mezcla sub-dominios y tablas). Si está presente, manda. */
 	childrenOrder?: DomainChildRef[];
 }
@@ -88,7 +90,7 @@ export function markAsMaster(domains: DomainsMap, tableName: string, domainName?
 	const id = `dom_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
 	next[id] = {
 		id,
-		name: domainName ?? tableName,
+		name: domainName ?? "Dominio",
 		masterTable: tableName,
 		members: [tableName],
 	};
@@ -147,5 +149,26 @@ export function saveTopLevelOrder(order: TopLevelEntry[]): void {
 	try {
 		if (typeof localStorage === "undefined") return;
 		localStorage.setItem(TOP_KEY, JSON.stringify(order));
+	} catch { /* noop */ }
+}
+
+/** Orden de hijos directos de un agrupador de prefijo (mezcla tablas y sub-dominios). */
+export type PrefixOrderMap = Record<string, DomainChildRef[]>;
+const PREFIX_KEY = "isa-doc:codegen:prefixOrder";
+
+export function loadPrefixOrders(): PrefixOrderMap {
+	try {
+		const raw = typeof localStorage !== "undefined" ? localStorage.getItem(PREFIX_KEY) : null;
+		if (!raw) return {};
+		const parsed = JSON.parse(raw) as unknown;
+		if (parsed && typeof parsed === "object") return parsed as PrefixOrderMap;
+		return {};
+	} catch { return {}; }
+}
+
+export function savePrefixOrders(m: PrefixOrderMap): void {
+	try {
+		if (typeof localStorage === "undefined") return;
+		localStorage.setItem(PREFIX_KEY, JSON.stringify(m));
 	} catch { /* noop */ }
 }

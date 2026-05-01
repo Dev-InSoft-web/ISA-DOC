@@ -215,19 +215,39 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 	protected oncommittreeorder(roots: INode<TWorking>[]): void {
 		const result: TWorking[] = [];
 		const idMap = new Map<string, string>();
-		const traverse = (nodes: INode<TWorking>[], referenceId: string) => {
+		const traverse = (nodes: INode<TWorking>[], parent: TWorking | null, referenceId: string) => {
+			// Permitir al padre reordenar SOLO a sus hijos directos. No se propaga a nietos.
+			if (parent) {
+				const sortFn = (parent as any).sortChildren as ((children: TWorking[]) => TWorking[]) | undefined;
+				if (typeof sortFn === "function") {
+					const ordered = sortFn.call(parent, nodes.map((n) => n.obj));
+					const byObj = new Map<TWorking, INode<TWorking>>();
+					nodes.forEach((n) => byObj.set(n.obj, n));
+					const reordered: INode<TWorking>[] = [];
+					const consumed = new Set<INode<TWorking>>();
+					for (const obj of ordered) {
+						const n = byObj.get(obj);
+						if (n && !consumed.has(n)) { reordered.push(n); consumed.add(n); }
+					}
+					for (const n of nodes) if (!consumed.has(n)) reordered.push(n);
+					nodes.length = 0;
+					nodes.push(...reordered);
+				}
+			}
 			nodes.forEach((node, index) => {
 				const oldId = this.normalizeNodeId(node.id);
 				const newId = referenceId ? `${referenceId}.${index + 1}` : `${index + 1}`;
 				if (oldId && oldId !== newId) idMap.set(oldId, newId);
 				node.id = newId;
 				node.obj.id = newId;
+				// Actualiza ireference al padre actual (fuente de verdad: la posición en el árbol).
+				// Esto desacopla al hijo de su agrupador anterior cuando cambia de padre.
+				node.obj.ireference = referenceId;
 				result.push(node.obj);
-				node.children.length && traverse(node.children, newId);
+				node.children.length && traverse(node.children, node.obj, newId);
 			});
 		};
-		traverse(roots, "");
-		this.remapReferences(result, idMap);
+		traverse(roots, null, "");
 		this.remapExpandedByIdMap(idMap);
 		this.commitFlatList(result);
 	}

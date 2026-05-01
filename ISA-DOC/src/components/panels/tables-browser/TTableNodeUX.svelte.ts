@@ -62,7 +62,22 @@ export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
 	 */
 	acceptsChild(child: TTableNodeUX): boolean {
 		if (this.kind === "domain") return child.kind === "table";
-		if (this.kind === "prefix") return child.kind === "table";
+		if (this.kind === "prefix") return child.kind === "table" || child.kind === "domain";
 		return false;
+	}
+
+	/**
+	 * Regla de orden por agrupador:
+	 * - `domain`: master siempre primero; el resto conserva el orden actual.
+	 * - `prefix` y `table`: sin regla (preservar orden visual).
+	 */
+	sortChildren(children: TTableNodeUX[]): TTableNodeUX[] {
+		if (this.kind !== "domain") return children;
+		// `Array.prototype.sort` es estable en JS moderno; los empates conservan el orden.
+		return children.slice().sort((a, b) => {
+			const am = a.isMaster ? 0 : 1;
+			const bm = b.isMaster ? 0 : 1;
+			return am - bm;
+		});
 	}
 }

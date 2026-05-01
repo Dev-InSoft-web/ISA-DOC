@@ -37,10 +37,6 @@
           "extra": ""
         },
         {
-          "kind": "section",
-          "name": "AUDITORIA"
-        },
-        {
           "kind": "col",
           "name": "IPCRE",
           "type": "VARCHAR(255)",
@@ -48,6 +44,10 @@
           "defaultValue": "",
           "primaryKey": false,
           "extra": ""
+        },
+        {
+          "kind": "section",
+          "name": "AUDITORIA"
         },
         {
           "kind": "col",

@@ -32,6 +32,13 @@ export interface ITreeData<T> {
 	 * nodos agrupadores (prefijo, dominio, sección) definen qué tipos pueden contener.
 	 */
 	acceptsChild?(child: T): boolean;
+	/**
+	 * Regla opcional de ordenamiento de hijos directos del agrupador.
+	 * Devuelve los hijos en el orden deseado. SOLO afecta el nivel inmediato:
+	 * el TreeAdapter respeta la profundidad y no propaga el sort a nietos.
+	 * Si no está definida, se preserva el orden visual existente.
+	 */
+	sortChildren?(children: T[]): T[];
 }
 
 type TreeRowConfig = {
