@@ -49,7 +49,36 @@ export class TSqlTableUX {
 				}
 			}
 		}
+		// Reubica la sección AUDITORIA (si existe) al final, junto con sus columnas
+		// hijas, sin alterar el orden relativo del resto.
+		const auditSection = out.find((n) => n.kind === "section" && n.rowName === "AUDITORIA");
+		if (auditSection) {
+			const auditId = auditSection.id;
+			const auditChildren = out.filter((n) => n.kind === "column" && n.ireference === auditId);
+			const auditSet = new Set<TSqlNodeUX>([auditSection, ...auditChildren]);
+			const rest = out.filter((n) => !auditSet.has(n));
+			return [...rest, auditSection, ...auditChildren];
+		}
 		return out;
+	}
+
+	/** ¿Existe la sección AUDITORIA en el estado actual? */
+	hasAudit(): boolean {
+		return this.rows.some((r) => r.kind === "section" && r.rowName === "AUDITORIA");
+	}
+
+	/** Conjunto de columnas de auditoría por defecto (cuando se activa el switch). */
+	static defaultAuditColumns(): TableColumn[] {
+		return [
+			{ kind: "col", name: "IAPPULT", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IPULT", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IUSUARIOULT", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "FHULT", type: "DATETIME2", nullable: "", defaultValue: "GETDATE()", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IAPPCRE", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IPCRE", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IUSUARIOCRE", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "FHCRE", type: "DATETIME2", nullable: "", defaultValue: "GETDATE()", primaryKey: false, extra: "" },
+		];
 	}
 
 	exportToParsed(): ParsedTable {

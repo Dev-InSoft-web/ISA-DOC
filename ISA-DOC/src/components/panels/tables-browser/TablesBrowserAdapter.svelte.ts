@@ -70,11 +70,16 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	public onTableSelect: (key: string) => void = () => undefined;
 	public onDomainsChange: (domains: DomainsMap) => void = () => undefined;
 	public onAddRoot: () => void = () => undefined;
+	public onCascadeAddDomain: () => void = () => undefined;
+	public onCascadeAddPrefix: () => void = () => undefined;
+	public onCascadeAddChildPrefix: (parent: TTableNodeUX) => void = () => undefined;
 	public onGenerateSql: () => void = () => undefined;
 	private _tables: ParsedTable[] = [];
 	private _domains: DomainsMap = {};
 	private _topOrder: TopLevelEntry[] = [];
 	private _prefixOrders: PrefixOrderMap = {};
+	/** Prefijos vacíos creados manualmente. Key: "" raíz | "prefix:<name>" | "domain:<id>". */
+	private _emptyPrefixes: Map<string, string[]> = new Map();
 
 	constructor(tables: ParsedTable[], onChange?: TablesBrowserChangeFn) {
 		const stacker = new TablesBrowserStack();
@@ -169,12 +174,14 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			},
 			{ icon: "mdi:unfold-less-horizontal", title: "Colapsar todo", onClick: () => this.collapseAll?.() },
 			{ icon: "mdi:unfold-more-horizontal", title: "Expandir todo", onClick: () => this.expandAll?.() },
-			{
-				icon: "mdi:plus-circle-outline",
-				title: "Agregar dominio o prefijo de tablas",
-				onClick: () => this.onAddRoot(),
-			},
 		];
+	}
+
+	override getToolsBarCascadeOptions(): any[] {
+		return [[
+			{ icon: "mdi:cube-outline", label: "Agregar dominio", title: "Agregar dominio", onClick: () => this.onCascadeAddDomain() },
+			{ icon: "mdi:tag-outline", label: "Agregar prefijo", title: "Agregar prefijo", onClick: () => this.onCascadeAddPrefix() },
+		]];
 	}
 
 	protected override particularactionsrow(_node: any): any[] { return []; }
@@ -207,6 +214,32 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				},
 			];
 		}
+		if (obj.kind === "domain") {
+			return [
+				{
+					icon: "mdi:tag-plus-outline",
+					label: "Agregar prefijo como hijo",
+					title: "Agregar prefijo como hijo",
+					onClick: () => this.onCascadeAddChildPrefix(obj),
+				},
+			];
+		}
+		if (obj.kind === "prefix") {
+			return [[
+				{
+					icon: "mdi:tag-plus-outline",
+					label: "Agregar prefijo como hijo",
+					title: "Agregar prefijo como hijo",
+					onClick: () => this.onCascadeAddChildPrefix(obj),
+				},
+				{
+					icon: "mdi:cube-outline",
+					label: "Agregar dominio como hijo",
+					title: "Agregar dominio como hijo",
+					onClick: () => this.createChildDomainOfPrefix(obj.prefix ?? ""),
+				},
+			]];
+		}
 		return [];
 	}
 
@@ -226,7 +259,8 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 
 	markTableAsMaster(tableName: string): void {
 		const prefix = detectPrefix(tableName);
-		this.setDomains(markMasterFn(this._domains, tableName, `Dominio ${tableName}`, prefix || undefined));
+		const bare = (prefix ? tableName.slice(prefix.length) : tableName).toLowerCase();
+		this.setDomains(markMasterFn(this._domains, tableName, `Dominio ${bare}`, prefix || undefined));
 	}
 
 	removeDomain(domainId: string): void {
@@ -361,6 +395,30 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		this.setDomains(createEmptyDomainFn(this._domains, name));
 	}
 
+	/** Crea un dominio vacío como hijo de otro dominio. */
+	createChildDomainOfDomain(parentDomainId: string, name: string = "Nuevo dominio"): void {
+		this.setDomains(createEmptyDomainFn(this._domains, name, parentDomainId, undefined));
+	}
+
+	/** Crea un dominio vacío como hijo de un prefijo. */
+	createChildDomainOfPrefix(parentPrefix: string, name: string = "Nuevo dominio"): void {
+		this.setDomains(createEmptyDomainFn(this._domains, name, undefined, parentPrefix));
+	}
+
+	/**
+	 * Crea un prefijo vacío bajo un padre. parentKey: "" para raíz, "prefix:<name>" o "domain:<id>".
+	 * Si ya existe un prefijo con ese nombre detectado en tablas o declarado vacío, no lo duplica.
+	 */
+	addEmptyPrefix(parentKey: string, name: string): void {
+		const clean = (name || "").trim().toUpperCase();
+		if (!clean) return;
+		const arr = this._emptyPrefixes.get(parentKey) ?? [];
+		if (arr.includes(clean)) return;
+		arr.push(clean);
+		this._emptyPrefixes.set(parentKey, arr);
+		this.rebuildRows();
+	}
+
 	/**
 	 * Override: el rowName de un nodo `domain` se reconstruye desde `_domains[id].name`
 	 * en `rebuildRows()`, así que la mutación local que hace `updateNode` por defecto
@@ -424,7 +482,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				arr.push(d);
 			}
 		}
-		const knownPrefixes = Array.from(new Set([...grouped.keys(), ...domainsByPrefix.keys()]));
+		const knownPrefixes = Array.from(new Set([...grouped.keys(), ...domainsByPrefix.keys(), ...(this._emptyPrefixes.get("") ?? [])]));
 		const childrenOfDomain = new Map<string | undefined, DomainDef[]>();
 		for (const d of allDomains) {
 			if (!d.parentId && typeof d.parentPrefix === "string") continue;
@@ -437,9 +495,10 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		// Orden a nivel raíz: usar topOrder persistido si menciona los items; si faltan, agregar al final.
 		const rootDomains = childrenOfDomain.get(undefined) ?? [];
 		const rootDomainIds = new Set(rootDomains.map((d) => d.id));
+		const rootEmptyPrefixes = new Set(this._emptyPrefixes.get("") ?? []);
 		const validTop = this._topOrder.filter((e) =>
 			(e.kind === "domain" && rootDomainIds.has(e.key)) ||
-			(e.kind === "prefix" && grouped.has(e.key)) ||
+			(e.kind === "prefix" && (grouped.has(e.key) || rootEmptyPrefixes.has(e.key))) ||
 			(e.kind === "table" && tableByUpper.has(upper(e.key)) && !claimedUpper.has(upper(e.key))),
 		);
 		const seenTop = new Set(validTop.map((e) => `${e.kind}:${e.kind === "table" ? upper(e.key) : e.key}`));
@@ -499,6 +558,21 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			return [...subs, ...tables];
 		};
 
+		const pushEmptyChildPrefixes = (parentKey: string, parentRowId: string, depth: number): void => {
+			const names = this._emptyPrefixes.get(parentKey) ?? [];
+			for (const name of names) {
+				counters[depth] = (counters[depth] ?? 0) + 1;
+				const rid = parentRowId ? `${parentRowId}.${counters[depth]}` : String(counters[depth]);
+				rows.push(new TTableNodeUX({
+					rowId: rid,
+					ireference: parentRowId,
+					kind: "prefix",
+					rowName: name,
+					prefix: name,
+				}, this.obj));
+			}
+		};
+
 		const pushDomainTree = (d: DomainDef, parentRowId: string, depth: number): void => {
 			counters[depth] = (counters[depth] ?? 0) + 1;
 			const myRowId = parentRowId ? `${parentRowId}.${counters[depth]}` : String(counters[depth]);
@@ -533,6 +607,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 					}, this.obj));
 				}
 			}
+			pushEmptyChildPrefixes(`domain:${d.id}`, myRowId, depth + 1);
 		};
 
 		// Recorre el orden raíz mezclado.
@@ -611,6 +686,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 					prefix,
 				}, this.obj));
 			}
+			pushEmptyChildPrefixes(`prefix:${prefix}`, prefId, 1);
 		}
 
 		this.obj.rows = rows;

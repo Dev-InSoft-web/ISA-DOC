@@ -139,7 +139,7 @@
                      </FlexLayout>
                   </FlexLayout>
                   <Card slot="float" class="trvwr-float-card">
-                     <FlexOptions cscroll actions={rowController.filteredActions} more={rowController.cascadeOptions} />
+                     <FlexOptions actions={rowController.filteredActions} more={rowController.cascadeOptions} />
                   </Card>
                </FloatingComponent>
             </summary>

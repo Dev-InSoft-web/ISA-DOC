@@ -315,6 +315,11 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 	} | null;
 
 	abstract getToolsBarActions(): FlexOptionsAction[];
+	/**
+	 * Opciones en cascada para la barra de herramientas (se muestran como
+	 * botón "more"). Por defecto vacío. Override para activar.
+	 */
+	getToolsBarCascadeOptions(): FlexOptionsInput[] { return []; }
 	protected abstract getNodeIcon(node: INode<TWorking>, ctx: { isLastNode: boolean; isFolder: boolean; hasChildren: boolean; isExpanded: boolean; isEmptyFolder: boolean }): { icon?: string; color?: ComponentColor; style?: string } | null;
 	protected abstract particularactionsrow(node: INode<TWorking>): ButtonIconifyProps[];
 	protected abstract particularcascadeoptionsrow(node: INode<TWorking>): FlexOptionsInput[];

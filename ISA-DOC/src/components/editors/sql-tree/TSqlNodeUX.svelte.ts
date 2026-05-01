@@ -34,6 +34,36 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 	/** Discriminador estable para reglas de aceptación de los agrupadores. */
 	get type(): SqlNodeKind { return this.kind; }
 
+	/**
+	 * Roles actorales: la sección AUDITORIA actúa como `monarchy` para
+	 * impedir que sus columnas hijas se reordenen (sólo pueden eliminarse).
+	 */
+	get actor(): string {
+		if (this.kind === "section" && this.rowName === "AUDITORIA") return "monarchy";
+		return "";
+	}
+
+	/** Contrato `monarchy`: preserva el orden actual (sort estable). */
+	sortChildren(children: TSqlNodeUX[]): TSqlNodeUX[] {
+		return children.slice();
+	}
+
+	/**
+	 * Contrato `monarchy`: las columnas de la sección AUDITORIA están
+	 * congeladas (no se pueden mover). También se reporta `true` para la
+	 * propia sección por consistencia (no se reordena dentro de su padre).
+	 */
+	freeze(): boolean {
+		if (this.kind === "section" && this.rowName === "AUDITORIA") return true;
+		if (this.kind === "column" && this.ireference) {
+			const rows = (this.stack as { rows?: TSqlNodeUX[] } | undefined)?.rows;
+			if (!rows) return false;
+			const parent = rows.find((r) => r.id === this.ireference);
+			return parent?.kind === "section" && parent?.rowName === "AUDITORIA";
+		}
+		return false;
+	}
+
 	get istack(): string { return String(this.tableId || ""); }
 	get nistack(): string { return "tableId"; }
 

@@ -203,6 +203,60 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		return src.type === "section" || src.type === "column";
 	}
 
+	/**
+	 * Refuerzos sobre el `canDrop` base:
+	 * - La sección AUDITORIA no se puede mover (debe permanecer al final).
+	 * - Nada se puede colocar `after` la sección AUDITORIA en el root (debe quedar última).
+	 */
+	override canDrop(sourceId: string, targetId: string, position: "before" | "after" | "into"): boolean {
+		if (!super.canDrop(sourceId, targetId, position)) return false;
+		const sId = this.normalizeNodeId(sourceId);
+		const tId = this.normalizeNodeId(targetId);
+		const src = this.findNodeById(sId)?.obj as TSqlNodeUX | undefined;
+		const tgt = this.findNodeById(tId)?.obj as TSqlNodeUX | undefined;
+		const isAudit = (n?: TSqlNodeUX): boolean => !!n && n.kind === "section" && n.rowName === "AUDITORIA";
+		if (isAudit(src)) return false;
+		if (isAudit(tgt) && !tgt!.ireference && position === "after") return false;
+		return true;
+	}
+
 	override get groupTypes(): readonly string[] { return ["section"]; }
 	override get actionTypes(): readonly string[] { return ["section"]; }
+
+	/** ¿La tabla actual incluye la sección AUDITORIA? */
+	get auditEnabled(): boolean { return this.obj.hasAudit(); }
+
+	/**
+	 * Activa/desactiva el bloque de auditoría:
+	 * - `true`: si no existe, agrega la sección AUDITORIA al final con las columnas
+	 *   por defecto. Si ya existe, no toca el contenido (se preserva tal cual).
+	 * - `false`: elimina la sección AUDITORIA y todas sus columnas hijas.
+	 */
+	setAuditEnabled(enabled: boolean): void {
+		const rows = this.obj.rows;
+		const audit = rows.find((r) => r.kind === "section" && r.rowName === "AUDITORIA");
+		if (enabled) {
+			if (audit) return;
+			const tableId = this.obj.tableId;
+			const usedTopIdx = rows.reduce((max, r) => {
+				const idStr = String(r.id || "");
+				if (idStr.includes(".")) return max;
+				const n = parseInt(idStr, 10);
+				return Number.isFinite(n) && n > max ? n : max;
+			}, 0);
+			const sid = String(usedTopIdx + 1);
+			const section = TSqlNodeUX.fromSection({ kind: "section", name: "AUDITORIA" }, sid, tableId, this.obj);
+			const cols = TSqlTableUX.defaultAuditColumns().map((c, i) =>
+				TSqlNodeUX.fromColumn(c, `${sid}.${i + 1}`, sid, tableId, this.obj),
+			);
+			this.obj.rows = [...rows, section, ...cols];
+		} else {
+			if (!audit) return;
+			const auditId = audit.id;
+			this.obj.rows = rows.filter((r) => r !== audit && !(r.kind === "column" && r.ireference === auditId));
+		}
+		this.onrefresh();
+		this.syncAllRowAdapters();
+		this.emitChange();
+	}
 }

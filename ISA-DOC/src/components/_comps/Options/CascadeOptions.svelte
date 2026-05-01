@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-   import { Button, ButtonIconify, Card, Dialog, FlexLayout, Iconify, Text, bordercolor, resolveColor, type ButtonProps, type DialogProps } from "@ingenieria_insoft/ispsveltecomponents";
+   import { ButtonIconify, Card, Dialog, FlexLayout, Iconify, Text, bordercolor, resolveColor, type ButtonProps, type DialogProps } from "@ingenieria_insoft/ispsveltecomponents";
    import type { ButtonOptionProps } from "./_ButtonOption.svelte";
    import type { FlexOptionsAction, FlexOptionsInput } from "./FlexOptions.svelte";
    import { onDestroy, tick } from "svelte";
@@ -81,7 +81,7 @@
       },
       panel: {
          get style() {
-            return ["padding: 0", "min-width: 10em", "max-width: min(22em, 90dvw)", "max-height: min(80dvh, 600px)", "overflow-y: auto", `--cod-separator-border: ${resolveColor("border")}`].join("; ");
+            return ["padding: 0", "min-width: 10em", "max-width: min(22em, 90dvw)", `--cod-separator-border: ${resolveColor("border")}`].join("; ");
          },
       },
       openmenu() {
@@ -212,12 +212,10 @@
 
 <FlexLayout class="cascade-options" inline items="center" style="vertical-align: middle">
    <FlexLayout class={self.anchor.class} inline items="center" role="presentation">
-      <span bind:this={anchorEl}>
-         <Button variant="text" shape="rect" style="padding: 0;" onkeydown={self.onanchorkeydown} on:click={self.onanchorclick}>
-            <slot open={self.isopen}>
-               <ButtonIconify icon="mdi:dots-vertical" title="Más opciones" disabled={self.blocked} />
-            </slot>
-         </Button>
+      <span bind:this={anchorEl} role="button" tabindex={self.blocked ? -1 : 0} on:keydown={self.onanchorkeydown} on:click={self.onanchorclick}>
+         <slot open={self.isopen}>
+            <ButtonIconify icon="mdi:dots-vertical" title="Más opciones" disabled={self.blocked} shape="pill" />
+         </slot>
       </span>
    </FlexLayout>
 
@@ -231,7 +229,7 @@
                   {:else}
                      {@const action = item as ButtonOptionProps}
                      {@const { onClick: itemOnClick, ...rest } = action}
-                     <ButtonIconify role="menuitem" {...rest} shape="rect" disabled={disabled ? true : action.disabled} class={action.class || ""} style={["justify-content: start", action.style].filter(Boolean).join("; ")} on:click={self.getmenuitemonclick(itemOnClick)}>
+                     <ButtonIconify role="menuitem" {...rest} shape="pill" disabled={disabled ? true : action.disabled} class={action.class || ""} style={["justify-content: start", action.style].filter(Boolean).join("; ")} on:click={self.getmenuitemonclick(itemOnClick)}>
                         {#if action.label}
                            {#if action.icon}
                               <Iconify icon={action.icon} />

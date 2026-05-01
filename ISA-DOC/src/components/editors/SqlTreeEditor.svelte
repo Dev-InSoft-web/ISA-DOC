@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
-	import { FlexLayout, Text, Iconify } from "@ingenieria_insoft/ispsveltecomponents";
+	import { FlexLayout, Text, Iconify, Switch } from "@ingenieria_insoft/ispsveltecomponents";
 	import Chip from "../_comps/Chip.svelte";
 	import TreeView from "../_comps/TreeView/TreeRowView.svelte";
 	import type { ParsedTable } from "../../lib/tableSchema";
@@ -35,6 +35,15 @@
 	$: baseNameDraft = baseName;
 	let commentDraft = table.comment;
 	$: commentDraft = table.comment;
+
+	let auditarChecked: boolean = adapter.auditEnabled;
+	$: { void table; auditarChecked = adapter.auditEnabled; }
+
+	function onAuditarChange(e: Event): void {
+		const v = (e.currentTarget as HTMLInputElement).checked;
+		adapter.setAuditEnabled(v);
+		auditarChecked = adapter.auditEnabled;
+	}
 
 	function commitBaseName(v: string): void {
 		const p = prefix && table.name.startsWith(prefix) ? prefix : "";
@@ -88,9 +97,8 @@
 </script>
 
 <div class="sql-tree-card">
-	<FlexLayout items="center">
+	<FlexLayout items="center" justify="between">
 		<div class="name-row">
-			<span class="prefix">{prefix}</span>
 			<input
 				class="input-field name-input"
 				type="text"
@@ -98,6 +106,10 @@
 				on:change={(e) => commitBaseName((e.currentTarget).value)}
 			/>
 		</div>
+		<FlexLayout items="center" inline>
+			<Text lines={1}>Auditar</Text>
+			<Switch checked={auditarChecked} color="primary" colorFalse="neutral" on:change={onAuditarChange} />
+		</FlexLayout>
 	</FlexLayout>
 
 	<label class="field">
@@ -243,7 +255,6 @@
 	}
 	.tree-host :global(.trvwr-itm > summary) { padding-top: 0.1rem; padding-bottom: 0.1rem; }
 	.name-row { display: inline-flex; align-items: center; gap: 0.25rem; }
-	.prefix { color: var(--is-color); opacity: 0.7; font-family: monospace; }
 	.input-field {
 		padding: 0.2rem 0.4rem;
 		border: 1px solid var(--is-b-color);

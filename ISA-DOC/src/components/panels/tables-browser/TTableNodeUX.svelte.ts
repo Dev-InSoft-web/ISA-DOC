@@ -78,15 +78,16 @@ export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
 	}
 
 	/**
-	 * Reglas de aceptación de hijos (semántica de agrupador).
-	 * - `domain`: agrupa tablas. Rechaza dominios anidados (regla del producto).
-	 * - `prefix`: agrupa tablas; renombra al moverlas (cambia de prefijo).
+	 * Reglas de aceptación de hijos.
+	 * Default (agrupadores): aceptan a cualquier otro nodo agrupador o hoja.
+	 * Reglas particulares:
+	 * - `domain`: rechaza dominios anidados (regla propia y única del dominio).
 	 * - `table`: hoja. Nunca acepta hijos.
 	 */
 	acceptsChild(child: TTableNodeUX): boolean {
-		if (this.type === "domain") return child.type === "table";
-		if (this.type === "prefix") return child.type === "table" || child.type === "domain";
-		return false;
+		if (this.type === "table") return false;
+		if (this.type === "domain" && child.type === "domain") return false;
+		return true;
 	}
 
 	/**

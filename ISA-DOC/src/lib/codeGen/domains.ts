@@ -118,11 +118,11 @@ export function renameDomain(domains: DomainsMap, domainId: string, newName: str
 	return { ...domains, [domainId]: { ...d, name: newName } };
 }
 
-export function createEmptyDomain(domains: DomainsMap, name: string, parentId?: string): DomainsMap {
+export function createEmptyDomain(domains: DomainsMap, name: string, parentId?: string, parentPrefix?: string): DomainsMap {
 	const id = `dom_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 	return {
 		...domains,
-		[id]: { id, name: name || "Nuevo dominio", masterTable: "", members: [], parentId },
+		[id]: { id, name: name || "Nuevo dominio", masterTable: "", members: [], parentId, parentPrefix },
 	};
 }
 

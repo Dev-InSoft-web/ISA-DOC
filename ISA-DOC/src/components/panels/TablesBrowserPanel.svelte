@@ -44,9 +44,6 @@
 	let runBusy: Record<string, boolean> = {};
 
 	let bshowTreeModal: boolean = false;
-	let addRootShow: boolean = false;
-	let addRootName: string = "";
-	let addRootKind: "domain" | "prefix" = "prefix";
 
 	let sqlPreviewShow: boolean = false;
 	let sqlPreviewValue: string = "";
@@ -90,22 +87,6 @@
 	function openTreeModal(): void { bshowTreeModal = true; }
 	function closeTreeModal(): void { bshowTreeModal = false; }
 
-	function confirmAddRoot(): void {
-		const name = addRootName.trim();
-		if (!name) {
-			toastError("Indica un nombre.");
-			return;
-		}
-		if (addRootKind === "domain") {
-			adapter.createDomain(name);
-			toastSuccess(`Dominio "${name}" creado. Marca una tabla como master desde el árbol.`);
-		} else {
-			toastSuccess(`Prefijo "${name}": añade tablas con ese prefijo desde la edición SQL para que aparezca el agrupador.`);
-		}
-		addRootName = "";
-		addRootShow = false;
-	}
-
 	function toggleRunLock(key: string): void {
 		runUnlocked = { ...runUnlocked, [key]: !runUnlocked[key] };
 	}
@@ -132,7 +113,29 @@
 	const adapter = new TablesBrowserAdapter([], onAdapterChange);
 	adapter.onTableSelect = (key) => { selectedKey = key; };
 	adapter.onDomainsChange = (d) => { domains = d; };
-	adapter.onAddRoot = () => { addRootShow = true; };
+	adapter.onCascadeAddDomain = () => {
+		adapter.createDomain("Nuevo dominio");
+		toastSuccess(`Dominio creado. Marca una tabla como master desde el árbol.`);
+	};
+	adapter.onCascadeAddPrefix = () => {
+		const raw = typeof window !== "undefined" ? window.prompt("Nombre del prefijo (sin guión bajo final):", "NUEVO") : null;
+		if (!raw) return;
+		const name = raw.trim().toUpperCase().replace(/_+$/, "") + "_";
+		adapter.addEmptyPrefix("", name);
+		toastSuccess(`Prefijo "${name}" creado. Agrega tablas o subgrupos.`);
+	};
+	adapter.onCascadeAddChildPrefix = (parent) => {
+		const raw = typeof window !== "undefined" ? window.prompt("Nombre del prefijo (sin guión bajo final):", "NUEVO") : null;
+		if (!raw) return;
+		const name = raw.trim().toUpperCase().replace(/_+$/, "") + "_";
+		const parentKey = parent.kind === "domain"
+			? `domain:${parent.domainId ?? ""}`
+			: parent.kind === "prefix"
+				? `prefix:${parent.prefix ?? ""}`
+				: "";
+		adapter.addEmptyPrefix(parentKey, name);
+		toastSuccess(`Prefijo "${name}" creado como hijo.`);
+	};
 	adapter.onGenerateSql = () => { void generateSql(); };
 	domains = adapter.domains;
 	const adapterAny = adapter as any;
@@ -653,35 +656,6 @@
 		<div class="sql-preview-host">
 			<CodeViewer value={sqlPreviewValue} lang="sql" height="100%" />
 		</div>
-	</FlexLayout>
-</Modal>
-
-<Modal bind:bshow={addRootShow} onClose={() => (addRootShow = false)} style="width: 30rem;">
-	<svelte:fragment slot="title">
-		<FlexLayout items="center">
-			<Iconify icon="mdi:plus-circle-outline" />
-			<Text><strong>Agregar raíz</strong></Text>
-		</FlexLayout>
-	</svelte:fragment>
-	<FlexLayout direction="column">
-		<Text color="neutral"><small>Elige el tipo de agrupador raíz a crear.</small></Text>
-		<label class="field">
-			<Text color="neutral"><small>Tipo</small></Text>
-			<select class="input-field" bind:value={addRootKind}>
-				<option value="domain">Dominio (master + esclavas)</option>
-				<option value="prefix">Prefijo de tablas</option>
-			</select>
-		</label>
-		<label class="field">
-			<Text color="neutral"><small>Nombre</small></Text>
-			<input class="input-field" type="text" bind:value={addRootName} placeholder={addRootKind === "domain" ? "Capacitación" : "UL_"} />
-		</label>
-		<FlexLayout justify="end">
-			<Button variant="outlined" onClick={() => (addRootShow = false)}>Cancelar</Button>
-			<Button variant="solid" color="primary" onClick={confirmAddRoot}>
-				<Iconify icon="mdi:check" /> Crear
-			</Button>
-		</FlexLayout>
 	</FlexLayout>
 </Modal>
 

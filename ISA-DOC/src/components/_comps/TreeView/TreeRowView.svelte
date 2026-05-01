@@ -246,7 +246,7 @@
       <FlexLayout direction="column" items="stretch" style="width: 100%; flex: 1 1 auto; min-height: 0;" let:sizew>
          <slot treeToolbar={TreeController} {sizew} {showEliminar}>
             {#if showToolbar}
-               <FlexOptions class="isp-tree-toolbar" cscroll inline items="center" aria-label="Acciones del plan de contenidos" actions={TreeController.getToolsBarActions() as FlexOptionsAction[]} />
+               <FlexOptions class="isp-tree-toolbar" inline items="center" aria-label="Acciones del plan de contenidos" actions={TreeController.getToolsBarActions() as FlexOptionsAction[]} more={TreeController.getToolsBarCascadeOptions()} />
             {/if}
             <slot name="pre" treeToolbar={TreeController} {sizew} {showEliminar} />
          </slot>
