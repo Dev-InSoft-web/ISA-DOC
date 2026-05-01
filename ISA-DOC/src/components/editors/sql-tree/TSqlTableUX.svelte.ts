@@ -6,6 +6,10 @@ export class TSqlTableUX {
 	tableId: string = "";
 	rows: TSqlNodeUX[] = [];
 	parsed!: ParsedTable;
+	/** Marca si la sección AUDITORIA está oculta por toggle. No persiste en ParsedTable. */
+	auditHidden: boolean = false;
+	/** Cache de la sección AUDITORIA + sus columnas cuando está oculta. */
+	_auditCache: { section: TSqlNodeUX; cols: TSqlNodeUX[] } | null = null;
 
 	constructor(parsed?: ParsedTable) {
 		if (parsed) {
@@ -82,7 +86,12 @@ export class TSqlTableUX {
 	}
 
 	exportToParsed(): ParsedTable {
-		const flat = this.rows;
+		// Si la auditoría está oculta, re-incluye los nodos cacheados al final
+		// para que el ParsedTable resultante NO pierda esa data (persiste
+		// columnas eliminadas por el usuario y permite reaparecer al activar).
+		const flat = this.auditHidden && this._auditCache
+			? [...this.rows, this._auditCache.section, ...this._auditCache.cols]
+			: this.rows;
 		const childrenBySection = new Map<string, TSqlNodeUX[]>();
 		for (const n of flat) {
 			if (n.kind === "section") childrenBySection.set(n.id, []);

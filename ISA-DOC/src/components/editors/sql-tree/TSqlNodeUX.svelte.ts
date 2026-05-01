@@ -126,7 +126,7 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 			kind: "section",
 			rowName: sec.name,
 		}, stack);
-		if (sec.name === "AUDITORIA") node.actor = "monarchy";
+		if (sec.name === "AUDITORIA") node.actor = "freezer";
 		return node;
 	}
 }

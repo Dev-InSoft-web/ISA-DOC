@@ -1,7 +1,7 @@
 ﻿<svelte:options accessors={true} />
 
 <script context="module" lang="ts">
-   import { AccionesGen, ActionDrawer, Button, FlexLayout, Iconify, Input, Modal, Text, type TDForm } from "@ingenieria_insoft/ispsveltecomponents";
+   import { AccionesGen, ActionDrawer, Button, FlexLayout, Iconify, Modal, Text, type TDForm } from "@ingenieria_insoft/ispsveltecomponents";
    import type { HTMLAttributes } from "svelte/elements";
    import type { FlexOptionsAction } from "../Options/FlexOptions.svelte";
    import FlexOptions from "../Options/FlexOptions.svelte";
@@ -66,7 +66,6 @@
    let editRowShow = false;
    let bshowEliminar = false;
    let loadingEliminar = false;
-   let codigoEliminarIngresado = "";
    let localItdForm: $$Props["itdForm"] = "view";
 
    const self = {
@@ -81,19 +80,8 @@
       },
    };
 
-   const codToMinLenX = (value: unknown): string =>
-      String(value ?? "")
-         .trim()
-         .padStart(5, "X");
-   const getObjWorkingPlanCode = (row: $$Props["objWorking"]): string => {
-      const asObj = row?.obj as Record<string, unknown> | null | undefined;
-      const source = asObj?.iplan ?? asObj?.idrow ?? "";
-      return codToMinLenX(String(source).replace(/^(_UP_|_M_)/, ""));
-   };
    const workingRow = (row: $$Props["objWorking"]): TWorking | null => (row?.obj as TWorking | null | undefined) ?? null;
 
-   $: codigoEliminarEsperado = getObjWorkingPlanCode(objWorking);
-   $: bBloquearEliminar = codigoEliminarIngresado.trim() !== codigoEliminarEsperado;
    $: rowLayoutTickStore = TreeController.rowLayoutEpoch;
    // rootNodes se re-evalúa cada vez que el store cambia (cuando syncAllRowAdapters incrementa el epoch),
    // garantizando que RowItem recibe el array actualizado y Svelte re-evalúa la condición del {#if}.
@@ -170,11 +158,10 @@
       const node = findNodeForAction(objRef);
       objWorking = node;
       bshowEliminar = true;
-      codigoEliminarIngresado = "";
    };
 
    async function confirmarEliminar() {
-      if (readonly || loadingEliminar || bBloquearEliminar || !objWorking) return;
+      if (readonly || loadingEliminar || !objWorking) return;
       loadingEliminar = true;
       try {
          const ctrl = CatalogoController as unknown as { ActEliminar?: (...args: unknown[]) => Promise<boolean> };
@@ -183,7 +170,6 @@
          if (!row) throw new Error("No hay fila activa para eliminar.");
          await ctrl.ActEliminar(row, Obj);
          bshowEliminar = false;
-         codigoEliminarIngresado = "";
          await postSubmit(row, "Eliminar");
       } catch (e) {
          const sAdd = e instanceof Error ? `\r\n${e.message}` : "";
@@ -227,15 +213,13 @@
    <Modal bind:bshow={bshowEliminar} bind:loading={loadingEliminar}>
       <Text slot="title" style="display: flex; align-items: center; gap: 0.5rem;">
          <Iconify icon="mdi:trash-can-outline" />
-         Eliminar contenido del plan
+         Eliminar
       </Text>
       <FlexLayout direction="column" style="padding: 0.75rem; min-width: 350px;">
-         <Text>Confirme la eliminación digitando el código de seguridad del plan.</Text>
-         <Input label="Código esperado" value={codigoEliminarEsperado} readonly />
-         <Input label="Confirme código de seguridad" required maxLength={60} bind:value={codigoEliminarIngresado} />
+         <Text>Esta acción es irreversible. ¿Deseas continuar?</Text>
          <FlexLayout direction="row" wrap justify="end" items="center" style="gap: 0.5rem">
             <Button variant="outlined" color="neutral" onClick={() => (bshowEliminar = false)} loading={loadingEliminar}>Cancelar</Button>
-            <Button color="danger" onClick={confirmarEliminar} disabled={loadingEliminar || bBloquearEliminar} loading={loadingEliminar}>Eliminar</Button>
+            <Button color="danger" onClick={confirmarEliminar} disabled={loadingEliminar} loading={loadingEliminar}>Aceptar</Button>
          </FlexLayout>
       </FlexLayout>
    </Modal>

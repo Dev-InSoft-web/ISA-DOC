@@ -6,6 +6,13 @@ import { TSqlTableUX } from "./TSqlTableUX.svelte";
 
 export type SqlTreeChangeFn = (next: ParsedTable) => void;
 
+/**
+ * Persistencia in-memory del estado oculto de la sección AUDITORIA por tabla.
+ * Permite que al cambiar de pestaña y regresar, el switch recupere su valor.
+ * Clave: `tableId` (`fragmentId::originalName`).
+ */
+const auditHiddenByTableId: Map<string, boolean> = new Map();
+
 class SqlCatalogoStub {
 	constructor(private readonly getAdapter: () => SqlTreeAdapter | null) {}
 
@@ -54,6 +61,10 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 			floatCard: { scale: 0.8 },
 		});
 		if (onChange) this.onChange = onChange;
+		// Restaura el estado oculto de auditoría si fue persistido en una sesión previa.
+		if (auditHiddenByTableId.get(this.obj.tableId) === true && this.obj.hasAudit()) {
+			this.setAuditEnabledInternal(false, false);
+		}
 		this.onrefresh();
 	}
 
@@ -223,38 +234,115 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 	override get groupTypes(): readonly string[] { return ["section"]; }
 	override get actionTypes(): readonly string[] { return ["section"]; }
 
-	/** ¿La tabla actual incluye la sección AUDITORIA? */
-	get auditEnabled(): boolean { return this.obj.hasAudit(); }
+	/**
+	 * El TreeAdapter actúa como contenedor virtual de los nodos raíz con rol
+	 * `monarchy`: la sección AUDITORIA implementa `freeze() => true`, lo que
+	 * la mantiene inamovible y oculta su drag handle. El resto de secciones
+	 * raíz devuelven `freeze() => false` y se mueven libremente.
+	 */
+	override getRootActor(): "" | "monarchy" | "freezer" { return "monarchy"; }
+
+	protected override particularcascadeoptionsrow(node: any): any[] {
+		const obj = node?.obj as TSqlNodeUX | undefined;
+		if (obj?.kind === "section" && obj.rowName === "AUDITORIA") {
+			return [
+				{
+					icon: "mdi:restore",
+					label: "Restablecer columnas",
+					title: "Restaurar todas las columnas de auditoría por defecto",
+					onClick: () => this.resetAuditColumns(),
+				},
+			];
+		}
+		return [];
+	}
+
+	/** ¿La tabla actual incluye la sección AUDITORIA visible? */
+	get auditEnabled(): boolean { return !this.obj.auditHidden && this.obj.hasAudit(); }
 
 	/**
 	 * Activa/desactiva el bloque de auditoría:
-	 * - `true`: si no existe, agrega la sección AUDITORIA al final con las columnas
-	 *   por defecto. Si ya existe, no toca el contenido (se preserva tal cual).
-	 * - `false`: elimina la sección AUDITORIA y todas sus columnas hijas.
+	 * - `true`: si está oculta, restaura desde el cache (preserva ediciones).
+	 *   Si no existe, agrega la sección AUDITORIA al final con las columnas
+	 *   por defecto.
+	 * - `false`: oculta la sección AUDITORIA y todas sus columnas hijas, las
+	 *   guarda en cache para poder restaurarlas. NO las elimina del modelo.
 	 */
 	setAuditEnabled(enabled: boolean): void {
+		this.setAuditEnabledInternal(enabled, true);
+	}
+
+	private setAuditEnabledInternal(enabled: boolean, emit: boolean): void {
 		const rows = this.obj.rows;
 		const audit = rows.find((r) => r.kind === "section" && r.rowName === "AUDITORIA");
 		if (enabled) {
-			if (audit) return;
-			const tableId = this.obj.tableId;
-			const usedTopIdx = rows.reduce((max, r) => {
-				const idStr = String(r.id || "");
-				if (idStr.includes(".")) return max;
-				const n = parseInt(idStr, 10);
-				return Number.isFinite(n) && n > max ? n : max;
-			}, 0);
-			const sid = String(usedTopIdx + 1);
-			const section = TSqlNodeUX.fromSection({ kind: "section", name: "AUDITORIA" }, sid, tableId, this.obj);
-			const cols = TSqlTableUX.defaultAuditColumns().map((c, i) =>
-				TSqlNodeUX.fromColumn(c, `${sid}.${i + 1}`, sid, tableId, this.obj),
-			);
-			this.obj.rows = [...rows, section, ...cols];
+			if (this.obj.auditHidden && this.obj._auditCache) {
+				const { section, cols } = this.obj._auditCache;
+				this.obj.rows = [...rows, section, ...cols];
+				this.obj._auditCache = null;
+				this.obj.auditHidden = false;
+			} else if (!audit) {
+				const tableId = this.obj.tableId;
+				const usedTopIdx = rows.reduce((max, r) => {
+					const idStr = String(r.id || "");
+					if (idStr.includes(".")) return max;
+					const n = parseInt(idStr, 10);
+					return Number.isFinite(n) && n > max ? n : max;
+				}, 0);
+				const sid = String(usedTopIdx + 1);
+				const section = TSqlNodeUX.fromSection({ kind: "section", name: "AUDITORIA" }, sid, tableId, this.obj);
+				const cols = TSqlTableUX.defaultAuditColumns().map((c, i) =>
+					TSqlNodeUX.fromColumn(c, `${sid}.${i + 1}`, sid, tableId, this.obj),
+				);
+				this.obj.rows = [...rows, section, ...cols];
+				this.obj.auditHidden = false;
+			} else {
+				this.obj.auditHidden = false;
+			}
 		} else {
-			if (!audit) return;
-			const auditId = audit.id;
-			this.obj.rows = rows.filter((r) => r !== audit && !(r.kind === "column" && r.ireference === auditId));
+			if (audit) {
+				const auditId = audit.id;
+				const cols = rows.filter((r) => r.kind === "column" && r.ireference === auditId);
+				this.obj._auditCache = { section: audit, cols };
+				this.obj.rows = rows.filter((r) => r !== audit && !cols.includes(r));
+			}
+			this.obj.auditHidden = true;
 		}
+		auditHiddenByTableId.set(this.obj.tableId, this.obj.auditHidden);
+		this.onrefresh();
+		this.syncAllRowAdapters();
+		if (emit) this.emitChange();
+	}
+
+	/**
+	 * Restaura todas las columnas de auditoría por defecto que el usuario haya
+	 * eliminado. Comparación por nombre (case-insensitive). Inserta las
+	 * faltantes al final de la sección AUDITORIA.
+	 */
+	resetAuditColumns(): void {
+		const rows = this.obj.rows.slice();
+		const audit = rows.find((r) => r.kind === "section" && r.rowName === "AUDITORIA");
+		if (!audit) return;
+		const auditId = audit.id;
+		const presentNames = new Set(
+			rows.filter((r) => r.kind === "column" && r.ireference === auditId).map((r) => String(r.rowName).toUpperCase()),
+		);
+		const tableId = this.obj.tableId;
+		const existingChildIdxs = rows
+			.filter((r) => r.kind === "column" && r.ireference === auditId)
+			.map((r) => parseInt(String(r.id).split(".").pop() || "0", 10))
+			.filter((n) => Number.isFinite(n));
+		let nextIdx = existingChildIdxs.length ? Math.max(...existingChildIdxs) : 0;
+		const toAdd: TSqlNodeUX[] = [];
+		for (const c of TSqlTableUX.defaultAuditColumns()) {
+			if (presentNames.has(c.name.toUpperCase())) continue;
+			nextIdx += 1;
+			toAdd.push(TSqlNodeUX.fromColumn(c, `${auditId}.${nextIdx}`, auditId, tableId, this.obj));
+		}
+		if (toAdd.length === 0) return;
+		// Inserta las nuevas columnas justo después del último hijo de AUDITORIA.
+		const lastChildIdx = rows.reduce((idx, r, i) => (r.kind === "column" && r.ireference === auditId ? i : idx), rows.indexOf(audit));
+		this.obj.rows = [...rows.slice(0, lastChildIdx + 1), ...toAdd, ...rows.slice(lastChildIdx + 1)];
 		this.onrefresh();
 		this.syncAllRowAdapters();
 		this.emitChange();

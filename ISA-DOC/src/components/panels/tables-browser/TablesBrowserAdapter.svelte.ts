@@ -925,17 +925,21 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const byRowId = new Map<string, TTableNodeUX>();
 		for (const n of flat) byRowId.set(n.rowId, n);
 		const findEnclosingPrefix = (rowId: string): string | null => {
+			// Cadena completa de prefijos ancestros (outermost → innermost). Si en el
+			// camino se encuentra un dominio, la tabla NO recibe rename por prefijo.
+			const chain: string[] = [];
 			let cur = byRowId.get(rowId);
 			while (cur) {
 				const ref = String(cur.ireference || "").trim();
-				if (!ref) return null;
+				if (!ref) break;
 				const parent = byRowId.get(ref);
-				if (!parent) return null;
+				if (!parent) break;
 				if (parent.kind === "domain") return null;
-				if (parent.kind === "prefix") return parent.prefix || "";
+				if (parent.kind === "prefix") chain.unshift(parent.prefix || "");
 				cur = parent;
 			}
-			return null;
+			if (chain.length === 0) return null;
+			return chain.join("");
 		};
 		const orderedTables: ParsedTable[] = [];
 		const seen = new Set<number>();
@@ -951,13 +955,13 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				orderedTables.push(t);
 				continue;
 			}
-			const oldPref = detectPrefix(t.name);
-			if (oldPref === enclosingPrefix) {
+			// Identidad estable: usar originalName y despojar su prefijo original (una sola capa).
+			const baseName = t.originalName.slice(detectPrefix(t.originalName).length);
+			const nextName = enclosingPrefix + baseName;
+			if (nextName === t.name) {
 				orderedTables.push(t);
 				continue;
 			}
-			const baseName = t.name.slice(oldPref.length);
-			const nextName = enclosingPrefix + baseName;
 			renames.push({ from: t.name, to: nextName });
 			orderedTables.push({ ...t, name: nextName });
 		}

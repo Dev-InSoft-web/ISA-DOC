@@ -12,6 +12,7 @@
       "name": "PERMISOS",
       "columns": [
         {
+          "kind": "col",
           "name": "IPERMISO",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -20,10 +21,87 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "NPERMISO",
           "type": "VARCHAR(255)",
           "nullable": "",
           "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "section",
+          "name": "AUDITORIA"
+        },
+        {
+          "kind": "col",
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "GETDATE()",
           "primaryKey": false,
           "extra": ""
         }
@@ -166,7 +244,7 @@
       "comment": "Tabla CAPAC_CURSOS",
       "hasIfNotExists": true,
       "originalName": "CAPAC_CURSOS",
-      "name": "CAPAC_CURSOS",
+      "name": "CAPAC_NUEVO_CURSOS",
       "columns": [
         {
           "name": "ICURSO",

@@ -176,6 +176,14 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	}
 
 	/**
+	 * Rol actoral del propio TreeAdapter como contenedor virtual de los
+	 * `rootNodes`. Default `""` (sin rol). Subclases pueden retornar
+	 * `"monarchy"` o `"freezer"` para aplicar reglas de congelamiento al
+	 * primer nivel sin necesidad de un nodo raíz real.
+	 */
+	getRootActor(): "" | "monarchy" | "freezer" { return ""; }
+
+	/**
 	 * ¿Este nodo está **congelado** (no se puede mover) por su pipeline de
 	 * ancestros? Recorrido closest→farthest:
 	 * - `freezer` ancestor → tautología: SIEMPRE congela a sus descendientes.
@@ -197,6 +205,17 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 					throw new Error(`[TreeAdapter] El nodo '${node.id}' bajo agrupador 'monarchy' '${anc.id}' requiere implementar 'freeze(): boolean'.`);
 				}
 				if (fn.call(node.obj)) return true;
+			}
+		}
+		// El TreeAdapter actúa como contenedor virtual de los nodos raíz.
+		// Sólo aplica cuando `node` es de primer nivel (sin ireference).
+		const isRootLevel = !String(node.ireference || "").trim();
+		if (isRootLevel) {
+			const rootActor = this.getRootActor();
+			if (rootActor === "freezer") return true;
+			if (rootActor === "monarchy") {
+				const fn = (node.obj as { freeze?: () => boolean } | undefined)?.freeze;
+				if (typeof fn === "function" && fn.call(node.obj)) return true;
 			}
 		}
 		return false;
