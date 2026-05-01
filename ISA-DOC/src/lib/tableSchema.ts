@@ -74,6 +74,14 @@ export interface ParsedTable {
 	hasIfNotExists: boolean;
 	originalName: string;
 	name: string;
+	/**
+	 * Cadena de prefijos heredados desde el árbol (outermost→innermost) que se
+	 * antepone virtualmente al `name` para producir el identificador SQL final.
+	 * NO forma parte del `name` persistido. La emite el adapter al guardar a
+	 * partir de la posición del nodo en el árbol; al cargar, se respeta.
+	 * Ej.: name="DRIVERS", effectivePrefix="CAPAC_" → SQL: CAPAC_DRIVERS.
+	 */
+	effectivePrefix?: string;
 	/** Filas de la tabla: columnas reales y secciones (`kind: "section"`). */
 	columns: TableRow[];
 	compositePrimaryKey: string[];
@@ -81,6 +89,11 @@ export interface ParsedTable {
 	extraStatements: string[];
 	/** Sufijo posterior al `);` (constraints, opciones). Normalmente vacío. */
 	trailing: string;
+}
+
+/** Identificador SQL efectivo: cadena heredada + nombre persistido. */
+export function effectiveTableName(t: Pick<ParsedTable, "name" | "effectivePrefix">): string {
+	return (t.effectivePrefix ?? "") + t.name;
 }
 
 const COMMENT_RE = /^\s*--\s?(.*)$/;
@@ -356,9 +369,10 @@ export function emitColumn(col: TableColumn): string {
 }
 
 export function emitTable(t: ParsedTable): string {
+	const fullName = effectiveTableName(t);
 	const out: string[] = [];
-	if (t.hasIfNotExists) out.push(`IF OBJECT_ID('${t.name}', 'U') IS NULL`);
-	out.push(`CREATE TABLE ${t.name} (`);
+	if (t.hasIfNotExists) out.push(`IF OBJECT_ID('${fullName}', 'U') IS NULL`);
+	out.push(`CREATE TABLE ${fullName} (`);
 
 	// Build inner lines with explicit comma logic.
 	// Sections become `-- #region NAME` … `-- #endregion NAME` wrapping their columns.
@@ -413,7 +427,8 @@ export function emitTable(t: ParsedTable): string {
 }
 
 export function emitDropTable(t: ParsedTable): string {
-	return `IF OBJECT_ID('${t.name}', 'U') IS NOT NULL DROP TABLE ${t.name};`;
+	const fullName = effectiveTableName(t);
+	return `IF OBJECT_ID('${fullName}', 'U') IS NOT NULL DROP TABLE ${fullName};`;
 }
 
 /**
@@ -431,7 +446,7 @@ export function emitTablesAsBody(tables: ParsedTable[]): string {
 		return tables.map(emitTable).join("\n\n") + "\n";
 	}
 	const chunks = tables.map((t) => {
-		const id = t.name;
+		const id = effectiveTableName(t);
 		return `-- #region ${id}\n${emitTable(t)}\n-- #endregion ${id}`;
 	});
 	return chunks.join("\n\n") + "\n";

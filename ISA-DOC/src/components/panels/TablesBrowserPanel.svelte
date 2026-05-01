@@ -419,19 +419,14 @@
 									<div class="frm">
 										<label class="field">
 											<Text color="neutral"><small>Nombre de la tabla</small></Text>
-											<div class="chain-input">
-												{#if adapter.chainPrefixOf(frmObj.rowId)}
-													<span class="chain-input-prefix" aria-hidden="true">{adapter.chainPrefixOf(frmObj.rowId)}</span>
-												{/if}
-												<input
-													class="input-field name-input"
-													type="text"
-													bind:value={frmObj.rowName}
-													on:input={(e) => { frmObj.rowName = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"); }}
-												/>
-											</div>
+											<input
+												class="input-field name-input"
+												type="text"
+												bind:value={frmObj.rowName}
+												on:input={(e) => { frmObj.rowName = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"); }}
+											/>
 										</label>
-										<Text color="neutral"><small>Para editar columnas/secciones, selecciona la tabla y usa el panel SQL.</small></Text>
+										<Text color="neutral"><small>El prefijo es una propiedad del grupo padre y no se edita desde aquí. Para editar columnas/secciones, usa el panel SQL.</small></Text>
 									</div>
 								{/if}
 							{/if}
@@ -706,6 +701,9 @@
 		width: 100%;
 		font-size: 0.8em;
 	}
+	/* El TouchGestures interno usa position:absolute para overlays, lo que saca al cuerpo del flujo y deja la altura de `.isp-tree` en 0. Forzamos in-flow para que `pane-scroll` reciba la altura real y pueda hacer scroll cuando rebose. */
+	.tables-tree-host :global(.touch-gestures-body) { position: static !important; display: flex; flex-direction: column; }
+	.tables-tree-host :global(.isp-tree) { display: block !important; height: auto !important; min-height: 0; }
 	.tree-row {
 		display: inline-flex;
 		align-items: center;
@@ -875,28 +873,5 @@
 		background: var(--is-bg-primary);
 		color: inherit;
 		font: inherit;
-	}
-	.chain-input {
-		display: flex;
-		align-items: stretch;
-		border: 1px solid var(--is-b-color, #555);
-		border-radius: 4px;
-		background: var(--is-bg-primary);
-		overflow: hidden;
-	}
-	.chain-input .chain-input-prefix {
-		padding: 0.4rem 0.5rem;
-		color: var(--is-text-neutral, #888);
-		opacity: 0.75;
-		background: var(--is-bg-secondary, transparent);
-		border-right: 1px solid var(--is-b-color, #555);
-		white-space: nowrap;
-		font: inherit;
-	}
-	.chain-input .input-field {
-		flex: 1;
-		border: none;
-		border-radius: 0;
-		background: transparent;
 	}
 </style>

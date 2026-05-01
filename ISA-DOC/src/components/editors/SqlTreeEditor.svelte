@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
-	import { FlexLayout, Text, Iconify, Switch } from "@ingenieria_insoft/ispsveltecomponents";
+	import { FlexLayout, Text, Iconify, Switch, SelectEnum } from "@ingenieria_insoft/ispsveltecomponents";
 	import Chip from "../_comps/Chip.svelte";
 	import TreeView from "../_comps/TreeView/TreeRowView.svelte";
 	import type { ParsedTable } from "../../lib/tableSchema";
@@ -53,8 +53,12 @@
 		return !!node.primaryKey || table.compositePrimaryKey.includes(node.rowName);
 	}
 
-	function dataListId(): string {
-		return `sql-tree-types-${table.fragmentId}-${table.originalName}`;
+	function buildTypeEnum(current: string): { [k: string]: string } {
+		const out: { [k: string]: string } = {};
+		for (const t of COMMON_COLUMN_TYPES) out[t] = t;
+		const norm = (current || "").toUpperCase().replace(/\s+/g, "");
+		if (norm && !(norm in out)) out[norm] = norm;
+		return out;
 	}
 </script>
 
@@ -73,12 +77,6 @@
 			<Switch bind:checked={auditarChecked} color="primary" colorFalse="neutral" />
 		</FlexLayout>
 	</FlexLayout>
-
-	<datalist id={dataListId()}>
-		{#each COMMON_COLUMN_TYPES as t}
-			<option value={t}></option>
-		{/each}
-	</datalist>
 
 	<div class="tree-host">
 		<TreeView
@@ -144,13 +142,14 @@
 							</label>
 							<label class="field">
 								<Text color="neutral"><small>Tipo</small></Text>
-								<input
-									class="input-field"
-									type="text"
-									list={dataListId()}
-									bind:value={frmObj.colType}
-									on:input={(e) => { frmObj.colType = (e.currentTarget).value.toUpperCase().replace(/\s+/g, ""); }}
-								/>
+								<div class="select-host">
+									<SelectEnum
+										label="Tipo"
+										required={false}
+										enumValue={buildTypeEnum(frmObj.colType)}
+										bind:value={frmObj.colType}
+									/>
+								</div>
 							</label>
 							<label class="field row">
 								<input
@@ -193,20 +192,23 @@
 </div>
 
 <style>
-	.sql-tree-card { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; }
+	.sql-tree-card { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; max-width: 100%; min-width: 0; min-height: 0; flex: 1 1 auto; height: 100%; }
 	.tree-host {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		flex: 1 1 auto;
 		min-height: 240px;
 		border: 1px solid var(--is-b-color);
 		border-radius: 0.25rem;
 		background: var(--is-bg-primary);
 		padding: 0.25rem;
 		font-size: 0.85rem;
+		overflow: auto;
 	}
-	.sql-tree-card { max-width: 100%; min-width: 0; min-height: 0; }
 	.tree-host :global(.trvwr-itm > summary) { padding-top: 0.1rem; padding-bottom: 0.1rem; }
+	.tree-host :global(.touch-gestures-body) { position: static !important; display: flex; flex-direction: column; }
+	.tree-host :global(.isp-tree) { display: block !important; height: auto !important; min-height: 0; }
 	.name-row { display: inline-flex; align-items: center; gap: 0.25rem; }
 	.input-field {
 		padding: 0.2rem 0.4rem;
@@ -222,6 +224,10 @@
 	.name-input { font-weight: bold; min-width: 12rem; }
 	.field { display: flex; flex-direction: column; gap: 0.15rem; }
 	.field.row { flex-direction: row; align-items: center; gap: 0.5rem; }
+	.select-host { width: 100%; }
+	.select-host :global(select) { height: 28px; padding: 0 0.4rem; font-size: 0.9rem; background-color: var(--is-bg-secondary); border: 1px solid var(--is-b-color); border-radius: 0.25rem; }
+	.select-host :global(select:focus) { border-color: var(--is-primary); }
+	.select-host :global(label) { display: none; }
 	.frm { display: flex; flex-direction: column; gap: 0.6rem; padding: 1rem; }
 	.tag {
 		padding: 0 0.35rem;
