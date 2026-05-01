@@ -4,6 +4,35 @@
     {
       "fragmentId": "tablas-principales-con-prefijo-capac-5",
       "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
+      "comment": "Tabla PERMISOS",
+      "hasIfNotExists": true,
+      "originalName": "PERMISOS",
+      "name": "PERMISOS",
+      "columns": [
+        {
+          "name": "IPERMISO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": true,
+          "extra": ""
+        },
+        {
+          "name": "NPERMISO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        }
+      ],
+      "compositePrimaryKey": [],
+      "extraStatements": [],
+      "trailing": ""
+    },
+    {
+      "fragmentId": "tablas-principales-con-prefijo-capac-5",
+      "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
       "comment": "Tabla CAPAC_DRIVERS",
       "hasIfNotExists": true,
       "originalName": "CAPAC_DRIVERS",
@@ -16,15 +45,6 @@
           "nullable": "",
           "defaultValue": "",
           "primaryKey": true,
-          "extra": ""
-        },
-        {
-          "kind": "col",
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
           "extra": ""
         },
         {
@@ -96,6 +116,15 @@
         },
         {
           "kind": "section_end"
+        },
+        {
+          "kind": "col",
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
         },
         {
           "kind": "col",
@@ -1388,35 +1417,6 @@
         {
           "name": "FHULT",
           "type": "DATETIME2",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        }
-      ],
-      "compositePrimaryKey": [],
-      "extraStatements": [],
-      "trailing": ""
-    },
-    {
-      "fragmentId": "tablas-principales-con-prefijo-capac-5",
-      "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
-      "comment": "Tabla PERMISOS",
-      "hasIfNotExists": true,
-      "originalName": "PERMISOS",
-      "name": "PERMISOS",
-      "columns": [
-        {
-          "name": "IPERMISO",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": true,
-          "extra": ""
-        },
-        {
-          "name": "NPERMISO",
-          "type": "VARCHAR(255)",
           "nullable": "",
           "defaultValue": "",
           "primaryKey": false,

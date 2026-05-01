@@ -184,6 +184,10 @@
             cursor: pointer;
             user-select: none;
             transition: background-color 0.15s ease;
+            /* Importante: position relative para anclar los indicadores ::before/::after
+               como overlays absolutos (sin layout shift) y evitar flickering al cruzar
+               el borde entre filas adyacentes durante el drag. */
+            position: relative;
 
             :global(.trvwr-float-btn) {
                scale: 0.7;
@@ -210,39 +214,30 @@
                display: none;
             }
             &.trvwr-itm-sum--drg-bf::before,
-            &.trvwr-itm-sum--drg-aftr::after {
-               content: "";
-               display: block;
-               width: 100%;
-               height: var(--trvwr-drp-ndctr-hght);
-               background-color: var(--trvwr-drp-ndctr-bg);
-               border: 1px dashed var(--is-primary);
-               border-radius: 0.25rem;
-               box-sizing: border-box;
-            }
-            &.trvwr-itm-sum--drg-bf::before {
-               margin-bottom: 0.35rem;
-            }
-            &.trvwr-itm-sum--drg-aftr::after {
-               margin-top: 0.35rem;
-            }
+            &.trvwr-itm-sum--drg-aftr::after,
             &.trvwr-itm-sum--drg-forbidden-bf::before,
             &.trvwr-itm-sum--drg-forbidden-aftr::after {
                content: "";
-               display: block;
-               width: 100%;
-               height: var(--trvwr-drp-ndctr-hght);
-               background-color: color-mix(in srgb, var(--is-danger, #e53935) 18%, transparent);
-               border: 1px dashed var(--is-danger, #e53935);
+               position: absolute;
+               left: 0;
+               right: 0;
+               height: 4px;
+               background-color: var(--trvwr-drp-ndctr-bg);
+               border: 1px solid var(--is-primary);
                border-radius: 0.25rem;
                box-sizing: border-box;
+               pointer-events: none;
+               z-index: 2;
             }
-            &.trvwr-itm-sum--drg-forbidden-bf::before {
-               margin-bottom: 0.35rem;
-            }
+            &.trvwr-itm-sum--drg-bf::before { top: -2px; }
+            &.trvwr-itm-sum--drg-aftr::after { bottom: -2px; }
+            &.trvwr-itm-sum--drg-forbidden-bf::before,
             &.trvwr-itm-sum--drg-forbidden-aftr::after {
-               margin-top: 0.35rem;
+               background-color: color-mix(in srgb, var(--is-danger, #e53935) 35%, transparent);
+               border-color: var(--is-danger, #e53935);
             }
+            &.trvwr-itm-sum--drg-forbidden-bf::before { top: -2px; }
+            &.trvwr-itm-sum--drg-forbidden-aftr::after { bottom: -2px; }
             &.trvwr-itm-sum--drg-into {
                outline: 2px dashed var(--is-primary);
                outline-offset: -2px;

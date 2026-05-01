@@ -9,6 +9,7 @@ import {
 	markAsMaster as markMasterFn,
 	removeDomain as removeDomainFn,
 	createEmptyDomain as createEmptyDomainFn,
+	renameDomain as renameDomainFn,
 	loadTopLevelOrder,
 	saveTopLevelOrder,
 	loadPrefixOrders,
@@ -240,6 +241,26 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 
 	createDomain(name: string): void {
 		this.setDomains(createEmptyDomainFn(this._domains, name));
+	}
+
+	/**
+	 * Override: el rowName de un nodo `domain` se reconstruye desde `_domains[id].name`
+	 * en `rebuildRows()`, así que la mutación local que hace `updateNode` por defecto
+	 * se perdería al refrescar. Persistimos el rename en el mapa de dominios y luego
+	 * delegamos en la mutación normal para mantener consistencia in-memory.
+	 */
+	override updateNode(data: any, mutate?: (target: TTableNodeUX, source: TTableNodeUX) => void): boolean {
+		const item = data as TTableNodeUX | undefined;
+		if (item && item.kind === "domain" && item.domainId) {
+			const current = this._domains[item.domainId];
+			const nextName = String(item.rowName ?? "").trim();
+			if (current && nextName && current.name !== nextName) {
+				this._domains = renameDomainFn(this._domains, item.domainId, nextName);
+				saveDomains(this._domains);
+				this.onDomainsChange(this._domains);
+			}
+		}
+		return super.updateNode(data, mutate);
 	}
 
 	protected override canAddChild(): boolean { return false; }

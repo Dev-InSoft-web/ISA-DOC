@@ -236,9 +236,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	get floatVisible(): boolean {
 		const ta = this.treeAdapter;
 		const hoverId = ta.hoveredRowId ? ta.normalizeNodeId(ta.hoveredRowId.id) : "";
-		if (hoverId.length > 0) return hoverId === this.id;
-		const focusId = ta.focusedRowId ? ta.normalizeNodeId(ta.focusedRowId.id) : "";
-		return focusId.length > 0 && focusId === this.id;
+		return hoverId.length > 0 && hoverId === this.id;
 	}
 	get floatFocusOnly(): boolean { return this.floatVisible && this.isReallyFocused }
 	get floatHoverOnly(): boolean { return this.floatVisible && !this.isReallyFocused && this.isReallyHovered }
