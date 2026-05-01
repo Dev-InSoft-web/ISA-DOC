@@ -197,6 +197,6 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 
 	/** En SQL, el root admite secciones y columnas (columnas-raíz son válidas). */
 	override canDropAtRoot(src: TSqlNodeUX): boolean {
-		return src.kind === "section" || src.kind === "column";
+		return src.type === "section" || src.type === "column";
 	}
 }

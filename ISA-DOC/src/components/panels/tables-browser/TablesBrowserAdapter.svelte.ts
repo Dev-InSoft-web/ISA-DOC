@@ -242,7 +242,7 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 
 	/** En el browser de tablas, el root admite dominios y prefijos. */
 	override canDropAtRoot(src: TTableNodeUX): boolean {
-		return src.kind === "domain" || src.kind === "prefix";
+		return src.type === "domain" || src.type === "prefix";
 	}
 
 	private rebuildRows(): void {

@@ -32,6 +32,9 @@ export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
 	get id(): string { return String(this.rowId || "").replace(/^(_UP_|_M_)/, "").trim(); }
 	set id(value: string) { this.rowId = value; }
 
+	/** Discriminador estable para reglas de aceptación de los agrupadores. */
+	get type(): TableTreeKind { return this.kind; }
+
 	get istack(): string { return this.stackId; }
 	get nistack(): string { return "stackId"; }
 
@@ -61,8 +64,8 @@ export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
 	 * - `table`: hoja. Nunca acepta hijos.
 	 */
 	acceptsChild(child: TTableNodeUX): boolean {
-		if (this.kind === "domain") return child.kind === "table";
-		if (this.kind === "prefix") return child.kind === "table" || child.kind === "domain";
+		if (this.type === "domain") return child.type === "table";
+		if (this.type === "prefix") return child.type === "table" || child.type === "domain";
 		return false;
 	}
 

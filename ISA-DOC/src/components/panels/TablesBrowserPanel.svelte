@@ -370,12 +370,12 @@
 						objWorking={adapterAny.objWorking}
 					>
 						<svelte:fragment slot="row" let:node>
-							{#if node.obj.kind === "prefix"}
+							{#if node.obj.type === "prefix"}
 								<span class="tree-row">
 									<strong class="tree-row-name">{node.obj.rowName}</strong>
 									<span class="tree-row-meta">{node.obj.colCount}</span>
 								</span>
-							{:else if node.obj.kind === "domain"}
+							{:else if node.obj.type === "domain"}
 								<span class="tree-row">
 									<strong class="tree-row-name">{node.obj.rowName}</strong>
 								</span>
@@ -384,6 +384,53 @@
 									<span class="tree-row-name">{node.obj.rowName.startsWith(node.obj.prefix) ? node.obj.rowName.slice(node.obj.prefix.length) : node.obj.rowName}</span>
 									<span class="tree-row-meta">{node.obj.colCount}</span>
 								</span>
+							{/if}
+						</svelte:fragment>
+
+						<svelte:fragment slot="Frm" let:frmObj>
+							{#if frmObj}
+								{#if frmObj.type === "prefix"}
+									<div class="frm">
+										<label class="field">
+											<Text color="neutral"><small>Prefijo</small></Text>
+											<input
+												class="input-field"
+												type="text"
+												bind:value={frmObj.prefix}
+												on:input={(e) => {
+													const v = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_");
+													frmObj.prefix = v;
+													frmObj.rowName = v || "(sin prefijo)";
+												}}
+											/>
+										</label>
+										<Text color="neutral"><small>Renombrar el prefijo aplica el cambio a todas las tablas que lo usan al guardar.</small></Text>
+									</div>
+								{:else if frmObj.type === "domain"}
+									<div class="frm">
+										<label class="field">
+											<Text color="neutral"><small>Nombre del dominio</small></Text>
+											<input
+												class="input-field"
+												type="text"
+												bind:value={frmObj.rowName}
+											/>
+										</label>
+									</div>
+								{:else}
+									<div class="frm">
+										<label class="field">
+											<Text color="neutral"><small>Nombre de la tabla</small></Text>
+											<input
+												class="input-field"
+												type="text"
+												bind:value={frmObj.rowName}
+												on:input={(e) => { frmObj.rowName = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"); }}
+											/>
+										</label>
+										<Text color="neutral"><small>Para editar columnas/secciones, selecciona la tabla y usa el panel SQL.</small></Text>
+									</div>
+								{/if}
 							{/if}
 						</svelte:fragment>
 					</TreeView>
@@ -839,5 +886,25 @@
 		0% { box-shadow: 0 0 0 0 var(--is-primary, #4ea1ff); }
 		40% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--is-primary, #4ea1ff) 35%, transparent); }
 		100% { box-shadow: 0 0 0 0 transparent; }
+	}
+	.frm {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding: 0.75rem;
+	}
+	.frm .field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+	.frm .input-field {
+		width: 100%;
+		padding: 0.4rem 0.5rem;
+		border: 1px solid var(--is-b-color, #555);
+		border-radius: 4px;
+		background: var(--is-bg-primary);
+		color: inherit;
+		font: inherit;
 	}
 </style>

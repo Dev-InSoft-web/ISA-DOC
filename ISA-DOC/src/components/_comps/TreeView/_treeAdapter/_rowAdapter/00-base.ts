@@ -26,6 +26,12 @@ export interface INode<T> {
 export interface ITreeData<T> {
 	[k: string]: any;
 	/**
+	 * Discriminador semántico del nodo (p.ej. "domain", "table", "prefix",
+	 * "section", "column"). Usado por agrupadores para identificar a quién
+	 * aceptan o rechazan como hijo sin tener que conocer la clase concreta.
+	 */
+	type?: string;
+	/**
 	 * Reglas opcionales del nodo respecto a la jerarquía.
 	 * Si está presente y devuelve `false`, el nodo rechaza recibir a `child` como hijo.
 	 * Por convención: nodos hoja (tablas, columnas) jamás aceptan hijos;

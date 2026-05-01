@@ -31,6 +31,9 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 	get id(): string { return String(this.rowId || "").replace(/^(_UP_|_M_)/, "").trim(); }
 	set id(value: string) { this.rowId = value; }
 
+	/** Discriminador estable para reglas de aceptación de los agrupadores. */
+	get type(): SqlNodeKind { return this.kind; }
+
 	get istack(): string { return String(this.tableId || ""); }
 	get nistack(): string { return "tableId"; }
 
@@ -75,7 +78,7 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 	 * - `column`: hoja. Nunca acepta hijos.
 	 */
 	acceptsChild(child: TSqlNodeUX): boolean {
-		if (this.kind === "section") return child.kind === "column";
+		if (this.type === "section") return child.type === "column";
 		return false;
 	}
 
