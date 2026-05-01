@@ -47,7 +47,20 @@ export interface TableSectionEnd {
 	kind: "section_end";
 }
 
-export type TableRow = TableColumn | TableSection | TableSectionEnd;
+/**
+ * Sección opcional (variante especial de sección): puede ocultarse o mostrarse
+ * mediante un flag `show` y NO se elimina con el botón de papelera; en su
+ * lugar la fila ofrece un ojito para alternar visibilidad. Se utiliza para la
+ * sección AUDITORIA y cualquier otra sección que el usuario pueda querer
+ * desactivar sin perder sus columnas.
+ */
+export interface TableOptional {
+	kind: "optional";
+	name: string;
+	show: boolean;
+}
+
+export type TableRow = TableColumn | TableSection | TableSectionEnd | TableOptional;
 
 export function isSectionRow(r: TableRow): r is TableSection {
 	return (r as TableSection).kind === "section";
@@ -57,8 +70,17 @@ export function isSectionEndRow(r: TableRow): r is TableSectionEnd {
 	return (r as TableSectionEnd).kind === "section_end";
 }
 
+export function isOptionalRow(r: TableRow): r is TableOptional {
+	return (r as TableOptional).kind === "optional";
+}
+
+/** Una sección "agrupadora" puede ser la clásica o la opcional. */
+export function isAnySectionRow(r: TableRow): r is TableSection | TableOptional {
+	return isSectionRow(r) || isOptionalRow(r);
+}
+
 export function isColumnRow(r: TableRow): r is TableColumn {
-	return !isSectionRow(r) && !isSectionEndRow(r);
+	return !isSectionRow(r) && !isSectionEndRow(r) && !isOptionalRow(r);
 }
 
 export function tableColumns(t: ParsedTable): TableColumn[] {
@@ -387,14 +409,24 @@ export function emitTable(t: ParsedTable): string {
 		}
 	};
 
+	let skipUntilSectionEnd = false;
 	for (const r of t.columns) {
-		if (isSectionRow(r)) {
+		if (isOptionalRow(r)) {
 			closeSection();
+			if (!r.show) { skipUntilSectionEnd = true; continue; }
+			skipUntilSectionEnd = false;
+			innerLines.push({ text: `    -- #region ${r.name}`, isStmt: false });
+			openSection = r.name;
+		} else if (isSectionRow(r)) {
+			closeSection();
+			skipUntilSectionEnd = false;
 			innerLines.push({ text: `    -- #region ${r.name}`, isStmt: false });
 			openSection = r.name;
 		} else if (isSectionEndRow(r)) {
 			closeSection();
+			skipUntilSectionEnd = false;
 		} else {
+			if (skipUntilSectionEnd) continue;
 			innerLines.push({ text: "    " + emitColumn(r), isStmt: true });
 		}
 	}

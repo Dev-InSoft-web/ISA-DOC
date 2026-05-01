@@ -1,15 +1,11 @@
-import type { ParsedTable, TableColumn, TableRow, TableSection } from "../../../lib/tableSchema";
-import { isSectionRow, isSectionEndRow } from "../../../lib/tableSchema";
+import type { ParsedTable, TableColumn, TableRow, TableSection, TableOptional } from "../../../lib/tableSchema";
+import { isSectionRow, isSectionEndRow, isOptionalRow, isAnySectionRow } from "../../../lib/tableSchema";
 import { TSqlNodeUX } from "./TSqlNodeUX.svelte";
 
 export class TSqlTableUX {
 	tableId: string = "";
 	rows: TSqlNodeUX[] = [];
 	parsed!: ParsedTable;
-	/** Marca si la sección AUDITORIA está oculta por toggle. No persiste en ParsedTable. */
-	auditHidden: boolean = false;
-	/** Cache de la sección AUDITORIA + sus columnas cuando está oculta. */
-	_auditCache: { section: TSqlNodeUX; cols: TSqlNodeUX[] } | null = null;
 
 	constructor(parsed?: ParsedTable) {
 		if (parsed) {
@@ -32,12 +28,31 @@ export class TSqlTableUX {
 				lastSectionId = "";
 				continue;
 			}
-			if (isSectionRow(row)) {
+			if (isOptionalRow(row)) {
 				topIdx += 1;
 				const sid = String(topIdx);
 				lastSectionId = sid;
 				columnIdx = 0;
-				out.push(TSqlNodeUX.fromSection(row as TableSection, sid, tableId, stack));
+				out.push(TSqlNodeUX.fromOptional(row as TableOptional, sid, tableId, stack));
+			} else if (isSectionRow(row)) {
+				topIdx += 1;
+				const sid = String(topIdx);
+				lastSectionId = sid;
+				columnIdx = 0;
+				// Migración tácita: la sección AUDITORIA siempre se promueve a `optional`
+				// para que herede el comportamiento de show/hide. El SQL parseado puede
+				// venir como `section` (legacy) o `optional`; ambos casos quedan
+				// homogeneizados en memoria.
+				if ((row as TableSection).name === "AUDITORIA") {
+					out.push(TSqlNodeUX.fromOptional(
+						{ kind: "optional", name: "AUDITORIA", show: true },
+						sid,
+						tableId,
+						stack,
+					));
+				} else {
+					out.push(TSqlNodeUX.fromSection(row as TableSection, sid, tableId, stack));
+				}
 			} else {
 				const col = row as TableColumn;
 				if (lastSectionId) {
@@ -53,9 +68,9 @@ export class TSqlTableUX {
 				}
 			}
 		}
-		// Reubica la sección AUDITORIA (si existe) al final, junto con sus columnas
-		// hijas, sin alterar el orden relativo del resto.
-		const auditSection = out.find((n) => n.kind === "section" && n.rowName === "AUDITORIA");
+		// Reubica la sección AUDITORIA (ahora siempre `optional`) al final, junto con
+		// sus columnas hijas, sin alterar el orden relativo del resto.
+		const auditSection = out.find((n) => (n.kind === "optional" || n.kind === "section") && n.rowName === "AUDITORIA");
 		if (auditSection) {
 			const auditId = auditSection.id;
 			const auditChildren = out.filter((n) => n.kind === "column" && n.ireference === auditId);
@@ -66,9 +81,14 @@ export class TSqlTableUX {
 		return out;
 	}
 
-	/** ¿Existe la sección AUDITORIA en el estado actual? */
+	/** ¿Existe la sección AUDITORIA (clásica u optional) en el estado actual? */
 	hasAudit(): boolean {
-		return this.rows.some((r) => r.kind === "section" && r.rowName === "AUDITORIA");
+		return this.rows.some((r) => (r.kind === "section" || r.kind === "optional") && r.rowName === "AUDITORIA");
+	}
+
+	/** Nodo `optional` de AUDITORIA si existe. */
+	auditOptionalNode(): TSqlNodeUX | undefined {
+		return this.rows.find((r) => r.kind === "optional" && r.rowName === "AUDITORIA");
 	}
 
 	/** Conjunto de columnas de auditoría por defecto (cuando se activa el switch). */
@@ -86,15 +106,10 @@ export class TSqlTableUX {
 	}
 
 	exportToParsed(): ParsedTable {
-		// Si la auditoría está oculta, re-incluye los nodos cacheados al final
-		// para que el ParsedTable resultante NO pierda esa data (persiste
-		// columnas eliminadas por el usuario y permite reaparecer al activar).
-		const flat = this.auditHidden && this._auditCache
-			? [...this.rows, this._auditCache.section, ...this._auditCache.cols]
-			: this.rows;
+		const flat = this.rows;
 		const childrenBySection = new Map<string, TSqlNodeUX[]>();
 		for (const n of flat) {
-			if (n.kind === "section") childrenBySection.set(n.id, []);
+			if (n.kind === "section" || n.kind === "optional") childrenBySection.set(n.id, []);
 		}
 		for (const n of flat) {
 			if (n.kind !== "column") continue;
@@ -109,7 +124,12 @@ export class TSqlTableUX {
 		for (const n of flat) {
 			const refId = String(n.ireference || "").trim();
 			if (refId) continue; // hijos: se emiten dentro de su sección
-			if (n.kind === "section") {
+			if (n.kind === "optional") {
+				if (openSection) columns.push({ kind: "section_end" });
+				columns.push(n.toOptional());
+				openSection = true;
+				for (const c of childrenBySection.get(n.id) ?? []) columns.push(c.toColumn());
+			} else if (n.kind === "section") {
 				if (openSection) columns.push({ kind: "section_end" });
 				columns.push(n.toSection());
 				openSection = true;
@@ -126,7 +146,7 @@ export class TSqlTableUX {
 			...this.parsed,
 			columns,
 			compositePrimaryKey: this.parsed.compositePrimaryKey.filter((c) =>
-				columns.some((cc) => !isSectionRow(cc) && !isSectionEndRow(cc) && (cc as TableColumn).name === c),
+				columns.some((cc) => !isAnySectionRow(cc) && !isSectionEndRow(cc) && (cc as TableColumn).name === c),
 			),
 		};
 		this.parsed = next;

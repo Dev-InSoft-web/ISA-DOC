@@ -5,23 +5,43 @@ import { TAMutations } from "./05-mutations";
 
 /**
  * Descriptor mutable que un hijo solicita y enriquece recorriendo sus ancestros
- * `warden` (closest → farthest). Cada `warden` lo transforma y lo devuelve.
+ * `warden` (closest → farthest). Es el HIJO quien orquesta la pipeline:
+ * solicita la lista de vigilantes ancestros, decide cuáles lo afectan y aplica
+ * sus acciones sobre una **copia** de sí mismo. Los vigilantes nunca mutan
+ * los nodos originales.
  *
- * Es un contrato genérico de la capa de roles: vive aquí porque pertenece al
- * sistema actoral, no al modelo de vista en forma de row.
+ * Es un contrato genérico de la capa de roles.
  */
 export interface WardenDraft<TWorking> {
 	readonly node: INode<TWorking>;
 	/**
-	 * **Copia decorada** del dato del nodo (`node.obj`). Cada `warden`
-	 * ancestro la transforma en su `wardenTransform` SIN mutar el original.
-	 * El consumidor lee aquí el resultado final (rowName decorado, etc.).
+	 * **Copia decorada** del dato del nodo (`node.obj`). Cada acción vigilante
+	 * la transforma SIN mutar el original. El consumidor lee aquí el
+	 * resultado final (rowName decorado, etc.).
 	 */
 	decoratedObj: TWorking;
 	actions: ButtonIconifyProps[];
 	cascadeOptions: FlexOptionsInput[];
 	extra: Record<string, unknown>;
 }
+
+/**
+ * Acción declarada por un vigilante (`warden`). Se almacena en `obj.wardenAction`
+ * del nodo vigilante. La acción es PURA: recibe una copia del draft del hijo
+ * afectado y devuelve un draft transformado. No accede a los nodos originales.
+ *
+ * - `idaction`: identificador estable (kebab-case) de la familia de la acción.
+ *   Permite a los hijos filtrar qué vigilantes los afectan y en qué orden.
+ *   Ej.: `"prefix"`, `"suffix"`, `"namespace"`.
+ * - `actionsOverNode(child, draft)`: transforma el draft del hijo y lo devuelve.
+ */
+export interface WardenAction<TWorking> {
+	readonly idaction: string;
+	actionsOverNode(child: INode<TWorking>, draft: WardenDraft<TWorking>): WardenDraft<TWorking>;
+}
+
+/** Forma de un nodo cuyo `obj` declara una acción vigilante. */
+type WithWardenAction<TWorking> = { wardenAction?: WardenAction<TWorking> };
 
 /**
  * Capa de **roles actorales** del TreeAdapter. Independiente del modelo de
@@ -122,9 +142,27 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 		return true;
 	}
 
-	/** Recorre ancestros hasta el root (siguiendo `ireference`), closest→farthest. */
+	/**
+	 * Recorre ancestros hasta el root, **closest \u2192 farthest**, derivando la
+	 * cadena del propio `rowId` (path por puntos: `1.2.3.4` \u2192 ancestros
+	 * `1.2.3`, `1.2`, `1`). Es robusto frente a nodos sin `ireference`
+	 * populado y mantiene el contrato del path como fuente de verdad
+	 * jer\u00e1rquica. Si el nodo carece de `rowId` con puntos, recae en
+	 * `ireference` para garantizar compatibilidad.
+	 */
 	protected getAncestors(node: INode<TWorking>): INode<TWorking>[] {
 		const out: INode<TWorking>[] = [];
+		const id = String(node.id ?? "").trim();
+		if (id && id.includes(".")) {
+			const parts = id.split(".");
+			for (let i = parts.length - 1; i >= 1; i--) {
+				const ancId = parts.slice(0, i).join(".");
+				const anc = this.findNodeById(ancId);
+				if (anc) out.push(anc);
+			}
+			return out;
+		}
+		// Fallback: cadena por `ireference` (compat).
 		let cur = node.ireference ? this.findNodeById(node.ireference) : null;
 		while (cur) {
 			out.push(cur);
@@ -152,12 +190,37 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	}
 
 	/**
+	 * Devuelve la lista de ancestros que actualmente son `warden`, ordenada
+	 * **closest → farthest** según profundidad relativa. Es la API que un nodo
+	 * usa para conocer qué vigilantes podrían afectarlo.
+	 */
+	protected wardensOf(node: INode<TWorking>): INode<TWorking>[] {
+		return this.getAncestors(node).filter((a) => this.isWarden(a));
+	}
+
+	/**
+	 * Hook que el dato del nodo afectado puede implementar para vetar a un
+	 * vigilante ancestro específico (regla particular del NODO, no del vigilante).
+	 * Default: acepta a todos. Las subclases pueden delegar en el dato
+	 * (`obj.acceptsWarden(warden)`).
+	 */
+	protected nodeAcceptsWarden(node: INode<TWorking>, warden: INode<TWorking>): boolean {
+		const fn = (node.obj as { acceptsWarden?: (warden: INode<TWorking>) => boolean } | undefined)?.acceptsWarden;
+		if (typeof fn === "function") return !!fn.call(node.obj, warden);
+		return true;
+	}
+
+	/**
 	 * Pipeline de **vigilancia**: el hijo SOLICITA una copia de su estado
-	 * efectivo, transformada por todos los `warden` ancestros, recorridos
-	 * desde el **más cercano** hasta el **más lejano**.
+	 * efectivo, transformada por las acciones declaradas en sus vigilantes
+	 * ancestros (filtrados por `nodeAcceptsWarden`). El recorrido es
+	 * **closest → farthest**: las acciones más cercanas al nodo se aplican
+	 * antes (regla por defecto; subclases pueden reordenar por `idaction`).
 	 *
-	 * El hijo nunca recibe acciones "empujadas" por el warden; es el hijo
-	 * quien consulta y compone su propio descriptor enriquecido.
+	 * El nodo NUNCA es mutado: cada acción trabaja sobre `draft.decoratedObj`,
+	 * que es un clon. Si un vigilante no declara `wardenAction`, se emite una
+	 * advertencia (warn) por consola y se ignora silenciosamente — no detiene
+	 * el flujo.
 	 */
 	protected wardenDraft(node: INode<TWorking>): WardenDraft<TWorking> {
 		let draft: WardenDraft<TWorking> = {
@@ -167,11 +230,21 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 			cascadeOptions: [],
 			extra: {},
 		};
-		for (const anc of this.getAncestors(node)) {
-			if (!this.isWarden(anc)) continue;
+		for (const anc of this.wardensOf(node)) {
+			if (!this.nodeAcceptsWarden(node, anc)) continue;
 			draft = this.wardenTransform(anc, node, draft);
 		}
 		return draft;
+	}
+
+	/**
+	 * Devuelve un **clon del nodo** con su `obj` ya decorado por toda la
+	 * pipeline vigilante. Es el punto de consumo por defecto para vistas y
+	 * snippets: representa la forma efectiva del nodo sin mutarlo.
+	 */
+	resume(node: INode<TWorking>): INode<TWorking> {
+		const draft = this.wardenDraft(node);
+		return { ...node, obj: draft.decoratedObj };
 	}
 
 	/** Clona los datos del nodo. Usa `obj.clone()` si está disponible; si no, copia superficial. */
@@ -191,11 +264,20 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	}
 
 	/**
-	 * Hook que un adapter override para definir cómo un warden ancestro
-	 * transforma el draft del hijo (closest→farthest). Por defecto no muta nada.
+	 * Despachador por defecto: si el `obj` del vigilante declara una
+	 * `wardenAction`, ejecuta su `actionsOverNode(child, draft)`. Si el nodo
+	 * tiene rol `warden` pero no declaró acción, se emite una **advertencia**
+	 * por consola (no detiene el flujo). Los adapters pueden hacer override
+	 * para reordenar por `idaction` o aplicar reglas particulares.
 	 */
-	protected wardenTransform(_warden: INode<TWorking>, _child: INode<TWorking>, draft: WardenDraft<TWorking>): WardenDraft<TWorking> {
-		return draft;
+	protected wardenTransform(warden: INode<TWorking>, child: INode<TWorking>, draft: WardenDraft<TWorking>): WardenDraft<TWorking> {
+		const action = (warden.obj as WithWardenAction<TWorking> | undefined)?.wardenAction;
+		if (!action || typeof action.actionsOverNode !== "function") {
+			// eslint-disable-next-line no-console
+			console.warn(`[TreeAdapter] Vigilante '${warden.id}' no declara 'wardenAction'. La acción vigilante es obligatoria; se ignora.`);
+			return draft;
+		}
+		return action.actionsOverNode(child, draft);
 	}
 
 	/** Hook que un adapter override para implementar la liberación de un agrupador `prison`. */

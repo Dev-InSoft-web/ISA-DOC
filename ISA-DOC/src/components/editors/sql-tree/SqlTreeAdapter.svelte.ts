@@ -62,7 +62,12 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		});
 		if (onChange) this.onChange = onChange;
 		// Restaura el estado oculto de auditoría si fue persistido en una sesión previa.
-		if (auditHiddenByTableId.get(this.obj.tableId) === true && this.obj.hasAudit()) {
+		// Usa primero el flag `show` del nodo `optional` (fuente canónica desde V4) y,
+		// como fallback, el cache en memoria por compatibilidad.
+		const auditOpt = this.obj.auditOptionalNode();
+		if (auditOpt) {
+			auditOpt.show = !!auditOpt.show;
+		} else if (auditHiddenByTableId.get(this.obj.tableId) === true && this.obj.hasAudit()) {
 			this.setAuditEnabledInternal(false, false);
 		}
 		this.onrefresh();
@@ -96,6 +101,12 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		const kind = node?.obj?.kind;
 		if (kind === "column") return { icon: "mdi:table-column", color: "info" };
 		if (kind === "section") return { icon: "mdi:format-list-group", style: "color: #C9A227" };
+		if (kind === "optional") {
+			const show = !!(node?.obj as TSqlNodeUX | undefined)?.show;
+			return show
+				? { icon: "mdi:format-list-group", style: "color: #C9A227" }
+				: { icon: "mdi:eye-off-outline", color: "neutral" };
+		}
 		return null;
 	}
 
@@ -216,8 +227,8 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 
 	/**
 	 * Refuerzos sobre el `canDrop` base:
-	 * - La sección AUDITORIA no se puede mover (debe permanecer al final).
-	 * - Nada se puede colocar `after` la sección AUDITORIA en el root (debe quedar última).
+	 * - La sección AUDITORIA (entidad `optional`) no se puede mover; debe permanecer al final.
+	 * - Nada se puede colocar `after` la sección opcional en el root (debe quedar última).
 	 */
 	override canDrop(sourceId: string, targetId: string, position: "before" | "after" | "into"): boolean {
 		if (!super.canDrop(sourceId, targetId, position)) return false;
@@ -225,14 +236,40 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		const tId = this.normalizeNodeId(targetId);
 		const src = this.findNodeById(sId)?.obj as TSqlNodeUX | undefined;
 		const tgt = this.findNodeById(tId)?.obj as TSqlNodeUX | undefined;
-		const isAudit = (n?: TSqlNodeUX): boolean => !!n && n.kind === "section" && n.rowName === "AUDITORIA";
-		if (isAudit(src)) return false;
-		if (isAudit(tgt) && !tgt!.ireference && position === "after") return false;
+		const isOpt = (n?: TSqlNodeUX): boolean => !!n && n.kind === "optional";
+		if (isOpt(src)) return false;
+		if (isOpt(tgt) && !tgt!.ireference && position === "after") return false;
 		return true;
 	}
 
-	override get groupTypes(): readonly string[] { return ["section"]; }
-	override get actionTypes(): readonly string[] { return ["section"]; }
+	override get groupTypes(): readonly string[] { return ["section", "optional"]; }
+	override get actionTypes(): readonly string[] { return ["section", "optional"]; }
+
+	/**
+	 * Reemplaza, para nodos `optional`, el botón de eliminar por un ojito que
+	 * alterna `show`. La sección opcional NO se elimina; solo se oculta/muestra.
+	 */
+	override getRowConfig(node: any): any {
+		const cfg = super.getRowConfig(node);
+		const obj = node?.obj as TSqlNodeUX | undefined;
+		if (!cfg || obj?.kind !== "optional") return cfg;
+		const show = !!obj.show;
+		const eyeAction = {
+			icon: show ? "mdi:eye-outline" : "mdi:eye-off-outline",
+			title: show ? "Ocultar sección opcional" : "Mostrar sección opcional",
+			color: "neutral" as const,
+			onClick: () => this.setAuditEnabled(!show),
+		};
+		const replaceDelete = (item: unknown): unknown => {
+			if (Array.isArray(item)) return item.map(replaceDelete).filter(Boolean);
+			if (item && typeof item === "object") {
+				const it = item as { icon?: string };
+				if (typeof it.icon === "string" && it.icon.includes("delete")) return eyeAction;
+			}
+			return item;
+		};
+		return { ...cfg, actions: (cfg.actions ?? []).map(replaceDelete) };
+	}
 
 	/**
 	 * El TreeAdapter actúa como contenedor virtual de los nodos raíz con rol
@@ -244,7 +281,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 
 	protected override particularcascadeoptionsrow(node: any): any[] {
 		const obj = node?.obj as TSqlNodeUX | undefined;
-		if (obj?.kind === "section" && obj.rowName === "AUDITORIA") {
+		if (obj?.kind === "optional" && obj.rowName === "AUDITORIA") {
 			return [
 				{
 					icon: "mdi:restore",
@@ -257,8 +294,11 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		return [];
 	}
 
-	/** ¿La tabla actual incluye la sección AUDITORIA visible? */
-	get auditEnabled(): boolean { return !this.obj.auditHidden && this.obj.hasAudit(); }
+	/** ¿La sección AUDITORIA (entidad `optional`) está visible? */
+	get auditEnabled(): boolean {
+		const opt = this.obj.auditOptionalNode();
+		return opt ? !!opt.show : false;
+	}
 
 	/**
 	 * Activa/desactiva el bloque de auditoría:
@@ -274,41 +314,29 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 
 	private setAuditEnabledInternal(enabled: boolean, emit: boolean): void {
 		const rows = this.obj.rows;
-		const audit = rows.find((r) => r.kind === "section" && r.rowName === "AUDITORIA");
-		if (enabled) {
-			if (this.obj.auditHidden && this.obj._auditCache) {
-				const { section, cols } = this.obj._auditCache;
-				this.obj.rows = [...rows, section, ...cols];
-				this.obj._auditCache = null;
-				this.obj.auditHidden = false;
-			} else if (!audit) {
-				const tableId = this.obj.tableId;
-				const usedTopIdx = rows.reduce((max, r) => {
-					const idStr = String(r.id || "");
-					if (idStr.includes(".")) return max;
-					const n = parseInt(idStr, 10);
-					return Number.isFinite(n) && n > max ? n : max;
-				}, 0);
-				const sid = String(usedTopIdx + 1);
-				const section = TSqlNodeUX.fromSection({ kind: "section", name: "AUDITORIA" }, sid, tableId, this.obj);
-				const cols = TSqlTableUX.defaultAuditColumns().map((c, i) =>
-					TSqlNodeUX.fromColumn(c, `${sid}.${i + 1}`, sid, tableId, this.obj),
-				);
-				this.obj.rows = [...rows, section, ...cols];
-				this.obj.auditHidden = false;
-			} else {
-				this.obj.auditHidden = false;
-			}
+		let optional = this.obj.auditOptionalNode();
+		if (!optional) {
+			// No existe el nodo: si se solicita activar, crearlo con columnas por defecto.
+			// Si se solicita desactivar y no existe, no hay nada que hacer.
+			if (!enabled) return;
+			const tableId = this.obj.tableId;
+			const usedTopIdx = rows.reduce((max, r) => {
+				const idStr = String(r.id || "");
+				if (idStr.includes(".")) return max;
+				const n = parseInt(idStr, 10);
+				return Number.isFinite(n) && n > max ? n : max;
+			}, 0);
+			const sid = String(usedTopIdx + 1);
+			optional = TSqlNodeUX.fromOptional({ kind: "optional", name: "AUDITORIA", show: true }, sid, tableId, this.obj);
+			const cols = TSqlTableUX.defaultAuditColumns().map((c, i) =>
+				TSqlNodeUX.fromColumn(c, `${sid}.${i + 1}`, sid, tableId, this.obj),
+			);
+			this.obj.rows = [...rows, optional, ...cols];
 		} else {
-			if (audit) {
-				const auditId = audit.id;
-				const cols = rows.filter((r) => r.kind === "column" && r.ireference === auditId);
-				this.obj._auditCache = { section: audit, cols };
-				this.obj.rows = rows.filter((r) => r !== audit && !cols.includes(r));
-			}
-			this.obj.auditHidden = true;
+			optional.show = enabled;
+			optional.refreshUX();
 		}
-		auditHiddenByTableId.set(this.obj.tableId, this.obj.auditHidden);
+		auditHiddenByTableId.set(this.obj.tableId, !enabled);
 		this.onrefresh();
 		this.syncAllRowAdapters();
 		if (emit) this.emitChange();
@@ -321,7 +349,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 	 */
 	resetAuditColumns(): void {
 		const rows = this.obj.rows.slice();
-		const audit = rows.find((r) => r.kind === "section" && r.rowName === "AUDITORIA");
+		const audit = rows.find((r) => r.kind === "optional" && r.rowName === "AUDITORIA");
 		if (!audit) return;
 		const auditId = audit.id;
 		const presentNames = new Set(

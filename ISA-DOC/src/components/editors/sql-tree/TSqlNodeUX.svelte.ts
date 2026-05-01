@@ -1,7 +1,7 @@
 import { TreeNodeUX } from "../../_comps/TreeView/TreeRowView.svelte";
-import type { TableColumn, TableSection } from "../../../lib/tableSchema";
+import type { TableColumn, TableSection, TableOptional } from "../../../lib/tableSchema";
 
-export type SqlNodeKind = "section" | "column";
+export type SqlNodeKind = "section" | "column" | "optional";
 
 export class TSqlNodeBase {
 	rowId: string = "";
@@ -15,6 +15,13 @@ export class TSqlNodeBase {
 	defaultValue: string = "";
 	primaryKey: boolean = false;
 	colExtra: string = "";
+
+	/**
+	 * Solo aplica a `kind === "optional"`. Indica si la sección opcional debe
+	 * mostrar sus hijos y emitirse en el SQL. Cuando es `false`, el bloque se
+	 * omite del CREATE TABLE pero los datos se conservan en memoria.
+	 */
+	show: boolean = true;
 }
 
 export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
@@ -46,11 +53,14 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 	 */
 	freeze(): boolean {
 		if (this.kind === "section" && this.rowName === "AUDITORIA") return true;
+		if (this.kind === "optional") return true;
 		if (this.kind === "column" && this.ireference) {
 			const rows = (this.stack as { rows?: TSqlNodeUX[] } | undefined)?.rows;
 			if (!rows) return false;
 			const parent = rows.find((r) => r.id === this.ireference);
-			return parent?.kind === "section" && parent?.rowName === "AUDITORIA";
+			if (!parent) return false;
+			if (parent.kind === "optional") return true;
+			return parent.kind === "section" && parent.rowName === "AUDITORIA";
 		}
 		return false;
 	}
@@ -64,8 +74,12 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 		this.depth = dotCount;
 		this.isLeaf = this.kind === "column";
 		this.isLast = this.kind === "column";
-		this.isPenultimate = this.kind === "section";
-		this.levelTitle = this.kind === "section" ? "Sección" : "Columna";
+		this.isPenultimate = this.kind === "section" || this.kind === "optional";
+		this.levelTitle = this.kind === "optional"
+			? "Sección opcional"
+			: this.kind === "section"
+				? "Sección"
+				: "Columna";
 		this.nextLevelTitle = "Columna";
 		this.label = this.rowName || "";
 	}
@@ -86,6 +100,10 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 		return { kind: "section", name: this.rowName };
 	}
 
+	toOptional(): TableOptional {
+		return { kind: "optional", name: this.rowName, show: !!this.show };
+	}
+
 	clone(): TSqlNodeUX {
 		const c = Object.create(TSqlNodeUX.prototype) as TSqlNodeUX;
 		Object.assign(c, this);
@@ -95,11 +113,11 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 
 	/**
 	 * Reglas del agrupador SQL.
-	 * - `section`: acepta solo columnas (no se permite anidar secciones).
+	 * - `section`/`optional`: aceptan solo columnas (no se permite anidar secciones).
 	 * - `column`: hoja. Nunca acepta hijos.
 	 */
 	acceptsChild(child: TSqlNodeUX): boolean {
-		if (this.type === "section") return child.type === "column";
+		if (this.type === "section" || this.type === "optional") return child.type === "column";
 		return false;
 	}
 
@@ -127,6 +145,20 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 			rowName: sec.name,
 		}, stack);
 		if (sec.name === "AUDITORIA") node.actor = "freezer";
+		return node;
+	}
+
+	static fromOptional(opt: TableOptional, id: string, tableId: string, stack?: any): TSqlNodeUX {
+		const node = new TSqlNodeUX({
+			rowId: id,
+			ireference: "",
+			tableId,
+			kind: "optional",
+			rowName: opt.name,
+			show: !!opt.show,
+		}, stack);
+		// La sección opcional siempre va congelada (no se reordena ni se elimina).
+		node.actor = "freezer";
 		return node;
 	}
 }

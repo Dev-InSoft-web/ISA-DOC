@@ -1,0 +1,70 @@
+{
+  "version": 3,
+  "kind": "columns-tree",
+  "tableRef": "ATRIBUTOS_X_DRIVERS",
+  "tableMeta": {
+    "originalName": "ATRIBUTOS_X_DRIVERS",
+    "hasIfNotExists": true
+  },
+  "root": {
+    "id": "",
+    "kind": "root",
+    "children": [
+      {
+        "id": "1",
+        "kind": "col",
+        "obj": {
+          "name": "IDRIVER",
+          "type": "BIGINT",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "2",
+        "kind": "col",
+        "obj": {
+          "name": "IATRIBUTO",
+          "type": "BIGINT",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "3",
+        "kind": "col",
+        "obj": {
+          "name": "QNIVEL",
+          "type": "TINYINT",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "4",
+        "kind": "col",
+        "obj": {
+          "name": "NATRIBUTO",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "5",
+        "kind": "col",
+        "obj": {
+          "name": "BREQUERIDO",
+          "type": "BIT",
+          "defaultValue": "0",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "6",
+        "kind": "col",
+        "obj": {
+          "name": "JCONFIG",
+          "type": "VARCHAR(MAX)",
+          "primaryKey": false
+        }
+      }
+    ]
+  }
+}

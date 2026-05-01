@@ -1,4 +1,6 @@
 import { TreeNodeUX } from "../../_comps/TreeView/TreeRowView.svelte";
+import type { WardenAction, WardenDraft } from "../../_comps/TreeView/_treeAdapter/06-roles";
+import type { INode } from "../../_comps/TreeView/_asRow/_rowAdapter/00-base";
 
 export type TableTreeKind = "domain" | "prefix" | "table";
 
@@ -18,6 +20,12 @@ export class TTableNodeBase {
 	isMaster: boolean = false;
 	/** Roles actorales (kebab-case). Se computa en `refreshUX` desde `kind`. */
 	actor: string = "";
+	/**
+	 * Acción vigilante declarada por este nodo (si tiene rol `warden`). Es
+	 * obligatoria para los vigilantes; los nodos no-vigilantes la dejan en
+	 * `undefined`. Se asigna en `refreshUX` para los `prefix`.
+	 */
+	wardenAction?: WardenAction<TTableNodeUX>;
 }
 
 export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
@@ -51,14 +59,29 @@ export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
 		this.nextLevelTitle = "Tabla";
 		this.label = this.rowName || "";
 		// Roles actorales (kebab-case, estilo "clases CSS"). Inferidos por kind.
-		// `domain`: prison → acción liberar.
-		// `prefix`: prison + warden → liberar + reglas sobre hijos (rename por prefijo).
-		// `table`: atom → hoja sin rol especial.
+		// `domain`: prison + monarchy.
+		// `prefix`: prison + warden → acción declarada en `wardenAction`.
+		// `table`: atom — hoja sin rol especial.
 		this.actor = this.kind === "domain"
 			? "group prison monarchy"
 			: this.kind === "prefix"
 				? "group prison warden"
 				: "atom";
+		// La acción vigilante se adjunta sólo para `prefix`. El `idaction` es
+		// `"prefix"` y la transformación antepone `prefix` al `rowName` del clon.
+		if (this.kind === "prefix") {
+			const pfx = String(this.prefix || "");
+			this.wardenAction = {
+				idaction: "prefix",
+				actionsOverNode: (_child: INode<TTableNodeUX>, draft: WardenDraft<TTableNodeUX>): WardenDraft<TTableNodeUX> => {
+					const dec = draft.decoratedObj;
+					dec.rowName = pfx + (dec.rowName ?? "");
+					return draft;
+				},
+			};
+		} else {
+			this.wardenAction = undefined;
+		}
 	}
 
 	/**

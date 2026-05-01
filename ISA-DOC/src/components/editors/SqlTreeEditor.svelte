@@ -7,6 +7,7 @@
 	import { COMMON_COLUMN_TYPES } from "../../lib/tableSchema";
 	import { SqlTreeAdapter } from "./sql-tree/SqlTreeAdapter.svelte";
 	import type { TSqlNodeUX } from "./sql-tree/TSqlNodeUX.svelte";
+	import DocInfoModal from "../viewers/DocInfoModal.svelte";
 
 	export let table: ParsedTable;
 	export let prefix: string = "";
@@ -73,6 +74,11 @@
 			/>
 		</div>
 		<FlexLayout items="center" inline>
+			<DocInfoModal
+				title={`Documentación de la tabla ${table.name}`}
+				label="Doc de la tabla"
+				query={{ table: table.name }}
+			/>
 			<Text lines={1}>Auditar</Text>
 			<Switch bind:checked={auditarChecked} color="primary" colorFalse="neutral" />
 		</FlexLayout>
@@ -97,6 +103,15 @@
 						<Chip>{node.id}</Chip>
 						<span class="badge badge-section">Sección</span>
 						<Text style="font-weight:bold;" lines={1}>{node.obj.rowName || "(sin nombre)"}</Text>
+					</FlexLayout>
+				{:else if node.obj.kind === "optional"}
+					<FlexLayout items="center" style="flex:1; min-width:0; gap:0.4rem;">
+						<Chip>{node.id}</Chip>
+						<span class="badge badge-optional">Opcional</span>
+						<Text style="font-weight:bold;" lines={1}>{node.obj.rowName || "(sin nombre)"}</Text>
+						{#if !node.obj.show}
+							<span class="tag tag-hidden">oculta</span>
+						{/if}
 					</FlexLayout>
 				{:else}
 					<FlexLayout items="center" justify="between" style="flex:1; min-width:0; gap:0.5rem;">
@@ -127,6 +142,22 @@
 									bind:value={frmObj.rowName}
 									on:input={(e) => { frmObj.rowName = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_ ]/g, "_"); }}
 								/>
+							</label>
+						</div>
+					{:else if frmObj.kind === "optional"}
+						<div class="frm">
+							<label class="field">
+								<Text color="neutral"><small>Nombre de la sección opcional</small></Text>
+								<input
+									class="input-field"
+									type="text"
+									bind:value={frmObj.rowName}
+									on:input={(e) => { frmObj.rowName = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_ ]/g, "_"); }}
+								/>
+							</label>
+							<label class="field row">
+								<Switch bind:checked={frmObj.show} color="primary" colorFalse="neutral" />
+								<Text>Mostrar (incluir en SQL)</Text>
 							</label>
 						</div>
 					{:else}
@@ -238,6 +269,7 @@
 	}
 	.tag-nn { background: color-mix(in srgb, var(--is-info) 25%, transparent); color: var(--is-info); }
 	.tag-pk { background: color-mix(in srgb, var(--is-success) 25%, transparent); color: var(--is-success); }
+	.tag-hidden { background: color-mix(in srgb, var(--is-neutral) 25%, transparent); color: var(--is-neutral); }
 	.badge {
 		padding: 0.1rem 0.4rem;
 		border-radius: 0.2rem;
@@ -245,4 +277,5 @@
 		font-weight: bold;
 	}
 	.badge-section { background: color-mix(in srgb, var(--is-warning) 25%, transparent); color: var(--is-warning); }
+	.badge-optional { background: color-mix(in srgb, var(--is-info) 25%, transparent); color: var(--is-info); }
 </style>

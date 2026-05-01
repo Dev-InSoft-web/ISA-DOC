@@ -21,6 +21,7 @@
 	import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
 	import CodeViewer from "../viewers/CodeViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
+	import DocInfoModal from "../viewers/DocInfoModal.svelte";
 	import TreeView from "../_comps/TreeView/TreeRowView.svelte";
 	import { TablesBrowserAdapter, type TablesBrowserState } from "./tables-browser/TablesBrowserAdapter.svelte";
 	import ResourceConfigSections from "./tables-browser/ResourceConfigSections.svelte";
@@ -155,9 +156,15 @@
 		// el reordenamiento en la próxima carga.
 		const sameOrder =
 			state.tables.length === tables.length &&
-			state.tables.every((t, i) => t.name === tables[i]?.name);
+			state.tables.every((t, i) =>
+				t.name === tables[i]?.name && (t.effectivePrefix ?? "") === (tables[i]?.effectivePrefix ?? ""),
+			);
 		if (state.prefixRenames.length === 0 && sameOrder) return;
 		tables = state.tables;
+		// Mantener el adapter sincronizado con el nuevo estado para que sus
+		// próximas operaciones (rebuildRows, emitChange) usen `effectivePrefix`
+		// actualizado y no se generen ciclos por estado divergente.
+		adapter.syncTablesQuiet(tables);
 		dirty = true;
 		void save(true);
 	}
@@ -337,6 +344,7 @@
 				<Text color="neutral"><small>Árbol con prefijos como carpetas (visual) y tablas como nodos. Los cambios se guardan automáticamente.</small></Text>
 			</div>
 			<FlexLayout items="center">
+				<DocInfoModal title="Documentación del árbol de tablas" label="Doc del árbol" query={{}} />
 				{#if saving}
 					<FlexLayout items="center"><Iconify icon="mdi:loading" /><Text color="neutral"><small>Guardando…</small></Text></FlexLayout>
 				{/if}
@@ -378,7 +386,7 @@
 								</span>
 							{:else}
 								<span class="tree-row">
-									<span class="tree-row-name">{node.obj.rowName}</span>
+									<span class="tree-row-name">{adapter.displayNameOf(node)}</span>
 									<span class="tree-row-meta">{node.obj.colCount}</span>
 								</span>
 							{/if}
@@ -460,7 +468,7 @@
 						</FlexLayout>
 
 						{#if activeCodeTab === "sql"}
-							<SqlTreeEditor table={t} prefix={detectPrefix(t.name)} onChange={(nt) => onTableChange(idx, nt)} />
+							<SqlTreeEditor table={t} prefix={t.effectivePrefix ?? ""} onChange={(nt) => onTableChange(idx, nt)} />
 						{:else if cfg && mergedCfg}
 							<ResourceConfigSections
 								resource={mergedCfg}
@@ -616,7 +624,7 @@
 			{@const t = selected.table}
 			{@const idx = selected.index}
 			{#key tableKey(t)}
-				<SqlTreeEditor table={t} prefix={detectPrefix(t.name)} onChange={(nt) => onTableChange(idx, nt)} />
+				<SqlTreeEditor table={t} prefix={t.effectivePrefix ?? ""} onChange={(nt) => onTableChange(idx, nt)} />
 			{/key}
 		{/if}
 	</div>

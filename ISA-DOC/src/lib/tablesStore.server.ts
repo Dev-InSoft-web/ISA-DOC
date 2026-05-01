@@ -1,15 +1,34 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { readFile, writeFile, access, mkdir, readdir, unlink } from "node:fs/promises";
+import { readFile, writeFile, access, mkdir, readdir, unlink, rename } from "node:fs/promises";
 import { sqlFilePath, parseSql } from "./sqlFragments.ts";
-import { parseTableFragment, type ParsedTable } from "./tableSchema.ts";
+import { parseTableFragment, type ParsedTable, type TableRow } from "./tableSchema.ts";
+import {
+	TREE_STORAGE_VERSION,
+	type PersistedColumnsTree,
+	type PersistedTablesTree,
+	type PersistedNode,
+	type PersistedNodeDoc,
+	type PersistedTreeDoc,
+} from "./treeStorage.ts";
+import {
+	BaseTreeNode,
+	ColumnNode,
+	PrefixNode,
+	RootNode,
+	TableNode,
+	rootFromJSON,
+	historialTableNameOf,
+	deriveHistorialColumns,
+	masterPkOf,
+} from "./treeNodes/index.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-/** Carpeta con un JSON por `fragmentId` (split storage). */
 export const clientesisDir = path.resolve(__dirname, "..", "..", "public", "db", "clientesis");
-/** Ruta legacy del único `tables.json` monolítico. Se conserva sólo para migración inicial. */
+export const columnsDir = path.join(clientesisDir, "columns");
+export const tablesTreePath = path.join(clientesisDir, "tables-tree.json");
 export const tablesJsonPath = path.resolve(__dirname, "..", "..", "public", "db", "tables.json");
 
 export interface TablesDoc {
@@ -17,7 +36,7 @@ export interface TablesDoc {
 	tables: ParsedTable[];
 }
 
-interface FragmentFile {
+interface LegacyFragmentFile {
 	version: 1;
 	fragmentId: string;
 	fragmentName: string;
@@ -28,34 +47,153 @@ async function exists(p: string): Promise<boolean> {
 	try { await access(p); return true; } catch { return false; }
 }
 
-async function listFragmentFiles(): Promise<string[]> {
-	if (!(await exists(clientesisDir))) return [];
-	const entries = await readdir(clientesisDir);
-	return entries.filter((e) => e.endsWith(".json")).map((e) => path.join(clientesisDir, e));
+// ---------------------------------------------------------------------------
+// Lectura del formato persistido + hidrataci\u00f3n a clases.
+// ---------------------------------------------------------------------------
+
+export async function readPersistedTree(): Promise<PersistedTablesTree | null> {
+	if (!(await exists(tablesTreePath))) return null;
+	try {
+		const raw = await readFile(tablesTreePath, "utf8");
+		const parsed = JSON.parse(raw) as Partial<PersistedTablesTree>;
+		if (parsed?.kind === "tables-tree" && parsed.root) return parsed as PersistedTablesTree;
+	} catch { /* noop */ }
+	return null;
 }
 
-async function readSplit(): Promise<TablesDoc | null> {
-	const files = await listFragmentFiles();
+export async function readColumnsTree(tableRef: string): Promise<PersistedColumnsTree | null> {
+	const file = path.join(columnsDir, `${tableRef}.json`);
+	if (!(await exists(file))) return null;
+	try {
+		const raw = await readFile(file, "utf8");
+		const parsed = JSON.parse(raw) as Partial<PersistedColumnsTree>;
+		if (parsed?.kind === "columns-tree" && parsed.root) return parsed as PersistedColumnsTree;
+	} catch { /* noop */ }
+	return null;
+}
+
+/** Comentario "Tabla X" \u2014 se genera en runtime a partir del nombre efectivo. */
+function runtimeTableComment(effectivePrefix: string | undefined, name: string): string {
+	const full = `${effectivePrefix ?? ""}${name}`;
+	return `Tabla ${full}`;
+}
+
+/**
+ * Camina el \u00e1rbol persistido en preorden produciendo, para cada TableNode,
+ * su prefijo efectivo (cadena de PrefixNodes ancestros).
+ */
+function* iterateTables(root: BaseTreeNode): IterableIterator<{ table: TableNode; effectivePrefix: string }> {
+	const walk = function* (n: BaseTreeNode, chain: string[]): IterableIterator<{ table: TableNode; effectivePrefix: string }> {
+		if (n instanceof TableNode) {
+			yield { table: n, effectivePrefix: chain.join("") };
+			return;
+		}
+		const nextChain = n instanceof PrefixNode ? [...chain, n.prefix] : chain;
+		for (const c of n.children) yield* walk(c, nextChain);
+	};
+	yield* walk(root, []);
+}
+
+/**
+ * Materializa el array de `ParsedTable` que consume el cliente.
+ *  1. Lee cada tabla persistida (con su archivo `columns/<X>.json`).
+ *  2. Para cada tabla con `obj.stack === true`, INYECTA una tabla virtual
+ *     `HISTORIAL<X>` justo despu\u00e9s del master, derivada en runtime.
+ *  3. Genera `comment` en runtime a partir del prefijo efectivo.
+ */
+async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<ParsedTable[]> {
+	const root = rootFromJSON(tree.root);
+	const out: ParsedTable[] = [];
+	for (const { table, effectivePrefix } of iterateTables(root)) {
+		const cols = await readColumnsTree(table.tableRef);
+		if (!cols) continue;
+		const meta = cols.tableMeta;
+		const columns: TableRow[] = (cols.root.children ?? [])
+			.map((c) => c.obj as unknown as TableRow)
+			.filter((c) => !!c);
+		out.push({
+			fragmentId: "",
+			fragmentName: "",
+			comment: runtimeTableComment(effectivePrefix || undefined, table.tableRef),
+			hasIfNotExists: meta.hasIfNotExists ?? true,
+			originalName: meta.originalName ?? table.tableRef,
+			name: table.tableRef,
+			effectivePrefix: effectivePrefix || undefined,
+			columns,
+			compositePrimaryKey: [],
+			extraStatements: [],
+			tail: "",
+		} as ParsedTable);
+		if (table.hasStack) {
+			const colNodes = (cols.root.children ?? [])
+				.map((c) => new ColumnNode(c.obj as never));
+			const pk = masterPkOf(colNodes);
+			if (pk) {
+				const histName = historialTableNameOf(table.tableRef);
+				const histCols = deriveHistorialColumns(table.tableRef, pk) as unknown as TableRow[];
+				out.push({
+					fragmentId: "",
+					fragmentName: "",
+					comment: runtimeTableComment(effectivePrefix || undefined, histName),
+					hasIfNotExists: true,
+					originalName: histName,
+					name: histName,
+					effectivePrefix: effectivePrefix || undefined,
+					columns: histCols,
+					compositePrimaryKey: [],
+					extraStatements: [],
+					tail: "",
+				} as ParsedTable);
+			}
+		}
+	}
+	return out;
+}
+
+// ---------------------------------------------------------------------------
+// Migraci\u00f3n legacy (split por fragmento + monol\u00edtico).
+// ---------------------------------------------------------------------------
+
+async function listLegacyFragmentFiles(): Promise<string[]> {
+	if (!(await exists(clientesisDir))) return [];
+	const entries = await readdir(clientesisDir);
+	return entries
+		.filter((e) => e.endsWith(".json")
+			&& !e.endsWith(".legacy.json")
+			&& e !== "tables-tree.json")
+		.map((e) => path.join(clientesisDir, e));
+}
+
+async function readLegacySplit(): Promise<TablesDoc | null> {
+	const files = await listLegacyFragmentFiles();
 	if (files.length === 0) return null;
 	const all: ParsedTable[] = [];
 	for (const f of files) {
 		try {
 			const raw = await readFile(f, "utf8");
-			const parsed = JSON.parse(raw) as Partial<FragmentFile>;
+			const parsed = JSON.parse(raw) as Partial<LegacyFragmentFile>;
 			if (parsed && Array.isArray(parsed.tables)) all.push(...(parsed.tables as ParsedTable[]));
-		} catch { /* ignore corrupt fragment */ }
+		} catch { /* ignore */ }
 	}
-	return { version: 1, tables: all };
+	return all.length ? { version: 1, tables: all } : null;
 }
 
-async function readLegacy(): Promise<TablesDoc | null> {
+async function readLegacyMonolithic(): Promise<TablesDoc | null> {
 	if (!(await exists(tablesJsonPath))) return null;
 	try {
 		const raw = await readFile(tablesJsonPath, "utf8");
 		const parsed = JSON.parse(raw) as TablesDoc;
 		if (parsed?.version === 1 && Array.isArray(parsed.tables)) return parsed;
-	} catch { /* fallthrough */ }
+	} catch { /* noop */ }
 	return null;
+}
+
+async function archiveLegacyFragments(): Promise<void> {
+	const files = await listLegacyFragmentFiles();
+	for (const f of files) {
+		const target = f.replace(/\.json$/i, ".legacy.json");
+		try { await rename(f, target); } catch { /* noop */ }
+	}
 }
 
 async function seedFromSql(): Promise<TablesDoc> {
@@ -69,12 +207,201 @@ async function seedFromSql(): Promise<TablesDoc> {
 	return { version: 1, tables: all };
 }
 
+// ---------------------------------------------------------------------------
+// Construcci\u00f3n del \u00e1rbol persistido a partir de ParsedTable[].
+// ---------------------------------------------------------------------------
+
+interface PreservedTreeDocs {
+	treeDoc?: PersistedTreeDoc;
+	rootDoc?: PersistedNodeDoc;
+	prefixDocByPrefix: Map<string, PersistedNodeDoc>;
+	tableDocByRef: Map<string, PersistedNodeDoc>;
+	prefixWarden: Map<string, { idaction: string }>;
+	stackByTableRef: Map<string, true>;
+}
+
+function collectPreservedDocs(tree: PersistedTablesTree | null): PreservedTreeDocs {
+	const acc: PreservedTreeDocs = {
+		treeDoc: tree?.doc,
+		rootDoc: tree?.root.doc,
+		prefixDocByPrefix: new Map(),
+		tableDocByRef: new Map(),
+		prefixWarden: new Map(),
+		stackByTableRef: new Map(),
+	};
+	if (!tree) return acc;
+	const dfs = (n: PersistedNode): void => {
+		if (n.kind === "prefix") {
+			const key = String(n.obj?.prefix ?? n.obj?.rowName ?? "");
+			if (key) {
+				if (n.doc) acc.prefixDocByPrefix.set(key, n.doc);
+				if (n.wardenAction) acc.prefixWarden.set(key, { idaction: n.wardenAction.idaction });
+			}
+		} else if (n.kind === "table") {
+			const key = String(n.obj?.tableRef ?? n.obj?.rowName ?? "");
+			if (key) {
+				if (n.doc) acc.tableDocByRef.set(key, n.doc);
+				if (n.obj?.stack === true) acc.stackByTableRef.set(key, true);
+			}
+		}
+		for (const ch of n.children ?? []) dfs(ch);
+	};
+	dfs(tree.root);
+	return acc;
+}
+
+interface PreservedColumnsDocs {
+	treeDoc?: PersistedTreeDoc;
+	rootDoc?: PersistedNodeDoc;
+	colDocByName: Map<string, PersistedNodeDoc>;
+}
+
+function collectPreservedColumnsDocs(tree: PersistedColumnsTree | null): PreservedColumnsDocs {
+	const acc: PreservedColumnsDocs = {
+		treeDoc: tree?.doc,
+		rootDoc: tree?.root.doc,
+		colDocByName: new Map(),
+	};
+	if (!tree) return acc;
+	for (const c of tree.root.children ?? []) {
+		const key = String(c.obj?.name ?? "");
+		if (key && c.doc) acc.colDocByName.set(key, c.doc);
+	}
+	return acc;
+}
+
+/**
+ * Detecta si una tabla entrante es una HISTORIAL derivada (sint\u00e9tica). Si lo
+ * es, NO se persiste como tabla independiente; se marca su master con
+ * `stack: true` para que se vuelva a derivar al pr\u00f3ximo read.
+ */
+function detectHistorialMaster(t: ParsedTable, allRefs: Set<string>): string | null {
+	const ref = t.name.toUpperCase();
+	if (!ref.startsWith("HISTORIAL")) return null;
+	const candidate = ref.slice("HISTORIAL".length);
+	if (candidate && allRefs.has(candidate)) return candidate;
+	return null;
+}
+
+function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs): { tree: PersistedTablesTree; persistedRefs: Set<string> } {
+	const refs = new Set<string>();
+	for (const t of tables) refs.add(t.name.toUpperCase());
+
+	// Particionar: tablas a persistir vs historiales sint\u00e9ticos.
+	const persistable: ParsedTable[] = [];
+	const stackMasters = new Set<string>();
+	for (const t of tables) {
+		const master = detectHistorialMaster(t, refs);
+		if (master) {
+			stackMasters.add(master);
+			continue;
+		}
+		persistable.push(t);
+	}
+	// Conservar masters que ya estaban marcados aunque la historial no haya
+	// llegado en este batch (p.ej. si el cliente no la materializ\u00f3).
+	for (const m of preserved.stackByTableRef.keys()) stackMasters.add(m.toUpperCase());
+
+	const root = new RootNode();
+	if (preserved.rootDoc) root.doc = { ...preserved.rootDoc };
+
+	const prefixOrder: string[] = [];
+	const byPrefix = new Map<string, ParsedTable[]>();
+	for (const t of persistable) {
+		const pfx = (t.effectivePrefix ?? "").toString();
+		if (!byPrefix.has(pfx)) {
+			byPrefix.set(pfx, []);
+			prefixOrder.push(pfx);
+		}
+		byPrefix.get(pfx)!.push(t);
+	}
+
+	for (const pfx of prefixOrder) {
+		if (pfx === "") {
+			for (const t of byPrefix.get(pfx)!) {
+				const tn = new TableNode({
+					tableRef: t.name,
+					rowName: t.name,
+					stack: stackMasters.has(t.name.toUpperCase()) ? true : undefined,
+				});
+				const tdoc = preserved.tableDocByRef.get(t.name);
+				if (tdoc) tn.doc = { ...tdoc };
+				root.addChild(tn);
+			}
+			continue;
+		}
+		const pn = new PrefixNode({ rowName: pfx, prefix: pfx });
+		const w = preserved.prefixWarden.get(pfx);
+		if (w) pn.wardenAction = { idaction: w.idaction };
+		const pdoc = preserved.prefixDocByPrefix.get(pfx);
+		if (pdoc) pn.doc = { ...pdoc };
+		for (const t of byPrefix.get(pfx)!) {
+			const tn = new TableNode({
+				tableRef: t.name,
+				rowName: t.name,
+				stack: stackMasters.has(t.name.toUpperCase()) ? true : undefined,
+			});
+			const tdoc = preserved.tableDocByRef.get(t.name);
+			if (tdoc) tn.doc = { ...tdoc };
+			pn.addChild(tn);
+		}
+		root.addChild(pn);
+	}
+
+	root.reindex("");
+	const tree: PersistedTablesTree = {
+		version: TREE_STORAGE_VERSION,
+		kind: "tables-tree",
+		root: root.toJSON(),
+	};
+	if (preserved.treeDoc) tree.doc = { ...preserved.treeDoc };
+	const persistedRefs = new Set<string>();
+	for (const t of persistable) persistedRefs.add(t.name);
+	return { tree, persistedRefs };
+}
+
+function buildColumnsTree(t: ParsedTable, preserved: PreservedColumnsDocs): PersistedColumnsTree {
+	const root = new RootNode();
+	if (preserved.rootDoc) root.doc = { ...preserved.rootDoc };
+	for (const col of t.columns) {
+		const cn = new ColumnNode(col as never);
+		const cdoc = cn.obj.name ? preserved.colDocByName.get(cn.obj.name) : undefined;
+		if (cdoc) cn.doc = { ...cdoc };
+		root.addChild(cn);
+	}
+	root.reindex("");
+	const out: PersistedColumnsTree = {
+		version: TREE_STORAGE_VERSION,
+		kind: "columns-tree",
+		tableRef: t.name,
+		tableMeta: {
+			originalName: t.originalName,
+			hasIfNotExists: t.hasIfNotExists ?? true,
+		},
+		root: root.toJSON(),
+	};
+	if (preserved.treeDoc) out.doc = { ...preserved.treeDoc };
+	return out;
+}
+
+// ---------------------------------------------------------------------------
+// API p\u00fablica.
+// ---------------------------------------------------------------------------
+
 export async function readTablesDoc(): Promise<TablesDoc> {
-	const split = await readSplit();
-	if (split) return split;
-	const legacy = await readLegacy();
+	const tree = await readPersistedTree();
+	if (tree) {
+		const tables = await materializeTablesFromTree(tree);
+		return { version: 1, tables };
+	}
+	const split = await readLegacySplit();
+	if (split) {
+		await writeTablesDoc(split);
+		await archiveLegacyFragments();
+		return split;
+	}
+	const legacy = await readLegacyMonolithic();
 	if (legacy) {
-		// Migración: escribe en split y elimina el monolítico.
 		await writeTablesDoc(legacy);
 		try { await unlink(tablesJsonPath); } catch { /* noop */ }
 		return legacy;
@@ -86,31 +413,27 @@ export async function readTablesDoc(): Promise<TablesDoc> {
 
 export async function writeTablesDoc(doc: TablesDoc): Promise<void> {
 	await mkdir(clientesisDir, { recursive: true });
-	const groups = new Map<string, ParsedTable[]>();
+	await mkdir(columnsDir, { recursive: true });
+	const previousTree = await readPersistedTree();
+	const preservedTree = collectPreservedDocs(previousTree);
+	const { tree, persistedRefs } = buildPersistedTree(doc.tables, preservedTree);
+	await writeFile(tablesTreePath, JSON.stringify(tree, null, 2), "utf8");
+	const writtenColumns = new Set<string>();
 	for (const t of doc.tables) {
-		const id = String(t.fragmentId || "_orphan");
-		let arr = groups.get(id);
-		if (!arr) { arr = []; groups.set(id, arr); }
-		arr.push(t);
-	}
-	const written = new Set<string>();
-	for (const [id, tables] of groups) {
-		const file = path.join(clientesisDir, `${id}.json`);
-		const payload: FragmentFile = {
-			version: 1,
-			fragmentId: id,
-			fragmentName: tables[0]?.fragmentName ?? "",
-			tables,
-		};
+		if (!persistedRefs.has(t.name)) continue; // historiales sint\u00e9ticos no escriben columnas
+		const previousCols = await readColumnsTree(t.name);
+		const preservedCols = collectPreservedColumnsDocs(previousCols);
+		const file = path.join(columnsDir, `${t.name}.json`);
+		const payload = buildColumnsTree(t, preservedCols);
 		await writeFile(file, JSON.stringify(payload, null, 2), "utf8");
-		written.add(`${id}.json`);
+		writtenColumns.add(`${t.name}.json`);
 	}
-	// Limpia fragmentos huérfanos.
-	const existing = (await readdir(clientesisDir)).filter((e) => e.endsWith(".json"));
-	for (const e of existing) {
-		if (!written.has(e)) {
-			try { await unlink(path.join(clientesisDir, e)); } catch { /* noop */ }
+	if (await exists(columnsDir)) {
+		const existing = (await readdir(columnsDir)).filter((e) => e.endsWith(".json"));
+		for (const e of existing) {
+			if (!writtenColumns.has(e)) {
+				try { await unlink(path.join(columnsDir, e)); } catch { /* noop */ }
+			}
 		}
 	}
 }
-

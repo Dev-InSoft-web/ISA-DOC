@@ -1,0 +1,294 @@
+{
+  "version": 3,
+  "kind": "tables-tree",
+  "root": {
+    "id": "",
+    "kind": "root",
+    "doc": {
+      "description": "Punto de entrada del árbol. Contiene los prefijos de primer nivel y las tablas bare (sin prefijo).",
+      "rules": [
+        "El orden de los hijos refleja el orden de aparición en el diseño conceptual: primero `CAPAC_`, luego tablas comunes (`PERMISOS`, `TEMAS`)."
+      ]
+    },
+    "children": [
+      {
+        "id": "1",
+        "kind": "prefix",
+        "obj": {
+          "rowName": "CAPAC_",
+          "prefix": "CAPAC_"
+        },
+        "wardenAction": {
+          "idaction": "prefix"
+        },
+        "doc": {
+          "description": "Familia de tablas del módulo de Capacitación. Todas las tablas SQL bajo este nodo serán emitidas como `CAPAC_<NAME>`.",
+          "rules": [
+            "Cualquier tabla nueva relativa a planes de estudio, cursos, drivers o auditorías de capacitación debe colgarse aquí.",
+            "NO renombrar este prefijo sin coordinar con migración de datos en producción."
+          ],
+          "notes": [
+            "Origen histórico: fragmentos legacy `tablas-principales-con-prefijo-capac-5`, `tablas-pivote-y-detalles-6` y `tablas-de-historial-auditora-a-7`."
+          ]
+        },
+        "children": [
+          {
+            "id": "1.1",
+            "kind": "table",
+            "obj": {
+              "tableRef": "ATRIBUTOS_X_DRIVERS",
+              "rowName": "ATRIBUTOS_X_DRIVERS"
+            },
+            "doc": {
+              "description": "Pivote N:N entre atributos y drivers.",
+              "rules": [
+                "PK compuesta (IDRIVER, IATRIBUTO)."
+              ]
+            }
+          },
+          {
+            "id": "1.2",
+            "kind": "table",
+            "obj": {
+              "tableRef": "SEGURIDADES_CURSOS",
+              "rowName": "SEGURIDADES_CURSOS"
+            },
+            "doc": {
+              "description": "Mapea permisos por curso. Cada fila concede un permiso a un curso específico.",
+              "rules": [
+                "PK compuesta (ICURSO, IPERMISO).",
+                "`BACTIVO` controla el soft-delete: las filas inactivas se ignoran en autorización."
+              ]
+            }
+          },
+          {
+            "id": "1.3",
+            "kind": "table",
+            "obj": {
+              "tableRef": "CURSOS_PREREQUISITOS",
+              "rowName": "CURSOS_PREREQUISITOS"
+            },
+            "doc": {
+              "description": "Grafo de prerequisitos entre cursos. (curso, prerequisito).",
+              "rules": [
+                "Sin ciclos: el cliente debe validar antes de insertar.",
+                "Self-loops prohibidos."
+              ]
+            }
+          },
+          {
+            "id": "1.4",
+            "kind": "table",
+            "obj": {
+              "tableRef": "CURSOS_DE_PLANES_ESTUDIO",
+              "rowName": "CURSOS_DE_PLANES_ESTUDIO"
+            },
+            "doc": {
+              "description": "Tabla puente N:N entre cursos y planes de estudio.",
+              "rules": [
+                "PK compuesta (IPLANESTUDIO, ICURSO).",
+                "Permite metadatos del vínculo (orden, obligatoriedad)."
+              ]
+            }
+          },
+          {
+            "id": "1.5",
+            "kind": "table",
+            "obj": {
+              "tableRef": "ATRIBUTOS_PLANES",
+              "rowName": "ATRIBUTOS_PLANES"
+            },
+            "doc": {
+              "description": "Atributos extensibles asociados a planes de estudio. Modelo EAV light.",
+              "rules": [
+                "Cada atributo requiere su definición correspondiente en `DRIVERS` / `ATRIBUTOS_X_DRIVERS`."
+              ]
+            }
+          },
+          {
+            "id": "1.6",
+            "kind": "table",
+            "obj": {
+              "tableRef": "ESTRUCTURAS_CURSOS",
+              "rowName": "ESTRUCTURAS_CURSOS"
+            },
+            "doc": {
+              "description": "Define la estructura jerárquica interna de un curso (módulos, lecciones).",
+              "rules": [
+                "El padre se referencia por `IESTRUCTURA_PADRE`; root tiene `IESTRUCTURA_PADRE` nulo."
+              ]
+            }
+          },
+          {
+            "id": "1.7",
+            "kind": "table",
+            "obj": {
+              "tableRef": "PLANES_CURSOS",
+              "rowName": "PLANES_CURSOS"
+            },
+            "doc": {
+              "description": "Catalogo de planes de cursos disponibles.",
+              "rules": [
+                "`BACTIVO` controla visibilidad en UIs cliente."
+              ]
+            }
+          },
+          {
+            "id": "1.8",
+            "kind": "table",
+            "obj": {
+              "tableRef": "DRIVERS",
+              "rowName": "DRIVERS"
+            },
+            "doc": {
+              "description": "Conductores/instructores que pueden ser asignados a cursos o planes.",
+              "rules": [
+                "Una persona física puede tener varios drivers si maneja distintos perfiles."
+              ]
+            }
+          },
+          {
+            "id": "1.9",
+            "kind": "table",
+            "obj": {
+              "tableRef": "PLANES_ESTUDIO",
+              "rowName": "PLANES_ESTUDIO",
+              "stack": true
+            },
+            "doc": {
+              "description": "Plan de estudio: el contenedor más alto del módulo de capacitación.",
+              "rules": [
+                "Un plan agrupa cursos a través de `CURSOS_DE_PLANES_ESTUDIO`."
+              ]
+            }
+          },
+          {
+            "id": "1.10",
+            "kind": "table",
+            "obj": {
+              "tableRef": "CURSOS",
+              "rowName": "CURSOS",
+              "stack": true
+            },
+            "doc": {
+              "description": "Catálogo de cursos. Tabla central del módulo.",
+              "rules": [
+                "`ICURSO` es la PK natural (varchar) usada en relaciones.",
+                "Cambios de duración/instructor se auditan en `HISTORIALCURSO`."
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "kind": "table",
+        "obj": {
+          "tableRef": "PERMISOS",
+          "rowName": "PERMISOS"
+        },
+        "doc": {
+          "description": "Catálogo global de permisos del sistema (no específico de capacitación). Por eso vive sin prefijo.",
+          "rules": [
+            "`IPERMISO` es global; cualquier módulo lo referencia."
+          ]
+        }
+      },
+      {
+        "id": "3",
+        "kind": "table",
+        "obj": {
+          "tableRef": "TEMAS",
+          "rowName": "TEMAS"
+        },
+        "doc": {
+          "description": "Catálogo de temas transversales. Aunque originalmente nació como `TEMAS`, se promovió a tabla común.",
+          "rules": [
+            "Sin prefijo: se usa desde múltiples módulos.",
+            "Renombrarla impactaría integraciones externas."
+          ]
+        }
+      }
+    ]
+  },
+  "doc": {
+    "description": "Árbol único que documenta el modelo de tablas del módulo de capacitación de ClientesIS. Cada rama representa una intención lógica de agrupación y los nodos hoja son tablas SQL. Los nodos agrupadores tipo `prefix` son vigilantes que decoran a sus descendientes.",
+    "rules": [
+      "Las tablas hoja persisten su árbol de columnas en `columns/{tableRef}.json`.",
+      "El campo `name` de la tabla NUNCA incluye el prefijo; el prefijo se aplica al emitir SQL vía warden.",
+      "Los `id` jerárquicos (ej. `1.2.3`) son la fuente de verdad para resolver ancestros y para `findNodeById`.",
+      "Un nodo vigilante DEBE declarar `wardenAction.idaction`. El runtime resuelve la transformación desde un registry.",
+      "Los `idaction` reservados actualmente: `prefix`. Cuando se añadan `domain` u otros, deben documentarse en `entities`.",
+      "`effectivePrefix` en `tableMeta` debe coincidir con el prefijo del padre vigilante; se valida al guardar.",
+      "Las acciones de vigilantes NUNCA mutan al nodo original: operan sobre `draft.decoratedObj`.",
+      "Las modificaciones manuales de docs en estos JSON se preservan al guardar (los writers hacen merge por identidad estable)."
+    ],
+    "entities": {
+      "root": {
+        "label": "Raíz del árbol",
+        "description": "Contenedor sintético. No emite SQL ni se renderiza como nodo cliqueable.",
+        "rules": [
+          "Su `id` es vacío (`\"\"`).",
+          "Sus hijos definen el orden inicial de prefijos y tablas bare."
+        ],
+        "objShape": {}
+      },
+      "prefix": {
+        "label": "Prefijo SQL (vigilante)",
+        "description": "Agrupa tablas que comparten un prefijo SQL común (ej. `CAPAC_`). Es un vigilante: decora a cada descendiente concatenando el prefijo a su `rowName`.",
+        "rules": [
+          "Su `obj.prefix` debe terminar en `_` y ser mayúscula.",
+          "Su `wardenAction.idaction` debe ser `\"prefix\"`.",
+          "Los hijos directos pueden ser otros prefijos (anidación) o tablas.",
+          "Renombrar el prefijo afecta a todos los descendientes en SQL pero no muta sus `name`."
+        ],
+        "objShape": {
+          "rowName": "string",
+          "prefix": "string"
+        }
+      },
+      "domain": {
+        "label": "Dominio funcional",
+        "description": "Agrupador conceptual master/slave (aún no persistido en disco; vive en localStorage del cliente). Se reservará `wardenAction.idaction = \"domain\"` cuando se migre.",
+        "rules": [
+          "Un dominio define una tabla `master` y N esclavas que viajan con ella.",
+          "No emite SQL adicional; es metadata para generación y navegación."
+        ],
+        "objShape": {
+          "domainId": "string",
+          "masterTable": "string"
+        }
+      },
+      "table": {
+        "label": "Tabla SQL",
+        "description": "Hoja del árbol. Su esquema vive en `columns/{tableRef}.json`.",
+        "rules": [
+          "`obj.tableRef` y `obj.rowName` siempre coinciden y NO incluyen el prefijo.",
+          "Para obtener el nombre SQL real se debe componer con la cadena de prefijos ancestros.",
+          "Eliminar el nodo elimina también el archivo de columnas correspondiente al guardar."
+        ],
+        "objShape": {
+          "tableRef": "string",
+          "rowName": "string"
+        }
+      },
+      "col": {
+        "label": "Columna SQL",
+        "description": "Fila de un árbol de columnas. Su forma sigue `TableRow` de `tableSchema.ts`.",
+        "rules": [
+          "`primaryKey: true` participa en la PK; múltiples columnas con `primaryKey: true` forman una PK compuesta.",
+          "`type` debe estar en mayúsculas y respetar el catálogo `COMMON_COLUMN_TYPES`.",
+          "Las columnas de auditoría (IUSUARIOCRE, FHCRE, IUSUARIOULT, FHULT, IAPPCRE, IPCRE, IAPPULT, IPULT) se autogeneran cuando `Auditar` está activo."
+        ],
+        "objShape": {
+          "name": "string",
+          "type": "string",
+          "nullable": "string",
+          "primaryKey": "boolean",
+          "defaultValue": "string",
+          "extra": "string"
+        }
+      }
+    }
+  }
+}
