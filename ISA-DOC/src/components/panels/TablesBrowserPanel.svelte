@@ -414,6 +414,7 @@
 												class="input-field"
 												type="text"
 												bind:value={frmObj.rowName}
+												on:input={() => adapter.updateNode(frmObj)}
 											/>
 										</label>
 									</div>
@@ -693,7 +694,7 @@
 	}
 	.layout {
 		display: grid;
-		grid-template-columns: minmax(168px, 14.4rem) minmax(0, 0.756fr) minmax(0, 1fr);
+		grid-template-columns: minmax(228px, calc(14.4rem + 60px)) minmax(0, 0.756fr) minmax(0, 1fr);
 		gap: 0.5rem;
 		height: calc(100dvh - 13rem);
 		align-items: stretch;

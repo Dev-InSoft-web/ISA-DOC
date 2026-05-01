@@ -16,6 +16,12 @@ export function TreeNodeUX<TParent extends object>(Base: Ctor<TParent>) {
 		public stack: any = null;
 		public obj: any = null;
 		public children: any[] = [];
+		/**
+		 * Cadena kebab-case de roles actorales (estilo "clases CSS"). Reconocidos:
+		 * `atom`, `group`, `warden`, `prison`, `hermetic`. Combinables.
+		 * `warden|prison|hermetic` infieren `group`. Vacío = legacy/sin actor.
+		 */
+		public actor: string = "";
 	}
 	type CCtor = new <TSelf>(...args: any[]) => TParent & { [k: string]: any };
 	return C as unknown as CCtor;

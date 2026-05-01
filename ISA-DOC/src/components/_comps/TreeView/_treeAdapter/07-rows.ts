@@ -3,67 +3,37 @@ import type { FlexOptionsAction, FlexOptionsInput } from "../../Options/FlexOpti
 import { TreeRowAdapter } from "./_rowAdapter/02-events";
 import { type INode, type ITreeData } from "./_rowAdapter/00-base";
 import type { RowItemProps } from "../_rowItem.svelte";
-import { TAMutations } from "./05-mutations";
+import { TARoles } from "./06-roles";
 
-type CascadeOptionsInput = FlexOptionsInput;
 
 /**
  * Configuración inyectable al TreeAdapter (vía `applyAdapterConfig` desde el
  * constructor de la subclase). Centraliza opciones visuales/comportamiento
  * que antes vivían dispersas en estilos de cada panel.
  */
-export interface TreeAdapterFloatCardConfig {
+export interface TreeRowViewAdapterFloatCardConfig {
 	tx?: number | string;
 	ty?: number | string;
 	scale?: number;
 }
 
-export interface TreeAdapterConfig {
+export interface TreeRowViewAdapterConfig {
 	/** Transformación lineal aplicada a las cards flotantes de acciones por fila. */
-	floatCard?: TreeAdapterFloatCardConfig;
+	floatCard?: TreeRowViewAdapterFloatCardConfig;
 }
 
-export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>> extends TAMutations<Stacker, TWorking> {
-	protected _adapterConfig: TreeAdapterConfig = {};
+export abstract class TreeRowViewAdapter<Stacker, TWorking extends ITreeData<TWorking>> extends TARoles<Stacker, TWorking> {
+	protected _adapterConfig: TreeRowViewAdapterConfig = {};
 
 	/** Combina/asigna la configuración del adapter (llamar desde la subclase). */
-	applyAdapterConfig(cfg: TreeAdapterConfig | undefined): void {
+	applyAdapterConfig(cfg: TreeRowViewAdapterConfig | undefined): void {
 		if (!cfg) return;
 		this._adapterConfig = { ...this._adapterConfig, ...cfg };
 	}
 
 	/** Config de transformación aplicada a la card flotante de cada fila. */
-	get floatCard(): TreeAdapterFloatCardConfig | undefined {
+	get floatCard(): TreeRowViewAdapterFloatCardConfig | undefined {
 		return this._adapterConfig.floatCard;
-	}
-
-	/**
-	 * Tipos de nodo que actúan como **agrupadores** (carpetas/contenedores).
-	 * Si el adapter no lo override, se infiere desde `node.isLeaf` (todo lo no-hoja
-	 * se considera agrupador). Se usa para la regla por defecto de expansión.
-	 */
-	get groupTypes(): readonly string[] { return []; }
-
-	/**
-	 * Tipos de agrupador sobre los que se ofrecen acciones de mutación
-	 * (p.ej. "Agregar hijo"). Subconjunto típico de `groupTypes`.
-	 */
-	get actionTypes(): readonly string[] { return []; }
-
-	/** Si el tipo del nodo declara aceptación de acciones del adapter. */
-	isActionGrouper(node: INode<TWorking>): boolean {
-		const t = (node.obj as { type?: string } | undefined)?.type;
-		const list = this.actionTypes;
-		if (!t || list.length === 0) return false;
-		return list.includes(t);
-	}
-
-	/** Si el nodo es agrupador según `groupTypes` (o por inferencia si está vacío). */
-	isGrouper(node: INode<TWorking>): boolean {
-		const t = (node.obj as { type?: string } | undefined)?.type;
-		const list = this.groupTypes;
-		if (list.length > 0) return !!t && list.includes(t);
-		return !node.isLeaf;
 	}
 
 	/**
@@ -107,6 +77,77 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 		if (!this._autoExpansionApplied && this.rootNodes.length) this.applyDefaultExpansion();
 	}
 
+	// =========================================================================
+	// Operaciones DOM específicas del modelo de vista en forma de **row**.
+	// Antes vivían en `04-view.ts` (capa de vista del modelo, agnóstica del DOM);
+	// se movieron aquí porque tocan selectores de fila (`[data-tree-row-id]`,
+	// `[data-idrow]`, `details.trvwr-itm > summary`) y son inherentes al row.
+	// =========================================================================
+
+	focusRowById(nodeId: string): void {
+		if (this.bLostFocus) return;
+		if (typeof window === "undefined" || !nodeId) return;
+		const attempt = () => {
+			const scope = document.querySelector<HTMLElement>(`[data-tree-root="${CSS.escape(this.treeRootId)}"]`);
+			if (!scope) return;
+			const row = scope.querySelector<HTMLElement>(`[data-idrow="${CSS.escape(nodeId)}"]`);
+			const summary = row?.querySelector<HTMLElement>("details.trvwr-itm > summary") || null;
+			if (!summary) return;
+			this.blurTreeSummariesExcept(summary);
+			summary.focus();
+		};
+		queueMicrotask(attempt);
+		requestAnimationFrame(attempt);
+	}
+
+	refocusFocusedRowSummary(): void {
+		if (this.bLostFocus) return;
+		if (typeof window === "undefined") return;
+		const id = this._focusedNodeId;
+		if (!id) return;
+		const sel = `[data-tree-root="${CSS.escape(this.treeRootId)}"] [data-tree-row-id="${CSS.escape(id)}"] > details.trvwr-itm > summary`;
+		const tryFocus = (): boolean => {
+			const summary = document.querySelector<HTMLElement>(sel);
+			if (!summary) return false;
+			if (!summary.hasAttribute("tabindex")) summary.setAttribute("tabindex", "-1");
+			summary.focus({ preventScroll: false });
+			return document.activeElement === summary;
+		};
+		let attempts = 0;
+		const tick = () => {
+			if (tryFocus()) return;
+			if (++attempts < 6) requestAnimationFrame(tick);
+		};
+		requestAnimationFrame(tick);
+	}
+
+	blurTreeSummariesExcept(activeSummary: HTMLElement): void {
+		if (!activeSummary) return;
+		const root = activeSummary.closest(".isp-tree");
+		if (!root) return;
+		root.querySelectorAll<HTMLElement>("details.trvwr-itm > summary").forEach((s) => {
+			if (s !== activeSummary && document.activeElement === s) s.blur();
+		});
+	}
+
+	commitAndFlash(id: string | undefined): void {
+		const clean = this.normalizeNodeId(id);
+		if (clean.length === 0) return;
+		this.setSelectedId?.(clean, this);
+		this.flashRowIds?.([clean], undefined, this);
+		this.syncAllRowAdapters();
+	}
+
+	flashRowIds(ids: string[], durationMs: number | undefined = 650, _context?: unknown): void {
+		const cleanIds = (ids ?? []).map((x) => this.normalizeNodeId(x)).filter((c) => c.length > 0);
+		this.flashIds = cleanIds;
+		this.flashClearTimer && clearTimeout(this.flashClearTimer);
+		this.flashClearTimer = setTimeout(() => {
+			this.flashIds = [];
+			this.flashClearTimer = undefined;
+		}, durationMs);
+	}
+
 	onrowclick(node: INode<TWorking>): void {
 		this._selectedId = this.normalizeNodeId(node.id);
 		this._item = node.obj;
@@ -120,11 +161,11 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 	}
 
 	onrowfocus(node: INode<TWorking>): void {
-		this.focusedRowId = node;
+		this.focusedNode = node;
 		this.syncAllRowAdapters();
 	}
 
-	onrowtoggle(_node: INode<TWorking>): void { }
+	override onrowtoggle(_node: INode<TWorking>): void { }
 
 	onrowdelete(node: INode<TWorking>): void {
 		if (!this.requestDelete(node)) return;
@@ -136,7 +177,7 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 		this.commitAndFlash(newId);
 	}
 
-	onCtrlEnter(_node: INode<TWorking>): void { }
+	override onCtrlEnter(_node: INode<TWorking>): void { }
 
 	onswipeopendrawer(): void {
 		const nodeId = this._selectedId || this.rootNodes[0]?.id || "";
@@ -147,7 +188,7 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 
 	onswipeclosedrawer(): void { this.setShowFrm(false) }
 
-	onswipenoop(): void { }
+	override onswipenoop(): void { }
 
 	registerRowAdapter(rowAdapter: TreeRowAdapter<Stacker, TWorking>): void {
 		const key = this.normalizeNodeId(rowAdapter.id);
@@ -227,7 +268,7 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 		isFirst?: boolean;
 		isLast?: boolean;
 		actions?: FlexOptionsInput[];
-		cascadeOptions?: CascadeOptionsInput[];
+		cascadeOptions?: FlexOptionsInput[];
 		events?: {
 			onopen?: () => void;
 			onclose?: () => void;
@@ -258,13 +299,19 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 		const mutDisabled = this.isViewMode && !this.isReadOnly;
 		const rdTitle = (base: string) => mutDisabled ? `${base} (Modo lectura)` : base;
 
+		const actorActs = this.actorActions(node);
+		const draft = this.wardenDraft(node);
+		const isPrisonOnly = this.isPrison(node) && !this.isHermetic(node);
+
 		const actions: FlexOptionsInput[] = this.isReadOnly ? [] : [
+			actorActs,
+			draft.actions,
 			this.particularactionsrow(node),
 			[
 				...(this.isViewMode
 					? [{ icon: "mdi:form-textbox", title: "Ver formulario (Enter)", onClick: () => rowController?.onrowdblclick() }]
 					: []),
-				...([{
+				...(isPrisonOnly ? [] : [{
 					icon: "mdi:delete-outline",
 					title: rdTitle("Eliminar (Supr)"),
 					color: "danger" as const,
@@ -274,7 +321,7 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 			]
 		];
 
-		const cascadeOptions: CascadeOptionsInput[] = this.isReadOnly ? [] : [
+		const cascadeOptions: FlexOptionsInput[] = this.isReadOnly ? [] : [
 			...(!this.isViewMode ? [{
 				icon: "mdi:pencil-outline",
 				label: "Editar",
@@ -298,6 +345,7 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 					onClick: () => { if (!mutDisabled) void this.handleaddsibling(node.id, "below"); },
 				},
 			]] : []),
+			...draft.cascadeOptions,
 			...this.particularcascadeoptionsrow(node),
 		];
 
@@ -321,8 +369,6 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 	}
 
 	protected getNodeIcon(_node: INode<TWorking>, _ctx: { isLastNode: boolean; isFolder: boolean; hasChildren: boolean; isExpanded: boolean; isEmptyFolder: boolean }): { icon?: string; color?: ComponentColor; style?: string } | null { return null; }
-
-	protected canAddChild(_node: INode<TWorking>): boolean { return true; }
 
 	protected isDirty(current: unknown, original: unknown): boolean { return original ? JSON.stringify(current) !== JSON.stringify(original) : false }
 }

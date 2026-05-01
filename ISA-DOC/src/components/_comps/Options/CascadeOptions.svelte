@@ -1,13 +1,13 @@
 <script context="module" lang="ts">
    import { Button, ButtonIconify, Card, Dialog, FlexLayout, Iconify, Text, bordercolor, resolveColor, type ButtonProps, type DialogProps } from "@ingenieria_insoft/ispsveltecomponents";
    import type { ButtonOptionProps } from "./_ButtonOption.svelte";
-   import type { FlexOptionsAction as CascadeOptionsAction, FlexOptionsInput as CascadeOptionsInput } from "./FlexOptions.svelte";
+   import type { FlexOptionsAction, FlexOptionsInput } from "./FlexOptions.svelte";
    import { onDestroy, tick } from "svelte";
    import { cubicOut } from "svelte/easing";
    import { scale } from "svelte/transition";
 
    export interface CascadeOptionsProps extends DialogProps {
-      actions?: CascadeOptionsInput[];
+      actions?: FlexOptionsInput[];
       disabled?: boolean;
    }
 
@@ -37,17 +37,17 @@
    $: cascadeZoomWrapStyle = ["position: absolute", "pointer-events: auto", `top: ${top}px`, `left: ${left}px`, "transform-origin: left top"].join("; ");
 
    const self = {
-      infercascadeseparators(input: CascadeOptionsInput[]) {
-         const out: CascadeOptionsAction[] = [];
+      infercascadeseparators(input: FlexOptionsInput[]) {
+         const out: FlexOptionsAction[] = [];
          for (const group of input) {
             if (!group) continue;
             const itemslist = Array.isArray(group) ? group : [group];
-            const validItems: CascadeOptionsAction[] = [];
+            const validItems: FlexOptionsAction[] = [];
             for (const item of itemslist) {
                if (item) validItems.push(item);
             }
             if (validItems.length === 0) continue;
-            if (out.length > 0) out.push({ separator: true } as CascadeOptionsAction);
+            if (out.length > 0) out.push({ separator: true } as FlexOptionsAction);
             out.push(...validItems);
          }
          return out;

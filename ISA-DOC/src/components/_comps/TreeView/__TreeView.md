@@ -91,7 +91,7 @@ type TreeRowConfig = {
    isFirst?: boolean;
    isLast?: boolean;
    actions?: ButtonIconifyProps[];
-   cascadeOptions?: CascadeOptionsAction[];
+   cascadeOptions?: FlexOptionsAction[];
    events?: {
       onopen?: () => void;
       onclose?: () => void;

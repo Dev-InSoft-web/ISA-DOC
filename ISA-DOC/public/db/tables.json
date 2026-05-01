@@ -159,6 +159,72 @@
       "trailing": ""
     },
     {
+      "fragmentId": "tablas-pivote-y-detalles-6",
+      "fragmentName": "TABLAS PIVOTE Y DETALLES",
+      "comment": "Tabla CAPAC_ATRIBUTOS_X_DRIVERS",
+      "hasIfNotExists": true,
+      "originalName": "CAPAC_ATRIBUTOS_X_DRIVERS",
+      "name": "CAPAC_ATRIBUTOS_X_DRIVERS",
+      "columns": [
+        {
+          "name": "IDRIVER",
+          "type": "BIGINT",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IATRIBUTO",
+          "type": "BIGINT",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "QNIVEL",
+          "type": "TINYINT",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "NATRIBUTO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "BREQUERIDO",
+          "type": "BIT",
+          "nullable": "",
+          "defaultValue": "0",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "JCONFIG",
+          "type": "VARCHAR(MAX)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        }
+      ],
+      "compositePrimaryKey": [
+        "IDRIVER",
+        "IATRIBUTO"
+      ],
+      "extraStatements": [
+        "/* Etiqueta legible para formularios (no codigo interno) */ TDATRIBUTO TINYINT DEFAULT 0"
+      ],
+      "trailing": ""
+    },
+    {
       "fragmentId": "tablas-principales-con-prefijo-capac-5",
       "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
       "comment": "Tabla CAPAC_CURSOS",
@@ -804,72 +870,6 @@
         "IPLANESTUDIO"
       ],
       "extraStatements": [],
-      "trailing": ""
-    },
-    {
-      "fragmentId": "tablas-pivote-y-detalles-6",
-      "fragmentName": "TABLAS PIVOTE Y DETALLES",
-      "comment": "Tabla CAPAC_ATRIBUTOS_X_DRIVERS",
-      "hasIfNotExists": true,
-      "originalName": "CAPAC_ATRIBUTOS_X_DRIVERS",
-      "name": "CAPAC_ATRIBUTOS_X_DRIVERS",
-      "columns": [
-        {
-          "name": "IDRIVER",
-          "type": "BIGINT",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IATRIBUTO",
-          "type": "BIGINT",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "QNIVEL",
-          "type": "TINYINT",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "NATRIBUTO",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "BREQUERIDO",
-          "type": "BIT",
-          "nullable": "",
-          "defaultValue": "0",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "JCONFIG",
-          "type": "VARCHAR(MAX)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        }
-      ],
-      "compositePrimaryKey": [
-        "IDRIVER",
-        "IATRIBUTO"
-      ],
-      "extraStatements": [
-        "/* Etiqueta legible para formularios (no codigo interno) */ TDATRIBUTO TINYINT DEFAULT 0"
-      ],
       "trailing": ""
     },
     {

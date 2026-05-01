@@ -17,7 +17,9 @@ TAView                04-view.ts        Vista: selección, foco, expand/collapse
         ▲
 TAMutations           05-mutations.ts   Operaciones del usuario: add/move/reorder/delete/edit.
         ▲
-TreeAdapter           06-rows.ts        Eventos de fila, registro de row adapters, getRowConfig, toolbar. Clase final abstracta.
+TARoles               06-roles.ts       Sistema actoral: atom/group/warden/prison/hermetic/cell + pipeline `wardenDraft` (closest→farthest). Independiente del modelo de vista.
+        ▲
+TreeAdapter           07-rows.ts        Eventos de fila, registro de row adapters, getRowConfig, toolbar. Clase final abstracta.
 ```
 
 `00-complex-control.ts` aporta `ComplexControl<TCtx>`, base genérica del estado reactivo. Vive aparte para evitar imports circulares con `TreeView.svelte`.
@@ -55,7 +57,7 @@ Esto es lo único que importa cuando vas a implementar tu propio `TreeAdapter`. 
 
 ## Por qué cascada y no monolito
 
-- **Diff limpio.** Cambias mutaciones, tocas `05-mutations.ts`. Cambias eventos de fila, tocas `06-rows.ts`. El blame queda preciso.
+- **Diff limpio.** Cambias mutaciones, tocas `05-mutations.ts`. Cambias el sistema actoral, tocas `06-roles.ts`. Cambias eventos de fila o `getRowConfig`, tocas `07-rows.ts`. El blame queda preciso.
 - **Contrato unificado.** Si te preguntas "¿qué tengo que implementar?", abres `01-contract.ts` y tienes la lista exacta.
 - **Sin barrels intermedios.** El único punto de entrada para consumidores es `TreeView.svelte`, que re-exporta `TreeAdapter`, `TreeRowAdapter`, `TreeNodeUX`, `INode`, `ITreeData`, `objRootsToNodes`, `groupedWithSeparators`, `ComplexControl`. Internamente la cascada se importa por archivo.
 

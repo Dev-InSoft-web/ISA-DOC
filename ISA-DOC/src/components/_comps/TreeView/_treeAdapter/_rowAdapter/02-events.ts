@@ -162,16 +162,16 @@ export class TreeRowAdapter<TStacker, TWorking extends ITreeData<TWorking>> exte
 	onsummarypointerenter() {
 		const ta = this.treeAdapter;
 		if (!this.rowNode) return;
-		const cur = ta.hoveredRowId ? ta.normalizeNodeId(ta.hoveredRowId.id) : "";
+		const cur = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.id) : "";
 		if (cur === this.id) return;
-		ta.hoveredRowId = this.rowNode;
+		ta.hoveredNode = this.rowNode;
 		ta.syncAllRowAdapters();
 	}
 	onsummarypointerleave() {
 		const ta = this.treeAdapter;
-		const cur = ta.hoveredRowId ? ta.normalizeNodeId(ta.hoveredRowId.id) : "";
+		const cur = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.id) : "";
 		if (cur !== this.id) return;
-		ta.hoveredRowId = null;
+		ta.hoveredNode = null;
 		ta.syncAllRowAdapters();
 	}
 	

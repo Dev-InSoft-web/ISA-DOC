@@ -136,7 +136,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 			const referenceId = parts.length > 1 ? parts.slice(0, -1).join(".") : "";
 			if (referenceId && map.has(referenceId)) {
 				const referenceUx = map.get(referenceId)!;
-				referenceUx.children.push(ux);
+				(referenceUx.children ??= []).push(ux);
 			} else {
 				roots.push(ux);
 			}
@@ -144,7 +144,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		const sortFn = (a: TWorking, b: TWorking) => this.sortFnBuildTree(a, b);
 		roots.sort(sortFn);
 		map.forEach((ux) => {
-			ux.children.sort(sortFn);
+			ux.children?.sort(sortFn);
 		});
 		return roots;
 	}
@@ -159,7 +159,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 				if (oldId && oldId !== newId) idMap.set(oldId, newId);
 				node.id = newId;
 				result.push(node);
-				node.children.length && traverse(node.children, newId);
+				node.children?.length && traverse(node.children, newId);
 			});
 		};
 		traverse(roots, "");
@@ -270,13 +270,13 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		}
 		const sel = idMap.get(this._selectedId);
 		if (sel) this._selectedId = sel;
-		const foc = idMap.get(this._focusedRowId);
-		if (foc) this._focusedRowId = foc;
+		const foc = idMap.get(this._focusedNodeId);
+		if (foc) this._focusedNodeId = foc;
 	}
 
 	protected commitFlatList(_flat: TWorking[]): void { }
 
-	protected serializeRowToJSON(row: TWorking): Record<string, unknown> {
+	protected serializeNodeToJSON(row: TWorking): Record<string, unknown> {
 		if (typeof (row as any)?.toJSON === "function") {
 			const j = { ...((row as any).toJSON(false) as Record<string, unknown>) };
 			delete j.children;
@@ -441,7 +441,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		const ctxObjId = this.normalizeNodeId(ctx.objWorking?.id);
 		const adapterObjId = this.normalizeNodeId(adapterObj?.id);
 		if (ctxObjId !== adapterObjId) ctx.objWorking = adapterObj;
-		if (!this.focusedRowId && this.selectedId) this.focusedRowId = this.selectedId;
+		if (!this.focusedNode && this.selectedId) this.focusedNode = this.selectedId;
 	}
 
 	async onAfterCatalogModificar(): Promise<void> {

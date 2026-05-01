@@ -8,8 +8,8 @@
    import RowItem from "./_rowItem.svelte";
    import { ComplexControl } from "./_treeAdapter/00-complex-control";
    import { type INode, type ITreeData, groupedWithSeparators, objRootsToNodes, TreeRowAdapter, TreeNodeUX } from "./_treeAdapter/_rowAdapter";
-   import { TreeAdapter } from "./_treeAdapter/06-rows";
-   export { ComplexControl, TreeAdapter, TreeRowAdapter, TreeNodeUX, groupedWithSeparators, objRootsToNodes };
+   import { TreeRowViewAdapter } from "./_treeAdapter/07-rows";
+   export { ComplexControl, TreeRowViewAdapter, TreeRowAdapter, TreeNodeUX, groupedWithSeparators, objRootsToNodes };
    export type { INode, ITreeData };
 
    export interface TreeViewProps<Stacker, TWorking extends ITreeData<TWorking>> extends HTMLAttributes<HTMLDivElement> {
@@ -19,7 +19,7 @@
       readonly?: boolean;
       small?: boolean;
       CatalogoController: Record<string, any>;
-      TreeController: TreeAdapter<Stacker, TWorking>;
+      TreeController: TreeRowViewAdapter<Stacker, TWorking>;
       disabled?: boolean;
       objWorking?: INode<TWorking> | null;
       showToolbar?: boolean;
@@ -35,8 +35,8 @@
    }
 
    export interface TreeViewSlots<Stacker, TWorking extends ITreeData<TWorking>> {
-      default: { treeToolbar: TreeAdapter<Stacker, TWorking>; sizew: any; showEliminar: (Obj: TWorking) => void };
-      pre: { treeToolbar: TreeAdapter<Stacker, TWorking>; sizew: any; showEliminar: (Obj: TWorking) => void };
+      default: { treeToolbar: TreeRowViewAdapter<Stacker, TWorking>; sizew: any; showEliminar: (Obj: TWorking) => void };
+      pre: { treeToolbar: TreeRowViewAdapter<Stacker, TWorking>; sizew: any; showEliminar: (Obj: TWorking) => void };
       row: { node: INode<TWorking> };
       Frm: any;
    }
@@ -249,7 +249,7 @@
             <slot name="pre" treeToolbar={TreeController} {sizew} {showEliminar} />
          </slot>
 
-         <FlexLayout direction="column" class="isp-tree-body isp-tree-focus-scope" data-testid="tree" role="tree" aria-label="Plan de contenidos" aria-disabled={disabled}>
+         <FlexLayout direction="column" class="isp-tree-body isp-tree-focus-scope" data-tree-root={TreeController.treeRootId} data-testid="tree" role="tree" aria-label="Plan de contenidos" aria-disabled={disabled}>
             {#if rootNodes?.length}
                <RowItem nodes={rootNodes} treeController={TreeController} rowLayoutEpoch={$rowLayoutTickStore}>
                   <svelte:fragment slot="row" let:node>

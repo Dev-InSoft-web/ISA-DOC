@@ -16,6 +16,8 @@ export class TTableNodeBase {
 	domainId: string = "";
 	/** Si la tabla es master de su dominio. */
 	isMaster: boolean = false;
+	/** Roles actorales (kebab-case). Se computa en `refreshUX` desde `kind`. */
+	actor: string = "";
 }
 
 export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
@@ -48,6 +50,15 @@ export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
 		this.levelTitle = this.kind === "domain" ? "Dominio" : this.kind === "prefix" ? "Prefijo" : "Tabla";
 		this.nextLevelTitle = "Tabla";
 		this.label = this.rowName || "";
+		// Roles actorales (kebab-case, estilo "clases CSS"). Inferidos por kind.
+		// `domain`: prison → acción liberar.
+		// `prefix`: prison + warden → liberar + reglas sobre hijos (rename por prefijo).
+		// `table`: atom → hoja sin rol especial.
+		this.actor = this.kind === "domain"
+			? "group prison"
+			: this.kind === "prefix"
+				? "group prison warden"
+				: "atom";
 	}
 
 	clone(): TTableNodeUX {

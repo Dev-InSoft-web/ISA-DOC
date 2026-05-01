@@ -38,74 +38,8 @@ export abstract class TAView<Stacker, TWorking extends ITreeData<TWorking>> exte
 		const cleanId = this.normalizeNodeId(id);
 		const node = cleanId.length > 0 ? this.findNodeById(cleanId) : null;
 		this.selectedId = node;
-		this.focusedRowId = node;
+		this.focusedNode = node;
 		this.syncAllRowAdapters();
-	}
-
-	
-	protected focusRowById(nodeId: string): void {
-		if (this.bLostFocus) return;
-		if (typeof window === "undefined" || !nodeId) return;
-		const attempt = () => {
-			const row = document.querySelector<HTMLElement>(`[data-idrow="${CSS.escape(nodeId)}"]`);
-			const summary = row?.querySelector<HTMLElement>("details.trvwr-itm > summary") || null;
-			if (!summary) return;
-			this.blurTreeSummariesExcept(summary);
-			summary.focus();
-		};
-		queueMicrotask(attempt);
-		requestAnimationFrame(attempt);
-	}
-
-	
-	refocusFocusedRowSummary(): void {
-		if (this.bLostFocus) return;
-		if (typeof window === "undefined") return;
-		const id = this._focusedRowId;
-		if (!id) return;
-		const sel = `[data-tree-row-id="${CSS.escape(id)}"] > details.trvwr-itm > summary`;
-		const tryFocus = (): boolean => {
-			const summary = document.querySelector<HTMLElement>(sel);
-			if (!summary) return false;
-			if (!summary.hasAttribute("tabindex")) summary.setAttribute("tabindex", "-1");
-			summary.focus({ preventScroll: false });
-			return document.activeElement === summary;
-		};
-		let attempts = 0;
-		const tick = () => {
-			if (tryFocus()) return;
-			if (++attempts < 6) requestAnimationFrame(tick);
-		};
-		requestAnimationFrame(tick);
-	}
-
-	
-	blurTreeSummariesExcept(activeSummary: HTMLElement): void {
-		if (!activeSummary) return;
-		const root = activeSummary.closest(".isp-tree");
-		if (!root) return;
-		root.querySelectorAll<HTMLElement>("details.trvwr-itm > summary").forEach((s) => {
-			if (s !== activeSummary && document.activeElement === s) s.blur();
-		});
-	}
-
-	
-	commitAndFlash(id: string | undefined): void {
-		const clean = this.normalizeNodeId(id);
-		if (clean.length === 0) return;
-		this.setSelectedId?.(clean, this);
-		this.flashRowIds?.([clean], undefined, this);
-		this.syncAllRowAdapters();
-	}
-
-	flashRowIds(ids: string[], durationMs: number | undefined = 650, _context?: unknown): void {
-		const cleanIds = (ids ?? []).map((x) => this.normalizeNodeId(x)).filter((c) => c.length > 0);
-		this.flashIds = cleanIds;
-		this.flashClearTimer && clearTimeout(this.flashClearTimer);
-		this.flashClearTimer = setTimeout(() => {
-			this.flashIds = [];
-			this.flashClearTimer = undefined;
-		}, durationMs);
 	}
 
 	expandAll(): void {

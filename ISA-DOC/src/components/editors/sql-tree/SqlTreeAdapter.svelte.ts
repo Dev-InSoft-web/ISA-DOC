@@ -1,5 +1,5 @@
 import type { TreeViewProps } from "../../_comps/TreeView/TreeRowView.svelte";
-import { TreeAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
+import { TreeRowViewAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
 import type { ParsedTable } from "../../../lib/tableSchema";
 import { TSqlNodeUX } from "./TSqlNodeUX.svelte";
 import { TSqlTableUX } from "./TSqlTableUX.svelte";
@@ -31,7 +31,7 @@ class SqlCatalogoStub {
 	ActRecodificar = async (_o: TSqlNodeUX, _n: TSqlNodeUX) => true;
 }
 
-export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
+export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> {
 	public onChange: SqlTreeChangeFn = () => undefined;
 
 	constructor(table: ParsedTable, onChange?: SqlTreeChangeFn) {
@@ -46,7 +46,7 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 			showToolbar: true,
 			bdrag: true,
 			CatalogoController: stub as unknown as TreeViewProps<TSqlTableUX, TSqlNodeUX>["CatalogoController"],
-			TreeController: undefined as unknown as TreeAdapter<TSqlTableUX, TSqlNodeUX>,
+			TreeController: undefined as unknown as TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX>,
 		} as TreeViewProps<TSqlTableUX, TSqlNodeUX>);
 		this.context.TreeController = this;
 		const self = this;

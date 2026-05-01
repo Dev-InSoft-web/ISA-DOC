@@ -5,10 +5,10 @@
    import FlexOptions from "../Options/FlexOptions.svelte";
    import FloatingComponent from "../containers/FloatingComponent.svelte";
    import type { INode, ITreeData } from "./TreeRowView.svelte";
-   import type { TreeAdapter } from "./TreeRowView.svelte";
+   import type { TreeRowViewAdapter } from "./TreeRowView.svelte";
 
    export interface RowItemProps<TWorking extends ITreeData<TWorking>> extends HTMLAttributes<HTMLDivElement> {
-      treeController: TreeAdapter<any, TWorking>;
+      treeController: TreeRowViewAdapter<any, TWorking>;
       nodes: INode<TWorking>[];
       rowLayoutEpoch: number;
    }

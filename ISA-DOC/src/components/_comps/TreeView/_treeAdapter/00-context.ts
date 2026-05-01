@@ -5,9 +5,13 @@ import { type INode, type ITreeData } from "./_rowAdapter/00-base";
 export abstract class TTreeAdapterContext<Stacker, TWorking extends ITreeData<TWorking>> extends ComplexControl<TreeViewProps<Stacker, TWorking>> {
 	bshowFrm = false;
 
+	private static _instanceCounter = 0;
+	/** Identificador único del adapter → scoping DOM (focus entre árboles independiente). */
+	readonly treeRootId: string = `t${++TTreeAdapterContext._instanceCounter}`;
+
 	protected _selectedId = "";
-	protected _focusedRowId = "";
-	protected _hoveredRowId = "";
+	protected _focusedNodeId = "";
+	protected _hoveredNodeId = "";
 	protected _item: TWorking | null = null;
 	protected _originalItem: TWorking | null = null;
 	protected _pendingDeleteNodeId = "";
@@ -32,15 +36,15 @@ export abstract class TTreeAdapterContext<Stacker, TWorking extends ITreeData<TW
 	}
 	set selectedId(value: INode<TWorking> | null) { this._selectedId = value == null ? "" : this.normalizeNodeId(value.id) }
 
-	get focusedRowId(): INode<TWorking> | null {
-		return this.findNodeById(this._focusedRowId)
+	get focusedNode(): INode<TWorking> | null {
+		return this.findNodeById(this._focusedNodeId)
 	}
-	set focusedRowId(value: INode<TWorking> | null) { this._focusedRowId = value == null ? "" : this.normalizeNodeId(value.id) }
+	set focusedNode(value: INode<TWorking> | null) { this._focusedNodeId = value == null ? "" : this.normalizeNodeId(value.id) }
 
-	get hoveredRowId(): INode<TWorking> | null {
-		return this.findNodeById(this._hoveredRowId)
+	get hoveredNode(): INode<TWorking> | null {
+		return this.findNodeById(this._hoveredNodeId)
 	}
-	set hoveredRowId(value: INode<TWorking> | null) { this._hoveredRowId = value == null ? "" : this.normalizeNodeId(value.id) }
+	set hoveredNode(value: INode<TWorking> | null) { this._hoveredNodeId = value == null ? "" : this.normalizeNodeId(value.id) }
 
 	get item(): TWorking | null { return this._item }
 	set item(value: TWorking | null) { this._item = value }

@@ -58,4 +58,15 @@ export abstract class TTreeAdapterContract<
 	abstract getEditAtributoValor(draft: TWorking, iatributo: number): string;
 	abstract setEditAtributoValor(draft: TWorking, iatributo: number, valor: string): TWorking;
 	abstract setEditRecursoSelected(draft: TWorking, record: any): TWorking;
+
+	// =========================================================================
+	// Operaciones específicas del modelo de vista en forma de **row** (DOM).
+	// Implementadas en la capa final (`07-rows.ts`); declaradas aquí para que
+	// las capas intermedias (mutaciones, eventos) puedan invocarlas vía `this`.
+	// =========================================================================
+	abstract focusRowById(nodeId: string): void;
+	abstract refocusFocusedRowSummary(): void;
+	abstract blurTreeSummariesExcept(activeSummary: HTMLElement): void;
+	abstract flashRowIds(ids: string[], durationMs?: number, context?: unknown): void;
+	abstract commitAndFlash(id: string | undefined): void;
 }

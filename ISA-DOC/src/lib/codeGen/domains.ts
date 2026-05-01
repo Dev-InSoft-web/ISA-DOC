@@ -126,9 +126,9 @@ export function createEmptyDomain(domains: DomainsMap, name: string, parentId?: 
 	};
 }
 
-/** Orden explícito de los nodos de nivel raíz (dominios y prefijos mezclados). */
+/** Orden explícito de los nodos de nivel raíz (dominios, prefijos y tablas mezclados). */
 export interface TopLevelEntry {
-	kind: "domain" | "prefix";
+	kind: "domain" | "prefix" | "table";
 	key: string;
 }
 
@@ -139,7 +139,7 @@ export function loadTopLevelOrder(): TopLevelEntry[] {
 		const raw = typeof localStorage !== "undefined" ? localStorage.getItem(TOP_KEY) : null;
 		if (!raw) return [];
 		const parsed = JSON.parse(raw) as unknown;
-		if (Array.isArray(parsed)) return parsed.filter((e: any) => e && (e.kind === "domain" || e.kind === "prefix") && typeof e.key === "string") as TopLevelEntry[];
+		if (Array.isArray(parsed)) return parsed.filter((e: any) => e && (e.kind === "domain" || e.kind === "prefix" || e.kind === "table") && typeof e.key === "string") as TopLevelEntry[];
 		return [];
 	} catch {
 		return [];

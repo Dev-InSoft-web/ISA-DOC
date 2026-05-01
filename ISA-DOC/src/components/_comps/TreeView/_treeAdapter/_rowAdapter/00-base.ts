@@ -3,10 +3,10 @@ import { resolveColor } from "@ingenieria_insoft/ispsveltecomponents";
 import type { FlexOptionsInput } from "../../../Options/FlexOptions.svelte";
 import type { RowItemProps } from "../../_rowItem.svelte";
 import { ComplexControl } from "../00-complex-control";
-import type { TreeAdapter } from "../06-rows";
+import type { TreeRowViewAdapter } from "../07-rows";
 import type { TreeRowAdapter } from "./02-events";
 
-type CascadeOptionsInput = FlexOptionsInput;
+
 
 export interface INode<T> {
 	id: string;
@@ -25,6 +25,12 @@ export interface INode<T> {
 
 export interface ITreeData<T> {
 	[k: string]: any;
+	/** Identificador jerárquico del nodo en notación punteada ("1", "1.2", "1.2.3"). */
+	id: string;
+	/** Id del padre (referencia explícita al agrupador contenedor). */
+	ireference: string;
+	/** Hijos directos del nodo (estructura de árbol materializada en el dato crudo). */
+	children?: T[];
 	/**
 	 * Discriminador semántico del nodo (p.ej. "domain", "table", "prefix",
 	 * "section", "column"). Usado por agrupadores para identificar a quién
@@ -61,7 +67,7 @@ type TreeRowConfig = {
 	isFirst?: boolean;
 	isLast?: boolean;
 	actions?: FlexOptionsInput[];
-	cascadeOptions?: CascadeOptionsInput[];
+	cascadeOptions?: FlexOptionsInput[];
 	events?: {
 		onopen?: () => void;
 		onclose?: () => void;
@@ -84,7 +90,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	public longPressTimer: ReturnType<typeof setTimeout> | undefined;
 	static currentDragNodeId = "";
 
-	constructor(bridge: RowItemProps<TWorking>, protected readonly treeAdapter: TreeAdapter<TStacker, TWorking>) {
+	constructor(bridge: RowItemProps<TWorking>, protected readonly treeAdapter: TreeRowViewAdapter<TStacker, TWorking>) {
 		super({} as RowItemProps<TWorking> & Record<string, unknown>);
 		this.applyBridge(bridge);
 	}
@@ -118,7 +124,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 		this.hasRowTools = this.filteredActions.length > 0 || this.cascadeOptions.length > 0;
 		this.showActions =
 			this.hasRowTools &&
-			(this.treeAdapter.focusedRowId ? this.treeAdapter.normalizeNodeId(this.treeAdapter.focusedRowId.id) : "") === this.id;
+			(this.treeAdapter.focusedNode ? this.treeAdapter.normalizeNodeId(this.treeAdapter.focusedNode.id) : "") === this.id;
 	}
 
 	get mergedDisabled() { return this.nodeDisabled || this.treeAdapter.disabled || this.effectiveRowConfig?.disabled }
@@ -126,7 +132,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	get rowIcono() { return this.iconParts(this.effectiveRowConfig?.icono) }
 	get isHighlighted() {
 		const ta = this.treeAdapter;
-		const focusedId = ta.focusedRowId ? ta.normalizeNodeId(ta.focusedRowId.id) : "";
+		const focusedId = ta.focusedNode ? ta.normalizeNodeId(ta.focusedNode.id) : "";
 		const selectedId = ta.selectedId ? ta.normalizeNodeId(ta.selectedId.id) : "";
 		return (focusedId.length > 0 ? this.id === focusedId : false) || (focusedId.length === 0 && selectedId.length > 0 && this.id === selectedId);
 	}
@@ -213,29 +219,29 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	get hasChildren() { return !!(this.rowNode?.children && this.rowNode.children.length > 0) }
 	get isReallyFocused(): boolean {
 		const ta = this.treeAdapter;
-		const id = ta.focusedRowId ? ta.normalizeNodeId(ta.focusedRowId.id) : "";
+		const id = ta.focusedNode ? ta.normalizeNodeId(ta.focusedNode.id) : "";
 		return id.length > 0 && id === this.id;
 	}
 	get hasDescendantFocus(): boolean {
 		const ta = this.treeAdapter;
-		const id = ta.focusedRowId ? ta.normalizeNodeId(ta.focusedRowId.id) : "";
+		const id = ta.focusedNode ? ta.normalizeNodeId(ta.focusedNode.id) : "";
 		if (id.length === 0 || id === this.id) return false;
 		return this.containsDescendantId(this.rowNode?.children, id);
 	}
 	get isReallyHovered(): boolean {
 		const ta = this.treeAdapter;
-		const id = ta.hoveredRowId ? ta.normalizeNodeId(ta.hoveredRowId.id) : "";
+		const id = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.id) : "";
 		return id.length > 0 && id === this.id;
 	}
 	get hasDescendantHover(): boolean {
 		const ta = this.treeAdapter;
-		const id = ta.hoveredRowId ? ta.normalizeNodeId(ta.hoveredRowId.id) : "";
+		const id = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.id) : "";
 		if (id.length === 0 || id === this.id) return false;
 		return this.containsDescendantId(this.rowNode?.children, id);
 	}
 	get floatVisible(): boolean {
 		const ta = this.treeAdapter;
-		const hoverId = ta.hoveredRowId ? ta.normalizeNodeId(ta.hoveredRowId.id) : "";
+		const hoverId = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.id) : "";
 		return hoverId.length > 0 && hoverId === this.id;
 	}
 	get floatFocusOnly(): boolean { return this.floatVisible && this.isReallyFocused }
@@ -383,7 +389,7 @@ export function objRootsToNodes<T extends ITreeData<T>>(
 			obj: r,
 			stack: r.stack,
 			label: text,
-			children: r.children.length ? objRootsToNodes(r.children, labelFn) : [],
+			children: r.children?.length ? objRootsToNodes(r.children, labelFn) : [],
 			istack: r.istack,
 			nistack: r.nistack,
 			isLeaf: r.isLeaf || false,

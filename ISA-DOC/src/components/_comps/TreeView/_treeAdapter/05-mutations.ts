@@ -174,7 +174,7 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		this.onrefresh();
 		this.resyncExpandedToCurrentTree();
 		this._selectedId = cleanNewId;
-		this._focusedRowId = cleanNewId;
+		this._focusedNodeId = cleanNewId;
 		this.syncAllRowAdapters();
 		this.focusRowById(cleanNewId);
 		return cleanNewId;
@@ -187,7 +187,7 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		this.onrefresh();
 		this.resyncExpandedToCurrentTree();
 		this._selectedId = cleanNewId;
-		this._focusedRowId = cleanNewId;
+		this._focusedNodeId = cleanNewId;
 		this.syncAllRowAdapters();
 		this.focusRowById(cleanNewId);
 		return cleanNewId;
@@ -204,7 +204,7 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		this.onrefresh();
 		this.resyncExpandedToCurrentTree();
 		this._selectedId = cleanNewId;
-		this._focusedRowId = cleanNewId;
+		this._focusedNodeId = cleanNewId;
 		this.syncAllRowAdapters();
 		this.focusRowById(cleanNewId);
 		return cleanNewId;
@@ -285,7 +285,7 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		this._pendingDeleteNodeId = nid;
 		this._selectedId = nid;
 		this._item = node.obj;
-		this._focusedRowId = nid;
+		this._focusedNodeId = nid;
 		const expandedIds = new Set(this._expandedNodes.map((n) => n.id));
 		const prevVisibleIds = this.getVisibleNodeIds(this.rootNodes, expandedIds);
 		this._pendingDeleteSnapshot = { prevVisibleIds, prevDeleteIdx: prevVisibleIds.indexOf(nid) };
