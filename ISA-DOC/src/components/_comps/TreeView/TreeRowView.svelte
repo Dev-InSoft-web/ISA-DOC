@@ -5,10 +5,10 @@
    import type { HTMLAttributes } from "svelte/elements";
    import type { FlexOptionsAction } from "../Options/FlexOptions.svelte";
    import FlexOptions from "../Options/FlexOptions.svelte";
-   import RowItem from "./_rowItem.svelte";
+   import RowItem from "./_asRow/_rowItem.svelte";
    import { ComplexControl } from "./_treeAdapter/00-complex-control";
-   import { type INode, type ITreeData, groupedWithSeparators, objRootsToNodes, TreeRowAdapter, TreeNodeUX } from "./_treeAdapter/_rowAdapter";
-   import { TreeRowViewAdapter } from "./_treeAdapter/07-rows";
+   import { type INode, type ITreeData, groupedWithSeparators, objRootsToNodes, TreeRowAdapter, TreeNodeUX } from "./_asRow/_rowAdapter";
+   import { TreeRowViewAdapter } from "./_asRow/01-treeAdapterAsRowEvents";
    export { ComplexControl, TreeRowViewAdapter, TreeRowAdapter, TreeNodeUX, groupedWithSeparators, objRootsToNodes };
    export type { INode, ITreeData };
 

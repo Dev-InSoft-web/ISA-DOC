@@ -1,4 +1,4 @@
-import { type INode, type ITreeData } from "./_rowAdapter/00-base";
+import { type INode, type ITreeData } from "../_asRow/_rowAdapter/00-base";
 import { TAView } from "./04-view";
 
 export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>> extends TAView<Stacker, TWorking> {

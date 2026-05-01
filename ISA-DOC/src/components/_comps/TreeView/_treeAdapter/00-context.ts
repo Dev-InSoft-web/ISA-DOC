@@ -1,6 +1,6 @@
 import type { TreeViewProps } from "../TreeRowView.svelte";
 import { ComplexControl } from "./00-complex-control";
-import { type INode, type ITreeData } from "./_rowAdapter/00-base";
+import { type INode, type ITreeData } from "../_asRow/_rowAdapter/00-base";
 
 export abstract class TTreeAdapterContext<Stacker, TWorking extends ITreeData<TWorking>> extends ComplexControl<TreeViewProps<Stacker, TWorking>> {
 	bshowFrm = false;

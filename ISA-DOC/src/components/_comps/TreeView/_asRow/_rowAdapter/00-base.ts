@@ -1,9 +1,9 @@
 import type { ComponentColor, IconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
 import { resolveColor } from "@ingenieria_insoft/ispsveltecomponents";
 import type { FlexOptionsInput } from "../../../Options/FlexOptions.svelte";
-import type { RowItemProps } from "../../_rowItem.svelte";
-import { ComplexControl } from "../00-complex-control";
-import type { TreeRowViewAdapter } from "../07-rows";
+import type { RowItemProps } from "../_rowItem.svelte";
+import { ComplexControl } from "../../_treeAdapter/00-complex-control";
+import type { TARowBase } from "../00-treeAdapterAsRow";
 import type { TreeRowAdapter } from "./02-events";
 
 
@@ -58,6 +58,14 @@ export interface ITreeData<T> {
 	 * (p.ej. impedir colocar nodos antes del master de un dominio).
 	 */
 	canPlaceChildAt?(src: T, target: T, position: "before" | "after"): boolean;
+	/**
+	 * Predicado de **congelamiento individual** consultado por agrupadores con
+	 * rol `monarchy`. Devuelve `true` si la posición de este nodo está fija y no
+	 * puede moverse (drag, mover arriba/abajo). Para `freezer` el congelado es
+	 * tautológico y este método se ignora; para nodos fuera de freezer/monarchy
+	 * se asume libre movimiento si está ausente.
+	 */
+	freeze?(): boolean;
 }
 
 type TreeRowConfig = {
@@ -90,7 +98,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	public longPressTimer: ReturnType<typeof setTimeout> | undefined;
 	static currentDragNodeId = "";
 
-	constructor(bridge: RowItemProps<TWorking>, protected readonly treeAdapter: TreeRowViewAdapter<TStacker, TWorking>) {
+	constructor(bridge: RowItemProps<TWorking>, protected readonly treeAdapter: TARowBase<TStacker, TWorking>) {
 		super({} as RowItemProps<TWorking> & Record<string, unknown>);
 		this.applyBridge(bridge);
 	}
@@ -128,7 +136,21 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	}
 
 	get mergedDisabled() { return this.nodeDisabled || this.treeAdapter.disabled || this.effectiveRowConfig?.disabled }
-	get isDraggable() { return !this.treeAdapter.isViewMode && !this.mergedDisabled }
+	get isFrozen(): boolean {
+		const node = this.rowNode;
+		return !!node && this.treeAdapter.isFrozen(node);
+	}
+	/**
+	 * ¿Este row debe pintar el caret (chevron de expansión)? Por reglas actorales:
+	 * los `atom` NUNCA pintan caret. El resto, sólo si tienen hijos visibles.
+	 */
+	get showCaret(): boolean {
+		const node = this.rowNode;
+		if (!node) return false;
+		if (this.treeAdapter.isAtom(node)) return false;
+		return this.hasChildren;
+	}
+	get isDraggable() { return !this.treeAdapter.isViewMode && !this.mergedDisabled && !this.isFrozen }
 	get rowIcono() { return this.iconParts(this.effectiveRowConfig?.icono) }
 	get isHighlighted() {
 		const ta = this.treeAdapter;
@@ -335,12 +357,14 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 		};
 	}
 	filterRowActions(cfg?: TreeRowConfig): FlexOptionsInput[] {
+		const frozen = this.isFrozen;
 		const keep = (item: unknown): boolean => {
 			if (!item || typeof item !== "object") return !!item;
 			const btn = item as { icon?: string; separator?: boolean };
 			if (btn.separator) return true;
 			if (cfg?.isFirst && btn.icon === "mdi:arrow-up") return false;
 			if (cfg?.isLast && btn.icon === "mdi:arrow-down") return false;
+			if (frozen && (btn.icon === "mdi:arrow-up" || btn.icon === "mdi:arrow-down")) return false;
 			return true;
 		};
 		const out: FlexOptionsInput[] = [];

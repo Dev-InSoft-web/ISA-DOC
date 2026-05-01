@@ -2,10 +2,10 @@
    import { ButtonIconify, Card, colorMix, FlexLayout, Iconify, mkAlpha, resolveColor, Text } from "@ingenieria_insoft/ispsveltecomponents";
    import type { HTMLAttributes } from "svelte/elements";
    import { slide } from "svelte/transition";
-   import FlexOptions from "../Options/FlexOptions.svelte";
-   import FloatingComponent from "../containers/FloatingComponent.svelte";
-   import type { INode, ITreeData } from "./TreeRowView.svelte";
-   import type { TreeRowViewAdapter } from "./TreeRowView.svelte";
+   import FlexOptions from "../../Options/FlexOptions.svelte";
+   import FloatingComponent from "../../containers/FloatingComponent.svelte";
+   import type { INode, ITreeData } from "../TreeRowView.svelte";
+   import type { TreeRowViewAdapter } from "../TreeRowView.svelte";
 
    export interface RowItemProps<TWorking extends ITreeData<TWorking>> extends HTMLAttributes<HTMLDivElement> {
       treeController: TreeRowViewAdapter<any, TWorking>;
@@ -111,10 +111,12 @@
                <FloatingComponent showfloat={rowController.floatVisible && rowController.hasRowTools} horizontal="right" vertical="top+50" linearTransform={self.floatCardLinearTransform}>
                   <FlexLayout items="center" class="trvwr-sum-row">
                      <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
-                     <span class="trvwr-drag-handle" title="Arrastrar para reordenar" draggable={true} on:dragstart={(e) => rowController.ondragstart(e)} on:dragend={(e) => rowController.ondragend(e)}>
-                        <Iconify icon="mdi:dots-grid" style="font-size: 1rem; opacity: 0.45" />
-                     </span>
-                     {#if rowController.hasChildren}
+                     {#if rowController.isDraggable}
+                        <span class="trvwr-drag-handle" title="Arrastrar para reordenar" draggable={true} on:dragstart={(e) => rowController.ondragstart(e)} on:dragend={(e) => rowController.ondragend(e)}>
+                           <Iconify icon="mdi:dots-grid" style="font-size: 1rem; opacity: 0.45" />
+                        </span>
+                     {/if}
+                     {#if rowController.showCaret}
                         <FlexLayout items="center" class="trvwr-itm-symb">
                            <Iconify icon="mdi:chevron-down" style="font-size: 1rem" rotate={rowController.isNodeOpen ? 0 : -90} />
                            {#if rowController.rowIcono}
@@ -122,7 +124,7 @@
                            {/if}
                         </FlexLayout>
                      {/if}
-                     {#if !rowController.hasChildren && rowController.rowIcono}
+                     {#if !rowController.showCaret && rowController.rowIcono}
                         <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
                         <span class="trvwr-itm-lead trvwr-itm-lead--icon" class:trvwr-itm-lead--add={!!rowController.onLeadIconClick} title={rowController.onLeadIconClick ? "Agregar hijo" : undefined} on:click|stopPropagation={rowController.onLeadIconClick ? () => rowController.onLeadIconClick?.() : undefined}>
                            <Iconify icon={rowController.rowIcono.icon} {...rowController.rowIcono.rest} style={rowController.rowIcono.mergedStyle} />

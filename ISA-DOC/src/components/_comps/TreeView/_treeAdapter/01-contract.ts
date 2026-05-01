@@ -1,6 +1,6 @@
 import { writable, type Writable } from "svelte/store";
-import { TreeRowAdapter } from "./_rowAdapter/02-events";
-import { type INode, type ITreeData } from "./_rowAdapter/00-base";
+import { TreeRowAdapter } from "../_asRow/_rowAdapter/02-events";
+import { type INode, type ITreeData } from "../_asRow/_rowAdapter/00-base";
 import { TTreeAdapterContext } from "./00-context";
 
 export abstract class TTreeAdapterContract<

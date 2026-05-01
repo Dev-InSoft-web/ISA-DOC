@@ -1,5 +1,5 @@
 import type { TreeViewProps } from "../TreeRowView.svelte";
-import { objRootsToNodes, type INode, type ITreeData } from "./_rowAdapter/00-base";
+import { objRootsToNodes, type INode, type ITreeData } from "../_asRow/_rowAdapter/00-base";
 import { TAModel } from "./02-model";
 
 export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> extends TAModel<Stacker, TWorking> {

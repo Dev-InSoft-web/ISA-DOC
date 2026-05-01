@@ -1,6 +1,6 @@
 import type { ButtonIconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
 import type { FlexOptionsInput } from "../../Options/FlexOptions.svelte";
-import { type INode, type ITreeData } from "./_rowAdapter/00-base";
+import { type INode, type ITreeData } from "../_asRow/_rowAdapter/00-base";
 import { TAMutations } from "./05-mutations";
 
 /**
@@ -52,10 +52,11 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	}
 
 	/** Si el nodo declara un rol actoral concreto. */
-	hasActor(node: INode<TWorking>, role: "atom" | "group" | "warden" | "prison" | "hermetic" | "cell"): boolean {
+	hasActor(node: INode<TWorking>, role: "atom" | "group" | "warden" | "prison" | "hermetic" | "cell" | "freezer" | "monarchy"): boolean {
 		const roles = this.getActorRoles(node);
 		if (roles.includes(role)) return true;
-		if (role === "group") return roles.includes("warden") || roles.includes("prison") || roles.includes("hermetic") || roles.includes("cell");
+		const groupAliases = ["warden", "prison", "hermetic", "cell", "freezer", "monarchy"] as const;
+		if (role === "group") return groupAliases.some((r) => roles.includes(r));
 		return false;
 	}
 
@@ -64,15 +65,18 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	isPrison(node: INode<TWorking>): boolean { return this.hasActor(node, "prison"); }
 	isHermetic(node: INode<TWorking>): boolean { return this.hasActor(node, "hermetic"); }
 	isCell(node: INode<TWorking>): boolean { return this.hasActor(node, "cell"); }
+	isFreezer(node: INode<TWorking>): boolean { return this.hasActor(node, "freezer"); }
+	isMonarchy(node: INode<TWorking>): boolean { return this.hasActor(node, "monarchy"); }
 	isGroupActor(node: INode<TWorking>): boolean { return this.hasActor(node, "group"); }
 
 	/**
 	 * ¿Los hijos de este agrupador pueden salir (osmosis) vía drag/operaciones?
-	 * Por defecto: sí para `prison` y `cell`; no para `hermetic`. Para nodos sin
-	 * rol específico, permitir salida (legacy).
+	 * Por defecto: sí para `prison` y `cell`; no para `hermetic`/`freezer`/`monarchy`.
+	 * Para nodos sin rol específico, permitir salida (legacy).
 	 */
 	allowsChildEscape(node: INode<TWorking>): boolean {
 		if (this.isHermetic(node)) return false;
+		if (this.isFreezer(node) || this.isMonarchy(node)) return false;
 		return true;
 	}
 
@@ -153,6 +157,49 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 		const list = this.groupTypes;
 		if (list.length > 0) return !!t && list.includes(t);
 		return !node.isLeaf;
+	}
+
+	/**
+	 * Valida el contrato de los agrupadores ordenadores `freezer`/`monarchy`:
+	 * el dato del agrupador DEBE implementar `sortChildren(children)`. Si no,
+	 * se lanza error inmediato (fail-fast en el momento que el rol se aplica).
+	 */
+	protected assertOrderingContract(grouper: INode<TWorking>): void {
+		const isFreezer = this.isFreezer(grouper);
+		const isMonarchy = this.isMonarchy(grouper);
+		if (!isFreezer && !isMonarchy) return;
+		const fn = (grouper.obj as { sortChildren?: unknown } | undefined)?.sortChildren;
+		if (typeof fn !== "function") {
+			const role = isFreezer ? "freezer" : "monarchy";
+			throw new Error(`[TreeAdapter] El agrupador '${grouper.id}' con rol '${role}' requiere implementar 'sortChildren(children)'.`);
+		}
+	}
+
+	/**
+	 * ¿Este nodo está **congelado** (no se puede mover) por su pipeline de
+	 * ancestros? Recorrido closest→farthest:
+	 * - `freezer` ancestor → tautología: SIEMPRE congela a sus descendientes.
+	 * - `monarchy` ancestor → contingente: el nodo DEBE implementar `freeze()`,
+	 *   y se congela cuando devuelve `true`.
+	 * Sólo afecta acciones de movimiento (drag, mover arriba/abajo). Resto de
+	 * acciones (editar, eliminar, agregar, etc.) no se ven afectadas.
+	 */
+	isFrozen(node: INode<TWorking>): boolean {
+		for (const anc of this.getAncestors(node)) {
+			if (this.isFreezer(anc)) {
+				this.assertOrderingContract(anc);
+				return true;
+			}
+			if (this.isMonarchy(anc)) {
+				this.assertOrderingContract(anc);
+				const fn = (node.obj as { freeze?: () => boolean } | undefined)?.freeze;
+				if (typeof fn !== "function") {
+					throw new Error(`[TreeAdapter] El nodo '${node.id}' bajo agrupador 'monarchy' '${anc.id}' requiere implementar 'freeze(): boolean'.`);
+				}
+				if (fn.call(node.obj)) return true;
+			}
+		}
+		return false;
 	}
 
 	// =========================================================================
