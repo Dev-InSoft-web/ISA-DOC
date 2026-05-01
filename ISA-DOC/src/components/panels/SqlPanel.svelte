@@ -7,7 +7,6 @@
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import SqlViewer from "../viewers/SqlViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
-	import TablesPanel from "./TablesPanel.svelte";
 	import TablesBrowserPanel from "./TablesBrowserPanel.svelte";
 	import CodeGenPanel from "./CodeGenPanel.svelte";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
@@ -169,13 +168,7 @@
 <Toaster />
 
 <Tabs>
-	<TabItem title="Tablas">
-		<section class="editor">
-			<TablesPanel />
-		</section>
-	</TabItem>
-
-	<TabItem title="Tablas 2">
+	<TabItem title="Tablas" open>
 		<section class="editor">
 			<TablesBrowserPanel />
 		</section>

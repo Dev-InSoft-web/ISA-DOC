@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { BlockLayout, Button, ButtonIconify, Card, FlexLayout, H2, H4, Iconify, TabItem, Tabs, Text, Toaster, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
+	import { ActionDrawer, Button, ButtonIconify, Card, FlexLayout, H2, H4, Iconify, Modal, TabItem, Tabs, Text, Toaster, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
 	import {
 		emitDropTable,
 		emitTable,
@@ -31,6 +31,79 @@
 
 	let runUnlocked: Record<string, boolean> = {};
 	let runBusy: Record<string, boolean> = {};
+
+	let bshowSettings: boolean = false;
+	let bshowTreeModal: boolean = false;
+	let syncingRegions: boolean = false;
+	let filterText: string = "";
+
+	type Category = "principales" | "pivote" | "historial" | "otras";
+	const CATEGORIES: { id: Category; label: string; icon: string }[] = [
+		{ id: "principales", label: "Tablas principales", icon: "mdi:table" },
+		{ id: "pivote", label: "Tablas pivote / detalle", icon: "mdi:table-multiple" },
+		{ id: "historial", label: "Tablas de historial", icon: "mdi:history" },
+		{ id: "otras", label: "Otras", icon: "mdi:dots-horizontal" },
+	];
+
+	function inferCategory(fragmentName: string): Category {
+		const n = (fragmentName ?? "").toUpperCase();
+		if (/(HISTORIAL|AUDITOR)/.test(n)) return "historial";
+		if (/(PIVOTE|DETALLES|PIVOT)/.test(n)) return "pivote";
+		if (/(PRINCIPAL|TABLAS)/.test(n)) return "principales";
+		return "otras";
+	}
+
+	function normalizePrefix(raw: string): string {
+		const v = (raw ?? "").trim().toUpperCase().replace(/[^A-Z0-9_]/g, "_");
+		if (!v) return "";
+		return v.endsWith("_") ? v : v + "_";
+	}
+
+	function openSettings(): void { bshowSettings = true; }
+	function closeSettings(): void { bshowSettings = false; }
+	function openTreeModal(): void { bshowTreeModal = true; }
+	function closeTreeModal(): void { bshowTreeModal = false; }
+
+	function renamePrefix(oldPrefix: string, rawNext: string): void {
+		const next = normalizePrefix(rawNext);
+		if (next === oldPrefix) return;
+		const exists = tables.some((t) => detectPrefix(t.name) === next);
+		if (exists && next !== "") {
+			toastError(`Ya existe el prefijo "${next}".`);
+			return;
+		}
+		const nextTables = tables.map((t) => {
+			if (detectPrefix(t.name) !== oldPrefix) return t;
+			return { ...t, name: next + t.name.slice(oldPrefix.length) };
+		});
+		tables = nextTables;
+		adapter.setTables(tables);
+		dirty = true;
+		void save(true);
+	}
+
+	async function syncRegions(): Promise<void> {
+		if (syncingRegions) return;
+		syncingRegions = true;
+		try {
+			const tableNames = Array.from(new Set(tables.map((t) => t.name.toUpperCase())));
+			const res = await fetch("/api/ts/sync-regions", {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ tables: tableNames }),
+			});
+			const data = (await res.json()) as { ok?: boolean; error?: string; filesChanged?: string[]; renames?: { from: string; to: string }[] };
+			if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+			const nRen = data.renames?.length ?? 0;
+			const nFiles = data.filesChanged?.length ?? 0;
+			toastSuccess(`Regiones sincronizadas: ${nRen} renombradas en ${nFiles} archivos.`);
+			await loadProdTs();
+		} catch (err) {
+			toastError(`Error sincronizando regiones: ${err instanceof Error ? err.message : String(err)}`);
+		} finally {
+			syncingRegions = false;
+		}
+	}
 
 	function toggleRunLock(key: string): void {
 		runUnlocked = { ...runUnlocked, [key]: !runUnlocked[key] };
@@ -200,7 +273,7 @@
 	</Card>
 
 	<div class="layout">
-		<BlockLayout class="tree-pane">
+		<div class="tree-pane">
 			<div class="pane-scroll">
 			{#if loading}
 				<Text color="neutral">Cargando…</Text>
@@ -237,9 +310,9 @@
 				</div>
 			{/if}
 			</div>
-		</BlockLayout>
+		</div>
 
-		<BlockLayout class="form-pane">
+		<div class="form-pane">
 			<div class="pane-scroll">
 			{#if !selected}
 				<Card variant="flat"><Text color="neutral">Selecciona una tabla del árbol.</Text></Card>
@@ -254,18 +327,24 @@
 
 				{#key tableKey(t)}
 					<Card>
-						<FlexLayout items="center">
-							<Iconify icon="mdi:table" />
-							<H4>{t.name}</H4>
+						<FlexLayout items="center" justify="between">
+							<FlexLayout items="center">
+								<Iconify icon="mdi:table" />
+								<H4>{t.name}</H4>
+							</FlexLayout>
+							<FlexLayout items="center">
+								<ButtonIconify icon="mdi:cog-outline" title="Personalizar entidad" on:click={openSettings} />
+								<ButtonIconify icon="mdi:eye-outline" title="Editor visual completo" on:click={openTreeModal} />
+							</FlexLayout>
 						</FlexLayout>
 						<SqlTreeEditor table={t} prefix={detectPrefix(t.name)} onChange={(nt) => onTableChange(idx, nt)} />
 					</Card>
 				{/key}
 			{/if}
 			</div>
-		</BlockLayout>
+		</div>
 
-		<BlockLayout class="code-pane">
+		<div class="code-pane">
 			<div class="pane-scroll">
 			{#if selected}
 				{@const t = selected.table}
@@ -294,7 +373,7 @@
 										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${t.name} · SQL`, sqlCode, "sql")} />
 									</FlexLayout>
 								</FlexLayout>
-								<CodeViewer value={sqlCode} lang="sql" height="calc(100dvh - 22rem)" />
+								<CodeViewer value={sqlCode} lang="sql" height="100%" />
 							</div>
 						</TabItem>
 						{#if cfg}
@@ -310,7 +389,7 @@
 											<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Modelo`, modelCode, "ts", prodPojo[0]?.body ?? "", prodPojo[0] ? `Prod · ${prodPojo[0].sourceFile}` : "Prod — sin fragmento")} />
 										</FlexLayout>
 									</FlexLayout>
-									<CodeViewer value={modelCode} lang="ts" height="calc(100dvh - 22rem)" />
+									<CodeViewer value={modelCode} lang="ts" height="100%" />
 								</div>
 							</TabItem>
 							<TabItem title="Server">
@@ -325,7 +404,7 @@
 											<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Server`, serverCode, "ts", prodServer[0]?.body ?? "", prodServer[0] ? `Prod · ${prodServer[0].sourceFile}` : "Prod — sin fragmento")} />
 										</FlexLayout>
 									</FlexLayout>
-									<CodeViewer value={serverCode} lang="ts" height="calc(100dvh - 22rem)" />
+									<CodeViewer value={serverCode} lang="ts" height="100%" />
 								</div>
 							</TabItem>
 							<TabItem title="Client">
@@ -340,7 +419,7 @@
 											<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Client`, clientCode, "ts", prodClient[0]?.body ?? "", prodClient[0] ? `Prod · ${prodClient[0].sourceFile}` : "Prod — sin fragmento")} />
 										</FlexLayout>
 									</FlexLayout>
-									<CodeViewer value={clientCode} lang="ts" height="calc(100dvh - 22rem)" />
+									<CodeViewer value={clientCode} lang="ts" height="100%" />
 								</div>
 							</TabItem>
 						{/if}
@@ -349,11 +428,113 @@
 				{/key}
 			{/if}
 			</div>
-		</BlockLayout>
+		</div>
 	</div>
 </section>
 
 <CodeModal bind:bshow={modalShow} title={modalTitle} value={modalValue} language={modalLanguage} compareValue={modalCompare} compareLabel={modalCompareLabel} valueLabel="Local" />
+
+<ActionDrawer bind:bshow={bshowSettings} onclose={closeSettings} style="width: 720px; max-width: 95vw;">
+	{#if !selected}
+		<Card variant="flat"><Text color="neutral">Selecciona una tabla.</Text></Card>
+	{:else}
+		{@const t = selected.table}
+		{@const currentPrefix = detectPrefix(t.name)}
+		{@const cfg = resByTable.get(t.name.toUpperCase())}
+		{@const prodFrags = prodTsMap[t.name.toUpperCase()] ?? []}
+		{@const prodPojo = prodFrags.filter((p: any) => p.role === "pojo")}
+		{@const prodServer = prodFrags.filter((p: any) => p.role === "server")}
+		{@const prodClient = prodFrags.filter((p: any) => p.role === "client")}
+		<Card>
+			<FlexLayout items="center">
+				<Iconify icon="mdi:cog-outline" />
+				<H4>Personalizar · {t.name}</H4>
+			</FlexLayout>
+		</Card>
+		<Tabs>
+			<TabItem open title="Filtro y prefijo">
+				<div class="drawer-section">
+					<label class="field">
+						<Text color="neutral"><small>Filtrar tabla / columna</small></Text>
+						<input class="input-field" type="text" placeholder="Buscar…" bind:value={filterText} />
+					</label>
+					<label class="field">
+						<Text color="neutral"><small>Prefijo actual: <code>{currentPrefix || "(vacío)"}</code></small></Text>
+						<input class="input-field" type="text" value={currentPrefix} placeholder="(sin prefijo)" on:change={(e) => renamePrefix(currentPrefix, (e.currentTarget as HTMLInputElement).value)} />
+					</label>
+				</div>
+			</TabItem>
+			<TabItem title="Categorización">
+				<div class="drawer-section">
+					{#if true}
+						{@const cat = inferCategory(t.fragmentName)}
+						{@const meta = CATEGORIES.find((c) => c.id === cat)}
+						<FlexLayout items="center">
+							<Iconify icon={meta?.icon ?? "mdi:tag-outline"} />
+							<Text><strong>{meta?.label ?? cat}</strong></Text>
+						</FlexLayout>
+						<Text color="neutral"><small>Inferida desde el nombre del fragmento <code>{t.fragmentName}</code>.</small></Text>
+					{/if}
+				</div>
+			</TabItem>
+			<TabItem title="Acciones">
+				<div class="drawer-section">
+					<FlexLayout items="center">
+						<Button variant="outlined" style="width: fit-content;" onClick={load}>
+							<Iconify icon="mdi:refresh" /> Recargar
+						</Button>
+						<Button variant="outlined" style="width: fit-content;" disabled={syncingRegions} onClick={syncRegions}>
+							<Iconify icon={syncingRegions ? "mdi:loading" : "mdi:sync"} /> Sincronizar regiones
+						</Button>
+						<Button color="primary" style="width: fit-content;" disabled={!dirty || saving} onClick={() => save()}>
+							<Iconify icon={saving ? "mdi:loading" : "mdi:content-save"} /> Guardar
+						</Button>
+					</FlexLayout>
+				</div>
+			</TabItem>
+			<TabItem title="Comparación prod ISP">
+				<div class="drawer-section">
+					{#if !cfg}
+						<Text color="neutral">Sin configuración generada.</Text>
+					{:else}
+						{#each [{ role: "pojo", label: "Modelo", frags: prodPojo }, { role: "server", label: "Server", frags: prodServer }, { role: "client", label: "Client", frags: prodClient }] as block}
+							<FlexLayout items="center" justify="between">
+								<FlexLayout items="center">
+									<Iconify icon="mdi:source-branch" />
+									<Text color="neutral"><small>{block.label} · Prod ISP {block.frags[0] ? `· ${block.frags[0].sourceFile}` : "— sin fragmento"}</small></Text>
+								</FlexLayout>
+								{#if block.frags[0]}
+									<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${t.name} · Prod ${block.label}`, block.frags[0].body, "ts")} />
+								{/if}
+							</FlexLayout>
+							<CodeViewer value={block.frags[0]?.body ?? ""} lang="ts" height="220px" />
+						{/each}
+					{/if}
+				</div>
+			</TabItem>
+		</Tabs>
+	{/if}
+</ActionDrawer>
+
+<Modal bind:bshow={bshowTreeModal} onClose={closeTreeModal} style="width: 96dvw; height: 96dvh;">
+	<svelte:fragment slot="title">
+		<FlexLayout items="center">
+			<Iconify icon="mdi:file-tree-outline" />
+			<Text><strong>Editor visual · {selected ? selected.table.name : ""}</strong></Text>
+		</FlexLayout>
+	</svelte:fragment>
+	<div class="tree-modal-body">
+		{#if !selected}
+			<Text color="neutral">Selecciona una tabla.</Text>
+		{:else}
+			{@const t = selected.table}
+			{@const idx = selected.index}
+			{#key tableKey(t)}
+				<SqlTreeEditor table={t} prefix={detectPrefix(t.name)} onChange={(nt) => onTableChange(idx, nt)} />
+			{/key}
+		{/if}
+	</div>
+</Modal>
 
 <style>
 	.browser {
@@ -366,7 +547,7 @@
 		display: grid;
 		grid-template-columns: minmax(168px, 14.4rem) minmax(0, 0.756fr) minmax(0, 1fr);
 		gap: 0.5rem;
-		height: calc(100dvh - 12rem);
+		height: calc(100dvh - 13rem);
 		align-items: stretch;
 	}
 	:global(.tree-pane),
@@ -374,17 +555,22 @@
 	:global(.code-pane) {
 		width: 100%;
 		min-width: 0;
-		height: calc(100dvh - 12rem);
-		max-height: calc(100dvh - 12rem);
+		min-height: 0;
 		overflow: hidden;
-		display: block;
+		display: flex;
+		flex-direction: column;
 	}
 	.pane-scroll {
-		height: 100%;
-		max-height: 100%;
+		flex: 1 1 auto;
+		min-height: 0;
 		width: 100%;
 		overflow: auto;
 		display: block;
+	}
+	:global(.code-pane) > .pane-scroll {
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 	}
 	:global(.tree-pane) {
 		padding: 0.5rem;
@@ -420,11 +606,16 @@
 		margin-left: auto;
 		padding-left: 0.5rem;
 	}
-	:global(.form-pane) > :global(.pane-scroll) > :global(.card-root),
 	:global(.code-pane) > :global(.pane-scroll) > :global(.card-root) {
 		width: 100%;
 		min-width: 0;
-		display: block !important;
+		min-height: 0;
+		flex: 1 1 auto;
+		display: flex !important;
+		flex-direction: column;
+	}
+	:global(.code-pane) > :global(.pane-scroll) {
+		overflow: hidden;
 	}
 	:global(.code-pane .code-tabs),
 	:global(.code-pane .code-tabs-content),
@@ -449,8 +640,12 @@
 		overflow: hidden;
 	}
 	.code-card {
-		display: block;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 		padding: 0.5rem;
+		min-height: 0;
+		flex: 1 1 auto;
 	}
 	.run-group {
 		display: inline-flex;
@@ -462,15 +657,55 @@
 	}
 	.code-card :global(.cm-wrap) {
 		display: block;
+		min-height: 0;
+		flex: 1 1 auto;
 	}
-	:global(.code-pane .code-tabs-content) {
-		display: block;
+	:global(.code-pane .tabs-content) {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
 	}
-	:global(.code-pane .code-tabs-content) > :global(*) {
-		display: block;
+	:global(.code-pane .tabs-content) > :global(.tab-item) {
+		flex: 1 1 auto;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
 	}
 	@media (max-width: 900px) {
 		.layout { grid-template-columns: 1fr; max-height: none; }
 		:global(.tree-pane), :global(.form-pane), :global(.code-pane) { height: auto; max-height: none; }
+	}
+	.drawer-section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding: 0.5rem;
+	}
+	.field {
+		display: flex;
+		flex-direction: column;
+		gap: 0.2rem;
+	}
+	.input-field {
+		background: var(--is-bg-secondary);
+		border: 1px solid var(--is-b-color);
+		border-radius: 4px;
+		padding: 0.25rem 0.5rem;
+		font-size: 0.85rem;
+		color: var(--is-color);
+		outline: none;
+	}
+	.input-field:focus {
+		border-color: var(--is-primary);
+	}
+	.tree-modal-body {
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-height: 0;
+		height: 100%;
+		overflow: auto;
 	}
 </style>
