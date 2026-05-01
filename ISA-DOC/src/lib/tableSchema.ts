@@ -43,14 +43,22 @@ export interface TableSection {
 	name: string;
 }
 
-export type TableRow = TableColumn | TableSection;
+export interface TableSectionEnd {
+	kind: "section_end";
+}
+
+export type TableRow = TableColumn | TableSection | TableSectionEnd;
 
 export function isSectionRow(r: TableRow): r is TableSection {
 	return (r as TableSection).kind === "section";
 }
 
+export function isSectionEndRow(r: TableRow): r is TableSectionEnd {
+	return (r as TableSectionEnd).kind === "section_end";
+}
+
 export function isColumnRow(r: TableRow): r is TableColumn {
-	return !isSectionRow(r);
+	return !isSectionRow(r) && !isSectionEndRow(r);
 }
 
 export function tableColumns(t: ParsedTable): TableColumn[] {
@@ -250,7 +258,8 @@ function parseInnerWithSections(inner: string): {
 	const lines = inner.split(/\r?\n/);
 	const columns: TableColumn[] = [];
 	const extraStatements: string[] = [];
-	const sectionMarks: { idx: number; name: string }[] = [];
+	const sectionMarks: { idx: number; kind: "start" | "end"; name?: string; seq: number }[] = [];
+	let seqCounter = 0;
 	let compositePrimaryKey: string[] = [];
 	let bufStmt = "";
 	let depth = 0;
@@ -275,10 +284,13 @@ function parseInnerWithSections(inner: string): {
 			const trimmed = raw.trim();
 			const region = REGION_LINE_RE.exec(trimmed);
 			if (region) {
-				sectionMarks.push({ idx: columns.length, name: region[1] });
+				sectionMarks.push({ idx: columns.length, kind: "start", name: region[1], seq: seqCounter++ });
 				continue;
 			}
-			if (ENDREGION_LINE_RE.test(trimmed)) continue;
+			if (ENDREGION_LINE_RE.test(trimmed)) {
+				sectionMarks.push({ idx: columns.length, kind: "end", seq: seqCounter++ });
+				continue;
+			}
 			if (/^--/.test(trimmed)) continue;
 		}
 		for (let i = 0; i < raw.length; i++) {
@@ -301,22 +313,23 @@ function parseInnerWithSections(inner: string): {
 	}
 	finalize();
 
-	// Splice sections at recorded column indices
+	// Splice sections at recorded column indices, preserving order between marks at same idx via seq.
 	const rows: TableRow[] = [];
 	let cIdx = 0;
-	const sorted = sectionMarks.slice().sort((a, b) => a.idx - b.idx);
+	const sorted = sectionMarks.slice().sort((a, b) => a.idx - b.idx || a.seq - b.seq);
 	let sIdx = 0;
+	const pushMark = (m: typeof sorted[number]): void => {
+		if (m.kind === "start") rows.push({ kind: "section", name: m.name || "" });
+		else rows.push({ kind: "section_end" });
+	};
 	while (cIdx < columns.length || sIdx < sorted.length) {
 		while (sIdx < sorted.length && sorted[sIdx].idx <= cIdx) {
-			rows.push({ kind: "section", name: sorted[sIdx].name });
+			pushMark(sorted[sIdx]);
 			sIdx++;
 		}
 		if (cIdx < columns.length) { rows.push(columns[cIdx]); cIdx++; }
 	}
-	while (sIdx < sorted.length) {
-		rows.push({ kind: "section", name: sorted[sIdx].name });
-		sIdx++;
-	}
+	while (sIdx < sorted.length) { pushMark(sorted[sIdx]); sIdx++; }
 	return { rows, extraStatements, compositePrimaryKey };
 }
 
@@ -366,6 +379,8 @@ export function emitTable(t: ParsedTable): string {
 			closeSection();
 			innerLines.push({ text: `    -- #region ${r.name}`, isStmt: false });
 			openSection = r.name;
+		} else if (isSectionEndRow(r)) {
+			closeSection();
 		} else {
 			innerLines.push({ text: "    " + emitColumn(r), isStmt: true });
 		}

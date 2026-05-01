@@ -199,4 +199,7 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 	override canDropAtRoot(src: TSqlNodeUX): boolean {
 		return src.type === "section" || src.type === "column";
 	}
+
+	override get groupTypes(): readonly string[] { return ["section"]; }
+	override get actionTypes(): readonly string[] { return ["section"]; }
 }

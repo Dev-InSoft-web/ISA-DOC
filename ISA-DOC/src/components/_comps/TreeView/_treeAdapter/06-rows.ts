@@ -9,6 +9,76 @@ type CascadeOptionsInput = FlexOptionsInput;
 
 export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>> extends TAMutations<Stacker, TWorking> {
 
+	/**
+	 * Tipos de nodo que actúan como **agrupadores** (carpetas/contenedores).
+	 * Si el adapter no lo override, se infiere desde `node.isLeaf` (todo lo no-hoja
+	 * se considera agrupador). Se usa para la regla por defecto de expansión.
+	 */
+	get groupTypes(): readonly string[] { return []; }
+
+	/**
+	 * Tipos de agrupador sobre los que se ofrecen acciones de mutación
+	 * (p.ej. "Agregar hijo"). Subconjunto típico de `groupTypes`.
+	 */
+	get actionTypes(): readonly string[] { return []; }
+
+	/** Si el tipo del nodo declara aceptación de acciones del adapter. */
+	isActionGrouper(node: INode<TWorking>): boolean {
+		const t = (node.obj as { type?: string } | undefined)?.type;
+		const list = this.actionTypes;
+		if (!t || list.length === 0) return false;
+		return list.includes(t);
+	}
+
+	/** Si el nodo es agrupador según `groupTypes` (o por inferencia si está vacío). */
+	isGrouper(node: INode<TWorking>): boolean {
+		const t = (node.obj as { type?: string } | undefined)?.type;
+		const list = this.groupTypes;
+		if (list.length > 0) return !!t && list.includes(t);
+		return !node.isLeaf;
+	}
+
+	/**
+	 * Regla para decidir si un nodo arranca expandido tras el primer build.
+	 * Por defecto: todos los agrupadores se expanden. Override en el adapter
+	 * concreto para otra política (p.ej. solo nivel 0, solo dominios, etc).
+	 */
+	protected shouldAutoExpand(node: INode<TWorking>): boolean {
+		return this.isGrouper(node);
+	}
+
+	/** Marca para correr la regla de expansión inicial una sola vez. */
+	private _autoExpansionApplied = false;
+
+	/**
+	 * Aplica la regla de expansión inicial sobre el árbol actual.
+	 * Se llama automáticamente la primera vez que `onrefresh` produce nodos,
+	 * o manualmente por el adapter si quiere re-aplicarla (p.ej. tras un reset).
+	 */
+	applyDefaultExpansion(): void {
+		if (!this.rootNodes.length) return;
+		const next: INode<TWorking>[] = [];
+		const seen = new Set<string>();
+		const walk = (nodes: INode<TWorking>[]): void => {
+			for (const n of nodes) {
+				if (this.shouldAutoExpand(n)) {
+					const key = this.normalizeNodeId(n.id);
+					if (key && !seen.has(key)) { seen.add(key); next.push(n); }
+				}
+				n.children?.length && walk(n.children);
+			}
+		};
+		walk(this.rootNodes);
+		this.expandedNodes = next;
+		this.syncAllRowAdapters();
+		this._autoExpansionApplied = true;
+	}
+
+	override onrefresh(): void {
+		super.onrefresh();
+		if (!this._autoExpansionApplied && this.rootNodes.length) this.applyDefaultExpansion();
+	}
+
 	onrowclick(node: INode<TWorking>): void {
 		this._selectedId = this.normalizeNodeId(node.id);
 		this._item = node.obj;

@@ -1,5 +1,5 @@
 import type { ParsedTable, TableColumn, TableRow, TableSection } from "../../../lib/tableSchema";
-import { isSectionRow } from "../../../lib/tableSchema";
+import { isSectionRow, isSectionEndRow } from "../../../lib/tableSchema";
 import { TSqlNodeUX } from "./TSqlNodeUX.svelte";
 
 export class TSqlTableUX {
@@ -18,14 +18,19 @@ export class TSqlTableUX {
 	static buildRowsFromParsed(parsed: ParsedTable, stack: any): TSqlNodeUX[] {
 		const tableId = `${parsed.fragmentId}::${parsed.originalName || parsed.name}`;
 		const out: TSqlNodeUX[] = [];
-		let sectionIdx = 0;
+		// Un único contador top-level garantiza ids únicos al intercalar secciones y
+		// columnas raíz en cualquier orden.
+		let topIdx = 0;
 		let lastSectionId = "";
 		let columnIdx = 0;
-		let rootColumnIdx = 0;
 		for (const row of parsed.columns) {
+			if (isSectionEndRow(row)) {
+				lastSectionId = "";
+				continue;
+			}
 			if (isSectionRow(row)) {
-				sectionIdx += 1;
-				const sid = String(sectionIdx);
+				topIdx += 1;
+				const sid = String(topIdx);
 				lastSectionId = sid;
 				columnIdx = 0;
 				out.push(TSqlNodeUX.fromSection(row as TableSection, sid, tableId, stack));
@@ -37,9 +42,8 @@ export class TSqlTableUX {
 					const node = TSqlNodeUX.fromColumn(col, cid, lastSectionId, tableId, stack);
 					out.push(node);
 				} else {
-					rootColumnIdx += 1;
-					sectionIdx = rootColumnIdx;
-					const cid = String(rootColumnIdx);
+					topIdx += 1;
+					const cid = String(topIdx);
 					const node = TSqlNodeUX.fromColumn(col, cid, "", tableId, stack);
 					out.push(node);
 				}
@@ -59,26 +63,32 @@ export class TSqlTableUX {
 			const refId = String(n.ireference || "").trim();
 			if (refId && childrenBySection.has(refId)) childrenBySection.get(refId)!.push(n);
 		}
-		// Para preservar la jerarquía explícita en el formato SQL secuencial:
-		// 1) Las columnas raíz (sin sección padre) se emiten ANTES de cualquier sección.
-		//    De lo contrario, al recargar quedarían anidadas bajo la sección que las precede.
-		// 2) Luego cada sección emite sus columnas hijas en orden visual.
+		// Emite los nodos raíz en su orden visual real (mezclando secciones y columnas
+		// raíz). Usa `section_end` como sentinela explícito para cerrar una sección
+		// abierta antes de una columna raíz, preservando la jerarquía al re-parsear.
 		const columns: TableRow[] = [];
+		let openSection = false;
 		for (const n of flat) {
-			if (n.kind !== "column") continue;
 			const refId = String(n.ireference || "").trim();
-			if (!refId || !childrenBySection.has(refId)) columns.push(n.toColumn());
-		}
-		for (const n of flat) {
-			if (n.kind !== "section") continue;
-			columns.push(n.toSection());
-			for (const c of childrenBySection.get(n.id) ?? []) columns.push(c.toColumn());
+			if (refId) continue; // hijos: se emiten dentro de su sección
+			if (n.kind === "section") {
+				if (openSection) columns.push({ kind: "section_end" });
+				columns.push(n.toSection());
+				openSection = true;
+				for (const c of childrenBySection.get(n.id) ?? []) columns.push(c.toColumn());
+			} else {
+				if (openSection) {
+					columns.push({ kind: "section_end" });
+					openSection = false;
+				}
+				columns.push(n.toColumn());
+			}
 		}
 		const next: ParsedTable = {
 			...this.parsed,
 			columns,
 			compositePrimaryKey: this.parsed.compositePrimaryKey.filter((c) =>
-				columns.some((cc) => !isSectionRow(cc) && (cc as TableColumn).name === c),
+				columns.some((cc) => !isSectionRow(cc) && !isSectionEndRow(cc) && (cc as TableColumn).name === c),
 			),
 		};
 		this.parsed = next;
