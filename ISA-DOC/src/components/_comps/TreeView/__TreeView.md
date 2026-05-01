@@ -6,106 +6,148 @@
 
 ## Rol
 
-Árbol jerárquico reutilizable en **Capacitación**. Proporciona:
+Árbol jerárquico reutilizable. Proporciona:
 
-- Expansión/colapso de nodos (individual, expandir todo, colapsar todo).
-- Fila resaltada (`selectedId` / `focusedRowId` internos en el adapter).
+- Expansión/colapso de nodos (individual, expandir todo, colapsar todo, expansión inicial automática).
+- Fila resaltada (`selectedId` / `focusedNodeId` internos en el adapter).
 - Flash de confirmación tras reordenar o insertar.
 - Barra de herramientas superior con `FlexOptions`.
-- Acciones flotantes por fila (`FloatingComponent` + `FlexOptions`) y menú en cascada (`CascadeOptions`).
-- Drag-and-drop para reordenar entre hermanos del mismo nivel.
+- Acciones flotantes por fila (`FloatingComponent` + `FlexOptions`) y menú en cascada.
+- Drag-and-drop para reordenar entre hermanos del mismo nivel (con osmosis controlada por roles).
 - Gestos táctiles (swipe) vía `TouchGestures`.
 - Drawer lateral (`ActionDrawer`) con formulario CRUD integrado vía `AccionesGen`.
 - Modal de eliminación con confirmación por código de seguridad.
+- **Sistema actoral** (`atom` · `group` · `warden` · `prison` · `cell` · `hermetic` · `freezer` · `monarchy`) con pipeline de vigilancia closest→farthest.
+- **Congelamiento** por roles `freezer` (tautológico) / `monarchy` (contingente).
 
-**No incluye lógica de negocio**. El consumidor aporta una subclase concreta de `TreeAdapter` y un `CatalogoController`.
+**No incluye lógica de negocio**. El consumidor aporta una subclase concreta de `TreeRowViewAdapter` y un `CatalogoController`.
 
 ---
 
-## Archivos (sin barrel)
+## Arquitectura — dos cascadas paralelas
 
-No hay `index.ts`. Importar siempre el archivo concreto:
+```text
+                ┌──────────────────────────────────┐
+                │   TreeRowView.svelte             │  ◄── único punto de entrada
+                │   (componente + barrel)          │      del consumidor
+                └──────────────────────────────────┘
+                              │
+                              │ usa
+                              ▼
+   ┌──────────────────────┐         ┌──────────────────────────┐
+   │  Cascada genérica    │ ──┐     │  Modo vista en fila      │
+   │  (_treeAdapter/)     │   │     │  (_asRow/)               │
+   │                      │   │     │                          │
+   │  00 ComplexControl   │   │     │  00 TARowBase            │
+   │  00 Context          │   │     │  01 TreeRowViewAdapter   │
+   │  01 Contract         │   │     │     (clase final)        │
+   │  02 Model            │   │     │                          │
+   │  03 Tree             │   │     │  _rowItem.svelte         │
+   │  04 View             │   │     │                          │
+   │  05 Mutations        │   │     │  _rowAdapter/            │
+   │  06 Roles  ───┐      │ <─┘     │   00 TRABase             │
+   └──────────────│───────┘  extiende│   01 TRADrag             │
+                  │                  │   02 TreeRowAdapter      │
+                  │                  └──────────────────────────┘
+                  │                                ▲
+                  └────────── usa INode/ITreeData ─┘
+                              (definidos en _rowAdapter/00-base.ts)
+```
+
+**Detalles por carpeta:**
+- `_treeAdapter/` — capas agnósticas del modo de vista. Detalle en [`_treeAdapter/__TreeAdapter.md`](_treeAdapter/__TreeAdapter.md).
+- `_asRow/` — modo de vista en forma de fila. Detalle en [`_asRow/__asRow.md`](_asRow/__asRow.md).
+- `_asRow/_rowAdapter/` — controlador por fila (drag, eventos). Detalle en [`_asRow/_rowAdapter/__RowAdapter.md`](_asRow/_rowAdapter/__RowAdapter.md).
+
+### Invariante estructural
+
+> **Cascada estricta:** un índice **NUNCA** importa de un índice mayor en la misma carpeta. Si la capa inferior necesita la API de una superior, declara `abstract` y deja que la herencia cierre el contrato. Vale para `_treeAdapter/`, `_asRow/` y `_asRow/_rowAdapter/`.
+
+---
+
+## Archivos
+
+No hay `index.ts`. Importar siempre desde `TreeRowView.svelte`:
 
 | Archivo | Rol |
-|---|---|
-| `TreeView.svelte` | Componente raíz. Define `TreeViewProps`, `TreeViewSlots`. Contiene la toolbar, el `RowItem` recursivo, el drawer de edición y el modal de eliminación. |
-| `_rowItem.svelte` | Fila recursiva. Renderiza `<details>/<summary>` con `FloatingComponent` flotante. Se auto-invoca vía `<svelte:self>` para hijos. Define `RowItemProps`, `RowItemAdapterBridge`. |
-| `_treeAdapter/` | Cascada del controlador del árbol (`TreeAdapter`). Construye la clase final abstracta por capas (contexto → contrato → modelo → tree → view → mutaciones → rows). Detalle en [`_treeAdapter/__TreeAdapter.md`](_treeAdapter/__TreeAdapter.md). |
-| `_treeAdapter/_rowAdapter/` | Cascada del controlador de fila (`TreeRowAdapter`). Clase final concreta (no abstracta). Detalle en [`_treeAdapter/_rowAdapter/__RowAdapter.md`](_treeAdapter/_rowAdapter/__RowAdapter.md). |
-
----
-
-## Arquitectura de clases
-
-```
-ComplexControl<TCtx>                          (_treeAdapter/00-complex-control.ts)
-├── TTreeAdapterContext<Stacker, TWorking>    (abstracta, estado interno)
-│   └── TTreeAdapterContract<…>              (abstracta, props de contrato)
-│       └── TreeAdapter<Stacker, TWorking>   (abstracta exportada, API pública)
-│           └── ContenidosTreeAdapter        (subclase concreta por dominio)
-└── TreeRowAdapter<TStacker, TWorking>       (adaptador por fila, instanciado por nodo)
-```
+| ------- | --- |
+| `TreeRowView.svelte` | Componente raíz + barrel. Define `TreeViewProps`, `TreeViewSlots`. Re-exporta: `TreeRowViewAdapter`, `TreeRowAdapter`, `TreeNodeUX`, `ComplexControl`, `INode`, `ITreeData`, `objRootsToNodes`, `groupedWithSeparators`. |
+| `_asRow/_rowItem.svelte` | Fila recursiva (`<details>`/`<summary>` + `FloatingComponent`). Se invoca a sí misma vía `<svelte:self>`. |
+| `_asRow/00-treeAdapterAsRow.ts` | `TARowBase`: plomería del modo fila. |
+| `_asRow/01-treeAdapterAsRowEvents.ts` | `TreeRowViewAdapter`: clase final que el consumidor extiende. |
+| `_asRow/_rowAdapter/00-base.ts` | `TRABase` + tipos `INode<T>`/`ITreeData<T>` + helpers `objRootsToNodes`/`groupedWithSeparators`. |
+| `_asRow/_rowAdapter/00-node-mixin.ts` | `TreeNodeUX(BaseClass)` — mixin que añade los campos del nodo. |
+| `_asRow/_rowAdapter/01-drag.ts` | `TRADrag` — drag & drop por fila. |
+| `_asRow/_rowAdapter/02-events.ts` | `TreeRowAdapter` — eventos (click/dblclick/focus/keydown/toggle). |
+| `_asRow/_rowAdapter/index.ts` | Barrel interno del row adapter (consumido SOLO por `TreeRowView.svelte`). |
+| `_treeAdapter/00-complex-control.ts` | `ComplexControl<TCtx>` — base reactiva genérica. |
+| `_treeAdapter/00-context.ts` | Estado interno y acceso a props. |
+| `_treeAdapter/01-contract.ts` | Contrato público abstracto. |
+| `_treeAdapter/02-model.ts` | Estado del modelo. |
+| `_treeAdapter/03-tree.ts` | Árbol: build/flatten/find/CRUD bajo nivel. |
+| `_treeAdapter/04-view.ts` | Selección, foco, expand/collapse, flash (sin DOM). |
+| `_treeAdapter/05-mutations.ts` | Add/move/reorder/delete/edit. |
+| `_treeAdapter/06-roles.ts` | Sistema actoral + warden + freezer/monarchy. |
 
 ---
 
 ## Tipos principales
 
-### `INode<T>` (exportado desde `_treeAdapter/_rowAdapter/00-base.ts`, re-exportado por `TreeView.svelte`)
+### `INode<T>` (definido en `_asRow/_rowAdapter/00-base.ts`)
 
 Nodo del árbol para la vista. Propiedades:
 
 | Propiedad | Tipo | Descripción |
-|---|---|---|
+| --------- | ---- | ----------- |
 | `id` | `string` | ID normalizado (sin prefijos `_UP_`/`_M_`). Jerárquico con puntos: `"1"`, `"1.2"`, `"1.2.3"`. |
-| `ireference` | `string` | Referencia legacy a un nodo del árbol (no necesariamente el padre directo; el padre real se infiere del `id` con notación de puntos). Vacío si no aplica. |
-| `obj` | `T` | Objeto de trabajo concreto (p. ej. `TPlanCursoUX`). |
-| `stack` | `TObject` | Objeto padre/stacker (p. ej. `TCurso`). |
-| `label` | `string` | Etiqueta HTML a mostrar, generada por `objRootsToNodes`. |
+| `ireference` | `string` | Referencia al nodo padre/ancestro lógico. Vacío si no aplica. |
+| `obj` | `T` | Objeto de trabajo concreto. |
+| `stack` | `TObject` | Objeto stacker (raíz). |
+| `label` | `string` | Etiqueta HTML a mostrar. |
 | `children` | `INode<T>[]` | Hijos del nodo. |
-| `isLeaf` | `boolean` | Es nodo hoja (último nivel de la estructura). |
-| `isPenultimate` | `boolean` | Es penúltimo nivel (sus hijos son hojas/recursos). |
-| `nextLevelTitle` | `string` | Título del nivel hijo (para tooltips de "agregar"). |
-| `isLast` | `boolean` | `true` si es hoja o leaf. |
-| `istack` | `string` | ID del stacker inyectado. |
-| `nistack` | `string` | Nombre de la propiedad del ID stacker (p. ej. `"icurso"`). |
+| `isLeaf` | `boolean` | Es nodo hoja. |
+| `isPenultimate` | `boolean` | Es penúltimo nivel. |
+| `nextLevelTitle` | `string` | Título del nivel hijo. |
+| `isLast` | `boolean` | `true` si es hoja. |
+| `istack` | `string` | ID del stacker. |
+| `nistack` | `string` | Nombre de la propiedad ID del stacker. |
+| `type?` | `string` | Tipo del nodo (consultado por `isGrouper`/`isActionGrouper`). |
+| `acceptsChild?` | `(child) => boolean` | Veto fino en drop. |
+| `sortChildren?` | `(children) => children` | **Obligatorio** en agrupadores `freezer`/`monarchy`. |
+| `canPlaceChildAt?` | `(child, idx) => boolean` | Veto de posición. |
+| `freeze?` | `() => boolean` | **Obligatorio** en hijos bajo `monarchy`. |
 
-### `ITreeData<T>` (exportado desde `_treeAdapter/_rowAdapter/00-base.ts`, re-exportado por `TreeView.svelte`)
-
-Interfaz que el modelo de trabajo debe implementar (F-bounded polymorphism). Extiende `INode<T>`:
+### `ITreeData<T>`
 
 ```ts
 interface ITreeData<T extends ITreeData<T> & TObject> extends INode<T> {
    children: T[];
+   [k: string]: any;
 }
 ```
 
-### `TreeRowConfig` (interno en `_treeAdapter/_rowAdapter/00-base.ts`)
+F-bounded polymorphism. La index signature permite que clases concretas sumen propiedades de dominio.
 
-Configuración visual y de comportamiento para cada fila:
+### Sistema actoral (`node.obj.actor`)
 
-```ts
-type TreeRowConfig = {
-   icono?: { icon: string; color?: ComponentColor; [k: string]: any };
-   disabled?: boolean;
-   draggable?: boolean;
-   isFirst?: boolean;
-   isLast?: boolean;
-   actions?: ButtonIconifyProps[];
-   cascadeOptions?: FlexOptionsAction[];
-   events?: {
-      onopen?: () => void;
-      onclose?: () => void;
-      onfocus?: () => void;
-      onblur?: () => void;
-      onclick?: () => void;
-      onleadiconclick?: () => void;
-   };
-};
-```
+Cadena en kebab-case con roles separados por espacios. Múltiples roles permitidos:
+
+| Rol | Semántica resumida |
+| --- | ------------------ |
+| `atom` | Hoja conceptual; nunca caret. |
+| `group` | Inferido si declara cualquier rol agrupador. |
+| `warden` | Transforma el `WardenDraft` del descendiente. |
+| `prison` | Agrupador con osmosis + acción "Liberar". |
+| `cell` | Agrupador con osmosis; se extingue con sus hijos. |
+| `hermetic` | Agrupador sellado (sin osmosis). |
+| `freezer` | Tautológico: congela TODOS los descendientes. Requiere `sortChildren`. |
+| `monarchy` | Contingente: cada descendiente decide vía `freeze()`. Requiere `sortChildren`. |
+
+Detalle completo en [`_treeAdapter/__TreeAdapter.md`](_treeAdapter/__TreeAdapter.md#capa-06-rolests--sistema-actoral).
 
 ---
 
-## `TreeView.svelte`
+## `TreeRowView.svelte`
 
 ### Directiva
 
@@ -124,72 +166,68 @@ generics="Stacker extends TObject, TWorking extends ITreeData<TWorking> & TObjec
 Extiende `FormularioProps<Stacker>`:
 
 | Prop | Tipo | Default | Descripción |
-|---|---|---|---|
-| `CatalogoController` | `TControllerCatalogoGen<TWorking> & ICtxGrid & ICtxAction` | **requerido** | Controlador CRUD de nodos. |
-| `TreeController` | `TreeAdapter<Stacker, TWorking>` | **requerido** | Instancia concreta del adapter del árbol. |
-| `Obj` | `Stacker` | **requerido** | Objeto padre (p. ej. `TCurso`). |
-| `itdForm` | `TDForm` | **requerido** | Estado del formulario (`"view"`, `"edit"`, `"create"`). |
-| `brapido` | `boolean` | `false` | Modo rápido (oculta toolbar de agregar raíz, cascadeOptions). |
+| ---- | ---- | ------- | ----------- |
+| `CatalogoController` | `TControllerCatalogoGen<TWorking> & ICtxGrid & ICtxAction` | requerido | Controlador CRUD de nodos. |
+| `TreeController` | `TreeRowViewAdapter<Stacker, TWorking>` | requerido | Instancia concreta del adapter. |
+| `Obj` | `Stacker` | requerido | Stacker (objeto padre). |
+| `itdForm` | `TDForm` | requerido | Estado del formulario (`"view"`/`"edit"`/`"create"`). |
+| `brapido` | `boolean` | `false` | Modo rápido (oculta toolbar de agregar raíz). |
 | `small` | `boolean` | `false` | Tamaño compacto. |
-| `readonly` | `boolean` | `false` | Solo lectura. Fuerza `itdForm = "view"` en el drawer. |
+| `readonly` | `boolean` | `false` | Solo lectura. Fuerza `itdForm = "view"`. |
 | `disabled` | `boolean` | `false` | Deshabilita interacción. |
-| `showToolbar` | `boolean` | `true` | Muestra/oculta barra de herramientas superior. |
-| `bAllowed` | `{ Crear?, Modificar?, Eliminar?, Visualizar? }` | `undefined` | Permisos de seguridad. |
-| `bdrag` | `boolean` | `true` | Habilita drag-and-drop para reordenar. |
-| `objWorking` | `INode<TWorking> \| null` | `null` | Nodo actualmente seleccionado (bindable). |
-| `addReferenceId` | `string \| null` | `null` | (interno) ID del nodo de referencia para agregar último nivel. |
-| `resourceSelectorOpen` | `boolean` | — | (interno) Indica si el selector de recursos está abierto. |
+| `showToolbar` | `boolean` | `true` | Muestra/oculta barra de herramientas. |
+| `bAllowed` | `{ Crear?, Modificar?, Eliminar?, Visualizar? }` | `undefined` | Permisos. |
+| `bdrag` | `boolean` | `true` | Habilita drag-and-drop. |
+| `objWorking` | `INode<TWorking> \| null` | `null` | Nodo seleccionado (bindable). |
+| `addReferenceId` | `string \| null` | `null` | Interno. |
+| `resourceSelectorOpen` | `boolean` | — | Interno. |
 
 ### `TreeViewSlots`
 
-| Slot | Props expuestas | Uso |
-|---|---|---|
+| Slot | Props | Uso |
+| ---- | ----- | --- |
 | `default` | `treeToolbar`, `sizew`, `showEliminar` | Reemplaza la toolbar por defecto. |
-| `pre` | `treeToolbar`, `sizew`, `showEliminar` | Contenido adicional antes del cuerpo del árbol. |
-| `Frm` | `frmObj`, `small`, `itdForm`, `brapido` | Formulario de edición dentro del `ActionDrawer`. |
+| `pre` | `treeToolbar`, `sizew`, `showEliminar` | Contenido antes del cuerpo. |
+| `Frm` | `frmObj`, `small`, `itdForm`, `brapido` | Formulario del drawer. |
 
-### Flujo reactivo interno
+### Re-exports (barrel)
 
-```
-$: TreeController.onstateupdate({ Obj, itdForm, small, brapido, bdrag, ... })
-    → syncTreeViewBindState()    // sincroniza objWorking adapter → vista
-    → Object.assign(context)     // actualiza contexto
-    → onchangecurso()            // detecta cambio de stacker
-    → onbranchexpand()           // auto-expande raíces (una vez)
-    → onprocessobj()             // procesa nodo seleccionado
-    → onupdate()                 // refresh si rootNodes cambió
-    → ontouchitem()              // hook subclases
-    → onensurefirstselection()   // selecciona primer nodo si nada está seleccionado
-
-$: TreeController.bindParentData(setShowFrm, showFrmModificar, showFrmVisualizar, showEliminar)
-
-$: rootNodes = TreeController.rootNodes   // re-evaluado cuando $rowLayoutTickStore cambia
+```ts
+export {
+   ComplexControl,         // _treeAdapter/00-complex-control
+   TreeRowViewAdapter,     // _asRow/01-treeAdapterAsRowEvents
+   TreeRowAdapter,         // _asRow/_rowAdapter/02-events
+   TreeNodeUX,             // _asRow/_rowAdapter/00-node-mixin
+   groupedWithSeparators,  // _asRow/_rowAdapter/00-base
+   objRootsToNodes,        // _asRow/_rowAdapter/00-base
+};
+export type { INode, ITreeData };
 ```
 
-### UI
+### UI (esquema)
 
-```
-TouchGestures (swipe handlers)
-└── span.isp-tree-host (display: contents)
+```text
+TouchGestures
+└── span.isp-tree-host
     └── FlexLayout (column)
-        ├── [slot default] o FlexOptions toolbar
+        ├── [slot default] | FlexOptions toolbar
         ├── [slot pre]
         └── FlexLayout.isp-tree-body (role="tree")
-            └── RowItem (nodes={rootNodes}, treeController, rowLayoutEpoch)
+            └── RowItem (recursivo)
         └── ActionDrawer (editRowShow)
             └── AccionesGen → slot Frm
-    └── Modal (bshowEliminar) — confirmación de eliminación con código
+    └── Modal (bshowEliminar)
 ```
 
 ### Clases CSS (`:global` desde `span.isp-tree-host`)
 
 | Clase | Elemento |
-|---|---|
-| `.isp-tree` | Contenedor raíz del árbol. |
-| `.isp-tree-body` | Cuerpo scrollable del árbol. |
-| `.isp-tree-focus-scope` | Scope de foco para navegación por teclado. |
-| `.isp-tree-toolbar` | Barra de herramientas superior. |
-| `.isp-tree-frm-body` | Cuerpo del drawer de edición. |
+| ----- | -------- |
+| `.isp-tree` | Contenedor raíz. |
+| `.isp-tree-body` | Cuerpo scrollable. |
+| `.isp-tree-focus-scope` | Scope de foco. |
+| `.isp-tree-toolbar` | Toolbar superior. |
+| `.isp-tree-frm-body` | Cuerpo del drawer. |
 
 ---
 
@@ -204,30 +242,37 @@ generics="TWorking extends ITreeData<TWorking> & TObject"
 ### `RowItemProps<TWorking>`
 
 | Prop | Tipo | Descripción |
-|---|---|---|
-| `treeController` | `TreeAdapter<any, TWorking>` | Referencia al adapter del árbol. |
-| `nodes` | `INode<TWorking>[]` | Lista de nodos a renderizar en este nivel. |
-| `rowLayoutEpoch` | `number` | Epoch de layout; fuerza re-render cuando se incrementa. |
+| ---- | ---- | ----------- |
+| `treeController` | `TreeRowViewAdapter<any, TWorking>` | Adapter del árbol. |
+| `nodes` | `INode<TWorking>[]` | Nodos a renderizar en este nivel. |
+| `rowLayoutEpoch` | `number` | Epoch para forzar re-render. |
 
 ### `RowItemAdapterBridge<TWorking>`
 
-Extiende `RowItemProps` con getters/setters reactivos:
-
+Extiende `RowItemProps` con:
 - `node` (getter) — nodo actual del `{#each}`.
-- `nodes` (getter/setter) — lista de nodos del nivel actual.
-- `onUiTouch` (getter) — callback para forzar re-asignación y re-render (`nodes = nodes`).
+- `nodes` (getter/setter) — lista del nivel.
+- `onUiTouch` (getter) — callback de re-render.
 - `rowLayoutEpoch` (getter/setter).
 
-### Flujo por nodo
+### Render por nodo
 
-```
+```svelte
 {#each nodes as node (node.id)}
    {@const rowController = treeController.getOrCreateRowAdapter(bridge)}
    <div data-tree-row-id={id} data-idrow={id}>
       <FloatingComponent showfloat={hasRowTools && (showActions || isHighlighted)}>
          <details.trvwr-itm open={isNodeOpen}>
-            <summary.trvwr-itm-sum ...eventos>
-               [drag handle] [chevron + icono carpeta | icono hoja] [label]
+            <summary.trvwr-itm-sum>
+               {#if rowController.isDraggable}
+                  <span class="trvwr-drag-handle" draggable />
+               {/if}
+               {#if rowController.showCaret}
+                  <span class="trvwr-itm-symb">…caret + folder…</span>
+               {:else if rowController.rowIcono}
+                  <span class="trvwr-itm-lead">…icono lead…</span>
+               {/if}
+               <span class="trvwr-itm-content">{@html node.label}</span>
             </summary>
             {#if hasChildren && isNodeOpen}
                <svelte:self {treeController} {rowLayoutEpoch} nodes={node.children} />
@@ -239,94 +284,111 @@ Extiende `RowItemProps` con getters/setters reactivos:
 {/each}
 ```
 
+### Reglas de visibilidad
+
+- **Drag handle:** `rowController.isDraggable` ⇔ `!isViewMode && !mergedDisabled && !isFrozen`.
+- **Caret:** `rowController.showCaret` ⇔ `!isAtom(node) && hasChildren`.
+- **Lead icon:** se pinta si NO hay caret y hay icono.
+- **Acciones flotantes:** `showActions || isHighlighted` (gobernado por `sync()` del row adapter).
+
 ### Interacción
 
-- **Drag handle**: siempre visible (`{#if true}`). El `<span class="trvwr-drag-handle">` tiene `draggable={true}` y delega `ondragstart`/`ondragend` al `rowController`.
+- **Drag handle**: `<span class="trvwr-drag-handle" draggable>` delega `ondragstart`/`ondragend` al `rowController`.
 - **Click en chevron** (`.trvwr-itm-symb`): toggle expand/collapse, no navega.
 - **Click en fila**: selecciona nodo, aplica foco.
-- **Doble click / Enter**: abre drawer de edición (o visualización en `view` mode).
+- **Doble click / Enter**: abre drawer (vista o edición).
 - **Long press (touch)**: equivale a doble click.
 
 ### Clases CSS clave
 
 | Clase | Descripción |
-|---|---|
+| ----- | ----------- |
 | `.trvwr-row-host` | `display: contents`. |
-| `.trvwr-itm` | `<details>` de cada fila. |
-| `.trvwr-itm-sum` | `<summary>` clickable. |
-| `.trvwr-itm-sum--focused` | Outline cuando es `isHighlighted`. |
+| `.trvwr-itm` | `<details>`. |
+| `.trvwr-itm-sum` | `<summary>`. |
+| `.trvwr-itm-sum--focused` | Outline cuando `isHighlighted`. |
 | `.trvwr-itm-sum--disabled` | Opacidad reducida. |
-| `.trvwr-itm-sum--drg-bf` / `--drg-aftr` | Indicador de drop antes/después. |
-| `.trvwr-itm-sum--drg-forbidden-bf` / `--drg-forbidden-aftr` | Indicador de drop prohibido (distinto padre). |
-| `.trvwr-itm--dragging` | Opacidad 0.4 al arrastrar. |
-| `.highlight` | Fondo resaltado (`--trvwr-hghlght-bg`). |
-| `.should-flash` | Clase para animación flash. |
+| `.trvwr-itm-sum--drg-bf` / `--drg-aftr` | Drop antes/después. |
+| `.trvwr-itm-sum--drg-forbidden-bf` / `--drg-forbidden-aftr` | Drop prohibido. |
+| `.trvwr-itm--dragging` | Mientras se arrastra. |
+| `.highlight` | Fila seleccionada. |
+| `.should-flash` | Animación flash. |
 | `.trvwr-drag-handle` | Handle de arrastre. |
-| `.trvwr-itm-symb` | Icono de expansión (chevron + carpeta). |
-| `.trvwr-itm-lead` | Icono lead para nodos sin hijos. |
-| `.trvwr-itm-content` | Contenido textual (label). |
+| `.trvwr-itm-symb` | Caret + folder icon. |
+| `.trvwr-itm-lead` | Icono lead. |
+| `.trvwr-itm-content` | Label. |
 | `.trvwr-itm-children-wrap` | Wrapper con `transition:slide`. |
 
 ### Variables CSS por fila (inline en `<details style>`)
 
 | Variable | Valor |
-|---|---|
+| -------- | ----- |
 | `--trvwr-hvr-dflt` | `mkAlpha("color", 92)` — hover. |
 | `--trvwr-ctv-dflt` | `mkAlpha("color", 86)` — active. |
-| `--trvwr-hghlght-bg` | `mkAlpha("primary", 88)` — fondo de fila seleccionada. |
-| `--trvwr-hghlght-hvr-bg` | `mkAlpha("primary", 80)` — hover sobre fila seleccionada. |
+| `--trvwr-hghlght-bg` | `mkAlpha("primary", 88)` — fila seleccionada. |
+| `--trvwr-hghlght-hvr-bg` | `mkAlpha("primary", 80)` — hover sobre seleccionada. |
 | `--trvwr-swp-bg` | `mkAlpha("success", 70)` — swipe. |
 | `--trvwr-fcs-rng` | `mkAlpha("primary", 45)` — focus ring. |
-| `--trvwr-drp-ndctr-bg` | `mkAlpha("primary", 80)` — indicador de drop. |
-| `--trvwr-drp-ndctr-hght` | Altura del placeholder de drop (mín. 24px). |
+| `--trvwr-drp-ndctr-bg` | `mkAlpha("primary", 80)` — indicador drop. |
+| `--trvwr-drp-ndctr-hght` | Altura del placeholder de drop. |
 
 ---
 
-## `_treeAdapter/_rowAdapter/` — `TreeRowAdapter`
+## `_asRow/_rowAdapter/` — `TreeRowAdapter`
 
-Clase instanciada por cada nodo visible. Extiende `ComplexControl`. **No** es un componente Svelte.
+Clase concreta instanciada por cada nodo visible. Detalle en [`_asRow/_rowAdapter/__RowAdapter.md`](_asRow/_rowAdapter/__RowAdapter.md). Resumen:
+
+### Cascada
+
+```text
+TRABase (00-base.ts)  + TreeNodeUX mixin (00-node-mixin.ts)
+   ▲
+TRADrag (01-drag.ts)
+   ▲
+TreeRowAdapter (02-events.ts)
+```
 
 ### Estado público mutable
 
 | Propiedad | Tipo | Descripción |
-|---|---|---|
-| `dragOver` | `"before" \| "after" \| null` | Posición del indicador de drop. |
-| `dragForbidden` | `boolean` | Drop prohibido (distinto padre). |
+| --------- | ---- | ----------- |
+| `dragOver` | `"before" \| "after" \| "into" \| null` | Indicador de drop. |
+| `dragForbidden` | `boolean` | Drop inválido (mismo nodo / descendiente / sin permiso). |
 | `dragEnterCount` | `number` | Contador de `dragenter`/`dragleave`. |
-| `dragPlaceholderHeight` | `number` | Altura del placeholder de drop. |
-| `filteredActions` | `ButtonIconifyProps[]` | Acciones visibles (sin flechas en extremos). |
-| `hasRowTools` | `boolean` | Tiene acciones o cascadeOptions. |
-| `showActions` | `boolean` | `true` si `hasRowTools && focusedRowId === this.id`. |
+| `dragPlaceholderHeight` | `number` | Altura del placeholder. |
+| `filteredActions` | `FlexOptionsInput[]` | Acciones visibles (filtradas por `isFirst/isLast/isFrozen`). |
+| `cascadeOptions` | `FlexOptionsInput[]` | Cascade options. |
+| `hasRowTools` | `boolean` | Tiene acciones o cascade. |
+| `showActions` | `boolean` | `hasRowTools && focusedRowId === id`. |
 | `longPressTimer` | timeout | Timer de long press. |
 
-### Getters derivados
+### Getters derivados (selección)
 
 | Getter | Descripción |
-|---|---|
-| `id` | ID normalizado del nodo. |
-| `hasChildren` | Tiene hijos. |
-| `isNodeOpen` | Está expandido (presente en `expandedNodes`). |
+| ------ | ----------- |
+| `id` | ID normalizado. |
+| `hasChildren` | `node.children?.length > 0`. |
+| `isNodeOpen` | Está expandido. |
 | `nodeDisabled` | Está en `disabledNodes`. |
 | `mergedDisabled` | `nodeDisabled \|\| adapter.disabled \|\| config.disabled`. |
-| `isDraggable` | No está en viewMode y no está disabled. |
-| `rowIcono` | Icono parseado (`{ icon, rest, mergedStyle }`). |
-| `isHighlighted` | Es focusedRow o (sin foco) es selectedRow. |
-| `isSelected` | Es selectedRow. |
-| `shouldFlash` | Está en `flashIds`. |
-| `siblingPos` | `{ isFirst, isLast }` — posición entre hermanos. |
-| `effectiveRowConfig` | Merge de `defaultRowConfig` + `getRowConfig` del adapter. |
-| `onLeadIconClick` | Callback de click en icono lead (carpeta vacía → agregar hijo). |
+| `isFrozen` | `treeAdapter.isFrozen(node)` — bloquea movimiento. |
+| `showCaret` | `!isAtom && hasChildren`. |
+| `isDraggable` | `!isViewMode && !mergedDisabled && !isFrozen`. |
+| `rowIcono` | `{ icon, rest, mergedStyle }` parseado. |
+| `isHighlighted` | Es focusedRow o (sin foco) selectedRow. |
+| `siblingPos` | `{ isFirst, isLast }`. |
+| `effectiveRowConfig` | Merge de `defaultRowConfig` + `getRowConfig`. |
 
-### `sync()`
+### `filterRowActions`
 
-Recalcula `filteredActions`, `hasRowTools` y `showActions`. Invocado por `syncAllRowAdapters()`.
+Quita `mdi:arrow-up` si `isFirst` y `mdi:arrow-down` si `isLast`. Con `isFrozen`, quita ambos.
 
 ### `effectiveRowConfig` — lógica de merge
 
 ```ts
 get effectiveRowConfig(): TreeRowConfig {
-   const fallback = this.defaultRowConfig(node);     // acciones genéricas
-   const cfg = this.treeAdapter.getRowConfig(node);   // override del adapter
+   const fallback = this.defaultRowConfig(node);
+   const cfg = this.treeAdapter.getRowConfig(node) ?? {};
    return {
       ...fallback,
       ...cfg,
@@ -340,245 +402,213 @@ get effectiveRowConfig(): TreeRowConfig {
 ### Eventos de teclado (`onkeydown`)
 
 | Tecla | Acción |
-|---|---|
-| `ArrowDown` | Foco al siguiente. Con `Ctrl`: mover nodo abajo. |
-| `ArrowUp` | Foco al anterior. Con `Ctrl`: mover nodo arriba. |
+| ----- | ------ |
+| `ArrowDown` | Foco al siguiente. Con `Ctrl`: mover abajo. |
+| `ArrowUp` | Foco al anterior. Con `Ctrl`: mover arriba. |
 | `ArrowRight` | Expandir nodo. |
 | `ArrowLeft` | Colapsar nodo. |
 | `Home` | Foco al primer visible. |
 | `End` | Foco al último visible. |
-| `Enter` | Abrir drawer de edición. Con `Ctrl`: `onCtrlEnter` (p. ej. ver recurso). |
+| `Enter` | Abrir drawer. Con `Ctrl`: `onCtrlEnter`. |
 | `Insert` | Agregar hermano debajo. |
 | `Delete` | Eliminar nodo. |
 
-### `objRootsToNodes()` (función exportada)
-
-Convierte un array de objetos `ITreeData` jerárquicos en `INode[]` para la vista:
+### `objRootsToNodes()`
 
 ```ts
 function objRootsToNodes<T>(roots: readonly T[], labelFn?: (obj: T) => string): INode<T>[]
 ```
 
-- Normaliza IDs (strip `_UP_`/`_M_`).
-- Aplica `labelFn` para generar el `label` HTML.
-- Copia `isLeaf`, `isPenultimate`, `nextLevelTitle`, `isLast`.
-- Recurre sobre `children`.
+Convierte objetos `ITreeData` jerárquicos en `INode[]` para la vista (normaliza IDs, aplica `labelFn`, copia flags, recurre).
 
 ---
 
-## `_treeAdapter/` — `TreeAdapter`
+## `TreeRowViewAdapter` — capa final del adapter
 
-Clase abstracta que centraliza toda la lógica del árbol. Las subclases concretas (p. ej. `ContenidosTreeAdapter`) implementan los métodos abstractos.
+Resumen (detalle en [`_asRow/__asRow.md`](_asRow/__asRow.md)). El consumidor extiende esta clase.
 
-### Jerarquía interna
+### Estado heredado clave
 
+| Propiedad | Descripción |
+| --------- | ----------- |
+| `_selectedId` | ID del nodo seleccionado. |
+| `_focusedNodeId` | ID con foco. |
+| `_item` / `_originalItem` | Item seleccionado + clon original (dirty check). |
+| `_treeNodes` | Roots construidos. |
+| `_expandedNodes` | Nodos expandidos. |
+| `flashIds` | IDs en flash temporal. |
+| `rowAdapters` | `Map<id, TreeRowAdapter>`. |
+| `rowLayoutEpoch` | Store de epoch para forzar relayout. |
+
+### Configuración inyectable
+
+```ts
+interface TreeRowViewAdapterConfig {
+   floatCard?: { tx?, ty?, scale? };
+}
+adapter.applyAdapterConfig({ floatCard: { tx: "1rem", ty: "-1em", scale: 0.8 } });
 ```
-TTreeAdapterContext    — estado interno (_selectedId, _focusedRowId, _item, _treeNodes, _expandedNodes, etc.)
-└── TTreeAdapterContract  — flashIds, disabledNodes, rowAdapters, rowLayoutEpoch
-    └── TreeAdapter       — API pública completa
-```
-
-### Estado interno clave (`TTreeAdapterContext`)
-
-| Propiedad | Tipo | Descripción |
-|---|---|---|
-| `_selectedId` | `string` | ID del nodo seleccionado. |
-| `_focusedRowId` | `string` | ID del nodo con foco visual. |
-| `_item` | `TWorking \| null` | Objeto de trabajo seleccionado. |
-| `_originalItem` | `TWorking \| null` | Clon del item al momento de selección (dirty check). |
-| `_treeNodes` | `INode<TWorking>[]` | Nodos raíz construidos. |
-| `_expandedNodes` | `INode<TWorking>[]` | Nodos expandidos. |
-
-### Getters públicos importantes
-
-| Getter | Descripción |
-|---|---|
-| `obj` / `set obj` | Stacker. El setter invoca `onrefresh()`. |
-| `rootNodes` / `treeNodes` | `_treeNodes`. |
-| `expandedNodes` | `_expandedNodes`. |
-| `selectedId` | `INode` del nodo seleccionado (busca en `rootNodes`). |
-| `focusedRowId` | `INode` del nodo con foco. |
-| `objWorking` | `INode` del item seleccionado (busca en `rootNodes`). |
-| `isViewMode` | `itdForm === "view"`. |
-| `isReadOnly` | `readonly === true`. |
-| `puedeCrear/Modificar/Eliminar/Visualizar` | Desde `bAllowed` (default `true`). |
-| `bdrag` | Drag habilitado. |
-| `isBrapido` | Modo rápido. |
-| `lastLevelSelectorOpen` | Mapea a `context.resourceSelectorOpen`. |
-| `addReferenceId` | Mapea a `context.addReferenceId`. |
 
 ### Métodos abstractos (subclase debe implementar)
 
-| Método | Firma | Descripción |
-|---|---|---|
-| `createNode` | `(data: TObject) => TWorking` | Fábrica de nodos concretos. |
-| `get stack` | `Stacker` | Acceso al stacker (alias de `obj`). |
-| `get istack` | `string` | ID del stacker (p. ej. `icurso`). |
-| `get nistack` | `string` | Nombre de la prop ID del stacker. |
-| `get stackListNodes` | `TObject[]` | Lista plana de nodos desde el stacker. |
-| `getNodeTitle` | `(obj: TWorking) => string` | Lee título del nodo. |
-| `setNodeTitle` | `(obj, title) => void` | Escribe título del nodo. |
-| `getTitle` | `(node: INode) => string` | Título para display. |
-| `prepareInsertSiblingNode` | `() => Partial<TWorking>` | Datos mínimos para hermano temporal. |
-| `prepareOpenDrawer` | `(newId, referenceId) => Partial<TWorking>` | Datos para nuevo hermano en drawer. |
-| `prepareOnAddChild` | `(nodeId, referenceId) => Partial<TWorking>` | Datos para nuevo hijo. |
-| `sortFnBuildTree` | `(a, b) => number` | Comparador de orden (default: `0`). |
+Heredados del contrato genérico (`_treeAdapter/01-contract.ts`):
 
-### Métodos públicos principales
+| Método | Firma |
+| ------ | ----- |
+| `createNode` | `(data) => TWorking` |
+| `get stack` | `Stacker` |
+| `get stackList` / `set` | `TWorking[]` |
+| `get istack` / `nistack` | `string` |
+| `nodeCtor` / `nidNode` | constructor / nombre |
+| `getlevelname` | `(nivel?, record?) => string` |
+| `getEditDriverAttrs` / `getEditAttrsForLevel` | atributos editables |
+| `canEditSelectResource` | `(plan, draft) => boolean` |
+| `getEditAtributoValor` / `setEditAtributoValor` | accesos al draft |
+| `setEditRecursoSelected` | asigna recurso |
+| `applySelection`, `resyncExpandedToCurrentTree`, `syncAllRowAdapters`, `onrefresh` | ciclo de vida |
 
-#### Construcción del árbol
+### Métodos públicos principales (cierre concreto)
 
-| Método | Descripción |
-|---|---|
-| `buildTree(planes)` | Construye árbol jerárquico desde lista plana. Mapea por `id` con `.` como separador de niveles. |
-| `flattenTree(roots)` | Aplana árbol en lista DFS, reasignando IDs. |
-| `onrefresh()` | Reconstruye `_treeNodes` desde `stackListNodes` via `buildTree` + `objRootsToNodes`. |
-
-#### Normalización y búsqueda
+#### Construcción del árbol (`_treeAdapter/03-tree.ts`)
 
 | Método | Descripción |
-|---|---|
-| `normalizeNodeId(id)` | Strip `_UP_`/`_M_` + trim. Acepta `null`/`undefined`. |
-| `findNodeById(id)` | Búsqueda pública por ID normalizado. |
-| `findBranchById(branches, id)` | Búsqueda recursiva en sub-árbol. |
-| `findBranchByObject(branches, obj)` | Búsqueda por igualdad de referencia. |
-| `getSiblingPosition(nodeId)` | `{ isFirst, isLast }` entre hermanos. |
-| `getNextNodeId(padreId)` | Siguiente ID disponible bajo `padreId`. |
+| ------ | ----------- |
+| `buildTree(planes)` | Árbol jerárquico desde lista plana. |
+| `flattenTree(roots)` | Aplana DFS y reasigna IDs. |
+| `onrefresh()` | Reconstruye `_treeNodes` desde `stackListNodes` + dispara `applyDefaultExpansion` la primera vez. |
 
 #### Selección y foco
 
 | Método | Descripción |
-|---|---|
-| `setSelectedId(id)` | Selecciona nodo, aplica foco, sincroniza. |
-| `applySelection(edit)` | Muta `_selectedId`, `_item`, `_originalItem`. |
-| `onensurefirstselection()` | Auto-selecciona primer nodo si nada está seleccionado. |
+| ------ | ----------- |
+| `setSelectedId(id)` | Selecciona, foca, sincroniza. |
+| `applySelection(edit)` | Muta `_selectedId`/`_item`. |
+| `onensurefirstselection()` | Auto-selecciona si nada seleccionado. |
+| `focusRowById(id)` | Foco DOM (microtask + rAF). |
+| `refocusFocusedRowSummary()` | Re-foca con reintentos (hasta 6 frames). |
+| `blurTreeSummariesExcept(el)` | Quita foco a otros `<summary>`. |
 
 #### Expansión
 
 | Método | Descripción |
-|---|---|
-| `expandAll()` | Expande todos los nodos con hijos. |
+| ------ | ----------- |
+| `expandAll()` | Expande todo. |
 | `collapseAll()` | Colapsa todo. |
-| `expandedNodesAfterToggle(nodes, id, open)` | Retorna nuevo array de expandidos tras toggle. |
+| `applyDefaultExpansion()` | Expande según `shouldAutoExpand` (idempotente). |
+| `shouldAutoExpand(node)` (protected) | Default: `isGrouper`; override en subclase. |
 
-#### CRUD de nodos
+#### CRUD
 
 | Método | Descripción |
-|---|---|
-| `onaddroot()` | Crea nodo raíz, refresh, abre drawer. |
-| `onaddchild(referenceId)` | Crea hijo. Si el nodo de referencia es penúltimo, invoca `onAddChildLastLevel()`. |
-| `onaddsibling(nodeId, pos)` | Crea hermano arriba/abajo. |
-| `handleaddchild(referenceId)` | Wrapper de `onaddchild` + `setSelectedId` + `flashRowIds`. |
-| `handleaddsibling(nodeId, pos)` | Wrapper de `onaddsibling` + flash. |
-| `onselectlastlevel(records)` | Procesa registros del selector de último nivel (recursos). |
-| `openEdit(node)` | Abre drawer de edición. |
-| `openViewNode(node)` | Abre drawer en modo visualización. |
-| `oneditaccept(node)` | `CatalogoController.Actualizar()` + refresh. |
-| `requestDelete(node)` | Guarda ID pendiente, muestra modal de eliminación. |
-| `ondeleteconfirmed()` | Ejecuta eliminación, refresh, selecciona nodo adyacente. |
+| ------ | ----------- |
+| `onaddroot()` | Crea raíz, refresh, abre drawer. |
+| `onaddchild(refId)` | Crea hijo. |
+| `onaddsibling(id, pos)` | Crea hermano arriba/abajo. |
+| `handleaddchild(refId)` | Wrapper + flash. |
+| `handleaddsibling(id, pos)` | Wrapper + flash. |
+| `requestDelete(node)` | Modal de confirmación. |
+| `ondeleteconfirmed()` | Ejecuta + refresh. |
+| `openEdit(node)` / `openViewNode(node)` | Drawer. |
+| `oneditaccept(node)` | Confirma edición. |
 
 #### Reorden
 
 | Método | Descripción |
-|---|---|
-| `move(nodeId, dir)` | Mueve nodo arriba/abajo entre hermanos. |
-| `reorder(sourceId, targetId, pos)` | Reordena por drag-and-drop. |
+| ------ | ----------- |
+| `move(id, dir)` | ↑/↓ entre hermanos. |
+| `reorder(srcId, tgtId, pos)` | Drag-and-drop. |
+| `nestInto(srcId, tgtId)` | Anida. |
 | `commitAndFlash(id)` | Selecciona + flash + sync. |
 
 #### Toolbar
 
 | Método | Descripción |
-|---|---|
-| `getToolsBarActions()` | Retorna `FlexOptionsAction[]`: agregar raíz, separador, colapsar, expandir. |
-| `getAddRootLabel()` | Etiqueta del botón agregar raíz (usa `getlevelname(1)`). |
+| ------ | ----------- |
+| `getToolsBarActions()` | `FlexOptionsAction[]`: agregar raíz, colapsar, expandir. |
+| `getAddRootLabel()` | Etiqueta del botón (usa `getlevelname(1)`). |
 
 #### Row adapters
 
 | Método | Descripción |
-|---|---|
-| `syncAllRowAdapters()` | Llama `sync()` en cada adapter + incrementa `rowLayoutEpoch`. |
-| `getOrCreateRowAdapter(bridge)` | Obtiene o crea `TreeRowAdapter` para un nodo. |
-| `registerRowAdapter(adapter)` | Registra adapter en el `Map`. |
-| `unregisterRowAdapter(adapter)` | Elimina adapter del `Map`. |
-| `blurTreeSummariesExcept(el)` | Quita foco DOM de otros `<summary>`. |
+| ------ | ----------- |
+| `getOrCreateRowAdapter(bridge)` | Idempotente. |
+| `registerRowAdapter` / `unregisterRowAdapter` | Map. |
+| `disposeRowAdapterById(id)` | Destruye uno. |
+| `syncAllRowAdapters()` | `sync()` masivo + `rowLayoutEpoch++`. |
 
-#### Drawer de edición
+#### Drawer
 
 | Método | Descripción |
-|---|---|
-| `bindParentData(setShowFrm, showFrmModificar, showFrmVisualizar, showEliminar)` | Conecta callbacks de la vista al adapter. |
-| `closePlanDrawer()` | Hook para cerrar drawer (no-op por defecto). |
-| `createEditDraft(plan)` | Clon del nodo para edición. |
-| `syncEditTitleToTree(plan, title)` | Sincroniza título del draft al árbol. |
-| `onEditDrawerAccept(draft)` | Acepta edición + cierra drawer. |
-| `onEditDrawerClose(plan, draft)` | Cierra drawer + sincroniza título. |
+| ------ | ----------- |
+| `bindParentData(setShowFrm, showFrmModificar, showFrmVisualizar, showEliminar)` | Conecta callbacks. |
+| `closePlanDrawer()` | Hook. |
+| `createEditDraft(plan)` | Clon para edición. |
+| `syncEditTitleToTree(plan, title)` | Sync de título. |
+| `onEditDrawerAccept(draft)` / `onEditDrawerClose(plan, draft)` | Cierre. |
 
-#### Hooks para edición (overridables)
+#### `getRowConfig(node)` — corazón de la fila
 
-| Método | Default | Descripción |
-|---|---|---|
-| `getEditDriverAttrs()` | `[]` | Atributos del driver para el formulario de edición. |
-| `getEditAttrsForLevel(attrs, plan)` | passthrough | Filtra atributos por nivel. |
-| `canEditSelectResource(plan, draft)` | `!!draft` | ¿Puede seleccionar recurso? |
-| `getEditAtributoValor(draft, iatributo)` | `""` | Lee valor de atributo. |
-| `setEditAtributoValor(draft, iatributo, valor)` | passthrough | Escribe valor de atributo. |
-| `setEditRecursoSelected(draft, record)` | passthrough | Asigna recurso seleccionado. |
+Retorna `TreeRowConfig | null` con:
 
-#### `getRowConfig(node)` — configuración de fila
-
-Retorna `TreeRowConfig` con:
-
-- **Icono**: carpeta (abierta/cerrada/vacía/plus), archivo, documento. Color dorado para carpetas, gris para vacías, `info` para hojas.
-- **Acciones** (array `ButtonIconifyProps`):
-  - Mover arriba/abajo (si `puedeModificar && bdrag`, no en viewMode).
-  - Editar / Ver formulario (si `puedeModificar || isViewMode`).
-  - Agregar hijo (si carpeta, `puedeCrear`, no `brapido`).
-  - Acciones particulares del consumidor (`particularactionsrow()`).
-  - Eliminar (si `puedeEliminar`).
-- **Cascade options**: añadir hermano arriba/abajo.
-- **Draggable**: `bdrag && !isReadOnly`.
-- **Events**: `onleadiconclick` en carpetas vacías (agregar hijo).
+- **Icono**: por default según `isLastNode`/`hasChildren`/`isFolder`. Override por `getNodeIcon(node, ctx)`.
+- **Acciones** (compuestas en orden):
+  1. `actorActions(node)` — del rol propio (`prison` aporta "Liberar").
+  2. `wardenDraft(node).actions` — pipeline closest→farthest.
+  3. `particularactionsrow(node)` — del consumidor.
+  4. Por modo: ver formulario (en `viewMode`), eliminar (si no `isPrison`-only).
+- **Cascade**: editar, añadir hermano arriba/abajo, `wardenDraft.cascadeOptions`, `particularcascadeoptionsrow`.
+- **Draggable**: `bdrag && !isReadOnly` (filtrado adicional por `isFrozen` en el row adapter).
+- **Events.onleadiconclick**: en folder vacío → `handleaddchild`.
 
 #### `onstateupdate(ctx)` — ciclo de sincronización
 
-Llamado reactivamente por `TreeView.svelte`:
+Llamado reactivamente por `TreeRowView.svelte`:
 
+```text
+syncTreeViewBindState(ctx)   sincroniza objWorking adapter→vista, auto-selecciona si vacío
+Object.assign(context, ctx)  actualiza contexto
+onchangecurso()              detecta cambio de stacker, resetea expansión
+onbranchexpand()             auto-expande raíces (primera vez)
+onprocessobj()               procesa selección
+onupdate()                   refresh si rootNodes cambió
+ontouchitem()                hook subclases
+onensurefirstselection()     selecciona primero si nada
+if (itdForm/readonly) → syncAllRowAdapters()
 ```
-syncTreeViewBindState(ctx)   → sincroniza objWorking adapter→vista, auto-selecciona si vacío
-Object.assign(context, ctx)  → actualiza contexto
-onchangecurso()              → detecta cambio de stacker, resetea expansión
-onbranchexpand()             → auto-expande raíces (primera vez)
-onprocessobj()               → procesa selección del nodo actual
-onupdate()                   → refresh si rootNodes cambió
-ontouchitem()                → hook para subclases
-onensurefirstselection()     → selecciona primer nodo si nada seleccionado
-if (itdForm || readonly changed) → syncAllRowAdapters()
+
+---
+
+## Flujo reactivo en `TreeRowView.svelte`
+
+```text
+$: TreeController.onstateupdate({ Obj, itdForm, small, brapido, bdrag, ... })
+$: TreeController.bindParentData(setShowFrm, showFrmModificar, showFrmVisualizar, showEliminar)
+$: rootNodes = TreeController.rootNodes   // re-evaluado con $rowLayoutTickStore
 ```
 
 ---
 
 ## Integración con otros `_comps`
 
-| Componente | Uso en TreeView |
-|---|---|
-| `FlexOptions` (`Options/`) | Toolbar global + acciones flotantes por fila. |
-| `FloatingComponent` (`containers/`) | Contenedor flotante para acciones por fila (visible al hacer foco). |
-| `CascadeOptions` (`Options/`) | Menú "más opciones" por fila. |
-| `TouchGestures` (`containers/`) | Wrapper de gestos swipe en el árbol. |
-| `ActionDrawer` (ISP) | Drawer lateral para formulario de edición. |
-| `AccionesGen` (ISP) | Controlador CRUD dentro del drawer. |
-| `ComplexControl` (`_treeAdapter/00-complex-control.ts`) | Clase base para adapter y row adapter. |
+| Componente | Uso |
+| ---------- | --- |
+| `FlexOptions` (`Options/`) | Toolbar global + acciones flotantes. |
+| `FloatingComponent` (`containers/`) | Card flotante de acciones por fila. |
+| `TouchGestures` (`containers/`) | Wrapper de gestos swipe. |
+| `ActionDrawer` (ISP) | Drawer lateral del formulario. |
+| `AccionesGen` (ISP) | Controlador CRUD del drawer. |
+| `ComplexControl` (`_treeAdapter/00-complex-control.ts`) | Base reactiva para adapter y row adapter. |
 
 ### Diagrama de componentes
 
-```
-TreeView.svelte
+```text
+TreeRowView.svelte
 ├── TouchGestures
 │   └── FlexOptions (toolbar)
 │   └── _rowItem.svelte (recursivo)
 │       ├── FloatingComponent
-│       │   ├── <details>/<summary> (fila)
-│       │   └── FlexOptions + CascadeOptions (slot="float")
+│       │   ├── <details>/<summary>
+│       │   └── FlexOptions (slot="float", + cascade)
 │       └── <svelte:self> (hijos)
 │   └── ActionDrawer
 │       └── AccionesGen → slot Frm
@@ -589,23 +619,32 @@ TreeView.svelte
 
 ## Referencia de consumo
 
-### Imports típicos
-
-```ts
-import TreeView from ".../_comps/TreeView/TreeView.svelte";
-import type { TreeViewProps } from ".../_comps/TreeView/TreeView.svelte";
-import type { INode, ITreeData } from ".../_comps/TreeView/_rowAdapter.svelte";
-import { TreeAdapter } from ".../_comps/TreeView/_treeAdapter.svelte";
-```
-
-### Patrón de uso (componente consumidor)
-
 ```svelte
 <script lang="ts">
-   let treeControl = new MiTreeAdapter();
+   import TreeView, {
+      TreeRowViewAdapter,
+      TreeNodeUX,
+      type INode,
+      type ITreeData,
+   } from ".../_comps/TreeView/TreeRowView.svelte";
+
+   class MiUX extends TreeNodeUX(TMiPlan) {}
+
+   class MiAdapter extends TreeRowViewAdapter<TMiCurso, MiUX> {
+      constructor() {
+         super(/* … */);
+         this.applyAdapterConfig({ floatCard: { tx: "1rem", ty: "-1em", scale: 0.8 } });
+      }
+      // … contrato (createNode, stack, getlevelname, etc.)
+      protected override getNodeIcon(node, { isLastNode }) {
+         return isLastNode ? null : { icon: "mdi:database-outline" };
+      }
+   }
+
+   let treeControl = new MiAdapter();
    let catalogoController = wrapCatalogo(new MiController(() => treeControl.obj));
 
-   $: treeControl.obj = Obj;  // CRÍTICO: sincroniza el stacker con el adapter
+   $: treeControl.obj = Obj;
 </script>
 
 <TreeView
@@ -614,11 +653,11 @@ import { TreeAdapter } from ".../_comps/TreeView/_treeAdapter.svelte";
    CatalogoController={catalogoController}
    TreeController={treeControl}
 >
-   <MiFormulario slot="Frm" let:frmObj let:small let:itdForm ... />
+   <MiFormulario slot="Frm" let:frmObj let:small let:itdForm />
 </TreeView>
 ```
 
-> **Nota importante sobre reactividad:** `treeControl.obj = Obj` invoca `onrefresh()` sincrónicamente, pero **no** incrementa `rowLayoutEpoch`. Si la vista depende de `treeNodes.length` (p. ej. para `{#if hasNodes}`), se debe leer el estado directamente después de la asignación o suscribirse a `$rowLayoutEpoch` como dependencia del `$:`.
+> **Reactividad:** `treeControl.obj = Obj` invoca `onrefresh()` sincrónicamente, pero **no** incrementa `rowLayoutEpoch`. Si la vista depende de `treeNodes.length`, léelo después de la asignación o usa `$rowLayoutEpoch` como dependencia del `$:`.
 
 ---
 
@@ -627,3 +666,14 @@ import { TreeAdapter } from ".../_comps/TreeView/_treeAdapter.svelte";
 `FlexLayout`, `Text`, `Iconify`, `mkAlpha`, `resolveColor`, `Button`, `H3`, `Input`, `Modal`, `ActionDrawer`, `AccionesGen`, `Card` — desde `@ingenieria_insoft/ispsveltecomponents`.
 
 `TObject`, `TControllerCatalogoGen` — desde `@ingenieria_insoft/ispgen`.
+
+---
+
+## Reglas de oro (resumen)
+
+1. **Cascada estricta** en `_treeAdapter/`, `_asRow/` y `_asRow/_rowAdapter/`: nunca importar de un índice mayor.
+2. **Una sola clase por archivo.** Sin mezcla de capas.
+3. **El barrel es `TreeRowView.svelte`**. No reintroduzcas un `index.ts` raíz.
+4. **Roles fuera del modo de vista.** Toda lógica actoral vive en `_treeAdapter/06-roles.ts`.
+5. **Plomería del modo fila en `_asRow/00`, UI en `_asRow/01`.** El consumidor extiende solo `TreeRowViewAdapter` (la clase final de `01`).
+6. **Svelte 4.** Sin runas, sin snippets. La reactividad la pone el `.svelte` consumidor.
