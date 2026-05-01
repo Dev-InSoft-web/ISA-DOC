@@ -11,6 +11,13 @@ export class TTableNodeBase {
 	tableKey: string = "";
 	tableIndex: number = -1;
 	prefix: string = "";
+	/**
+	 * Cadena completa de prefijos heredados desde los wardens ancestros
+	 * (outermost→innermost). Se aplica como decoración no editable: el input
+	 * de renombrado edita sólo `rowName` (la parte despojada de la cadena),
+	 * y al persistir el nombre final es `chainPrefix + rowName`.
+	 */
+	chainPrefix: string = "";
 	colCount: number = 0;
 	/** Id del dominio al que pertenece este nodo (si aplica). */
 	domainId: string = "";

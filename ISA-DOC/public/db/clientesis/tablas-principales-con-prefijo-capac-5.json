@@ -241,13 +241,13 @@
     {
       "fragmentId": "tablas-principales-con-prefijo-capac-5",
       "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
-      "comment": "Tabla CAPAC_CURSOS",
+      "comment": "Tabla CAPAC_PLANES_ESTUDIO",
       "hasIfNotExists": true,
-      "originalName": "CAPAC_CURSOS",
-      "name": "CAPAC_NUEVO_CURSOS",
+      "originalName": "CAPAC_PLANES_ESTUDIO",
+      "name": "CAPAC_PLANES_ESTUDIO",
       "columns": [
         {
-          "name": "ICURSO",
+          "name": "IPLANESTUDIO",
           "type": "VARCHAR(255)",
           "nullable": "",
           "defaultValue": "",
@@ -255,7 +255,7 @@
           "extra": ""
         },
         {
-          "name": "NCURSO",
+          "name": "NOMBRE",
           "type": "VARCHAR(255)",
           "nullable": "",
           "defaultValue": "",
@@ -263,15 +263,7 @@
           "extra": ""
         },
         {
-          "name": "ITEMA",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "DESCRIPCION",
+          "name": "DESCRIPCIONPLAN",
           "type": "TEXT",
           "nullable": "",
           "defaultValue": "",
@@ -279,8 +271,8 @@
           "extra": ""
         },
         {
-          "name": "IDRIVER",
-          "type": "BIGINT",
+          "name": "TTDVISUALIZACION",
+          "type": "VARCHAR(50)",
           "nullable": "",
           "defaultValue": "",
           "primaryKey": false,
@@ -295,10 +287,18 @@
           "extra": ""
         },
         {
-          "name": "BGENERACERTIFICADO",
+          "name": "BGENERACERTIFICADOS",
           "type": "BIT",
           "nullable": "",
           "defaultValue": "0",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IRECURSO",
+          "type": "VARCHAR(255)",
+          "nullable": "NULL",
+          "defaultValue": "",
           "primaryKey": false,
           "extra": ""
         },
@@ -374,13 +374,13 @@
     {
       "fragmentId": "tablas-principales-con-prefijo-capac-5",
       "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
-      "comment": "Tabla CAPAC_PLANES_ESTUDIO",
+      "comment": "Tabla CAPAC_CURSOS",
       "hasIfNotExists": true,
-      "originalName": "CAPAC_PLANES_ESTUDIO",
-      "name": "CAPAC_PLANES_ESTUDIO",
+      "originalName": "CAPAC_CURSOS",
+      "name": "CAPAC_NUEVO_MISCURSOS",
       "columns": [
         {
-          "name": "IPLANESTUDIO",
+          "name": "ICURSO",
           "type": "VARCHAR(255)",
           "nullable": "",
           "defaultValue": "",
@@ -388,7 +388,7 @@
           "extra": ""
         },
         {
-          "name": "NOMBRE",
+          "name": "NCURSO",
           "type": "VARCHAR(255)",
           "nullable": "",
           "defaultValue": "",
@@ -396,7 +396,15 @@
           "extra": ""
         },
         {
-          "name": "DESCRIPCIONPLAN",
+          "name": "ITEMA",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "DESCRIPCION",
           "type": "TEXT",
           "nullable": "",
           "defaultValue": "",
@@ -404,8 +412,8 @@
           "extra": ""
         },
         {
-          "name": "TTDVISUALIZACION",
-          "type": "VARCHAR(50)",
+          "name": "IDRIVER",
+          "type": "BIGINT",
           "nullable": "",
           "defaultValue": "",
           "primaryKey": false,
@@ -420,18 +428,10 @@
           "extra": ""
         },
         {
-          "name": "BGENERACERTIFICADOS",
+          "name": "BGENERACERTIFICADO",
           "type": "BIT",
           "nullable": "",
           "defaultValue": "0",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IRECURSO",
-          "type": "VARCHAR(255)",
-          "nullable": "NULL",
-          "defaultValue": "",
           "primaryKey": false,
           "extra": ""
         },

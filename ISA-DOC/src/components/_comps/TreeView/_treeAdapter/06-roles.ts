@@ -51,9 +51,45 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 		return raw.trim().length === 0 ? [] : raw.trim().split(/\s+/);
 	}
 
-	/** Si el nodo declara un rol actoral concreto. */
+	/**
+	 * Grupos de roles actorales que entran en conflicto entre sí. Para cada
+	 * grupo, si un nodo declara más de un miembro, sólo prevalece el de
+	 * **mayor índice** (el último en la lista del grupo). El resto se ignora.
+	 *
+	 * - Contención de hijos: `prison` < `hermetic` < `cell`. Si se declaran
+	 *   "prison hermetic cell", actúa únicamente como `cell`.
+	 * - Ordenamiento: `monarchy` < `freezer`. Si se declaran "monarchy freezer",
+	 *   actúa únicamente como `freezer`.
+	 */
+	private static readonly CONFLICT_GROUPS: ReadonlyArray<readonly string[]> = [
+		["prison", "hermetic", "cell"],
+		["monarchy", "freezer"],
+	];
+
+	/**
+	 * Resuelve la lista de roles eliminando los miembros de cada grupo de
+	 * conflicto que NO sean el de mayor índice declarado. Mantiene el orden
+	 * relativo del resto de roles (no agrupados).
+	 */
+	private resolveActorRoles(roles: readonly string[]): string[] {
+		if (roles.length === 0) return [];
+		const drop = new Set<string>();
+		for (const group of TARoles.CONFLICT_GROUPS) {
+			let bestIdx = -1;
+			for (const r of roles) {
+				const i = group.indexOf(r);
+				if (i > bestIdx) bestIdx = i;
+			}
+			if (bestIdx < 0) continue;
+			const winner = group[bestIdx];
+			for (const member of group) if (member !== winner) drop.add(member);
+		}
+		return roles.filter((r) => !drop.has(r));
+	}
+
+	/** Si el nodo declara un rol actoral concreto (tras resolución de conflictos). */
 	hasActor(node: INode<TWorking>, role: "atom" | "group" | "warden" | "prison" | "hermetic" | "cell" | "freezer" | "monarchy"): boolean {
-		const roles = this.getActorRoles(node);
+		const roles = this.resolveActorRoles(this.getActorRoles(node));
 		if (roles.includes(role)) return true;
 		const groupAliases = ["warden", "prison", "hermetic", "cell", "freezer", "monarchy"] as const;
 		if (role === "group") return groupAliases.some((r) => roles.includes(r));

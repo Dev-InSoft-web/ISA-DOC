@@ -378,7 +378,10 @@
 								</span>
 							{:else}
 								<span class="tree-row">
-									<span class="tree-row-name">{node.obj.rowName.startsWith(node.obj.prefix) ? node.obj.rowName.slice(node.obj.prefix.length) : node.obj.rowName}</span>
+									{#if node.obj.chainPrefix}
+										<span class="tree-row-chain" aria-hidden="true">{node.obj.chainPrefix}</span>
+									{/if}
+									<span class="tree-row-name">{node.obj.rowName}</span>
 									<span class="tree-row-meta">{node.obj.colCount}</span>
 								</span>
 							{/if}
@@ -419,12 +422,17 @@
 									<div class="frm">
 										<label class="field">
 											<Text color="neutral"><small>Nombre de la tabla</small></Text>
-											<input
-												class="input-field"
-												type="text"
-												bind:value={frmObj.rowName}
-												on:input={(e) => { frmObj.rowName = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"); }}
-											/>
+											<div class="chain-input">
+												{#if frmObj.chainPrefix}
+													<span class="chain-input-prefix" aria-hidden="true">{frmObj.chainPrefix}</span>
+												{/if}
+												<input
+													class="input-field name-input"
+													type="text"
+													bind:value={frmObj.rowName}
+													on:input={(e) => { frmObj.rowName = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"); }}
+												/>
+											</div>
 										</label>
 										<Text color="neutral"><small>Para editar columnas/secciones, selecciona la tabla y usa el panel SQL.</small></Text>
 									</div>
@@ -717,6 +725,11 @@
 		min-width: 0;
 		flex: 1;
 	}
+	.tree-row-chain {
+		color: var(--is-text-neutral, #888);
+		opacity: 0.7;
+		white-space: nowrap;
+	}
 	.tree-row-meta {
 		color: var(--is-text-neutral, #888);
 		font-size: 0.75rem;
@@ -870,5 +883,28 @@
 		background: var(--is-bg-primary);
 		color: inherit;
 		font: inherit;
+	}
+	.chain-input {
+		display: flex;
+		align-items: stretch;
+		border: 1px solid var(--is-b-color, #555);
+		border-radius: 4px;
+		background: var(--is-bg-primary);
+		overflow: hidden;
+	}
+	.chain-input .chain-input-prefix {
+		padding: 0.4rem 0.5rem;
+		color: var(--is-text-neutral, #888);
+		opacity: 0.75;
+		background: var(--is-bg-secondary, transparent);
+		border-right: 1px solid var(--is-b-color, #555);
+		white-space: nowrap;
+		font: inherit;
+	}
+	.chain-input .input-field {
+		flex: 1;
+		border: none;
+		border-radius: 0;
+		background: transparent;
 	}
 </style>

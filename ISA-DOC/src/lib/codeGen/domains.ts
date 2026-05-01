@@ -173,3 +173,29 @@ export function savePrefixOrders(m: PrefixOrderMap): void {
 		localStorage.setItem(PREFIX_KEY, JSON.stringify(m));
 	} catch { /* noop */ }
 }
+
+/**
+ * Mapa de prefijos hijos por contenedor padre. La clave usa el contrato:
+ * "" para la raíz, "prefix:<name>" para un prefijo padre, "domain:<id>" para
+ * un dominio padre. El valor es la lista de nombres de prefijos hijos
+ * (incluye los vacíos creados manualmente y los que sí contienen tablas).
+ */
+export type ChildPrefixMap = Record<string, string[]>;
+const CHILD_PREFIX_KEY = "isa-doc:codegen:childPrefixes";
+
+export function loadChildPrefixes(): ChildPrefixMap {
+	try {
+		const raw = typeof localStorage !== "undefined" ? localStorage.getItem(CHILD_PREFIX_KEY) : null;
+		if (!raw) return {};
+		const parsed = JSON.parse(raw) as unknown;
+		if (parsed && typeof parsed === "object") return parsed as ChildPrefixMap;
+		return {};
+	} catch { return {}; }
+}
+
+export function saveChildPrefixes(m: ChildPrefixMap): void {
+	try {
+		if (typeof localStorage === "undefined") return;
+		localStorage.setItem(CHILD_PREFIX_KEY, JSON.stringify(m));
+	} catch { /* noop */ }
+}
