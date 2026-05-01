@@ -66,6 +66,14 @@ export interface ITreeData<T> {
 	 * se asume libre movimiento si está ausente.
 	 */
 	freeze?(): boolean;
+	/**
+	 * Devuelve una copia superficial e independiente del dato. Usada por la
+	 * pipeline de wardens para construir la **versión decorada** del nodo sin
+	 * mutar el original. Si no se implementa, los wardens harán un clon
+	 * por `Object.assign` con prototipo plano (útil para casos triviales,
+	 * pero pierde métodos de la clase original).
+	 */
+	clone?(): T;
 }
 
 type TreeRowConfig = {

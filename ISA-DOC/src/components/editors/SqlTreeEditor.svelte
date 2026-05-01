@@ -33,8 +33,6 @@
 	$: baseName = prefix && table.name.startsWith(prefix) ? table.name.slice(prefix.length) : table.name;
 	let baseNameDraft = baseName;
 	$: baseNameDraft = baseName;
-	let commentDraft = table.comment;
-	$: commentDraft = table.comment;
 
 	let auditarChecked: boolean = adapter.auditEnabled;
 	$: { void table; auditarChecked = adapter.auditEnabled; }
@@ -51,46 +49,12 @@
 		onChange(table);
 	}
 
-	function commitComment(v: string): void {
-		if (v === table.comment) return;
-		table.comment = v;
-		onChange(table);
-	}
-
 	function isPk(node: TSqlNodeUX): boolean {
 		return !!node.primaryKey || table.compositePrimaryKey.includes(node.rowName);
 	}
 
 	function dataListId(): string {
 		return `sql-tree-types-${table.fragmentId}-${table.originalName}`;
-	}
-
-	function autoSize(host: HTMLElement) {
-		let raf = 0;
-		const measure = () => {
-			if (raf) cancelAnimationFrame(raf);
-			raf = requestAnimationFrame(() => {
-				const inner = host.querySelector<HTMLElement>(".isp-tree");
-				if (!inner) return;
-				const h = Math.max(inner.scrollHeight, 240);
-				host.style.minHeight = `${h + 16}px`;
-			});
-		};
-		const ro = new ResizeObserver(measure);
-		const mo = new MutationObserver(measure);
-		requestAnimationFrame(() => {
-			const inner = host.querySelector<HTMLElement>(".isp-tree");
-			if (inner) ro.observe(inner);
-			mo.observe(host, { childList: true, subtree: true });
-			measure();
-		});
-		return {
-			destroy() {
-				ro.disconnect();
-				mo.disconnect();
-				if (raf) cancelAnimationFrame(raf);
-			},
-		};
 	}
 </script>
 
@@ -110,23 +74,13 @@
 		</FlexLayout>
 	</FlexLayout>
 
-	<label class="field">
-		<Text color="neutral"><small>Comentario (línea sobre la tabla)</small></Text>
-		<input
-			class="input-field"
-			type="text"
-			bind:value={commentDraft}
-			on:change={(e) => commitComment((e.currentTarget).value)}
-		/>
-	</label>
-
 	<datalist id={dataListId()}>
 		{#each COMMON_COLUMN_TYPES as t}
 			<option value={t}></option>
 		{/each}
 	</datalist>
 
-	<div class="tree-host" use:autoSize>
+	<div class="tree-host">
 		<TreeView
 			Obj={adapter.obj}
 			itdForm="edit"
@@ -244,13 +198,14 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		min-height: 320px;
+		min-height: 240px;
 		border: 1px solid var(--is-b-color);
 		border-radius: 0.25rem;
 		background: var(--is-bg-primary);
 		padding: 0.25rem;
 		font-size: 0.85rem;
 	}
+	.sql-tree-card { max-width: 100%; min-width: 0; min-height: 0; }
 	.tree-host :global(.trvwr-itm > summary) { padding-top: 0.1rem; padding-bottom: 0.1rem; }
 	.name-row { display: inline-flex; align-items: center; gap: 0.25rem; }
 	.input-field {

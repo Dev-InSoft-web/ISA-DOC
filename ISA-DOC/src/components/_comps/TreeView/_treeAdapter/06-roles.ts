@@ -12,6 +12,12 @@ import { TAMutations } from "./05-mutations";
  */
 export interface WardenDraft<TWorking> {
 	readonly node: INode<TWorking>;
+	/**
+	 * **Copia decorada** del dato del nodo (`node.obj`). Cada `warden`
+	 * ancestro la transforma en su `wardenTransform` SIN mutar el original.
+	 * El consumidor lee aquí el resultado final (rowName decorado, etc.).
+	 */
+	decoratedObj: TWorking;
 	actions: ButtonIconifyProps[];
 	cascadeOptions: FlexOptionsInput[];
 	extra: Record<string, unknown>;
@@ -156,6 +162,7 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	protected wardenDraft(node: INode<TWorking>): WardenDraft<TWorking> {
 		let draft: WardenDraft<TWorking> = {
 			node,
+			decoratedObj: this.cloneNodeData(node.obj),
 			actions: [],
 			cascadeOptions: [],
 			extra: {},
@@ -165,6 +172,22 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 			draft = this.wardenTransform(anc, node, draft);
 		}
 		return draft;
+	}
+
+	/** Clona los datos del nodo. Usa `obj.clone()` si está disponible; si no, copia superficial. */
+	protected cloneNodeData(data: TWorking): TWorking {
+		const fn = (data as { clone?: () => TWorking } | undefined)?.clone;
+		if (typeof fn === "function") return fn.call(data);
+		return { ...(data as object) } as TWorking;
+	}
+
+	/**
+	 * API pública del pipeline de wardens. Devuelve el draft decorado del nodo.
+	 * Los consumidores (display, SQL emit, etc.) deben leer de aquí; nunca
+	 * mutar `node.obj` directamente para representar la decoración actoral.
+	 */
+	draftFor(node: INode<TWorking>): WardenDraft<TWorking> {
+		return this.wardenDraft(node);
 	}
 
 	/**
@@ -275,3 +298,4 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	/** Gesto de swipe que no debe disparar acción (consumir). */
 	abstract onswipenoop(): void;
 }
+

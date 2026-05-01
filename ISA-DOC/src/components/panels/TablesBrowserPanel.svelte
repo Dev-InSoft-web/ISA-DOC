@@ -378,9 +378,6 @@
 								</span>
 							{:else}
 								<span class="tree-row">
-									{#if node.obj.chainPrefix}
-										<span class="tree-row-chain" aria-hidden="true">{node.obj.chainPrefix}</span>
-									{/if}
 									<span class="tree-row-name">{node.obj.rowName}</span>
 									<span class="tree-row-meta">{node.obj.colCount}</span>
 								</span>
@@ -423,8 +420,8 @@
 										<label class="field">
 											<Text color="neutral"><small>Nombre de la tabla</small></Text>
 											<div class="chain-input">
-												{#if frmObj.chainPrefix}
-													<span class="chain-input-prefix" aria-hidden="true">{frmObj.chainPrefix}</span>
+												{#if adapter.chainPrefixOf(frmObj.rowId)}
+													<span class="chain-input-prefix" aria-hidden="true">{adapter.chainPrefixOf(frmObj.rowId)}</span>
 												{/if}
 												<input
 													class="input-field name-input"
@@ -724,11 +721,6 @@
 		text-overflow: ellipsis;
 		min-width: 0;
 		flex: 1;
-	}
-	.tree-row-chain {
-		color: var(--is-text-neutral, #888);
-		opacity: 0.7;
-		white-space: nowrap;
 	}
 	.tree-row-meta {
 		color: var(--is-text-neutral, #888);

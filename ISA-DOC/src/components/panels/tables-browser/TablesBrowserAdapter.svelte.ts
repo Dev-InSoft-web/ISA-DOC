@@ -206,6 +206,48 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		else if (obj.kind === "prefix") this.releasePrefix(obj.prefix ?? "");
 	}
 
+	/**
+	 * Pipeline de wardens: cuando un ancestro `prefix` (warden) decora a un
+	 * descendiente, antepone su prefijo al `rowName` del clon decorado. El
+	 * dato original (`node.obj`) NUNCA se muta; sólo se mutará el clon que
+	 * vive dentro del draft.
+	 *
+	 * Excepción: si el clon ya pertenece a un dominio (atravesar un dominio
+	 * en el camino arriba), no aplicamos prefijo. La detección de dominio se
+	 * hace en `chainPrefixOf` que inspecciona la cadena real del árbol.
+	 */
+	protected override wardenTransform(warden: any, _child: any, draft: any): any {
+		const w = warden?.obj as TTableNodeUX | undefined;
+		if (!w || w.kind !== "prefix") return draft;
+		const dec = draft.decoratedObj as TTableNodeUX;
+		dec.rowName = (w.prefix ?? "") + (dec.rowName ?? "");
+		return draft;
+	}
+
+	/**
+	 * Cadena de prefijos heredados desde la raíz hasta el nodo (outermost→innermost).
+	 * Recorre los ancestros reales del árbol; si en el camino aparece un dominio,
+	 * se considera que la tabla escapa de la cadena y devuelve `""`. Esta es la
+	 * representación VIRTUAL de la decoración: no se almacena en el nodo.
+	 */
+	chainPrefixOf(rowId: string): string {
+		const node = this.findNodeById(String(rowId || "").trim());
+		if (!node) return "";
+		const parts: string[] = [];
+		let cur: any = node;
+		while (cur) {
+			const ref = String(cur.ireference || "").trim();
+			if (!ref) break;
+			const parent = this.findNodeById(ref);
+			if (!parent) break;
+			const pObj = parent.obj as TTableNodeUX | undefined;
+			if (pObj?.kind === "domain") return "";
+			if (pObj?.kind === "prefix") parts.unshift(pObj.prefix || "");
+			cur = parent;
+		}
+		return parts.join("");
+	}
+
 	particularcascadeoptionsrow(node: any): any[] {
 		const obj = node?.obj as TTableNodeUX | undefined;
 		if (!obj) return [];
@@ -832,7 +874,6 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 					ireference: myRowId,
 					kind: "table",
 					rowName: bare,
-					chainPrefix: fullChain,
 					tableKey: tableKey(it.table),
 					tableIndex: it.index,
 					colCount: it.table.columns.length,
@@ -1012,28 +1053,10 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	private emitChange(): void {
 		// Reconstruir orden de tablas a partir del árbol; tablas dentro de dominios
 		// se mantienen sin renombrar por prefijo. Las que están bajo un nodo "prefix"
-		// adoptan el nuevo prefijo (rename).
+		// adoptan el nuevo prefijo (rename). La cadena se calcula virtualmente
+		// vía `chainPrefixOf` (no se almacena en el nodo).
 		const flat = this.obj.rows;
 		const original = this._tables.slice();
-		const byRowId = new Map<string, TTableNodeUX>();
-		for (const n of flat) byRowId.set(n.rowId, n);
-		const findEnclosingPrefix = (rowId: string): string | null => {
-			// Cadena completa de prefijos ancestros (outermost → innermost). Si en el
-			// camino se encuentra un dominio, la tabla NO recibe rename por prefijo.
-			const chain: string[] = [];
-			let cur = byRowId.get(rowId);
-			while (cur) {
-				const ref = String(cur.ireference || "").trim();
-				if (!ref) break;
-				const parent = byRowId.get(ref);
-				if (!parent) break;
-				if (parent.kind === "domain") return null;
-				if (parent.kind === "prefix") chain.unshift(parent.prefix || "");
-				cur = parent;
-			}
-			if (chain.length === 0) return null;
-			return chain.join("");
-		};
 		const orderedTables: ParsedTable[] = [];
 		const seen = new Set<number>();
 		const renames: Array<{ from: string; to: string }> = [];
@@ -1043,15 +1066,15 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			const t = original[n.tableIndex];
 			if (!t) continue;
 			seen.add(n.tableIndex);
-			const enclosingPrefix = findEnclosingPrefix(n.rowId);
-			if (enclosingPrefix === null) {
+			const chain = this.chainPrefixOf(n.rowId);
+			if (!chain) {
 				orderedTables.push(t);
 				continue;
 			}
 			// El nombre final es la cadena de prefijos ancestros + el bare editado.
 			// `n.rowName` ya es el bare (la UI sólo expone esa parte para edición).
 			const sanitized = String(n.rowName ?? "").trim();
-			const nextName = enclosingPrefix + sanitized;
+			const nextName = chain + sanitized;
 			if (nextName === t.name) {
 				orderedTables.push(t);
 				continue;

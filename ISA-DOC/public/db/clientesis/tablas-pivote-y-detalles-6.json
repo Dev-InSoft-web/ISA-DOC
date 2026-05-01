@@ -182,6 +182,7 @@
       "name": "CAPAC_CURSOS_PREREQUISITOS",
       "columns": [
         {
+          "kind": "col",
           "name": "ICURSO",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -190,6 +191,7 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "ICURSOREQUERIDO",
           "type": "VARCHAR(255)",
           "nullable": "",
@@ -198,10 +200,87 @@
           "extra": ""
         },
         {
+          "kind": "col",
           "name": "IPLANESTUDIO",
           "type": "VARCHAR(255)",
           "nullable": "",
           "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "section",
+          "name": "AUDITORIA"
+        },
+        {
+          "kind": "col",
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "GETDATE()",
           "primaryKey": false,
           "extra": ""
         }

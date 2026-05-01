@@ -357,7 +357,6 @@ export function emitColumn(col: TableColumn): string {
 
 export function emitTable(t: ParsedTable): string {
 	const out: string[] = [];
-	if (t.comment) out.push(`-- ${t.comment}`);
 	if (t.hasIfNotExists) out.push(`IF OBJECT_ID('${t.name}', 'U') IS NULL`);
 	out.push(`CREATE TABLE ${t.name} (`);
 
@@ -420,7 +419,20 @@ export function emitDropTable(t: ParsedTable): string {
 /**
  * Reemplaza en el body original el bloque CREATE TABLE de cada tabla por
  * su versión re-emitida. Se reescribe por completo para garantizar consistencia.
+ *
+ * Cuando se concatenan varios snippets (más de una tabla), cada tabla se
+ * envuelve en marcadores de región SQL (`-- #region <id>` ... `-- #endregion <id>`)
+ * usando el nombre de la tabla como identificador del snippet. Para una sola
+ * tabla NO se aplica el envoltorio (no hay concatenación que requiera
+ * delimitar el snippet).
  */
 export function emitTablesAsBody(tables: ParsedTable[]): string {
-	return tables.map(emitTable).join("\n\n") + "\n";
+	if (tables.length <= 1) {
+		return tables.map(emitTable).join("\n\n") + "\n";
+	}
+	const chunks = tables.map((t) => {
+		const id = t.name;
+		return `-- #region ${id}\n${emitTable(t)}\n-- #endregion ${id}`;
+	});
+	return chunks.join("\n\n") + "\n";
 }
