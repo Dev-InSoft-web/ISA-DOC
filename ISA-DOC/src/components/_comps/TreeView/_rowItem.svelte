@@ -51,7 +51,7 @@
       summaryClass(rc: ReturnType<typeof treeController.getOrCreateRowAdapter>) {
          const drg = rc.dragOver;
          const forbidden = rc.dragForbidden && drg !== null;
-         return ["trvwr-itm-sum", rc.isHighlighted && "trvwr-itm-sum--focused", rc.mergedDisabled && "trvwr-itm-sum--disabled", !forbidden && drg === "before" && "trvwr-itm-sum--drg-bf", !forbidden && drg === "after" && "trvwr-itm-sum--drg-aftr", forbidden && drg === "before" && "trvwr-itm-sum--drg-forbidden-bf", forbidden && drg === "after" && "trvwr-itm-sum--drg-forbidden-aftr"].filter(Boolean).join(" ");
+         return ["trvwr-itm-sum", rc.isHighlighted && "trvwr-itm-sum--focused", rc.mergedDisabled && "trvwr-itm-sum--disabled", !forbidden && drg === "before" && "trvwr-itm-sum--drg-bf", !forbidden && drg === "after" && "trvwr-itm-sum--drg-aftr", !forbidden && drg === "into" && "trvwr-itm-sum--drg-into", forbidden && drg === "before" && "trvwr-itm-sum--drg-forbidden-bf", forbidden && drg === "after" && "trvwr-itm-sum--drg-forbidden-aftr", forbidden && drg === "into" && "trvwr-itm-sum--drg-forbidden-into"].filter(Boolean).join(" ");
       },
       summaryResume(rc: ReturnType<typeof treeController.getOrCreateRowAdapter>) {
          const ctx = (rc as unknown as { context?: { node?: { obj?: { label?: unknown; rowName?: unknown; levelTitle?: unknown } } } }).context;
@@ -68,11 +68,7 @@
       },
       detailsStyle(rc: ReturnType<typeof treeController.getOrCreateRowAdapter>) {
          const colorPrimary80 = mkAlpha("primary", 80);
-         const ctx = (rc as unknown as { context?: { node?: { obj?: unknown } } }).context;
-         const tc = treeController as unknown as { getRowScale?(node: unknown): number };
-         const scale = typeof tc.getRowScale === "function" && ctx?.node ? tc.getRowScale(ctx.node) : 1;
-         const fontSize = scale && scale !== 1 ? `font-size: ${scale}em` : "";
-         return [`--trvwr-hvr-dflt: ${mkAlpha("color", 92)}`, `--trvwr-ctv-dflt: ${mkAlpha("color", 86)}`, `--trvwr-hghlght-bg: ${mkAlpha("primary", 88)}`, `--trvwr-hghlght-hvr-bg: ${colorPrimary80}`, `--trvwr-swp-bg: ${mkAlpha("success", 70)}`, `--trvwr-fcs-rng: ${mkAlpha("primary", 45)}`, `--trvwr-drp-ndctr-bg: ${colorPrimary80}`, `--trvwr-drp-ndctr-hght: ${Math.max(24, rc.dragPlaceholderHeight || 24)}px`, `--trvwr-sel-brd: ${resolveColor("border")}`, fontSize].filter(Boolean).join("; ");
+         return [`--trvwr-hvr-dflt: ${mkAlpha("color", 92)}`, `--trvwr-ctv-dflt: ${mkAlpha("color", 86)}`, `--trvwr-hghlght-bg: ${mkAlpha("primary", 88)}`, `--trvwr-hghlght-hvr-bg: ${colorPrimary80}`, `--trvwr-swp-bg: ${mkAlpha("success", 70)}`, `--trvwr-fcs-rng: ${mkAlpha("primary", 45)}`, `--trvwr-drp-ndctr-bg: ${colorPrimary80}`, `--trvwr-drp-ndctr-hght: ${Math.max(24, rc.dragPlaceholderHeight || 24)}px`, `--trvwr-sel-brd: ${resolveColor("border")}`].join("; ");
       },
       get floatCardLinearTransform() {
          const tc = treeController as unknown as { floatCard?: { tx?: number | string; ty?: number | string; scale?: number } };
@@ -246,6 +242,18 @@
             }
             &.trvwr-itm-sum--drg-forbidden-aftr::after {
                margin-top: 0.35rem;
+            }
+            &.trvwr-itm-sum--drg-into {
+               outline: 2px dashed var(--is-primary);
+               outline-offset: -2px;
+               background-color: var(--trvwr-drp-ndctr-bg);
+               border-radius: 0.25rem;
+            }
+            &.trvwr-itm-sum--drg-forbidden-into {
+               outline: 2px dashed var(--is-danger, #e53935);
+               outline-offset: -2px;
+               background-color: color-mix(in srgb, var(--is-danger, #e53935) 18%, transparent);
+               border-radius: 0.25rem;
             }
             :global {
                .trvwr-itm-symb {

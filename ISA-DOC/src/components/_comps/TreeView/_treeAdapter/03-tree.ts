@@ -325,7 +325,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 	 * - Cambio de padre: se delega a `acceptsChild` del nuevo padre, o a `canDropAtRoot` si destino es root.
 	 * - Bloquea ciclos (mover un nodo dentro de su propio subárbol).
 	 */
-	canDrop(sourceId: string, targetId: string, position: "before" | "after"): boolean {
+	canDrop(sourceId: string, targetId: string, position: "before" | "after" | "into"): boolean {
 		const sId = this.normalizeNodeId(sourceId);
 		const tId = this.normalizeNodeId(targetId);
 		if (!sId || !tId || sId === tId) return false;
@@ -333,6 +333,12 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		const srcNode = this.findNodeById(sId);
 		const tgtNode = this.findNodeById(tId);
 		if (!srcNode || !tgtNode) return false;
+		// Drop "into": el destino mismo es el nuevo padre. Delega en su `acceptsChild`.
+		if (position === "into") {
+			const fn = (tgtNode.obj as any).acceptsChild as ((c: TWorking) => boolean) | undefined;
+			if (typeof fn !== "function") return false;
+			return !!fn.call(tgtNode.obj, srcNode.obj);
+		}
 		const srcRef = this.normalizeNodeId(srcNode.obj.ireference || "");
 		const tgtRef = this.normalizeNodeId(tgtNode.obj.ireference || "");
 		const sameParent = srcRef === tgtRef;

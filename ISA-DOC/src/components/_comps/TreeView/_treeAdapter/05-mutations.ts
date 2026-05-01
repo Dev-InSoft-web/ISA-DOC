@@ -193,6 +193,43 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		return cleanNewId;
 	}
 
+	/**
+	 * Anida `sourceId` como hijo (último) de `targetId`. El target se evalúa
+	 * contra `canDrop(..., "into")` (que delega en su `acceptsChild`).
+	 */
+	nestInto(sourceId: string, targetId: string): string | undefined {
+		const newId = this.nestNodeInTree(sourceId, targetId);
+		const cleanNewId = this.normalizeNodeId(newId);
+		if (!cleanNewId) return undefined;
+		this.onrefresh();
+		this.resyncExpandedToCurrentTree();
+		this._selectedId = cleanNewId;
+		this._focusedRowId = cleanNewId;
+		this.syncAllRowAdapters();
+		this.focusRowById(cleanNewId);
+		return cleanNewId;
+	}
+
+	private nestNodeInTree(sourceId: string, targetId: string): string | null {
+		if (!this.rootNodes.length) return null;
+		const srcId = this.normalizeNodeId(sourceId);
+		const tgtId = this.normalizeNodeId(targetId);
+		if (!srcId || !tgtId || srcId === tgtId) return null;
+		if (!this.canDrop(srcId, tgtId, "into")) return null;
+		const srcReference = this.findReferenceBranchInTree(this.rootNodes, srcId);
+		const tgtNode = this.findNodeById(tgtId);
+		if (!tgtNode) return null;
+		const srcSiblings = srcReference ? (srcReference.children ?? []) : this.rootNodes;
+		const srcIdx = srcSiblings.findIndex((n) => this.normalizeNodeId(n.id) === srcId);
+		if (srcIdx === -1) return null;
+		const [moving] = srcSiblings.splice(srcIdx, 1);
+		tgtNode.children = tgtNode.children ?? [];
+		tgtNode.children.push(moving);
+		this.oncommittreeorder(this.rootNodes);
+		const tgtClean = this.normalizeNodeId(tgtNode.id);
+		return `${tgtClean}.${tgtNode.children.length}`;
+	}
+
 	private moveNodeInTree(nodeId: string, dir: "up" | "down"): string | null {
 		const referenceNode = this.findReferenceBranchInTree(this.rootNodes, nodeId);
 		const siblings = referenceNode ? (referenceNode.children ?? []) : this.rootNodes;

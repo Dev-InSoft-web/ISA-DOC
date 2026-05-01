@@ -51,7 +51,7 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 		this.context.TreeController = this;
 		const self = this;
 		this.applyAdapterConfig({
-			floatCard: { tx: "1rem", ty: "-1em", scale: 0.8 },
+			floatCard: { scale: 0.8 },
 		});
 		if (onChange) this.onChange = onChange;
 		this.onrefresh();
@@ -205,9 +205,4 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 
 	override get groupTypes(): readonly string[] { return ["section"]; }
 	override get actionTypes(): readonly string[] { return ["section"]; }
-
-	override getRowScale(node: any): number {
-		const kind = node?.obj?.kind;
-		return kind === "section" ? 0.8 : 1;
-	}
 }

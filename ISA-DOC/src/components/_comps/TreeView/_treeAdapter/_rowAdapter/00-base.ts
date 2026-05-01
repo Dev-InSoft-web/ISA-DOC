@@ -73,7 +73,7 @@ type TreeRowConfig = {
 };
 
 export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> extends ComplexControl<RowItemProps<TWorking> & Record<string, unknown>> {
-	public dragOver: "before" | "after" | null = null;
+	public dragOver: "before" | "after" | "into" | null = null;
 	public dragForbidden = false;
 	public dragEnterCount = 0;
 	public dragPlaceholderHeight = 0;
@@ -292,7 +292,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 		this.treeAdapter.setExpandedNodesFn(next);
 		this.treeAdapter.onrowtoggle(this.rowNode);
 	}
-	onrowreorder(sourceId: string, targetId: string, position: "before" | "after") {
+	onrowreorder(sourceId: string, targetId: string, position: "before" | "after" | "into") {
 		this.treeAdapter.onrowreorder(sourceId, targetId, position);
 	}
 	onrowfocus(node: INode<TWorking>) {

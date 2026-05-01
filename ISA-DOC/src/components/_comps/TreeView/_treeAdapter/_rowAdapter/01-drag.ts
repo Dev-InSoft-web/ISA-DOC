@@ -43,6 +43,14 @@ export abstract class TRADrag<TStacker, TWorking extends ITreeData<TWorking>> ex
 			if (this.mergedDisabled) return;
 			e.preventDefault();
 			e.dataTransfer!.dropEffect = "move";
+			const sourceId = TRABase.currentDragNodeId || e.dataTransfer?.getData("text/plain") || "";
+			// Arrastrarse sobre sí mismo: no mostrar indicador alguno.
+			if (sourceId && sourceId === this.id) {
+				this.dragOver = null;
+				this.dragForbidden = false;
+				this.dragPlaceholderHeight = 0;
+				return;
+			}
 			if (!this.dragPlaceholderHeight) {
 				const encoded = e.dataTransfer?.getData("application/x-trvwr-row-height");
 				const parsed = encoded ? Number(encoded) : NaN;
@@ -50,12 +58,19 @@ export abstract class TRADrag<TStacker, TWorking extends ITreeData<TWorking>> ex
 			}
 			const summary = e.currentTarget as HTMLElement;
 			const rect = summary.getBoundingClientRect();
-			const midY = rect.top + rect.height / 2;
-			this.dragOver = e.clientY < midY ? "before" : "after";
-			const sourceId = TRABase.currentDragNodeId || e.dataTransfer?.getData("text/plain") || "";
-			if (sourceId && sourceId !== this.id) {
-				// La regla efectiva la decide el TreeAdapter via `canDrop`, que delega
-				// en `acceptsChild` del nuevo padre o en `canDropAtRoot`.
+			const node = (this.context as { node?: { obj?: unknown } }).node;
+			const isGrouper = !!node && this.treeAdapter.isGrouper(node as any);
+			if (isGrouper) {
+				// Agrupador: 3 bandas (25% / 50% / 25%) → before / into / after.
+				const y = e.clientY - rect.top;
+				const topBand = rect.height * 0.25;
+				const bottomBand = rect.height * 0.75;
+				this.dragOver = y < topBand ? "before" : y > bottomBand ? "after" : "into";
+			} else {
+				const midY = rect.top + rect.height / 2;
+				this.dragOver = e.clientY < midY ? "before" : "after";
+			}
+			if (sourceId) {
 				this.dragForbidden = !this.treeAdapter.canDrop(sourceId, this.id, this.dragOver);
 			} else {
 				this.dragForbidden = false;
@@ -82,14 +97,15 @@ export abstract class TRADrag<TStacker, TWorking extends ITreeData<TWorking>> ex
 			e.preventDefault();
 			const sourceId = e.dataTransfer?.getData("text/plain") || TRABase.currentDragNodeId;
 			const wasForbidden = this.dragForbidden;
+			const pos = this.dragOver;
 			this.dragEnterCount = 0;
 			this.dragForbidden = false;
-			if (!sourceId || sourceId === this.id || this.mergedDisabled || wasForbidden) {
+			if (!sourceId || sourceId === this.id || this.mergedDisabled || wasForbidden || !pos) {
 				this.dragOver = null;
 				this.dragPlaceholderHeight = 0;
 				return;
 			}
-			this.onrowreorder(sourceId, this.id, this.dragOver || "after");
+			this.onrowreorder(sourceId, this.id, pos);
 			this.dragOver = null;
 			this.dragPlaceholderHeight = 0;
 		} finally {

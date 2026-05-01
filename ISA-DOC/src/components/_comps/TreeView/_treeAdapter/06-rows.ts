@@ -21,8 +21,6 @@ export interface TreeAdapterFloatCardConfig {
 export interface TreeAdapterConfig {
 	/** Transformación lineal aplicada a las cards flotantes de acciones por fila. */
 	floatCard?: TreeAdapterFloatCardConfig;
-	/** Escala visual por defecto de la fila (font-size relativo). 1 = sin cambio. */
-	rowScale?: number;
 }
 
 export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>> extends TAMutations<Stacker, TWorking> {
@@ -37,11 +35,6 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 	/** Config de transformación aplicada a la card flotante de cada fila. */
 	get floatCard(): TreeAdapterFloatCardConfig | undefined {
 		return this._adapterConfig.floatCard;
-	}
-
-	/** Escala visual de una fila concreta. Override para escalar por tipo de nodo. */
-	getRowScale(_node: INode<TWorking>): number {
-		return this._adapterConfig.rowScale ?? 1;
 	}
 
 	/**
@@ -138,8 +131,8 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 		this.ondeleteconfirmed();
 	}
 
-	onrowreorder(sourceId: string, targetId: string, position: "before" | "after"): void {
-		const newId = this.reorder(sourceId, targetId, position);
+	onrowreorder(sourceId: string, targetId: string, position: "before" | "after" | "into"): void {
+		const newId = position === "into" ? this.nestInto(sourceId, targetId) : this.reorder(sourceId, targetId, position);
 		this.commitAndFlash(newId);
 	}
 
