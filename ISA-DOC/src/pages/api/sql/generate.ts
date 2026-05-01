@@ -8,9 +8,12 @@ import { broadcastFragmentsInvalidated } from "../../../lib/socket-server.ts";
 /**
  * Regenera los fragmentos kind="table" del init_capacitacion.sql a partir de
  * tables.json y reescribe el archivo SQL completo.
+ *
+ * Acepta `?dry=1` para devolver el SQL sin escribir a disco (preview).
  */
-export const POST: APIRoute = async () => {
+export const POST: APIRoute = async ({ url }) => {
 	try {
+		const dry = url.searchParams.get("dry") === "1";
 		const doc = await readTablesDoc();
 		const raw = await readFile(sqlFilePath, "utf8");
 		const fragments = parseSql(raw);
@@ -29,10 +32,12 @@ export const POST: APIRoute = async () => {
 		});
 
 		const full = joinFragments(next);
-		await writeFile(sqlFilePath, full, "utf8");
-		broadcastFragmentsInvalidated();
+		if (!dry) {
+			await writeFile(sqlFilePath, full, "utf8");
+			broadcastFragmentsInvalidated();
+		}
 
-		return new Response(JSON.stringify({ ok: true, full, count: doc.tables.length }), {
+		return new Response(JSON.stringify({ ok: true, full, count: doc.tables.length, dry }), {
 			status: 200, headers: { "content-type": "application/json; charset=utf-8" },
 		});
 	} catch (err) {

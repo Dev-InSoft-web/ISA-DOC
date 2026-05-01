@@ -49,34 +49,30 @@ export class TSqlTableUX {
 	}
 
 	exportToParsed(): ParsedTable {
-		const flat = this.rows.slice().sort((a, b) => compareDotIds(a.id, b.id));
-		const columns: TableRow[] = [];
+		const flat = this.rows;
 		const childrenBySection = new Map<string, TSqlNodeUX[]>();
-		const sections: TSqlNodeUX[] = [];
-		const orphans: TSqlNodeUX[] = [];
 		for (const n of flat) {
-			if (n.kind === "section") {
-				sections.push(n);
-				childrenBySection.set(n.id, []);
-			}
+			if (n.kind === "section") childrenBySection.set(n.id, []);
 		}
 		for (const n of flat) {
 			if (n.kind !== "column") continue;
 			const refId = String(n.ireference || "").trim();
-			if (refId && childrenBySection.has(refId)) {
-				childrenBySection.get(refId)!.push(n);
-			} else {
-				orphans.push(n);
-			}
+			if (refId && childrenBySection.has(refId)) childrenBySection.get(refId)!.push(n);
 		}
-		const inSectionOrder = (list: TSqlNodeUX[]) =>
-			list.slice().sort((a, b) => compareDotIds(a.id, b.id));
-		for (const o of inSectionOrder(orphans)) columns.push(o.toColumn());
-		for (const s of inSectionOrder(sections)) {
-			columns.push(s.toSection());
-			for (const c of inSectionOrder(childrenBySection.get(s.id) ?? [])) {
-				columns.push(c.toColumn());
-			}
+		// Para preservar la jerarquía explícita en el formato SQL secuencial:
+		// 1) Las columnas raíz (sin sección padre) se emiten ANTES de cualquier sección.
+		//    De lo contrario, al recargar quedarían anidadas bajo la sección que las precede.
+		// 2) Luego cada sección emite sus columnas hijas en orden visual.
+		const columns: TableRow[] = [];
+		for (const n of flat) {
+			if (n.kind !== "column") continue;
+			const refId = String(n.ireference || "").trim();
+			if (!refId || !childrenBySection.has(refId)) columns.push(n.toColumn());
+		}
+		for (const n of flat) {
+			if (n.kind !== "section") continue;
+			columns.push(n.toSection());
+			for (const c of childrenBySection.get(n.id) ?? []) columns.push(c.toColumn());
 		}
 		const next: ParsedTable = {
 			...this.parsed,
@@ -95,16 +91,4 @@ export class TSqlTableUX {
 		c.rows = this.rows.map((r) => r.clone());
 		return c;
 	}
-}
-
-function compareDotIds(a: string, b: string): number {
-	const pa = a.split(".").map((p) => parseInt(p, 10) || 0);
-	const pb = b.split(".").map((p) => parseInt(p, 10) || 0);
-	const len = Math.max(pa.length, pb.length);
-	for (let i = 0; i < len; i++) {
-		const va = pa[i] ?? 0;
-		const vb = pb[i] ?? 0;
-		if (va !== vb) return va - vb;
-	}
-	return 0;
 }

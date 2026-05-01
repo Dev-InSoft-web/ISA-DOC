@@ -131,8 +131,8 @@
 		>
 			<svelte:fragment slot="row" let:node>
 				{#if node.obj.kind === "section"}
-					<FlexLayout items="center" style="flex:1; min-width:0;">
-						<Iconify icon="mdi:folder-outline" />
+					<FlexLayout items="center" style="flex:1; min-width:0; gap:0.4rem;">
+						<Chip>{node.id}</Chip>
 						<span class="badge badge-section">Sección</span>
 						<Text style="font-weight:bold;" lines={1}>{node.obj.rowName || "(sin nombre)"}</Text>
 					</FlexLayout>

@@ -162,32 +162,10 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 
 		const actions: FlexOptionsInput[] = this.isReadOnly ? [] : [
 			this.particularactionsrow(node),
-			...(this.bdrag ? [[
-				{
-					icon: "mdi:arrow-up",
-					title: rdTitle("Mover arriba (Ctrl+Up)"),
-					disabled: mutDisabled || undefined,
-					onClick: async () => { if (!mutDisabled) { const newId = await this.move(node.id, "up"); this.commitAndFlash(newId); } },
-				},
-				{
-					icon: "mdi:arrow-down",
-					title: rdTitle("Mover abajo (Ctrl+Down)"),
-					disabled: mutDisabled || undefined,
-					onClick: async () => { if (!mutDisabled) { const newId = await this.move(node.id, "down"); this.commitAndFlash(newId); } },
-				},
-			]] : []),
 			[
-				...([
-					this.isViewMode
-						? { icon: "mdi:form-textbox", title: "Ver formulario (Enter)", onClick: () => rowController?.onrowdblclick() }
-						: { icon: "mdi:pencil-outline", title: "Editar (Enter)", onClick: () => rowController?.onrowdblclick() },
-				]),
-				...(isFolder && !this.isBrapido ? [{
-					icon: "mdi:plus-circle-outline",
-					title: rdTitle(node.isPenultimate ? "Agregar recurso (Ins)" : `Agregar ${node.nextLevelTitle || "hijo"} (Ins)`),
-					disabled: mutDisabled || undefined,
-					onClick: () => { if (!mutDisabled) void this.handleaddchild(node.id); },
-				}] : []),
+				...(this.isViewMode
+					? [{ icon: "mdi:form-textbox", title: "Ver formulario (Enter)", onClick: () => rowController?.onrowdblclick() }]
+					: []),
 				...([{
 					icon: "mdi:delete-outline",
 					title: rdTitle("Eliminar (Supr)"),
@@ -199,6 +177,13 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 		];
 
 		const cascadeOptions: CascadeOptionsInput[] = this.isReadOnly ? [] : [
+			...(!this.isViewMode ? [{
+				icon: "mdi:pencil-outline",
+				label: "Editar",
+				title: rdTitle("Editar (Enter)"),
+				disabled: mutDisabled || undefined,
+				onClick: () => rowController?.onrowdblclick(),
+			}] : []),
 			...(this.bdrag ? [[
 				{
 					icon: "mdi:table-row-plus-before",
@@ -238,6 +223,8 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 	}
 
 	protected getNodeIcon(_node: INode<TWorking>, _ctx: { isLastNode: boolean; isFolder: boolean; hasChildren: boolean; isExpanded: boolean; isEmptyFolder: boolean }): { icon?: string; color?: ComponentColor; style?: string } | null { return null; }
+
+	protected canAddChild(_node: INode<TWorking>): boolean { return true; }
 
 	protected isDirty(current: unknown, original: unknown): boolean { return original ? JSON.stringify(current) !== JSON.stringify(original) : false }
 }

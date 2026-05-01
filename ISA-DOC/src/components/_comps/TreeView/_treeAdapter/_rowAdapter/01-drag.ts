@@ -48,18 +48,18 @@ export abstract class TRADrag<TStacker, TWorking extends ITreeData<TWorking>> ex
 				const parsed = encoded ? Number(encoded) : NaN;
 				this.dragPlaceholderHeight = Number.isFinite(parsed) && parsed > 0 ? parsed : 24;
 			}
-			const sourceId = TRABase.currentDragNodeId || e.dataTransfer?.getData("text/plain") || "";
-			if (sourceId && sourceId !== this.id) {
-				const srcReference = sourceId.split(".").slice(0, -1).join(".");
-				const tgtReference = this.id.split(".").slice(0, -1).join(".");
-				this.dragForbidden = srcReference !== tgtReference;
-			} else {
-				this.dragForbidden = false;
-			}
 			const summary = e.currentTarget as HTMLElement;
 			const rect = summary.getBoundingClientRect();
 			const midY = rect.top + rect.height / 2;
 			this.dragOver = e.clientY < midY ? "before" : "after";
+			const sourceId = TRABase.currentDragNodeId || e.dataTransfer?.getData("text/plain") || "";
+			if (sourceId && sourceId !== this.id) {
+				// La regla efectiva la decide el TreeAdapter via `canDrop`, que delega
+				// en `acceptsChild` del nuevo padre o en `canDropAtRoot`.
+				this.dragForbidden = !this.treeAdapter.canDrop(sourceId, this.id, this.dragOver);
+			} else {
+				this.dragForbidden = false;
+			}
 		} finally {
 			this.touchRowUi();
 		}
@@ -81,9 +81,10 @@ export abstract class TRADrag<TStacker, TWorking extends ITreeData<TWorking>> ex
 		try {
 			e.preventDefault();
 			const sourceId = e.dataTransfer?.getData("text/plain") || TRABase.currentDragNodeId;
+			const wasForbidden = this.dragForbidden;
 			this.dragEnterCount = 0;
 			this.dragForbidden = false;
-			if (!sourceId || sourceId === this.id || this.mergedDisabled) {
+			if (!sourceId || sourceId === this.id || this.mergedDisabled || wasForbidden) {
 				this.dragOver = null;
 				this.dragPlaceholderHeight = 0;
 				return;

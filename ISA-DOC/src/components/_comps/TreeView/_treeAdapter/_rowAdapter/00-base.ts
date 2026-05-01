@@ -25,6 +25,13 @@ export interface INode<T> {
 
 export interface ITreeData<T> {
 	[k: string]: any;
+	/**
+	 * Reglas opcionales del nodo respecto a la jerarquía.
+	 * Si está presente y devuelve `false`, el nodo rechaza recibir a `child` como hijo.
+	 * Por convención: nodos hoja (tablas, columnas) jamás aceptan hijos;
+	 * nodos agrupadores (prefijo, dominio, sección) definen qué tipos pueden contener.
+	 */
+	acceptsChild?(child: T): boolean;
 }
 
 type TreeRowConfig = {

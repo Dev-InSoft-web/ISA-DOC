@@ -37,26 +37,12 @@
           "extra": ""
         },
         {
-          "kind": "col",
-          "name": "DESCRIPCION",
-          "type": "TEXT",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
+          "kind": "section",
+          "name": "AUDITORIA"
         },
         {
           "kind": "col",
-          "name": "QNIVELES",
-          "type": "TINYINT",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "kind": "col",
-          "name": "IUSUARIOCRE",
+          "name": "IPCRE",
           "type": "VARCHAR(255)",
           "nullable": "",
           "defaultValue": "",
@@ -65,7 +51,7 @@
         },
         {
           "kind": "col",
-          "name": "IPCRE",
+          "name": "IUSUARIOCRE",
           "type": "VARCHAR(255)",
           "nullable": "",
           "defaultValue": "",
@@ -118,11 +104,161 @@
           "extra": ""
         },
         {
-          "kind": "section",
-          "name": "AUDITORIA"
+          "kind": "col",
+          "name": "DESCRIPCION",
+          "type": "TEXT",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "kind": "col",
+          "name": "QNIVELES",
+          "type": "TINYINT",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
         }
       ],
       "compositePrimaryKey": [],
+      "extraStatements": [],
+      "trailing": ""
+    },
+    {
+      "fragmentId": "tablas-pivote-y-detalles-6",
+      "fragmentName": "TABLAS PIVOTE Y DETALLES",
+      "comment": "Tabla CAPAC_PLANES_CURSOS",
+      "hasIfNotExists": true,
+      "originalName": "CAPAC_PLANES_CURSOS",
+      "name": "CAPAC_PLANES_CURSOS",
+      "columns": [
+        {
+          "name": "IPLAN",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "ICURSO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "TITULO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "ITEMA",
+          "type": "VARCHAR(25)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IRECURSO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPLANPADRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "BACTIVO",
+          "type": "BIT",
+          "nullable": "",
+          "defaultValue": "1",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false,
+          "extra": ""
+        }
+      ],
+      "compositePrimaryKey": [
+        "IPLAN",
+        "ICURSO"
+      ],
       "extraStatements": [],
       "trailing": ""
     },
@@ -353,6 +489,118 @@
       "trailing": ""
     },
     {
+      "fragmentId": "tablas-pivote-y-detalles-6",
+      "fragmentName": "TABLAS PIVOTE Y DETALLES",
+      "comment": "Tabla CAPAC_CURSOS_DE_PLANES_ESTUDIO",
+      "hasIfNotExists": true,
+      "originalName": "CAPAC_CURSOS_DE_PLANES_ESTUDIO",
+      "name": "CAPAC_CURSOS_DE_PLANES_ESTUDIO",
+      "columns": [
+        {
+          "name": "IPLANESTUDIO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "ICURSO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "QORDEN",
+          "type": "INT",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "BREQUERIDO",
+          "type": "BIT",
+          "nullable": "",
+          "defaultValue": "1",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false,
+          "extra": ""
+        }
+      ],
+      "compositePrimaryKey": [
+        "IPLANESTUDIO",
+        "ICURSO"
+      ],
+      "extraStatements": [],
+      "trailing": ""
+    },
+    {
       "fragmentId": "tablas-principales-con-prefijo-capac-5",
       "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
       "comment": "Tabla CAPAC_CURSOS",
@@ -482,147 +730,6 @@
         }
       ],
       "compositePrimaryKey": [],
-      "extraStatements": [],
-      "trailing": ""
-    },
-    {
-      "fragmentId": "tablas-principales-con-prefijo-capac-5",
-      "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
-      "comment": "Tabla PERMISOS",
-      "hasIfNotExists": true,
-      "originalName": "PERMISOS",
-      "name": "PERMISOS",
-      "columns": [
-        {
-          "name": "IPERMISO",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": true,
-          "extra": ""
-        },
-        {
-          "name": "NPERMISO",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        }
-      ],
-      "compositePrimaryKey": [],
-      "extraStatements": [],
-      "trailing": ""
-    },
-    {
-      "fragmentId": "tablas-pivote-y-detalles-6",
-      "fragmentName": "TABLAS PIVOTE Y DETALLES",
-      "comment": "Tabla CAPAC_CURSOS_DE_PLANES_ESTUDIO",
-      "hasIfNotExists": true,
-      "originalName": "CAPAC_CURSOS_DE_PLANES_ESTUDIO",
-      "name": "CAPAC_CURSOS_DE_PLANES_ESTUDIO",
-      "columns": [
-        {
-          "name": "IPLANESTUDIO",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "ICURSO",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "QORDEN",
-          "type": "INT",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "BREQUERIDO",
-          "type": "BIT",
-          "nullable": "",
-          "defaultValue": "1",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IUSUARIOCRE",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IPCRE",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "FHCRE",
-          "type": "DATETIME2",
-          "nullable": "",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IUSUARIOULT",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IAPPULT",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IPULT",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "FHULT",
-          "type": "DATETIME2",
-          "nullable": "",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false,
-          "extra": ""
-        }
-      ],
-      "compositePrimaryKey": [
-        "IPLANESTUDIO",
-        "ICURSO"
-      ],
       "extraStatements": [],
       "trailing": ""
     },
@@ -833,142 +940,6 @@
       "compositePrimaryKey": [
         "ICURSO",
         "IPERMISO"
-      ],
-      "extraStatements": [],
-      "trailing": ""
-    },
-    {
-      "fragmentId": "tablas-pivote-y-detalles-6",
-      "fragmentName": "TABLAS PIVOTE Y DETALLES",
-      "comment": "Tabla CAPAC_PLANES_CURSOS",
-      "hasIfNotExists": true,
-      "originalName": "CAPAC_PLANES_CURSOS",
-      "name": "CAPAC_PLANES_CURSOS",
-      "columns": [
-        {
-          "name": "IPLAN",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "ICURSO",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "TITULO",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "ITEMA",
-          "type": "VARCHAR(25)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IRECURSO",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IPLANPADRE",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "BACTIVO",
-          "type": "BIT",
-          "nullable": "",
-          "defaultValue": "1",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IUSUARIOCRE",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IPCRE",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "FHCRE",
-          "type": "DATETIME2",
-          "nullable": "",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IUSUARIOULT",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IAPPULT",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IPULT",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "FHULT",
-          "type": "DATETIME2",
-          "nullable": "",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false,
-          "extra": ""
-        }
-      ],
-      "compositePrimaryKey": [
-        "IPLAN",
-        "ICURSO"
       ],
       "extraStatements": [],
       "trailing": ""
@@ -1414,6 +1385,35 @@
         {
           "name": "FHULT",
           "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        }
+      ],
+      "compositePrimaryKey": [],
+      "extraStatements": [],
+      "trailing": ""
+    },
+    {
+      "fragmentId": "tablas-principales-con-prefijo-capac-5",
+      "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
+      "comment": "Tabla PERMISOS",
+      "hasIfNotExists": true,
+      "originalName": "PERMISOS",
+      "name": "PERMISOS",
+      "columns": [
+        {
+          "name": "IPERMISO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": true,
+          "extra": ""
+        },
+        {
+          "name": "NPERMISO",
+          "type": "VARCHAR(255)",
           "nullable": "",
           "defaultValue": "",
           "primaryKey": false,

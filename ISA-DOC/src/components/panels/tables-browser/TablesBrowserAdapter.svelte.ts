@@ -9,7 +9,12 @@ import {
 	markAsMaster as markMasterFn,
 	removeDomain as removeDomainFn,
 	createEmptyDomain as createEmptyDomainFn,
+	loadTopLevelOrder,
+	saveTopLevelOrder,
+	type DomainDef,
 	type DomainsMap,
+	type DomainChildRef,
+	type TopLevelEntry,
 } from "../../../lib/codeGen/domains.ts";
 
 export type TablesBrowserChangeFn = (next: TablesBrowserState) => void;
@@ -64,6 +69,7 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 	public onGenerateSql: () => void = () => undefined;
 	private _tables: ParsedTable[] = [];
 	private _domains: DomainsMap = {};
+	private _topOrder: TopLevelEntry[] = [];
 
 	constructor(tables: ParsedTable[], onChange?: TablesBrowserChangeFn) {
 		const stacker = new TablesBrowserStack();
@@ -83,6 +89,7 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 		const self = this;
 		if (onChange) this.onChange = onChange;
 		this._domains = loadDomains();
+		this._topOrder = loadTopLevelOrder();
 		this.setTables(tables);
 	}
 
@@ -149,7 +156,6 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 			{
 				icon: "mdi:database-export",
 				title: "Creación SQL · Resumen completo",
-				label: "Creación SQL",
 				onClick: () => this.onGenerateSql(),
 			},
 			{ icon: "mdi:unfold-less-horizontal", title: "Colapsar todo", onClick: () => this.collapseAll?.() },
@@ -157,7 +163,6 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 			{
 				icon: "mdi:plus-circle-outline",
 				title: "Agregar dominio o prefijo de tablas",
-				label: "Agregar",
 				onClick: () => this.onAddRoot(),
 			},
 		];
@@ -192,7 +197,7 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 						? "Master del dominio"
 						: inDom
 							? "Marcar como master de este dominio"
-							: "Crear dominio con esta tabla como master",
+							: "Crear dominio",
 					title: isM ? "Master del dominio" : "Marcar como master",
 					color: isM ? ("warning" as const) : undefined,
 					onClick: () => this.markTableAsMaster(obj.rowName),
@@ -228,15 +233,21 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 		this.setDomains(createEmptyDomainFn(this._domains, name));
 	}
 
+	protected override canAddChild(): boolean { return false; }
+
+	/** En el browser de tablas, el root admite dominios y prefijos. */
+	override canDropAtRoot(src: TTableNodeUX): boolean {
+		return src.kind === "domain" || src.kind === "prefix";
+	}
+
 	private rebuildRows(): void {
-		// Particiona tablas: las que pertenecen a un dominio vs. las que no.
 		const upper = (s: string) => s.toUpperCase();
 		const tableByUpper = new Map<string, { table: ParsedTable; index: number }>();
 		this._tables.forEach((t, index) => tableByUpper.set(upper(t.name), { table: t, index }));
 
 		const claimedUpper = new Set<string>();
-		const domains = Object.values(this._domains);
-		domains.forEach((d) => d.members.forEach((m) => claimedUpper.add(upper(m))));
+		const allDomains = Object.values(this._domains);
+		allDomains.forEach((d) => d.members.forEach((m) => claimedUpper.add(upper(m))));
 
 		// Tablas no-dominio agrupadas por prefijo
 		const grouped = new Map<string, { table: ParsedTable; index: number }[]>();
@@ -247,55 +258,116 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 			if (!arr) { arr = []; grouped.set(p, arr); }
 			arr.push({ table: t, index });
 		});
-		const prefixOrder = Array.from(grouped.keys()).sort((a, b) => {
+		const knownPrefixes = Array.from(grouped.keys());
+		const childrenOfDomain = new Map<string | undefined, DomainDef[]>();
+		for (const d of allDomains) {
+			const k = d.parentId;
+			let arr = childrenOfDomain.get(k);
+			if (!arr) { arr = []; childrenOfDomain.set(k, arr); }
+			arr.push(d);
+		}
+
+		// Orden a nivel raíz: usar topOrder persistido si menciona los items; si faltan, agregar al final.
+		const rootDomains = childrenOfDomain.get(undefined) ?? [];
+		const rootDomainIds = new Set(rootDomains.map((d) => d.id));
+		const validTop = this._topOrder.filter((e) =>
+			(e.kind === "domain" && rootDomainIds.has(e.key)) ||
+			(e.kind === "prefix" && grouped.has(e.key)),
+		);
+		const seenTop = new Set(validTop.map((e) => `${e.kind}:${e.key}`));
+		for (const d of rootDomains) {
+			const k = `domain:${d.id}`;
+			if (!seenTop.has(k)) { validTop.push({ kind: "domain", key: d.id }); seenTop.add(k); }
+		}
+		const sortedPrefixes = knownPrefixes.slice().sort((a, b) => {
 			if (a === b) return 0;
 			if (a === "") return 1;
 			if (b === "") return -1;
 			return a.localeCompare(b);
 		});
+		for (const p of sortedPrefixes) {
+			const k = `prefix:${p}`;
+			if (!seenTop.has(k)) { validTop.push({ kind: "prefix", key: p }); seenTop.add(k); }
+		}
 
 		const rows: TTableNodeUX[] = [];
-		let level1 = 0;
+		const counters: number[] = [0];
 
-		// 1) Dominios primero
-		domains.forEach((d) => {
-			level1 += 1;
-			const domId = String(level1);
+		const orderedChildrenOf = (d: DomainDef): DomainChildRef[] => {
+			if (d.childrenOrder && d.childrenOrder.length > 0) {
+				const order = d.childrenOrder.slice();
+				const seenT = new Set<string>();
+				const seenD = new Set<string>();
+				for (const e of order) {
+					if (e.kind === "table") seenT.add(upper(e.key));
+					else seenD.add(e.key);
+				}
+				const subs = childrenOfDomain.get(d.id) ?? [];
+				for (const s of subs) if (!seenD.has(s.id)) order.push({ kind: "domain", key: s.id });
+				for (const m of d.members) if (!seenT.has(upper(m))) order.push({ kind: "table", key: m });
+				// Filtrar entradas obsoletas
+				return order.filter((e) =>
+					(e.kind === "domain" && (childrenOfDomain.get(d.id) ?? []).some((s) => s.id === e.key)) ||
+					(e.kind === "table" && d.members.some((m) => upper(m) === upper(e.key))),
+				);
+			}
+			// Legacy: sub-dominios primero, luego tablas (master primero).
+			const subs = (childrenOfDomain.get(d.id) ?? []).map((s) => ({ kind: "domain" as const, key: s.id }));
+			const ms = upper(d.masterTable || "");
+			const tables = [
+				...(ms ? [{ kind: "table" as const, key: d.masterTable }] : []),
+				...d.members.filter((m) => upper(m) !== ms).map((m) => ({ kind: "table" as const, key: m })),
+			];
+			return [...subs, ...tables];
+		};
+
+		const pushDomainTree = (d: DomainDef, parentRowId: string, depth: number): void => {
+			counters[depth] = (counters[depth] ?? 0) + 1;
+			const myRowId = parentRowId ? `${parentRowId}.${counters[depth]}` : String(counters[depth]);
 			rows.push(new TTableNodeUX({
-				rowId: domId,
-				ireference: "",
+				rowId: myRowId,
+				ireference: parentRowId,
 				kind: "domain",
 				rowName: d.name,
 				domainId: d.id,
 			}, this.obj));
-			// Master primero, luego slaves
-			const ordered = [
-				d.masterTable,
-				...d.members.filter((m) => upper(m) !== upper(d.masterTable)),
-			];
-			ordered.forEach((tname, ti) => {
-				const found = tableByUpper.get(upper(tname));
-				if (!found) return;
-				const isM = upper(tname) === upper(d.masterTable);
-				rows.push(new TTableNodeUX({
-					rowId: `${domId}.${ti + 1}`,
-					ireference: domId,
-					kind: "table",
-					rowName: found.table.name,
-					tableKey: tableKey(found.table),
-					tableIndex: found.index,
-					colCount: found.table.columns.length,
-					prefix: detectPrefix(found.table.name),
-					domainId: d.id,
-					isMaster: isM,
-				}, this.obj));
-			});
-		});
+			counters[depth + 1] = 0;
+			for (const child of orderedChildrenOf(d)) {
+				if (child.kind === "domain") {
+					const subDef = this._domains[child.key];
+					if (subDef) pushDomainTree(subDef, myRowId, depth + 1);
+				} else {
+					const found = tableByUpper.get(upper(child.key));
+					if (!found) continue;
+					counters[depth + 1] += 1;
+					const isM = upper(child.key) === upper(d.masterTable);
+					rows.push(new TTableNodeUX({
+						rowId: `${myRowId}.${counters[depth + 1]}`,
+						ireference: myRowId,
+						kind: "table",
+						rowName: found.table.name,
+						tableKey: tableKey(found.table),
+						tableIndex: found.index,
+						colCount: found.table.columns.length,
+						prefix: detectPrefix(found.table.name),
+						domainId: d.id,
+						isMaster: isM,
+					}, this.obj));
+				}
+			}
+		};
 
-		// 2) Prefijos (sin dominio)
-		prefixOrder.forEach((prefix) => {
-			level1 += 1;
-			const prefId = String(level1);
+		// Recorre el orden raíz mezclado.
+		counters[0] = 0;
+		for (const entry of validTop) {
+			if (entry.kind === "domain") {
+				const d = this._domains[entry.key];
+				if (d) pushDomainTree(d, "", 0);
+				continue;
+			}
+			counters[0] = (counters[0] ?? 0) + 1;
+			const prefId = String(counters[0]);
+			const prefix = entry.key;
 			rows.push(new TTableNodeUX({
 				rowId: prefId,
 				ireference: "",
@@ -316,7 +388,7 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 					prefix,
 				}, this.obj));
 			});
-		});
+		}
 
 		this.obj.rows = rows;
 		this.onrefresh();
@@ -325,39 +397,140 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 
 	protected commitFlatList(flat: TTableNodeUX[]): void {
 		this.obj.rows = flat.map((n) => { n.stack = this.obj; n.refreshUX(); return n; });
+		this.recomputeDomainsFromTree();
 		this.emitChange();
 	}
 
-	private emitChange(): void {
-		// Reconstruir mapeo prefijo → tablas a partir del orden actual.
-		// Las tablas dentro de un dominio NO se renombran por prefijo (el dominio prima).
+	/**
+	 * A partir del estado actual del árbol, reconstruye `_domains` (parentId, members,
+	 * childrenOrder) y `_topOrder` para reflejar cualquier drag de tablas o dominios.
+	 * NO re-renderea las filas: `oncommittreeorder` ya dejó ids/iref consistentes.
+	 */
+	private recomputeDomainsFromTree(): void {
 		const flat = this.obj.rows;
-		const tables = this._tables.slice();
-		const renames: Array<{ from: string; to: string }> = [];
-		let currentPrefix = "";
-		let insideDomain = false;
+		const byRowId = new Map<string, TTableNodeUX>();
+		for (const n of flat) byRowId.set(n.rowId, n);
+
+		// Sube por ireference hasta el primer nodo "domain". Devuelve su domainId, o undefined.
+		const domainContainerOf = (rowId: string): string | undefined => {
+			let cur = byRowId.get(rowId);
+			while (cur) {
+				const ref = String(cur.ireference || "").trim();
+				if (!ref) return undefined;
+				const parent = byRowId.get(ref);
+				if (!parent) return undefined;
+				if (parent.kind === "domain") return parent.domainId;
+				cur = parent;
+			}
+			return undefined;
+		};
+
+		// Reset members + parentId + childrenOrder de todos los dominios existentes.
+		const next: DomainsMap = {};
+		for (const id of Object.keys(this._domains)) {
+			next[id] = { ...this._domains[id], members: [], parentId: undefined, childrenOrder: [] };
+		}
+
+		// 1) Asignar parentId a dominios y construir childrenOrder en el orden flat.
+		const topOrder: TopLevelEntry[] = [];
+		const seenTop = new Set<string>();
+		const seenPrefixForTop = new Set<string>();
+
 		for (const n of flat) {
+			const refStr = String(n.ireference || "").trim();
 			if (n.kind === "domain") {
-				insideDomain = true;
+				const did = n.domainId;
+				if (!did || !next[did]) continue;
+				const parentDid = domainContainerOf(n.rowId);
+				next[did].parentId = parentDid;
+				if (parentDid && next[parentDid]) {
+					next[parentDid].childrenOrder!.push({ kind: "domain", key: did });
+				} else if (!refStr) {
+					const tk = `domain:${did}`;
+					if (!seenTop.has(tk)) { topOrder.push({ kind: "domain", key: did }); seenTop.add(tk); }
+				}
 				continue;
 			}
-			if (n.kind === "prefix") {
-				insideDomain = false;
-				currentPrefix = n.prefix || "";
+			if (n.kind === "table") {
+				const containerId = domainContainerOf(n.rowId);
+				if (containerId && next[containerId]) {
+					if (!next[containerId].members.some((m) => m.toUpperCase() === n.rowName.toUpperCase())) {
+						next[containerId].members.push(n.rowName);
+						next[containerId].childrenOrder!.push({ kind: "table", key: n.rowName });
+					}
+				}
 				continue;
 			}
+			if (n.kind === "prefix" && !refStr) {
+				const pk = n.prefix ?? "";
+				if (!seenPrefixForTop.has(pk)) {
+					seenPrefixForTop.add(pk);
+					const tk = `prefix:${pk}`;
+					if (!seenTop.has(tk)) { topOrder.push({ kind: "prefix", key: pk }); seenTop.add(tk); }
+				}
+			}
+		}
+
+		// Mantener master si sigue como miembro; si no, asignar el primer miembro como master.
+		for (const d of Object.values(next)) {
+			const masterUp = d.masterTable.toUpperCase();
+			const stillThere = d.members.some((m) => m.toUpperCase() === masterUp);
+			if (!stillThere) d.masterTable = d.members[0] ?? "";
+		}
+
+		this._domains = next;
+		this._topOrder = topOrder;
+		saveDomains(next);
+		saveTopLevelOrder(topOrder);
+		this.onDomainsChange(next);
+	}
+
+	private emitChange(): void {
+		// Reconstruir orden de tablas a partir del árbol; tablas dentro de dominios
+		// se mantienen sin renombrar por prefijo. Las que están bajo un nodo "prefix"
+		// adoptan el nuevo prefijo (rename).
+		const flat = this.obj.rows;
+		const original = this._tables.slice();
+		const byRowId = new Map<string, TTableNodeUX>();
+		for (const n of flat) byRowId.set(n.rowId, n);
+		const findEnclosingPrefix = (rowId: string): string | null => {
+			let cur = byRowId.get(rowId);
+			while (cur) {
+				const ref = String(cur.ireference || "").trim();
+				if (!ref) return null;
+				const parent = byRowId.get(ref);
+				if (!parent) return null;
+				if (parent.kind === "domain") return null;
+				if (parent.kind === "prefix") return parent.prefix || "";
+				cur = parent;
+			}
+			return null;
+		};
+		const orderedTables: ParsedTable[] = [];
+		const seen = new Set<number>();
+		const renames: Array<{ from: string; to: string }> = [];
+		for (const n of flat) {
 			if (n.kind !== "table") continue;
 			if (n.tableIndex < 0) continue;
-			const t = tables[n.tableIndex];
+			const t = original[n.tableIndex];
 			if (!t) continue;
-			if (insideDomain) continue;
+			seen.add(n.tableIndex);
+			const enclosingPrefix = findEnclosingPrefix(n.rowId);
+			if (enclosingPrefix === null) {
+				orderedTables.push(t);
+				continue;
+			}
 			const oldPref = detectPrefix(t.name);
-			if (oldPref === currentPrefix) continue;
+			if (oldPref === enclosingPrefix) {
+				orderedTables.push(t);
+				continue;
+			}
 			const baseName = t.name.slice(oldPref.length);
-			const nextName = currentPrefix + baseName;
+			const nextName = enclosingPrefix + baseName;
 			renames.push({ from: t.name, to: nextName });
-			tables[n.tableIndex] = { ...t, name: nextName };
+			orderedTables.push({ ...t, name: nextName });
 		}
-		this.onChange({ tables, prefixRenames: renames });
+		original.forEach((t, i) => { if (!seen.has(i)) orderedTables.push(t); });
+		this.onChange({ tables: orderedTables, prefixRenames: renames });
 	}
 }

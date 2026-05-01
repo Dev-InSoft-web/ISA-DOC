@@ -78,6 +78,13 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 		return nivel === 1 ? "Sección" : "Columna";
 	}
 
+	protected override getNodeIcon(node: any): { icon?: string; color?: any; style?: string } | null {
+		const kind = node?.obj?.kind;
+		if (kind === "column") return { icon: "mdi:table-column", color: "info" };
+		if (kind === "section") return { icon: "mdi:format-list-group", style: "color: #C9A227" };
+		return null;
+	}
+
 	getEditDriverAttrs(): any[] { return []; }
 	getEditAttrsForLevel(_d: any[], _p: TSqlNodeUX): any[] { return []; }
 	canEditSelectResource(_p: TSqlNodeUX, _d: TSqlNodeUX): boolean { return false; }
@@ -103,6 +110,29 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 	setEditRecursoSelected(d: TSqlNodeUX, _r: any): TSqlNodeUX { return d; }
 
 	private _siblingKindHint: "section" | "column" | null = null;
+
+	/**
+	 * Override: en el árbol SQL no usamos el selector de último nivel.
+	 * Cuando el padre es penúltimo (sección), añadimos directamente una columna hija.
+	 */
+	protected override onAddChildLastLevel(referenceId: string): void {
+		const ref = this.normalizeNodeId(referenceId);
+		const nodeId = this.getNextNodeId(ref);
+		const newItem = {
+			ireference: ref,
+			...this.prepareNewNode(nodeId, ref),
+			...this.getNewNodeDefaults(ref),
+		};
+		const uxItem = this.toNode(newItem as any);
+		void this.CatalogoController?.ActInsertar?.(this.stack, uxItem);
+		this.applySelection(uxItem);
+		this.onrefresh();
+		this.syncAllRowAdapters();
+		this.emitChange();
+		const item = this._item;
+		item && this.showFrmModificar(item);
+		!item && this.setShowFrm?.(true);
+	}
 
 	protected override async openSiblingDrawer(ref: TSqlNodeUX, pos: "above" | "below"): Promise<void> {
 		this._siblingKindHint = ref.kind;
@@ -163,5 +193,10 @@ export class SqlTreeAdapter extends TreeAdapter<TSqlTableUX, TSqlNodeUX> {
 		node.refreshUX();
 		this.emitChange();
 		this.syncAllRowAdapters();
+	}
+
+	/** En SQL, el root admite secciones y columnas (columnas-raíz son válidas). */
+	override canDropAtRoot(src: TSqlNodeUX): boolean {
+		return src.kind === "section" || src.kind === "column";
 	}
 }

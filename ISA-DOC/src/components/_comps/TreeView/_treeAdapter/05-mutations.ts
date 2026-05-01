@@ -214,18 +214,20 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		const srcReference = this.findReferenceBranchInTree(this.rootNodes, srcId);
 		const tgtReference = this.findReferenceBranchInTree(this.rootNodes, tgtId);
 		const sameParent = srcReference === tgtReference;
-		// Restricción cross-parent: por defecto bloqueada salvo `bcanMoveOutside`.
+		// Regla central de drop: delega en el nodo padre destino vía `canDrop`.
+		// Mantiene compat con `bcanMoveOutside` como veto adicional cuando se cruza padre.
+		if (!this.canDrop(srcId, tgtId, position)) return null;
 		if (!sameParent) {
 			const allow = this.bcanMoveOutside;
-			let canMove = false;
+			let veto = false;
 			if (typeof allow === "function") {
 				const srcNode = this.findNodeById(srcId);
 				const tgtNode = this.findNodeById(tgtId);
-				if (srcNode && tgtNode) canMove = !!allow(srcNode, tgtNode, position);
-			} else {
-				canMove = !!allow;
+				if (srcNode && tgtNode) veto = !allow(srcNode, tgtNode, position);
+			} else if (allow === false) {
+				veto = false; // ya no se usa como veto duro: canDrop manda
 			}
-			if (!canMove) return null;
+			if (veto) return null;
 		}
 		const srcSiblings = srcReference ? (srcReference.children ?? []) : this.rootNodes;
 		const tgtSiblings = tgtReference ? (tgtReference.children ?? []) : this.rootNodes;

@@ -69,6 +69,16 @@ export class TSqlNodeUX extends TreeNodeUX(TSqlNodeBase)<TSqlNodeUX> {
 		return c;
 	}
 
+	/**
+	 * Reglas del agrupador SQL.
+	 * - `section`: acepta solo columnas (no se permite anidar secciones).
+	 * - `column`: hoja. Nunca acepta hijos.
+	 */
+	acceptsChild(child: TSqlNodeUX): boolean {
+		if (this.kind === "section") return child.kind === "column";
+		return false;
+	}
+
 	static fromColumn(col: TableColumn, id: string, ireference: string, tableId: string, stack?: any): TSqlNodeUX {
 		return new TSqlNodeUX({
 			rowId: id,

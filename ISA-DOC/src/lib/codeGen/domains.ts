@@ -4,11 +4,19 @@
 
 const KEY = "isa-doc:codegen:domains";
 
+export interface DomainChildRef {
+	kind: "table" | "domain";
+	key: string;
+}
+
 export interface DomainDef {
 	id: string;
 	name: string;
 	masterTable: string;
 	members: string[];
+	parentId?: string;
+	/** Orden visual explícito de hijos (mezcla sub-dominios y tablas). Si está presente, manda. */
+	childrenOrder?: DomainChildRef[];
 }
 
 export type DomainsMap = Record<string, DomainDef>;
@@ -107,10 +115,37 @@ export function renameDomain(domains: DomainsMap, domainId: string, newName: str
 	return { ...domains, [domainId]: { ...d, name: newName } };
 }
 
-export function createEmptyDomain(domains: DomainsMap, name: string): DomainsMap {
+export function createEmptyDomain(domains: DomainsMap, name: string, parentId?: string): DomainsMap {
 	const id = `dom_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 	return {
 		...domains,
-		[id]: { id, name: name || "Nuevo dominio", masterTable: "", members: [] },
+		[id]: { id, name: name || "Nuevo dominio", masterTable: "", members: [], parentId },
 	};
+}
+
+/** Orden explícito de los nodos de nivel raíz (dominios y prefijos mezclados). */
+export interface TopLevelEntry {
+	kind: "domain" | "prefix";
+	key: string;
+}
+
+const TOP_KEY = "isa-doc:codegen:topOrder";
+
+export function loadTopLevelOrder(): TopLevelEntry[] {
+	try {
+		const raw = typeof localStorage !== "undefined" ? localStorage.getItem(TOP_KEY) : null;
+		if (!raw) return [];
+		const parsed = JSON.parse(raw) as unknown;
+		if (Array.isArray(parsed)) return parsed.filter((e: any) => e && (e.kind === "domain" || e.kind === "prefix") && typeof e.key === "string") as TopLevelEntry[];
+		return [];
+	} catch {
+		return [];
+	}
+}
+
+export function saveTopLevelOrder(order: TopLevelEntry[]): void {
+	try {
+		if (typeof localStorage === "undefined") return;
+		localStorage.setItem(TOP_KEY, JSON.stringify(order));
+	} catch { /* noop */ }
 }

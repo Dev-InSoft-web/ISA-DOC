@@ -299,6 +299,33 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		this.rowLayoutEpoch.update((n) => n + 1);
 	}
 
+	/**
+	 * Decide si un drag/drop es válido consultando las reglas del nodo padre destino.
+	 * - Reordenamientos en el mismo padre siempre se permiten.
+	 * - Cambio de padre: se delega a `acceptsChild` del nuevo padre, o a `canDropAtRoot` si destino es root.
+	 * - Bloquea ciclos (mover un nodo dentro de su propio subárbol).
+	 */
+	canDrop(sourceId: string, targetId: string, _position: "before" | "after"): boolean {
+		const sId = this.normalizeNodeId(sourceId);
+		const tId = this.normalizeNodeId(targetId);
+		if (!sId || !tId || sId === tId) return false;
+		if (tId === sId || tId.startsWith(sId + ".")) return false;
+		const srcNode = this.findNodeById(sId);
+		const tgtNode = this.findNodeById(tId);
+		if (!srcNode || !tgtNode) return false;
+		const srcRef = this.normalizeNodeId(srcNode.obj.ireference || "");
+		const tgtRef = this.normalizeNodeId(tgtNode.obj.ireference || "");
+		if (srcRef === tgtRef) return true;
+		if (!tgtRef) return this.canDropAtRoot(srcNode.obj);
+		const newParent = this.findNodeById(tgtRef)?.obj;
+		if (!newParent) return false;
+		const fn = (newParent as any).acceptsChild as ((c: TWorking) => boolean) | undefined;
+		return typeof fn === "function" ? !!fn.call(newParent, srcNode.obj) : false;
+	}
+
+	/** Override por adapter: regla de qué tipos de nodo aceptan ser hijos directos del root. */
+	canDropAtRoot(_src: TWorking): boolean { return true; }
+
 	onstateupdate(ctx: TreeViewProps<Stacker, TWorking>) {
 		const prevItdForm = this.context.itdForm;
 		const prevReadonly = this.context.readonly;

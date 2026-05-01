@@ -414,12 +414,26 @@ export function defaultFilename(cfg: ResourceConfig, kind: "modelo" | "datos" | 
 
 export function generateAll(cfg: ResourceConfig, all: ResourceConfig[]): GeneratedSnippet[] {
 	const t = cfg.targetFiles ?? {};
+	const tidy = tidySnippetBody;
 	return [
-		{ id: "modelo", label: "Modelo", filename: t.modelo || defaultFilename(cfg, "modelo"), language: "ts", body: genModelo(cfg, all) },
-		{ id: "datos", label: "Datos / Detalles", filename: t.datos || defaultFilename(cfg, "datos"), language: "ts", body: genDatos(cfg, all) },
-		{ id: "server", label: "Server", filename: t.server || defaultFilename(cfg, "server"), language: "ts", body: genServer(cfg, all) },
-		{ id: "client", label: "Client", filename: t.client || defaultFilename(cfg, "client"), language: "ts", body: genClient(cfg) },
-		{ id: "webctrl", label: "Web Controller", filename: t.webctrl || defaultFilename(cfg, "webctrl"), language: "ts", body: genWebController(cfg) },
-		{ id: "azurefn", label: "FN-Módulo", filename: t.azurefn || defaultFilename(cfg, "azurefn"), language: "ts", body: genAzureFnSingle(cfg) },
+		{ id: "modelo", label: "Modelo", filename: t.modelo || defaultFilename(cfg, "modelo"), language: "ts", body: tidy(genModelo(cfg, all)) },
+		{ id: "datos", label: "Datos / Detalles", filename: t.datos || defaultFilename(cfg, "datos"), language: "ts", body: tidy(genDatos(cfg, all)) },
+		{ id: "server", label: "Server", filename: t.server || defaultFilename(cfg, "server"), language: "ts", body: tidy(genServer(cfg, all)) },
+		{ id: "client", label: "Client", filename: t.client || defaultFilename(cfg, "client"), language: "ts", body: tidy(genClient(cfg)) },
+		{ id: "webctrl", label: "Web Controller", filename: t.webctrl || defaultFilename(cfg, "webctrl"), language: "ts", body: tidy(genWebController(cfg)) },
+		{ id: "azurefn", label: "FN-Módulo", filename: t.azurefn || defaultFilename(cfg, "azurefn"), language: "ts", body: tidy(genAzureFnSingle(cfg)) },
 	];
+}
+
+function tidySnippetBody(s: string): string {
+	let out = s;
+	// Colapsar líneas en blanco entre dos llaves de cierre consecutivas.
+	for (let i = 0; i < 4; i++) {
+		const next = out.replace(/\}[ \t]*\n[ \t]*\n+(\s*\})/g, "}\n$1");
+		if (next === out) break;
+		out = next;
+	}
+	// Colapsar 3+ saltos a 2.
+	out = out.replace(/\n{3,}/g, "\n\n");
+	return out;
 }

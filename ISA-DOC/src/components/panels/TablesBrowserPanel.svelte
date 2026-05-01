@@ -48,6 +48,11 @@
 	let addRootName: string = "";
 	let addRootKind: "domain" | "prefix" = "prefix";
 
+	let sqlPreviewShow: boolean = false;
+	let sqlPreviewValue: string = "";
+	let sqlPreviewExecuting: boolean = false;
+	let sqlPreviewUnlocked: boolean = false;
+
 	let overrides: OverrideMap = {};
 	let activeCodeTab: "sql" | "model" | "server" | "client" | "azure" = "sql";
 	let targetFilePaths: string[] = [];
@@ -149,7 +154,12 @@
 	}
 
 	function onAdapterChange(state: TablesBrowserState): void {
-		if (state.prefixRenames.length === 0) return;
+		// Persistir orden y/o renombrados de inmediato para que el árbol conserve
+		// el reordenamiento en la próxima carga.
+		const sameOrder =
+			state.tables.length === tables.length &&
+			state.tables.every((t, i) => t.name === tables[i]?.name);
+		if (state.prefixRenames.length === 0 && sameOrder) return;
 		tables = state.tables;
 		dirty = true;
 		void save(true);
@@ -241,15 +251,32 @@
 		generating = true;
 		try {
 			if (dirty) await save(true);
-			const r = await fetch("/api/sql/generate", { method: "POST" });
+			const r = await fetch("/api/sql/generate?dry=1", { method: "POST" });
 			const data = (await r.json()) as { ok?: boolean; full?: string; count?: number; error?: string };
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
-			toastSuccess(`SQL regenerado (${data.count ?? tables.length} tablas)`);
-			if (data.full) openCodeModal("init_capacitacion.sql · Resumen generado", data.full, "sql");
+			sqlPreviewValue = data.full ?? "";
+			sqlPreviewShow = true;
 		} catch (err) {
 			toastError(`Error generando SQL: ${err instanceof Error ? err.message : String(err)}`);
 		} finally {
 			generating = false;
+		}
+	}
+
+	async function executeSqlFromPreview(): Promise<void> {
+		if (sqlPreviewExecuting || !sqlPreviewUnlocked) return;
+		sqlPreviewExecuting = true;
+		try {
+			const r = await fetch("/api/sql/generate", { method: "POST" });
+			const data = (await r.json()) as { ok?: boolean; count?: number; error?: string };
+			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
+			toastSuccess(`SQL aplicado (${data.count ?? tables.length} tablas)`);
+			sqlPreviewShow = false;
+		} catch (err) {
+			toastError(`Error ejecutando SQL: ${err instanceof Error ? err.message : String(err)}`);
+		} finally {
+			sqlPreviewExecuting = false;
+			sqlPreviewUnlocked = false;
 		}
 	}
 
@@ -285,6 +312,22 @@
 		void loadProdTs();
 		void loadOverrides();
 	});
+
+	$: focusOnSelection(selectedKey);
+
+	function focusOnSelection(_key: string | null): void {
+		if (typeof window === "undefined") return;
+		requestAnimationFrame(() => {
+			const formPane = document.querySelector<HTMLElement>(".browser .form-pane");
+			if (!formPane) return;
+			const target =
+				formPane.querySelector<HTMLElement>(".name-input") ??
+				formPane.querySelector<HTMLElement>("input, select, textarea, button");
+			target?.focus({ preventScroll: false });
+			formPane.classList.add("entity-focus-flash");
+			window.setTimeout(() => formPane.classList.remove("entity-focus-flash"), 700);
+		});
+	}
 </script>
 
 <Toaster />
@@ -534,6 +577,37 @@
 	</div>
 </Modal>
 
+<Modal bind:bshow={sqlPreviewShow} onClose={() => (sqlPreviewShow = false)} style="width: 96dvw; height: 96dvh;">
+	<svelte:fragment slot="title">
+		<FlexLayout items="center">
+			<Iconify icon="mdi:database-export" />
+			<Text><strong>Creación SQL · Vista previa</strong></Text>
+		</FlexLayout>
+	</svelte:fragment>
+	<FlexLayout direction="column" style="height: 100%;">
+		<FlexLayout justify="between" items="center">
+			<Text color="neutral"><small>Código generado a partir de los snippets actuales. No se ha aplicado nada todavía.</small></Text>
+			<div class="run-pill">
+				<ButtonIconify
+					icon={sqlPreviewUnlocked ? "mdi:lock-open-variant-outline" : "mdi:lock-outline"}
+					title={sqlPreviewUnlocked ? "Bloquear ejecución" : "Desbloquear ejecución"}
+					on:click={() => (sqlPreviewUnlocked = !sqlPreviewUnlocked)}
+				/>
+				<ButtonIconify
+					color="success"
+					icon="mdi:play"
+					title="Ejecutar"
+					disabled={!sqlPreviewUnlocked || sqlPreviewExecuting}
+					on:click={executeSqlFromPreview}
+				/>
+			</div>
+		</FlexLayout>
+		<div class="sql-preview-host">
+			<CodeViewer value={sqlPreviewValue} lang="sql" height="100%" />
+		</div>
+	</FlexLayout>
+</Modal>
+
 <Modal bind:bshow={addRootShow} onClose={() => (addRootShow = false)} style="width: 30rem;">
 	<svelte:fragment slot="title">
 		<FlexLayout items="center">
@@ -741,5 +815,29 @@
 		min-height: 0;
 		height: 100%;
 		overflow: auto;
+	}
+	.sql-preview-host {
+		display: flex;
+		flex: 1 1 auto;
+		min-height: 0;
+		height: 100%;
+		overflow: hidden;
+	}
+	.run-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.15rem 0.4rem;
+		border: 1px solid var(--is-b-color, #555);
+		border-radius: 999px;
+		background: var(--is-bg-secondary);
+	}
+	:global(.entity-focus-flash) {
+		animation: entityFocusFlash 0.7s ease-out;
+	}
+	@keyframes entityFocusFlash {
+		0% { box-shadow: 0 0 0 0 var(--is-primary, #4ea1ff); }
+		40% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--is-primary, #4ea1ff) 35%, transparent); }
+		100% { box-shadow: 0 0 0 0 transparent; }
 	}
 </style>

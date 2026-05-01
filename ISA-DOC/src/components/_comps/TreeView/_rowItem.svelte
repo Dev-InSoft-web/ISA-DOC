@@ -126,8 +126,8 @@
                         {/if}
                      </FlexLayout>
                   </FlexLayout>
-                  <Card slot="float">
-                     <FlexOptions actions={rowController.filteredActions} more={rowController.cascadeOptions} />
+                  <Card slot="float" class="trvwr-float-card">
+                     <FlexOptions cscroll actions={rowController.filteredActions} more={rowController.cascadeOptions} />
                   </Card>
                </FloatingComponent>
             </summary>
@@ -148,6 +148,14 @@
 {/if}
 
 <style>
+   :global(.trvwr-float-card) {
+      max-width: min(100%, 18rem);
+      overflow-x: auto;
+      overflow-y: hidden;
+   }
+   :global(.trvwr-float-card .ispsc-flex-options) {
+      flex-wrap: nowrap;
+   }
    .trvwr-row-host {
       display: contents;
       .trvwr-itm {
