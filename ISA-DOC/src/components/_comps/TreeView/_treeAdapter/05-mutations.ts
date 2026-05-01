@@ -213,18 +213,32 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		if (!srcId || !tgtId || srcId === tgtId) return null;
 		const srcReference = this.findReferenceBranchInTree(this.rootNodes, srcId);
 		const tgtReference = this.findReferenceBranchInTree(this.rootNodes, tgtId);
-		if (srcReference !== tgtReference) return null;
-		const siblings = srcReference ? (srcReference.children ?? []) : this.rootNodes;
-		const srcIdx = siblings.findIndex((n) => this.normalizeNodeId(n.id) === srcId);
-		const tgtIdx = siblings.findIndex((n) => this.normalizeNodeId(n.id) === tgtId);
+		const sameParent = srcReference === tgtReference;
+		// Restricción cross-parent: por defecto bloqueada salvo `bcanMoveOutside`.
+		if (!sameParent) {
+			const allow = this.bcanMoveOutside;
+			let canMove = false;
+			if (typeof allow === "function") {
+				const srcNode = this.findNodeById(srcId);
+				const tgtNode = this.findNodeById(tgtId);
+				if (srcNode && tgtNode) canMove = !!allow(srcNode, tgtNode, position);
+			} else {
+				canMove = !!allow;
+			}
+			if (!canMove) return null;
+		}
+		const srcSiblings = srcReference ? (srcReference.children ?? []) : this.rootNodes;
+		const tgtSiblings = tgtReference ? (tgtReference.children ?? []) : this.rootNodes;
+		const srcIdx = srcSiblings.findIndex((n) => this.normalizeNodeId(n.id) === srcId);
+		const tgtIdx = tgtSiblings.findIndex((n) => this.normalizeNodeId(n.id) === tgtId);
 		if (srcIdx === -1 || tgtIdx === -1) return null;
-		const [moving] = siblings.splice(srcIdx, 1);
+		const [moving] = srcSiblings.splice(srcIdx, 1);
 		let insertAt = tgtIdx + (position === "after" ? 1 : 0);
-		if (srcIdx < tgtIdx) insertAt -= 1;
-		siblings.splice(Math.max(0, Math.min(insertAt, siblings.length)), 0, moving);
+		if (sameParent && srcIdx < tgtIdx) insertAt -= 1;
+		tgtSiblings.splice(Math.max(0, Math.min(insertAt, tgtSiblings.length)), 0, moving);
 		this.oncommittreeorder(this.rootNodes);
-		const referenceClean = srcReference ? this.normalizeNodeId(srcReference.id) : "";
-		return (referenceClean ? `${referenceClean}.` : "") + (Math.max(0, Math.min(insertAt, siblings.length - 1)) + 1);
+		const referenceClean = tgtReference ? this.normalizeNodeId(tgtReference.id) : "";
+		return (referenceClean ? `${referenceClean}.` : "") + (Math.max(0, Math.min(insertAt, tgtSiblings.length - 1)) + 1);
 	}
 
 	requestDelete(node: INode<TWorking>): boolean {

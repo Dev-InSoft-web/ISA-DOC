@@ -51,6 +51,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	public dragEnterCount = 0;
 	public dragPlaceholderHeight = 0;
 	public filteredActions: FlexOptionsInput[] = [];
+	public cascadeOptions: FlexOptionsInput[] = [];
 	public hasRowTools = false;
 	public showActions = false;
 	public longPressTimer: ReturnType<typeof setTimeout> | undefined;
@@ -86,7 +87,8 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	sync() {
 		const cfg = this.effectiveRowConfig;
 		this.filteredActions = this.filterRowActions(cfg);
-		this.hasRowTools = this.filteredActions.length > 0 || (cfg?.cascadeOptions?.length ?? 0) > 0;
+		this.cascadeOptions = (cfg?.cascadeOptions ?? []) as FlexOptionsInput[];
+		this.hasRowTools = this.filteredActions.length > 0 || this.cascadeOptions.length > 0;
 		this.showActions =
 			this.hasRowTools &&
 			(this.treeAdapter.focusedRowId ? this.treeAdapter.normalizeNodeId(this.treeAdapter.focusedRowId.id) : "") === this.id;

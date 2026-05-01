@@ -1,0 +1,17 @@
+{
+  "relations": [
+    {
+      "versus": [
+        {
+          "sub": "IDRIVER",
+          "parent": "IDRIVER"
+        }
+      ],
+      "equals": [],
+      "alias": "atributosxdriver",
+      "kind": "1-N",
+      "target": "AtributosXDriver",
+      "insertEffect": "syncDetails"
+    }
+  ]
+}

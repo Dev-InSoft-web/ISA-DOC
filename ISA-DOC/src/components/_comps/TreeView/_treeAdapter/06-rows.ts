@@ -120,6 +120,7 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 	}
 
 	protected particularactionsrow(_node: INode<TWorking>): ButtonIconifyProps[] { return []; }
+	protected particularcascadeoptionsrow(_node: INode<TWorking>): FlexOptionsInput[] { return []; }
 
 	getRowConfig(node: INode<TWorking>): {
 		icono?: Omit<IconifyProps, "icon"> & { icon: string; color?: ComponentColor };
@@ -197,8 +198,8 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 			]
 		];
 
-		const cascadeOptions: CascadeOptionsInput[] = (this.isReadOnly || this.isBrapido) ? [] : [
-			[
+		const cascadeOptions: CascadeOptionsInput[] = this.isReadOnly ? [] : [
+			...(this.bdrag ? [[
 				{
 					icon: "mdi:table-row-plus-before",
 					label: rdTitle("Añadir arriba"),
@@ -213,7 +214,8 @@ export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>>
 					disabled: mutDisabled || undefined,
 					onClick: () => { if (!mutDisabled) void this.handleaddsibling(node.id, "below"); },
 				},
-			],
+			]] : []),
+			...this.particularcascadeoptionsrow(node),
 		];
 
 		return {

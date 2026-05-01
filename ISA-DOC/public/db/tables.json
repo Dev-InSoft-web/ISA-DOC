@@ -116,6 +116,10 @@
           "defaultValue": "GETDATE()",
           "primaryKey": false,
           "extra": ""
+        },
+        {
+          "kind": "section",
+          "name": "AUDITORIA"
         }
       ],
       "compositePrimaryKey": [],

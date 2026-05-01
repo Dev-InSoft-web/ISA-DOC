@@ -27,6 +27,11 @@
       bLostFocus?: boolean;
       addReferenceId?: string | null;
       resourceSelectorOpen?: boolean;
+      /**
+       * Cuando es `true`, los nodos pueden salir de su agrupador (cross-parent reorder/drag).
+       * Si se pasa una función, retornar `true` autoriza el movimiento; `false` lo bloquea.
+       */
+      bcanMoveOutside?: boolean | ((source: INode<TWorking>, target: INode<TWorking>, position: "before" | "after") => boolean);
    }
 
    export interface TreeViewSlots<Stacker, TWorking extends ITreeData<TWorking>> {
@@ -56,6 +61,7 @@
    export let small: $$Props["small"] = false;
    export let bdrag: $$Props["bdrag"] = true;
    export let bLostFocus: $$Props["bLostFocus"] = false;
+   export let bcanMoveOutside: $$Props["bcanMoveOutside"] = false;
 
    let editRowShow = false;
    let bshowEliminar = false;
@@ -197,6 +203,7 @@
          brapido,
          bdrag,
          bLostFocus,
+         bcanMoveOutside,
          CatalogoController,
          TreeController,
          showToolbar,

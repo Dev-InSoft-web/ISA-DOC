@@ -77,7 +77,6 @@
 				extensions: [
 					lineNumbers(),
 					foldGutter(),
-					EditorView.lineWrapping,
 					vsCodeDark,
 					syntaxHighlighting(vsCodeHighlight),
 					syntaxHighlighting(defaultHighlightStyle),
@@ -132,6 +131,6 @@
 	}
 	.cm-host :global(.cm-editor) { border-radius: 6px; height: 100%; max-width: 100%; }
 	.cm-host :global(.cm-scroller) { overflow: auto; max-width: 100%; }
-	.cm-host :global(.cm-content) { white-space: pre-wrap; word-break: break-word; }
+	.cm-host :global(.cm-content) { white-space: pre; }
 	.cm-host :global(.cm-line) { word-break: break-word; }
 </style>

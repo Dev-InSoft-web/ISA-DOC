@@ -1,18 +1,29 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { ActionDrawer, Button, ButtonIconify, Card, FlexLayout, H2, H4, Iconify, Modal, TabItem, Tabs, Text, Toaster, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, ButtonIconify, Card, FlexLayout, H2, H4, Iconify, Modal, Text, Toaster, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
 	import {
 		emitDropTable,
 		emitTable,
 		type ParsedTable,
 	} from "../../lib/tableSchema.ts";
 	import { generateResourcesFromTables } from "../../lib/codeGen/autogen.ts";
-	import { genClient, genModelo, genServer } from "../../lib/codeGen/generators.ts";
+	import { genAzureFn, genClient, genModelo, genServer } from "../../lib/codeGen/generators.ts";
+	import {
+		computeOverride,
+		deleteOverride,
+		fetchAllOverrides,
+		mergeWithOverride,
+		saveOverride,
+		type OverrideMap,
+	} from "../../lib/codeGen/storage.ts";
+	import { findDomainOf, getSlaves, isMaster as isMasterFn, type DomainsMap } from "../../lib/codeGen/domains.ts";
+	import type { ResourceConfig } from "../../lib/codeGen/types.ts";
 	import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
 	import CodeViewer from "../viewers/CodeViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
 	import TreeView from "../_comps/TreeView/TreeRowView.svelte";
 	import { TablesBrowserAdapter, type TablesBrowserState } from "./tables-browser/TablesBrowserAdapter.svelte";
+	import ResourceConfigSections from "./tables-browser/ResourceConfigSections.svelte";
 
 	let tables: ParsedTable[] = [];
 	let loading = true;
@@ -32,77 +43,62 @@
 	let runUnlocked: Record<string, boolean> = {};
 	let runBusy: Record<string, boolean> = {};
 
-	let bshowSettings: boolean = false;
 	let bshowTreeModal: boolean = false;
-	let syncingRegions: boolean = false;
-	let filterText: string = "";
+	let addRootShow: boolean = false;
+	let addRootName: string = "";
+	let addRootKind: "domain" | "prefix" = "prefix";
 
-	type Category = "principales" | "pivote" | "historial" | "otras";
-	const CATEGORIES: { id: Category; label: string; icon: string }[] = [
-		{ id: "principales", label: "Tablas principales", icon: "mdi:table" },
-		{ id: "pivote", label: "Tablas pivote / detalle", icon: "mdi:table-multiple" },
-		{ id: "historial", label: "Tablas de historial", icon: "mdi:history" },
-		{ id: "otras", label: "Otras", icon: "mdi:dots-horizontal" },
+	let overrides: OverrideMap = {};
+	let activeCodeTab: "sql" | "model" | "server" | "client" | "azure" = "sql";
+	let targetFilePaths: string[] = [];
+	let domains: DomainsMap = {};
+
+	const PATHS_LS_KEY = "isa-doc:codegen:targetFilePaths";
+	const DEFAULT_TARGET_PATHS: string[] = [
+		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/01.Modelo.ts",
+		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/02.Datos.ts",
+		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/01.PlanDeEstudio.ts",
+		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/130_UlTema.ts",
+		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/150_UlPermiso.ts",
+		"ISP-ClientesIS/src/sources/020 Controllers/6.ContaPymeU/2.Capacitacion/UlCapacitacionClient.ts",
+		"ISP-CLientesISServer/src/sources/6.ContaPymeU/2.Capacitacion/01_PlanDeEstudio.ts",
+		"ISP-CLientesISServer/src/sources/6.ContaPymeU/2.Capacitacion/02_Cursos.ts",
+		"ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/Cursos.ts",
+		"ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/PlanDeEstudio.ts",
 	];
 
-	function inferCategory(fragmentName: string): Category {
-		const n = (fragmentName ?? "").toUpperCase();
-		if (/(HISTORIAL|AUDITOR)/.test(n)) return "historial";
-		if (/(PIVOTE|DETALLES|PIVOT)/.test(n)) return "pivote";
-		if (/(PRINCIPAL|TABLAS)/.test(n)) return "principales";
-		return "otras";
+	function loadTargetFilePaths(): void {
+		try {
+			const raw = localStorage.getItem(PATHS_LS_KEY);
+			if (raw === null) {
+				targetFilePaths = [...DEFAULT_TARGET_PATHS];
+				localStorage.setItem(PATHS_LS_KEY, JSON.stringify(targetFilePaths));
+				return;
+			}
+			const arr = JSON.parse(raw);
+			targetFilePaths = Array.isArray(arr) ? arr.filter((s): s is string => typeof s === "string") : [];
+		} catch {
+			targetFilePaths = [];
+		}
 	}
 
-	function normalizePrefix(raw: string): string {
-		const v = (raw ?? "").trim().toUpperCase().replace(/[^A-Z0-9_]/g, "_");
-		if (!v) return "";
-		return v.endsWith("_") ? v : v + "_";
-	}
-
-	function openSettings(): void { bshowSettings = true; }
-	function closeSettings(): void { bshowSettings = false; }
 	function openTreeModal(): void { bshowTreeModal = true; }
 	function closeTreeModal(): void { bshowTreeModal = false; }
 
-	function renamePrefix(oldPrefix: string, rawNext: string): void {
-		const next = normalizePrefix(rawNext);
-		if (next === oldPrefix) return;
-		const exists = tables.some((t) => detectPrefix(t.name) === next);
-		if (exists && next !== "") {
-			toastError(`Ya existe el prefijo "${next}".`);
+	function confirmAddRoot(): void {
+		const name = addRootName.trim();
+		if (!name) {
+			toastError("Indica un nombre.");
 			return;
 		}
-		const nextTables = tables.map((t) => {
-			if (detectPrefix(t.name) !== oldPrefix) return t;
-			return { ...t, name: next + t.name.slice(oldPrefix.length) };
-		});
-		tables = nextTables;
-		adapter.setTables(tables);
-		dirty = true;
-		void save(true);
-	}
-
-	async function syncRegions(): Promise<void> {
-		if (syncingRegions) return;
-		syncingRegions = true;
-		try {
-			const tableNames = Array.from(new Set(tables.map((t) => t.name.toUpperCase())));
-			const res = await fetch("/api/ts/sync-regions", {
-				method: "POST",
-				headers: { "content-type": "application/json" },
-				body: JSON.stringify({ tables: tableNames }),
-			});
-			const data = (await res.json()) as { ok?: boolean; error?: string; filesChanged?: string[]; renames?: { from: string; to: string }[] };
-			if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
-			const nRen = data.renames?.length ?? 0;
-			const nFiles = data.filesChanged?.length ?? 0;
-			toastSuccess(`Regiones sincronizadas: ${nRen} renombradas en ${nFiles} archivos.`);
-			await loadProdTs();
-		} catch (err) {
-			toastError(`Error sincronizando regiones: ${err instanceof Error ? err.message : String(err)}`);
-		} finally {
-			syncingRegions = false;
+		if (addRootKind === "domain") {
+			adapter.createDomain(name);
+			toastSuccess(`Dominio "${name}" creado. Marca una tabla como master desde el árbol.`);
+		} else {
+			toastSuccess(`Prefijo "${name}": añade tablas con ese prefijo desde la edición SQL para que aparezca el agrupador.`);
 		}
+		addRootName = "";
+		addRootShow = false;
 	}
 
 	function toggleRunLock(key: string): void {
@@ -130,6 +126,10 @@
 
 	const adapter = new TablesBrowserAdapter([], onAdapterChange);
 	adapter.onTableSelect = (key) => { selectedKey = key; };
+	adapter.onDomainsChange = (d) => { domains = d; };
+	adapter.onAddRoot = () => { addRootShow = true; };
+	adapter.onGenerateSql = () => { void generateSql(); };
+	domains = adapter.domains;
 	const adapterAny = adapter as any;
 
 	function tableKey(t: ParsedTable): string {
@@ -164,6 +164,34 @@
 
 	$: autogen = generateResourcesFromTables(tables);
 	$: resByTable = new Map(autogen.resources.map((r) => [r.tableName.toUpperCase(), r]));
+	$: inferredById = Object.fromEntries(autogen.resources.map((r) => [r.id, r])) as Record<string, ResourceConfig>;
+	$: mergedResources = autogen.resources.map((inf) => mergeWithOverride(inf, overrides[inf.id] ?? {}));
+	$: mergedById = Object.fromEntries(mergedResources.map((r) => [r.id, r])) as Record<string, ResourceConfig>;
+	$: mergedByTable = new Map(mergedResources.map((r) => [r.tableName.toUpperCase(), r]));
+
+	$: selectedIsMaster = !!(selected && isMasterFn(domains, selected.table.name));
+	$: selectedSlaves = selected ? getSlaves(domains, selected.table.name) : [];
+	$: selectedDomain = selected ? findDomainOf(domains, selected.table.name) : undefined;
+	$: if (activeCodeTab === "azure" && !selectedIsMaster) activeCodeTab = "sql";
+
+	async function handleCfgChange(id: string): Promise<void> {
+		const inferred = inferredById[id];
+		const merged = mergedById[id];
+		if (!inferred || !merged) return;
+		try {
+			const ov = computeOverride(merged, inferred);
+			if (Object.keys(ov).length === 0) {
+				await deleteOverride(id);
+				const { [id]: _omit, ...rest } = overrides;
+				overrides = rest;
+			} else {
+				await saveOverride(id, ov);
+				overrides = { ...overrides, [id]: ov };
+			}
+		} catch (err) {
+			toastError(`Error guardando personalización: ${err instanceof Error ? err.message : String(err)}`);
+		}
+	}
 
 	function onTableChange(idx: number, t: ParsedTable): void {
 		tables[idx] = { ...t };
@@ -243,9 +271,19 @@
 		} catch { /* ignore */ }
 	}
 
+	async function loadOverrides(): Promise<void> {
+		try {
+			overrides = await fetchAllOverrides();
+		} catch (err) {
+			toastError(`Error cargando overrides: ${err instanceof Error ? err.message : String(err)}`);
+		}
+	}
+
 	onMount(() => {
+		loadTargetFilePaths();
 		void load();
 		void loadProdTs();
+		void loadOverrides();
 	});
 </script>
 
@@ -255,16 +293,10 @@
 	<Card>
 		<FlexLayout items="center" justify="between">
 			<div>
-				<H2>Editor visual de tablas · v2</H2>
+				<H2>Editor visual de tablas</H2>
 				<Text color="neutral"><small>Árbol con prefijos como carpetas (visual) y tablas como nodos. Los cambios se guardan automáticamente.</small></Text>
 			</div>
 			<FlexLayout items="center">
-				<Button variant="outlined" style="width: fit-content;" onClick={load}>
-					<Iconify icon="mdi:refresh" /> Recargar
-				</Button>
-				<Button variant="solid" color="primary" style="width: fit-content;" disabled={generating} onClick={generateSql}>
-					<Iconify icon="mdi:database-export" /> Generar resumen SQL
-				</Button>
 				{#if saving}
 					<FlexLayout items="center"><Iconify icon="mdi:loading" /><Text color="neutral"><small>Guardando…</small></Text></FlexLayout>
 				{/if}
@@ -288,6 +320,7 @@
 						small={true}
 						readonly={false}
 						bdrag={true}
+						bcanMoveOutside={() => true}
 						showToolbar={true}
 						CatalogoController={adapterAny.catalogoController}
 						TreeController={adapter}
@@ -298,6 +331,10 @@
 								<span class="tree-row">
 									<strong class="tree-row-name">{node.obj.rowName}</strong>
 									<span class="tree-row-meta">{node.obj.colCount}</span>
+								</span>
+							{:else if node.obj.kind === "domain"}
+								<span class="tree-row">
+									<strong class="tree-row-name">{node.obj.rowName}</strong>
 								</span>
 							{:else}
 								<span class="tree-row">
@@ -320,12 +357,9 @@
 				{@const t = selected.table}
 				{@const idx = selected.index}
 				{@const cfg = resByTable.get(t.name.toUpperCase())}
-				{@const prodFrags = prodTsMap[t.name.toUpperCase()] ?? []}
-				{@const prodPojo = prodFrags.filter((p: any) => p.role === "pojo")}
-				{@const prodServer = prodFrags.filter((p: any) => p.role === "server")}
-				{@const prodClient = prodFrags.filter((p: any) => p.role === "client")}
+				{@const mergedCfg = mergedByTable.get(t.name.toUpperCase())}
 
-				{#key tableKey(t)}
+				{#key tableKey(t) + "::" + activeCodeTab}
 					<Card>
 						<FlexLayout items="center" justify="between">
 							<FlexLayout items="center">
@@ -333,11 +367,26 @@
 								<H4>{t.name}</H4>
 							</FlexLayout>
 							<FlexLayout items="center">
-								<ButtonIconify icon="mdi:cog-outline" title="Personalizar entidad" on:click={openSettings} />
 								<ButtonIconify icon="mdi:eye-outline" title="Editor visual completo" on:click={openTreeModal} />
 							</FlexLayout>
 						</FlexLayout>
-						<SqlTreeEditor table={t} prefix={detectPrefix(t.name)} onChange={(nt) => onTableChange(idx, nt)} />
+
+						{#if activeCodeTab === "sql"}
+							<SqlTreeEditor table={t} prefix={detectPrefix(t.name)} onChange={(nt) => onTableChange(idx, nt)} />
+						{:else if cfg && mergedCfg}
+							<ResourceConfigSections
+								resource={mergedCfg}
+								resources={mergedResources}
+								inferred={cfg}
+								{targetFilePaths}
+								section={((activeCodeTab as string) === "sql" ? "model" : activeCodeTab) as "model" | "server" | "client" | "azure"}
+								slaves={selectedSlaves}
+								domainName={selectedDomain?.name ?? ""}
+								on:change={() => handleCfgChange(mergedCfg.id)}
+							/>
+						{:else}
+							<Text color="neutral">Sin configuración inferida para esta tabla.</Text>
+						{/if}
 					</Card>
 				{/key}
 			{/if}
@@ -348,7 +397,7 @@
 			<div class="pane-scroll">
 			{#if selected}
 				{@const t = selected.table}
-				{@const cfg = resByTable.get(t.name.toUpperCase())}
+				{@const cfg = mergedByTable.get(t.name.toUpperCase())}
 				{@const prodFrags = prodTsMap[t.name.toUpperCase()] ?? []}
 				{@const prodPojo = prodFrags.filter((p: any) => p.role === "pojo")}
 				{@const prodServer = prodFrags.filter((p: any) => p.role === "server")}
@@ -356,74 +405,105 @@
 
 				{#key tableKey(t)}
 					{@const sqlCode = `${emitDropTable(t)}\n\n${emitTable(t)}`}
-					{@const modelCode = cfg ? genModelo(cfg, autogen.resources) : ""}
-					{@const serverCode = cfg ? genServer(cfg, autogen.resources) : ""}
+					{@const modelCode = cfg ? genModelo(cfg, mergedResources) : ""}
+					{@const serverCode = cfg ? genServer(cfg, mergedResources) : ""}
 					{@const clientCode = cfg ? genClient(cfg) : ""}
+					{@const slavesCfgs = (selectedSlaves ?? []).map((sn) => mergedByTable.get(sn.toUpperCase())).filter((x): x is ResourceConfig => !!x)}
+					{@const azureCode = (cfg && selectedIsMaster) ? genAzureFn([cfg, ...slavesCfgs]) : ""}
 					<Card>
-						<Tabs class="code-tabs" contentClass="code-tabs-content">
-						<TabItem open title="SQL">
+						<div class="code-tabs-bar">
+							<button class="code-tab" class:active={activeCodeTab === "sql"} type="button" on:click={() => (activeCodeTab = "sql")}>
+								<Iconify icon="mdi:database" /> <span>SQL</span>
+							</button>
+							{#if cfg}
+								<button class="code-tab" class:active={activeCodeTab === "model"} type="button" on:click={() => (activeCodeTab = "model")}>
+									<Iconify icon="mdi:cube-outline" /> <span>Modelo</span>
+								</button>
+								<button class="code-tab" class:active={activeCodeTab === "server"} type="button" on:click={() => (activeCodeTab = "server")}>
+									<Iconify icon="mdi:server" /> <span>Server</span>
+								</button>
+								<button class="code-tab" class:active={activeCodeTab === "client"} type="button" on:click={() => (activeCodeTab = "client")}>
+									<Iconify icon="mdi:monitor" /> <span>Client</span>
+								</button>
+								{#if selectedIsMaster}
+									<button class="code-tab" class:active={activeCodeTab === "azure"} type="button" on:click={() => (activeCodeTab = "azure")}>
+										<Iconify icon="mdi:microsoft-azure" /> <span>Azure</span>
+									</button>
+								{/if}
+							{/if}
+						</div>
+
+						{#if activeCodeTab === "sql"}
 							<div class="code-card">
 								<FlexLayout items="center" justify="between">
 									<FlexLayout items="center"><Iconify icon="mdi:database" /><Text color="neutral"><small>DROP + CREATE</small></Text></FlexLayout>
 									<FlexLayout items="center">
 										<div class="run-group">
-										<ButtonIconify icon={runUnlocked[`${t.name}::sql`] ? "mdi:lock-open-variant-outline" : "mdi:lock-outline"} title={runUnlocked[`${t.name}::sql`] ? "Bloquear ejecución" : "Desbloquear ejecución"} on:click={() => toggleRunLock(`${t.name}::sql`)} />
-										<ButtonIconify color="success" icon="mdi:play" title="Ejecutar" disabled={!runUnlocked[`${t.name}::sql`] || runBusy[`${t.name}::sql`]} on:click={() => runCode(`${t.name}::sql`, sqlCode, "sql")} />
-									</div>
+											<ButtonIconify icon={runUnlocked[`${t.name}::sql`] ? "mdi:lock-open-variant-outline" : "mdi:lock-outline"} title={runUnlocked[`${t.name}::sql`] ? "Bloquear ejecución" : "Desbloquear ejecución"} on:click={() => toggleRunLock(`${t.name}::sql`)} />
+											<ButtonIconify color="success" icon="mdi:play" title="Ejecutar" disabled={!runUnlocked[`${t.name}::sql`] || runBusy[`${t.name}::sql`]} on:click={() => runCode(`${t.name}::sql`, sqlCode, "sql")} />
+										</div>
 										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${t.name} · SQL`, sqlCode, "sql")} />
 									</FlexLayout>
 								</FlexLayout>
 								<CodeViewer value={sqlCode} lang="sql" height="100%" />
 							</div>
-						</TabItem>
-						{#if cfg}
-							<TabItem title="Modelo">
-								<div class="code-card">
-									<FlexLayout items="center" justify="between">
-										<FlexLayout items="center"><Iconify icon="mdi:cube-outline" /><Text color="neutral"><small>{cfg.className}</small></Text></FlexLayout>
-										<FlexLayout items="center">
-											<div class="run-group">
+						{:else if cfg && activeCodeTab === "model"}
+							<div class="code-card">
+								<FlexLayout items="center" justify="between">
+									<FlexLayout items="center"><Iconify icon="mdi:cube-outline" /><Text color="neutral"><small>{cfg.className}</small></Text></FlexLayout>
+									<FlexLayout items="center">
+										<div class="run-group">
 											<ButtonIconify icon={runUnlocked[`${cfg.className}::model`] ? "mdi:lock-open-variant-outline" : "mdi:lock-outline"} title={runUnlocked[`${cfg.className}::model`] ? "Bloquear ejecución" : "Desbloquear ejecución"} on:click={() => toggleRunLock(`${cfg.className}::model`)} />
 											<ButtonIconify color="success" icon="mdi:play" title="Ejecutar" disabled={!runUnlocked[`${cfg.className}::model`] || runBusy[`${cfg.className}::model`]} on:click={() => runCode(`${cfg.className}::model`, modelCode, "ts")} />
 										</div>
-											<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Modelo`, modelCode, "ts", prodPojo[0]?.body ?? "", prodPojo[0] ? `Prod · ${prodPojo[0].sourceFile}` : "Prod — sin fragmento")} />
-										</FlexLayout>
+										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Modelo`, modelCode, "ts", prodPojo[0]?.body ?? "", prodPojo[0] ? `Prod · ${prodPojo[0].sourceFile}` : "Prod — sin fragmento")} />
 									</FlexLayout>
-									<CodeViewer value={modelCode} lang="ts" height="100%" />
-								</div>
-							</TabItem>
-							<TabItem title="Server">
-								<div class="code-card">
-									<FlexLayout items="center" justify="between">
-										<FlexLayout items="center"><Iconify icon="mdi:server" /><Text color="neutral"><small>{cfg.className}</small></Text></FlexLayout>
-										<FlexLayout items="center">
-											<div class="run-group">
+								</FlexLayout>
+								<CodeViewer value={modelCode} lang="ts" height="100%" />
+							</div>
+						{:else if cfg && activeCodeTab === "server"}
+							<div class="code-card">
+								<FlexLayout items="center" justify="between">
+									<FlexLayout items="center"><Iconify icon="mdi:server" /><Text color="neutral"><small>{cfg.className}</small></Text></FlexLayout>
+									<FlexLayout items="center">
+										<div class="run-group">
 											<ButtonIconify icon={runUnlocked[`${cfg.className}::server`] ? "mdi:lock-open-variant-outline" : "mdi:lock-outline"} title={runUnlocked[`${cfg.className}::server`] ? "Bloquear ejecución" : "Desbloquear ejecución"} on:click={() => toggleRunLock(`${cfg.className}::server`)} />
 											<ButtonIconify color="success" icon="mdi:play" title="Ejecutar" disabled={!runUnlocked[`${cfg.className}::server`] || runBusy[`${cfg.className}::server`]} on:click={() => runCode(`${cfg.className}::server`, serverCode, "ts")} />
 										</div>
-											<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Server`, serverCode, "ts", prodServer[0]?.body ?? "", prodServer[0] ? `Prod · ${prodServer[0].sourceFile}` : "Prod — sin fragmento")} />
-										</FlexLayout>
+										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Server`, serverCode, "ts", prodServer[0]?.body ?? "", prodServer[0] ? `Prod · ${prodServer[0].sourceFile}` : "Prod — sin fragmento")} />
 									</FlexLayout>
-									<CodeViewer value={serverCode} lang="ts" height="100%" />
-								</div>
-							</TabItem>
-							<TabItem title="Client">
-								<div class="code-card">
-									<FlexLayout items="center" justify="between">
-										<FlexLayout items="center"><Iconify icon="mdi:monitor" /><Text color="neutral"><small>{cfg.className}</small></Text></FlexLayout>
-										<FlexLayout items="center">
-											<div class="run-group">
+								</FlexLayout>
+								<CodeViewer value={serverCode} lang="ts" height="100%" />
+							</div>
+						{:else if cfg && activeCodeTab === "client"}
+							<div class="code-card">
+								<FlexLayout items="center" justify="between">
+									<FlexLayout items="center"><Iconify icon="mdi:monitor" /><Text color="neutral"><small>{cfg.className}</small></Text></FlexLayout>
+									<FlexLayout items="center">
+										<div class="run-group">
 											<ButtonIconify icon={runUnlocked[`${cfg.className}::client`] ? "mdi:lock-open-variant-outline" : "mdi:lock-outline"} title={runUnlocked[`${cfg.className}::client`] ? "Bloquear ejecución" : "Desbloquear ejecución"} on:click={() => toggleRunLock(`${cfg.className}::client`)} />
 											<ButtonIconify color="success" icon="mdi:play" title="Ejecutar" disabled={!runUnlocked[`${cfg.className}::client`] || runBusy[`${cfg.className}::client`]} on:click={() => runCode(`${cfg.className}::client`, clientCode, "ts")} />
 										</div>
-											<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Client`, clientCode, "ts", prodClient[0]?.body ?? "", prodClient[0] ? `Prod · ${prodClient[0].sourceFile}` : "Prod — sin fragmento")} />
-										</FlexLayout>
+										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Client`, clientCode, "ts", prodClient[0]?.body ?? "", prodClient[0] ? `Prod · ${prodClient[0].sourceFile}` : "Prod — sin fragmento")} />
 									</FlexLayout>
-									<CodeViewer value={clientCode} lang="ts" height="100%" />
-								</div>
-							</TabItem>
+								</FlexLayout>
+								<CodeViewer value={clientCode} lang="ts" height="100%" />
+							</div>
+						{:else if cfg && activeCodeTab === "azure" && selectedIsMaster}
+							<div class="code-card">
+								<FlexLayout items="center" justify="between">
+									<FlexLayout items="center"><Iconify icon="mdi:microsoft-azure" /><Text color="neutral"><small>FN-{selectedDomain?.name ?? cfg.className} · master {cfg.className} + {slavesCfgs.length} esclavas</small></Text></FlexLayout>
+									<FlexLayout items="center">
+										<div class="run-group">
+											<ButtonIconify icon={runUnlocked[`${cfg.className}::azure`] ? "mdi:lock-open-variant-outline" : "mdi:lock-outline"} title={runUnlocked[`${cfg.className}::azure`] ? "Bloquear ejecución" : "Desbloquear ejecución"} on:click={() => toggleRunLock(`${cfg.className}::azure`)} />
+											<ButtonIconify color="success" icon="mdi:play" title="Ejecutar" disabled={!runUnlocked[`${cfg.className}::azure`] || runBusy[`${cfg.className}::azure`]} on:click={() => runCode(`${cfg.className}::azure`, azureCode, "ts")} />
+										</div>
+										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Azure FN`, azureCode, "ts")} />
+									</FlexLayout>
+								</FlexLayout>
+								<CodeViewer value={azureCode} lang="ts" height="100%" />
+							</div>
 						{/if}
-						</Tabs>
 					</Card>
 				{/key}
 			{/if}
@@ -433,88 +513,6 @@
 </section>
 
 <CodeModal bind:bshow={modalShow} title={modalTitle} value={modalValue} language={modalLanguage} compareValue={modalCompare} compareLabel={modalCompareLabel} valueLabel="Local" />
-
-<ActionDrawer bind:bshow={bshowSettings} onclose={closeSettings} style="width: 720px; max-width: 95vw;">
-	{#if !selected}
-		<Card variant="flat"><Text color="neutral">Selecciona una tabla.</Text></Card>
-	{:else}
-		{@const t = selected.table}
-		{@const currentPrefix = detectPrefix(t.name)}
-		{@const cfg = resByTable.get(t.name.toUpperCase())}
-		{@const prodFrags = prodTsMap[t.name.toUpperCase()] ?? []}
-		{@const prodPojo = prodFrags.filter((p: any) => p.role === "pojo")}
-		{@const prodServer = prodFrags.filter((p: any) => p.role === "server")}
-		{@const prodClient = prodFrags.filter((p: any) => p.role === "client")}
-		<Card>
-			<FlexLayout items="center">
-				<Iconify icon="mdi:cog-outline" />
-				<H4>Personalizar · {t.name}</H4>
-			</FlexLayout>
-		</Card>
-		<Tabs>
-			<TabItem open title="Filtro y prefijo">
-				<div class="drawer-section">
-					<label class="field">
-						<Text color="neutral"><small>Filtrar tabla / columna</small></Text>
-						<input class="input-field" type="text" placeholder="Buscar…" bind:value={filterText} />
-					</label>
-					<label class="field">
-						<Text color="neutral"><small>Prefijo actual: <code>{currentPrefix || "(vacío)"}</code></small></Text>
-						<input class="input-field" type="text" value={currentPrefix} placeholder="(sin prefijo)" on:change={(e) => renamePrefix(currentPrefix, (e.currentTarget as HTMLInputElement).value)} />
-					</label>
-				</div>
-			</TabItem>
-			<TabItem title="Categorización">
-				<div class="drawer-section">
-					{#if true}
-						{@const cat = inferCategory(t.fragmentName)}
-						{@const meta = CATEGORIES.find((c) => c.id === cat)}
-						<FlexLayout items="center">
-							<Iconify icon={meta?.icon ?? "mdi:tag-outline"} />
-							<Text><strong>{meta?.label ?? cat}</strong></Text>
-						</FlexLayout>
-						<Text color="neutral"><small>Inferida desde el nombre del fragmento <code>{t.fragmentName}</code>.</small></Text>
-					{/if}
-				</div>
-			</TabItem>
-			<TabItem title="Acciones">
-				<div class="drawer-section">
-					<FlexLayout items="center">
-						<Button variant="outlined" style="width: fit-content;" onClick={load}>
-							<Iconify icon="mdi:refresh" /> Recargar
-						</Button>
-						<Button variant="outlined" style="width: fit-content;" disabled={syncingRegions} onClick={syncRegions}>
-							<Iconify icon={syncingRegions ? "mdi:loading" : "mdi:sync"} /> Sincronizar regiones
-						</Button>
-						<Button color="primary" style="width: fit-content;" disabled={!dirty || saving} onClick={() => save()}>
-							<Iconify icon={saving ? "mdi:loading" : "mdi:content-save"} /> Guardar
-						</Button>
-					</FlexLayout>
-				</div>
-			</TabItem>
-			<TabItem title="Comparación prod ISP">
-				<div class="drawer-section">
-					{#if !cfg}
-						<Text color="neutral">Sin configuración generada.</Text>
-					{:else}
-						{#each [{ role: "pojo", label: "Modelo", frags: prodPojo }, { role: "server", label: "Server", frags: prodServer }, { role: "client", label: "Client", frags: prodClient }] as block}
-							<FlexLayout items="center" justify="between">
-								<FlexLayout items="center">
-									<Iconify icon="mdi:source-branch" />
-									<Text color="neutral"><small>{block.label} · Prod ISP {block.frags[0] ? `· ${block.frags[0].sourceFile}` : "— sin fragmento"}</small></Text>
-								</FlexLayout>
-								{#if block.frags[0]}
-									<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${t.name} · Prod ${block.label}`, block.frags[0].body, "ts")} />
-								{/if}
-							</FlexLayout>
-							<CodeViewer value={block.frags[0]?.body ?? ""} lang="ts" height="220px" />
-						{/each}
-					{/if}
-				</div>
-			</TabItem>
-		</Tabs>
-	{/if}
-</ActionDrawer>
 
 <Modal bind:bshow={bshowTreeModal} onClose={closeTreeModal} style="width: 96dvw; height: 96dvh;">
 	<svelte:fragment slot="title">
@@ -534,6 +532,35 @@
 			{/key}
 		{/if}
 	</div>
+</Modal>
+
+<Modal bind:bshow={addRootShow} onClose={() => (addRootShow = false)} style="width: 30rem;">
+	<svelte:fragment slot="title">
+		<FlexLayout items="center">
+			<Iconify icon="mdi:plus-circle-outline" />
+			<Text><strong>Agregar raíz</strong></Text>
+		</FlexLayout>
+	</svelte:fragment>
+	<FlexLayout direction="column">
+		<Text color="neutral"><small>Elige el tipo de agrupador raíz a crear.</small></Text>
+		<label class="field">
+			<Text color="neutral"><small>Tipo</small></Text>
+			<select class="input-field" bind:value={addRootKind}>
+				<option value="domain">Dominio (master + esclavas)</option>
+				<option value="prefix">Prefijo de tablas</option>
+			</select>
+		</label>
+		<label class="field">
+			<Text color="neutral"><small>Nombre</small></Text>
+			<input class="input-field" type="text" bind:value={addRootName} placeholder={addRootKind === "domain" ? "Capacitación" : "UL_"} />
+		</label>
+		<FlexLayout justify="end">
+			<Button variant="outlined" onClick={() => (addRootShow = false)}>Cancelar</Button>
+			<Button variant="solid" color="primary" onClick={confirmAddRoot}>
+				<Iconify icon="mdi:check" /> Crear
+			</Button>
+		</FlexLayout>
+	</FlexLayout>
 </Modal>
 
 <style>
@@ -677,28 +704,35 @@
 		.layout { grid-template-columns: 1fr; max-height: none; }
 		:global(.tree-pane), :global(.form-pane), :global(.code-pane) { height: auto; max-height: none; }
 	}
-	.drawer-section {
+	.code-tabs-bar {
 		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		padding: 0.5rem;
+		gap: 0.25rem;
+		border-bottom: 1px solid var(--is-b-color, #444);
+		margin-bottom: 0.5rem;
 	}
-	.field {
-		display: flex;
-		flex-direction: column;
-		gap: 0.2rem;
-	}
-	.input-field {
-		background: var(--is-bg-secondary);
-		border: 1px solid var(--is-b-color);
-		border-radius: 4px;
-		padding: 0.25rem 0.5rem;
+	.code-tab {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		padding: 0.35rem 0.7rem;
+		background: transparent;
+		border: 1px solid transparent;
+		border-bottom: none;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+		color: inherit;
+		cursor: pointer;
 		font-size: 0.85rem;
-		color: var(--is-color);
-		outline: none;
+		margin-bottom: -1px;
 	}
-	.input-field:focus {
-		border-color: var(--is-primary);
+	.code-tab:hover {
+		background: var(--is-bg-secondary, #2a2a2a);
+	}
+	.code-tab.active {
+		border-color: var(--is-b-color, #444);
+		border-bottom-color: var(--is-bg-primary, #1e1e1e);
+		background: var(--is-bg-primary, #1e1e1e);
+		font-weight: 600;
 	}
 	.tree-modal-body {
 		display: flex;

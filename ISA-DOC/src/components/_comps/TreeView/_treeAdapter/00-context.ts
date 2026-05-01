@@ -65,6 +65,9 @@ export abstract class TTreeAdapterContext<Stacker, TWorking extends ITreeData<TW
 	get bdrag(): boolean { return this.context.bdrag !== false }
 	get bLostFocus(): boolean { return !!this.context.bLostFocus }
 	get isBrapido(): boolean { return !!this.context.brapido }
+	get bcanMoveOutside(): boolean | ((source: INode<TWorking>, target: INode<TWorking>, position: "before" | "after") => boolean) {
+		return (this.context as any).bcanMoveOutside ?? false;
+	}
 
 	
 	get addReferenceId(): string { return this.context.addReferenceId || ""; }

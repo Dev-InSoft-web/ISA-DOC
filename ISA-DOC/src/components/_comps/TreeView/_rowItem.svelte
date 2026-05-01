@@ -99,66 +99,35 @@
          <details class="trvwr-itm" class:highlight={rowController.isHighlighted} class:should-flash={rowController.shouldFlash} class:trvwr-itm--folder-selected={rowController.isSelected && rowController.hasChildren} class:trvwr-itm--active={rowController.showActions || rowController.isHighlighted} data-testid="tree-item" open={rowController.isNodeOpen} aria-disabled={rowController.mergedDisabled} on:toggle={(e) => rowController.ondetailstoggle(e)} style={self.detailsStyle(rowController)}>
             <summary {...self.summaryResume(rowController)} role="treeitem" draggable={rowController.isDraggable} on:click={(e) => rowController.onsummaryclick(e)} on:dblclick={(e) => rowController.onsummarydblclick(e)} on:keydown={(e) => rowController.onkeydown(e)} on:focus={(e) => rowController.onsummaryfocus(e)} on:blur={() => rowController.onsummaryblur()} on:pointerenter={() => rowController.onsummarypointerenter()} on:pointerleave={() => rowController.onsummarypointerleave()} on:dragstart={(e) => rowController.ondragstart(e)} on:dragend={(e) => rowController.ondragend(e)} on:dragenter={() => rowController.onsummarydragenter()} on:dragover={(e) => rowController.onsummarydragover(e)} on:dragleave={() => rowController.onsummarydragleave()} on:drop={(e) => rowController.ondrop(e)} on:pointerdown={(e) => rowController.onpointerdown(e)} on:pointerup={() => rowController.onpointerup()} on:pointermove={() => rowController.onpointerup()} on:pointercancel={() => rowController.onpointerup()}>
                <FloatingComponent showfloat={rowController.floatVisible && rowController.hasRowTools} horizontal="right" vertical="top+50">
-                  <FloatingComponent showfloat={rowController.floatVisible && rowController.canAddSibling} horizontal="center" vertical="top+50">
-                     <FloatingComponent showfloat={rowController.floatVisible && rowController.canAddSibling} horizontal="center" vertical="bottom+50">
-                        <FlexLayout items="center" class="trvwr-sum-row">
-                           <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
-                           <span class="trvwr-drag-handle" title="Arrastrar para reordenar" draggable={true} on:dragstart={(e) => rowController.ondragstart(e)} on:dragend={(e) => rowController.ondragend(e)}>
-                              <Iconify icon="mdi:dots-grid" style="font-size: 1rem; opacity: 0.45" />
-                           </span>
-                           {#if rowController.hasChildren}
-                              <FlexLayout items="center" class="trvwr-itm-symb">
-                                 <Iconify icon="mdi:chevron-down" style="font-size: 1rem" rotate={rowController.isNodeOpen ? 0 : -90} />
-                                 {#if rowController.rowIcono}
-                                    <Iconify icon={rowController.rowIcono.icon} {...rowController.rowIcono.rest} style={rowController.rowIcono.mergedStyle} />
-                                 {/if}
-                              </FlexLayout>
+                  <FlexLayout items="center" class="trvwr-sum-row">
+                     <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
+                     <span class="trvwr-drag-handle" title="Arrastrar para reordenar" draggable={true} on:dragstart={(e) => rowController.ondragstart(e)} on:dragend={(e) => rowController.ondragend(e)}>
+                        <Iconify icon="mdi:dots-grid" style="font-size: 1rem; opacity: 0.45" />
+                     </span>
+                     {#if rowController.hasChildren}
+                        <FlexLayout items="center" class="trvwr-itm-symb">
+                           <Iconify icon="mdi:chevron-down" style="font-size: 1rem" rotate={rowController.isNodeOpen ? 0 : -90} />
+                           {#if rowController.rowIcono}
+                              <Iconify icon={rowController.rowIcono.icon} {...rowController.rowIcono.rest} style={rowController.rowIcono.mergedStyle} />
                            {/if}
-                           {#if !rowController.hasChildren && rowController.rowIcono}
-                              <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
-                              <span class="trvwr-itm-lead trvwr-itm-lead--icon" class:trvwr-itm-lead--add={!!rowController.onLeadIconClick} title={rowController.onLeadIconClick ? "Agregar hijo" : undefined} on:click|stopPropagation={rowController.onLeadIconClick ? () => rowController.onLeadIconClick?.() : undefined}>
-                                 <Iconify icon={rowController.rowIcono.icon} {...rowController.rowIcono.rest} style={rowController.rowIcono.mergedStyle} />
-                              </span>
-                           {/if}
-                           <FlexLayout items="center" class="trvwr-itm-content" style="flex: 1; min-width: 0">
-                              {#if $$slots.row}
-                                 <slot name="row" {node} />
-                              {:else}
-                                 <Text lines={1}>{@html node.label ?? ""}</Text>
-                              {/if}
-                           </FlexLayout>
                         </FlexLayout>
-                        <svelte:fragment slot="float">
-                           {#if rowController.canAddSibling}
-                              <ButtonIconify
-                                 class="trvwr-float-btn"
-                                 icon="mdi:table-row-plus-after"
-                                 title="Añadir abajo (Ctrl+Shift+↓)"
-                                 variant="solid"
-                                 color={self.floatBtnColor}
-                                 on:click={(e) => {
-                                    e.stopPropagation();
-                                    rowController.addSiblingBelow();
-                                 }}
-                              />
-                           {/if}
-                        </svelte:fragment>
-                     </FloatingComponent>
-                     <ButtonIconify
-                        slot="float"
-                        class="trvwr-float-btn"
-                        icon="mdi:table-row-plus-before"
-                        title="Añadir arriba (Ctrl+Shift+↑)"
-                        variant="solid"
-                        color={self.floatBtnColor}
-                        on:click={(e) => {
-                           e.stopPropagation();
-                           rowController.addSiblingAbove();
-                        }}
-                     />
-                  </FloatingComponent>
+                     {/if}
+                     {#if !rowController.hasChildren && rowController.rowIcono}
+                        <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
+                        <span class="trvwr-itm-lead trvwr-itm-lead--icon" class:trvwr-itm-lead--add={!!rowController.onLeadIconClick} title={rowController.onLeadIconClick ? "Agregar hijo" : undefined} on:click|stopPropagation={rowController.onLeadIconClick ? () => rowController.onLeadIconClick?.() : undefined}>
+                           <Iconify icon={rowController.rowIcono.icon} {...rowController.rowIcono.rest} style={rowController.rowIcono.mergedStyle} />
+                        </span>
+                     {/if}
+                     <FlexLayout items="center" class="trvwr-itm-content" style="flex: 1; min-width: 0">
+                        {#if $$slots.row}
+                           <slot name="row" {node} />
+                        {:else}
+                           <Text lines={1}>{@html node.label ?? ""}</Text>
+                        {/if}
+                     </FlexLayout>
+                  </FlexLayout>
                   <Card slot="float">
-                     <FlexOptions actions={rowController.filteredActions} />
+                     <FlexOptions actions={rowController.filteredActions} more={rowController.cascadeOptions} />
                   </Card>
                </FloatingComponent>
             </summary>

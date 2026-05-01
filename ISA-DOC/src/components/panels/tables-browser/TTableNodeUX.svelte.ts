@@ -1,6 +1,6 @@
 import { TreeNodeUX } from "../../_comps/TreeView/TreeRowView.svelte";
 
-export type TableTreeKind = "prefix" | "table";
+export type TableTreeKind = "domain" | "prefix" | "table";
 
 export class TTableNodeBase {
 	rowId: string = "";
@@ -12,6 +12,10 @@ export class TTableNodeBase {
 	tableIndex: number = -1;
 	prefix: string = "";
 	colCount: number = 0;
+	/** Id del dominio al que pertenece este nodo (si aplica). */
+	domainId: string = "";
+	/** Si la tabla es master de su dominio. */
+	isMaster: boolean = false;
 }
 
 export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
@@ -37,8 +41,8 @@ export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
 		this.depth = dotCount;
 		this.isLeaf = this.kind === "table";
 		this.isLast = this.kind === "table";
-		this.isPenultimate = this.kind === "prefix";
-		this.levelTitle = this.kind === "prefix" ? "Prefijo" : "Tabla";
+		this.isPenultimate = this.kind === "prefix" || this.kind === "domain";
+		this.levelTitle = this.kind === "domain" ? "Dominio" : this.kind === "prefix" ? "Prefijo" : "Tabla";
 		this.nextLevelTitle = "Tabla";
 		this.label = this.rowName || "";
 	}
