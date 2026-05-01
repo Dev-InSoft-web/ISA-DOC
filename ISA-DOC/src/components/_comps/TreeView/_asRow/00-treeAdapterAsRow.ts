@@ -191,8 +191,8 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 
 	onrowclick(node: INode<TWorking>): void {
 		this._selectedId = this.normalizeNodeId(node.flatPath);
-		this._item = node.obj;
-		this._originalItem = this.toNode(node.obj, true);
+		this._item = node as unknown as TWorking;
+		this._originalItem = this.toNode(node as unknown as TWorking, true);
 		this.onrefresh();
 	}
 

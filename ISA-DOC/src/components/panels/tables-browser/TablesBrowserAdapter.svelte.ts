@@ -738,12 +738,18 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			if (e.kind === "table") rootTablesUpper.add(upper(e.key));
 		}
 
-		// Tablas no-dominio (ni root) agrupadas por prefijo
+		// Tablas no-dominio (ni root) agrupadas por su `effectivePrefix` EXACTO.
+		// No se infiere por nombre: una tabla pertenece a un agrupador de prefijo
+		// SOLO si su `effectivePrefix` coincide exactamente con el `prefix` del
+		// agrupador. Tablas con `effectivePrefix === ""` van directamente al root
+		// (jamás se crea un agrupador sintético "(sin prefijo)").
 		const grouped = new Map<string, { table: ParsedTable; index: number }[]>();
+		const bareTables: { table: ParsedTable; index: number }[] = [];
 		this._tables.forEach((t, index) => {
 			if (claimedUpper.has(upper(effectiveTableName(t)))) return;
 			if (rootTablesUpper.has(upper(effectiveTableName(t)))) return;
 			const p = effPrefixOf(t);
+			if (!p) { bareTables.push({ table: t, index }); return; }
 			let arr = grouped.get(p);
 			if (!arr) { arr = []; grouped.set(p, arr); }
 			arr.push({ table: t, index });
@@ -757,7 +763,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				arr.push(d);
 			}
 		}
-		const knownPrefixes = Array.from(new Set([...grouped.keys(), ...domainsByPrefix.keys(), ...(this._emptyPrefixes.get("") ?? [])]));
+		const knownPrefixes = Array.from(new Set([...grouped.keys(), ...domainsByPrefix.keys(), ...(this._emptyPrefixes.get("") ?? [])])).filter((p) => p !== "");
 		const childrenOfDomain = new Map<string | undefined, DomainDef[]>();
 		for (const d of allDomains) {
 			if (!d.parentId && typeof d.parentPrefix === "string") continue;
@@ -773,7 +779,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const rootEmptyPrefixes = new Set(this._emptyPrefixes.get("") ?? []);
 		const validTop = this._topOrder.filter((e) =>
 			(e.kind === "domain" && rootDomainIds.has(e.key)) ||
-			(e.kind === "prefix" && (grouped.has(e.key) || rootEmptyPrefixes.has(e.key))) ||
+			(e.kind === "prefix" && e.key !== "" && (grouped.has(e.key) || rootEmptyPrefixes.has(e.key))) ||
 			(e.kind === "table" && tableByUpper.has(upper(e.key)) && !claimedUpper.has(upper(e.key))),
 		);
 		const seenTop = new Set(validTop.map((e) => `${e.kind}:${e.kind === "table" ? upper(e.key) : e.key}`));
@@ -781,12 +787,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			const k = `domain:${d.id}`;
 			if (!seenTop.has(k)) { validTop.push({ kind: "domain", key: d.id }); seenTop.add(k); }
 		}
-		const sortedPrefixes = knownPrefixes.slice().sort((a, b) => {
-			if (a === b) return 0;
-			if (a === "") return 1;
-			if (b === "") return -1;
-			return a.localeCompare(b);
-		});
+		const sortedPrefixes = knownPrefixes.slice().sort((a, b) => a.localeCompare(b));
 		for (const p of sortedPrefixes) {
 			const k = `prefix:${p}`;
 			if (!seenTop.has(k)) { validTop.push({ kind: "prefix", key: p }); seenTop.add(k); }
@@ -900,7 +901,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			chainPrefix: string,
 			parentRowId: string,
 			depth: number,
-			tablesScope: { table: ParsedTable; index: number }[],
+			_tablesScope: { table: ParsedTable; index: number }[],
 			childDomainsScope: DomainDef[],
 		): void => {
 			counters[depth] = (counters[depth] ?? 0) + 1;
@@ -909,36 +910,23 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				flatPath: myRowId,
 				ireference: parentRowId,
 				kind: "prefix",
-				rowName: prefix || "(sin prefijo)",
+				rowName: prefix,
 				prefix,
 			}, this.obj));
 			const fullChain = chainPrefix + prefix;
-			// Tablas candidatas a este nivel: las que empiezan por la cadena completa
-			// (computado sobre el nombre efectivo, que respeta `effectivePrefix`).
-			const tablesHere = tablesScope.filter((it) => upper(effectiveTableName(it.table)).startsWith(upper(fullChain)));
+			// Tablas que pertenecen EXACTAMENTE a este nivel: las que declaran
+			// `effectivePrefix === fullChain` en el JSON. No se infiere por
+			// nombre (`startsWith`) — eso robaba hijos a otros agrupadores.
+			const directTables: { table: ParsedTable; index: number }[] = [];
+			for (let i = 0; i < this._tables.length; i += 1) {
+				const t = this._tables[i];
+				if (claimedUpper.has(upper(effectiveTableName(t)))) continue;
+				if (rootTablesUpper.has(upper(effectiveTableName(t)))) continue;
+				if ((t.effectivePrefix ?? "") !== fullChain) continue;
+				directTables.push({ table: t, index: i });
+			}
 			// Subprefijos registrados bajo este prefijo. Pueden estar vacíos o tener tablas/dominios.
 			const childPrefixNames = (this._emptyPrefixes.get(`prefix:${prefix}`) ?? []).slice();
-			// Particionado: para cada tabla, ver si encaja en algún subprefijo registrado.
-			const childTables = new Map<string, { table: ParsedTable; index: number }[]>();
-			const directTables: { table: ParsedTable; index: number }[] = [];
-			const matchChildOf = (it: { table: ParsedTable; index: number }): string | null => {
-				const bare = upper(effectiveTableName(it.table)).slice(upper(fullChain).length);
-				let best: string | null = null;
-				for (const cp of childPrefixNames) {
-					if (bare.startsWith(upper(cp)) && (!best || upper(cp).length > upper(best).length)) best = cp;
-				}
-				return best;
-			};
-			for (const it of tablesHere) {
-				const cp = matchChildOf(it);
-				if (cp) {
-					let arr = childTables.get(cp);
-					if (!arr) { arr = []; childTables.set(cp, arr); }
-					arr.push(it);
-				} else {
-					directTables.push(it);
-				}
-			}
 			// Dominios y orden directo bajo este prefijo (sólo aplica al primer nivel
 			// del prefijo, no a subprefijos; mantiene compatibilidad con el modelo previo).
 			const childDomains = childDomainsScope;
@@ -986,8 +974,8 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			}
 			// Subprefijos: emítelos al final, recursivamente.
 			for (const cp of childPrefixNames) {
-				const childTbls = childTables.get(cp) ?? [];
-				pushPrefixSubtree(cp, fullChain, myRowId, depth + 1, childTbls, []);
+				if (!cp) continue;
+				pushPrefixSubtree(cp, fullChain, myRowId, depth + 1, [], []);
 			}
 		};
 
@@ -1015,10 +1003,31 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				continue;
 			}
 			// prefix entry
+			if (!entry.key) continue;
 			const prefix = entry.key;
 			const items = grouped.get(prefix) ?? [];
 			const childDomains = domainsByPrefix.get(prefix) ?? [];
 			pushPrefixSubtree(prefix, "", "", 0, items, childDomains);
+		}
+
+		// Tablas bare (sin prefijo y no listadas en `_topOrder`) al final del root.
+		// No se sintetiza un agrupador "(sin prefijo)": cuelgan directamente del root.
+		const seenRootTables = new Set<string>();
+		for (const e of this._topOrder) if (e.kind === "table") seenRootTables.add(upper(e.key));
+		for (const it of bareTables) {
+			const key = upper(effectiveTableName(it.table));
+			if (seenRootTables.has(key)) continue;
+			counters[0] = (counters[0] ?? 0) + 1;
+			rows.push(new TTableNodeUX({
+				flatPath: String(counters[0]),
+				ireference: "",
+				kind: "table",
+				rowName: it.table.name,
+				tableKey: tableKey(it.table),
+				tableIndex: it.index,
+				colCount: it.table.columns.length,
+				prefix: effPrefixOf(it.table),
+			}, this.obj));
 		}
 
 		this.obj.rows = rows;

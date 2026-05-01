@@ -139,11 +139,6 @@
 		return `${t.fragmentId}::${t.originalName}`;
 	}
 
-	function detectPrefix(name: string): string {
-		const m = /^([A-Z][A-Z0-9]*_)/.exec(name);
-		return m ? m[1] : "";
-	}
-
 	function setTables(list: ParsedTable[]): void {
 		tables = list;
 		adapter.setTables(tables);
@@ -405,7 +400,7 @@
 												on:input={(e) => {
 													const v = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_");
 													frmObj.prefix = v;
-													frmObj.rowName = v || "(sin prefijo)";
+												frmObj.rowName = v;
 												}}
 											/>
 										</label>
