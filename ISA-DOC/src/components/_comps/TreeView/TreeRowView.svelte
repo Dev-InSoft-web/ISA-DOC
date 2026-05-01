@@ -221,6 +221,8 @@
    $: TreeController.bindParentData(setShowFrm, showFrmModificar, showFrmVisualizar, showEliminar);
 </script>
 
+<svelte:window on:pointerdown={(e) => TreeController.ontreeoutsidepointerdown(e)} />
+
 {#if bshowEliminar}
    <Modal bind:bshow={bshowEliminar} bind:loading={loadingEliminar}>
       <Text slot="title" style="display: flex; align-items: center; gap: 0.5rem;">

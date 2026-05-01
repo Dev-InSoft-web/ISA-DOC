@@ -100,7 +100,7 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 		const out: ButtonIconifyProps[] = [];
 		if (this.isPrison(node)) {
 			out.push({
-				icon: "mdi:folder-open-outline",
+				icon: "mdi:exit-run",
 				title: "Liberar (los hijos toman su lugar conservando el orden)",
 				color: "neutral" as const,
 				onClick: () => this.onrelease(node),

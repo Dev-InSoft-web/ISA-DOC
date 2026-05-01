@@ -55,10 +55,19 @@ export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
 		// `prefix`: prison + warden → liberar + reglas sobre hijos (rename por prefijo).
 		// `table`: atom → hoja sin rol especial.
 		this.actor = this.kind === "domain"
-			? "group prison"
+			? "group prison monarchy"
 			: this.kind === "prefix"
 				? "group prison warden"
 				: "atom";
+	}
+
+	/**
+	 * Contrato del rol `monarchy` (ancestro `domain`): el master del dominio
+	 * queda congelado (no se puede mover ni arrastrar fuera). Para liberarlo
+	 * hay que liberar el dominio. Los esclavos NO se congelan.
+	 */
+	freeze(): boolean {
+		return this.kind === "table" && !!this.isMaster;
 	}
 
 	clone(): TTableNodeUX {

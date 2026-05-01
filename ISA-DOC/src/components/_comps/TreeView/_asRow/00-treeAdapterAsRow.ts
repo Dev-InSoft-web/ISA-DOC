@@ -57,30 +57,49 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 		return this.isGrouper(node);
 	}
 
-	private _autoExpansionApplied = false;
+	/**
+	 * Ids de agrupadores que ya recibieron expansión por defecto.
+	 * Permite re-aplicar la política cuando llegan nodos NUEVOS (p.ej. tras
+	 * `setTables`) sin pisar el estado del usuario para los nodos ya vistos.
+	 */
+	private _autoExpandedSeen = new Set<string>();
 
 	applyDefaultExpansion(): void {
 		if (!this.rootNodes.length) return;
-		const next: INode<TWorking>[] = [];
-		const seen = new Set<string>();
+		// Mapa por id de los expandidos actuales (preserva referencia fresca).
+		const currentById = new Map<string, INode<TWorking>>();
+		for (const n of this._expandedNodes) {
+			const id = this.normalizeNodeId(n?.id);
+			if (id) currentById.set(id, n);
+		}
+		let changed = false;
 		const walk = (nodes: INode<TWorking>[]): void => {
 			for (const n of nodes) {
-				if (this.shouldAutoExpand(n)) {
-					const key = this.normalizeNodeId(n.id);
-					if (key && !seen.has(key)) { seen.add(key); next.push(n); }
+				const key = this.normalizeNodeId(n.id);
+				if (key && this.shouldAutoExpand(n) && !this._autoExpandedSeen.has(key)) {
+					this._autoExpandedSeen.add(key);
+					if (!currentById.has(key)) { currentById.set(key, n); changed = true; }
 				}
 				n.children?.length && walk(n.children);
 			}
 		};
 		walk(this.rootNodes);
-		this.expandedNodes = next;
+		if (!changed) return;
+		this.expandedNodes = [...currentById.values()];
 		this.syncAllRowAdapters();
-		this._autoExpansionApplied = true;
+		// Inhibe el `onbranchexpand` legacy de la cascada genérica para que no
+		// sobreescriba la expansión completa con sólo los rootNodes de nivel 0.
+		this.didNodesExpand = true;
 	}
 
 	override onrefresh(): void {
 		super.onrefresh();
-		if (!this._autoExpansionApplied && this.rootNodes.length) this.applyDefaultExpansion();
+		// Tras reconstruir `_treeNodes`, las referencias en `expandedNodes`
+		// apuntan a INode antiguos: hay que resincronizar por id contra el árbol
+		// vivo, o el render verá "nada expandido" aunque el estado conceptual lo esté.
+		this.resyncExpandedToCurrentTree();
+		// Re-aplica la política para nodos NUEVOS (idempotente por id).
+		if (this.rootNodes.length) this.applyDefaultExpansion();
 	}
 
 	// =========================================================================
@@ -247,6 +266,29 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 	syncAllRowAdapters(): void {
 		for (const adapter of this.rowAdapters.values()) adapter.sync();
 		this.rowLayoutEpoch.update((n) => n + 1);
+	}
+
+	/**
+	 * Listener global de `pointerdown`: si el clic ocurre **fuera** del
+	 * `[data-tree-root]` del árbol, limpia los estados visuales que producen
+	 * el efecto "hover/highlight" persistente (`focusedNode`, `hoveredNode`).
+	 *
+	 * Cubre el caso del menú `more` en cascada: al cerrarse haciendo clic
+	 * fuera, la fila origen perdería el foco DOM pero conservaba el
+	 * `_focusedNodeId` interno → el background de hover quedaba pegado.
+	 */
+	ontreeoutsidepointerdown(e: PointerEvent): void {
+		if (typeof document === "undefined") return;
+		const id = this.treeRootId;
+		if (!id) return;
+		const body = document.querySelector(`[data-tree-root="${CSS.escape(id)}"]`);
+		if (!body) return;
+		const tgt = e.target as Node | null;
+		if (tgt && body.contains(tgt)) return;
+		let changed = false;
+		if (this._hoveredNodeId) { this.hoveredNode = null; changed = true; }
+		if (this._focusedNodeId) { this.focusedNode = null; changed = true; }
+		if (changed) this.syncAllRowAdapters();
 	}
 
 	// =========================================================================

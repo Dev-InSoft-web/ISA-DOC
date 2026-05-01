@@ -200,7 +200,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 						? "Master del dominio"
 						: inDom
 							? "Marcar como master de este dominio"
-							: "Crear dominio",
+							: "Crear su dominio",
 					title: isM ? "Master del dominio" : "Marcar como master",
 					color: isM ? ("warning" as const) : undefined,
 					onClick: () => this.markTableAsMaster(obj.rowName),
@@ -462,6 +462,16 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const counters: number[] = [0];
 
 		const orderedChildrenOf = (d: DomainDef): DomainChildRef[] => {
+			const masterUp = upper(d.masterTable || "");
+			const withMasterFirst = (entries: DomainChildRef[]): DomainChildRef[] => {
+				if (!masterUp) return entries;
+				const idx = entries.findIndex((e) => e.kind === "table" && upper(e.key) === masterUp);
+				if (idx <= 0) return entries;
+				const copy = entries.slice();
+				const [m] = copy.splice(idx, 1);
+				copy.unshift(m);
+				return copy;
+			};
 			if (d.childrenOrder && d.childrenOrder.length > 0) {
 				const order = d.childrenOrder.slice();
 				const seenT = new Set<string>();
@@ -473,11 +483,11 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				const subs = childrenOfDomain.get(d.id) ?? [];
 				for (const s of subs) if (!seenD.has(s.id)) order.push({ kind: "domain", key: s.id });
 				for (const m of d.members) if (!seenT.has(upper(m))) order.push({ kind: "table", key: m });
-				// Filtrar entradas obsoletas
-				return order.filter((e) =>
+				const filtered = order.filter((e) =>
 					(e.kind === "domain" && (childrenOfDomain.get(d.id) ?? []).some((s) => s.id === e.key)) ||
 					(e.kind === "table" && d.members.some((m) => upper(m) === upper(e.key))),
 				);
+				return withMasterFirst(filtered);
 			}
 			// Legacy: sub-dominios primero, luego tablas (master primero).
 			const subs = (childrenOfDomain.get(d.id) ?? []).map((s) => ({ kind: "domain" as const, key: s.id }));

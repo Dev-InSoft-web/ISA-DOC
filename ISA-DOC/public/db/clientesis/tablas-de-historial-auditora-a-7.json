@@ -1,0 +1,225 @@
+{
+  "version": 1,
+  "fragmentId": "tablas-de-historial-auditora-a-7",
+  "fragmentName": "TABLAS DE HISTORIAL (AUDITORÃA)",
+  "tables": [
+    {
+      "fragmentId": "tablas-de-historial-auditora-a-7",
+      "fragmentName": "TABLAS DE HISTORIAL (AUDITORÃA)",
+      "comment": "",
+      "hasIfNotExists": true,
+      "originalName": "CAPAC_HISTORIALPLANESTUDIO",
+      "name": "CAPAC_HISTORIALPLANESTUDIO",
+      "columns": [
+        {
+          "name": "IHISTORIALPLANESTUDIO",
+          "type": "BIGINT",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": true,
+          "extra": ""
+        },
+        {
+          "name": "IPLANESTUDIO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "CAMPO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "VALOR",
+          "type": "TEXT",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        }
+      ],
+      "compositePrimaryKey": [],
+      "extraStatements": [],
+      "trailing": ""
+    },
+    {
+      "fragmentId": "tablas-de-historial-auditora-a-7",
+      "fragmentName": "TABLAS DE HISTORIAL (AUDITORÃA)",
+      "comment": "",
+      "hasIfNotExists": true,
+      "originalName": "CAPAC_HISTORIALCURSO",
+      "name": "CAPAC_HISTORIALCURSO",
+      "columns": [
+        {
+          "name": "IHISTORIALCURSO",
+          "type": "BIGINT",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": true,
+          "extra": ""
+        },
+        {
+          "name": "ICURSO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "CAMPO",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "VALOR",
+          "type": "TEXT",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        }
+      ],
+      "compositePrimaryKey": [],
+      "extraStatements": [],
+      "trailing": ""
+    }
+  ]
+}
