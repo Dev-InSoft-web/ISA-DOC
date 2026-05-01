@@ -6,6 +6,12 @@
       showfloat?: boolean;
       horizontal?: "left" | "center" | "right" | `left+${number}` | `right+${number}`;
       vertical?: "top" | "center" | "bottom" | `top+${number}` | `bottom+${number}`;
+      /**
+       * Transformación lineal extra aplicada al panel flotante. Se compone después
+       * de la traslación de anclaje. `tx`/`ty` aceptan número (px) o string CSS
+       * (`"1rem"`, `"-1em"`, `"50%"`); `scale` es un número (1 = sin escala).
+       */
+      linearTransform?: { tx?: number | string; ty?: number | string; scale?: number };
    }
 
    export interface FloatingComponentSlots extends BlockLayoutSlots {
@@ -20,6 +26,7 @@
    export let showfloat: $$Props["showfloat"] = true;
    export let horizontal: $$Props["horizontal"] = "right";
    export let vertical: $$Props["vertical"] = "center";
+   export let linearTransform: $$Props["linearTransform"] = undefined;
 
    let sizew: $$Props["sizew"] = "md";
 
@@ -28,6 +35,23 @@
       const [side, off] = raw.split("+");
       const offset = off ? Number(off) : NaN;
       return { side: side || "", offset: Number.isFinite(offset) ? offset : 0 };
+   };
+
+   const toCssLen = (v: number | string | undefined): string => {
+      if (v === undefined || v === null || v === "") return "0";
+      if (typeof v === "number") return Number.isFinite(v) ? `${v}px` : "0";
+      return String(v);
+   };
+
+   const linearTransformCss = (lt: { tx?: number | string; ty?: number | string; scale?: number } | undefined): string => {
+      if (!lt) return "";
+      const parts: string[] = [];
+      const tx = toCssLen(lt.tx);
+      const ty = toCssLen(lt.ty);
+      if (tx !== "0" || ty !== "0") parts.push(`translate(${tx}, ${ty})`);
+      const s = typeof lt.scale === "number" && Number.isFinite(lt.scale) && lt.scale !== 1 ? lt.scale : 0;
+      if (s) parts.push(`scale(${s})`);
+      return parts.join(" ");
    };
 
    const self = {
@@ -55,7 +79,10 @@
          get style() {
             const h = self.panel.getHorizontal();
             const v = self.panel.getVertical();
-            return [...h.styles, ...v.styles, (h.tx !== "0" || v.ty !== "0") && `transform: translate(${h.tx}, ${v.ty})`].filter(Boolean).join("; ");
+            const baseTransform = (h.tx !== "0" || v.ty !== "0") ? `translate(${h.tx}, ${v.ty})` : "";
+            const extra = linearTransformCss(linearTransform);
+            const transform = [baseTransform, extra].filter(Boolean).join(" ");
+            return [...h.styles, ...v.styles, transform && `transform: ${transform}`, extra && `transform-origin: top right`].filter(Boolean).join("; ");
          },
       },
       get wrapClass() {

@@ -83,4 +83,16 @@ export class TTableNodeUX extends TreeNodeUX(TTableNodeBase)<TTableNodeUX> {
 			return am - bm;
 		});
 	}
+
+	/**
+	 * Veto fino de posición: en un dominio, ningún nodo puede quedar antes del master.
+	 * - `before <master>`: prohibido (saldría arriba del master).
+	 * - `after <slave>` ó `before <slave>`: permitido (master ya queda arriba por sortChildren).
+	 */
+	canPlaceChildAt(src: TTableNodeUX, target: TTableNodeUX, position: "before" | "after"): boolean {
+		if (this.kind !== "domain") return true;
+		if (src.isMaster) return true;
+		if (target.isMaster && position === "before") return false;
+		return true;
+	}
 }

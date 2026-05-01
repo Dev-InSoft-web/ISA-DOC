@@ -76,7 +76,7 @@ export function getSlaves(domains: DomainsMap, masterTableName: string): string[
 }
 
 /** Marca `tableName` como master: si no tiene dominio, crea uno nuevo con esa tabla como master. */
-export function markAsMaster(domains: DomainsMap, tableName: string, domainName?: string): DomainsMap {
+export function markAsMaster(domains: DomainsMap, tableName: string, domainName?: string, parentPrefix?: string): DomainsMap {
 	const next: DomainsMap = { ...domains };
 	const existing = findDomainOf(next, tableName);
 	if (existing) {
@@ -90,9 +90,10 @@ export function markAsMaster(domains: DomainsMap, tableName: string, domainName?
 	const id = `dom_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
 	next[id] = {
 		id,
-		name: domainName ?? "Dominio",
+		name: domainName ?? `Dominio ${tableName}`,
 		masterTable: tableName,
 		members: [tableName],
+		parentPrefix,
 	};
 	return next;
 }

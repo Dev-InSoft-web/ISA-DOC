@@ -91,6 +91,9 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 		} as TreeViewProps<TablesBrowserStack, TTableNodeUX>);
 		this.context.TreeController = this;
 		const self = this;
+		this.applyAdapterConfig({
+			floatCard: { tx: "1rem", ty: "-1em", scale: 0.8 },
+		});
 		if (onChange) this.onChange = onChange;
 		this._domains = loadDomains();
 		this._topOrder = loadTopLevelOrder();
@@ -227,7 +230,8 @@ export class TablesBrowserAdapter extends TreeAdapter<TablesBrowserStack, TTable
 	}
 
 	markTableAsMaster(tableName: string): void {
-		this.setDomains(markMasterFn(this._domains, tableName));
+		const prefix = detectPrefix(tableName);
+		this.setDomains(markMasterFn(this._domains, tableName, `Dominio ${tableName}`, prefix || undefined));
 	}
 
 	removeDomain(domainId: string): void {

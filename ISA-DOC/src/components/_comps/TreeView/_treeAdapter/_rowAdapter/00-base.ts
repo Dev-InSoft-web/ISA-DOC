@@ -45,6 +45,13 @@ export interface ITreeData<T> {
 	 * Si no está definida, se preserva el orden visual existente.
 	 */
 	sortChildren?(children: T[]): T[];
+	/**
+	 * Regla opcional fina para validar el drop específico (segunda barrera).
+	 * El TreeAdapter llama a este método sobre el padre del destino cuando
+	 * ya pasó `acceptsChild`/`canDropAtRoot`. Permite vetar posiciones puntuales
+	 * (p.ej. impedir colocar nodos antes del master de un dominio).
+	 */
+	canPlaceChildAt?(src: T, target: T, position: "before" | "after"): boolean;
 }
 
 type TreeRowConfig = {

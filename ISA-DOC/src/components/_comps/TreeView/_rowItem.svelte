@@ -54,15 +54,29 @@
          return ["trvwr-itm-sum", rc.isHighlighted && "trvwr-itm-sum--focused", rc.mergedDisabled && "trvwr-itm-sum--disabled", !forbidden && drg === "before" && "trvwr-itm-sum--drg-bf", !forbidden && drg === "after" && "trvwr-itm-sum--drg-aftr", forbidden && drg === "before" && "trvwr-itm-sum--drg-forbidden-bf", forbidden && drg === "after" && "trvwr-itm-sum--drg-forbidden-aftr"].filter(Boolean).join(" ");
       },
       summaryResume(rc: ReturnType<typeof treeController.getOrCreateRowAdapter>) {
+         const ctx = (rc as unknown as { context?: { node?: { obj?: { label?: unknown; rowName?: unknown; levelTitle?: unknown } } } }).context;
+         const obj = ctx?.node?.obj;
+         const label = String(obj?.label ?? obj?.rowName ?? "").trim();
+         const lvl = String(obj?.levelTitle ?? "").trim();
+         const title = lvl && label ? `${lvl}: ${label}` : (label || lvl || undefined);
          return {
             class: self.summaryClass(rc),
             "aria-selected": rc.isSelected,
             "aria-expanded": rc.hasChildren ? rc.isNodeOpen : undefined,
+            title,
          };
       },
       detailsStyle(rc: ReturnType<typeof treeController.getOrCreateRowAdapter>) {
          const colorPrimary80 = mkAlpha("primary", 80);
-         return [`--trvwr-hvr-dflt: ${mkAlpha("color", 92)}`, `--trvwr-ctv-dflt: ${mkAlpha("color", 86)}`, `--trvwr-hghlght-bg: ${mkAlpha("primary", 88)}`, `--trvwr-hghlght-hvr-bg: ${colorPrimary80}`, `--trvwr-swp-bg: ${mkAlpha("success", 70)}`, `--trvwr-fcs-rng: ${mkAlpha("primary", 45)}`, `--trvwr-drp-ndctr-bg: ${colorPrimary80}`, `--trvwr-drp-ndctr-hght: ${Math.max(24, rc.dragPlaceholderHeight || 24)}px`, `--trvwr-sel-brd: ${resolveColor("border")}`].join("; ");
+         const ctx = (rc as unknown as { context?: { node?: { obj?: unknown } } }).context;
+         const tc = treeController as unknown as { getRowScale?(node: unknown): number };
+         const scale = typeof tc.getRowScale === "function" && ctx?.node ? tc.getRowScale(ctx.node) : 1;
+         const fontSize = scale && scale !== 1 ? `font-size: ${scale}em` : "";
+         return [`--trvwr-hvr-dflt: ${mkAlpha("color", 92)}`, `--trvwr-ctv-dflt: ${mkAlpha("color", 86)}`, `--trvwr-hghlght-bg: ${mkAlpha("primary", 88)}`, `--trvwr-hghlght-hvr-bg: ${colorPrimary80}`, `--trvwr-swp-bg: ${mkAlpha("success", 70)}`, `--trvwr-fcs-rng: ${mkAlpha("primary", 45)}`, `--trvwr-drp-ndctr-bg: ${colorPrimary80}`, `--trvwr-drp-ndctr-hght: ${Math.max(24, rc.dragPlaceholderHeight || 24)}px`, `--trvwr-sel-brd: ${resolveColor("border")}`, fontSize].filter(Boolean).join("; ");
+      },
+      get floatCardLinearTransform() {
+         const tc = treeController as unknown as { floatCard?: { tx?: number | string; ty?: number | string; scale?: number } };
+         return tc.floatCard;
       },
       get floatBtnColor() {
          return colorMix("card", "primary", 30) as unknown as "primary";
@@ -98,7 +112,7 @@
       <div {...self.resume} data-tree-row-id={rowController.id} data-idrow={rowController.id}>
          <details class="trvwr-itm" class:highlight={rowController.isHighlighted} class:should-flash={rowController.shouldFlash} class:trvwr-itm--folder-selected={rowController.isSelected && rowController.hasChildren} class:trvwr-itm--active={rowController.showActions || rowController.isHighlighted} data-testid="tree-item" open={rowController.isNodeOpen} aria-disabled={rowController.mergedDisabled} on:toggle={(e) => rowController.ondetailstoggle(e)} style={self.detailsStyle(rowController)}>
             <summary {...self.summaryResume(rowController)} role="treeitem" draggable={rowController.isDraggable} on:click={(e) => rowController.onsummaryclick(e)} on:dblclick={(e) => rowController.onsummarydblclick(e)} on:keydown={(e) => rowController.onkeydown(e)} on:focus={(e) => rowController.onsummaryfocus(e)} on:blur={() => rowController.onsummaryblur()} on:pointerenter={() => rowController.onsummarypointerenter()} on:pointerleave={() => rowController.onsummarypointerleave()} on:dragstart={(e) => rowController.ondragstart(e)} on:dragend={(e) => rowController.ondragend(e)} on:dragenter={() => rowController.onsummarydragenter()} on:dragover={(e) => rowController.onsummarydragover(e)} on:dragleave={() => rowController.onsummarydragleave()} on:drop={(e) => rowController.ondrop(e)} on:pointerdown={(e) => rowController.onpointerdown(e)} on:pointerup={() => rowController.onpointerup()} on:pointermove={() => rowController.onpointerup()} on:pointercancel={() => rowController.onpointerup()}>
-               <FloatingComponent showfloat={rowController.floatVisible && rowController.hasRowTools} horizontal="right" vertical="top+50">
+               <FloatingComponent showfloat={rowController.floatVisible && rowController.hasRowTools} horizontal="right" vertical="top+50" linearTransform={self.floatCardLinearTransform}>
                   <FlexLayout items="center" class="trvwr-sum-row">
                      <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
                      <span class="trvwr-drag-handle" title="Arrastrar para reordenar" draggable={true} on:dragstart={(e) => rowController.ondragstart(e)} on:dragend={(e) => rowController.ondragend(e)}>

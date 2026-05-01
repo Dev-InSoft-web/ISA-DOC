@@ -7,7 +7,42 @@ import { TAMutations } from "./05-mutations";
 
 type CascadeOptionsInput = FlexOptionsInput;
 
+/**
+ * Configuración inyectable al TreeAdapter (vía `applyAdapterConfig` desde el
+ * constructor de la subclase). Centraliza opciones visuales/comportamiento
+ * que antes vivían dispersas en estilos de cada panel.
+ */
+export interface TreeAdapterFloatCardConfig {
+	tx?: number | string;
+	ty?: number | string;
+	scale?: number;
+}
+
+export interface TreeAdapterConfig {
+	/** Transformación lineal aplicada a las cards flotantes de acciones por fila. */
+	floatCard?: TreeAdapterFloatCardConfig;
+	/** Escala visual por defecto de la fila (font-size relativo). 1 = sin cambio. */
+	rowScale?: number;
+}
+
 export abstract class TreeAdapter<Stacker, TWorking extends ITreeData<TWorking>> extends TAMutations<Stacker, TWorking> {
+	protected _adapterConfig: TreeAdapterConfig = {};
+
+	/** Combina/asigna la configuración del adapter (llamar desde la subclase). */
+	applyAdapterConfig(cfg: TreeAdapterConfig | undefined): void {
+		if (!cfg) return;
+		this._adapterConfig = { ...this._adapterConfig, ...cfg };
+	}
+
+	/** Config de transformación aplicada a la card flotante de cada fila. */
+	get floatCard(): TreeAdapterFloatCardConfig | undefined {
+		return this._adapterConfig.floatCard;
+	}
+
+	/** Escala visual de una fila concreta. Override para escalar por tipo de nodo. */
+	getRowScale(_node: INode<TWorking>): number {
+		return this._adapterConfig.rowScale ?? 1;
+	}
 
 	/**
 	 * Tipos de nodo que actúan como **agrupadores** (carpetas/contenedores).

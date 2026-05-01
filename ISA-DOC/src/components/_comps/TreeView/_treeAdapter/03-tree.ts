@@ -325,7 +325,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 	 * - Cambio de padre: se delega a `acceptsChild` del nuevo padre, o a `canDropAtRoot` si destino es root.
 	 * - Bloquea ciclos (mover un nodo dentro de su propio subárbol).
 	 */
-	canDrop(sourceId: string, targetId: string, _position: "before" | "after"): boolean {
+	canDrop(sourceId: string, targetId: string, position: "before" | "after"): boolean {
 		const sId = this.normalizeNodeId(sourceId);
 		const tId = this.normalizeNodeId(targetId);
 		if (!sId || !tId || sId === tId) return false;
@@ -335,12 +335,23 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		if (!srcNode || !tgtNode) return false;
 		const srcRef = this.normalizeNodeId(srcNode.obj.ireference || "");
 		const tgtRef = this.normalizeNodeId(tgtNode.obj.ireference || "");
-		if (srcRef === tgtRef) return true;
-		if (!tgtRef) return this.canDropAtRoot(srcNode.obj);
-		const newParent = this.findNodeById(tgtRef)?.obj;
-		if (!newParent) return false;
-		const fn = (newParent as any).acceptsChild as ((c: TWorking) => boolean) | undefined;
-		return typeof fn === "function" ? !!fn.call(newParent, srcNode.obj) : false;
+		const sameParent = srcRef === tgtRef;
+		if (!sameParent) {
+			if (!tgtRef) {
+				if (!this.canDropAtRoot(srcNode.obj)) return false;
+			} else {
+				const newParent = this.findNodeById(tgtRef)?.obj;
+				if (!newParent) return false;
+				const fn = (newParent as any).acceptsChild as ((c: TWorking) => boolean) | undefined;
+				if (typeof fn !== "function" || !fn.call(newParent, srcNode.obj)) return false;
+			}
+		}
+		// Segunda barrera: el padre del destino puede vetar la posición específica
+		// (p.ej. impedir colocar antes del master de un dominio).
+		const destParent = tgtRef ? this.findNodeById(tgtRef)?.obj : undefined;
+		const place = (destParent as any)?.canPlaceChildAt as ((s: TWorking, t: TWorking, p: "before" | "after") => boolean) | undefined;
+		if (typeof place === "function" && !place.call(destParent, srcNode.obj, tgtNode.obj, position)) return false;
+		return true;
 	}
 
 	/** Override por adapter: regla de qué tipos de nodo aceptan ser hijos directos del root. */

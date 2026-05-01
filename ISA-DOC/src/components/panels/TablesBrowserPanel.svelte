@@ -349,7 +349,7 @@
 
 	<div class="layout">
 		<div class="tree-pane">
-			<div class="pane-scroll">
+			<div class="pane-scroll custom-scrollbar">
 			{#if loading}
 				<Text color="neutral">Cargando…</Text>
 			{:else if tables.length === 0}
@@ -440,7 +440,7 @@
 		</div>
 
 		<div class="form-pane">
-			<div class="pane-scroll">
+			<div class="pane-scroll custom-scrollbar">
 			{#if !selected}
 				<Card variant="flat"><Text color="neutral">Selecciona una tabla del árbol.</Text></Card>
 			{:else}
@@ -484,7 +484,7 @@
 		</div>
 
 		<div class="code-pane">
-			<div class="pane-scroll">
+			<div class="pane-scroll custom-scrollbar">
 			{#if selected}
 				{@const t = selected.table}
 				{@const cfg = mergedByTable.get(t.name.toUpperCase())}
@@ -778,11 +778,6 @@
 	:global(.code-pane) {
 		padding: 1rem;
 		gap: 1rem;
-	}
-	:global(.tree-pane .fc-panel),
-	:global(.tables-tree-host .fc-panel) {
-		zoom: 0.8;
-		transform-origin: top right;
 	}
 	:global(body) {
 		overflow: hidden;
