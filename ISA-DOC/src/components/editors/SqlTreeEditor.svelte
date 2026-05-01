@@ -98,31 +98,31 @@
 			objWorking={adapter.objWorking}
 		>
 			<svelte:fragment slot="row" let:node>
-				{#if node.obj.kind === "section"}
+				{#if node.kind === "section"}
 					<FlexLayout items="center" style="flex:1; min-width:0; gap:0.4rem;">
-						<Chip>{node.id}</Chip>
+						<Chip>{node.flatPath}</Chip>
 						<span class="badge badge-section">Sección</span>
-						<Text style="font-weight:bold;" lines={1}>{node.obj.rowName || "(sin nombre)"}</Text>
+						<Text style="font-weight:bold;" lines={1}>{node.rowName || "(sin nombre)"}</Text>
 					</FlexLayout>
-				{:else if node.obj.kind === "optional"}
+				{:else if node.kind === "optional"}
 					<FlexLayout items="center" style="flex:1; min-width:0; gap:0.4rem;">
-						<Chip>{node.id}</Chip>
+						<Chip>{node.flatPath}</Chip>
 						<span class="badge badge-optional">Opcional</span>
-						<Text style="font-weight:bold;" lines={1}>{node.obj.rowName || "(sin nombre)"}</Text>
-						{#if !node.obj.show}
+						<Text style="font-weight:bold;" lines={1}>{node.rowName || "(sin nombre)"}</Text>
+						{#if !node.active}
 							<span class="tag tag-hidden">oculta</span>
 						{/if}
 					</FlexLayout>
 				{:else}
 					<FlexLayout items="center" justify="between" style="flex:1; min-width:0; gap:0.5rem;">
 						<FlexLayout items="center" style="flex: 0 1 auto; min-width: 0; gap:0.4rem;">
-							<Chip>{node.id}</Chip>
-							<Text style="font-weight:600; min-width: 6rem;" lines={1}>{node.obj.rowName || "(columna)"}</Text>
-							<Text color="neutral" lines={1}><code>{node.obj.colType || "—"}</code></Text>
-							{#if node.obj.nullable === "NOT NULL"}
+							<Chip>{node.flatPath}</Chip>
+							<Text style="font-weight:600; min-width: 6rem;" lines={1}>{node.rowName || "(columna)"}</Text>
+							<Text color="neutral" lines={1}><code>{node.colType || "—"}</code></Text>
+							{#if node.nullable === "NOT NULL"}
 								<span class="tag tag-nn">NN</span>
 							{/if}
-							{#if isPk(node.obj)}
+							{#if isPk(node)}
 								<span class="tag tag-pk">PK</span>
 							{/if}
 						</FlexLayout>
@@ -156,8 +156,8 @@
 								/>
 							</label>
 							<label class="field row">
-								<Switch bind:checked={frmObj.show} color="primary" colorFalse="neutral" />
-								<Text>Mostrar (incluir en SQL)</Text>
+								<Switch bind:checked={frmObj.active} color="primary" colorFalse="neutral" />
+								<Text>Activo (incluir en SQL)</Text>
 							</label>
 						</div>
 					{:else}

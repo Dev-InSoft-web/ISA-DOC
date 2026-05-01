@@ -1,4 +1,4 @@
-﻿<svelte:options accessors={true} />
+<svelte:options accessors={true} />
 
 <script context="module" lang="ts">
    import { AccionesGen, ActionDrawer, Button, FlexLayout, Iconify, Modal, Text, type TDForm } from "@ingenieria_insoft/ispsveltecomponents";
@@ -6,10 +6,11 @@
    import type { FlexOptionsAction } from "../Options/FlexOptions.svelte";
    import FlexOptions from "../Options/FlexOptions.svelte";
    import RowItem from "./_asRow/_rowItem.svelte";
-   import { ComplexControl } from "./_treeAdapter/00-complex-control";
-   import { type INode, type ITreeData, groupedWithSeparators, objRootsToNodes, TreeRowAdapter, TreeNodeUX } from "./_asRow/_rowAdapter";
+   import { ComplexControl } from "./_treeAdapter/_defgen/01-complex-control";
+   import { TreeNode, objRootsToNodes, type INode, type ITreeData } from "./_treeAdapter/_defgen/00-tree-data";
+   import { groupedWithSeparators, TreeRowAdapter } from "./_asRow/_rowAdapter";
    import { TreeRowViewAdapter } from "./_asRow/01-treeAdapterAsRowEvents";
-   export { ComplexControl, TreeRowViewAdapter, TreeRowAdapter, TreeNodeUX, groupedWithSeparators, objRootsToNodes };
+   export { ComplexControl, TreeRowViewAdapter, TreeRowAdapter, TreeNode, groupedWithSeparators, objRootsToNodes };
    export type { INode, ITreeData };
 
    export interface TreeViewProps<Stacker, TWorking extends ITreeData<TWorking>> extends HTMLAttributes<HTMLDivElement> {
@@ -21,7 +22,7 @@
       CatalogoController: Record<string, any>;
       TreeController: TreeRowViewAdapter<Stacker, TWorking>;
       disabled?: boolean;
-      objWorking?: INode<TWorking> | null;
+      objWorking?: TWorking | null;
       showToolbar?: boolean;
       bdrag?: boolean;
       bLostFocus?: boolean;
@@ -31,13 +32,13 @@
        * Cuando es `true`, los nodos pueden salir de su agrupador (cross-parent reorder/drag).
        * Si se pasa una función, retornar `true` autoriza el movimiento; `false` lo bloquea.
        */
-      bcanMoveOutside?: boolean | ((source: INode<TWorking>, target: INode<TWorking>, position: "before" | "after") => boolean);
+      bcanMoveOutside?: boolean | ((source: TWorking, target: TWorking, position: "before" | "after") => boolean);
    }
 
    export interface TreeViewSlots<Stacker, TWorking extends ITreeData<TWorking>> {
       default: { treeToolbar: TreeRowViewAdapter<Stacker, TWorking>; sizew: any; showEliminar: (Obj: TWorking) => void };
       pre: { treeToolbar: TreeRowViewAdapter<Stacker, TWorking>; sizew: any; showEliminar: (Obj: TWorking) => void };
-      row: { node: INode<TWorking> };
+      row: { node: TWorking };
       Frm: any;
    }
 </script>
@@ -80,7 +81,7 @@
       },
    };
 
-   const workingRow = (row: $$Props["objWorking"]): TWorking | null => (row?.obj as TWorking | null | undefined) ?? null;
+   const workingRow = (row: $$Props["objWorking"]): TWorking | null => (row as TWorking | null | undefined) ?? null;
 
    $: rowLayoutTickStore = TreeController.rowLayoutEpoch;
    // rootNodes se re-evalúa cada vez que el store cambia (cuando syncAllRowAdapters incrementa el epoch),
@@ -132,7 +133,7 @@
    const showFrmModificar = (objRef: TWorking) => {
       const node = findNodeForAction(objRef);
       if (!node) return;
-      objWorking = node;
+      objWorking = node as unknown as TWorking;
       localItdForm = readonly ? "view" : "edit";
       editRowShow = true;
    };
@@ -140,7 +141,7 @@
    const showFrmVisualizar = (objRef: TWorking) => {
       const node = findNodeForAction(objRef);
       if (!node) return;
-      objWorking = node;
+      objWorking = node as unknown as TWorking;
       localItdForm = "view";
       editRowShow = true;
    };
@@ -156,7 +157,7 @@
 
    const showEliminar = (objRef: TWorking) => {
       const node = findNodeForAction(objRef);
-      objWorking = node;
+      objWorking = (node as unknown as TWorking | null) ?? null;
       bshowEliminar = true;
    };
 
@@ -239,7 +240,7 @@
             {#if rootNodes?.length}
                <RowItem nodes={rootNodes} treeController={TreeController} rowLayoutEpoch={$rowLayoutTickStore}>
                   <svelte:fragment slot="row" let:node>
-                     <slot name="row" {node} />
+                     <slot name="row" node={node as unknown as TWorking} />
                   </svelte:fragment>
                </RowItem>
             {/if}
@@ -253,7 +254,7 @@
                   {#if currentWorking}
                      <AccionesGen bind:itdForm={localItdForm} bRapido={true} {postSubmit} {onError} onCancel={closeTreePlanDrawer} Controller={CatalogoController as any} Obj={currentWorking as any} onNewObject={async () => currentWorking}>
                         <slot name="Frm" slot="Frm" let:Obj={frmObj} let:small let:itdForm {frmObj} {small} {itdForm} {brapido}>
-                           <Text style="padding: 1rem;" color="neutral">Implemente el slot "Frm" para las acciones sobre el objeto {currentWorking?.id ?? "---"}.</Text>
+                           <Text style="padding: 1rem;" color="neutral">Implemente el slot "Frm" para las acciones sobre el objeto {currentWorking?.flatPath ?? "---"}.</Text>
                         </slot>
                      </AccionesGen>
                   {/if}

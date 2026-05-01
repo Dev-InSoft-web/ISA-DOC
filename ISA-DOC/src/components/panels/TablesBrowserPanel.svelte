@@ -164,7 +164,7 @@
 		// Mantener el adapter sincronizado con el nuevo estado para que sus
 		// próximas operaciones (rebuildRows, emitChange) usen `effectivePrefix`
 		// actualizado y no se generen ciclos por estado divergente.
-		adapter.syncTablesQuiet(tables);
+		(adapter as TablesBrowserAdapter).syncTablesQuiet(tables);
 		dirty = true;
 		void save(true);
 	}
@@ -375,26 +375,26 @@
 						objWorking={adapterAny.objWorking}
 					>
 						<svelte:fragment slot="row" let:node>
-							{#if node.obj.type === "prefix"}
+							{#if node.kind === "prefix"}
 								<span class="tree-row">
-									<strong class="tree-row-name">{node.obj.rowName}</strong>
-									<span class="tree-row-meta">{node.obj.colCount}</span>
+									<strong class="tree-row-name">{node.rowName}</strong>
+									<span class="tree-row-meta">{node.colCount}</span>
 								</span>
-							{:else if node.obj.type === "domain"}
+							{:else if node.kind === "domain"}
 								<span class="tree-row">
-									<strong class="tree-row-name">{node.obj.rowName}</strong>
+									<strong class="tree-row-name">{node.rowName}</strong>
 								</span>
 							{:else}
 								<span class="tree-row">
-									<span class="tree-row-name">{adapter.displayNameOf(node)}</span>
-									<span class="tree-row-meta">{node.obj.colCount}</span>
+									<span class="tree-row-name">{node.rowName}</span>
+									<span class="tree-row-meta">{node.colCount}</span>
 								</span>
 							{/if}
 						</svelte:fragment>
 
 						<svelte:fragment slot="Frm" let:frmObj>
 							{#if frmObj}
-								{#if frmObj.type === "prefix"}
+								{#if frmObj.kind === "prefix"}
 									<div class="frm">
 										<label class="field">
 											<Text color="neutral"><small>Prefijo</small></Text>
@@ -411,7 +411,7 @@
 										</label>
 										<Text color="neutral"><small>Renombrar el prefijo aplica el cambio a todas las tablas que lo usan al guardar.</small></Text>
 									</div>
-								{:else if frmObj.type === "domain"}
+								{:else if frmObj.kind === "domain"}
 									<div class="frm">
 										<label class="field">
 											<Text color="neutral"><small>Nombre del dominio</small></Text>

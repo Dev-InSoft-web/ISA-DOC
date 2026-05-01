@@ -1,4 +1,4 @@
-import { type INode, type ITreeData } from "../_asRow/_rowAdapter/00-base";
+import { type INode, type ITreeData } from "./_defgen/00-tree-data";
 import { TAView } from "./04-view";
 
 export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>> extends TAView<Stacker, TWorking> {
@@ -18,27 +18,27 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		this.syncAllRowAdapters();
 		const cleanId = this._selectedId;
 		const found = this.findNodeById(cleanId);
-		this.showFrmModificar?.(found?.obj ?? uxItem);
+		this.showFrmModificar?.((found as unknown as TWorking) ?? uxItem);
 	}
 
 	protected insertSiblingNode(ref: TWorking, pos: "above" | "below"): string {
-		this._pendingExpandedSnapshot = this._expandedNodes.map((n) => this.normalizeNodeId(n.id)).filter((id) => id.length > 0);
-		const refId = this.normalizeNodeId(ref.id);
+		this._pendingExpandedSnapshot = this._expandedNodes.map((n) => this.normalizeNodeId(n.flatPath)).filter((id) => id.length > 0);
+		const refId = this.normalizeNodeId(ref.flatPath);
 		const referenceNode = this.findReferenceBranchInTree(this.rootNodes, refId);
 		const tmpUx = this.toNode({ ireference: "", ...this.prepareInsertSiblingNode() } as Partial<TWorking>);
 		(tmpUx as { children?: TWorking[] }).children = [];
-		const rootObjs: TWorking[] = this.rootNodes.map((n) => n.obj);
-		const objSiblings: TWorking[] = referenceNode ? ((referenceNode.obj as { children?: TWorking[] }).children ?? []) : rootObjs;
-		const refIdx = objSiblings.findIndex((o) => this.normalizeNodeId(o.id) === refId);
+		const rootObjs: TWorking[] = this.rootNodes as unknown as TWorking[];
+		const objSiblings: TWorking[] = referenceNode ? (((referenceNode as unknown as { children?: TWorking[] }).children) ?? []) : rootObjs;
+		const refIdx = objSiblings.findIndex((o) => this.normalizeNodeId(o.flatPath) === refId);
 		const insertAt = pos === "above" ? refIdx : refIdx + 1;
 		objSiblings.splice(Math.max(0, insertAt), 0, tmpUx);
-		if (referenceNode) (referenceNode.obj as { children?: TWorking[] }).children = objSiblings;
+		if (referenceNode) (referenceNode as unknown as { children?: TWorking[] }).children = objSiblings;
 		const flat = this.flattenTree(rootObjs);
 		const cleanFlat = flat.filter((o) => o !== tmpUx);
 		this.commitFlatList(cleanFlat);
 		const restoreIdx = objSiblings.indexOf(tmpUx);
 		if (restoreIdx >= 0) objSiblings.splice(restoreIdx, 1);
-		const referenceClean = referenceNode ? this.normalizeNodeId(referenceNode.obj.id) : "";
+		const referenceClean = referenceNode ? this.normalizeNodeId(referenceNode.obj.flatPath) : "";
 		const newOrder = pos === "above" ? refIdx + 1 : refIdx + 2;
 		return (referenceClean ? `${referenceClean}.` : "") + newOrder;
 	}
@@ -84,7 +84,7 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 	}
 
 	async onaddchild(referenceId: string): Promise<{ selectedId?: string; flashRowIds?: string[]; ensureExpandedIds?: string[] }> {
-		const uxPadre = this.findNodeById(referenceId)?.obj ?? this.getNodeById(referenceId);
+		const uxPadre = (this.findNodeById(referenceId) as unknown as TWorking | undefined) ?? this.getNodeById(referenceId);
 		const padrePenultimate = uxPadre?.isPenultimate ?? false;
 		if (padrePenultimate) {
 			this.onAddChildLastLevel(referenceId);
@@ -113,7 +113,7 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 			result?.selectedId && this.setSelectedId(result.selectedId, this);
 			result?.flashRowIds?.length && this.flashRowIds(result.flashRowIds, undefined, this);
 			if (result?.ensureExpandedIds?.length) {
-				const currentIds = this.expandedNodes.map((node) => node.id);
+				const currentIds = this.expandedNodes.map((node) => node.flatPath);
 				const nextIds = [...new Set([...currentIds, ...result.ensureExpandedIds])];
 				this.expandedNodes = nextIds
 					.map((id) => this.findNodeById(id))
@@ -144,9 +144,9 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		const lastId = (idPrefix ? `${idPrefix}.` : "") + (nextOrder - 1);
 		this.onrefresh();
 		const lastNode = this.findNodeById(lastId);
-		lastNode && this.applySelection(lastNode.obj);
+		lastNode && this.applySelection(lastNode as unknown as TWorking);
 		this.lastLevelSelectorOpen = false;
-		if (referenceId && !this._expandedNodes.some((n) => n.id === referenceId)) {
+		if (referenceId && !this._expandedNodes.some((n) => n.flatPath === referenceId)) {
 			const referenceNode = this.findNodeById(referenceId);
 			referenceNode && (this._expandedNodes = [...this._expandedNodes, referenceNode]);
 		}
@@ -159,7 +159,7 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		const referenceNode = clean.length > 0 ? this.findNodeById(clean) : null;
 		const childSiblings = referenceNode ? (referenceNode.children ?? []) : this.rootNodes;
 		const orders = childSiblings
-			.map((n) => { const p = n.id.split("."); return parseInt(p[p.length - 1], 10); })
+			.map((n) => { const p = n.flatPath.split("."); return parseInt(p[p.length - 1], 10); })
 			.filter((o) => !isNaN(o));
 		const max = Math.max(0, ...orders);
 		return (clean ? `${clean}.` : "") + (max + 1);
@@ -220,26 +220,26 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		const tgtNode = this.findNodeById(tgtId);
 		if (!tgtNode) return null;
 		const srcSiblings = srcReference ? (srcReference.children ?? []) : this.rootNodes;
-		const srcIdx = srcSiblings.findIndex((n) => this.normalizeNodeId(n.id) === srcId);
+		const srcIdx = srcSiblings.findIndex((n) => this.normalizeNodeId(n.flatPath) === srcId);
 		if (srcIdx === -1) return null;
 		const [moving] = srcSiblings.splice(srcIdx, 1);
 		tgtNode.children = tgtNode.children ?? [];
 		tgtNode.children.push(moving);
 		this.oncommittreeorder(this.rootNodes);
-		const tgtClean = this.normalizeNodeId(tgtNode.id);
+		const tgtClean = this.normalizeNodeId(tgtNode.flatPath);
 		return `${tgtClean}.${tgtNode.children.length}`;
 	}
 
 	private moveNodeInTree(nodeId: string, dir: "up" | "down"): string | null {
 		const referenceNode = this.findReferenceBranchInTree(this.rootNodes, nodeId);
 		const siblings = referenceNode ? (referenceNode.children ?? []) : this.rootNodes;
-		const idx = siblings.findIndex((n) => this.normalizeNodeId(n.id) === nodeId);
+		const idx = siblings.findIndex((n) => this.normalizeNodeId(n.flatPath) === nodeId);
 		if (idx === -1) return null;
 		const newIdx = idx + (dir === "up" ? -1 : 1);
 		if (newIdx < 0 || newIdx >= siblings.length) return null;
 		[siblings[idx], siblings[newIdx]] = [siblings[newIdx], siblings[idx]];
 		this.oncommittreeorder(this.rootNodes);
-		const referenceClean = referenceNode ? this.normalizeNodeId(referenceNode.id) : "";
+		const referenceClean = referenceNode ? this.normalizeNodeId(referenceNode.flatPath) : "";
 		return (referenceClean ? `${referenceClean}.` : "") + (newIdx + 1);
 	}
 
@@ -268,28 +268,28 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		}
 		const srcSiblings = srcReference ? (srcReference.children ?? []) : this.rootNodes;
 		const tgtSiblings = tgtReference ? (tgtReference.children ?? []) : this.rootNodes;
-		const srcIdx = srcSiblings.findIndex((n) => this.normalizeNodeId(n.id) === srcId);
-		const tgtIdx = tgtSiblings.findIndex((n) => this.normalizeNodeId(n.id) === tgtId);
+		const srcIdx = srcSiblings.findIndex((n) => this.normalizeNodeId(n.flatPath) === srcId);
+		const tgtIdx = tgtSiblings.findIndex((n) => this.normalizeNodeId(n.flatPath) === tgtId);
 		if (srcIdx === -1 || tgtIdx === -1) return null;
 		const [moving] = srcSiblings.splice(srcIdx, 1);
 		let insertAt = tgtIdx + (position === "after" ? 1 : 0);
 		if (sameParent && srcIdx < tgtIdx) insertAt -= 1;
 		tgtSiblings.splice(Math.max(0, Math.min(insertAt, tgtSiblings.length)), 0, moving);
 		this.oncommittreeorder(this.rootNodes);
-		const referenceClean = tgtReference ? this.normalizeNodeId(tgtReference.id) : "";
+		const referenceClean = tgtReference ? this.normalizeNodeId(tgtReference.flatPath) : "";
 		return (referenceClean ? `${referenceClean}.` : "") + (Math.max(0, Math.min(insertAt, tgtSiblings.length - 1)) + 1);
 	}
 
 	requestDelete(node: INode<TWorking>): boolean {
-		const nid = this.normalizeNodeId(node.id);
+		const nid = this.normalizeNodeId(node.flatPath);
 		this._pendingDeleteNodeId = nid;
 		this._selectedId = nid;
-		this._item = node.obj;
+		this._item = node as unknown as TWorking;
 		this._focusedNodeId = nid;
-		const expandedIds = new Set(this._expandedNodes.map((n) => n.id));
+		const expandedIds = new Set(this._expandedNodes.map((n) => n.flatPath));
 		const prevVisibleIds = this.getVisibleNodeIds(this.rootNodes, expandedIds);
 		this._pendingDeleteSnapshot = { prevVisibleIds, prevDeleteIdx: prevVisibleIds.indexOf(nid) };
-		this.showEliminar(node.obj);
+		this.showEliminar(node as unknown as TWorking);
 		return false;
 	}
 
@@ -316,7 +316,7 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 		}
 
 		this.onrefresh();
-		const nextExpandedIds = new Set(this._expandedNodes.map((n) => n.id));
+		const nextExpandedIds = new Set(this._expandedNodes.map((n) => n.flatPath));
 		const nextVisibleIds = this.getVisibleNodeIds(this.rootNodes, nextExpandedIds);
 		if (nextVisibleIds.length && (!this._selectedId || !nextVisibleIds.includes(this._selectedId))) {
 			const fallbackIdx = prevDeleteIdx > 0 ? prevDeleteIdx - 1 : 0;
@@ -329,7 +329,7 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 
 	protected async rollbackPendingInsert(id: string, expandedSnapshot: string[] = []): Promise<void> {
 		const node = this.findNodeById(id);
-		const row = node?.obj;
+		const row = node ? (node as unknown as TWorking) : undefined;
 		if (!row) return;
 		const ctrl = this.CatalogoController as unknown as { ActEliminar?: (item: TWorking, Obj: Stacker) => unknown } | undefined;
 		await ctrl?.ActEliminar?.(row, this.stack);
@@ -340,8 +340,8 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 	}
 
 	createEditDraft(plan: INode<TWorking>): TWorking | null {
-		const raw = this.findNodeById(plan.id)?.obj;
-		return raw ? this.toNode(raw, true) : null;
+		const raw = this.findNodeById(plan.flatPath);
+		return raw ? this.toNode(raw as unknown as TWorking, true) : null;
 	}
 
 	async onEditDrawerAccept(draft: TWorking): Promise<void> {
@@ -355,17 +355,17 @@ export abstract class TAMutations<Stacker, TWorking extends ITreeData<TWorking>>
 	}
 
 	openEdit(node: INode<TWorking>): void {
-		this.applySelection(node.obj);
+		this.applySelection(node as unknown as TWorking);
 		this.onrefresh();
 		this.syncAllRowAdapters();
-		this.showFrmModificar?.(node.obj);
+		this.showFrmModificar?.(node as unknown as TWorking);
 	}
 
 	openViewNode(node: INode<TWorking>): void {
-		this.applySelection(node.obj);
+		this.applySelection(node as unknown as TWorking);
 		this.onrefresh();
 		this.syncAllRowAdapters();
-		this.showFrmVisualizar?.(node.obj);
+		this.showFrmVisualizar?.(node as unknown as TWorking);
 	}
 
 	async oneditaccept(node: TWorking): Promise<void> {

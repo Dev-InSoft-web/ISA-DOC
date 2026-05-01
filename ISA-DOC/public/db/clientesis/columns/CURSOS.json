@@ -3,7 +3,7 @@
   "kind": "columns-tree",
   "tableRef": "CURSOS",
   "tableMeta": {
-    "originalName": "CURSOS",
+    "originalName": "PLANES_CURSOS",
     "hasIfNotExists": true
   },
   "root": {
@@ -14,16 +14,16 @@
         "id": "1",
         "kind": "col",
         "obj": {
-          "name": "ICURSO",
+          "name": "IPLAN",
           "type": "VARCHAR(255)",
-          "primaryKey": true
+          "primaryKey": false
         }
       },
       {
         "id": "2",
         "kind": "col",
         "obj": {
-          "name": "NCURSO",
+          "name": "ICURSO",
           "type": "VARCHAR(255)",
           "primaryKey": false
         }
@@ -32,7 +32,7 @@
         "id": "3",
         "kind": "col",
         "obj": {
-          "name": "ITEMA",
+          "name": "TITULO",
           "type": "VARCHAR(255)",
           "primaryKey": false
         }
@@ -41,8 +41,8 @@
         "id": "4",
         "kind": "col",
         "obj": {
-          "name": "DESCRIPCION",
-          "type": "TEXT",
+          "name": "ITEMA",
+          "type": "VARCHAR(25)",
           "primaryKey": false
         }
       },
@@ -50,8 +50,8 @@
         "id": "5",
         "kind": "col",
         "obj": {
-          "name": "IDRIVER",
-          "type": "BIGINT",
+          "name": "IRECURSO",
+          "type": "VARCHAR(255)",
           "primaryKey": false
         }
       },
@@ -59,9 +59,8 @@
         "id": "6",
         "kind": "col",
         "obj": {
-          "name": "BACTIVO",
-          "type": "BIT",
-          "defaultValue": "1",
+          "name": "IPLANPADRE",
+          "type": "VARCHAR(255)",
           "primaryKey": false
         }
       },
@@ -69,9 +68,9 @@
         "id": "7",
         "kind": "col",
         "obj": {
-          "name": "BGENERACERTIFICADO",
+          "name": "BACTIVO",
           "type": "BIT",
-          "defaultValue": "0",
+          "defaultValue": "1",
           "primaryKey": false
         }
       },

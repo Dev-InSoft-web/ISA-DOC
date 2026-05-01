@@ -1,6 +1,6 @@
 import type { ButtonIconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
 import type { FlexOptionsInput } from "../../Options/FlexOptions.svelte";
-import { type INode, type ITreeData } from "../_asRow/_rowAdapter/00-base";
+import { type INode, type ITreeData } from "./_defgen/00-tree-data";
 import { TAMutations } from "./05-mutations";
 
 /**
@@ -58,6 +58,9 @@ type WithWardenAction<TWorking> = { wardenAction?: WardenAction<TWorking> };
  * - `hermetic` : agrupador sellado (los hijos no pueden salir) y acción eliminar.
  */
 export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> extends TAMutations<Stacker, TWorking> {
+	/** Cache de wardens cuya advertencia ya fue emitida — evita loops de consola por re-renders reactivos. */
+	private _warnedWardens: Set<string> = new Set<string>();
+
 	/**
 	 * Tipos de nodo que actúan como **agrupadores** (carpetas/contenedores).
 	 * Si el adapter no lo override, se infiere desde `node.isLeaf` (todo lo no-hoja
@@ -71,9 +74,9 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	 */
 	get actionTypes(): readonly string[] { return []; }
 
-	/** Devuelve los roles actorales declarados en `node.obj.actor`. */
+	/** Devuelve los roles actorales declarados en `node.actor`. */
 	getActorRoles(node: INode<TWorking>): string[] {
-		const raw = (node.obj as { actor?: string } | undefined)?.actor ?? "";
+		const raw = (node as { actor?: string } | undefined)?.actor ?? "";
 		return raw.trim().length === 0 ? [] : raw.trim().split(/\s+/);
 	}
 
@@ -152,7 +155,7 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	 */
 	protected getAncestors(node: INode<TWorking>): INode<TWorking>[] {
 		const out: INode<TWorking>[] = [];
-		const id = String(node.id ?? "").trim();
+		const id = String(node.flatPath ?? "").trim();
 		if (id && id.includes(".")) {
 			const parts = id.split(".");
 			for (let i = parts.length - 1; i >= 1; i--) {
@@ -205,8 +208,8 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	 * (`obj.acceptsWarden(warden)`).
 	 */
 	protected nodeAcceptsWarden(node: INode<TWorking>, warden: INode<TWorking>): boolean {
-		const fn = (node.obj as { acceptsWarden?: (warden: INode<TWorking>) => boolean } | undefined)?.acceptsWarden;
-		if (typeof fn === "function") return !!fn.call(node.obj, warden);
+		const fn = (node as unknown as { acceptsWarden?: (warden: INode<TWorking>) => boolean }).acceptsWarden;
+		if (typeof fn === "function") return !!fn.call(node, warden);
 		return true;
 	}
 
@@ -225,7 +228,7 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	protected wardenDraft(node: INode<TWorking>): WardenDraft<TWorking> {
 		let draft: WardenDraft<TWorking> = {
 			node,
-			decoratedObj: this.cloneNodeData(node.obj),
+			decoratedObj: this.cloneNodeData(node as unknown as TWorking),
 			actions: [],
 			cascadeOptions: [],
 			extra: {},
@@ -271,10 +274,14 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	 * para reordenar por `idaction` o aplicar reglas particulares.
 	 */
 	protected wardenTransform(warden: INode<TWorking>, child: INode<TWorking>, draft: WardenDraft<TWorking>): WardenDraft<TWorking> {
-		const action = (warden.obj as WithWardenAction<TWorking> | undefined)?.wardenAction;
+		const action = (warden as unknown as WithWardenAction<TWorking>).wardenAction;
 		if (!action || typeof action.actionsOverNode !== "function") {
-			// eslint-disable-next-line no-console
-			console.warn(`[TreeAdapter] Vigilante '${warden.id}' no declara 'wardenAction'. La acción vigilante es obligatoria; se ignora.`);
+			const key = String(warden.flatPath || "");
+			if (!this._warnedWardens.has(key)) {
+				this._warnedWardens.add(key);
+				// eslint-disable-next-line no-console
+				console.warn(`[TreeAdapter] Vigilante '${key}' no declara 'wardenAction'. Implementa una clase que extienda 'WardenNode<T>' o asigna 'wardenAction' al nodo.`);
+			}
 			return draft;
 		}
 		return action.actionsOverNode(child, draft);
@@ -285,7 +292,7 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 
 	/** Si el tipo del nodo declara aceptación de acciones del adapter. */
 	isActionGrouper(node: INode<TWorking>): boolean {
-		const t = (node.obj as { type?: string } | undefined)?.type;
+		const t = (node as unknown as { type?: string }).type;
 		const list = this.actionTypes;
 		if (!t || list.length === 0) return this.isGroupActor(node);
 		return list.includes(t);
@@ -294,7 +301,7 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	/** Si el nodo es agrupador según actor, `groupTypes` o por inferencia. */
 	isGrouper(node: INode<TWorking>): boolean {
 		if (this.isGroupActor(node)) return true;
-		const t = (node.obj as { type?: string } | undefined)?.type;
+		const t = (node as unknown as { type?: string }).type;
 		const list = this.groupTypes;
 		if (list.length > 0) return !!t && list.includes(t);
 		return !node.isLeaf;
@@ -309,10 +316,10 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 		const isFreezer = this.isFreezer(grouper);
 		const isMonarchy = this.isMonarchy(grouper);
 		if (!isFreezer && !isMonarchy) return;
-		const fn = (grouper.obj as { sortChildren?: unknown } | undefined)?.sortChildren;
+		const fn = (grouper as unknown as { sortChildren?: unknown }).sortChildren;
 		if (typeof fn !== "function") {
 			const role = isFreezer ? "freezer" : "monarchy";
-			throw new Error(`[TreeAdapter] El agrupador '${grouper.id}' con rol '${role}' requiere implementar 'sortChildren(children)'.`);
+			throw new Error(`[TreeAdapter] El agrupador '${grouper.flatPath}' con rol '${role}' requiere implementar 'sortChildren(children)'.`);
 		}
 	}
 
@@ -341,11 +348,11 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 			}
 			if (this.isMonarchy(anc)) {
 				this.assertOrderingContract(anc);
-				const fn = (node.obj as { freeze?: () => boolean } | undefined)?.freeze;
+				const fn = (node as unknown as { freeze?: () => boolean }).freeze;
 				if (typeof fn !== "function") {
-					throw new Error(`[TreeAdapter] El nodo '${node.id}' bajo agrupador 'monarchy' '${anc.id}' requiere implementar 'freeze(): boolean'.`);
+					throw new Error(`[TreeAdapter] El nodo '${node.flatPath}' bajo agrupador 'monarchy' '${anc.flatPath}' requiere implementar 'freeze(): boolean'.`);
 				}
-				if (fn.call(node.obj)) return true;
+				if (fn.call(node)) return true;
 			}
 		}
 		// El TreeAdapter actúa como contenedor virtual de los nodos raíz.
@@ -355,8 +362,8 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 			const rootActor = this.getRootActor();
 			if (rootActor === "freezer") return true;
 			if (rootActor === "monarchy") {
-				const fn = (node.obj as { freeze?: () => boolean } | undefined)?.freeze;
-				if (typeof fn === "function" && fn.call(node.obj)) return true;
+				const fn = (node as unknown as { freeze?: () => boolean }).freeze;
+				if (typeof fn === "function" && fn.call(node)) return true;
 			}
 		}
 		return false;

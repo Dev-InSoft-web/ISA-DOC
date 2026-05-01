@@ -1,6 +1,6 @@
 import type { TreeViewProps } from "../TreeRowView.svelte";
-import { ComplexControl } from "./00-complex-control";
-import { type INode, type ITreeData } from "../_asRow/_rowAdapter/00-base";
+import { ComplexControl } from "./_defgen/01-complex-control";
+import { type INode, type ITreeData } from "./_defgen/00-tree-data";
 
 export abstract class TTreeAdapterContext<Stacker, TWorking extends ITreeData<TWorking>> extends ComplexControl<TreeViewProps<Stacker, TWorking>> {
 	bshowFrm = false;
@@ -34,27 +34,28 @@ export abstract class TTreeAdapterContext<Stacker, TWorking extends ITreeData<TW
 	get selectedId(): INode<TWorking> | null {
 		return this.findNodeById(this._selectedId)
 	}
-	set selectedId(value: INode<TWorking> | null) { this._selectedId = value == null ? "" : this.normalizeNodeId(value.id) }
+	set selectedId(value: INode<TWorking> | null) { this._selectedId = value == null ? "" : this.normalizeNodeId(value.flatPath) }
 
 	get focusedNode(): INode<TWorking> | null {
 		return this.findNodeById(this._focusedNodeId)
 	}
-	set focusedNode(value: INode<TWorking> | null) { this._focusedNodeId = value == null ? "" : this.normalizeNodeId(value.id) }
+	set focusedNode(value: INode<TWorking> | null) { this._focusedNodeId = value == null ? "" : this.normalizeNodeId(value.flatPath) }
 
 	get hoveredNode(): INode<TWorking> | null {
 		return this.findNodeById(this._hoveredNodeId)
 	}
-	set hoveredNode(value: INode<TWorking> | null) { this._hoveredNodeId = value == null ? "" : this.normalizeNodeId(value.id) }
+	set hoveredNode(value: INode<TWorking> | null) { this._hoveredNodeId = value == null ? "" : this.normalizeNodeId(value.flatPath) }
 
 	get item(): TWorking | null { return this._item }
 	set item(value: TWorking | null) { this._item = value }
 
-	get objWorking(): INode<TWorking> | null {
+	get objWorking(): TWorking | null {
 		const current = this._item;
 		if (!current) return null;
-		return this.findNodeById(current.id) ?? null
+		const found = this.findNodeById(current.flatPath);
+		return found ? (found as unknown as TWorking) : null;
 	}
-	set objWorking(value: INode<TWorking> | null) { this._item = value?.obj ?? null }
+	set objWorking(value: TWorking | null) { this._item = value ?? null }
 
 	get rootNodes(): INode<TWorking>[] { return this._treeNodes }
 	get treeNodes(): INode<TWorking>[] { return this._treeNodes }

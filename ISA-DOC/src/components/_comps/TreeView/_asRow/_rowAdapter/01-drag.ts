@@ -1,4 +1,5 @@
-import { TRABase, type ITreeData } from "./00-base";
+import { TRABase } from "./00-base";
+import type { ITreeData } from "../../_treeAdapter/_defgen/00-tree-data";
 
 export abstract class TRADrag<TStacker, TWorking extends ITreeData<TWorking>> extends TRABase<TStacker, TWorking> {
 	ondragstart(e: DragEvent) {

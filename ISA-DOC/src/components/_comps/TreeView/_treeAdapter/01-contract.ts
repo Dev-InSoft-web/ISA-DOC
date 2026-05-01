@@ -1,6 +1,6 @@
 import { writable, type Writable } from "svelte/store";
 import { TreeRowAdapter } from "../_asRow/_rowAdapter/02-events";
-import { type INode, type ITreeData } from "../_asRow/_rowAdapter/00-base";
+import { type INode, type ITreeData } from "./_defgen/00-tree-data";
 import { TTreeAdapterContext } from "./00-context";
 
 export abstract class TTreeAdapterContract<
@@ -28,8 +28,8 @@ export abstract class TTreeAdapterContract<
 		const ids: string[] = [];
 		const walk = (list: INode<TWorking>[]) => {
 			for (const node of list) {
-				ids.push(node.id);
-				if (node.children?.length && expandedSet.has(node.id)) walk(node.children);
+				ids.push(node.flatPath);
+				if (node.children?.length && expandedSet.has(node.flatPath)) walk(node.children);
 			}
 		};
 		walk(nodes);

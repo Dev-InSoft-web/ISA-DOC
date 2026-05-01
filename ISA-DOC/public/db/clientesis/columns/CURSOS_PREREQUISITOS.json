@@ -3,7 +3,7 @@
   "kind": "columns-tree",
   "tableRef": "CURSOS_PREREQUISITOS",
   "tableMeta": {
-    "originalName": "CURSOS_PREREQUISITOS",
+    "originalName": "PERMISOS",
     "hasIfNotExists": true
   },
   "root": {
@@ -14,16 +14,16 @@
         "id": "1",
         "kind": "col",
         "obj": {
-          "name": "ICURSO",
+          "name": "IPERMISO",
           "type": "VARCHAR(255)",
-          "primaryKey": false
+          "primaryKey": true
         }
       },
       {
         "id": "2",
         "kind": "col",
         "obj": {
-          "name": "ICURSOREQUERIDO",
+          "name": "NPERMISO",
           "type": "VARCHAR(255)",
           "primaryKey": false
         }
@@ -32,22 +32,13 @@
         "id": "3",
         "kind": "col",
         "obj": {
-          "name": "IPLANESTUDIO",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "4",
-        "kind": "col",
-        "obj": {
           "name": "AUDITORIA",
           "primaryKey": false,
           "kind": "section"
         }
       },
       {
-        "id": "5",
+        "id": "4",
         "kind": "col",
         "obj": {
           "name": "IAPPULT",
@@ -56,7 +47,7 @@
         }
       },
       {
-        "id": "6",
+        "id": "5",
         "kind": "col",
         "obj": {
           "name": "IPULT",
@@ -65,7 +56,7 @@
         }
       },
       {
-        "id": "7",
+        "id": "6",
         "kind": "col",
         "obj": {
           "name": "IUSUARIOULT",
@@ -74,7 +65,7 @@
         }
       },
       {
-        "id": "8",
+        "id": "7",
         "kind": "col",
         "obj": {
           "name": "FHULT",
@@ -84,7 +75,7 @@
         }
       },
       {
-        "id": "9",
+        "id": "8",
         "kind": "col",
         "obj": {
           "name": "IAPPCRE",
@@ -93,7 +84,7 @@
         }
       },
       {
-        "id": "10",
+        "id": "9",
         "kind": "col",
         "obj": {
           "name": "IPCRE",
@@ -102,7 +93,7 @@
         }
       },
       {
-        "id": "11",
+        "id": "10",
         "kind": "col",
         "obj": {
           "name": "IUSUARIOCRE",
@@ -111,7 +102,7 @@
         }
       },
       {
-        "id": "12",
+        "id": "11",
         "kind": "col",
         "obj": {
           "name": "FHCRE",

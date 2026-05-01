@@ -2,79 +2,11 @@ import type { ComponentColor, IconifyProps } from "@ingenieria_insoft/ispsveltec
 import { resolveColor } from "@ingenieria_insoft/ispsveltecomponents";
 import type { FlexOptionsInput } from "../../../Options/FlexOptions.svelte";
 import type { RowItemProps } from "../_rowItem.svelte";
-import { ComplexControl } from "../../_treeAdapter/00-complex-control";
+import { ComplexControl } from "../../_treeAdapter/_defgen/01-complex-control";
 import type { TARowBase } from "../00-treeAdapterAsRow";
 import type { TreeRowAdapter } from "./02-events";
-
-
-
-export interface INode<T> {
-	id: string;
-	ireference: string;
-	obj: T;
-	stack: any;
-	label: string;
-	children: INode<T>[];
-	istack: string;
-	nistack: string;
-	isLeaf: boolean;
-	isPenultimate: boolean;
-	nextLevelTitle: string;
-	isLast: boolean;
-}
-
-export interface ITreeData<T> {
-	[k: string]: any;
-	/** Identificador jerárquico del nodo en notación punteada ("1", "1.2", "1.2.3"). */
-	id: string;
-	/** Id del padre (referencia explícita al agrupador contenedor). */
-	ireference: string;
-	/** Hijos directos del nodo (estructura de árbol materializada en el dato crudo). */
-	children?: T[];
-	/**
-	 * Discriminador semántico del nodo (p.ej. "domain", "table", "prefix",
-	 * "section", "column"). Usado por agrupadores para identificar a quién
-	 * aceptan o rechazan como hijo sin tener que conocer la clase concreta.
-	 */
-	type?: string;
-	/**
-	 * Reglas opcionales del nodo respecto a la jerarquía.
-	 * Si está presente y devuelve `false`, el nodo rechaza recibir a `child` como hijo.
-	 * Por convención: nodos hoja (tablas, columnas) jamás aceptan hijos;
-	 * nodos agrupadores (prefijo, dominio, sección) definen qué tipos pueden contener.
-	 */
-	acceptsChild?(child: T): boolean;
-	/**
-	 * Regla opcional de ordenamiento de hijos directos del agrupador.
-	 * Devuelve los hijos en el orden deseado. SOLO afecta el nivel inmediato:
-	 * el TreeAdapter respeta la profundidad y no propaga el sort a nietos.
-	 * Si no está definida, se preserva el orden visual existente.
-	 */
-	sortChildren?(children: T[]): T[];
-	/**
-	 * Regla opcional fina para validar el drop específico (segunda barrera).
-	 * El TreeAdapter llama a este método sobre el padre del destino cuando
-	 * ya pasó `acceptsChild`/`canDropAtRoot`. Permite vetar posiciones puntuales
-	 * (p.ej. impedir colocar nodos antes del master de un dominio).
-	 */
-	canPlaceChildAt?(src: T, target: T, position: "before" | "after"): boolean;
-	/**
-	 * Predicado de **congelamiento individual** consultado por agrupadores con
-	 * rol `monarchy`. Devuelve `true` si la posición de este nodo está fija y no
-	 * puede moverse (drag, mover arriba/abajo). Para `freezer` el congelado es
-	 * tautológico y este método se ignora; para nodos fuera de freezer/monarchy
-	 * se asume libre movimiento si está ausente.
-	 */
-	freeze?(): boolean;
-	/**
-	 * Devuelve una copia superficial e independiente del dato. Usada por la
-	 * pipeline de wardens para construir la **versión decorada** del nodo sin
-	 * mutar el original. Si no se implementa, los wardens harán un clon
-	 * por `Object.assign` con prototipo plano (útil para casos triviales,
-	 * pero pierde métodos de la clase original).
-	 */
-	clone?(): T;
-}
+import type { INode, ITreeData } from "../../_treeAdapter/_defgen/00-tree-data";
+export type { INode, ITreeData };
 
 type TreeRowConfig = {
 	icono?: Omit<IconifyProps, "icon"> & { icon: string; color?: ComponentColor };
@@ -140,7 +72,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 		this.hasRowTools = this.filteredActions.length > 0 || this.cascadeOptions.length > 0;
 		this.showActions =
 			this.hasRowTools &&
-			(this.treeAdapter.focusedNode ? this.treeAdapter.normalizeNodeId(this.treeAdapter.focusedNode.id) : "") === this.id;
+			(this.treeAdapter.focusedNode ? this.treeAdapter.normalizeNodeId(this.treeAdapter.focusedNode.flatPath) : "") === this.id;
 	}
 
 	get mergedDisabled() { return this.nodeDisabled || this.treeAdapter.disabled || this.effectiveRowConfig?.disabled }
@@ -162,13 +94,13 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	get rowIcono() { return this.iconParts(this.effectiveRowConfig?.icono) }
 	get isHighlighted() {
 		const ta = this.treeAdapter;
-		const focusedId = ta.focusedNode ? ta.normalizeNodeId(ta.focusedNode.id) : "";
-		const selectedId = ta.selectedId ? ta.normalizeNodeId(ta.selectedId.id) : "";
+		const focusedId = ta.focusedNode ? ta.normalizeNodeId(ta.focusedNode.flatPath) : "";
+		const selectedId = ta.selectedId ? ta.normalizeNodeId(ta.selectedId.flatPath) : "";
 		return (focusedId.length > 0 ? this.id === focusedId : false) || (focusedId.length === 0 && selectedId.length > 0 && this.id === selectedId);
 	}
 	get isSelected() {
 		const ta = this.treeAdapter;
-		const selectedId = ta.selectedId ? ta.normalizeNodeId(ta.selectedId.id) : "";
+		const selectedId = ta.selectedId ? ta.normalizeNodeId(ta.selectedId.flatPath) : "";
 		return selectedId.length > 0 && this.id === selectedId;
 	}
 
@@ -245,33 +177,33 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 			if (node) this.onrowfocus(node);
 		}
 	}
-	get id() { return this.treeAdapter.normalizeNodeId(this.rowNode?.id) }
+	get id() { return this.treeAdapter.normalizeNodeId(this.rowNode?.flatPath) }
 	get hasChildren() { return !!(this.rowNode?.children && this.rowNode.children.length > 0) }
 	get isReallyFocused(): boolean {
 		const ta = this.treeAdapter;
-		const id = ta.focusedNode ? ta.normalizeNodeId(ta.focusedNode.id) : "";
+		const id = ta.focusedNode ? ta.normalizeNodeId(ta.focusedNode.flatPath) : "";
 		return id.length > 0 && id === this.id;
 	}
 	get hasDescendantFocus(): boolean {
 		const ta = this.treeAdapter;
-		const id = ta.focusedNode ? ta.normalizeNodeId(ta.focusedNode.id) : "";
+		const id = ta.focusedNode ? ta.normalizeNodeId(ta.focusedNode.flatPath) : "";
 		if (id.length === 0 || id === this.id) return false;
 		return this.containsDescendantId(this.rowNode?.children, id);
 	}
 	get isReallyHovered(): boolean {
 		const ta = this.treeAdapter;
-		const id = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.id) : "";
+		const id = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.flatPath) : "";
 		return id.length > 0 && id === this.id;
 	}
 	get hasDescendantHover(): boolean {
 		const ta = this.treeAdapter;
-		const id = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.id) : "";
+		const id = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.flatPath) : "";
 		if (id.length === 0 || id === this.id) return false;
 		return this.containsDescendantId(this.rowNode?.children, id);
 	}
 	get floatVisible(): boolean {
 		const ta = this.treeAdapter;
-		const hoverId = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.id) : "";
+		const hoverId = ta.hoveredNode ? ta.normalizeNodeId(ta.hoveredNode.flatPath) : "";
 		return hoverId.length > 0 && hoverId === this.id;
 	}
 	get floatFocusOnly(): boolean { return this.floatVisible && this.isReallyFocused }
@@ -280,12 +212,12 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 		if (!children || children.length === 0) return false;
 		const norm = this.treeAdapter.normalizeNodeId.bind(this.treeAdapter);
 		for (const c of children) {
-			if (norm(c.id) === targetId) return true;
+			if (norm(c.flatPath) === targetId) return true;
 			if (this.containsDescendantId(c.children, targetId)) return true;
 		}
 		return false;
 	}
-	get isNodeOpen() { return !!this.id && (this.treeAdapter.expandedNodes ?? []).some((node) => node.id === this.id) }
+	get isNodeOpen() { return !!this.id && (this.treeAdapter.expandedNodes ?? []).some((node) => node.flatPath === this.id) }
 	get nodeDisabled() { return !!this.id && (this.treeAdapter.disabledNodes ?? []).includes(this.id) }
 	get siblingPos() {
 		if (!this.id || !this.treeAdapter?.getSiblingPosition) return { isFirst: false, isLast: false };
@@ -322,7 +254,7 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 	onrowtoggle(open: boolean) {
 		if (!this.rowNode) return;
 		const source = this.treeAdapter.expandedNodes ?? [];
-		const next = this.treeAdapter.expandedNodesAfterToggle(source, this.rowNode.id, open);
+		const next = this.treeAdapter.expandedNodesAfterToggle(source, this.rowNode.flatPath, open);
 		this.treeAdapter.setExpandedNodesFn(next);
 		this.treeAdapter.onrowtoggle(this.rowNode);
 	}
@@ -341,8 +273,8 @@ export abstract class TRABase<TStacker, TWorking extends ITreeData<TWorking>> ex
 		const icon = isLast ? "mdi:file-document-outline" : hasChildren ? (isExpanded ? "mdi:folder-open-outline" : "mdi:folder-outline") : node.isLeaf ? "mdi:file-outline" : "mdi:folder-outline";
 		const isFolderIcon = !isLast && icon.includes("folder");
 		const onView = () => ta.onCtrlEnter(node);
-		const onMoveUp = async () => { const newId = await ta.move(node.id, "up"); ta.commitAndFlash(newId); };
-		const onMoveDown = async () => { const newId = await ta.move(node.id, "down"); ta.commitAndFlash(newId); };
+		const onMoveUp = async () => { const newId = await ta.move(node.flatPath, "up"); ta.commitAndFlash(newId); };
+		const onMoveDown = async () => { const newId = await ta.move(node.flatPath, "down"); ta.commitAndFlash(newId); };
 		const onEdit = () => ta.openEdit(node);
 		const onDelete = () => this.onrowdelete();
 		const actions: FlexOptionsInput[] = [
@@ -407,27 +339,3 @@ export function groupedWithSeparators<T>(groups: ReadonlyArray<T | T[] | false |
 	return result;
 }
 
-export function objRootsToNodes<T extends ITreeData<T>>(
-	roots: readonly T[],
-	labelFn?: (obj: T) => string,
-): INode<T>[] {
-	return roots.map((r) => {
-		const rawId = String(r.id || "").replace(/^(_UP_|_M_)/, "").trim() || String(r.id || "");
-		const rawReference = String(r.ireference || "").replace(/^(_UP_|_M_)/, "").trim() || String(r.ireference || "");
-		const text = labelFn ? labelFn(r) : rawId;
-		return {
-			id: rawId,
-			ireference: rawReference,
-			obj: r,
-			stack: r.stack,
-			label: text,
-			children: r.children?.length ? objRootsToNodes(r.children, labelFn) : [],
-			istack: r.istack,
-			nistack: r.nistack,
-			isLeaf: r.isLeaf || false,
-			isPenultimate: r.isPenultimate || false,
-			nextLevelTitle: r.nextLevelTitle || "",
-			isLast: r.isLast || r.isLeaf || false,
-		};
-	});
-}

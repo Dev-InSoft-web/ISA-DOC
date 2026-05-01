@@ -72,7 +72,7 @@ export class TSqlTableUX {
 		// sus columnas hijas, sin alterar el orden relativo del resto.
 		const auditSection = out.find((n) => (n.kind === "optional" || n.kind === "section") && n.rowName === "AUDITORIA");
 		if (auditSection) {
-			const auditId = auditSection.id;
+			const auditId = auditSection.flatPath;
 			const auditChildren = out.filter((n) => n.kind === "column" && n.ireference === auditId);
 			const auditSet = new Set<TSqlNodeUX>([auditSection, ...auditChildren]);
 			const rest = out.filter((n) => !auditSet.has(n));
@@ -109,7 +109,7 @@ export class TSqlTableUX {
 		const flat = this.rows;
 		const childrenBySection = new Map<string, TSqlNodeUX[]>();
 		for (const n of flat) {
-			if (n.kind === "section" || n.kind === "optional") childrenBySection.set(n.id, []);
+			if (n.kind === "section" || n.kind === "optional") childrenBySection.set(n.flatPath, []);
 		}
 		for (const n of flat) {
 			if (n.kind !== "column") continue;
@@ -125,15 +125,19 @@ export class TSqlTableUX {
 			const refId = String(n.ireference || "").trim();
 			if (refId) continue; // hijos: se emiten dentro de su sección
 			if (n.kind === "optional") {
+				// Una sección opcional inactiva NO se procesa: se omite del SQL,
+				// de los snippets y de cualquier resume() consumidor. Sus columnas
+				// hijas tampoco se emiten (se conservan en memoria, invisibles).
+				if (!n.active) continue;
 				if (openSection) columns.push({ kind: "section_end" });
 				columns.push(n.toOptional());
 				openSection = true;
-				for (const c of childrenBySection.get(n.id) ?? []) columns.push(c.toColumn());
+				for (const c of childrenBySection.get(n.flatPath) ?? []) columns.push(c.toColumn());
 			} else if (n.kind === "section") {
 				if (openSection) columns.push({ kind: "section_end" });
 				columns.push(n.toSection());
 				openSection = true;
-				for (const c of childrenBySection.get(n.id) ?? []) columns.push(c.toColumn());
+				for (const c of childrenBySection.get(n.flatPath) ?? []) columns.push(c.toColumn());
 			} else {
 				if (openSection) {
 					columns.push({ kind: "section_end" });

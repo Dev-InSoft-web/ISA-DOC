@@ -1,7 +1,9 @@
 import type { TreeViewProps } from "../../_comps/TreeView/TreeRowView.svelte";
 import { TreeRowViewAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
+import { TreeAdapterCatalogoStub } from "../../_comps/TreeView/_treeAdapter/CatalogoStub";
 import type { ParsedTable } from "../../../lib/tableSchema";
 import { TSqlNodeUX } from "./TSqlNodeUX.svelte";
+import type { SqlNodeKind } from "./TSqlNodeUX.svelte";
 import { TSqlTableUX } from "./TSqlTableUX.svelte";
 
 export type SqlTreeChangeFn = (next: ParsedTable) => void;
@@ -13,37 +15,12 @@ export type SqlTreeChangeFn = (next: ParsedTable) => void;
  */
 const auditHiddenByTableId: Map<string, boolean> = new Map();
 
-class SqlCatalogoStub {
-	constructor(private readonly getAdapter: () => SqlTreeAdapter | null) {}
-
-	private get adapter(): SqlTreeAdapter | null { return this.getAdapter(); }
-
-	Insertar = async (_o: any, item: TSqlNodeUX): Promise<boolean> => {
-		const a = this.adapter; if (!a) return false;
-		return !!a.addNode(item);
-	};
-	Actualizar = async (_o: any, item: TSqlNodeUX): Promise<boolean> => {
-		const a = this.adapter; if (!a) return false;
-		return a.updateNode(item);
-	};
-	Eliminar = async (item: TSqlNodeUX): Promise<boolean> => {
-		const a = this.adapter; if (!a) return false;
-		return a.removeNode(item);
-	};
-	ActInsertar = (o: any, item: TSqlNodeUX) => this.Insertar(o, item);
-	ActActualizar = (o: any, item: TSqlNodeUX) => this.Actualizar(o, item);
-	ActEliminar = (item: TSqlNodeUX) => this.Eliminar(item);
-	ActVisualizar = async (_item: TSqlNodeUX) => true;
-	ActModificar = async (_item: TSqlNodeUX) => true;
-	ActRecodificar = async (_o: TSqlNodeUX, _n: TSqlNodeUX) => true;
-}
-
 export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> {
 	public onChange: SqlTreeChangeFn = () => undefined;
 
 	constructor(table: ParsedTable, onChange?: SqlTreeChangeFn) {
 		const stacker = new TSqlTableUX(table);
-		const stub = new SqlCatalogoStub(() => self);
+		const stub = new TreeAdapterCatalogoStub<TSqlNodeUX>(() => self);
 		super({
 			Obj: stacker,
 			itdForm: "edit",
@@ -62,11 +39,11 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		});
 		if (onChange) this.onChange = onChange;
 		// Restaura el estado oculto de auditoría si fue persistido en una sesión previa.
-		// Usa primero el flag `show` del nodo `optional` (fuente canónica desde V4) y,
+		// Usa primero el flag `active` del nodo `optional` (fuente canónica desde V4) y,
 		// como fallback, el cache en memoria por compatibilidad.
 		const auditOpt = this.obj.auditOptionalNode();
 		if (auditOpt) {
-			auditOpt.show = !!auditOpt.show;
+			auditOpt.active = !!auditOpt.active;
 		} else if (auditHiddenByTableId.get(this.obj.tableId) === true && this.obj.hasAudit()) {
 			this.setAuditEnabledInternal(false, false);
 		}
@@ -80,7 +57,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 	get istack(): string { return this.obj.tableId; }
 	get nistack(): string { return "tableId"; }
 	get nodeCtor(): new (...args: any[]) => TSqlNodeUX { return TSqlNodeUX; }
-	get nidNode(): string { return "rowId"; }
+	get nidNode(): string { return "flatPath"; }
 	get ntitleNode(): string { return "rowName"; }
 
 	createNode(data: any): TSqlNodeUX {
@@ -97,13 +74,13 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		return nivel === 1 ? "Sección" : "Columna";
 	}
 
-	protected override getNodeIcon(node: any): { icon?: string; color?: any; style?: string } | null {
-		const kind = node?.obj?.kind;
+	protected override getNodeIcon(node: TSqlNodeUX): { icon?: string; color?: any; style?: string } | null {
+		const kind = node?.kind;
 		if (kind === "column") return { icon: "mdi:table-column", color: "info" };
 		if (kind === "section") return { icon: "mdi:format-list-group", style: "color: #C9A227" };
 		if (kind === "optional") {
-			const show = !!(node?.obj as TSqlNodeUX | undefined)?.show;
-			return show
+			const active = !!node?.active;
+			return active
 				? { icon: "mdi:format-list-group", style: "color: #C9A227" }
 				: { icon: "mdi:eye-off-outline", color: "neutral" };
 		}
@@ -134,7 +111,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 	setEditAtributoValor(d: TSqlNodeUX, _i: number, _v: string): TSqlNodeUX { return d; }
 	setEditRecursoSelected(d: TSqlNodeUX, _r: any): TSqlNodeUX { return d; }
 
-	private _siblingKindHint: "section" | "column" | null = null;
+	private _siblingKindHint: SqlNodeKind | null = null;
 
 	/**
 	 * Override: en el árbol SQL no usamos el selector de último nivel.
@@ -170,7 +147,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 
 	protected getNewNodeDefaults(referenceId: string): Partial<TSqlNodeUX> {
 		const ref = this.normalizeNodeId(referenceId);
-		const refNode = ref ? this.findNodeById(ref)?.obj : null;
+		const refNode = ref ? (this.findNodeById(ref) as unknown as TSqlNodeUX | undefined) : null;
 		const hint = this._siblingKindHint;
 		const wantColumn = hint === "column" || (hint === null && refNode?.kind === "section");
 		const tableId = this.obj.tableId;
@@ -222,7 +199,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 
 	/** En SQL, el root admite secciones y columnas (columnas-raíz son válidas). */
 	override canDropAtRoot(src: TSqlNodeUX): boolean {
-		return src.type === "section" || src.type === "column";
+		return src.kind === "section" || src.kind === "column";
 	}
 
 	/**
@@ -234,8 +211,8 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		if (!super.canDrop(sourceId, targetId, position)) return false;
 		const sId = this.normalizeNodeId(sourceId);
 		const tId = this.normalizeNodeId(targetId);
-		const src = this.findNodeById(sId)?.obj as TSqlNodeUX | undefined;
-		const tgt = this.findNodeById(tId)?.obj as TSqlNodeUX | undefined;
+		const src = this.findNodeById(sId) as unknown as TSqlNodeUX | undefined;
+		const tgt = this.findNodeById(tId) as unknown as TSqlNodeUX | undefined;
 		const isOpt = (n?: TSqlNodeUX): boolean => !!n && n.kind === "optional";
 		if (isOpt(src)) return false;
 		if (isOpt(tgt) && !tgt!.ireference && position === "after") return false;
@@ -249,16 +226,15 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 	 * Reemplaza, para nodos `optional`, el botón de eliminar por un ojito que
 	 * alterna `show`. La sección opcional NO se elimina; solo se oculta/muestra.
 	 */
-	override getRowConfig(node: any): any {
+	override getRowConfig(node: TSqlNodeUX): any {
 		const cfg = super.getRowConfig(node);
-		const obj = node?.obj as TSqlNodeUX | undefined;
-		if (!cfg || obj?.kind !== "optional") return cfg;
-		const show = !!obj.show;
+		if (!cfg || node?.kind !== "optional") return cfg;
+		const active = !!node.active;
 		const eyeAction = {
-			icon: show ? "mdi:eye-outline" : "mdi:eye-off-outline",
-			title: show ? "Ocultar sección opcional" : "Mostrar sección opcional",
+			icon: active ? "mdi:eye-outline" : "mdi:eye-off-outline",
+			title: active ? "Ocultar sección opcional" : "Mostrar sección opcional",
 			color: "neutral" as const,
-			onClick: () => this.setAuditEnabled(!show),
+			onClick: () => this.setAuditEnabled(!active),
 		};
 		const replaceDelete = (item: unknown): unknown => {
 			if (Array.isArray(item)) return item.map(replaceDelete).filter(Boolean);
@@ -279,9 +255,8 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 	 */
 	override getRootActor(): "" | "monarchy" | "freezer" { return "monarchy"; }
 
-	protected override particularcascadeoptionsrow(node: any): any[] {
-		const obj = node?.obj as TSqlNodeUX | undefined;
-		if (obj?.kind === "optional" && obj.rowName === "AUDITORIA") {
+	protected override particularcascadeoptionsrow(node: TSqlNodeUX): any[] {
+		if (node?.kind === "optional" && node.rowName === "AUDITORIA") {
 			return [
 				{
 					icon: "mdi:restore",
@@ -297,7 +272,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 	/** ¿La sección AUDITORIA (entidad `optional`) está visible? */
 	get auditEnabled(): boolean {
 		const opt = this.obj.auditOptionalNode();
-		return opt ? !!opt.show : false;
+		return opt ? !!opt.active : false;
 	}
 
 	/**
@@ -321,7 +296,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 			if (!enabled) return;
 			const tableId = this.obj.tableId;
 			const usedTopIdx = rows.reduce((max, r) => {
-				const idStr = String(r.id || "");
+				const idStr = String(r.flatPath || "");
 				if (idStr.includes(".")) return max;
 				const n = parseInt(idStr, 10);
 				return Number.isFinite(n) && n > max ? n : max;
@@ -333,7 +308,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 			);
 			this.obj.rows = [...rows, optional, ...cols];
 		} else {
-			optional.show = enabled;
+			optional.active = enabled;
 			optional.refreshUX();
 		}
 		auditHiddenByTableId.set(this.obj.tableId, !enabled);
@@ -351,14 +326,14 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		const rows = this.obj.rows.slice();
 		const audit = rows.find((r) => r.kind === "optional" && r.rowName === "AUDITORIA");
 		if (!audit) return;
-		const auditId = audit.id;
+		const auditId = audit.flatPath;
 		const presentNames = new Set(
 			rows.filter((r) => r.kind === "column" && r.ireference === auditId).map((r) => String(r.rowName).toUpperCase()),
 		);
 		const tableId = this.obj.tableId;
 		const existingChildIdxs = rows
 			.filter((r) => r.kind === "column" && r.ireference === auditId)
-			.map((r) => parseInt(String(r.id).split(".").pop() || "0", 10))
+			.map((r) => parseInt(String(r.flatPath).split(".").pop() || "0", 10))
 			.filter((n) => Number.isFinite(n));
 		let nextIdx = existingChildIdxs.length ? Math.max(...existingChildIdxs) : 0;
 		const toAdd: TSqlNodeUX[] = [];

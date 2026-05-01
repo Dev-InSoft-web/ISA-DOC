@@ -1,6 +1,6 @@
 import type { ButtonIconifyProps, ComponentColor, IconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
 import type { FlexOptionsAction, FlexOptionsInput } from "../../Options/FlexOptions.svelte";
-import { type INode, type ITreeData } from "./_rowAdapter/00-base";
+import { type INode, type ITreeData } from "../_treeAdapter/_defgen/00-tree-data";
 import { TARowBase } from "./00-treeAdapterAsRow";
 
 /**
@@ -57,12 +57,12 @@ export abstract class TreeRowViewAdapter<Stacker, TWorking extends ITreeData<TWo
 			onleadiconclick?: () => void;
 		};
 	} | null {
-		const rowController = this.rowAdapters.get(this.normalizeNodeId(node.id));
+		const rowController = this.rowAdapters.get(this.normalizeNodeId(node.flatPath));
 		const hasChildren = rowController?.hasChildren ?? !!(node.children && node.children.length > 0);
 		const isLastNode = !!node.isLast;
 		const isFolder = !isLastNode && (hasChildren || !node.isLeaf);
 		const isEmptyFolder = isFolder && !hasChildren;
-		const isExpanded = rowController?.isNodeOpen ?? this._expandedNodes.some((n) => n.id === node.id);
+		const isExpanded = rowController?.isNodeOpen ?? this._expandedNodes.some((n) => n.flatPath === node.flatPath);
 		const defaultIcon = isLastNode
 			? "mdi:file-document-outline"
 			: hasChildren
@@ -114,14 +114,14 @@ export abstract class TreeRowViewAdapter<Stacker, TWorking extends ITreeData<TWo
 					label: rdTitle("Añadir arriba"),
 					title: rdTitle("Añadir arriba (Ctrl+Shift+Up)"),
 					disabled: mutDisabled || undefined,
-					onClick: () => { if (!mutDisabled) void this.handleaddsibling(node.id, "above"); },
+					onClick: () => { if (!mutDisabled) void this.handleaddsibling(node.flatPath, "above"); },
 				},
 				{
 					icon: "mdi:table-row-plus-after",
 					label: rdTitle("Añadir abajo"),
 					title: rdTitle("Añadir abajo (Ctrl+Shift+Down)"),
 					disabled: mutDisabled || undefined,
-					onClick: () => { if (!mutDisabled) void this.handleaddsibling(node.id, "below"); },
+					onClick: () => { if (!mutDisabled) void this.handleaddsibling(node.flatPath, "below"); },
 				},
 			]] : []),
 			...draft.cascadeOptions,
@@ -142,7 +142,7 @@ export abstract class TreeRowViewAdapter<Stacker, TWorking extends ITreeData<TWo
 			isFirst: isFirstPos,
 			isLast: isLastPos,
 			events: {
-				onleadiconclick: isEmptyFolder && !mutDisabled && !this.isBrapido ? () => void this.handleaddchild(node.id) : undefined,
+				onleadiconclick: isEmptyFolder && !mutDisabled && !this.isBrapido ? () => void this.handleaddchild(node.flatPath) : undefined,
 			},
 		};
 	}

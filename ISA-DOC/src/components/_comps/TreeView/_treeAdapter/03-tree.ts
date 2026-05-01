@@ -1,5 +1,5 @@
 import type { TreeViewProps } from "../TreeRowView.svelte";
-import { objRootsToNodes, type INode, type ITreeData } from "../_asRow/_rowAdapter/00-base";
+import { normalizeRoots, type INode, type ITreeData } from "./_defgen/00-tree-data";
 import { TAModel } from "./02-model";
 
 export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> extends TAModel<Stacker, TWorking> {
@@ -48,7 +48,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		const needle = this.normalizeNodeId(id);
 		if (needle.length === 0) return null;
 		for (const branch of branches) {
-			if (this.normalizeNodeId(branch.id) === needle) return branch;
+			if (this.normalizeNodeId(branch.flatPath) === needle) return branch;
 			if (branch.children?.length) {
 				const found = this.findNodeById(needle, branch.children);
 				if (found) return found;
@@ -60,15 +60,15 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 	findFlatNodeIndex(item: TWorking): number {
 		const list = this.stackListNodes;
 		if (!list.length) return -1;
-		const sId = this.normalizeNodeId(item.id);
+		const sId = this.normalizeNodeId(item.flatPath);
 		const sStack = item.istack;
-		return list.findIndex((n) => this.normalizeNodeId(n.id) === sId && n.istack === sStack);
+		return list.findIndex((n) => this.normalizeNodeId(n.flatPath) === sId && n.istack === sStack);
 	}
 
 	findNode(data: any): TWorking | undefined {
-		const sId = this.normalizeNodeId(this.toNode(data).id);
+		const sId = this.normalizeNodeId(this.toNode(data).flatPath);
 		if (!sId) return undefined;
-		return this.stackListNodes.find((n) => this.normalizeNodeId(n.id) === sId);
+		return this.stackListNodes.find((n) => this.normalizeNodeId(n.flatPath) === sId);
 	}
 
 	findBranchByObject(branches: INode<TWorking>[], obj: TWorking): INode<TWorking> | null {
@@ -85,7 +85,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 	protected findReferenceBranchInTree(branches: INode<TWorking>[], childId: string, referenceBranch: INode<TWorking> | null = null): INode<TWorking> | null {
 		const needle = this.normalizeNodeId(childId);
 		for (const branch of branches) {
-			if (this.normalizeNodeId(branch.id) === needle) return referenceBranch;
+			if (this.normalizeNodeId(branch.flatPath) === needle) return referenceBranch;
 			if (branch.children?.length) {
 				const inner = this.findReferenceBranchInTree(branch.children, childId, branch);
 				if (inner !== null) return inner;
@@ -94,7 +94,35 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		return null;
 	}
 
-	getNodeById(nodeId: string): TWorking | undefined { return this.findNodeById(nodeId)?.obj }
+	getNodeById(nodeId: string): TWorking | undefined {
+		const node = this.findNodeById(nodeId);
+		return node ? (node as unknown as TWorking) : undefined;
+	}
+
+	/**
+	 * Recorre los ancestros de un nodo subiendo por `ireference`. Aplica
+	 * cycle-guard y termina si `visit` devuelve `false`. No incluye el nodo
+	 * inicial; visita desde el primer padre hacia la raíz.
+	 *
+	 * Genérico: cualquier adapter puede recorrer la cadena sin reimplementar
+	 * la guarda contra ciclos ni la búsqueda por id.
+	 */
+	walkAncestors(rowId: string, visit: (parent: INode<TWorking>) => boolean | void): void {
+		const startId = this.normalizeNodeId(rowId);
+		if (!startId) return;
+		const seen = new Set<string>([startId]);
+		let cur: INode<TWorking> | null = this.findNodeById(startId);
+		while (cur) {
+			const ref = this.normalizeNodeId(cur.ireference || "");
+			if (!ref || ref === this.normalizeNodeId(cur.flatPath) || seen.has(ref)) return;
+			seen.add(ref);
+			const parent = this.findNodeById(ref);
+			if (!parent) return;
+			const r = visit(parent);
+			if (r === false) return;
+			cur = parent;
+		}
+	}
 
 	getSiblingPosition(nodeId: string): { isFirst: boolean; isLast: boolean } {
 		const branches = this.rootNodes;
@@ -102,12 +130,12 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		if (!branches?.length || n.length === 0) return { isFirst: false, isLast: false };
 		const referenceBranch = this.findReferenceBranchInTree(branches, n);
 		const siblings = referenceBranch ? (referenceBranch.children ?? []) : branches;
-		const idx = siblings.findIndex((ch) => this.normalizeNodeId(ch.id) === n);
+		const idx = siblings.findIndex((ch) => this.normalizeNodeId(ch.flatPath) === n);
 		return { isFirst: idx === 0, isLast: idx === siblings.length - 1 };
 	}
 
 	protected collectBranchAndLeafIds(branch: INode<TWorking>): string[] {
-		const out = [branch.id];
+		const out = [branch.flatPath];
 		branch.children?.forEach((leafOrBranch) => out.push(...this.collectBranchAndLeafIds(leafOrBranch)));
 		return out;
 	}
@@ -115,7 +143,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 	protected collectBranchIds(branches: INode<TWorking>[] = this.rootNodes): string[] {
 		const out: string[] = [];
 		for (const branch of branches) {
-			if (branch.children?.length) out.push(branch.id, ...this.collectBranchIds(branch.children));
+			if (branch.children?.length) out.push(branch.flatPath, ...this.collectBranchIds(branch.children));
 		}
 		return out;
 	}
@@ -127,11 +155,11 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		planes.forEach((p) => {
 			const ux = this.createNode(p);
 			ux.children = [] as TWorking[];
-			map.set(this.normalizeNodeId(ux.id), ux);
+			map.set(this.normalizeNodeId(ux.flatPath), ux);
 			uxList.push(ux);
 		});
 		uxList.forEach((ux) => {
-			const uxId = this.normalizeNodeId(ux.id);
+			const uxId = this.normalizeNodeId(ux.flatPath);
 			const parts = uxId.split(".");
 			const referenceId = parts.length > 1 ? parts.slice(0, -1).join(".") : "";
 			if (referenceId && map.has(referenceId)) {
@@ -154,10 +182,10 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		const idMap = new Map<string, string>();
 		const traverse = (nodes: TWorking[], referenceId: string) => {
 			nodes.forEach((node, index) => {
-				const oldId = this.normalizeNodeId(node.id);
+				const oldId = this.normalizeNodeId(node.flatPath);
 				const newId = referenceId ? `${referenceId}.${index + 1}` : `${index + 1}`;
 				if (oldId && oldId !== newId) idMap.set(oldId, newId);
-				node.id = newId;
+				node.flatPath = newId;
 				result.push(node);
 				node.children?.length && traverse(node.children, newId);
 			});
@@ -175,7 +203,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		type Node = { row: TWorking; key: string; parent: string; children: Node[] };
 		const nodes: Node[] = list.map((row) => ({
 			row,
-			key: this.normalizeNodeId(row.id),
+			key: this.normalizeNodeId(row.flatPath),
 			parent: String(row.ireference || "").trim(),
 			children: [],
 		}));
@@ -197,7 +225,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 				const newKey = prefix ? `${prefix}.${i + 1}` : `${i + 1}`;
 				if (n.key && n.key !== newKey) idMap.set(n.key, newKey);
 				n.key = newKey;
-				n.row.id = newKey;
+				n.row.flatPath = newKey;
 				flat.push(n);
 				traverse(n.children, newKey);
 			});
@@ -220,9 +248,9 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 			if (parent) {
 				const sortFn = (parent as any).sortChildren as ((children: TWorking[]) => TWorking[]) | undefined;
 				if (typeof sortFn === "function") {
-					const ordered = sortFn.call(parent, nodes.map((n) => n.obj));
+					const ordered = sortFn.call(parent, nodes as unknown as TWorking[]);
 					const byObj = new Map<TWorking, INode<TWorking>>();
-					nodes.forEach((n) => byObj.set(n.obj, n));
+					nodes.forEach((n) => byObj.set(n as unknown as TWorking, n));
 					const reordered: INode<TWorking>[] = [];
 					const consumed = new Set<INode<TWorking>>();
 					for (const obj of ordered) {
@@ -235,16 +263,15 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 				}
 			}
 			nodes.forEach((node, index) => {
-				const oldId = this.normalizeNodeId(node.id);
+				const oldId = this.normalizeNodeId(node.flatPath);
 				const newId = referenceId ? `${referenceId}.${index + 1}` : `${index + 1}`;
 				if (oldId && oldId !== newId) idMap.set(oldId, newId);
-				node.id = newId;
-				node.obj.id = newId;
+				node.flatPath = newId;
 				// Actualiza ireference al padre actual (fuente de verdad: la posición en el árbol).
 				// Esto desacopla al hijo de su agrupador anterior cuando cambia de padre.
-				node.obj.ireference = referenceId;
-				result.push(node.obj);
-				node.children.length && traverse(node.children, node.obj, newId);
+				node.ireference = referenceId;
+				result.push(node as unknown as TWorking);
+				node.children.length && traverse(node.children, node as unknown as TWorking, newId);
 			});
 		};
 		traverse(roots, null, "");
@@ -265,8 +292,8 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 	protected remapExpandedByIdMap(idMap: Map<string, string>): void {
 		if (idMap.size === 0) return;
 		for (const node of this._expandedNodes) {
-			const mapped = idMap.get(this.normalizeNodeId(node.id));
-			if (mapped) node.id = mapped;
+			const mapped = idMap.get(this.normalizeNodeId(node.flatPath));
+			if (mapped) node.flatPath = mapped;
 		}
 		const sel = idMap.get(this._selectedId);
 		if (sel) this._selectedId = sel;
@@ -306,15 +333,15 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 	}
 
 	removeNode(data: any): boolean {
-		const sId = this.toNode(data).id;
+		const sId = this.toNode(data).flatPath;
 		if (!sId) return false;
-		this.stackList = this.stackListNodes.filter((n) => n.id !== sId && !n.id.startsWith(sId + "."));
+		this.stackList = this.stackListNodes.filter((n) => n.flatPath !== sId && !n.flatPath.startsWith(sId + "."));
 		this.rebuildFlatTree();
 		return true;
 	}
 
 	onrefresh(): void {
-		const nextNodes = objRootsToNodes(this.buildTree(this.stackList), (obj) => this.normalizeNodeId(obj.id));
+		const nextNodes = normalizeRoots(this.buildTree(this.stackList)) as unknown as INode<TWorking>[];
 		this._treeNodes = [...nextNodes];
 		this.rowLayoutEpoch.update((n) => n + 1);
 	}
@@ -335,28 +362,28 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		if (!srcNode || !tgtNode) return false;
 		// Drop "into": el destino mismo es el nuevo padre. Delega en su `acceptsChild`.
 		if (position === "into") {
-			const fn = (tgtNode.obj as any).acceptsChild as ((c: TWorking) => boolean) | undefined;
+			const fn = (tgtNode as any).acceptsChild as ((c: TWorking) => boolean) | undefined;
 			if (typeof fn !== "function") return false;
-			return !!fn.call(tgtNode.obj, srcNode.obj);
+			return !!fn.call(tgtNode, srcNode as unknown as TWorking);
 		}
-		const srcRef = this.normalizeNodeId(srcNode.obj.ireference || "");
-		const tgtRef = this.normalizeNodeId(tgtNode.obj.ireference || "");
+		const srcRef = this.normalizeNodeId(srcNode.ireference || "");
+		const tgtRef = this.normalizeNodeId(tgtNode.ireference || "");
 		const sameParent = srcRef === tgtRef;
 		if (!sameParent) {
 			if (!tgtRef) {
-				if (!this.canDropAtRoot(srcNode.obj)) return false;
+				if (!this.canDropAtRoot(srcNode as unknown as TWorking)) return false;
 			} else {
-				const newParent = this.findNodeById(tgtRef)?.obj;
+				const newParent = this.findNodeById(tgtRef);
 				if (!newParent) return false;
 				const fn = (newParent as any).acceptsChild as ((c: TWorking) => boolean) | undefined;
-				if (typeof fn !== "function" || !fn.call(newParent, srcNode.obj)) return false;
+				if (typeof fn !== "function" || !fn.call(newParent, srcNode as unknown as TWorking)) return false;
 			}
 		}
 		// Segunda barrera: el padre del destino puede vetar la posición específica
 		// (p.ej. impedir colocar antes del master de un dominio).
-		const destParent = tgtRef ? this.findNodeById(tgtRef)?.obj : undefined;
+		const destParent = tgtRef ? this.findNodeById(tgtRef) : undefined;
 		const place = (destParent as any)?.canPlaceChildAt as ((s: TWorking, t: TWorking, p: "before" | "after") => boolean) | undefined;
-		if (typeof place === "function" && !place.call(destParent, srcNode.obj, tgtNode.obj, position)) return false;
+		if (typeof place === "function" && !place.call(destParent, srcNode as unknown as TWorking, tgtNode as unknown as TWorking, position)) return false;
 		return true;
 	}
 
@@ -407,7 +434,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		if (currentObj && currentObj !== this._lastProcessedObj) {
 			if (this.rootNodes.length > 0 && !this._selectedId) {
 				setTimeout(() => {
-					const first = this.rootNodes[0]?.obj;
+					const first = this.rootNodes[0] as unknown as TWorking | undefined;
 					if (first && !this._selectedId) {
 						this.applySelection(first);
 					}
@@ -430,7 +457,7 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 
 	onensurefirstselection(): void {
 		if (this._selectedId || !this.rootNodes.length) return;
-		const first = this.rootNodes[0]?.obj;
+		const first = this.rootNodes[0] as unknown as TWorking | undefined;
 		if (!first) return;
 		this.applySelection(first);
 	}
@@ -438,8 +465,8 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 	protected syncTreeViewBindState(ctx: TreeViewProps<Stacker, TWorking>): void {
 		if (!this.selectedId && this.rootNodes.length) this.selectedId = this.rootNodes[0];
 		const adapterObj = this.objWorking ?? null;
-		const ctxObjId = this.normalizeNodeId(ctx.objWorking?.id);
-		const adapterObjId = this.normalizeNodeId(adapterObj?.id);
+		const ctxObjId = this.normalizeNodeId(ctx.objWorking?.flatPath);
+		const adapterObjId = this.normalizeNodeId(adapterObj?.flatPath);
 		if (ctxObjId !== adapterObjId) ctx.objWorking = adapterObj;
 		if (!this.focusedNode && this.selectedId) this.focusedNode = this.selectedId;
 	}

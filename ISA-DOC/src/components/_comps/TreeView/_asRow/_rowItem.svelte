@@ -54,10 +54,10 @@
          return ["trvwr-itm-sum", rc.isHighlighted && "trvwr-itm-sum--focused", rc.mergedDisabled && "trvwr-itm-sum--disabled", !forbidden && drg === "before" && "trvwr-itm-sum--drg-bf", !forbidden && drg === "after" && "trvwr-itm-sum--drg-aftr", !forbidden && drg === "into" && "trvwr-itm-sum--drg-into", forbidden && drg === "before" && "trvwr-itm-sum--drg-forbidden-bf", forbidden && drg === "after" && "trvwr-itm-sum--drg-forbidden-aftr", forbidden && drg === "into" && "trvwr-itm-sum--drg-forbidden-into"].filter(Boolean).join(" ");
       },
       summaryResume(rc: ReturnType<typeof treeController.getOrCreateRowAdapter>) {
-         const ctx = (rc as unknown as { context?: { node?: { obj?: { label?: unknown; rowName?: unknown; levelTitle?: unknown } } } }).context;
-         const obj = ctx?.node?.obj;
-         const label = String(obj?.label ?? obj?.rowName ?? "").trim();
-         const lvl = String(obj?.levelTitle ?? "").trim();
+         const ctx = (rc as unknown as { context?: { node?: INode<TWorking> } }).context;
+         const node = ctx?.node;
+         const label = String((node?.label as unknown) ?? (node?.rowName as unknown) ?? "").trim();
+         const lvl = String((node?.levelTitle as unknown) ?? "").trim();
          const title = lvl && label ? `${lvl}: ${label}` : (label || lvl || undefined);
          return {
             class: self.summaryClass(rc),
@@ -81,7 +81,7 @@
 </script>
 
 {#if nodes?.length}
-   {#each nodes as node (node.id)}
+   {#each nodes as node (node.flatPath)}
       {@const rowController = treeController.getOrCreateRowAdapter({
          ...$$props,
          ...$$restProps,

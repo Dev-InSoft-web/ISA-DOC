@@ -80,7 +80,7 @@ No hay `index.ts`. Importar siempre desde `TreeRowView.svelte`:
 | `_asRow/_rowAdapter/01-drag.ts` | `TRADrag` — drag & drop por fila. |
 | `_asRow/_rowAdapter/02-events.ts` | `TreeRowAdapter` — eventos (click/dblclick/focus/keydown/toggle). |
 | `_asRow/_rowAdapter/index.ts` | Barrel interno del row adapter (consumido SOLO por `TreeRowView.svelte`). |
-| `_treeAdapter/00-complex-control.ts` | `ComplexControl<TCtx>` — base reactiva genérica. |
+| `_treeAdapter/002-complex-control.ts` | `ComplexControl<TCtx>` — base reactiva genérica. |
 | `_treeAdapter/00-context.ts` | Estado interno y acceso a props. |
 | `_treeAdapter/01-contract.ts` | Contrato público abstracto. |
 | `_treeAdapter/02-model.ts` | Estado del modelo. |
@@ -194,7 +194,7 @@ Extiende `FormularioProps<Stacker>`:
 
 ```ts
 export {
-   ComplexControl,         // _treeAdapter/00-complex-control
+   ComplexControl,         // _treeAdapter/002-complex-control
    TreeRowViewAdapter,     // _asRow/01-treeAdapterAsRowEvents
    TreeRowAdapter,         // _asRow/_rowAdapter/02-events
    TreeNodeUX,             // _asRow/_rowAdapter/00-node-mixin
@@ -597,7 +597,7 @@ $: rootNodes = TreeController.rootNodes   // re-evaluado con $rowLayoutTickStore
 | `TouchGestures` (`containers/`) | Wrapper de gestos swipe. |
 | `ActionDrawer` (ISP) | Drawer lateral del formulario. |
 | `AccionesGen` (ISP) | Controlador CRUD del drawer. |
-| `ComplexControl` (`_treeAdapter/00-complex-control.ts`) | Base reactiva para adapter y row adapter. |
+| `ComplexControl` (`_treeAdapter/002-complex-control.ts`) | Base reactiva para adapter y row adapter. |
 
 ### Diagrama de componentes
 

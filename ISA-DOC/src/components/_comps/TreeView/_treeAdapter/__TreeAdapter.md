@@ -5,7 +5,7 @@
 `TreeAdapter` no es una clase única: se construye por **cascada estricta**, donde cada índice extiende del anterior y aporta una sola responsabilidad. Esta carpeta contiene únicamente las capas **agnósticas del modo de vista** (no saben nada de filas, mosaicos, grafos). El modo "vista en fila" vive en la carpeta hermana [`../_asRow/`](../_asRow/__asRow.md).
 
 ```text
-ComplexControl<TCtx>     00-complex-control.ts   Estado reactivo genérico (stores ligeros).
+ComplexControl<TCtx>     002-complex-control.ts   Estado reactivo genérico (stores ligeros).
         ▲
 TTreeAdapterContext      00-context.ts           Estado interno + acceso a props (no extiende; define).
         ▲
@@ -24,7 +24,7 @@ TARoles                  06-roles.ts             Sistema actoral + warden pipeli
 
 > **Última capa pública aquí:** `TARoles` (`06-roles.ts`). El cierre concreto del adapter — donde se ata al modo de vista en forma de fila — vive en `_asRow/00-treeAdapterAsRow.ts` (`TARowBase`) y `_asRow/01-treeAdapterAsRowEvents.ts` (`TreeRowViewAdapter`).
 
-`00-complex-control.ts` aporta `ComplexControl<TCtx>`, base genérica del estado reactivo. Vive aparte para evitar imports circulares con `TreeRowView.svelte`.
+`002-complex-control.ts` aporta `ComplexControl<TCtx>`, base genérica del estado reactivo. Vive aparte para evitar imports circulares con `TreeRowView.svelte`.
 
 Los tipos `INode<T>` e `ITreeData<T>` se importan desde `../_asRow/_rowAdapter/00-base.ts` (la capa donde se definen, junto al row adapter). Esto es a propósito: el contrato del nodo es contrato del adapter de fila — donde se consume.
 

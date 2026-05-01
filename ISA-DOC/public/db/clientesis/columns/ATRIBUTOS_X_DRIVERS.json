@@ -3,7 +3,7 @@
   "kind": "columns-tree",
   "tableRef": "ATRIBUTOS_X_DRIVERS",
   "tableMeta": {
-    "originalName": "ATRIBUTOS_X_DRIVERS",
+    "originalName": "CURSOS",
     "hasIfNotExists": true
   },
   "root": {
@@ -14,17 +14,17 @@
         "id": "1",
         "kind": "col",
         "obj": {
-          "name": "IDRIVER",
-          "type": "BIGINT",
-          "primaryKey": false
+          "name": "ICURSO",
+          "type": "VARCHAR(255)",
+          "primaryKey": true
         }
       },
       {
         "id": "2",
         "kind": "col",
         "obj": {
-          "name": "IATRIBUTO",
-          "type": "BIGINT",
+          "name": "NCURSO",
+          "type": "VARCHAR(255)",
           "primaryKey": false
         }
       },
@@ -32,8 +32,8 @@
         "id": "3",
         "kind": "col",
         "obj": {
-          "name": "QNIVEL",
-          "type": "TINYINT",
+          "name": "ITEMA",
+          "type": "VARCHAR(255)",
           "primaryKey": false
         }
       },
@@ -41,8 +41,8 @@
         "id": "4",
         "kind": "col",
         "obj": {
-          "name": "NATRIBUTO",
-          "type": "VARCHAR(255)",
+          "name": "DESCRIPCION",
+          "type": "TEXT",
           "primaryKey": false
         }
       },
@@ -50,9 +50,8 @@
         "id": "5",
         "kind": "col",
         "obj": {
-          "name": "BREQUERIDO",
-          "type": "BIT",
-          "defaultValue": "0",
+          "name": "IDRIVER",
+          "type": "BIGINT",
           "primaryKey": false
         }
       },
@@ -60,8 +59,176 @@
         "id": "6",
         "kind": "col",
         "obj": {
-          "name": "JCONFIG",
-          "type": "VARCHAR(MAX)",
+          "name": "BACTIVO",
+          "type": "BIT",
+          "defaultValue": "1",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "7",
+        "kind": "col",
+        "obj": {
+          "name": "BGENERACERTIFICADO",
+          "type": "BIT",
+          "defaultValue": "0",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "8",
+        "kind": "col",
+        "obj": {
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "9",
+        "kind": "col",
+        "obj": {
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "10",
+        "kind": "col",
+        "obj": {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "11",
+        "kind": "col",
+        "obj": {
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "12",
+        "kind": "col",
+        "obj": {
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "13",
+        "kind": "col",
+        "obj": {
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "14",
+        "kind": "col",
+        "obj": {
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "15",
+        "kind": "col",
+        "obj": {
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "16",
+        "kind": "col",
+        "obj": {
+          "name": "AUDITORIA",
+          "primaryKey": false,
+          "kind": "section"
+        }
+      },
+      {
+        "id": "17",
+        "kind": "col",
+        "obj": {
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "18",
+        "kind": "col",
+        "obj": {
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "19",
+        "kind": "col",
+        "obj": {
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "20",
+        "kind": "col",
+        "obj": {
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "21",
+        "kind": "col",
+        "obj": {
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "22",
+        "kind": "col",
+        "obj": {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "23",
+        "kind": "col",
+        "obj": {
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "24",
+        "kind": "col",
+        "obj": {
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "defaultValue": "GETDATE()",
           "primaryKey": false
         }
       }

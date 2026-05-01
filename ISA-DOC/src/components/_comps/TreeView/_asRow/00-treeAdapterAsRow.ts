@@ -1,7 +1,7 @@
 import type { ButtonIconifyProps, ComponentColor, IconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
 import type { FlexOptionsAction, FlexOptionsInput } from "../../Options/FlexOptions.svelte";
 import { TreeRowAdapter } from "./_rowAdapter/02-events";
-import { type INode, type ITreeData } from "./_rowAdapter/00-base";
+import { type INode, type ITreeData } from "../_treeAdapter/_defgen/00-tree-data";
 import type { RowItemProps } from "./_rowItem.svelte";
 import { TARoles } from "../_treeAdapter/06-roles";
 
@@ -82,13 +82,13 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 		// Mapa por id de los expandidos actuales (preserva referencia fresca).
 		const currentById = new Map<string, INode<TWorking>>();
 		for (const n of this._expandedNodes) {
-			const id = this.normalizeNodeId(n?.id);
+			const id = this.normalizeNodeId(n?.flatPath);
 			if (id) currentById.set(id, n);
 		}
 		let changed = false;
 		const walk = (nodes: INode<TWorking>[]): void => {
 			for (const n of nodes) {
-				const key = this.normalizeNodeId(n.id);
+				const key = this.normalizeNodeId(n.flatPath);
 				if (key && this.shouldAutoExpand(n) && !this._autoExpandedSeen.has(key)) {
 					this._autoExpandedSeen.add(key);
 					if (!currentById.has(key)) { currentById.set(key, n); changed = true; }
@@ -190,7 +190,7 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 	// =========================================================================
 
 	onrowclick(node: INode<TWorking>): void {
-		this._selectedId = this.normalizeNodeId(node.id);
+		this._selectedId = this.normalizeNodeId(node.flatPath);
 		this._item = node.obj;
 		this._originalItem = this.toNode(node.obj, true);
 		this.onrefresh();
@@ -203,7 +203,7 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 
 	onrowfocus(node: INode<TWorking>): void {
 		this.focusedNode = node;
-		this._lastFocusedNodeId = String(node?.id ?? "");
+		this._lastFocusedNodeId = String(node?.flatPath ?? "");
 		this.syncAllRowAdapters();
 	}
 
@@ -222,7 +222,7 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 	override onCtrlEnter(_node: INode<TWorking>): void { }
 
 	onswipeopendrawer(): void {
-		const nodeId = this._selectedId || this.rootNodes[0]?.id || "";
+		const nodeId = this._selectedId || this.rootNodes[0]?.flatPath || "";
 		const node = nodeId ? this.findNodeById(nodeId) : null;
 		if (!node) return;
 		this.openEdit(node);
@@ -237,14 +237,14 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 	// =========================================================================
 
 	registerRowAdapter(rowAdapter: TreeRowAdapter<Stacker, TWorking>): void {
-		const key = this.normalizeNodeId(rowAdapter.id);
+		const key = this.normalizeNodeId(rowAdapter.flatPath);
 		if (key.length === 0) return;
-		const existing = Array.from(this.rowAdapters.values()).find((item) => item.id === rowAdapter.id);
+		const existing = Array.from(this.rowAdapters.values()).find((item) => item.flatPath === rowAdapter.flatPath);
 		!existing && this.rowAdapters.set(key, rowAdapter);
 	}
 
 	unregisterRowAdapter(rowAdapter: TreeRowAdapter<Stacker, TWorking>): void {
-		const key = this.normalizeNodeId(rowAdapter.id);
+		const key = this.normalizeNodeId(rowAdapter.flatPath);
 		if (key.length === 0) return;
 		this.rowAdapters.delete(key);
 	}
@@ -254,9 +254,9 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 		if (node == null) {
 			throw new Error("TreeAdapter.getOrCreateRowAdapter: `bridge.node` es obligatorio");
 		}
-		const idKey = this.normalizeNodeId(node.id);
+		const idKey = this.normalizeNodeId(node.flatPath);
 		if (idKey.length === 0) {
-			throw new Error("TreeAdapter.getOrCreateRowAdapter: `bridge.node.id` no puede quedar vacío tras normalizar");
+			throw new Error("TreeAdapter.getOrCreateRowAdapter: `bridge.node.flatPath` no puede quedar vacío tras normalizar");
 		}
 		const existing = this.rowAdapters.get(idKey);
 		if (existing) {

@@ -1,28 +1,28 @@
-import type { TreeViewProps } from "../../_comps/TreeView/TreeRowView.svelte";
-import { TreeRowViewAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
-import type { ParsedTable } from "../../../lib/tableSchema";
-import { effectiveTableName } from "../../../lib/tableSchema";
-import { TTableNodeUX } from "./TTableNodeUX.svelte";
 import {
+	createEmptyDomain as createEmptyDomainFn,
+	loadChildPrefixes,
 	loadDomains,
-	saveDomains,
-	findDomainOf,
+	loadPrefixOrders,
+	loadTopLevelOrder,
 	markAsMaster as markMasterFn,
 	removeDomain as removeDomainFn,
-	createEmptyDomain as createEmptyDomainFn,
 	renameDomain as renameDomainFn,
-	loadTopLevelOrder,
-	saveTopLevelOrder,
-	loadPrefixOrders,
-	savePrefixOrders,
-	loadChildPrefixes,
 	saveChildPrefixes,
+	saveDomains,
+	savePrefixOrders,
+	saveTopLevelOrder,
+	type DomainChildRef,
 	type DomainDef,
 	type DomainsMap,
-	type DomainChildRef,
-	type TopLevelEntry,
 	type PrefixOrderMap,
+	type TopLevelEntry
 } from "../../../lib/codeGen/domains.ts";
+import type { ParsedTable } from "../../../lib/tableSchema";
+import { effectiveTableName } from "../../../lib/tableSchema";
+import { TreeAdapterCatalogoStub } from "../../_comps/TreeView/_treeAdapter/CatalogoStub";
+import type { TreeViewProps } from "../../_comps/TreeView/TreeRowView.svelte";
+import { TreeRowViewAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
+import { TTableNodeUX } from "./TTableNodeUX.svelte";
 
 export type TablesBrowserChangeFn = (next: TablesBrowserState) => void;
 
@@ -34,29 +34,6 @@ export interface TablesBrowserState {
 export class TablesBrowserStack {
 	id: string = "tables";
 	rows: TTableNodeUX[] = [];
-}
-
-class CatalogoStub {
-	constructor(private readonly getAdapter: () => TablesBrowserAdapter | null) {}
-	private get adapter() { return this.getAdapter(); }
-	Insertar = async (_o: any, item: TTableNodeUX): Promise<boolean> => {
-		const a = this.adapter; if (!a) return false;
-		return !!a.addNode(item);
-	};
-	Actualizar = async (_o: any, item: TTableNodeUX): Promise<boolean> => {
-		const a = this.adapter; if (!a) return false;
-		return a.updateNode(item);
-	};
-	Eliminar = async (item: TTableNodeUX): Promise<boolean> => {
-		const a = this.adapter; if (!a) return false;
-		return a.removeNode(item);
-	};
-	ActInsertar = (o: any, item: TTableNodeUX) => this.Insertar(o, item);
-	ActActualizar = (o: any, item: TTableNodeUX) => this.Actualizar(o, item);
-	ActEliminar = (item: TTableNodeUX) => this.Eliminar(item);
-	ActVisualizar = async (_item: TTableNodeUX) => true;
-	ActModificar = async (_item: TTableNodeUX) => true;
-	ActRecodificar = async (_o: TTableNodeUX, _n: TTableNodeUX) => true;
 }
 
 /**
@@ -96,7 +73,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 
 	constructor(tables: ParsedTable[], onChange?: TablesBrowserChangeFn) {
 		const stacker = new TablesBrowserStack();
-		const stub = new CatalogoStub(() => self);
+		const stub = new TreeAdapterCatalogoStub<TTableNodeUX>(() => self);
 		super({
 			Obj: stacker,
 			itdForm: "edit",
@@ -131,7 +108,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	get istack(): string { return this.obj.id; }
 	get nistack(): string { return "id"; }
 	get nodeCtor(): new (...args: any[]) => TTableNodeUX { return TTableNodeUX; }
-	get nidNode(): string { return "rowId"; }
+	get nidNode(): string { return "flatPath"; }
 	get ntitleNode(): string { return "rowName"; }
 
 	createNode(data: any): TTableNodeUX {
@@ -158,21 +135,19 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		return this.context.CatalogoController;
 	}
 
-	override onrowclick(node: any): void {
+	override onrowclick(node: TTableNodeUX): void {
 		super.onrowclick(node);
-		const obj = node.obj as TTableNodeUX;
-		if (obj.kind === "table" && obj.tableKey) {
-			this.onTableSelect(obj.tableKey);
+		if (node.kind === "table" && node.tableKey) {
+			this.onTableSelect(node.tableKey);
 		}
 	}
 
-	protected override getNodeIcon(node: any) {
-		const obj = node?.obj as TTableNodeUX | undefined;
-		if (obj?.kind === "domain") {
+	protected override getNodeIcon(node: TTableNodeUX) {
+		if (node?.kind === "domain") {
 			return { icon: "mdi:cube-outline", color: "warning" as const };
 		}
-		if (obj?.kind === "table") {
-			if (obj.isMaster) return { icon: "mdi:crown", color: "warning" as const };
+		if (node?.kind === "table") {
+			if (node.isMaster) return { icon: "mdi:crown", color: "warning" as const };
 			return { icon: "mdi:table", color: "info" as const };
 		}
 		return null;
@@ -204,11 +179,10 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	protected override particularactionsrow(_node: any): any[] { return []; }
 
 	/** Delega la liberación del agrupador (actor `prison`) en los métodos específicos. */
-	protected override onrelease(node: any): void {
-		const obj = node?.obj as TTableNodeUX | undefined;
-		if (!obj) return;
-		if (obj.kind === "domain") this.releaseDomain(obj.domainId);
-		else if (obj.kind === "prefix") this.releasePrefix(obj.prefix ?? "");
+	protected override onrelease(node: TTableNodeUX): void {
+		if (!node) return;
+		if (node.kind === "domain") this.releaseDomain(node.domainId);
+		else if (node.kind === "prefix") this.releasePrefix(node.prefix ?? "");
 	}
 
 	/**
@@ -216,22 +190,6 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	 * (`obj.wardenAction.actionsOverNode`). El despachador genérico de
 	 * `TARoles.wardenTransform` la invoca; este adapter no necesita override.
 	 */
-
-	/**
-	 * Devuelve el `rowName` decorado por la pipeline de vigilantes (cadena de
-	 * prefijos ancestros). Delega en `resume(node)` del TreeAdapter \u2014 que
-	 * devuelve un clon del nodo con su `obj` ya transformado por toda la
-	 * pipeline vigilante. La plantilla del slot `row` debe consumir este
-	 * m\u00e9todo en lugar de `node.obj.rowName` directo.
-	 */
-	displayNameOf(node: any): string {
-		try {
-			const clone = this.resume(node);
-			return String((clone?.obj as TTableNodeUX | undefined)?.rowName ?? node?.obj?.rowName ?? "");
-		} catch {
-			return String(node?.obj?.rowName ?? "");
-		}
-	}
 
 	/**
 	 * Cadena de prefijos heredados desde la raíz hasta el nodo (outermost→innermost).
@@ -245,30 +203,28 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		if (!node) return "";
 		const parts: string[] = [];
 		const seen = new Set<string>();
-		let cur: any = node;
+		let cur: TTableNodeUX | null = node as unknown as TTableNodeUX;
 		while (cur) {
-			const curId = String(cur.id ?? cur.obj?.rowId ?? "").trim();
+			const curId = String(cur.flatPath ?? "").trim();
 			if (curId) {
 				if (seen.has(curId)) break;
 				seen.add(curId);
 			}
 			const ref = String(cur.ireference || "").trim();
 			if (!ref || ref === curId) break;
-			const parent = this.findNodeById(ref);
+			const parent = this.findNodeById(ref) as unknown as TTableNodeUX | null;
 			if (!parent) break;
-			const pObj = parent.obj as TTableNodeUX | undefined;
-			if (pObj?.kind === "prefix") parts.unshift(pObj.prefix || "");
+			if (parent.kind === "prefix") parts.unshift(parent.prefix || "");
 			cur = parent;
 		}
 		return parts.join("");
 	}
 
-	particularcascadeoptionsrow(node: any): any[] {
-		const obj = node?.obj as TTableNodeUX | undefined;
-		if (!obj) return [];
-		if (obj.kind === "table") {
-			const isM = !!obj.isMaster;
-			const inDom = !!obj.domainId;
+	particularcascadeoptionsrow(node: TTableNodeUX): any[] {
+		if (!node) return [];
+		if (node.kind === "table") {
+			const isM = !!node.isMaster;
+			const inDom = !!node.domainId;
 			return [
 				{
 					icon: isM ? "mdi:crown" : "mdi:crown-outline",
@@ -279,33 +235,33 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 							: "Crear su dominio",
 					title: isM ? "Master del dominio" : "Marcar como master",
 					color: isM ? ("warning" as const) : undefined,
-					onClick: () => this.markTableAsMaster(obj.rowName),
+					onClick: () => this.markTableAsMaster(node.rowName),
 				},
 			];
 		}
-		if (obj.kind === "domain") {
+		if (node.kind === "domain") {
 			return [
 				{
 					icon: "mdi:tag-plus-outline",
 					label: "Agregar prefijo como hijo",
 					title: "Agregar prefijo como hijo",
-					onClick: () => this.onCascadeAddChildPrefix(obj),
+					onClick: () => this.onCascadeAddChildPrefix(node),
 				},
 			];
 		}
-		if (obj.kind === "prefix") {
+		if (node.kind === "prefix") {
 			return [[
 				{
 					icon: "mdi:tag-plus-outline",
 					label: "Agregar prefijo como hijo",
 					title: "Agregar prefijo como hijo",
-					onClick: () => this.onCascadeAddChildPrefix(obj),
+					onClick: () => this.onCascadeAddChildPrefix(node),
 				},
 				{
 					icon: "mdi:cube-outline",
 					label: "Agregar dominio como hijo",
 					title: "Agregar dominio como hijo",
-					onClick: () => this.createChildDomainOfPrefix(obj.prefix ?? ""),
+					onClick: () => this.createChildDomainOfPrefix(node.prefix ?? ""),
 				},
 			]];
 		}
@@ -318,13 +274,28 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	}
 
 	/**
+	 * Clave estable para el estado de expansión. Los `rowId` son posicionales
+	 * y cambian al insertar/quitar nodos; en su lugar identificamos el
+	 * agrupador por su tipo + identidad lógica. La capa base
+	 * (`_treeAdapter/04-view.ts`) consume este hook para reidentificar nodos
+	 * expandidos tras un `rebuildRows`.
+	 */
+	protected override stableExpandKey(obj: TTableNodeUX | null | undefined): string | null {
+		if (!obj) return null;
+		if (obj.kind === "domain") return obj.domainId ? `domain:${obj.domainId}` : null;
+		if (obj.kind === "prefix") return `prefix:${obj.rowName ?? ""}`;
+		if (obj.kind === "table") return obj.tableKey ? `table:${obj.tableKey}` : null;
+		return null;
+	}
+
+	/**
 	 * Actualiza la copia interna de `_tables` sin disparar `rebuildRows`. Se
 	 * usa después de `emitChange()`, cuando el panel ya tiene la lista nueva y
 	 * el árbol visible ya está consistente; solo necesitamos que el adapter
 	 * deje de referenciar el snapshot anterior para evitar `effectivePrefix`
 	 * desincronizado en cálculos posteriores.
 	 */
-	syncTablesQuiet(tables: ParsedTable[]): void {
+	public syncTablesQuiet(tables: ParsedTable[]): void {
 		this._tables = tables;
 	}
 
@@ -338,7 +309,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	}
 
 	markTableAsMaster(tableName: string): void {
-		const prefix = detectPrefix(tableName);
+		const prefix = TablesBrowserAdapter.detectPrefix(tableName);
 		const bare = (prefix ? tableName.slice(prefix.length) : tableName).toLowerCase();
 		this.setDomains(markMasterFn(this._domains, tableName, `Dominio ${bare}`, prefix || undefined));
 	}
@@ -427,6 +398,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		savePrefixOrders(this._prefixOrders);
 		this.onDomainsChange(this._domains);
 		this.rebuildRows();
+		this.emitChange();
 	}
 
 	/**
@@ -552,6 +524,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		savePrefixOrders(this._prefixOrders);
 		this.onDomainsChange(this._domains);
 		this.rebuildRows();
+		this.emitChange();
 	}
 
 	private effectiveChildrenOf(d: DomainDef): DomainChildRef[] {
@@ -598,10 +571,9 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const parentId = String(f.ireference || "").trim();
 		let parentKey = "";
 		if (parentId) {
-			const parent = this.findNodeById(parentId);
-			const pObj = parent?.obj as TTableNodeUX | undefined;
-			if (pObj?.kind === "domain") parentKey = `domain:${pObj.domainId ?? ""}`;
-			else if (pObj?.kind === "prefix") parentKey = `prefix:${pObj.prefix ?? ""}`;
+			const parent = this.findNodeById(parentId) as unknown as TTableNodeUX | null;
+			if (parent?.kind === "domain") parentKey = `domain:${parent.domainId ?? ""}`;
+			else if (parent?.kind === "prefix") parentKey = `prefix:${parent.prefix ?? ""}`;
 		}
 		return { parentKey, insertAfterTop: rootIdx >= 0 ? rootIdx : this._topOrder.length - 1 };
 	}
@@ -625,6 +597,12 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	}
 
 	/** Genera un nombre único tipo `${base}` o `${base} N` que no choque con dominios existentes. */
+	/** Detecta un prefijo `[A-Z][A-Z0-9]*_` al inicio del nombre. */
+	private static detectPrefix(name: string): string {
+		const m = /^([A-Z][A-Z0-9]*_)/.exec(name);
+		return m ? m[1] : "";
+	}
+
 	private uniqueDomainName(base: string): string {
 		const names = new Set(Object.values(this._domains).map((d) => d.name));
 		if (!names.has(base)) return base;
@@ -638,7 +616,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const upper = (s: string) => s.toUpperCase();
 		const declared = new Set<string>(this._emptyPrefixes.get(parentKey) ?? []);
 		const detected = new Set<string>();
-		for (const t of this._tables) detected.add(upper(detectPrefix(t.name)));
+		for (const t of this._tables) detected.add(upper(TablesBrowserAdapter.detectPrefix(t.name)));
 		const exists = (n: string) => declared.has(n) || detected.has(n);
 		let candidate = `${base}_`;
 		let i = 2;
@@ -742,7 +720,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	override get actionTypes(): readonly string[] { return ["domain"]; }
 
 	override canDropAtRoot(src: TTableNodeUX): boolean {
-		return src.type === "domain" || src.type === "prefix" || src.type === "table";
+		return src.kind === "domain" || src.kind === "prefix" || src.kind === "table";
 	}
 
 	private rebuildRows(): void {
@@ -861,7 +839,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				counters[depth] = (counters[depth] ?? 0) + 1;
 				const rid = parentRowId ? `${parentRowId}.${counters[depth]}` : String(counters[depth]);
 				rows.push(new TTableNodeUX({
-					rowId: rid,
+					flatPath: rid,
 					ireference: parentRowId,
 					kind: "prefix",
 					rowName: name,
@@ -874,7 +852,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			counters[depth] = (counters[depth] ?? 0) + 1;
 			const myRowId = parentRowId ? `${parentRowId}.${counters[depth]}` : String(counters[depth]);
 			rows.push(new TTableNodeUX({
-				rowId: myRowId,
+				flatPath: myRowId,
 				ireference: parentRowId,
 				kind: "domain",
 				rowName: d.name,
@@ -891,7 +869,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 					counters[depth + 1] += 1;
 					const isM = upper(child.key) === upper(d.masterTable);
 					rows.push(new TTableNodeUX({
-						rowId: `${myRowId}.${counters[depth + 1]}`,
+						flatPath: `${myRowId}.${counters[depth + 1]}`,
 						ireference: myRowId,
 						kind: "table",
 						rowName: found.table.name,
@@ -928,7 +906,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			counters[depth] = (counters[depth] ?? 0) + 1;
 			const myRowId = parentRowId ? `${parentRowId}.${counters[depth]}` : String(counters[depth]);
 			rows.push(new TTableNodeUX({
-				rowId: myRowId,
+				flatPath: myRowId,
 				ireference: parentRowId,
 				kind: "prefix",
 				rowName: prefix || "(sin prefijo)",
@@ -996,7 +974,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				const effFull = effectiveTableName(it.table);
 				const bare = upper(effFull).startsWith(upper(fullChain)) ? effFull.slice(fullChain.length) : it.table.name;
 				rows.push(new TTableNodeUX({
-					rowId: `${myRowId}.${counters[depth + 1]}`,
+					flatPath: `${myRowId}.${counters[depth + 1]}`,
 					ireference: myRowId,
 					kind: "table",
 					rowName: bare,
@@ -1025,7 +1003,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				counters[0] = (counters[0] ?? 0) + 1;
 				const tid = String(counters[0]);
 				rows.push(new TTableNodeUX({
-					rowId: tid,
+					flatPath: tid,
 					ireference: "",
 					kind: "table",
 					rowName: found.table.name,
@@ -1062,17 +1040,17 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	private recomputeDomainsFromTree(): void {
 		const flat = this.obj.rows;
 		const byRowId = new Map<string, TTableNodeUX>();
-		for (const n of flat) byRowId.set(n.rowId, n);
+		for (const n of flat) byRowId.set(n.flatPath, n);
 
 		// Sube por ireference hasta el primer nodo agrupador (domain o prefix).
 		const enclosingContainerOf = (rowId: string): { kind: "domain" | "prefix"; key: string } | null => {
 			const seen = new Set<string>();
 			let cur = byRowId.get(rowId);
 			while (cur) {
-				if (seen.has(cur.rowId)) return null;
-				seen.add(cur.rowId);
+				if (seen.has(cur.flatPath)) return null;
+				seen.add(cur.flatPath);
 				const ref = String(cur.ireference || "").trim();
-				if (!ref || ref === cur.rowId) return null;
+				if (!ref || ref === cur.flatPath) return null;
 				const parent = byRowId.get(ref);
 				if (!parent) return null;
 				if (parent.kind === "domain") return { kind: "domain", key: parent.domainId ?? "" };
@@ -1110,7 +1088,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			if (n.kind === "domain") {
 				const did = n.domainId;
 				if (!did || !next[did]) continue;
-				const enc = enclosingContainerOf(n.rowId);
+				const enc = enclosingContainerOf(n.flatPath);
 				if (enc?.kind === "domain" && enc.key && next[enc.key]) {
 					next[did].parentId = enc.key;
 					next[enc.key].childrenOrder!.push({ kind: "domain", key: did });
@@ -1124,7 +1102,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				continue;
 			}
 			if (n.kind === "table") {
-				const enc = enclosingContainerOf(n.rowId);
+				const enc = enclosingContainerOf(n.flatPath);
 				// Para mantener unicidad y consistencia entre fragmentos, las claves
 				// persistidas usan el nombre EFECTIVO (cadena ancestra + bare).
 				const sourceTable = n.tableIndex >= 0 ? this._tables[n.tableIndex] : undefined;
@@ -1144,7 +1122,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			}
 			if (n.kind === "prefix") {
 				const pk = n.prefix ?? "";
-				const enc = enclosingContainerOf(n.rowId);
+				const enc = enclosingContainerOf(n.flatPath);
 				if (enc?.kind === "prefix") {
 					const list = ensureChildPrefixList(`prefix:${enc.key}`);
 					if (!list.includes(pk)) list.push(pk);
@@ -1198,7 +1176,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			const t = original[n.tableIndex];
 			if (!t) continue;
 			seen.add(n.tableIndex);
-			const chain = this.chainPrefixOf(n.rowId);
+			const chain = this.chainPrefixOf(n.flatPath);
 			const sanitized = String(n.rowName ?? "").trim();
 			const nextEffPrefix = chain || undefined;
 			const prevFull = effectiveTableName(t);
