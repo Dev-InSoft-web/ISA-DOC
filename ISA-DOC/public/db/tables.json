@@ -33,6 +33,99 @@
     {
       "fragmentId": "tablas-principales-con-prefijo-capac-5",
       "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
+      "comment": "Tabla CAPAC_TEMAS",
+      "hasIfNotExists": true,
+      "originalName": "CAPAC_TEMAS",
+      "name": "CAPAC_TEMAS",
+      "columns": [
+        {
+          "name": "ITEMA",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": true,
+          "extra": ""
+        },
+        {
+          "name": "NTEMA",
+          "type": "VARCHAR(255)",
+          "nullable": "",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "NULL",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "NULL",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "nullable": "NULL",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "FHCRE",
+          "type": "DATETIME2(7)",
+          "nullable": "NULL",
+          "defaultValue": "(GETDATE())",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "nullable": "NULL",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "NULL",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "nullable": "NULL",
+          "defaultValue": "",
+          "primaryKey": false,
+          "extra": ""
+        },
+        {
+          "name": "FHULT",
+          "type": "DATETIME2(7)",
+          "nullable": "NULL",
+          "defaultValue": "(GETDATE())",
+          "primaryKey": false,
+          "extra": ""
+        }
+      ],
+      "compositePrimaryKey": [],
+      "extraStatements": [],
+      "trailing": ""
+    },
+    {
+      "fragmentId": "tablas-principales-con-prefijo-capac-5",
+      "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
       "comment": "Tabla CAPAC_DRIVERS",
       "hasIfNotExists": true,
       "originalName": "CAPAC_DRIVERS",
@@ -618,99 +711,6 @@
           "type": "DATETIME2",
           "nullable": "",
           "defaultValue": "GETDATE()",
-          "primaryKey": false,
-          "extra": ""
-        }
-      ],
-      "compositePrimaryKey": [],
-      "extraStatements": [],
-      "trailing": ""
-    },
-    {
-      "fragmentId": "tablas-principales-con-prefijo-capac-5",
-      "fragmentName": "TABLAS PRINCIPALES (CON PREFIJO CAPAC_)",
-      "comment": "Tabla CAPAC_TEMAS",
-      "hasIfNotExists": true,
-      "originalName": "CAPAC_TEMAS",
-      "name": "CAPAC_TEMAS",
-      "columns": [
-        {
-          "name": "ITEMA",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": true,
-          "extra": ""
-        },
-        {
-          "name": "NTEMA",
-          "type": "VARCHAR(255)",
-          "nullable": "",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IUSUARIOCRE",
-          "type": "VARCHAR(255)",
-          "nullable": "NULL",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "nullable": "NULL",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IPCRE",
-          "type": "VARCHAR(255)",
-          "nullable": "NULL",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "FHCRE",
-          "type": "DATETIME2(7)",
-          "nullable": "NULL",
-          "defaultValue": "(GETDATE())",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IUSUARIOULT",
-          "type": "VARCHAR(255)",
-          "nullable": "NULL",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IAPPULT",
-          "type": "VARCHAR(255)",
-          "nullable": "NULL",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "IPULT",
-          "type": "VARCHAR(255)",
-          "nullable": "NULL",
-          "defaultValue": "",
-          "primaryKey": false,
-          "extra": ""
-        },
-        {
-          "name": "FHULT",
-          "type": "DATETIME2(7)",
-          "nullable": "NULL",
-          "defaultValue": "(GETDATE())",
           "primaryKey": false,
           "extra": ""
         }

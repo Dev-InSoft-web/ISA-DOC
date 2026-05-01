@@ -205,7 +205,7 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	// =========================================================================
 	// Hooks generales del ciclo de vida del nodo. Independientes del modelo de
 	// vista (rows, mosaicos, grafo); las subclases concretas que sí pintan en
-	// forma de fila (07-rows) los implementan o sobreescriben con su semántica.
+	// forma de fila (`../_asRow/00-treeAdapterAsRow.ts`) los implementan o sobreescriben.
 	// =========================================================================
 
 	/** Si un nodo admite "agregar hijo" desde la UI. Hook virtual; default `true`. */

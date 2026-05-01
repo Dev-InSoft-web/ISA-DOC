@@ -61,7 +61,7 @@ export abstract class TTreeAdapterContract<
 
 	// =========================================================================
 	// Operaciones específicas del modelo de vista en forma de **row** (DOM).
-	// Implementadas en la capa final (`07-rows.ts`); declaradas aquí para que
+	// Implementadas en la capa de vista en fila (`../_asRow/00-treeAdapterAsRow.ts`); declaradas aquí para que
 	// las capas intermedias (mutaciones, eventos) puedan invocarlas vía `this`.
 	// =========================================================================
 	abstract focusRowById(nodeId: string): void;

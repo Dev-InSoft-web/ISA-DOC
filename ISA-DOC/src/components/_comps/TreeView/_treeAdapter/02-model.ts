@@ -1,4 +1,4 @@
-import { type ITreeData } from "./_rowAdapter/00-base";
+import { type ITreeData } from "../_asRow/_rowAdapter/00-base";
 import { TTreeAdapterContract } from "./01-contract";
 
 export abstract class TAModel<Stacker, TWorking extends ITreeData<TWorking>> extends TTreeAdapterContract<Stacker, TWorking> {
