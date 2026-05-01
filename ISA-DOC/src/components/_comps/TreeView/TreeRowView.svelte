@@ -109,7 +109,7 @@
    };
    const findNodeByObj = (nodes: INode<TWorking>[], row: TWorking): INode<TWorking> | null => {
       for (const node of nodes) {
-         if (node.obj === row) return node;
+         if (node === (row as unknown) || node.obj === row) return node;
          if (node.children?.length) {
             const found = findNodeByObj(node.children, row);
             if (found) return found;
@@ -218,7 +218,7 @@
       </Text>
       <FlexLayout direction="column" style="padding: 0.75rem; min-width: 350px;">
          <Text>Esta acción es irreversible. ¿Deseas continuar?</Text>
-         <FlexLayout direction="row" wrap justify="end" items="center" style="gap: 0.5rem">
+         <FlexLayout direction="row" wrap justify="end" items="center">
             <Button variant="outlined" color="neutral" onClick={() => (bshowEliminar = false)} loading={loadingEliminar}>Cancelar</Button>
             <Button color="danger" onClick={confirmarEliminar} disabled={loadingEliminar} loading={loadingEliminar}>Aceptar</Button>
          </FlexLayout>

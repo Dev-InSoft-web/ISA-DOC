@@ -137,12 +137,12 @@
 	<FlexLayout direction="column" justify="between" items="stretch" style="height: 100%; min-height: 220px;">
 		<FlexLayout direction="column">
 			{#if projectName}
-				<FlexLayout items="center" gap="0.25rem">
+				<FlexLayout items="center">
 					{#if projectIcon}<Iconify icon={projectIcon} style="opacity: 0.7;" />{/if}
 					<Text color="primary" lines={1}><small><strong>{projectName}</strong></small></Text>
 				</FlexLayout>
 			{/if}
-			<FlexLayout items="center" gap="0.4rem">
+			<FlexLayout items="center">
 				<Iconify icon={typeIcon} />
 				<Text><strong>{action.label}</strong></Text>
 				{#if running}
@@ -169,7 +169,7 @@
 			{/if}
 		</FlexLayout>
 
-		<FlexLayout direction="row" items="stretch" gap="0.4rem" style="flex-wrap: wrap;">
+		<FlexLayout direction="row" items="stretch" style="flex-wrap: wrap;">
 			{#if action.longRunning}
 				{#if running}
 					<div class="grow">
@@ -212,7 +212,7 @@
 {#if output}
 	<Modal bind:bshow={showConsole} onClose={closeConsole} style="width: 90dvw; height: 80dvh;">
 		<svelte:fragment slot="title">
-			<FlexLayout items="center" gap="0.4rem">
+			<FlexLayout items="center">
 				<Iconify icon="mdi:console-line" />
 				<Text lines={1}>
 					<strong>{action.label}</strong>

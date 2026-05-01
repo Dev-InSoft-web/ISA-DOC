@@ -3,7 +3,7 @@
   "kind": "columns-tree",
   "tableRef": "ATRIBUTOS_X_DRIVERS",
   "tableMeta": {
-    "originalName": "CURSOS",
+    "originalName": "HISTORIALPLANES_ESTUDIO",
     "hasIfNotExists": true
   },
   "root": {
@@ -14,222 +14,80 @@
         "id": "1",
         "kind": "col",
         "obj": {
-          "name": "ICURSO",
-          "type": "VARCHAR(255)",
-          "primaryKey": true
+          "name": "IHISTORIALPLANES_ESTUDIO",
+          "type": "BIGINT",
+          "primaryKey": true,
+          "kind": "col"
         }
       },
       {
         "id": "2",
         "kind": "col",
         "obj": {
-          "name": "NCURSO",
+          "name": "IPLANESTUDIO",
           "type": "VARCHAR(255)",
-          "primaryKey": false
+          "primaryKey": false,
+          "kind": "col"
         }
       },
       {
         "id": "3",
         "kind": "col",
         "obj": {
-          "name": "ITEMA",
+          "name": "CAMPO",
           "type": "VARCHAR(255)",
-          "primaryKey": false
+          "primaryKey": false,
+          "kind": "col"
         }
       },
       {
         "id": "4",
         "kind": "col",
         "obj": {
-          "name": "DESCRIPCION",
+          "name": "VALOR",
           "type": "TEXT",
-          "primaryKey": false
+          "primaryKey": false,
+          "kind": "col"
         }
       },
       {
         "id": "5",
         "kind": "col",
         "obj": {
-          "name": "IDRIVER",
-          "type": "BIGINT",
-          "primaryKey": false
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
         }
       },
       {
         "id": "6",
         "kind": "col",
         "obj": {
-          "name": "BACTIVO",
-          "type": "BIT",
-          "defaultValue": "1",
-          "primaryKey": false
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
         }
       },
       {
         "id": "7",
         "kind": "col",
         "obj": {
-          "name": "BGENERACERTIFICADO",
-          "type": "BIT",
-          "defaultValue": "0",
-          "primaryKey": false
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
         }
       },
       {
         "id": "8",
         "kind": "col",
         "obj": {
-          "name": "IUSUARIOCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "9",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "10",
-        "kind": "col",
-        "obj": {
-          "name": "IPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "11",
-        "kind": "col",
-        "obj": {
           "name": "FHCRE",
           "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "12",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "13",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "14",
-        "kind": "col",
-        "obj": {
-          "name": "IPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "15",
-        "kind": "col",
-        "obj": {
-          "name": "FHULT",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "16",
-        "kind": "col",
-        "obj": {
-          "name": "AUDITORIA",
           "primaryKey": false,
-          "kind": "section"
-        }
-      },
-      {
-        "id": "17",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "18",
-        "kind": "col",
-        "obj": {
-          "name": "IPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "19",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "20",
-        "kind": "col",
-        "obj": {
-          "name": "FHULT",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "21",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "22",
-        "kind": "col",
-        "obj": {
-          "name": "IPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "23",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "24",
-        "kind": "col",
-        "obj": {
-          "name": "FHCRE",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false
+          "kind": "col"
         }
       }
     ]

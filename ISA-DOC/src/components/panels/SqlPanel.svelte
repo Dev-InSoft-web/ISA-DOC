@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
-	import TablesBrowserPanel from "./TablesBrowserPanel.svelte";
+	import TablesBrowserPanel from "./TreeSQLTables.svelte";
 </script>
 
 <Toaster />

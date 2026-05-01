@@ -22,7 +22,7 @@ import { effectiveTableName } from "../../../lib/tableSchema";
 import { TreeAdapterCatalogoStub } from "../../_comps/TreeView/_treeAdapter/CatalogoStub";
 import type { TreeViewProps } from "../../_comps/TreeView/TreeRowView.svelte";
 import { TreeRowViewAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
-import { TTableNodeUX } from "./TTableNodeUX.svelte";
+import { TTableNodeUX } from "./TTableNodeUX";
 
 export type TablesBrowserChangeFn = (next: TablesBrowserState) => void;
 
@@ -49,7 +49,7 @@ function tableKey(t: ParsedTable): string {
 	return `${t.fragmentId}::${t.originalName}`;
 }
 
-export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack, TTableNodeUX> {
+export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack, TTableNodeUX> {
 	public onChange: TablesBrowserChangeFn = () => undefined;
 	public onTableSelect: (key: string) => void = () => undefined;
 	public onDomainsChange: (domains: DomainsMap) => void = () => undefined;
@@ -139,12 +139,22 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		super.onrowclick(node);
 		if (node.kind === "table" && node.tableKey) {
 			this.onTableSelect(node.tableKey);
+			return;
+		}
+		// Para agrupadores (domain/prefix) las tablas no tienen panel central
+		// propio: abrimos el drawer de edición para que el usuario pueda
+		// renombrar el agrupador in-situ.
+		if (node.kind === "domain" || node.kind === "prefix") {
+			this.openEdit(node);
 		}
 	}
 
 	protected override getNodeIcon(node: TTableNodeUX) {
 		if (node?.kind === "domain") {
 			return { icon: "mdi:cube-outline", color: "warning" as const };
+		}
+		if (node?.kind === "prefix") {
+			return { icon: "mdi:tag-outline", color: "success" as const };
 		}
 		if (node?.kind === "table") {
 			if (node.isMaster) return { icon: "mdi:crown", color: "warning" as const };
@@ -309,9 +319,94 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	}
 
 	markTableAsMaster(tableName: string): void {
-		const prefix = TablesBrowserAdapter.detectPrefix(tableName);
-		const bare = (prefix ? tableName.slice(prefix.length) : tableName).toLowerCase();
-		this.setDomains(markMasterFn(this._domains, tableName, `Dominio ${bare}`, prefix || undefined));
+		const upper = (s: string) => s.toUpperCase();
+		const targetUpper = upper(tableName);
+		const found =
+			this._tables.find((t) => upper(effectiveTableName(t)) === targetUpper) ??
+			this._tables.find((t) => upper(t.name) === targetUpper);
+		const effFull = found ? effectiveTableName(found) : tableName;
+		const effFullUpper = upper(effFull);
+		const tablePrefix = found ? (found.effectivePrefix ?? "") : TreeSQLTablesAdapter.detectPrefix(tableName);
+		const bare = (tablePrefix && effFull.startsWith(tablePrefix) ? effFull.slice(tablePrefix.length) : effFull).toLowerCase();
+		const domainName = `Dominio ${bare}`;
+
+		// Localiza el contenedor actual de la tabla (root | prefix | domain) y su índice.
+		let parentDomainId: string | undefined;
+		let parentPrefix: string | undefined;
+		let originalIndex = -1;
+		const tableNode = this.obj.rows.find(
+			(n) =>
+				n.kind === "table" &&
+				n.tableIndex >= 0 &&
+				n.tableIndex < this._tables.length &&
+				upper(effectiveTableName(this._tables[n.tableIndex])) === effFullUpper,
+		);
+		if (tableNode) {
+			const refStr = String(tableNode.ireference || "").trim();
+			const parent = refStr ? (this.findNodeById(refStr) as unknown as TTableNodeUX | null) : null;
+			if (parent?.kind === "domain") {
+				parentDomainId = parent.domainId ?? undefined;
+				const pd = parentDomainId ? this._domains[parentDomainId] : undefined;
+				const order = pd?.childrenOrder ?? [];
+				originalIndex = order.findIndex((e) => e.kind === "table" && upper(e.key) === effFullUpper);
+			} else if (parent?.kind === "prefix") {
+				parentPrefix = parent.prefix ?? "";
+				const order = this._prefixOrders[parentPrefix] ?? [];
+				originalIndex = order.findIndex((e) => e.kind === "table" && upper(e.key) === effFullUpper);
+			} else {
+				originalIndex = this._topOrder.findIndex((e) => e.kind === "table" && upper(e.key) === effFullUpper);
+			}
+		} else if (tablePrefix) {
+			parentPrefix = tablePrefix;
+		}
+
+		const prevIds = new Set(Object.keys(this._domains));
+		let nextDomains = markMasterFn(this._domains, effFull, domainName, parentPrefix);
+		let newId = "";
+		for (const id of Object.keys(nextDomains)) {
+			if (!prevIds.has(id) && upper(nextDomains[id].masterTable) === effFullUpper) { newId = id; break; }
+		}
+		if (newId && parentDomainId) {
+			nextDomains = {
+				...nextDomains,
+				[newId]: { ...nextDomains[newId], parentId: parentDomainId, parentPrefix: undefined },
+			};
+		}
+		this._domains = nextDomains;
+
+		// Inserta el dominio en el contenedor original, en la posición exacta donde estaba la tabla.
+		if (newId) {
+			if (parentDomainId) {
+				const pd = this._domains[parentDomainId];
+				if (pd) {
+					const order = (pd.childrenOrder ?? []).slice();
+					const tIdx = order.findIndex((e) => e.kind === "table" && upper(e.key) === effFullUpper);
+					if (tIdx >= 0) order.splice(tIdx, 1);
+					const insertAt = originalIndex >= 0 ? Math.min(originalIndex, order.length) : order.length;
+					order.splice(insertAt, 0, { kind: "domain", key: newId });
+					const newMembers = pd.members.filter((m) => upper(m) !== effFullUpper);
+					this._domains = { ...this._domains, [parentDomainId]: { ...pd, members: newMembers, childrenOrder: order } };
+				}
+			} else if (typeof parentPrefix === "string") {
+				const order = (this._prefixOrders[parentPrefix] ?? []).slice();
+				const tIdx = order.findIndex((e) => e.kind === "table" && upper(e.key) === effFullUpper);
+				if (tIdx >= 0) order.splice(tIdx, 1);
+				const insertAt = originalIndex >= 0 ? Math.min(originalIndex, order.length) : order.length;
+				order.splice(insertAt, 0, { kind: "domain", key: newId });
+				this._prefixOrders = { ...this._prefixOrders, [parentPrefix]: order };
+				savePrefixOrders(this._prefixOrders);
+			} else {
+				const order = this._topOrder.slice();
+				const tIdx = order.findIndex((e) => e.kind === "table" && upper(e.key) === effFullUpper);
+				if (tIdx >= 0) order.splice(tIdx, 1);
+				const insertAt = originalIndex >= 0 ? Math.min(originalIndex, order.length) : order.length;
+				order.splice(insertAt, 0, { kind: "domain", key: newId });
+				this._topOrder = order;
+				saveTopLevelOrder(this._topOrder);
+			}
+		}
+
+		this.setDomains(this._domains);
 	}
 
 	removeDomain(domainId: string): void {
@@ -616,7 +711,7 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const upper = (s: string) => s.toUpperCase();
 		const declared = new Set<string>(this._emptyPrefixes.get(parentKey) ?? []);
 		const detected = new Set<string>();
-		for (const t of this._tables) detected.add(upper(TablesBrowserAdapter.detectPrefix(t.name)));
+		for (const t of this._tables) detected.add(upper(TreeSQLTablesAdapter.detectPrefix(t.name)));
 		const exists = (n: string) => declared.has(n) || detected.has(n);
 		let candidate = `${base}_`;
 		let i = 2;
@@ -714,6 +809,25 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		return super.updateNode(data, mutate);
 	}
 
+	/**
+	 * Override: nodos `domain`/`prefix` son contenedores virtuales; no viven en
+	 * `stackList`, así que `super.removeNode` no los puede eliminar. Para esos
+	 * casos delegamos en `releaseDomain`/`releasePrefix`, que vacían el contenedor
+	 * preservando hijos en su lugar y persisten el cambio.
+	 */
+	override removeNode(data: any): boolean {
+		const item = data as TTableNodeUX | undefined;
+		if (item && item.kind === "domain" && item.domainId) {
+			this.releaseDomain(item.domainId);
+			return true;
+		}
+		if (item && item.kind === "prefix" && item.prefix) {
+			this.releasePrefix(item.prefix);
+			return true;
+		}
+		return super.removeNode(data);
+	}
+
 	protected override canAddChild(): boolean { return false; }
 
 	override get groupTypes(): readonly string[] { return ["domain", "prefix"]; }
@@ -724,6 +838,24 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	}
 
 	private rebuildRows(): void {
+		// Dedupe in-place de `_topOrder` y `_prefixOrders` antes de regenerar.
+		// Reorders sucesivos pueden dejar entradas repetidas; sin esto se emiten
+		// rows con `flatPath` duplicado y se rompe el `{#each}` keyed.
+		const dedupEntries = (list: { kind: string; key: string }[]) => {
+			const seen = new Set<string>();
+			const out: typeof list = [];
+			for (const e of list) {
+				const k = `${e.kind}:${e.kind === "table" ? e.key.toUpperCase() : e.key}`;
+				if (seen.has(k)) continue;
+				seen.add(k);
+				out.push(e);
+			}
+			return out;
+		};
+		this._topOrder = dedupEntries(this._topOrder) as TopLevelEntry[];
+		for (const pk of Object.keys(this._prefixOrders)) {
+			this._prefixOrders[pk] = dedupEntries(this._prefixOrders[pk]) as DomainChildRef[];
+		}
 		const upper = (s: string) => s.toUpperCase();
 		const tableByUpper = new Map<string, { table: ParsedTable; index: number }>();
 		this._tables.forEach((t, index) => tableByUpper.set(upper(effectiveTableName(t)), { table: t, index }));
@@ -777,12 +909,23 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const rootDomains = childrenOfDomain.get(undefined) ?? [];
 		const rootDomainIds = new Set(rootDomains.map((d) => d.id));
 		const rootEmptyPrefixes = new Set(this._emptyPrefixes.get("") ?? []);
-		const validTop = this._topOrder.filter((e) =>
+		const validTopRaw = this._topOrder.filter((e) =>
 			(e.kind === "domain" && rootDomainIds.has(e.key)) ||
 			(e.kind === "prefix" && e.key !== "" && (grouped.has(e.key) || rootEmptyPrefixes.has(e.key))) ||
 			(e.kind === "table" && tableByUpper.has(upper(e.key)) && !claimedUpper.has(upper(e.key))),
 		);
-		const seenTop = new Set(validTop.map((e) => `${e.kind}:${e.kind === "table" ? upper(e.key) : e.key}`));
+		// Dedupe defensivo: `_topOrder` puede acumular entradas repetidas tras
+		// reorders/recompute; sin esto se emiten dos rows con el mismo `flatPath`
+		// y revienta el `{#each}` keyed del TreeView (`each_key_duplicate`).
+		const validTop: TopLevelEntry[] = [];
+		const seenValid = new Set<string>();
+		for (const e of validTopRaw) {
+			const k = `${e.kind}:${e.kind === "table" ? upper(e.key) : e.key}`;
+			if (seenValid.has(k)) continue;
+			seenValid.add(k);
+			validTop.push(e);
+		}
+		const seenTop = seenValid;
 		for (const d of rootDomains) {
 			const k = `domain:${d.id}`;
 			if (!seenTop.has(k)) { validTop.push({ kind: "domain", key: d.id }); seenTop.add(k); }
@@ -1069,16 +1212,49 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			return null;
 		};
 
-		// Reset members + parentId + parentPrefix + childrenOrder de todos los dominios existentes.
+		// Conjunto de tablas VISIBLES en el árbol actual (clave en mayúsculas).
+		// Los `members`/orders existentes que NO están visibles se conservan tal cual:
+		// recompute es conservador para que ningún agrupador pierda hijos que no
+		// alcanzaron a renderizar (otro fragmento, lazy, etc.). Solo las tablas
+		// visibles se reasignan según el árbol.
+		const upperFn = (s: string) => s.toUpperCase();
+		const visibleUpper = new Set<string>();
+		for (const n of flat) {
+			if (n.kind !== "table") continue;
+			const src = n.tableIndex >= 0 ? this._tables[n.tableIndex] : undefined;
+			const eff = src ? effectiveTableName(src) : n.rowName;
+			visibleUpper.add(upperFn(eff));
+		}
+
+		// Reset parent links de todos los dominios; conserva members invisibles.
 		const next: DomainsMap = {};
 		for (const id of Object.keys(this._domains)) {
-			next[id] = { ...this._domains[id], members: [], parentId: undefined, parentPrefix: undefined, childrenOrder: [] };
+			const orig = this._domains[id];
+			const keptMembers = orig.members.filter((m) => !visibleUpper.has(upperFn(m)));
+			const keptOrder = (orig.childrenOrder ?? []).filter(
+				(e) => e.kind === "domain" || (e.kind === "table" && !visibleUpper.has(upperFn(e.key))),
+			);
+			next[id] = { ...orig, members: keptMembers, parentId: undefined, parentPrefix: undefined, childrenOrder: keptOrder };
 		}
 
 		const topOrder: TopLevelEntry[] = [];
 		const seenTop = new Set<string>();
 		const seenPrefixForTop = new Set<string>();
 		const prefixOrders: PrefixOrderMap = {};
+		// Pre-siembra: conserva entries `kind:"table"` invisibles del estado anterior
+		// (otro fragmento, lazy load, etc.). Los visibles serán re-añadidos por el
+		// walk siguiente. Mantiene también prefijos/dominios previos en topOrder
+		// para ser filtrados/renumerados al final.
+		for (const e of this._topOrder) {
+			if (e.kind === "table" && !visibleUpper.has(upperFn(e.key))) {
+				const tk = `table:${upperFn(e.key)}`;
+				if (!seenTop.has(tk)) { topOrder.push(e); seenTop.add(tk); }
+			}
+		}
+		for (const [pk, arr] of Object.entries(this._prefixOrders)) {
+			const kept = arr.filter((e) => e.kind === "table" && !visibleUpper.has(upperFn(e.key)));
+			if (kept.length) prefixOrders[pk] = kept;
+		}
 		// Reconstruye el mapa de prefijos hijos a partir del árbol actual. Las claves
 		// siguen el contrato: "" para la raíz, "prefix:<name>" para un prefijo padre,
 		// "domain:<id>" para un dominio padre.
@@ -1151,6 +1327,8 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		}
 
 		// Mantener master si sigue como miembro; si no, asignar el primer miembro como master.
+		// Esto cubre también el caso "dominio vacío recibe su primer hijo": como el master previo
+		// (cadena vacía) no es miembro, el primer member pasa a ser master automáticamente.
 		for (const d of Object.values(next)) {
 			const masterUp = d.masterTable.toUpperCase();
 			const stillThere = d.members.some((m) => m.toUpperCase() === masterUp);
@@ -1161,6 +1339,25 @@ export class TablesBrowserAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		this._topOrder = topOrder;
 		this._prefixOrders = prefixOrders;
 		this._emptyPrefixes = nextEmptyPrefixes;
+
+		// Refrescar flags visuales en las filas existentes (`isMaster`, `domainId`) sin
+		// reconstruir el árbol: garantiza que la corona aparezca tras drag a un dominio
+		// vacío y que la tabla recién promovida muestre el ícono correcto.
+		const masterByTable = new Map<string, string>(); // upper(tableName) -> domainId
+		const domainByMember = new Map<string, string>();
+		for (const d of Object.values(next)) {
+			if (d.masterTable) masterByTable.set(upperFn(d.masterTable), d.id);
+			for (const m of d.members) domainByMember.set(upperFn(m), d.id);
+		}
+		for (const n of flat) {
+			if (n.kind !== "table") continue;
+			const src = n.tableIndex >= 0 ? this._tables[n.tableIndex] : undefined;
+			const eff = src ? upperFn(effectiveTableName(src)) : upperFn(n.rowName);
+			const did = domainByMember.get(eff);
+			n.domainId = did ?? "";
+			n.isMaster = !!did && masterByTable.get(eff) === did;
+			n.refreshUX();
+		}
 		const childPrefixObj: Record<string, string[]> = {};
 		for (const [k, v] of nextEmptyPrefixes) childPrefixObj[k] = v.slice();
 		saveChildPrefixes(childPrefixObj);

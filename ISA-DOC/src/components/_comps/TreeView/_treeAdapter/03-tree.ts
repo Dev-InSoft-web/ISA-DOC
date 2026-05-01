@@ -152,10 +152,18 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		const map = new Map<string, TWorking>();
 		const roots: TWorking[] = [];
 		const uxList: TWorking[] = [];
+		// Dedupe defensivo por flatPath: si llegan dos rows con el mismo id
+		// (por mutaciones encadenadas o estado desincronizado), Svelte explota
+		// con `each_key_duplicate` al construir hijos. Conservamos solo la
+		// primera ocurrencia de cada flatPath.
+		const seen = new Set<string>();
 		planes.forEach((p) => {
 			const ux = this.createNode(p);
 			ux.children = [] as TWorking[];
-			map.set(this.normalizeNodeId(ux.flatPath), ux);
+			const key = this.normalizeNodeId(ux.flatPath);
+			if (key && seen.has(key)) return;
+			if (key) seen.add(key);
+			map.set(key, ux);
 			uxList.push(ux);
 		});
 		uxList.forEach((ux) => {
@@ -200,8 +208,19 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 		const cmp = sort ?? ((a: TWorking, b: TWorking) => this.sortFnBuildTree(a, b));
 		const list = this.stackListNodes;
 		if (!list.length) return;
+		// Dedupe defensivo por flatPath para evitar `each_key_duplicate` en el
+		// `{#each}` keyed del TreeView. Tras mutaciones encadenadas o reorders
+		// el `stackList` puede quedar con dos referencias al mismo path.
+		const seen = new Set<string>();
+		const deduped: TWorking[] = [];
+		for (const row of list) {
+			const k = this.normalizeNodeId(row.flatPath);
+			if (k && seen.has(k)) continue;
+			if (k) seen.add(k);
+			deduped.push(row);
+		}
 		type Node = { row: TWorking; key: string; parent: string; children: Node[] };
-		const nodes: Node[] = list.map((row) => ({
+		const nodes: Node[] = deduped.map((row) => ({
 			row,
 			key: this.normalizeNodeId(row.flatPath),
 			parent: String(row.ireference || "").trim(),

@@ -631,15 +631,15 @@
 <!-- Modal: Editor de Environments -->
 <Modal bind:bshow={showEnvEditor} onClose={() => { if (envDirty) persistEnvs(); showEnvEditor = false; }} style="width: 80dvw; height: 80dvh;">
 	<svelte:fragment slot="title">
-		<FlexLayout items="center" gap="0.4rem">
+		<FlexLayout items="center">
 			<Iconify icon="mdi:earth" />
 			<Text><strong>Environments</strong></Text>
 		</FlexLayout>
 	</svelte:fragment>
 
 	{#if envs}
-		<FlexLayout direction="column" gap="0.5rem">
-			<FlexLayout items="center" gap="0.5rem" style="flex-wrap: wrap;">
+		<FlexLayout direction="column">
+			<FlexLayout items="center" style="flex-wrap: wrap;">
 				{#each envs.environments as env}
 					<Button
 						variant={env.id === activeEnvId ? "solid" : "outlined"}
@@ -701,7 +701,7 @@
 <!-- Modal: Vista previa Markdown -->
 <Modal bind:bshow={showMdPreview} onClose={() => { showMdPreview = false; }} style="width: 70dvw; height: 70dvh;">
 	<svelte:fragment slot="title">
-		<FlexLayout items="center" gap="0.4rem">
+		<FlexLayout items="center">
 			<Iconify icon="mdi:eye-outline" />
 			<Text><strong>{mdPreviewTitle}</strong></Text>
 		</FlexLayout>
@@ -712,13 +712,13 @@
 <!-- Modal: Consola Pruebas en secuencia -->
 <Modal bind:bshow={showVerifyConsole} onClose={() => { showVerifyConsole = false; }} style="width: 90dvw; height: 80dvh;">
 	<svelte:fragment slot="title">
-		<FlexLayout items="center" gap="0.4rem">
+		<FlexLayout items="center">
 			<Iconify icon="mdi:console-line" />
 			<Text><strong>Pruebas API · {verifyHost}</strong></Text>
 			{#if verifyRunning}<Text color="success"><small>· en ejecución</small></Text>{/if}
 		</FlexLayout>
 	</svelte:fragment>
-	<FlexLayout items="center" justify="end" gap="0.4rem">
+	<FlexLayout items="center" justify="end">
 		{#if verifyRunning}
 			<Button color="danger" variant="ghost" onClick={stopVerify}>
 				<Iconify icon="mdi:stop-circle-outline" /> Detener

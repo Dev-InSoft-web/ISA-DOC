@@ -2,9 +2,9 @@ import type { TreeViewProps } from "../../_comps/TreeView/TreeRowView.svelte";
 import { TreeRowViewAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
 import { TreeAdapterCatalogoStub } from "../../_comps/TreeView/_treeAdapter/CatalogoStub";
 import type { ParsedTable } from "../../../lib/tableSchema";
-import { TSqlNodeUX } from "./TSqlNodeUX.svelte";
-import type { SqlNodeKind } from "./TSqlNodeUX.svelte";
-import { TSqlTableUX } from "./TSqlTableUX.svelte";
+import { TSqlNodeUX } from "./TSqlNodeUX";
+import type { SqlNodeKind } from "./TSqlNodeUX";
+import { TSqlTableUX } from "./TSqlTableUX";
 
 export type SqlTreeChangeFn = (next: ParsedTable) => void;
 
@@ -195,6 +195,29 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		node.refreshUX();
 		this.emitChange();
 		this.syncAllRowAdapters();
+	}
+
+	/**
+	 * Una sección `optional` con `active=false` se oculta por completo del
+	 * diagrama de filas (el nodo y todos sus hijos). Solo puede volver a
+	 * mostrarse desde el switch superior. La data se conserva en `obj.rows`
+	 * para no perder ediciones; el filtro aplica únicamente a la vista.
+	 */
+	override buildTree(planes: any[]): TSqlNodeUX[] {
+		const rows = planes as TSqlNodeUX[];
+		const hiddenPrefixes: string[] = [];
+		for (const r of rows) {
+			if (r?.kind === "optional" && !r.active) hiddenPrefixes.push(String(r.flatPath || ""));
+		}
+		if (hiddenPrefixes.length === 0) return super.buildTree(rows) as TSqlNodeUX[];
+		const visible = rows.filter((r) => {
+			const id = String(r?.flatPath || "");
+			for (const p of hiddenPrefixes) {
+				if (id === p || id.startsWith(p + ".")) return false;
+			}
+			return true;
+		});
+		return super.buildTree(visible) as TSqlNodeUX[];
 	}
 
 	/** En SQL, el root admite secciones y columnas (columnas-raíz son válidas). */

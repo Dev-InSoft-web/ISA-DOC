@@ -1,6 +1,6 @@
 import type { ParsedTable, TableColumn, TableRow, TableSection, TableOptional } from "../../../lib/tableSchema";
 import { isSectionRow, isSectionEndRow, isOptionalRow, isAnySectionRow } from "../../../lib/tableSchema";
-import { TSqlNodeUX } from "./TSqlNodeUX.svelte";
+import { TSqlNodeUX } from "./TSqlNodeUX";
 
 export class TSqlTableUX {
 	tableId: string = "";

@@ -4,6 +4,7 @@
 	import {
 		emitDropTable,
 		emitTable,
+		effectiveTableName,
 		type ParsedTable,
 	} from "../../lib/tableSchema.ts";
 	import { generateResourcesFromTables } from "../../lib/codeGen/autogen.ts";
@@ -23,7 +24,7 @@
 	import CodeModal from "../viewers/CodeModal.svelte";
 	import DocInfoModal from "../viewers/DocInfoModal.svelte";
 	import TreeView from "../_comps/TreeView/TreeRowView.svelte";
-	import { TablesBrowserAdapter, type TablesBrowserState } from "./tables-browser/TablesBrowserAdapter.svelte";
+	import { TreeSQLTablesAdapter, type TablesBrowserState } from "./tables-browser/TreeSQLTablesAdapter";
 	import ResourceConfigSections from "./tables-browser/ResourceConfigSections.svelte";
 
 	let tables: ParsedTable[] = [];
@@ -111,7 +112,7 @@
 		}
 	}
 
-	const adapter = new TablesBrowserAdapter([], onAdapterChange);
+	const adapter = new TreeSQLTablesAdapter([], onAdapterChange);
 	adapter.onTableSelect = (key) => { selectedKey = key; };
 	adapter.onDomainsChange = (d) => { domains = d; };
 	adapter.onCascadeAddDomain = () => {
@@ -159,7 +160,7 @@
 		// Mantener el adapter sincronizado con el nuevo estado para que sus
 		// próximas operaciones (rebuildRows, emitChange) usen `effectivePrefix`
 		// actualizado y no se generen ciclos por estado divergente.
-		(adapter as TablesBrowserAdapter).syncTablesQuiet(tables);
+		(adapter as TreeSQLTablesAdapter).syncTablesQuiet(tables);
 		dirty = true;
 		void save(true);
 	}
@@ -319,10 +320,8 @@
 		requestAnimationFrame(() => {
 			const formPane = document.querySelector<HTMLElement>(".browser .form-pane");
 			if (!formPane) return;
-			const target =
-				formPane.querySelector<HTMLElement>(".name-input") ??
-				formPane.querySelector<HTMLElement>("input, select, textarea, button");
-			target?.focus({ preventScroll: false });
+			// Solo flashear visualmente; NO robar el foco al usuario que está
+			// interactuando con el árbol u otros controles.
 			formPane.classList.add("entity-focus-flash");
 			window.setTimeout(() => formPane.classList.remove("entity-focus-flash"), 700);
 		});
@@ -372,12 +371,14 @@
 						<svelte:fragment slot="row" let:node>
 							{#if node.kind === "prefix"}
 								<span class="tree-row">
-									<strong class="tree-row-name">{node.rowName}</strong>
+									<span class="badge badge-prefix">Prefixer</span>
+									<span class="tree-row-name">{node.rowName}</span>
 									<span class="tree-row-meta">{node.colCount}</span>
 								</span>
 							{:else if node.kind === "domain"}
 								<span class="tree-row">
-									<strong class="tree-row-name">{node.rowName}</strong>
+									<span class="badge badge-domain">Domain</span>
+									<span class="tree-row-name">{node.rowName}</span>
 								</span>
 							{:else}
 								<span class="tree-row">
@@ -455,9 +456,14 @@
 						<FlexLayout items="center" justify="between">
 							<FlexLayout items="center">
 								<Iconify icon="mdi:table" />
-								<H4>{t.name}</H4>
+								<H4>{effectiveTableName(t)}</H4>
 							</FlexLayout>
 							<FlexLayout items="center">
+								<DocInfoModal
+									title={`Documentación de la tabla ${t.name}`}
+									label="Doc de la tabla"
+									query={{ table: t.name }}
+								/>
 								<ButtonIconify icon="mdi:eye-outline" title="Editor visual completo" on:click={openTreeModal} />
 							</FlexLayout>
 						</FlexLayout>
@@ -728,6 +734,20 @@
 		font-size: 0.75rem;
 		margin-left: auto;
 		padding-left: 0.5rem;
+	}
+	.badge {
+		padding: 0.1rem 0.4rem;
+		border-radius: 0.2rem;
+		font-size: 0.75rem;
+		font-weight: bold;
+	}
+	.badge-domain {
+		background: color-mix(in srgb, var(--is-warning) 25%, transparent);
+		color: var(--is-warning);
+	}
+	.badge-prefix {
+		background: color-mix(in srgb, var(--is-success) 25%, transparent);
+		color: var(--is-success);
 	}
 	:global(.code-pane) > :global(.pane-scroll) > :global(.card-root) {
 		width: 100%;

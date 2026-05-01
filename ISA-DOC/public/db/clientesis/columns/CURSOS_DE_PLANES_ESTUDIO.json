@@ -3,7 +3,7 @@
   "kind": "columns-tree",
   "tableRef": "CURSOS_DE_PLANES_ESTUDIO",
   "tableMeta": {
-    "originalName": "HISTORIALCURSOS",
+    "originalName": "PLANES_ESTUDIO",
     "hasIfNotExists": true
   },
   "root": {
@@ -14,80 +14,140 @@
         "id": "1",
         "kind": "col",
         "obj": {
-          "name": "IHISTORIALCURSOS",
-          "type": "BIGINT",
-          "primaryKey": true,
-          "kind": "col"
+          "name": "IPLANESTUDIO",
+          "type": "VARCHAR(255)",
+          "primaryKey": true
         }
       },
       {
         "id": "2",
         "kind": "col",
         "obj": {
-          "name": "ICURSO",
+          "name": "NOMBRE",
           "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
+          "primaryKey": false
         }
       },
       {
         "id": "3",
         "kind": "col",
         "obj": {
-          "name": "CAMPO",
-          "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
+          "name": "DESCRIPCIONPLAN",
+          "type": "TEXT",
+          "primaryKey": false
         }
       },
       {
         "id": "4",
         "kind": "col",
         "obj": {
-          "name": "VALOR",
-          "type": "TEXT",
-          "primaryKey": false,
-          "kind": "col"
+          "name": "TTDVISUALIZACION",
+          "type": "VARCHAR(50)",
+          "primaryKey": false
         }
       },
       {
         "id": "5",
         "kind": "col",
         "obj": {
-          "name": "IUSUARIOCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
+          "name": "BACTIVO",
+          "type": "BIT",
+          "defaultValue": "1",
+          "primaryKey": false
         }
       },
       {
         "id": "6",
         "kind": "col",
         "obj": {
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
+          "name": "BGENERACERTIFICADOS",
+          "type": "BIT",
+          "defaultValue": "0",
+          "primaryKey": false
         }
       },
       {
         "id": "7",
         "kind": "col",
         "obj": {
-          "name": "IPCRE",
+          "name": "IRECURSO",
           "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
+          "nullable": "NULL",
+          "primaryKey": false
         }
       },
       {
         "id": "8",
         "kind": "col",
         "obj": {
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "9",
+        "kind": "col",
+        "obj": {
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "10",
+        "kind": "col",
+        "obj": {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "11",
+        "kind": "col",
+        "obj": {
           "name": "FHCRE",
           "type": "DATETIME2",
-          "primaryKey": false,
-          "kind": "col"
+          "defaultValue": "GETDATE()",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "12",
+        "kind": "col",
+        "obj": {
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "13",
+        "kind": "col",
+        "obj": {
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "14",
+        "kind": "col",
+        "obj": {
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "15",
+        "kind": "col",
+        "obj": {
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false
         }
       }
     ]
