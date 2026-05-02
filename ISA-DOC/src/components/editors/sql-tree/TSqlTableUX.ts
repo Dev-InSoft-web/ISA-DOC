@@ -45,7 +45,7 @@ export class TSqlTableUX {
 				// homogeneizados en memoria.
 				if ((row as TableSection).name === "AUDITORIA") {
 					out.push(TSqlNodeUX.fromOptional(
-						{ kind: "optional", name: "AUDITORIA", show: true },
+						{ kind: "optional", name: "AUDITORIA", active: true },
 						sid,
 						tableId,
 						stack,
@@ -72,8 +72,15 @@ export class TSqlTableUX {
 		// sus columnas hijas, sin alterar el orden relativo del resto.
 		const auditSection = out.find((n) => (n.kind === "optional" || n.kind === "section") && n.rowName === "AUDITORIA");
 		if (auditSection) {
-			const auditId = auditSection.flatPath;
+			const auditId = auditSection.flatpath;
 			const auditChildren = out.filter((n) => n.kind === "column" && n.ireference === auditId);
+			// Si la sección AUDITORIA llega sin columnas hijas, debe aparecer
+			// como inactiva. Al activarla luego, `setAuditEnabled` la rellenará
+			// con el conjunto por defecto.
+			if (auditSection.kind === "optional" && auditChildren.length === 0) {
+				auditSection.active = false;
+				auditSection.refreshUX();
+			}
 			const auditSet = new Set<TSqlNodeUX>([auditSection, ...auditChildren]);
 			const rest = out.filter((n) => !auditSet.has(n));
 			return [...rest, auditSection, ...auditChildren];
@@ -109,7 +116,7 @@ export class TSqlTableUX {
 		const flat = this.rows;
 		const childrenBySection = new Map<string, TSqlNodeUX[]>();
 		for (const n of flat) {
-			if (n.kind === "section" || n.kind === "optional") childrenBySection.set(n.flatPath, []);
+			if (n.kind === "section" || n.kind === "optional") childrenBySection.set(n.flatpath, []);
 		}
 		for (const n of flat) {
 			if (n.kind !== "column") continue;
@@ -132,12 +139,12 @@ export class TSqlTableUX {
 				if (openSection) columns.push({ kind: "section_end" });
 				columns.push(n.toOptional());
 				openSection = true;
-				for (const c of childrenBySection.get(n.flatPath) ?? []) columns.push(c.toColumn());
+				for (const c of childrenBySection.get(n.flatpath) ?? []) columns.push(c.toColumn());
 			} else if (n.kind === "section") {
 				if (openSection) columns.push({ kind: "section_end" });
 				columns.push(n.toSection());
 				openSection = true;
-				for (const c of childrenBySection.get(n.flatPath) ?? []) columns.push(c.toColumn());
+				for (const c of childrenBySection.get(n.flatpath) ?? []) columns.push(c.toColumn());
 			} else {
 				if (openSection) {
 					columns.push({ kind: "section_end" });

@@ -1,142 +1,73 @@
 {
-  "version": 3,
+  "version": 4,
   "kind": "columns-tree",
-  "tableRef": "CURSOS_DE_PLANES_ESTUDIO",
-  "tableMeta": {
-    "originalName": "CURSOS_DE_PLANES_ESTUDIO",
-    "hasIfNotExists": true
+  "tableref": "CURSOS_DE_PLANES_ESTUDIO",
+  "tablemeta": {
+    "originalname": "CURSOS_DE_PLANES_ESTUDIO",
+    "hasifnotexists": true
   },
-  "root": {
-    "id": "",
-    "kind": "root",
-    "children": [
+  "nodes": [
+    {
+      "flatpath": "1",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "2",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "3",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "4",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "5",
+      "kind": "optional",
+      "name": "AUDITORIA"
+    }
+  ],
+  "entities": {
+    "COLUMN": [
       {
-        "id": "1",
-        "kind": "col",
-        "obj": {
-          "name": "IPLANESTUDIO",
-          "type": "VARCHAR(255)",
-          "primaryKey": true
-        }
+        "icolumn": "1",
+        "flatpath": "1",
+        "name": "IPLANESTUDIO",
+        "type": "VARCHAR(255)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "2",
-        "kind": "col",
-        "obj": {
-          "name": "ICURSO",
-          "type": "VARCHAR(255)",
-          "primaryKey": true
-        }
+        "icolumn": "2",
+        "flatpath": "2",
+        "name": "ICURSO",
+        "type": "VARCHAR(255)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "3",
-        "kind": "col",
-        "obj": {
-          "name": "QORDEN",
-          "type": "INT",
-          "primaryKey": false
-        }
+        "icolumn": "3",
+        "flatpath": "3",
+        "name": "QORDEN",
+        "type": "INT",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "4",
-        "kind": "col",
-        "obj": {
-          "name": "BREQUERIDO",
-          "type": "BIT",
-          "defaultValue": "1",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "5",
-        "kind": "col",
-        "obj": {
-          "name": "AUDITORIA",
-          "primaryKey": false,
-          "kind": "optional",
-          "show": true
-        }
-      },
-      {
-        "id": "6",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "7",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "8",
-        "kind": "col",
-        "obj": {
-          "name": "IPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "9",
-        "kind": "col",
-        "obj": {
-          "name": "FHCRE",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "10",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "11",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "12",
-        "kind": "col",
-        "obj": {
-          "name": "IPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "13",
-        "kind": "col",
-        "obj": {
-          "name": "FHULT",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false
-        }
+        "icolumn": "4",
+        "flatpath": "4",
+        "name": "BREQUERIDO",
+        "type": "BIT",
+        "defaultvalue": "1",
+        "primarykey": false,
+        "kind": "col"
       }
-    ]
-  },
-  "doc": {
-    "description": "Pivote N:N entre planes de estudio y cursos.",
-    "rules": [
-      "PK compuesta (IPLANESTUDIO, ICURSO)."
     ]
   }
 }

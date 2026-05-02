@@ -41,6 +41,14 @@ export abstract class BaseTreeNode<TObj extends object = Record<string, unknown>
 	public children: BaseTreeNode<any>[] = [];
 
 	/**
+	 * Bandera de visibilidad/procesamiento. Cuando es `false`, todos los
+	 * algoritmos (emisión SQL, snippets, validación derivada) deben
+	 * ignorar este nodo y su subárbol. NO es una eliminación: la fila se
+	 * conserva en el árbol y en JSON. Default `true`.
+	 */
+	public active: boolean = true;
+
+	/**
 	 * Vector de rol actoral. Cada slot es opcional; si está `undefined` el
 	 * algoritmo aplicará el default dimensional (`group` / `prison` /
 	 * `unanchored` / `distracted`) sin quemarlo en la instancia.
@@ -155,6 +163,7 @@ export abstract class BaseTreeNode<TObj extends object = Record<string, unknown>
 	public toJSON(): PersistedNodeJSON {
 		this.normalize();
 		const out: PersistedNodeJSON = { id: this.flatPath, kind: this.kind };
+		if (this.active === false) out.active = false;
 		const obj = this.serializeObj();
 		if (obj && Object.keys(obj).length) out.obj = obj;
 		if (this.wardenAction) out.wardenAction = { idaction: this.wardenAction.idaction };

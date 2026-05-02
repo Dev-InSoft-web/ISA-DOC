@@ -1,171 +1,113 @@
 {
-  "version": 3,
+  "version": 4,
   "kind": "columns-tree",
-  "tableRef": "CURSOS",
-  "tableMeta": {
-    "originalName": "CURSOS",
-    "hasIfNotExists": true
+  "tableref": "CURSOS",
+  "tablemeta": {
+    "originalname": "CURSOS",
+    "hasifnotexists": true
   },
-  "root": {
-    "id": "",
-    "kind": "root",
-    "children": [
+  "nodes": [
+    {
+      "flatpath": "1",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "2",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "3",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "4",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "5",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "6",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "7",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "8",
+      "kind": "optional",
+      "name": "AUDITORIA"
+    }
+  ],
+  "entities": {
+    "COLUMN": [
       {
-        "id": "1",
-        "kind": "col",
-        "obj": {
-          "name": "ICURSO",
-          "type": "VARCHAR(255)",
-          "primaryKey": true
-        }
+        "icolumn": "1",
+        "flatpath": "1",
+        "name": "ICURSO",
+        "type": "VARCHAR(255)",
+        "primarykey": true,
+        "kind": "col"
       },
       {
-        "id": "2",
-        "kind": "col",
-        "obj": {
-          "name": "NCURSO",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
+        "icolumn": "2",
+        "flatpath": "2",
+        "name": "NCURSO",
+        "type": "VARCHAR(255)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "3",
-        "kind": "col",
-        "obj": {
-          "name": "ITEMA",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
+        "icolumn": "3",
+        "flatpath": "3",
+        "name": "ITEMA",
+        "type": "VARCHAR(255)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "4",
-        "kind": "col",
-        "obj": {
-          "name": "DESCRIPCION",
-          "type": "TEXT",
-          "primaryKey": false
-        }
+        "icolumn": "4",
+        "flatpath": "4",
+        "name": "DESCRIPCION",
+        "type": "TEXT",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "5",
-        "kind": "col",
-        "obj": {
-          "name": "IDRIVER",
-          "type": "BIGINT",
-          "primaryKey": false
-        }
+        "icolumn": "5",
+        "flatpath": "5",
+        "name": "IDRIVER",
+        "type": "BIGINT",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "6",
-        "kind": "col",
-        "obj": {
-          "name": "BACTIVO",
-          "type": "BIT",
-          "defaultValue": "1",
-          "primaryKey": false
-        }
+        "icolumn": "6",
+        "flatpath": "6",
+        "name": "BACTIVO",
+        "type": "BIT",
+        "defaultvalue": "1",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "7",
-        "kind": "col",
-        "obj": {
-          "name": "BGENERACERTIFICADO",
-          "type": "BIT",
-          "defaultValue": "0",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "8",
-        "kind": "col",
-        "obj": {
-          "name": "AUDITORIA",
-          "primaryKey": false,
-          "kind": "optional",
-          "show": true
-        }
-      },
-      {
-        "id": "9",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "10",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "11",
-        "kind": "col",
-        "obj": {
-          "name": "IPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "12",
-        "kind": "col",
-        "obj": {
-          "name": "FHCRE",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "13",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "14",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "15",
-        "kind": "col",
-        "obj": {
-          "name": "IPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "16",
-        "kind": "col",
-        "obj": {
-          "name": "FHULT",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false
-        }
+        "icolumn": "7",
+        "flatpath": "7",
+        "name": "BGENERACERTIFICADO",
+        "type": "BIT",
+        "defaultvalue": "0",
+        "primarykey": false,
+        "kind": "col"
       }
-    ]
-  },
-  "doc": {
-    "description": "Catalogo de cursos. Tabla central del modulo.",
-    "rules": [
-      "Master del dominio Cursos.",
-      "stack:true emite HISTORIALCURSO."
     ]
   }
 }

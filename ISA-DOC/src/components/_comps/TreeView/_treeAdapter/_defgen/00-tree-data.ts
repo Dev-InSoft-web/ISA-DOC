@@ -39,13 +39,25 @@
 
 export interface INode<T = any> {
 	/** Ruta plana del nodo en notación punteada ("1", "1.2", …). */
-	flatPath: string;
-	/** Ruta plana del padre (vacío si es raíz). */
-	ireference: string;
-	/** Discriminador semántico del nodo (definido por la subclase). */
+	flatpath: string;
+	/**
+	 * Nombre de la ENTIDAD SQL (tabla) a la que pertenece la fila de obj
+	 * del nodo. Convención: MAYÚSCULA SOSTENIDA, con `_` como separador
+	 * (estilo MSSQL). P.ej. `TABLE`, `COLUMN`, `PLANES_ESTUDIO`.
+	 * Es la FK al bucket `entities[ireference]` del `NodeStore`.
+	 *
+	 * **OPCIONAL**: los nodos puramente estructurales (p.ej. `prefix`,
+	 * `root`) no referencian entidad alguna — sólo delegan comportamiento
+	 * a su clase TS por `kind` y NO cargan obj. En ese caso `ireference`
+	 * se omite y el nodo no tiene fila en `entities`.
+	 */
+	ireference?: string;
+	/**
+	 * Discriminador semántico del nodo. Vincula el nodo con la CLASE TS
+	 * concreta que implementa su lógica (ej. `prefix`, `table`, `col`).
+	 * Convención: minúsculas sin separadores.
+	 */
 	kind: string;
-	/** Texto visual primario del nodo. */
-	label: string;
 	/** Hijos del árbol (SIEMPRE nodos, nunca objetos crudos). */
 	children: T[];
 	/** Si el nodo rechaza recibir a `child` como hijo. */
@@ -268,10 +280,21 @@ export function dimensionOfRole(role: NodeRole): RoleDimension {
  */
 export abstract class TreeNode<T = any> implements INode<T> {
 	/** Estructura de árbol. */
-	public flatPath: string = "";
-	public ireference: string = "";
+	public flatpath: string = "";
+	/**
+	 * Alias camelCase de `flatpath`. La capa TreeView base (TreeAdapter,
+	 * RowAdapter, _rowItem) lee históricamente `node.flatPath`; el modelo
+	 * v4 unificó a `flatpath` minúscula. Este getter/setter mantiene
+	 * compatibilidad bidireccional sin duplicar estado.
+	 */
+	public get flatPath(): string { return this.flatpath; }
+	public set flatPath(value: string) { this.flatpath = value; }
+	/**
+	 * Entidad SQL (bucket `entities[ireference]`) referenciada por este
+	 * nodo. `undefined` para nodos estructurales sin obj (p.ej. prefix).
+	 */
+	public ireference?: string;
 	public kind: string = "";
-	public label: string = "";
 	/** Hijos del árbol (siempre nodos del mismo tipo recursivo). */
 	public children: T[] = [];
 
@@ -293,7 +316,7 @@ export abstract class TreeNode<T = any> implements INode<T> {
 
 	/** Profundidad inferida de la ruta plana (cuenta de puntos). */
 	protected computeDepthFromPath(): number {
-		const raw = String(this.flatPath || "").trim();
+		const raw = String(this.flatpath || "").trim();
 		return raw ? (raw.match(/\./g) || []).length : 0;
 	}
 
@@ -337,9 +360,10 @@ export abstract class TreeNodeSlave<T = any> extends TreeNode<T> implements INod
 const stripUiPrefix = (raw: unknown): string => String(raw ?? "").replace(/^(_UP_|_M_)/, "").trim();
 
 /**
- * Normaliza recursivamente los `flatPath`/`ireference` de los nodos
- * (quita prefijos UI `_UP_`/`_M_`). Mutación in-situ. Retorna el mismo
- * arreglo con los hijos también normalizados.
+ * Normaliza recursivamente los `flatpath` de los nodos (quita prefijos
+ * UI `_UP_`/`_M_`). Mutación in-situ. Retorna el mismo arreglo con los
+ * hijos también normalizados. NO toca `ireference` (que ahora es el
+ * nombre de la entidad SQL, no una ruta plana).
  *
  * Las clases-nodo SON los nodos del árbol — esta función NO crea wrappers
  * paralelos. La estructura de hijos debe ya estar materializada por el
@@ -347,10 +371,8 @@ const stripUiPrefix = (raw: unknown): string => String(raw ?? "").replace(/^(_UP
  */
 export function normalizeRoots<T extends INode<any>>(roots: readonly T[]): T[] {
 	for (const r of roots) {
-		const flat = stripUiPrefix(r.flatPath);
-		if (flat) r.flatPath = flat;
-		const iref = stripUiPrefix(r.ireference);
-		if (iref) r.ireference = iref;
+		const flat = stripUiPrefix(r.flatpath);
+		if (flat) r.flatpath = flat;
 		const kids = r.children;
 		if (kids && kids.length) normalizeRoots(kids as readonly INode<any>[]);
 	}
@@ -360,8 +382,8 @@ export function normalizeRoots<T extends INode<any>>(roots: readonly T[]): T[] {
 /**
  * Alias retro-compatible: el adapter llamaba a esta función para construir
  * la estructura paralela. Hoy los nodos SON las clases — la función se
- * limita a normalizar los flatPath/ireference y devolver los mismos
- * nodos (sin parallel-wrapping).
+ * limita a normalizar los flatpath y devolver los mismos nodos (sin
+ * parallel-wrapping).
  */
 export function objRootsToNodes<T extends INode<any>>(
 	roots: readonly T[],
@@ -370,3 +392,119 @@ export function objRootsToNodes<T extends INode<any>>(
 	void _labelFn;
 	return normalizeRoots(roots) as INode<any>[];
 }
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* Almacenamiento plano estilo SQL.                                         */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Modelo de almacenamiento del árbol en formato APLANADO estilo SQL.
+ *
+ * - `nodes`: tabla única de FILAS de nodos (sin `children` materializado).
+ *   Cada `NodeRow` refleja la forma del contrato `INode` (sin `id` propio:
+ *   la identidad del nodo es su `flatpath`). La jerarquía se reconstruye
+ *   por prefijo de `flatpath` — los hijos de primer nivel de un nodo son
+ *   las filas cuyo `flatpath` empieza por el `flatpath` del padre seguido
+ *   de un único segmento adicional.
+ *
+ * - `entities`: diccionario `{ [entityName]: ObjRow[] }`. Cada bucket es
+ *   una "tabla" SQL que agrupa los registros de UNA entidad concreta
+ *   (`TABLE`, `COLUMN`, `PREFIX`, …). El nombre de bucket sigue la
+ *   convención SQL: MAYÚSCULA SOSTENIDA con `_` como separador. Los
+ *   datos de dominio (incluido `label` cuando aplica) viven aquí.
+ *
+ * Convenciones de nomenclatura:
+ *  - Claves de `NodeRow` y `ObjRow`: SIEMPRE en minúsculas, sin separadores
+ *    ni guiones bajos (POJO TObject-ready).
+ *  - PK de `ObjRow`: `i<entityname>` en minúsculas, sin `_` (p.ej. la
+ *    entidad `TABLE` usa `itable`; `PLANES_ESTUDIO` usa `iplanesestudio`).
+ *  - Nombres de entidad (claves de `entities` y valores de `ireference`):
+ *    en MAYÚSCULA SOSTENIDA, pueden incluir `_` (estilo MSSQL).
+ */
+
+/** Fila base de NODO. La identidad del nodo es su `flatpath` (no hay `id`). */
+export interface NodeBaseRow {
+	/** Posición jerárquica en notación punteada ("1", "1.2", …). */
+	flatpath: string;
+}
+
+/** Fila base de OBJ de entidad. Lleva PK propia (`i<entityname>`). */
+export interface ObjBaseRow {
+	/**
+	 * PK natural de la fila dentro del bucket `entities[entityName]`.
+	 * Convención: clave `i<entityname>` (todo en minúsculas, sin `_`),
+	 * presente como CUALQUIER otra propiedad más en el `ObjRow`.
+	 */
+	[key: string]: unknown;
+	/** Posición jerárquica del nodo asociado (join key con `NodeRow`). */
+	flatpath: string;
+}
+
+/**
+ * Fila de NODO en la tabla `nodes`. Contiene EXCLUSIVAMENTE metadatos
+ * estructurales del árbol — todos los datos de dominio (incluido el
+ * texto visual cuando aplica) viven en la fila de obj de la entidad
+ * referenciada por `ireference`.
+ */
+export interface NodeRow extends NodeBaseRow {
+	/**
+	 * Nombre de la entidad SQL (FK al bucket `entities[ireference]`).
+	 * **Opcional**: se omite en nodos estructurales sin obj (p.ej.
+	 * `prefix`, `root`) que sólo delegan comportamiento a su clase TS
+	 * vía `kind` y no tienen fila en `entities`.
+	 */
+	ireference?: string;
+	/** Discriminador semántico del nodo (clase TS concreta que lo procesa). */
+	kind: string;
+	/** Cadena kebab-case de roles actorales (ver `NodeRole`). Opcional. */
+	actor?: string;
+}
+
+/**
+ * Fila de objeto de entidad. Comparte `flatpath` con el `NodeRow`
+ * correspondiente (join key). El resto de propiedades son los campos
+ * SQL de la "tabla" que representa la entidad.
+ */
+export interface ObjRow extends ObjBaseRow {}
+
+/**
+ * Almacén plano del árbol. `entities` agrupa filas de obj por nombre de
+ * entidad SQL (MAYÚSCULA SOSTENIDA) — equivale a una tabla por entidad.
+ */
+export interface NodeStore {
+	nodes: NodeRow[];
+	entities: { [entityName: string]: ObjRow[] };
+}
+
+/** ¿`child` es hijo DIRECTO de `parent` en notación de flatpath punteado? */
+function isDirectChildPath(parent: string, child: string): boolean {
+	if (!child) return false;
+	if (parent === "") return !child.includes(".");
+	if (!child.startsWith(parent + ".")) return false;
+	return !child.slice(parent.length + 1).includes(".");
+}
+
+/** Filas raíz (hijos directos del nodo virtual con `flatpath = ""`). */
+export function getRootRows(store: NodeStore): NodeRow[] {
+	return store.nodes.filter((n) => n.flatpath !== "" && !n.flatpath.includes("."));
+}
+
+/** Hijos DIRECTOS (primer nivel) de un nodo identificado por su `flatpath`. */
+export function getChildRows(store: NodeStore, parentFlatpath: string): NodeRow[] {
+	return store.nodes.filter((n) => isDirectChildPath(parentFlatpath, n.flatpath));
+}
+
+/** TODOS los descendientes (cualquier nivel) de un nodo. */
+export function getDescendantRows(store: NodeStore, ancestorFlatpath: string): NodeRow[] {
+	const prefix = ancestorFlatpath === "" ? "" : ancestorFlatpath + ".";
+	return store.nodes.filter((n) => n.flatpath !== ancestorFlatpath && n.flatpath.startsWith(prefix));
+}
+
+/** Fila de obj asociada a un `NodeRow` (mismo `flatpath` dentro del bucket). */
+export function findObjRowFor(store: NodeStore, node: NodeRow): ObjRow | undefined {
+	if (!node.ireference) return undefined;
+	const bucket = store.entities[node.ireference];
+	if (!bucket) return undefined;
+	return bucket.find((o) => o.flatpath === node.flatpath);
+}
+

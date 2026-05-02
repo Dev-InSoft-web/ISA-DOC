@@ -35,11 +35,15 @@ export function nodeFromJSON(json: PersistedNodeJSON, parent: BaseTreeNode<any> 
 		case "col":
 			n = new ColumnNode(obj as Partial<ColumnObj>);
 			break;
+		case "optional":
+			n = new ColumnNode({ ...(obj as Partial<ColumnObj>), kind: "optional" });
+			break;
 		default:
 			throw new Error(`Kind desconocido al hidratar: '${String(kind)}'.`);
 	}
 	if (json.wardenAction) n.wardenAction = { idaction: json.wardenAction.idaction };
 	if (json.doc) n.doc = { ...json.doc };
+	if (json.active === false) n.active = false;
 	n.parent = parent;
 	if (Array.isArray(json.children)) {
 		n.children = json.children.map((c) => nodeFromJSON(c, n));

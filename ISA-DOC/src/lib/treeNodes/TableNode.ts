@@ -1,6 +1,32 @@
 import { BaseTreeNode } from "./BaseTreeNode.ts";
 import type { NodeKind, NodeValidation } from "./types.ts";
 
+/**
+ * Acción declarativa de un constraint de FK en SQL Server.
+ */
+export type FkAction = "NO ACTION" | "CASCADE" | "SET NULL" | "SET DEFAULT";
+
+/**
+ * Relación FK declarada A NIVEL DE TABLA. Soporta FK compuesta
+ * (varias columnas locales → varias columnas de la tabla referenciada).
+ * Para FKs simples de una sola columna se suele usar `ColumnObj.foreignKey`,
+ * que el emisor SQL fusiona en este array al persistir.
+ */
+export interface TableRelation {
+	/** Nombre del constraint (FK_<X>_<Y>...). Opcional. */
+	name?: string;
+	/** Columnas locales (en orden). */
+	columns: string[];
+	/** Tabla referenciada (sin prefijo, MAYÚSCULAS). */
+	refTable: string;
+	/** Columnas referenciadas en `refTable` (en orden). */
+	refColumns: string[];
+	/** Acción al borrar la fila padre. */
+	onDelete?: FkAction;
+	/** Acción al actualizar la PK padre. */
+	onUpdate?: FkAction;
+}
+
 export interface TableObj {
 	/** Nombre bare de la tabla (sin prefijo). Idem `rowName`. */
 	tableRef: string;
@@ -18,6 +44,13 @@ export interface TableObj {
 	autoStackHistorial?: boolean;
 	/** @deprecated Alias legado de `autoStack` (lectura tolerante). */
 	stack?: boolean;
+	/**
+	 * Relaciones FK declaradas a nivel de tabla. Incluye FK compuestas y
+	 * cualquier FK con nombre de constraint explícito. Las FKs simples de
+	 * UNA columna pueden vivir alternativamente en `ColumnObj.foreignKey`
+	 * — el emisor SQL las fusiona al generar.
+	 */
+	relations?: TableRelation[];
 }
 
 /**
@@ -34,6 +67,7 @@ export class TableNode extends BaseTreeNode<TableObj> {
 			rowName: obj.rowName ?? obj.tableRef ?? "",
 			autoStack: auto,
 			autoStackHistorial: obj.autoStackHistorial,
+			relations: Array.isArray(obj.relations) && obj.relations.length ? obj.relations.map((r) => ({ ...r })) : undefined,
 		} as TableObj);
 	}
 
@@ -69,6 +103,16 @@ export class TableNode extends BaseTreeNode<TableObj> {
 		if (this.obj.autoStack === true) {
 			out.autoStack = true;
 			if (this.obj.autoStackHistorial === false) out.autoStackHistorial = false;
+		}
+		if (Array.isArray(this.obj.relations) && this.obj.relations.length) {
+			out.relations = this.obj.relations.map((r) => ({
+				...(r.name ? { name: r.name } : {}),
+				columns: [...r.columns],
+				refTable: r.refTable,
+				refColumns: [...r.refColumns],
+				...(r.onDelete ? { onDelete: r.onDelete } : {}),
+				...(r.onUpdate ? { onUpdate: r.onUpdate } : {}),
+			}));
 		}
 		return out;
 	}

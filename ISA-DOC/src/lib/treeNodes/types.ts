@@ -12,7 +12,7 @@
  *    `obj.stack === true` en la tabla maestra.
  */
 
-export type NodeKind = "root" | "prefix" | "domain" | "table" | "col";
+export type NodeKind = "root" | "prefix" | "domain" | "table" | "col" | "optional";
 
 export interface PersistedWardenRefJSON {
 	idaction: string;
@@ -40,6 +40,11 @@ export interface PersistedTreeDocJSON {
 export interface PersistedNodeJSON {
 	id: string;
 	kind: NodeKind;
+	/** Bandera de visibilidad/procesamiento. `false` ⇒ el nodo se ignora en
+	 * todos los procesamientos (snippets, SQL, validaciones derivadas).
+	 * Por defecto `true`; sólo se persiste cuando es `false`. No es una
+	 * eliminación: el nodo y sus hijos se conservan en el árbol. */
+	active?: boolean;
 	obj?: Record<string, unknown>;
 	wardenAction?: PersistedWardenRefJSON;
 	doc?: PersistedNodeDocJSON;

@@ -1,86 +1,99 @@
 {
-  "version": 3,
+  "version": 4,
   "kind": "columns-tree",
-  "tableRef": "ATRIBUTOS_X_DRIVERS",
-  "tableMeta": {
-    "originalName": "ATRIBUTOS_X_DRIVERS",
-    "hasIfNotExists": true
+  "tableref": "ATRIBUTOS_X_DRIVERS",
+  "tablemeta": {
+    "originalname": "ATRIBUTOS_X_DRIVERS",
+    "hasifnotexists": true
   },
-  "root": {
-    "id": "",
-    "kind": "root",
-    "children": [
+  "nodes": [
+    {
+      "flatpath": "1",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "2",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "3",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "4",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "5",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "6",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "7",
+      "kind": "optional",
+      "name": "AUDITORIA"
+    }
+  ],
+  "entities": {
+    "COLUMN": [
       {
-        "id": "1",
-        "kind": "col",
-        "obj": {
-          "name": "IDRIVER",
-          "type": "BIGINT",
-          "primaryKey": true
-        }
+        "icolumn": "1",
+        "flatpath": "1",
+        "name": "IDRIVER",
+        "type": "BIGINT",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "2",
-        "kind": "col",
-        "obj": {
-          "name": "IATRIBUTO",
-          "type": "BIGINT",
-          "primaryKey": true
-        }
+        "icolumn": "2",
+        "flatpath": "2",
+        "name": "IATRIBUTO",
+        "type": "BIGINT",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "3",
-        "kind": "col",
-        "obj": {
-          "name": "QNIVEL",
-          "type": "TINYINT",
-          "primaryKey": false
-        }
+        "icolumn": "3",
+        "flatpath": "3",
+        "name": "QNIVEL",
+        "type": "TINYINT",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "4",
-        "kind": "col",
-        "obj": {
-          "name": "NATRIBUTO",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
+        "icolumn": "4",
+        "flatpath": "4",
+        "name": "NATRIBUTO",
+        "type": "VARCHAR(255)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "5",
-        "kind": "col",
-        "obj": {
-          "name": "BREQUERIDO",
-          "type": "BIT",
-          "defaultValue": "0",
-          "primaryKey": false
-        }
+        "icolumn": "5",
+        "flatpath": "5",
+        "name": "BREQUERIDO",
+        "type": "BIT",
+        "defaultvalue": "0",
+        "primarykey": false,
+        "kind": "col"
       },
       {
-        "id": "6",
-        "kind": "col",
-        "obj": {
-          "name": "JCONFIG",
-          "type": "VARCHAR(MAX)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "7",
-        "kind": "col",
-        "obj": {
-          "name": "TDATRIBUTO",
-          "type": "TINYINT",
-          "defaultValue": "0",
-          "primaryKey": false
-        }
+        "icolumn": "6",
+        "flatpath": "6",
+        "name": "JCONFIG",
+        "type": "VARCHAR(MAX)",
+        "primarykey": false,
+        "kind": "col"
       }
-    ]
-  },
-  "doc": {
-    "description": "Pivote N:N entre atributos y drivers.",
-    "rules": [
-      "PK compuesta (IDRIVER, IATRIBUTO)."
     ]
   }
 }

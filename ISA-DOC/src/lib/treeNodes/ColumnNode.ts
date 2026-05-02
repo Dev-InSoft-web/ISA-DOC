@@ -1,5 +1,23 @@
 import { BaseTreeNode } from "./BaseTreeNode.ts";
 import type { NodeKind, NodeValidation } from "./types.ts";
+import type { FkAction } from "./TableNode.ts";
+
+/**
+ * FK simple (una columna) declarada a nivel de columna. El emisor SQL la
+ * fusiona con `TableObj.relations` al generar el `CREATE TABLE`.
+ */
+export interface ColumnForeignKey {
+	/** Nombre del constraint (FK_<X>_<Y>). Opcional. */
+	name?: string;
+	/** Tabla referenciada (sin prefijo, MAYÚSCULAS). */
+	refTable: string;
+	/** Columna referenciada en `refTable`. */
+	refColumn: string;
+	/** Acción al borrar la fila padre. */
+	onDelete?: FkAction;
+	/** Acción al actualizar la PK padre. */
+	onUpdate?: FkAction;
+}
 
 export interface ColumnObj {
 	name: string;
@@ -10,19 +28,17 @@ export interface ColumnObj {
 	extra: string;
 	/** Subtipo opcional usado por filas de seccion en el editor visual. */
 	kind?: "col" | "section" | "section_end" | "optional";
-	/**
-	 * Solo aplica a filas con `kind === "optional"`. Indica si la sección
-	 * opcional debe emitirse en el SQL. Cuando es `false`, se conserva en
-	 * memoria y JSON pero el bloque se omite del CREATE TABLE.
-	 */
-	show?: boolean;
+	/** FK declarada a nivel de columna (FK simple, una sola columna). */
+	foreignKey?: ColumnForeignKey;
 }
 
 /**
  * Nodo "columna". Es la fila del árbol de columnas (`columns-tree`).
  */
 export class ColumnNode extends BaseTreeNode<ColumnObj> {
-	public readonly kind = "col" as const;
+	public get kind(): NodeKind {
+		return this.obj.kind === "optional" ? "optional" : "col";
+	}
 
 	constructor(obj: Partial<ColumnObj> = {}) {
 		super({
@@ -33,7 +49,7 @@ export class ColumnNode extends BaseTreeNode<ColumnObj> {
 			primaryKey: !!obj.primaryKey,
 			extra: obj.extra ?? "",
 			kind: obj.kind,
-			...(obj.kind === "optional" ? { show: !!obj.show } : {}),
+			...(obj.foreignKey ? { foreignKey: { ...obj.foreignKey } } : {}),
 		} as ColumnObj);
 	}
 

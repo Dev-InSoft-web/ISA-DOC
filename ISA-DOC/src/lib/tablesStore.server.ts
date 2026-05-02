@@ -10,6 +10,11 @@ import {
 	type PersistedNode,
 	type PersistedNodeDoc,
 	type PersistedTreeDoc,
+	type V4NodeStore,
+	type V4PersistedTablesTree,
+	type V4PersistedColumnsTree,
+	persistedNodeTreeToV4Store,
+	v4StoreToPersistedNodeTree,
 } from "./treeStorage.ts";
 import {
 	BaseTreeNode,
@@ -55,8 +60,19 @@ export async function readPersistedTree(): Promise<PersistedTablesTree | null> {
 	if (!(await exists(tablesTreePath))) return null;
 	try {
 		const raw = await readFile(tablesTreePath, "utf8");
-		const parsed = JSON.parse(raw) as Partial<PersistedTablesTree>;
-		if (parsed?.kind === "tables-tree" && parsed.root) return parsed as PersistedTablesTree;
+		const parsed = JSON.parse(raw) as Record<string, unknown>;
+		if (!parsed || typeof parsed !== "object") return null;
+		if (parsed.kind !== "tables-tree") return null;
+		// V4 (NodeStore aplanado) → hidratamos al PersistedNodeJSON anidado.
+		if (Array.isArray((parsed as Partial<V4PersistedTablesTree>).nodes)) {
+			const v4 = parsed as unknown as V4PersistedTablesTree;
+			const root = v4StoreToPersistedNodeTree({ nodes: v4.nodes, entities: v4.entities ?? {} });
+			return { version: TREE_STORAGE_VERSION, kind: "tables-tree", root, doc: v4.doc };
+		}
+		// V3 (anidado) — fallback de compat.
+		if ((parsed as Partial<PersistedTablesTree>).root) {
+			return parsed as unknown as PersistedTablesTree;
+		}
 	} catch { /* noop */ }
 	return null;
 }
@@ -66,8 +82,27 @@ export async function readColumnsTree(tableRef: string): Promise<PersistedColumn
 	if (!(await exists(file))) return null;
 	try {
 		const raw = await readFile(file, "utf8");
-		const parsed = JSON.parse(raw) as Partial<PersistedColumnsTree>;
-		if (parsed?.kind === "columns-tree" && parsed.root) return parsed as PersistedColumnsTree;
+		const parsed = JSON.parse(raw) as Record<string, unknown>;
+		if (!parsed || typeof parsed !== "object") return null;
+		if (parsed.kind !== "columns-tree") return null;
+		if (Array.isArray((parsed as Partial<V4PersistedColumnsTree>).nodes)) {
+			const v4 = parsed as unknown as V4PersistedColumnsTree;
+			const root = v4StoreToPersistedNodeTree({ nodes: v4.nodes, entities: v4.entities ?? {} });
+			return {
+				version: TREE_STORAGE_VERSION,
+				kind: "columns-tree",
+				tableRef: v4.tableref ?? tableRef,
+				tableMeta: {
+					originalName: v4.tablemeta?.originalname ?? tableRef,
+					hasIfNotExists: v4.tablemeta?.hasifnotexists ?? true,
+				},
+				doc: v4.doc,
+				root,
+			};
+		}
+		if ((parsed as Partial<PersistedColumnsTree>).root) {
+			return parsed as unknown as PersistedColumnsTree;
+		}
 	} catch { /* noop */ }
 	return null;
 }
@@ -109,7 +144,14 @@ async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<Par
 		if (!cols) continue;
 		const meta = cols.tableMeta;
 		const columns: TableRow[] = (cols.root.children ?? [])
-			.map((c) => c.obj as unknown as TableRow)
+			.map((c) => {
+				const base = (c.obj as Record<string, unknown> | undefined) ?? {};
+				// El obj de nodos estructurales (p.ej. `optional`) no lleva `kind`
+				// inline (lo guarda el NodeRow). Lo propagamos al obj para que
+				// los discriminadores `isOptionalRow`/`isSectionRow` resuelvan.
+				const merged = { ...base, kind: c.kind } as unknown as TableRow;
+				return merged;
+			})
 			.filter((c) => !!c);
 		out.push({
 			fragmentId: "",
@@ -121,10 +163,13 @@ async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<Par
 			effectivePrefix: effectivePrefix || undefined,
 			autoStack: table.hasStack ? true : undefined,
 			autoStackHistorial: table.hasStack ? (table.obj.autoStackHistorial !== false) : undefined,
+			relations: Array.isArray(table.obj.relations) && table.obj.relations.length
+				? table.obj.relations.map((r) => ({ ...r, columns: [...r.columns], refColumns: [...r.refColumns] }))
+				: undefined,
 			columns,
 			compositePrimaryKey: [],
 			extraStatements: [],
-			tail: "",
+			trailing: "",
 		} as ParsedTable);
 		if (table.historialEnabled) {
 			const colNodes = (cols.root.children ?? [])
@@ -144,7 +189,7 @@ async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<Par
 					columns: histCols,
 					compositePrimaryKey: [],
 					extraStatements: [],
-					tail: "",
+					trailing: "",
 				} as ParsedTable);
 			}
 		}
@@ -332,6 +377,7 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 					rowName: t.name,
 					autoStack: isMaster ? true : undefined,
 					autoStackHistorial: histDisabled ? false : undefined,
+					relations: Array.isArray(t.relations) && t.relations.length ? t.relations.map((r) => ({ ...r })) : undefined,
 				});
 				const tdoc = preserved.tableDocByRef.get(t.name);
 				if (tdoc) tn.doc = { ...tdoc };
@@ -352,6 +398,7 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 				rowName: t.name,
 				autoStack: isMaster ? true : undefined,
 				autoStackHistorial: histDisabled ? false : undefined,
+				relations: Array.isArray(t.relations) && t.relations.length ? t.relations.map((r) => ({ ...r })) : undefined,
 			});
 			const tdoc = preserved.tableDocByRef.get(t.name);
 			if (tdoc) tn.doc = { ...tdoc };
@@ -429,7 +476,7 @@ export async function writeTablesDoc(doc: TablesDoc): Promise<void> {
 	const previousTree = await readPersistedTree();
 	const preservedTree = collectPreservedDocs(previousTree);
 	const { tree, persistedRefs } = buildPersistedTree(doc.tables, preservedTree);
-	await writeFile(tablesTreePath, JSON.stringify(tree, null, 2), "utf8");
+	await writeFile(tablesTreePath, JSON.stringify(toV4TablesTree(tree), null, 2), "utf8");
 	const writtenColumns = new Set<string>();
 	for (const t of doc.tables) {
 		if (!persistedRefs.has(t.name)) continue; // historiales sintéticos no escriben columnas
@@ -437,7 +484,7 @@ export async function writeTablesDoc(doc: TablesDoc): Promise<void> {
 		const preservedCols = collectPreservedColumnsDocs(previousCols);
 		const file = path.join(columnsDir, `${t.name}.json`);
 		const payload = buildColumnsTree(t, preservedCols);
-		await writeFile(file, JSON.stringify(payload, null, 2), "utf8");
+		await writeFile(file, JSON.stringify(toV4ColumnsTree(payload), null, 2), "utf8");
 		writtenColumns.add(`${t.name}.json`);
 	}
 	if (await exists(columnsDir)) {
@@ -448,4 +495,33 @@ export async function writeTablesDoc(doc: TablesDoc): Promise<void> {
 			}
 		}
 	}
+}
+
+function toV4TablesTree(t: PersistedTablesTree): V4PersistedTablesTree {
+	const store: V4NodeStore = persistedNodeTreeToV4Store(t.root);
+	const out: V4PersistedTablesTree = {
+		version: 4,
+		kind: "tables-tree",
+		nodes: store.nodes,
+		entities: store.entities,
+	};
+	if (t.doc) out.doc = t.doc;
+	return out;
+}
+
+function toV4ColumnsTree(t: PersistedColumnsTree): V4PersistedColumnsTree {
+	const store: V4NodeStore = persistedNodeTreeToV4Store(t.root);
+	const out: V4PersistedColumnsTree = {
+		version: 4,
+		kind: "columns-tree",
+		tableref: t.tableRef,
+		tablemeta: {
+			originalname: t.tableMeta.originalName,
+			hasifnotexists: t.tableMeta.hasIfNotExists,
+		},
+		nodes: store.nodes,
+		entities: store.entities,
+	};
+	if (t.doc) out.doc = t.doc;
+	return out;
 }

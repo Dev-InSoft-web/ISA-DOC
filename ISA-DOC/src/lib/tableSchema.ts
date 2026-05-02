@@ -36,6 +36,14 @@ export interface TableColumn {
 	defaultValue: string;
 	primaryKey: boolean;
 	extra: string;
+	/** FK simple (una columna) declarada a nivel de columna. Opcional. */
+	foreignKey?: {
+		name?: string;
+		refTable: string;
+		refColumn: string;
+		onDelete?: "NO ACTION" | "CASCADE" | "SET NULL" | "SET DEFAULT";
+		onUpdate?: "NO ACTION" | "CASCADE" | "SET NULL" | "SET DEFAULT";
+	};
 }
 
 export interface TableSection {
@@ -49,15 +57,16 @@ export interface TableSectionEnd {
 
 /**
  * Sección opcional (variante especial de sección): puede ocultarse o mostrarse
- * mediante un flag `show` y NO se elimina con el botón de papelera; en su
- * lugar la fila ofrece un ojito para alternar visibilidad. Se utiliza para la
- * sección AUDITORIA y cualquier otra sección que el usuario pueda querer
- * desactivar sin perder sus columnas.
+ * mediante el flag `active` heredado de la base; cuando es `false`, todos los
+ * procesamientos (snippets, SQL, validaciones) ignoran el bloque pero éste NO
+ * se elimina del árbol. Se usa para la sección AUDITORIA y cualquier otra
+ * que el usuario pueda querer desactivar sin perder sus columnas.
  */
 export interface TableOptional {
 	kind: "optional";
 	name: string;
-	show: boolean;
+	/** Default `true`. */
+	active?: boolean;
 }
 
 export type TableRow = TableColumn | TableSection | TableSectionEnd | TableOptional;
@@ -108,6 +117,19 @@ export interface ParsedTable {
 	autoStack?: boolean;
 	/** Cuando `autoStack` está activo, controla la inyección de historial. Default `true`. */
 	autoStackHistorial?: boolean;
+	/**
+	 * Relaciones FK a nivel de tabla (FK compuestas, FKs con nombre de
+	 * constraint). Las FK simples de una sola columna pueden vivir también
+	 * en `TableColumn.foreignKey`; el emisor SQL las fusiona.
+	 */
+	relations?: Array<{
+		name?: string;
+		columns: string[];
+		refTable: string;
+		refColumns: string[];
+		onDelete?: "NO ACTION" | "CASCADE" | "SET NULL" | "SET DEFAULT";
+		onUpdate?: "NO ACTION" | "CASCADE" | "SET NULL" | "SET DEFAULT";
+	}>;
 	/** Filas de la tabla: columnas reales y secciones (`kind: "section"`). */
 	columns: TableRow[];
 	compositePrimaryKey: string[];
@@ -417,7 +439,7 @@ export function emitTable(t: ParsedTable): string {
 	for (const r of t.columns) {
 		if (isOptionalRow(r)) {
 			closeSection();
-			if (!r.show) { skipUntilSectionEnd = true; continue; }
+			if (r.active === false) { skipUntilSectionEnd = true; continue; }
 			skipUntilSectionEnd = false;
 			innerLines.push({ text: `    -- #region ${r.name}`, isStmt: false });
 			openSection = r.name;

@@ -28,10 +28,20 @@ export abstract class TSqlNodeBase extends TreeNode<TSqlNodeUX> {
 	 * consumidores). Cada `optional` lleva su propio `active` independiente.
 	 */
 	active: boolean = true;
+
+	/** Backref opcional al `stack`/contexto (table/store) — usado por `freeze()`. */
+	public stack: unknown = null;
+
+	/** Banderas UX adicionales no presentes en `TreeNode` base. */
+	public isLeaf: boolean = false;
+	public isLast: boolean = false;
+	public isPenultimate: boolean = false;
+	public nextLevelTitle: string = "";
+	public label: string = "";
 }
 
 export class TSqlNodeUX extends TSqlNodeBase {
-	constructor(data?: Partial<TSqlNodeBase> & { flatPath?: string; ireference?: string; kind?: SqlNodeKind }, stack?: any) {
+	constructor(data?: Partial<TSqlNodeBase> & { flatpath?: string; ireference?: string; kind?: SqlNodeKind }, stack?: any) {
 		super();
 		this.kind = "column";
 		if (data) Object.assign(this, data);
@@ -55,7 +65,7 @@ export class TSqlNodeUX extends TSqlNodeBase {
 		if (this.kind === "column" && this.ireference) {
 			const rows = (this.stack as { rows?: TSqlNodeUX[] } | undefined)?.rows;
 			if (!rows) return false;
-			const parent = rows.find((r) => r.flatPath === this.ireference);
+			const parent = rows.find((r) => r.flatpath === this.ireference);
 			if (!parent) return false;
 			if (parent.kind === "optional") return true;
 			return parent.kind === "section" && parent.rowName === "AUDITORIA";
@@ -97,7 +107,7 @@ export class TSqlNodeUX extends TSqlNodeBase {
 	}
 
 	toOptional(): TableOptional {
-		return { kind: "optional", name: this.rowName, show: !!this.active };
+		return { kind: "optional", name: this.rowName, active: !!this.active };
 	}
 
 	/**
@@ -112,7 +122,7 @@ export class TSqlNodeUX extends TSqlNodeBase {
 
 	static fromColumn(col: TableColumn, id: string, ireference: string, tableId: string, stack?: any): TSqlNodeUX {
 		return new TSqlNodeUX({
-			flatPath: id,
+			flatpath: id,
 			ireference,
 			tableId,
 			kind: "column",
@@ -127,7 +137,7 @@ export class TSqlNodeUX extends TSqlNodeBase {
 
 	static fromSection(sec: TableSection, id: string, tableId: string, stack?: any): TSqlNodeUX {
 		const node = new TSqlNodeUX({
-			flatPath: id,
+			flatpath: id,
 			ireference: "",
 			tableId,
 			kind: "section",
@@ -139,12 +149,12 @@ export class TSqlNodeUX extends TSqlNodeBase {
 
 	static fromOptional(opt: TableOptional, id: string, tableId: string, stack?: any): TSqlNodeUX {
 		const node = new TSqlNodeUX({
-			flatPath: id,
+			flatpath: id,
 			ireference: "",
 			tableId,
 			kind: "optional",
 			rowName: opt.name,
-			active: !!opt.show,
+			active: opt.active !== false,
 		}, stack);
 		// La sección opcional siempre va congelada (no se reordena ni se elimina).
 		node.actor = "freezer";

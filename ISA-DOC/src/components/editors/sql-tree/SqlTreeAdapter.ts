@@ -5,6 +5,7 @@ import type { ParsedTable } from "../../../lib/tableSchema";
 import { TSqlNodeUX } from "./TSqlNodeUX";
 import type { SqlNodeKind } from "./TSqlNodeUX";
 import { TSqlTableUX } from "./TSqlTableUX";
+import { RealtimeTreeAdapter } from "./RealtimeTreeAdapter";
 
 export type SqlTreeChangeFn = (next: ParsedTable) => void;
 
@@ -15,7 +16,7 @@ export type SqlTreeChangeFn = (next: ParsedTable) => void;
  */
 const auditHiddenByTableId: Map<string, boolean> = new Map();
 
-export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> {
+export class SqlTreeAdapter extends RealtimeTreeAdapter<TSqlTableUX, TSqlNodeUX> {
 	public onChange: SqlTreeChangeFn = () => undefined;
 
 	constructor(table: ParsedTable, onChange?: SqlTreeChangeFn) {
@@ -57,7 +58,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 	get istack(): string { return this.obj.tableId; }
 	get nistack(): string { return "tableId"; }
 	get nodeCtor(): new (...args: any[]) => TSqlNodeUX { return TSqlNodeUX; }
-	get nidNode(): string { return "flatPath"; }
+	get nidNode(): string { return "flatpath"; }
 	get ntitleNode(): string { return "rowName"; }
 
 	createNode(data: any): TSqlNodeUX {
@@ -207,11 +208,11 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		const rows = planes as TSqlNodeUX[];
 		const hiddenPrefixes: string[] = [];
 		for (const r of rows) {
-			if (r?.kind === "optional" && !r.active) hiddenPrefixes.push(String(r.flatPath || ""));
+			if (r?.kind === "optional" && !r.active) hiddenPrefixes.push(String(r.flatpath || ""));
 		}
 		if (hiddenPrefixes.length === 0) return super.buildTree(rows) as TSqlNodeUX[];
 		const visible = rows.filter((r) => {
-			const id = String(r?.flatPath || "");
+			const id = String(r?.flatpath || "");
 			for (const p of hiddenPrefixes) {
 				if (id === p || id.startsWith(p + ".")) return false;
 			}
@@ -247,7 +248,7 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 
 	/**
 	 * Reemplaza, para nodos `optional`, el botón de eliminar por un ojito que
-	 * alterna `show`. La sección opcional NO se elimina; solo se oculta/muestra.
+	 * alterna `active`. La sección opcional NO se elimina; solo se oculta/muestra.
 	 */
 	override getRowConfig(node: TSqlNodeUX): any {
 		const cfg = super.getRowConfig(node);
@@ -338,13 +339,13 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 			if (!enabled) return;
 			const tableId = this.obj.tableId;
 			const usedTopIdx = rows.reduce((max, r) => {
-				const idStr = String(r.flatPath || "");
+				const idStr = String(r.flatpath || "");
 				if (idStr.includes(".")) return max;
 				const n = parseInt(idStr, 10);
 				return Number.isFinite(n) && n > max ? n : max;
 			}, 0);
 			const sid = String(usedTopIdx + 1);
-			optional = TSqlNodeUX.fromOptional({ kind: "optional", name: "AUDITORIA", show: true }, sid, tableId, this.obj);
+			optional = TSqlNodeUX.fromOptional({ kind: "optional", name: "AUDITORIA", active: true }, sid, tableId, this.obj);
 			const cols = TSqlTableUX.defaultAuditColumns().map((c, i) =>
 				TSqlNodeUX.fromColumn(c, `${sid}.${i + 1}`, sid, tableId, this.obj),
 			);
@@ -352,6 +353,21 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		} else {
 			optional.active = enabled;
 			optional.refreshUX();
+			// Si se activa una AUDITORIA existente pero sin columnas hijas,
+			// rellenar con el conjunto por defecto. Esto cubre tablas donde la
+			// sección quedó vacía (parseada o tras eliminar todas sus columnas).
+			if (enabled) {
+				const auditId = optional.flatpath;
+				const hasChildren = rows.some((r) => r.kind === "column" && r.ireference === auditId);
+				if (!hasChildren) {
+					const tableId = this.obj.tableId;
+					const cols = TSqlTableUX.defaultAuditColumns().map((c, i) =>
+						TSqlNodeUX.fromColumn(c, `${auditId}.${i + 1}`, auditId, tableId, this.obj),
+					);
+					const optIdx = rows.indexOf(optional);
+					this.obj.rows = [...rows.slice(0, optIdx + 1), ...cols, ...rows.slice(optIdx + 1)];
+				}
+			}
 		}
 		auditHiddenByTableId.set(this.obj.tableId, !enabled);
 		this.onrefresh();
@@ -368,14 +384,14 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		const rows = this.obj.rows.slice();
 		const audit = rows.find((r) => r.kind === "optional" && r.rowName === "AUDITORIA");
 		if (!audit) return;
-		const auditId = audit.flatPath;
+		const auditId = audit.flatpath;
 		const presentNames = new Set(
 			rows.filter((r) => r.kind === "column" && r.ireference === auditId).map((r) => String(r.rowName).toUpperCase()),
 		);
 		const tableId = this.obj.tableId;
 		const existingChildIdxs = rows
 			.filter((r) => r.kind === "column" && r.ireference === auditId)
-			.map((r) => parseInt(String(r.flatPath).split(".").pop() || "0", 10))
+			.map((r) => parseInt(String(r.flatpath).split(".").pop() || "0", 10))
 			.filter((n) => Number.isFinite(n));
 		let nextIdx = existingChildIdxs.length ? Math.max(...existingChildIdxs) : 0;
 		const toAdd: TSqlNodeUX[] = [];

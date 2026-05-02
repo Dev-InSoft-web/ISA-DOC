@@ -1,39 +1,46 @@
 {
-  "version": 3,
+  "version": 4,
   "kind": "columns-tree",
-  "tableRef": "PERMISOS",
-  "tableMeta": {
-    "originalName": "PERMISOS",
-    "hasIfNotExists": true
+  "tableref": "PERMISOS",
+  "tablemeta": {
+    "originalname": "PERMISOS",
+    "hasifnotexists": true
   },
-  "root": {
-    "id": "",
-    "kind": "root",
-    "children": [
+  "nodes": [
+    {
+      "flatpath": "1",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "2",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "3",
+      "kind": "optional",
+      "name": "AUDITORIA"
+    }
+  ],
+  "entities": {
+    "COLUMN": [
       {
-        "id": "1",
-        "kind": "col",
-        "obj": {
-          "name": "IPERMISO",
-          "type": "VARCHAR(255)",
-          "primaryKey": true
-        }
+        "icolumn": "1",
+        "flatpath": "1",
+        "name": "IPERMISO",
+        "type": "VARCHAR(255)",
+        "primarykey": true,
+        "kind": "col"
       },
       {
-        "id": "2",
-        "kind": "col",
-        "obj": {
-          "name": "NPERMISO",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
+        "icolumn": "2",
+        "flatpath": "2",
+        "name": "NPERMISO",
+        "type": "VARCHAR(255)",
+        "primarykey": false,
+        "kind": "col"
       }
-    ]
-  },
-  "doc": {
-    "description": "Catalogo global de permisos del sistema (sin prefijo).",
-    "rules": [
-      "Vive bare bajo root: cualquier modulo lo referencia."
     ]
   }
 }

@@ -1,9 +1,9 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "CURSOS_PREREQUISITOS",
+  "tableref": "HISTORIALPLANESTUDIO",
   "tablemeta": {
-    "originalname": "CURSOS_PREREQUISITOS",
+    "originalname": "HISTORIALPLANESTUDIO",
     "hasifnotexists": true
   },
   "nodes": [
@@ -24,8 +24,8 @@
     },
     {
       "flatpath": "4",
-      "kind": "optional",
-      "name": "AUDITORIA"
+      "ireference": "COLUMN",
+      "kind": "col"
     }
   ],
   "entities": {
@@ -33,15 +33,15 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "ICURSO",
-        "type": "VARCHAR(255)",
-        "primarykey": false,
+        "name": "IHISTORIALPLANESTUDIO",
+        "type": "BIGINT",
+        "primarykey": true,
         "kind": "col"
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "ICURSOREQUERIDO",
+        "name": "IPLANESTUDIO",
         "type": "VARCHAR(255)",
         "primarykey": false,
         "kind": "col"
@@ -49,8 +49,16 @@
       {
         "icolumn": "3",
         "flatpath": "3",
-        "name": "IPLANESTUDIO",
+        "name": "CAMPO",
         "type": "VARCHAR(255)",
+        "primarykey": false,
+        "kind": "col"
+      },
+      {
+        "icolumn": "4",
+        "flatpath": "4",
+        "name": "VALOR",
+        "type": "TEXT",
         "primarykey": false,
         "kind": "col"
       }

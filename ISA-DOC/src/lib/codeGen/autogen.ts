@@ -90,14 +90,15 @@ function buildResource(id: string, t: ParsedTable, idByTable: Map<string, string
 }
 
 function columnToField(c: TableColumn, t: ParsedTable, idByTable: Map<string, string>): FieldDef {
-	const propName = c.name.toLowerCase();
+	const rawName = String(c.name ?? "").trim();
+	const propName = rawName.toLowerCase();
 	const type = sqlTypeToFieldType(c.type);
-	const fk = detectFkTarget(c.name, t.name, idByTable);
+	const fk = rawName ? detectFkTarget(rawName, t.name, idByTable) : undefined;
 	const field: FieldDef = {
 		name: propName,
-		column: c.name === propName.toUpperCase() ? undefined : c.name,
+		column: rawName === propName.toUpperCase() ? undefined : rawName,
 		type,
-		caption: prettyCaption(c.name),
+		caption: prettyCaption(rawName),
 		visible: true,
 		required: c.nullable === "NOT NULL" && !c.primaryKey,
 	};
@@ -191,8 +192,9 @@ function prettyCaption(col: string): string {
 	return lower[0].toUpperCase() + lower.slice(1);
 }
 
-function sqlTypeToFieldType(sqlType: string): FieldType {
-	const t = sqlType.toUpperCase();
+function sqlTypeToFieldType(sqlType: string | undefined | null): FieldType {
+	const t = String(sqlType ?? "").toUpperCase();
+	if (!t) return "string";
 	if (/BIT|BOOL/.test(t)) return "bool";
 	if (/INT|NUMERIC|DECIMAL|FLOAT|REAL|MONEY/.test(t)) return "number";
 	if (/DATE|TIME/.test(t)) return "date";
