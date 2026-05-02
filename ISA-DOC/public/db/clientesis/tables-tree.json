@@ -72,11 +72,6 @@
       "kind": "table"
     },
     {
-      "flatpath": "1.13",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
       "flatpath": "2",
       "ireference": "TABLE",
       "kind": "table"
@@ -93,72 +88,66 @@
       {
         "itable": "1.2",
         "flatpath": "1.2",
-        "tableref": "PLANES_ESTUDIO",
-        "rowname": "PLANES_ESTUDIO"
-      },
-      {
-        "itable": "1.3",
-        "flatpath": "1.3",
-        "tableref": "TEMAS",
-        "rowname": "TEMAS"
-      },
-      {
-        "itable": "1.4",
-        "flatpath": "1.4",
-        "tableref": "CURSOS",
-        "rowname": "CURSOS"
-      },
-      {
-        "itable": "1.5",
-        "flatpath": "1.5",
-        "tableref": "CURSOS_DE_PLANES_ESTUDIO",
-        "rowname": "CURSOS_DE_PLANES_ESTUDIO"
-      },
-      {
-        "itable": "1.6",
-        "flatpath": "1.6",
-        "tableref": "CURSOS_PREREQUISITOS",
-        "rowname": "CURSOS_PREREQUISITOS"
-      },
-      {
-        "itable": "1.7",
-        "flatpath": "1.7",
         "tableref": "ATRIBUTOS_X_DRIVERS",
         "rowname": "ATRIBUTOS_X_DRIVERS"
       },
       {
-        "itable": "1.8",
-        "flatpath": "1.8",
-        "tableref": "SEGURIDADES_CURSOS",
-        "rowname": "SEGURIDADES_CURSOS"
+        "itable": "1.3",
+        "flatpath": "1.3",
+        "tableref": "PLANES_ESTUDIO",
+        "rowname": "PLANES_ESTUDIO"
       },
       {
-        "itable": "1.9",
-        "flatpath": "1.9",
-        "tableref": "PLANES_CURSOS",
-        "rowname": "PLANES_CURSOS"
+        "itable": "1.4",
+        "flatpath": "1.4",
+        "tableref": "CURSOS_DE_PLANES_ESTUDIO",
+        "rowname": "CURSOS_DE_PLANES_ESTUDIO"
       },
       {
-        "itable": "1.10",
-        "flatpath": "1.10",
+        "itable": "1.5",
+        "flatpath": "1.5",
         "tableref": "ATRIBUTOS_PLANES",
         "rowname": "ATRIBUTOS_PLANES"
       },
       {
-        "itable": "1.11",
-        "flatpath": "1.11",
+        "itable": "1.6",
+        "flatpath": "1.6",
+        "tableref": "PLANES_CURSOS",
+        "rowname": "PLANES_CURSOS"
+      },
+      {
+        "itable": "1.7",
+        "flatpath": "1.7",
+        "tableref": "TEMAS",
+        "rowname": "TEMAS"
+      },
+      {
+        "itable": "1.8",
+        "flatpath": "1.8",
+        "tableref": "CURSOS",
+        "rowname": "CURSOS"
+      },
+      {
+        "itable": "1.9",
+        "flatpath": "1.9",
+        "tableref": "CURSOS_PREREQUISITOS",
+        "rowname": "CURSOS_PREREQUISITOS"
+      },
+      {
+        "itable": "1.10",
+        "flatpath": "1.10",
         "tableref": "ESTRUCTURAS_CURSOS",
         "rowname": "ESTRUCTURAS_CURSOS"
       },
       {
-        "itable": "1.12",
-        "flatpath": "1.12",
-        "tableref": "HISTORIALPLANESTUDIO",
-        "rowname": "HISTORIALPLANESTUDIO"
+        "itable": "1.11",
+        "flatpath": "1.11",
+        "tableref": "SEGURIDADES_CURSOS",
+        "rowname": "SEGURIDADES_CURSOS"
       },
       {
-        "itable": "1.13",
-        "flatpath": "1.13",
+        "itable": "1.12",
+        "flatpath": "1.12",
         "tableref": "HISTORIALCURSO",
         "rowname": "HISTORIALCURSO"
       },

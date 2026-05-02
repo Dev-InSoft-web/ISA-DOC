@@ -19,7 +19,12 @@ async function ensureDir(): Promise<void> {
 
 async function readState(): Promise<StateDoc> {
 	try {
-		const raw = await readFile(STATE_FILE, "utf8");
+		let raw = await readFile(STATE_FILE, "utf8");
+		// Defensa contra BOM UTF-8 (EF BB BF) que algunos editores / shells
+		// (PowerShell 5 `Set-Content -Encoding UTF8`) anteponen y rompen
+		// `JSON.parse`. Lo strippeamos antes de parsear.
+		if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
+		if (!raw.trim()) return {};
 		const parsed = JSON.parse(raw) as unknown;
 		if (parsed && typeof parsed === "object") return parsed as StateDoc;
 		return {};

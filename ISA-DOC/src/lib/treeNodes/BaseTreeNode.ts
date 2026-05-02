@@ -8,6 +8,50 @@ import type {
 import type { NodeRoleVector } from "../../components/_comps/TreeView/_treeAdapter/_defgen/00-tree-data.ts";
 
 /**
+ * Evento de cambio emitido por cualquier nodo cuando muta una propiedad
+ * suceptible de re-render: una clave de `obj`, su `flatPath` o `active`.
+ * El bus es global para que la capa de presentación pueda agendar saves /
+ * broadcasts cross-tab sin acoplarse al sitio exacto donde se hizo la
+ * mutación.
+ */
+export interface NodeChangeEvent {
+	node: BaseTreeNode<any>;
+	/** Origen lógico: `"obj"` para una clave de `obj`, o el nombre del campo del nodo (`"flatPath"`, `"active"`). */
+	source: "obj" | "flatPath" | "active";
+	/** Clave concreta dentro de `obj` cuando `source === "obj"`. */
+	key?: string;
+	value: unknown;
+	prev: unknown;
+}
+
+const nodeChangeListeners = new Set<(e: NodeChangeEvent) => void>();
+let nodeChangeMuted = 0;
+
+/** Suscribirse a TODA mutación de cualquier `BaseTreeNode`. Devuelve unsubscribe. */
+export function onNodeChange(cb: (e: NodeChangeEvent) => void): () => void {
+	nodeChangeListeners.add(cb);
+	return () => { nodeChangeListeners.delete(cb); };
+}
+
+/**
+ * Ejecuta `fn` con todas las emisiones de cambio silenciadas. Útil para
+ * fases de carga / hidratación en las que las mutaciones son “réplicas”
+ * de un estado server-side y no deben re-disparar saves.
+ */
+export function withNodeChangesMuted<T>(fn: () => T): T {
+	nodeChangeMuted++;
+	try { return fn(); }
+	finally { nodeChangeMuted--; }
+}
+
+function emitNodeChange(e: NodeChangeEvent): void {
+	if (nodeChangeMuted > 0) return;
+	for (const l of nodeChangeListeners) {
+		try { l(e); } catch { /* noop: el bus nunca debe romper la mutación */ }
+	}
+}
+
+/**
  * Clase abstracta común a todos los nodos del árbol persistido.
  *
  * Implementa el subconjunto estructural del contrato `INode<T>` que vive en
@@ -32,8 +76,16 @@ import type { NodeRoleVector } from "../../components/_comps/TreeView/_treeAdapt
  */
 export abstract class BaseTreeNode<TObj extends object = Record<string, unknown>> {
 	public abstract readonly kind: NodeKind;
+	/** Backing store de `flatPath` (expuesto vía getter/setter para emitir cambios). */
+	private _flatPath: string = "";
 	/** Ruta plana jerárquica ("", "1", "1.2", …). Alias estable: `id`. */
-	public flatPath: string = "";
+	public get flatPath(): string { return this._flatPath; }
+	public set flatPath(v: string) {
+		if (this._flatPath === v) return;
+		const prev = this._flatPath;
+		this._flatPath = v;
+		emitNodeChange({ node: this, source: "flatPath", value: v, prev });
+	}
 	public obj: TObj;
 	public doc?: PersistedNodeDocJSON;
 	public wardenAction?: PersistedWardenRefJSON;
@@ -46,7 +98,14 @@ export abstract class BaseTreeNode<TObj extends object = Record<string, unknown>
 	 * ignorar este nodo y su subárbol. NO es una eliminación: la fila se
 	 * conserva en el árbol y en JSON. Default `true`.
 	 */
-	public active: boolean = true;
+	private _active: boolean = true;
+	public get active(): boolean { return this._active; }
+	public set active(v: boolean) {
+		if (this._active === v) return;
+		const prev = this._active;
+		this._active = v;
+		emitNodeChange({ node: this, source: "active", value: v, prev });
+	}
 
 	/**
 	 * Vector de rol actoral. Cada slot es opcional; si está `undefined` el
@@ -56,9 +115,35 @@ export abstract class BaseTreeNode<TObj extends object = Record<string, unknown>
 	public roleVector: NodeRoleVector = {};
 
 	constructor(obj: Partial<TObj> = {}, roleVector: NodeRoleVector = {}) {
-		this.obj = { ...(obj as TObj) };
+		this.obj = this.wrapObj({ ...(obj as TObj) });
 		this.roleVector = { ...roleVector };
 		this.normalize();
+	}
+
+	/**
+	 * Envuelve `obj` en un `Proxy` que emite `NodeChangeEvent` ante cada
+	 * mutación de propiedad (set/delete). Idempotente: si los valores no
+	 * cambian no emite. Las normalizaciones idempotentes desde `normalize`
+	 * tampoco generan eventos espurios.
+	 */
+	private wrapObj(raw: TObj): TObj {
+		const self = this;
+		return new Proxy(raw, {
+			set(target: any, prop, value): boolean {
+				const prev = target[prop];
+				if (prev === value) return true;
+				target[prop] = value;
+				emitNodeChange({ node: self, source: "obj", key: String(prop), value, prev });
+				return true;
+			},
+			deleteProperty(target: any, prop): boolean {
+				if (!(prop in target)) return true;
+				const prev = target[prop];
+				delete target[prop];
+				emitNodeChange({ node: self, source: "obj", key: String(prop), value: undefined, prev });
+				return true;
+			},
+		}) as TObj;
 	}
 
 	/* ────────── Compatibilidad con el contrato `INode<T>` ────────── */
@@ -153,7 +238,13 @@ export abstract class BaseTreeNode<TObj extends object = Record<string, unknown>
 		const proto = Object.getPrototypeOf(this);
 		const c = Object.create(proto) as this;
 		Object.assign(c, this);
-		c.obj = { ...this.obj };
+		// `Object.assign` copia los enumerables pero NO ejecuta los setters
+		// definidos en el prototipo de `BaseTreeNode` (flatPath/active). Re-
+		// asignamos a través de los backing stores privados para evitar emitir
+		// cambios espurios y luego re-envolvemos `obj` en un Proxy nuevo.
+		(c as any)._flatPath = this._flatPath;
+		(c as any)._active = this._active;
+		c.obj = c.wrapObj({ ...(this.obj as object) } as TObj);
 		c.children = [];
 		c.parent = null;
 		return c;

@@ -96,7 +96,83 @@ export function tableColumns(t: ParsedTable): TableColumn[] {
 	return t.columns.filter(isColumnRow);
 }
 
+/**
+ * Personalizaciones de generación de código persistidas EN LA ENTIDAD (no
+ * en archivos override). Se "queman" sobre la tabla al crearla y se editan
+ * desde los formularios de Modelo/Server/Cliente/Azure. Los snippets se
+ * generan en runtime a partir de estas personalizaciones (no se persisten).
+ */
+export interface ResourceCustomization {
+	/** Alias del recurso (ej: "Curso"). Sembrado al crear; editable. */
+	resourceId?: string;
+	className?: string;
+	tableConst?: string;
+	module?: string;
+	singularApi?: string;
+	pluralApi?: string;
+	pluralCaption?: string;
+	singularCaption?: string;
+	isysRecurso?: string;
+	parentBaseClass?: string;
+	clientBaseClass?: string;
+	uiBaseKind?: "CRUD" | "LIST";
+	omitOps?: string[];
+	exposeInFn?: boolean;
+	orderBy?: string;
+	relations?: ResourceRelationDef[];
+	customHooks?: ResourceCustomHookDef[];
+	helpers?: ResourceHelperDef[];
+	/** Override por columna: caption/visible/required/defaultValue/fk. */
+	fieldOverrides?: Record<string, ResourceFieldOverride>;
+	/** Ruta de archivo de producción al que apunta cada snippet. Sólo informativo. */
+	targetFiles?: Partial<Record<"modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn", string>>;
+}
+
+export interface ResourceFieldOverride {
+	caption?: string;
+	visible?: boolean;
+	required?: boolean;
+	defaultValue?: string;
+	fk?: string;
+	enumName?: string;
+}
+
+export interface ResourceRelationDef {
+	alias: string;
+	kind: "1-1" | "1-N";
+	target: string;
+	versus: Array<{ sub: string; parent: string }>;
+	equals: Array<{ col: string; value: string; type: "bool" | "number" | "string" }>;
+	insertEffect?: "syncDetails" | "ignore";
+	customWhere?: string;
+}
+
+export interface ResourceCustomHookDef {
+	name: string;
+	signature: string;
+	clientPath?: string;
+	clientMethod?: "GET" | "POST" | "PUT" | "DELETE";
+	clientFnName?: string;
+	notes?: string;
+}
+
+export interface ResourceHelperDef {
+	name: string;
+	kind: "get" | "fn";
+	returnType?: string;
+	body: string;
+	params?: string;
+}
+
 export interface ParsedTable {
+	/**
+	 * Identificador estable e inmutable de la tabla, análogo a una PK SQL.
+	 * No depende del `name` ni de `originalName`: si el usuario renombra la
+	 * tabla, el `id` permanece igual y todas las referencias persistidas
+	 * (dominios, etc.) lo conservan. Se asigna al crear la tabla y se
+	 * preserva al serializar/deserializar `/api/tables`.
+	 */
+	id: string;
 	/** Nombre del fragmento padre (para categoría: principales/pivote/historial). */
 	fragmentId: string;
 	fragmentName: string;
@@ -137,11 +213,25 @@ export interface ParsedTable {
 	extraStatements: string[];
 	/** Sufijo posterior al `);` (constraints, opciones). Normalmente vacío. */
 	trailing: string;
+	/**
+	 * Personalizaciones de generación de código persistidas en la entidad.
+	 * Si está ausente, los generadores usan defaults inferidos de `name`/columnas.
+	 */
+	customization?: ResourceCustomization;
 }
 
 /** Identificador SQL efectivo: cadena heredada + nombre persistido. */
 export function effectiveTableName(t: Pick<ParsedTable, "name" | "effectivePrefix">): string {
 	return (t.effectivePrefix ?? "") + t.name;
+}
+
+/**
+ * Genera un identificador estable nuevo para una `ParsedTable`. Se usa al
+ * parsear desde SQL o cuando una persistencia legacy (sin `id`) se carga.
+ */
+export function newTableId(): string {
+	const rand = Math.random().toString(36).slice(2, 8);
+	return `tbl_${Date.now().toString(36)}_${rand}`;
 }
 
 const COMMENT_RE = /^\s*--\s?(.*)$/;
@@ -293,6 +383,7 @@ export function parseTableFragment(fragmentId: string, fragmentName: string, bod
 		const parsedRows = parseInnerWithSections(inner);
 
 		tables.push({
+			id: newTableId(),
 			fragmentId,
 			fragmentName,
 			comment,

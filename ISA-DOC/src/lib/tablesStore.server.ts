@@ -2,7 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFile, writeFile, access, mkdir, readdir, unlink, rename } from "node:fs/promises";
 import { sqlFilePath, parseSql } from "./sqlFragments.ts";
-import { parseTableFragment, type ParsedTable, type TableRow } from "./tableSchema.ts";
+import { parseTableFragment, newTableId, type ParsedTable, type TableRow } from "./tableSchema.ts";
 import {
 	TREE_STORAGE_VERSION,
 	type PersistedColumnsTree,
@@ -149,13 +149,21 @@ async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<Par
 				// El obj de nodos estructurales (p.ej. `optional`) no lleva `kind`
 				// inline (lo guarda el NodeRow). Lo propagamos al obj para que
 				// los discriminadores `isOptionalRow`/`isSectionRow` resuelvan.
-				const merged = { ...base, kind: c.kind } as unknown as TableRow;
+				// `active` vive a nivel de nodo en el JSON persistido; lo
+				// reflejamos en la fila para que los emisores/snippets puedan
+				// gating por estado activo de la sección (p.ej. AUDITORIA).
+				const merged = {
+					...base,
+					kind: c.kind,
+					...(c.active === false ? { active: false } : {}),
+				} as unknown as TableRow;
 				return merged;
 			})
 			.filter((c) => !!c);
 		out.push({
 			fragmentId: "",
 			fragmentName: "",
+			id: (table.obj as { tableId?: string }).tableId ?? newTableId(),
 			comment: runtimeTableComment(effectivePrefix || undefined, table.tableRef),
 			hasIfNotExists: meta.hasIfNotExists ?? true,
 			originalName: meta.originalName ?? table.tableRef,
@@ -170,6 +178,9 @@ async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<Par
 			compositePrimaryKey: [],
 			extraStatements: [],
 			trailing: "",
+			customization: table.obj.customization && typeof table.obj.customization === "object"
+				? (JSON.parse(JSON.stringify(table.obj.customization)) as ParsedTable["customization"])
+				: undefined,
 		} as ParsedTable);
 		if (table.historialEnabled) {
 			const colNodes = (cols.root.children ?? [])
@@ -181,6 +192,7 @@ async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<Par
 				out.push({
 					fragmentId: "",
 					fragmentName: "",
+					id: newTableId(),
 					comment: runtimeTableComment(effectivePrefix || undefined, histName),
 					hasIfNotExists: true,
 					originalName: histName,
@@ -266,6 +278,7 @@ interface PreservedTreeDocs {
 	prefixWarden: Map<string, { idaction: string }>;
 	stackByTableRef: Map<string, true>;
 	historialDisabledByTableRef: Map<string, true>;
+	customizationByTableRef: Map<string, Record<string, unknown>>;
 }
 
 function collectPreservedDocs(tree: PersistedTablesTree | null): PreservedTreeDocs {
@@ -277,6 +290,7 @@ function collectPreservedDocs(tree: PersistedTablesTree | null): PreservedTreeDo
 		prefixWarden: new Map(),
 		stackByTableRef: new Map(),
 		historialDisabledByTableRef: new Map(),
+		customizationByTableRef: new Map(),
 	};
 	if (!tree) return acc;
 	const dfs = (n: PersistedNode): void => {
@@ -290,9 +304,12 @@ function collectPreservedDocs(tree: PersistedTablesTree | null): PreservedTreeDo
 			const key = String(n.obj?.tableRef ?? n.obj?.rowName ?? "");
 			if (key) {
 				if (n.doc) acc.tableDocByRef.set(key, n.doc);
-				const nObj = n.obj as { autoStack?: boolean; stack?: boolean; autoStackHistorial?: boolean } | undefined;
+				const nObj = n.obj as { autoStack?: boolean; stack?: boolean; autoStackHistorial?: boolean; customization?: Record<string, unknown> } | undefined;
 				if (nObj?.autoStack === true || nObj?.stack === true) acc.stackByTableRef.set(key, true);
 				if (nObj?.autoStackHistorial === false) acc.historialDisabledByTableRef.set(key, true);
+				if (nObj?.customization && typeof nObj.customization === "object" && Object.keys(nObj.customization).length) {
+					acc.customizationByTableRef.set(key, nObj.customization);
+				}
 			}
 		}
 		for (const ch of n.children ?? []) dfs(ch);
@@ -372,12 +389,17 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 			for (const t of byPrefix.get(pfx)!) {
 				const isMaster = stackMasters.has(t.name.toUpperCase()) || t.autoStack === true;
 				const histDisabled = isMaster && (t.autoStackHistorial === false || preserved.historialDisabledByTableRef.has(t.name));
+				const customization = (t.customization && Object.keys(t.customization).length
+					? (t.customization as Record<string, unknown>)
+					: preserved.customizationByTableRef.get(t.name));
 				const tn = new TableNode({
 					tableRef: t.name,
 					rowName: t.name,
+					tableId: t.id || undefined,
 					autoStack: isMaster ? true : undefined,
 					autoStackHistorial: histDisabled ? false : undefined,
 					relations: Array.isArray(t.relations) && t.relations.length ? t.relations.map((r) => ({ ...r })) : undefined,
+					customization: customization ? { ...customization } : undefined,
 				});
 				const tdoc = preserved.tableDocByRef.get(t.name);
 				if (tdoc) tn.doc = { ...tdoc };
@@ -393,12 +415,17 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 		for (const t of byPrefix.get(pfx)!) {
 			const isMaster = stackMasters.has(t.name.toUpperCase()) || t.autoStack === true;
 			const histDisabled = isMaster && (t.autoStackHistorial === false || preserved.historialDisabledByTableRef.has(t.name));
+			const customization = (t.customization && Object.keys(t.customization).length
+				? (t.customization as Record<string, unknown>)
+				: preserved.customizationByTableRef.get(t.name));
 			const tn = new TableNode({
 				tableRef: t.name,
 				rowName: t.name,
+				tableId: t.id || undefined,
 				autoStack: isMaster ? true : undefined,
 				autoStackHistorial: histDisabled ? false : undefined,
 				relations: Array.isArray(t.relations) && t.relations.length ? t.relations.map((r) => ({ ...r })) : undefined,
+				customization: customization ? { ...customization } : undefined,
 			});
 			const tdoc = preserved.tableDocByRef.get(t.name);
 			if (tdoc) tn.doc = { ...tdoc };
@@ -424,6 +451,10 @@ function buildColumnsTree(t: ParsedTable, preserved: PreservedColumnsDocs): Pers
 	if (preserved.rootDoc) root.doc = { ...preserved.rootDoc };
 	for (const col of t.columns) {
 		const cn = new ColumnNode(col as never);
+		// Reflejar el flag `active: false` (p.ej. AUDITORIA desactivada) al
+		// nivel de nodo, que es donde lo persiste BaseTreeNode.toJSON().
+		const active = (col as { active?: boolean }).active;
+		if (active === false) cn.active = false;
 		const cdoc = cn.obj.name ? preserved.colDocByName.get(cn.obj.name) : undefined;
 		if (cdoc) cn.doc = { ...cdoc };
 		root.addChild(cn);

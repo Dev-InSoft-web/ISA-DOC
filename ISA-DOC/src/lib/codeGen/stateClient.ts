@@ -3,6 +3,7 @@
 // memoria para no romper la API de los `load*`/`save*` originales.
 
 const ENDPOINT = "/api/codegen/state";
+const STATE_BROADCAST_CHANNEL = "isa-doc:state";
 
 interface StateDoc {
 	domains?: unknown;
@@ -19,6 +20,47 @@ let pendingPatch: StateDoc = {};
 let pendingScheduled = false;
 let inflightSave: Promise<void> | null = null;
 let beforeUnloadBound = false;
+
+let stateChannel: BroadcastChannel | null = null;
+let stateTabId = "";
+const stateListeners = new Set<() => void>();
+
+function ensureStateChannel(): void {
+	if (typeof window === "undefined") return;
+	if (typeof BroadcastChannel === "undefined") return;
+	if (stateChannel) return;
+	stateTabId = `tab_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+	stateChannel = new BroadcastChannel(STATE_BROADCAST_CHANNEL);
+	stateChannel.onmessage = (ev) => {
+		const msg = ev.data as { kind?: string; senderId?: string } | null;
+		if (!msg || msg.kind !== "state-updated") return;
+		if (msg.senderId === stateTabId) return;
+		// Invalidar caché local: la fuente de verdad cambió en otra pestaña.
+		loaded = false;
+		for (const k of Object.keys(cache) as (keyof StateDoc)[]) delete cache[k];
+		for (const l of stateListeners) {
+			try { l(); } catch { /* noop */ }
+		}
+	};
+}
+
+function broadcastStateUpdated(): void {
+	if (!stateChannel) return;
+	try {
+		stateChannel.postMessage({ kind: "state-updated", senderId: stateTabId, ts: Date.now() });
+	} catch { /* noop */ }
+}
+
+/**
+ * Suscribirse a cambios de estado provenientes de otras pestañas. El callback
+ * se invoca DESPUÉS de invalidar la caché local; el consumidor debe hacer
+ * `await reloadStateFromServer()` y rehidratar lo que dependa del estado.
+ */
+export function onStateChanged(cb: () => void): () => void {
+	ensureStateChannel();
+	stateListeners.add(cb);
+	return () => { stateListeners.delete(cb); };
+}
 
 /** Borra del navegador cualquier rastro de almacenamiento previo. */
 export function purgeBrowserStorage(): void {
@@ -39,6 +81,7 @@ export function purgeBrowserStorage(): void {
 function bindUnload(): void {
 	if (beforeUnloadBound || typeof window === "undefined") return;
 	beforeUnloadBound = true;
+	ensureStateChannel();
 	const handler = (): void => {
 		if (Object.keys(pendingPatch).length === 0) return;
 		try {
@@ -81,6 +124,19 @@ export async function loadStateFromServer(): Promise<void> {
 	return inflightLoad;
 }
 
+/**
+ * Forzar recarga del estado server-side, descartando la caché en memoria.
+ * Útil cuando otra pestaña modificó `_state.json` y se debe refrescar la
+ * vista local (ver listener de BroadcastChannel `tables-updated`).
+ */
+export async function reloadStateFromServer(): Promise<void> {
+	if (typeof window === "undefined") return;
+	if (inflightLoad) await inflightLoad;
+	loaded = false;
+	for (const k of Object.keys(cache) as (keyof StateDoc)[]) delete cache[k];
+	await loadStateFromServer();
+}
+
 export function getCached<K extends keyof StateDoc>(key: K): StateDoc[K] | undefined {
 	return cache[key];
 }
@@ -119,6 +175,7 @@ async function flushPending(): Promise<void> {
 				body: JSON.stringify({ patch }),
 				keepalive: true,
 			});
+			broadcastStateUpdated();
 		} catch {
 			pendingPatch = { ...patch, ...pendingPatch };
 			scheduleFlush();

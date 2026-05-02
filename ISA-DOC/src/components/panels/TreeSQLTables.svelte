@@ -5,21 +5,14 @@
 		emitDropTable,
 		emitTable,
 		effectiveTableName,
+		newTableId,
 		type ParsedTable,
 	} from "../../lib/tableSchema.ts";
 	import { generateResourcesFromTables } from "../../lib/codeGen/autogen.ts";
 	import { genAzureFn, genClient, genModelo, genServer } from "../../lib/codeGen/generators.ts";
-	import {
-		computeOverride,
-		deleteOverride,
-		fetchAllOverrides,
-		mergeWithOverride,
-		saveOverride,
-		type OverrideMap,
-	} from "../../lib/codeGen/storage.ts";
 	import { findDomainOf, getSlaves, isMaster as isMasterFn, type DomainsMap } from "../../lib/codeGen/domains.ts";
-	import { getCached, setCached, loadStateFromServer } from "../../lib/codeGen/stateClient.ts";
-	import type { ResourceConfig } from "../../lib/codeGen/types.ts";
+	import { getCached, setCached, loadStateFromServer, reloadStateFromServer, onStateChanged } from "../../lib/codeGen/stateClient.ts";
+	import type { ResourceConfig, FieldDef } from "../../lib/codeGen/types.ts";
 	import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
 	import CodeViewer from "../viewers/CodeViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
@@ -53,10 +46,16 @@
 	let sqlPreviewExecuting: boolean = false;
 	let sqlPreviewUnlocked: boolean = false;
 
-	let overrides: OverrideMap = {};
+	let overrides: Record<string, never> = {};
+	void overrides;
 	let activeCodeTab: "sql" | "model" | "server" | "client" | "azure" = "sql";
 	let targetFilePaths: string[] = [];
 	let domains: DomainsMap = {};
+
+	/** Canal de sincronización entre pestañas del navegador para `/api/tables`. */
+	const TABLES_BROADCAST_CHANNEL = "isa-doc:tables";
+	let tablesChannel: BroadcastChannel | null = null;
+	let tabId: string = "";
 
 	const DEFAULT_TARGET_PATHS: string[] = [
 		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/01.Modelo.ts",
@@ -132,7 +131,7 @@
 	const adapterAny = adapter as any;
 
 	function tableKey(t: ParsedTable): string {
-		return `${t.fragmentId}::${t.originalName}`;
+		return t.id;
 	}
 
 	function isHistorialDerived(t: ParsedTable): boolean {
@@ -174,34 +173,92 @@
 	})();
 
 	$: autogen = generateResourcesFromTables(tables);
+	$: tablesPlain = tables.map((t) => ({ ...t, customization: undefined }));
+	$: inferredAutogen = generateResourcesFromTables(tablesPlain);
 	$: resByTable = new Map(autogen.resources.map((r) => [r.tableName.toUpperCase(), r]));
-	$: inferredById = Object.fromEntries(autogen.resources.map((r) => [r.id, r])) as Record<string, ResourceConfig>;
-	$: mergedResources = autogen.resources.map((inf) => mergeWithOverride(inf, overrides[inf.id] ?? {}));
+	$: inferredById = Object.fromEntries(inferredAutogen.resources.map((r) => [r.id, r])) as Record<string, ResourceConfig>;
+	$: mergedResources = autogen.resources;
 	$: mergedById = Object.fromEntries(mergedResources.map((r) => [r.id, r])) as Record<string, ResourceConfig>;
 	$: mergedByTable = new Map(mergedResources.map((r) => [r.tableName.toUpperCase(), r]));
 
-	$: selectedIsMaster = !!(selected && isMasterFn(domains, selected.table.name));
-	$: selectedSlaves = selected ? getSlaves(domains, selected.table.name) : [];
-	$: selectedDomain = selected ? findDomainOf(domains, selected.table.name) : undefined;
+	$: selectedIsMaster = !!(selected && isMasterFn(domains, selected.table.id));
+	$: selectedSlaves = selected ? getSlaves(domains, selected.table.id) : [];
+	$: selectedSlaveNames = (selectedSlaves ?? []).map((sid) => tables.find((tt) => tt.id === sid)).filter((tt): tt is ParsedTable => !!tt).map((tt) => effectiveTableName(tt));
+	$: selectedDomain = selected ? findDomainOf(domains, selected.table.id) : undefined;
 	$: if (activeCodeTab === "azure" && !selectedIsMaster) activeCodeTab = "sql";
 
 	async function handleCfgChange(id: string): Promise<void> {
 		const inferred = inferredById[id];
 		const merged = mergedById[id];
 		if (!inferred || !merged) return;
-		try {
-			const ov = computeOverride(merged, inferred);
-			if (Object.keys(ov).length === 0) {
-				await deleteOverride(id);
-				const { [id]: _omit, ...rest } = overrides;
-				overrides = rest;
-			} else {
-				await saveOverride(id, ov);
-				overrides = { ...overrides, [id]: ov };
-			}
-		} catch (err) {
-			toastError(`Error guardando personalización: ${err instanceof Error ? err.message : String(err)}`);
+		const t = tables.find((tt) => tt.name.toUpperCase() === merged.tableName.toUpperCase());
+		if (!t) return;
+		const idx = tables.indexOf(t);
+		const cust = buildCustomizationFromMerged(merged, inferred);
+		tables[idx] = { ...t, customization: Object.keys(cust).length ? cust : undefined };
+		tables = tables;
+		adapter.setTables(tables);
+		dirty = true;
+		void save(true);
+	}
+
+	function buildCustomizationFromMerged(
+		merged: ResourceConfig,
+		inferred: ResourceConfig,
+	): NonNullable<ParsedTable["customization"]> {
+		const out: NonNullable<ParsedTable["customization"]> = {};
+		const eq = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
+		if (merged.id !== inferred.id) out.resourceId = merged.id;
+		if (merged.className !== inferred.className) out.className = merged.className;
+		if ((merged.tableConst ?? undefined) !== (inferred.tableConst ?? undefined)) out.tableConst = merged.tableConst;
+		if (merged.module !== inferred.module) out.module = merged.module;
+		if (merged.singularApi !== inferred.singularApi) out.singularApi = merged.singularApi;
+		if (merged.pluralApi !== inferred.pluralApi) out.pluralApi = merged.pluralApi;
+		if (merged.singularCaption !== inferred.singularCaption) out.singularCaption = merged.singularCaption;
+		if (merged.pluralCaption !== inferred.pluralCaption) out.pluralCaption = merged.pluralCaption;
+		if (merged.isysRecurso !== inferred.isysRecurso) out.isysRecurso = merged.isysRecurso;
+		if (merged.parentBaseClass !== inferred.parentBaseClass) out.parentBaseClass = merged.parentBaseClass;
+		if (merged.clientBaseClass !== inferred.clientBaseClass) out.clientBaseClass = merged.clientBaseClass;
+		if (merged.uiBaseKind !== inferred.uiBaseKind) out.uiBaseKind = merged.uiBaseKind;
+		if (!eq(merged.omitOps ?? [], inferred.omitOps ?? [])) out.omitOps = merged.omitOps ? [...merged.omitOps] : undefined;
+		if ((merged.exposeInFn ?? undefined) !== (inferred.exposeInFn ?? undefined)) out.exposeInFn = merged.exposeInFn;
+		if ((merged.orderBy ?? undefined) !== (inferred.orderBy ?? undefined)) out.orderBy = merged.orderBy;
+		if (!eq(merged.relations ?? [], inferred.relations ?? [])) {
+			out.relations = (merged.relations ?? []).map((r) => ({
+				alias: r.alias,
+				kind: r.kind,
+				target: r.target,
+				versus: r.versus.map((v) => ({ ...v })),
+				equals: r.equals.map((e) => ({ ...e })),
+				insertEffect: r.insertEffect,
+				customWhere: r.customWhere,
+			}));
 		}
+		if (!eq(merged.customHooks ?? [], inferred.customHooks ?? [])) {
+			out.customHooks = (merged.customHooks ?? []).map((h) => ({ ...h }));
+		}
+		if (!eq(merged.helpers ?? [], inferred.helpers ?? [])) {
+			out.helpers = (merged.helpers ?? []).map((h) => ({ ...h }));
+		}
+		if (merged.targetFiles && Object.keys(merged.targetFiles).length) {
+			out.targetFiles = { ...merged.targetFiles };
+		}
+		const fOv: Record<string, NonNullable<NonNullable<ParsedTable["customization"]>["fieldOverrides"]>[string]> = {};
+		const infByName = new Map<string, FieldDef>(inferred.fields.map((f) => [f.name, f]));
+		for (const f of merged.fields) {
+			const inf = infByName.get(f.name);
+			if (!inf) continue;
+			const ov: NonNullable<NonNullable<ParsedTable["customization"]>["fieldOverrides"]>[string] = {};
+			if ((f.caption ?? undefined) !== (inf.caption ?? undefined)) ov.caption = f.caption;
+			if ((f.visible ?? undefined) !== (inf.visible ?? undefined)) ov.visible = f.visible;
+			if ((f.required ?? undefined) !== (inf.required ?? undefined)) ov.required = f.required;
+			if ((f.defaultValue ?? undefined) !== (inf.defaultValue ?? undefined)) ov.defaultValue = f.defaultValue;
+			if ((f.fk ?? undefined) !== (inf.fk ?? undefined)) ov.fk = f.fk;
+			if ((f.enumName ?? undefined) !== (inf.enumName ?? undefined)) ov.enumName = f.enumName;
+			if (Object.keys(ov).length) fOv[f.name] = ov;
+		}
+		if (Object.keys(fOv).length) out.fieldOverrides = fOv;
+		return out;
 	}
 
 	function onTableChange(idx: number, t: ParsedTable): void {
@@ -219,7 +276,15 @@
 			const r = await fetch("/api/tables");
 			const data = (await r.json()) as { ok?: boolean; tables?: ParsedTable[]; error?: string };
 			if (!r.ok || !data.ok || !data.tables) throw new Error(data.error ?? `HTTP ${r.status}`);
+			// Backfill de id estable: tablas legacy persistidas antes de la migración
+			// llegan sin `id`. Asignamos uno aquí y marcamos `dirty` para round-tripear
+			// los ids al server en el siguiente save.
+			let backfilled = false;
+			for (const t of data.tables) {
+				if (!t.id) { t.id = newTableId(); backfilled = true; }
+			}
 			setTables(data.tables);
+			if (backfilled) { dirty = true; void save(true); }
 		} catch (err) {
 			toastError(`Error cargando tablas: ${err instanceof Error ? err.message : String(err)}`);
 		} finally {
@@ -241,11 +306,20 @@
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			if (!silent) toastSuccess(`Tablas guardadas (${tables.length})`);
 			dirty = false;
+			broadcastTablesUpdated();
 		} catch (err) {
 			toastError(`Error guardando: ${err instanceof Error ? err.message : String(err)}`);
 		} finally {
 			saving = false;
 		}
+	}
+
+	/** Notifica a otras pestañas que `/api/tables` cambió para que recarguen. */
+	function broadcastTablesUpdated(): void {
+		if (!tablesChannel) return;
+		try {
+			tablesChannel.postMessage({ kind: "tables-updated", senderId: tabId, ts: Date.now() });
+		} catch { /* noop */ }
 	}
 
 	async function generateSql(): Promise<void> {
@@ -301,11 +375,10 @@
 	}
 
 	async function loadOverrides(): Promise<void> {
-		try {
-			overrides = await fetchAllOverrides();
-		} catch (err) {
-			toastError(`Error cargando overrides: ${err instanceof Error ? err.message : String(err)}`);
-		}
+		// Override layer eliminado: las personalizaciones viven en `t.customization`
+		// y se persisten al guardar `tables` en `/api/tables`. Función conservada
+		// como no-op por compatibilidad con call sites existentes.
+		return;
 	}
 
 	onMount(() => {
@@ -317,6 +390,34 @@
 			void loadProdTs();
 			void loadOverrides();
 		})();
+		// Sincronización entre pestañas: cuando otra pestaña guarda `/api/tables`,
+		// recargamos el estado para reflejar los cambios remotos. No recargamos
+		// si hay edición sucia local pendiente para evitar perder cambios no
+		// confirmados — el flush por `pagehide` cubrirá el caso de cierre.
+		if (typeof window !== "undefined" && typeof BroadcastChannel !== "undefined") {
+			tabId = `tab_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+			tablesChannel = new BroadcastChannel(TABLES_BROADCAST_CHANNEL);
+			tablesChannel.onmessage = (ev) => {
+				const msg = ev.data as { kind?: string; senderId?: string } | null;
+				if (!msg || msg.kind !== "tables-updated") return;
+				if (msg.senderId === tabId) return;
+				if (dirty || saving) return;
+				void load();
+				void loadOverrides();
+				void reloadStateFromServer().then(() => {
+					domains = adapter.reloadFromCache();
+				});
+			};
+		}
+		// Sincronización del estado de codegen (`_state.json`): cuando otra
+		// pestaña reordena dominios/prefijos o cambia targetFilePaths, recibimos
+		// la notificación y rehidratamos los dominios sin tocar las tablas.
+		const offStateChanged = onStateChanged(() => {
+			if (dirty || saving) return;
+			void reloadStateFromServer().then(() => {
+				domains = adapter.reloadFromCache();
+			});
+		});
 		// Asegura persistencia del save de tablas ante refresh/cierre repentino.
 		// Si hubo cambios pendientes (`dirty`), envía un `sendBeacon` con los
 		// `tables` actuales como respaldo; el backend trata PUT igual que POST
@@ -346,6 +447,11 @@
 				window.removeEventListener("pagehide", flushTablesOnUnload);
 				window.removeEventListener("beforeunload", flushTablesOnUnload);
 			}
+			if (tablesChannel) {
+				try { tablesChannel.close(); } catch { /* noop */ }
+				tablesChannel = null;
+			}
+			try { offStateChanged(); } catch { /* noop */ }
 		};
 	});
 
@@ -517,7 +623,7 @@
 								inferred={cfg}
 								{targetFilePaths}
 								section={((activeCodeTab as string) === "sql" ? "model" : activeCodeTab) as "model" | "server" | "client" | "azure"}
-								slaves={selectedSlaves}
+								slaves={selectedSlaveNames}
 								domainName={selectedDomain?.name ?? ""}
 								on:change={() => handleCfgChange(mergedCfg.id)}
 							/>
@@ -545,7 +651,7 @@
 					{@const modelCode = cfg ? genModelo(cfg, mergedResources) : ""}
 					{@const serverCode = cfg ? genServer(cfg, mergedResources) : ""}
 					{@const clientCode = cfg ? genClient(cfg) : ""}
-					{@const slavesCfgs = (selectedSlaves ?? []).map((sn) => mergedByTable.get(sn.toUpperCase())).filter((x): x is ResourceConfig => !!x)}
+					{@const slavesCfgs = (selectedSlaves ?? []).map((sid) => tables.find((tt) => tt.id === sid)).filter((tt): tt is ParsedTable => !!tt).map((tt) => mergedByTable.get(tt.name.toUpperCase())).filter((x): x is ResourceConfig => !!x)}
 					{@const azureCode = (cfg && selectedIsMaster) ? genAzureFn([cfg, ...slavesCfgs]) : ""}
 					<Card>
 						<div class="code-tabs-bar">

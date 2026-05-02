@@ -11,129 +11,228 @@
     "ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/Cursos.ts",
     "ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/PlanDeEstudio.ts"
   ],
-  "domains": {
-    "dom_capac_drivers": {
-      "id": "dom_capac_drivers",
-      "name": "Drivers",
-      "masterTable": "CAPAC_DRIVERS",
-      "members": [
-        "CAPAC_DRIVERS",
-        "CAPAC_ATRIBUTOS_X_DRIVERS"
-      ],
-      "parentPrefix": "CAPAC_",
-      "childrenOrder": [
-        {
-          "kind": "table",
-          "key": "CAPAC_DRIVERS"
-        },
-        {
-          "kind": "table",
-          "key": "CAPAC_ATRIBUTOS_X_DRIVERS"
-        }
-      ]
-    },
-    "dom_capac_planes": {
-      "id": "dom_capac_planes",
-      "name": "Planes Estudio",
-      "masterTable": "CAPAC_PLANES_ESTUDIO",
-      "members": [
-        "CAPAC_PLANES_ESTUDIO",
-        "CAPAC_CURSOS_DE_PLANES_ESTUDIO",
-        "CAPAC_ATRIBUTOS_PLANES",
-        "CAPAC_PLANES_CURSOS"
-      ],
-      "parentPrefix": "CAPAC_",
-      "childrenOrder": [
-        {
-          "kind": "table",
-          "key": "CAPAC_PLANES_ESTUDIO"
-        },
-        {
-          "kind": "table",
-          "key": "CAPAC_CURSOS_DE_PLANES_ESTUDIO"
-        },
-        {
-          "kind": "table",
-          "key": "CAPAC_ATRIBUTOS_PLANES"
-        },
-        {
-          "kind": "table",
-          "key": "CAPAC_PLANES_CURSOS"
-        }
-      ]
-    },
-    "dom_capac_cursos": {
-      "id": "dom_capac_cursos",
-      "name": "Cursos",
-      "masterTable": "CAPAC_CURSOS",
-      "members": [
-        "CAPAC_CURSOS",
-        "CAPAC_CURSOS_PREREQUISITOS",
-        "CAPAC_ESTRUCTURAS_CURSOS",
-        "CAPAC_SEGURIDADES_CURSOS"
-      ],
-      "parentPrefix": "CAPAC_",
-      "childrenOrder": [
-        {
-          "kind": "table",
-          "key": "CAPAC_CURSOS"
-        },
-        {
-          "kind": "table",
-          "key": "CAPAC_CURSOS_PREREQUISITOS"
-        },
-        {
-          "kind": "table",
-          "key": "CAPAC_ESTRUCTURAS_CURSOS"
-        },
-        {
-          "kind": "table",
-          "key": "CAPAC_SEGURIDADES_CURSOS"
-        }
-      ]
-    }
-  },
-  "prefixOrders": {
-    "CAPAC_": [
-      {
-        "kind": "domain",
-        "key": "dom_capac_drivers"
-      },
-      {
-        "kind": "domain",
-        "key": "dom_capac_planes"
-      },
-      {
-        "kind": "table",
-        "key": "CAPAC_TEMAS"
-      },
-      {
-        "kind": "domain",
-        "key": "dom_capac_cursos"
-      },
-      {
-        "kind": "table",
-        "key": "CAPAC_HISTORIALPLANESESTUDIO"
-      },
-      {
-        "kind": "table",
-        "key": "CAPAC_HISTORIALCURSOS"
-      }
+  "childPrefixes": {
+    "": [
+      "CAPAC_"
     ]
   },
+  "domains": {},
   "topOrder": [
+    {
+      "kind": "table",
+      "key": "tbl_moot5cmu_vglrpd"
+    },
+    {
+      "kind": "table",
+      "key": "tbl_moot60on_nsia4z"
+    },
+    {
+      "kind": "table",
+      "key": "tbl_mootfi78_6zkdo6"
+    },
     {
       "kind": "prefix",
       "key": "CAPAC_"
     },
     {
       "kind": "table",
-      "key": "PERMISOS"
+      "key": "tbl_mootklpb_f3n4tt"
     }
   ],
-  "childPrefixes": {
-    "": [
-      "CAPAC_"
+  "prefixOrders": {
+    "CAPAC_": [
+      {
+        "kind": "table",
+        "key": "tbl_moot5cmm_vqzmdl"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cmn_4g5f34"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cmn_r5m1ni"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cmo_j4yc4p"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cmq_wqfsom"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cmr_d7kzf5"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cmr_03xs3k"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cms_79qqvs"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cms_c1b6v2"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cmt_8w7biq"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cmt_22by9w"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot5cmu_encufw"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60ok_2kpmof"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60oj_eye6u2"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60ok_kir18h"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60ok_yvsdbf"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60ol_9ln0nz"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60ol_ivbyuf"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60om_y7g19z"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60om_kj1xvh"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60om_odzqy6"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60om_jiqaxz"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60on_bsvvk3"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_moot60on_75sg7b"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi72_3rnzz5"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi71_559scc"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi72_njq4nx"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi72_za0dgr"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi74_gohlzh"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi75_j4si8a"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi75_2c3zqe"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi76_ih2pzc"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi77_snwbtn"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi77_2npzzn"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi78_ptee7s"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootfi78_9uj3sz"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklp7_b35sic"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklp6_t7rnvw"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklp7_yvhqhc"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklp8_21sytq"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklp9_f4wkm8"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklp9_v2ycjt"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklp9_efcy4i"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklp9_cj9g77"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklpa_ocmswx"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklpa_azcdtw"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklpa_c0h6wn"
+      },
+      {
+        "kind": "table",
+        "key": "tbl_mootklpa_w5jlm5"
+      }
     ]
   }
 }

@@ -1,5 +1,5 @@
 export * from "./types.ts";
-export { BaseTreeNode } from "./BaseTreeNode.ts";
+export { BaseTreeNode, onNodeChange, withNodeChangesMuted, type NodeChangeEvent } from "./BaseTreeNode.ts";
 export { RootNode } from "./RootNode.ts";
 export { PrefixNode, type PrefixObj } from "./PrefixNode.ts";
 export { DomainNode, type DomainObj } from "./DomainNode.ts";

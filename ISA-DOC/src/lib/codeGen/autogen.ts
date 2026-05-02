@@ -36,7 +36,7 @@ export function generateResourcesFromTables(tables: ParsedTable[]): AutogenResul
 	const idByTable = new Map<string, string>();
 
 	for (const t of tables) {
-		const id = tableToResourceId(t.name);
+		const id = t.customization?.resourceId ?? tableToResourceId(t.name);
 		idByTable.set(t.name.toUpperCase(), id);
 	}
 
@@ -49,6 +49,8 @@ export function generateResourcesFromTables(tables: ParsedTable[]): AutogenResul
 	for (const cfg of resources) {
 		const t = tables.find((x) => x.name.toUpperCase() === cfg.tableName.toUpperCase());
 		if (!t) continue;
+		// Si la entidad ya trae relaciones de recurso persistidas, respetarlas.
+		if (Array.isArray(t.customization?.relations) && t.customization!.relations!.length) continue;
 		cfg.relations = inferRelations(cfg, t, tables, idByTable);
 	}
 
@@ -67,25 +69,58 @@ function buildResource(id: string, t: ParsedTable, idByTable: Map<string, string
 	}
 	if (!fields.some((f) => f.pk)) warnings.push(`Tabla ${t.name}: sin PK detectada.`);
 
-	const idLower = id.toLowerCase();
+	const cust = t.customization ?? {};
+	// Aplicar overrides de campos persistidos en la entidad.
+	if (cust.fieldOverrides) {
+		for (const f of fields) {
+			const ov = cust.fieldOverrides[f.name] ?? cust.fieldOverrides[(f.column ?? f.name).toUpperCase()];
+			if (!ov) continue;
+			if (ov.caption !== undefined) f.caption = ov.caption;
+			if (ov.visible !== undefined) f.visible = ov.visible;
+			if (ov.required !== undefined) f.required = ov.required;
+			if (ov.defaultValue !== undefined) f.defaultValue = ov.defaultValue;
+			if (ov.fk !== undefined) f.fk = ov.fk;
+			if (ov.enumName !== undefined) {
+				f.enumName = ov.enumName;
+				f.type = "enum";
+			}
+		}
+	}
+
+	const idLower = (cust.resourceId ?? id).toLowerCase();
+	const resourceId = cust.resourceId ?? id;
 	return {
-		id,
-		className: "T" + id,
+		id: resourceId,
+		className: cust.className ?? "T" + resourceId,
 		tableName: t.name,
-		tableConst: undefined,
-		module: "ContaPymeU/Capacitacion",
-		singularApi: idLower,
-		pluralApi: pluralize(idLower),
-		singularCaption: id,
-		pluralCaption: pluralize(id),
-		isysRecurso: pluralize(id),
-		parentBaseClass: "TCapacitacionServer",
-		clientBaseClass: "TCapacitacionBaseClient",
-		uiBaseKind: "CRUD",
+		tableConst: cust.tableConst,
+		module: cust.module ?? "ContaPymeU/Capacitacion",
+		singularApi: cust.singularApi ?? idLower,
+		pluralApi: cust.pluralApi ?? pluralize(idLower),
+		singularCaption: cust.singularCaption ?? resourceId,
+		pluralCaption: cust.pluralCaption ?? pluralize(resourceId),
+		isysRecurso: cust.isysRecurso ?? pluralize(resourceId),
+		parentBaseClass: cust.parentBaseClass ?? "TCapacitacionServer",
+		clientBaseClass: cust.clientBaseClass ?? "TCapacitacionBaseClient",
+		uiBaseKind: cust.uiBaseKind ?? "CRUD",
 		fields,
-		relations: [],
-		customHooks: [],
-		omitOps: ["Verificar", "Duplicar", "Recodificar", "Consolidar"],
+		relations: Array.isArray(cust.relations) && cust.relations.length
+			? cust.relations.map((r) => ({
+				alias: r.alias,
+				kind: r.kind,
+				target: r.target,
+				versus: r.versus.map((v) => ({ ...v })),
+				equals: r.equals.map((e) => ({ ...e })),
+				insertEffect: r.insertEffect,
+				customWhere: r.customWhere,
+			}))
+			: [],
+		customHooks: Array.isArray(cust.customHooks) ? cust.customHooks.map((h) => ({ ...h })) : [],
+		helpers: Array.isArray(cust.helpers) ? cust.helpers.map((h) => ({ ...h })) : undefined,
+		omitOps: Array.isArray(cust.omitOps) ? [...cust.omitOps] : ["Verificar", "Duplicar", "Recodificar", "Consolidar"],
+		exposeInFn: cust.exposeInFn,
+		orderBy: cust.orderBy,
+		targetFiles: cust.targetFiles ? { ...cust.targetFiles } : undefined,
 	};
 }
 

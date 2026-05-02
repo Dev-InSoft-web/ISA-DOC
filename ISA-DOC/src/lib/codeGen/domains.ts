@@ -1,18 +1,25 @@
 // Persistencia de dominios y master/slave en el servidor (vía stateClient).
 // Los dominios agrupan una tabla "master" + N tablas "slave".
 // La tabla master debe ser la primera del dominio.
+//
+// Modelo de identidad: `members[]` y `masterTable` guardan IDs ESTABLES
+// (`ParsedTable.id`), no nombres. El nombre puede cambiar; el id es inmutable.
+// Las entradas de `childrenOrder` con `kind:"table"` también guardan id.
 
 import { getCached, setCached } from "./stateClient.ts";
 
 export interface DomainChildRef {
 	kind: "table" | "domain";
+	/** Para `kind:"table"`: id estable de la tabla. Para `kind:"domain"`: id del dominio. */
 	key: string;
 }
 
 export interface DomainDef {
 	id: string;
 	name: string;
+	/** Id estable de la tabla master (no el nombre). Cadena vacía si aún no se asignó. */
 	masterTable: string;
+	/** Ids estables de las tablas miembro (no nombres). */
 	members: string[];
 	parentId?: string;
 	/** Si el dominio cuelga directamente de un agrupador de prefijo, su clave. */
@@ -40,28 +47,33 @@ export function saveDomains(m: DomainsMap): void {
 	safeWrite(m);
 }
 
-export function findDomainOf(domains: DomainsMap, tableName: string): DomainDef | undefined {
-	const upper = tableName.toUpperCase();
+export function findDomainOf(domains: DomainsMap, tableId: string): DomainDef | undefined {
+	if (!tableId) return undefined;
 	for (const d of Object.values(domains)) {
-		if (d.members.some((t) => t.toUpperCase() === upper)) return d;
+		if (d.members.includes(tableId)) return d;
 	}
 	return undefined;
 }
 
-export function isMaster(domains: DomainsMap, tableName: string): boolean {
-	const d = findDomainOf(domains, tableName);
-	return !!d && d.masterTable.toUpperCase() === tableName.toUpperCase();
+export function isMaster(domains: DomainsMap, tableId: string): boolean {
+	if (!tableId) return false;
+	const d = findDomainOf(domains, tableId);
+	return !!d && d.masterTable === tableId;
 }
 
-export function getSlaves(domains: DomainsMap, masterTableName: string): string[] {
-	const upper = masterTableName.toUpperCase();
+/** Devuelve los ids de las tablas slave del dominio cuyo master es `masterTableId`. */
+export function getSlaveIds(domains: DomainsMap, masterTableId: string): string[] {
+	if (!masterTableId) return [];
 	for (const d of Object.values(domains)) {
-		if (d.masterTable.toUpperCase() === upper) {
-			return d.members.filter((m) => m.toUpperCase() !== upper);
+		if (d.masterTable === masterTableId) {
+			return d.members.filter((m) => m !== masterTableId);
 		}
 	}
 	return [];
 }
+
+/** Compat: alias deprecado, equivalente a `getSlaveIds`. */
+export const getSlaves = getSlaveIds;
 
 /**
  * Deriva el nombre visible de un dominio a partir del nombre de la tabla master.
@@ -78,20 +90,27 @@ export function deriveDomainName(masterTable: string, parentPrefix?: string): st
 	return tokens.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
 }
 
-/** Marca `tableName` como master: si no tiene dominio, crea uno nuevo con esa tabla como master. */
-export function markAsMaster(domains: DomainsMap, tableName: string, domainName?: string, parentPrefix?: string): DomainsMap {
+/** Marca `tableId` como master: si no tiene dominio, crea uno nuevo con esa tabla como master. */
+export function markAsMaster(
+	domains: DomainsMap,
+	tableId: string,
+	tableName: string,
+	domainName?: string,
+	parentPrefix?: string,
+): DomainsMap {
+	if (!tableId) return domains;
 	const next: DomainsMap = { ...domains };
-	const existing = findDomainOf(next, tableName);
+	const existing = findDomainOf(next, tableId);
 	if (existing) {
-		const masterChanged = existing.masterTable.toUpperCase() !== tableName.toUpperCase();
+		const masterChanged = existing.masterTable !== tableId;
 		const nextName = masterChanged
 			? deriveDomainName(tableName, parentPrefix ?? existing.parentPrefix)
 			: existing.name;
 		next[existing.id] = {
 			...existing,
 			name: nextName,
-			masterTable: tableName,
-			members: [tableName, ...existing.members.filter((m) => m.toUpperCase() !== tableName.toUpperCase())],
+			masterTable: tableId,
+			members: [tableId, ...existing.members.filter((m) => m !== tableId)],
 		};
 		return next;
 	}
@@ -99,18 +118,18 @@ export function markAsMaster(domains: DomainsMap, tableName: string, domainName?
 	next[id] = {
 		id,
 		name: domainName ?? deriveDomainName(tableName, parentPrefix),
-		masterTable: tableName,
-		members: [tableName],
+		masterTable: tableId,
+		members: [tableId],
 		parentPrefix,
 	};
 	return next;
 }
 
-export function addToDomain(domains: DomainsMap, domainId: string, tableName: string): DomainsMap {
+export function addToDomain(domains: DomainsMap, domainId: string, tableId: string): DomainsMap {
 	const d = domains[domainId];
-	if (!d) return domains;
-	if (d.members.some((m) => m.toUpperCase() === tableName.toUpperCase())) return domains;
-	return { ...domains, [domainId]: { ...d, members: [...d.members, tableName] } };
+	if (!d || !tableId) return domains;
+	if (d.members.includes(tableId)) return domains;
+	return { ...domains, [domainId]: { ...d, members: [...d.members, tableId] } };
 }
 
 export function removeDomain(domains: DomainsMap, domainId: string): DomainsMap {
@@ -124,6 +143,84 @@ export function renameDomain(domains: DomainsMap, domainId: string, newName: str
 	const d = domains[domainId];
 	if (!d) return domains;
 	return { ...domains, [domainId]: { ...d, name: newName } };
+}
+
+/**
+ * Propaga el rename de una tabla a través de todos los dominios: actualiza
+ * `members` (case-insensitive) y `masterTable` cuando coincidan con `oldName`.
+ * Mantiene la posición del miembro renombrado en el array.
+ *
+ * @deprecated Las identidades de tabla en `domains` ahora son ids estables
+ * (`ParsedTable.id`), por lo que renombrar el `name` no requiere propagación.
+ * La función se conserva como no-op para callers heredados.
+ */
+export function renameTableMember(domains: DomainsMap, _oldName: string, _newName: string): DomainsMap {
+	return domains;
+}
+
+/**
+ * Migra `domains` y los \u00f3rdenes persistidos para que las referencias a
+ * tablas usen IDs estables en vez de nombres. Si una entrada coincide con
+ * un id actual de tabla, se conserva. Si coincide (case-insensitive) con
+ * un nombre (`effectiveTableName`, `name` u `originalName`), se sustituye
+ * por el id correspondiente. Las entradas que no resuelven se dejan tal
+ * cual (dato residual de otro fragmento o tabla no cargada).
+ */
+export function migrateDomainsAndOrdersToIds(input: {
+	domains: DomainsMap;
+	topOrder: TopLevelEntry[];
+	prefixOrders: PrefixOrderMap;
+	tables: ReadonlyArray<{ id: string; name: string; originalName: string; effectivePrefix?: string }>;
+}): { domains: DomainsMap; topOrder: TopLevelEntry[]; prefixOrders: PrefixOrderMap; changed: boolean } {
+	const idSet = new Set<string>();
+	const nameToId = new Map<string, string>();
+	for (const t of input.tables) {
+		if (!t.id) continue;
+		idSet.add(t.id);
+		const eff = (t.effectivePrefix ?? "") + t.name;
+		const aliases = [eff, t.name, t.originalName ?? t.name];
+		for (const a of aliases) {
+			const k = (a ?? "").toUpperCase();
+			if (!k) continue;
+			if (!nameToId.has(k)) nameToId.set(k, t.id);
+		}
+	}
+	const resolveTable = (key: string): string => {
+		if (!key) return key;
+		if (idSet.has(key)) return key;
+		const byName = nameToId.get(key.toUpperCase());
+		return byName ?? key;
+	};
+	let changed = false;
+	const nextDomains: DomainsMap = {};
+	for (const [id, d] of Object.entries(input.domains)) {
+		const newMembers = d.members.map(resolveTable);
+		const newMaster = resolveTable(d.masterTable || "");
+		const newOrder = d.childrenOrder?.map((e) =>
+			e.kind === "table" ? { kind: "table" as const, key: resolveTable(e.key) } : e,
+		);
+		if (
+			newMembers.some((m, i) => m !== d.members[i]) ||
+			newMaster !== d.masterTable ||
+			(newOrder && d.childrenOrder && newOrder.some((e, i) => e.key !== d.childrenOrder![i].key))
+		) {
+			changed = true;
+		}
+		nextDomains[id] = { ...d, members: newMembers, masterTable: newMaster, childrenOrder: newOrder };
+	}
+	const nextTopOrder = input.topOrder.map<TopLevelEntry>((e) =>
+		e.kind === "table" ? { kind: "table", key: resolveTable(e.key) } : e,
+	);
+	if (nextTopOrder.some((e, i) => e.key !== input.topOrder[i].key)) changed = true;
+	const nextPrefixOrders: PrefixOrderMap = {};
+	for (const [pk, arr] of Object.entries(input.prefixOrders)) {
+		const newArr = arr.map((e) =>
+			e.kind === "table" ? { kind: "table" as const, key: resolveTable(e.key) } : e,
+		);
+		if (newArr.some((e, i) => e.key !== arr[i].key)) changed = true;
+		nextPrefixOrders[pk] = newArr;
+	}
+	return { domains: nextDomains, topOrder: nextTopOrder, prefixOrders: nextPrefixOrders, changed };
 }
 
 export function createEmptyDomain(domains: DomainsMap, name: string, parentId?: string, parentPrefix?: string): DomainsMap {

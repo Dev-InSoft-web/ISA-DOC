@@ -32,6 +32,11 @@ export interface TableObj {
 	tableRef: string;
 	rowName: string;
 	/**
+	 * Identificador estable e inmutable de la tabla (PK lógica). Persistido
+	 * para que la ParsedTable conserve su `id` aunque el `tableRef` cambie.
+	 */
+	tableId?: string;
+	/**
 	 * Si `true`, la tabla es master de un dominio auto-stack: el motor inyecta
 	 * tablas/datos derivados por algoritmo (no editables a mano). Hoy el auto-stack
 	 * inyecta la tabla virtual `HISTORIAL<X>`.
@@ -51,6 +56,13 @@ export interface TableObj {
 	 * — el emisor SQL las fusiona al generar.
 	 */
 	relations?: TableRelation[];
+	/**
+	 * Personalizaciones de generación de código (className, isysRecurso,
+	 * singularApi/pluralApi, parentBaseClass, helpers, hooks, relaciones de
+	 * recurso, targetFiles, etc.) "quemadas" en la entidad. Persistidas
+	 * tal cual desde `tableSchema.ResourceCustomization`.
+	 */
+	customization?: Record<string, unknown>;
 }
 
 /**
@@ -65,9 +77,13 @@ export class TableNode extends BaseTreeNode<TableObj> {
 		super({
 			tableRef: obj.tableRef ?? obj.rowName ?? "",
 			rowName: obj.rowName ?? obj.tableRef ?? "",
+			tableId: obj.tableId,
 			autoStack: auto,
 			autoStackHistorial: obj.autoStackHistorial,
 			relations: Array.isArray(obj.relations) && obj.relations.length ? obj.relations.map((r) => ({ ...r })) : undefined,
+			customization: obj.customization && typeof obj.customization === "object"
+				? { ...obj.customization }
+				: undefined,
 		} as TableObj);
 	}
 
@@ -100,6 +116,7 @@ export class TableNode extends BaseTreeNode<TableObj> {
 			tableRef: this.obj.tableRef,
 			rowName: this.obj.rowName,
 		};
+		if (this.obj.tableId) out.tableId = this.obj.tableId;
 		if (this.obj.autoStack === true) {
 			out.autoStack = true;
 			if (this.obj.autoStackHistorial === false) out.autoStackHistorial = false;
@@ -113,6 +130,9 @@ export class TableNode extends BaseTreeNode<TableObj> {
 				...(r.onDelete ? { onDelete: r.onDelete } : {}),
 				...(r.onUpdate ? { onUpdate: r.onUpdate } : {}),
 			}));
+		}
+		if (this.obj.customization && typeof this.obj.customization === "object" && Object.keys(this.obj.customization).length) {
+			out.customization = { ...this.obj.customization };
 		}
 		return out;
 	}

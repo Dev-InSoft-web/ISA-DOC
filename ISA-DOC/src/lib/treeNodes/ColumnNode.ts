@@ -28,6 +28,12 @@ export interface ColumnObj {
 	extra: string;
 	/** Subtipo opcional usado por filas de seccion en el editor visual. */
 	kind?: "col" | "section" | "section_end" | "optional";
+	/**
+	 * Para filas con `kind: "optional"` (p.ej. AUDITORIA): `false` desactiva
+	 * el bloque (no se emite `-- #region` ni sus columnas). `undefined`/`true`
+	 * = activo. Default `true`.
+	 */
+	active?: boolean;
 	/** FK declarada a nivel de columna (FK simple, una sola columna). */
 	foreignKey?: ColumnForeignKey;
 }
@@ -49,6 +55,7 @@ export class ColumnNode extends BaseTreeNode<ColumnObj> {
 			primaryKey: !!obj.primaryKey,
 			extra: obj.extra ?? "",
 			kind: obj.kind,
+			...(obj.kind === "optional" && obj.active === false ? { active: false } : {}),
 			...(obj.foreignKey ? { foreignKey: { ...obj.foreignKey } } : {}),
 		} as ColumnObj);
 	}
