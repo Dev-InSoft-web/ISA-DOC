@@ -3,7 +3,7 @@
   "kind": "columns-tree",
   "tableRef": "ATRIBUTOS_X_DRIVERS",
   "tableMeta": {
-    "originalName": "HISTORIALPLANES_ESTUDIO",
+    "originalName": "ATRIBUTOS_X_DRIVERS",
     "hasIfNotExists": true
   },
   "root": {
@@ -24,8 +24,8 @@
         "id": "2",
         "kind": "col",
         "obj": {
-          "name": "IPLANESTUDIO",
-          "type": "VARCHAR(255)",
+          "name": "IHISTORIALCURSOS",
+          "type": "BIGINT",
           "primaryKey": false,
           "kind": "col"
         }

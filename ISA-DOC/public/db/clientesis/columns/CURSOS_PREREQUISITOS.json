@@ -3,7 +3,7 @@
   "kind": "columns-tree",
   "tableRef": "CURSOS_PREREQUISITOS",
   "tableMeta": {
-    "originalName": "ATRIBUTOS_X_DRIVERS",
+    "originalName": "CURSOS_PREREQUISITOS",
     "hasIfNotExists": true
   },
   "root": {
@@ -14,55 +14,80 @@
         "id": "1",
         "kind": "col",
         "obj": {
-          "name": "IDRIVER",
+          "name": "IHISTORIALPLANES_ESTUDIO",
           "type": "BIGINT",
-          "primaryKey": false
+          "primaryKey": true,
+          "kind": "col"
         }
       },
       {
         "id": "2",
         "kind": "col",
         "obj": {
-          "name": "IATRIBUTO",
-          "type": "BIGINT",
-          "primaryKey": false
+          "name": "IPLANESTUDIO",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
         }
       },
       {
         "id": "3",
         "kind": "col",
         "obj": {
-          "name": "QNIVEL",
-          "type": "TINYINT",
-          "primaryKey": false
+          "name": "CAMPO",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
         }
       },
       {
         "id": "4",
         "kind": "col",
         "obj": {
-          "name": "NATRIBUTO",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
+          "name": "VALOR",
+          "type": "TEXT",
+          "primaryKey": false,
+          "kind": "col"
         }
       },
       {
         "id": "5",
         "kind": "col",
         "obj": {
-          "name": "BREQUERIDO",
-          "type": "BIT",
-          "defaultValue": "0",
-          "primaryKey": false
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
         }
       },
       {
         "id": "6",
         "kind": "col",
         "obj": {
-          "name": "JCONFIG",
-          "type": "VARCHAR(MAX)",
-          "primaryKey": false
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "7",
+        "kind": "col",
+        "obj": {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "8",
+        "kind": "col",
+        "obj": {
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "primaryKey": false,
+          "kind": "col"
         }
       }
     ]

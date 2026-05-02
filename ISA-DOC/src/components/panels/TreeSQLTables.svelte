@@ -18,6 +18,7 @@
 		type OverrideMap,
 	} from "../../lib/codeGen/storage.ts";
 	import { findDomainOf, getSlaves, isMaster as isMasterFn, type DomainsMap } from "../../lib/codeGen/domains.ts";
+	import { getCached, setCached, loadStateFromServer } from "../../lib/codeGen/stateClient.ts";
 	import type { ResourceConfig } from "../../lib/codeGen/types.ts";
 	import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
 	import CodeViewer from "../viewers/CodeViewer.svelte";
@@ -57,7 +58,6 @@
 	let targetFilePaths: string[] = [];
 	let domains: DomainsMap = {};
 
-	const PATHS_LS_KEY = "isa-doc:codegen:targetFilePaths";
 	const DEFAULT_TARGET_PATHS: string[] = [
 		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/01.Modelo.ts",
 		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/02.Datos.ts",
@@ -72,18 +72,13 @@
 	];
 
 	function loadTargetFilePaths(): void {
-		try {
-			const raw = localStorage.getItem(PATHS_LS_KEY);
-			if (raw === null) {
-				targetFilePaths = [...DEFAULT_TARGET_PATHS];
-				localStorage.setItem(PATHS_LS_KEY, JSON.stringify(targetFilePaths));
-				return;
-			}
-			const arr = JSON.parse(raw);
-			targetFilePaths = Array.isArray(arr) ? arr.filter((s): s is string => typeof s === "string") : [];
-		} catch {
-			targetFilePaths = [];
+		const v = getCached("targetFilePaths");
+		if (Array.isArray(v) && v.every((s) => typeof s === "string")) {
+			targetFilePaths = v as string[];
+			return;
 		}
+		targetFilePaths = [...DEFAULT_TARGET_PATHS];
+		setCached("targetFilePaths", targetFilePaths);
 	}
 
 	function openTreeModal(): void { bshowTreeModal = true; }
@@ -234,6 +229,7 @@
 				method: "PUT",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ tables }),
+				keepalive: true,
 			});
 			const data = (await r.json()) as { ok?: boolean; error?: string };
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
@@ -307,10 +303,44 @@
 	}
 
 	onMount(() => {
-		loadTargetFilePaths();
-		void load();
-		void loadProdTs();
-		void loadOverrides();
+		void (async () => {
+			await loadStateFromServer();
+			loadTargetFilePaths();
+			domains = adapter.reloadFromCache();
+			void load();
+			void loadProdTs();
+			void loadOverrides();
+		})();
+		// Asegura persistencia del save de tablas ante refresh/cierre repentino.
+		// Si hubo cambios pendientes (`dirty`), envía un `sendBeacon` con los
+		// `tables` actuales como respaldo; el backend trata PUT igual que POST
+		// para este endpoint via la lectura del body JSON.
+		const flushTablesOnUnload = (): void => {
+			if (!dirty) return;
+			try {
+				const blob = new Blob([JSON.stringify({ tables })], { type: "application/json" });
+				if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+					navigator.sendBeacon("/api/tables", blob);
+					return;
+				}
+				void fetch("/api/tables", {
+					method: "PUT",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({ tables }),
+					keepalive: true,
+				});
+			} catch { /* noop */ }
+		};
+		if (typeof window !== "undefined") {
+			window.addEventListener("pagehide", flushTablesOnUnload);
+			window.addEventListener("beforeunload", flushTablesOnUnload);
+		}
+		return () => {
+			if (typeof window !== "undefined") {
+				window.removeEventListener("pagehide", flushTablesOnUnload);
+				window.removeEventListener("beforeunload", flushTablesOnUnload);
+			}
+		};
 	});
 
 	$: focusOnSelection(selectedKey);
@@ -371,17 +401,20 @@
 						<svelte:fragment slot="row" let:node>
 							{#if node.kind === "prefix"}
 								<span class="tree-row">
+									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="badge badge-prefix">Prefixer</span>
 									<span class="tree-row-name">{node.rowName}</span>
 									<span class="tree-row-meta">{node.colCount}</span>
 								</span>
 							{:else if node.kind === "domain"}
 								<span class="tree-row">
+									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="badge badge-domain">Domain</span>
 									<span class="tree-row-name">{node.rowName}</span>
 								</span>
 							{:else}
 								<span class="tree-row">
+									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="tree-row-name">{node.rowName}</span>
 									<span class="tree-row-meta">{node.colCount}</span>
 								</span>
@@ -740,6 +773,21 @@
 		border-radius: 0.2rem;
 		font-size: 0.75rem;
 		font-weight: bold;
+	}
+	.tree-row-index {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 1.5rem;
+		height: 1.1rem;
+		padding: 0 0.35rem;
+		border-radius: 0.6rem;
+		background: color-mix(in srgb, var(--is-text-neutral, #888) 18%, transparent);
+		color: var(--is-text-neutral, #666);
+		font-size: 0.7rem;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+		flex: 0 0 auto;
 	}
 	.badge-domain {
 		background: color-mix(in srgb, var(--is-warning) 25%, transparent);

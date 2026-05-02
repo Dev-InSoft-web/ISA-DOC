@@ -3,7 +3,7 @@
   "kind": "columns-tree",
   "tableRef": "TEMAS",
   "tableMeta": {
-    "originalName": "HISTORIALPLANES_ESTUDIO",
+    "originalName": "TEMAS",
     "hasIfNotExists": true
   },
   "root": {
@@ -14,7 +14,7 @@
         "id": "1",
         "kind": "col",
         "obj": {
-          "name": "IHISTORIALPLANES_ESTUDIO",
+          "name": "IDRIVER",
           "type": "BIGINT",
           "primaryKey": true,
           "kind": "col"
@@ -24,7 +24,7 @@
         "id": "2",
         "kind": "col",
         "obj": {
-          "name": "IPLANESTUDIO",
+          "name": "IAPPCRE",
           "type": "VARCHAR(255)",
           "primaryKey": false,
           "kind": "col"
@@ -34,8 +34,9 @@
         "id": "3",
         "kind": "col",
         "obj": {
-          "name": "CAMPO",
-          "type": "VARCHAR(255)",
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "defaultValue": "GETDATE()",
           "primaryKey": false,
           "kind": "col"
         }
@@ -44,8 +45,8 @@
         "id": "4",
         "kind": "col",
         "obj": {
-          "name": "VALOR",
-          "type": "TEXT",
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
           "primaryKey": false,
           "kind": "col"
         }
@@ -54,7 +55,7 @@
         "id": "5",
         "kind": "col",
         "obj": {
-          "name": "IUSUARIOCRE",
+          "name": "NDRIVER",
           "type": "VARCHAR(255)",
           "primaryKey": false,
           "kind": "col"
@@ -64,7 +65,7 @@
         "id": "6",
         "kind": "col",
         "obj": {
-          "name": "IAPPCRE",
+          "name": "IPCRE",
           "type": "VARCHAR(255)",
           "primaryKey": false,
           "kind": "col"
@@ -74,7 +75,7 @@
         "id": "7",
         "kind": "col",
         "obj": {
-          "name": "IPCRE",
+          "name": "IUSUARIOCRE",
           "type": "VARCHAR(255)",
           "primaryKey": false,
           "kind": "col"
@@ -84,8 +85,59 @@
         "id": "8",
         "kind": "col",
         "obj": {
-          "name": "FHCRE",
+          "name": "AUDITORIA",
+          "primaryKey": false,
+          "kind": "optional",
+          "show": true
+        }
+      },
+      {
+        "id": "9",
+        "kind": "col",
+        "obj": {
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "10",
+        "kind": "col",
+        "obj": {
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "11",
+        "kind": "col",
+        "obj": {
+          "name": "FHULT",
           "type": "DATETIME2",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "12",
+        "kind": "col",
+        "obj": {
+          "name": "DESCRIPCION",
+          "type": "TEXT",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "13",
+        "kind": "col",
+        "obj": {
+          "name": "QNIVELES",
+          "type": "TINYINT",
           "primaryKey": false,
           "kind": "col"
         }

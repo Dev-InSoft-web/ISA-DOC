@@ -3,7 +3,7 @@
   "kind": "columns-tree",
   "tableRef": "CURSOS",
   "tableMeta": {
-    "originalName": "HISTORIALPLANES_ESTUDIO",
+    "originalName": "CURSOS",
     "hasIfNotExists": true
   },
   "root": {

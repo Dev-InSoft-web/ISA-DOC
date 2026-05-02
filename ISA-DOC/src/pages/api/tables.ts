@@ -46,3 +46,7 @@ export const PUT: APIRoute = async ({ request }) => {
 		});
 	}
 };
+
+// `navigator.sendBeacon` solo emite POST; reusamos el handler de PUT como
+// fallback de persistencia ante refresh/cierre.
+export const POST: APIRoute = async (ctx) => PUT(ctx);

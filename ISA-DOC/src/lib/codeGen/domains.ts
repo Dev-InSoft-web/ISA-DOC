@@ -1,8 +1,8 @@
-// Persistencia de dominios y master/slave en localStorage.
+// Persistencia de dominios y master/slave en el servidor (vía stateClient).
 // Los dominios agrupan una tabla "master" + N tablas "slave".
 // La tabla master debe ser la primera del dominio.
 
-const KEY = "isa-doc:codegen:domains";
+import { getCached, setCached } from "./stateClient.ts";
 
 export interface DomainChildRef {
 	kind: "table" | "domain";
@@ -24,24 +24,12 @@ export interface DomainDef {
 export type DomainsMap = Record<string, DomainDef>;
 
 function safeRead(): DomainsMap {
-	try {
-		const raw = typeof localStorage !== "undefined" ? localStorage.getItem(KEY) : null;
-		if (!raw) return {};
-		const parsed = JSON.parse(raw) as unknown;
-		if (parsed && typeof parsed === "object") return parsed as DomainsMap;
-		return {};
-	} catch {
-		return {};
-	}
+	const v = getCached("domains");
+	return v && typeof v === "object" ? (v as DomainsMap) : {};
 }
 
 function safeWrite(m: DomainsMap): void {
-	try {
-		if (typeof localStorage === "undefined") return;
-		localStorage.setItem(KEY, JSON.stringify(m));
-	} catch {
-		/* noop */
-	}
+	setCached("domains", m);
 }
 
 export function loadDomains(): DomainsMap {
@@ -75,13 +63,33 @@ export function getSlaves(domains: DomainsMap, masterTableName: string): string[
 	return [];
 }
 
+/**
+ * Deriva el nombre visible de un dominio a partir del nombre de la tabla master.
+ * Quita el prefijo asociado, capitaliza cada token (separado por `_`) y los une
+ * con espacios. Ej: `tablePrefix="hcl_"`, `master="hcl_HISTORIAL_CURSOS"` -> `"Historial Cursos"`.
+ */
+export function deriveDomainName(masterTable: string, parentPrefix?: string): string {
+	const pref = parentPrefix ?? "";
+	const bare = pref && masterTable.toUpperCase().startsWith(pref.toUpperCase())
+		? masterTable.slice(pref.length)
+		: masterTable;
+	const tokens = bare.split(/[_\s]+/).filter(Boolean);
+	if (tokens.length === 0) return masterTable;
+	return tokens.map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+}
+
 /** Marca `tableName` como master: si no tiene dominio, crea uno nuevo con esa tabla como master. */
 export function markAsMaster(domains: DomainsMap, tableName: string, domainName?: string, parentPrefix?: string): DomainsMap {
 	const next: DomainsMap = { ...domains };
 	const existing = findDomainOf(next, tableName);
 	if (existing) {
+		const masterChanged = existing.masterTable.toUpperCase() !== tableName.toUpperCase();
+		const nextName = masterChanged
+			? deriveDomainName(tableName, parentPrefix ?? existing.parentPrefix)
+			: existing.name;
 		next[existing.id] = {
 			...existing,
+			name: nextName,
 			masterTable: tableName,
 			members: [tableName, ...existing.members.filter((m) => m.toUpperCase() !== tableName.toUpperCase())],
 		};
@@ -90,7 +98,7 @@ export function markAsMaster(domains: DomainsMap, tableName: string, domainName?
 	const id = `dom_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
 	next[id] = {
 		id,
-		name: domainName ?? `Dominio ${tableName}`,
+		name: domainName ?? deriveDomainName(tableName, parentPrefix),
 		masterTable: tableName,
 		members: [tableName],
 		parentPrefix,
@@ -132,46 +140,28 @@ export interface TopLevelEntry {
 	key: string;
 }
 
-const TOP_KEY = "isa-doc:codegen:topOrder";
+const TOP_KEY = "topOrder" as const;
 
 export function loadTopLevelOrder(): TopLevelEntry[] {
-	try {
-		const raw = typeof localStorage !== "undefined" ? localStorage.getItem(TOP_KEY) : null;
-		if (!raw) return [];
-		const parsed = JSON.parse(raw) as unknown;
-		if (Array.isArray(parsed)) return parsed.filter((e: any) => e && (e.kind === "domain" || e.kind === "prefix" || e.kind === "table") && typeof e.key === "string") as TopLevelEntry[];
-		return [];
-	} catch {
-		return [];
-	}
+	const v = getCached("topOrder");
+	if (Array.isArray(v)) return v.filter((e: any) => e && (e.kind === "domain" || e.kind === "prefix" || e.kind === "table") && typeof e.key === "string") as TopLevelEntry[];
+	return [];
 }
 
 export function saveTopLevelOrder(order: TopLevelEntry[]): void {
-	try {
-		if (typeof localStorage === "undefined") return;
-		localStorage.setItem(TOP_KEY, JSON.stringify(order));
-	} catch { /* noop */ }
+	setCached("topOrder", order);
 }
 
 /** Orden de hijos directos de un agrupador de prefijo (mezcla tablas y sub-dominios). */
 export type PrefixOrderMap = Record<string, DomainChildRef[]>;
-const PREFIX_KEY = "isa-doc:codegen:prefixOrder";
 
 export function loadPrefixOrders(): PrefixOrderMap {
-	try {
-		const raw = typeof localStorage !== "undefined" ? localStorage.getItem(PREFIX_KEY) : null;
-		if (!raw) return {};
-		const parsed = JSON.parse(raw) as unknown;
-		if (parsed && typeof parsed === "object") return parsed as PrefixOrderMap;
-		return {};
-	} catch { return {}; }
+	const v = getCached("prefixOrders");
+	return v && typeof v === "object" ? (v as PrefixOrderMap) : {};
 }
 
 export function savePrefixOrders(m: PrefixOrderMap): void {
-	try {
-		if (typeof localStorage === "undefined") return;
-		localStorage.setItem(PREFIX_KEY, JSON.stringify(m));
-	} catch { /* noop */ }
+	setCached("prefixOrders", m);
 }
 
 /**
@@ -181,21 +171,12 @@ export function savePrefixOrders(m: PrefixOrderMap): void {
  * (incluye los vacíos creados manualmente y los que sí contienen tablas).
  */
 export type ChildPrefixMap = Record<string, string[]>;
-const CHILD_PREFIX_KEY = "isa-doc:codegen:childPrefixes";
 
 export function loadChildPrefixes(): ChildPrefixMap {
-	try {
-		const raw = typeof localStorage !== "undefined" ? localStorage.getItem(CHILD_PREFIX_KEY) : null;
-		if (!raw) return {};
-		const parsed = JSON.parse(raw) as unknown;
-		if (parsed && typeof parsed === "object") return parsed as ChildPrefixMap;
-		return {};
-	} catch { return {}; }
+	const v = getCached("childPrefixes");
+	return v && typeof v === "object" ? (v as ChildPrefixMap) : {};
 }
 
 export function saveChildPrefixes(m: ChildPrefixMap): void {
-	try {
-		if (typeof localStorage === "undefined") return;
-		localStorage.setItem(CHILD_PREFIX_KEY, JSON.stringify(m));
-	} catch { /* noop */ }
+	setCached("childPrefixes", m);
 }

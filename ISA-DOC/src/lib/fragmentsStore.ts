@@ -21,40 +21,14 @@ export interface FragmentsState {
 
 const LS_KEY = "isa-sql:fragments-cache:v1";
 
-function readCache(): { fragments: SqlFragment[]; updatedAt: number } | null {
-	if (typeof localStorage === "undefined") return null;
-	try {
-		const raw = localStorage.getItem(LS_KEY);
-		if (!raw) return null;
-		const data = JSON.parse(raw) as { fragments: SqlFragment[]; updatedAt: number };
-		if (!Array.isArray(data.fragments)) return null;
-		return data;
-	} catch {
-		return null;
-	}
-}
-
-function writeCache(fragments: SqlFragment[]): void {
+/** Limpieza one-shot del cache anterior almacenado en navegador. */
+function purgeLegacyCache(): void {
 	if (typeof localStorage === "undefined") return;
-	try {
-		localStorage.setItem(LS_KEY, JSON.stringify({ fragments, updatedAt: Date.now() }));
-	} catch {
-		/* quota / privacidad: ignorar */
-	}
+	try { localStorage.removeItem(LS_KEY); } catch { /* noop */ }
 }
 
 const initial: FragmentsState = (() => {
-	const cached = readCache();
-	if (cached) {
-		return {
-			fragments: cached.fragments,
-			loaded: true,
-			revalidating: false,
-			error: "",
-			fromCache: true,
-			updatedAt: cached.updatedAt,
-		};
-	}
+	purgeLegacyCache();
 	return { fragments: [], loaded: false, revalidating: false, error: "", fromCache: false, updatedAt: 0 };
 })();
 
@@ -71,7 +45,6 @@ async function fetchAndApply(): Promise<void> {
 		if (!r.ok) throw new Error(`HTTP ${r.status}`);
 		const data = (await r.json()) as { fragments: SqlFragment[] };
 		const fragments = data.fragments ?? [];
-		writeCache(fragments);
 		store.set({
 			fragments,
 			loaded: true,
@@ -98,7 +71,6 @@ export function ensureFragmentsLoaded(): void {
 }
 
 export function setFragmentsAfterSave(fragments: SqlFragment[]): void {
-	writeCache(fragments);
 	store.set({
 		fragments,
 		loaded: true,

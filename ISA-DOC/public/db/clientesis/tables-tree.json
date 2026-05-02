@@ -13,48 +13,77 @@
     "children": [
       {
         "id": "1",
-        "kind": "prefix",
+        "kind": "table",
         "obj": {
-          "rowName": "CAPAC_",
-          "prefix": "CAPAC_"
+          "tableRef": "DRIVERS",
+          "rowName": "DRIVERS"
         },
-        "wardenAction": {
-          "idaction": "prefix"
-        },
-        "children": [
-          {
-            "id": "1.1",
-            "kind": "table",
-            "obj": {
-              "tableRef": "TEMAS",
-              "rowName": "TEMAS"
-            },
-            "doc": {
-              "description": "Catálogo de temas transversales. Aunque originalmente nació como `TEMAS`, se promovió a tabla común.",
-              "rules": [
-                "Sin prefijo: se usa desde múltiples módulos.",
-                "Renombrarla impactaría integraciones externas."
-              ]
-            }
-          }
-        ]
+        "doc": {
+          "description": "Conductores/instructores que pueden ser asignados a cursos o planes.",
+          "rules": [
+            "Una persona física puede tener varios drivers si maneja distintos perfiles."
+          ]
+        }
       },
       {
         "id": "2",
         "kind": "table",
         "obj": {
-          "tableRef": "PERMISOS",
-          "rowName": "PERMISOS"
+          "tableRef": "TEMAS",
+          "rowName": "TEMAS"
         },
         "doc": {
-          "description": "Catálogo global de permisos del sistema (no específico de capacitación). Por eso vive sin prefijo.",
+          "description": "Catálogo de temas transversales. Aunque originalmente nació como `TEMAS`, se promovió a tabla común.",
           "rules": [
-            "`IPERMISO` es global; cualquier módulo lo referencia."
+            "Sin prefijo: se usa desde múltiples módulos.",
+            "Renombrarla impactaría integraciones externas."
           ]
         }
       },
       {
         "id": "3",
+        "kind": "table",
+        "obj": {
+          "tableRef": "ATRIBUTOS_X_DRIVERS",
+          "rowName": "ATRIBUTOS_X_DRIVERS"
+        },
+        "doc": {
+          "description": "Pivote N:N entre atributos y drivers.",
+          "rules": [
+            "PK compuesta (IDRIVER, IATRIBUTO)."
+          ]
+        }
+      },
+      {
+        "id": "4",
+        "kind": "table",
+        "obj": {
+          "tableRef": "ATRIBUTOS_PLANES",
+          "rowName": "ATRIBUTOS_PLANES"
+        },
+        "doc": {
+          "description": "Atributos extensibles asociados a planes de estudio. Modelo EAV light.",
+          "rules": [
+            "Cada atributo requiere su definición correspondiente en `DRIVERS` / `ATRIBUTOS_X_DRIVERS`."
+          ]
+        }
+      },
+      {
+        "id": "5",
+        "kind": "table",
+        "obj": {
+          "tableRef": "ESTRUCTURAS_CURSOS",
+          "rowName": "ESTRUCTURAS_CURSOS"
+        },
+        "doc": {
+          "description": "Define la estructura jerárquica interna de un curso (módulos, lecciones).",
+          "rules": [
+            "El padre se referencia por `IESTRUCTURA_PADRE`; root tiene `IESTRUCTURA_PADRE` nulo."
+          ]
+        }
+      },
+      {
+        "id": "6",
         "kind": "table",
         "obj": {
           "tableRef": "PLANES_CURSOS",
@@ -68,22 +97,7 @@
         }
       },
       {
-        "id": "4",
-        "kind": "table",
-        "obj": {
-          "tableRef": "CURSOS_DE_PLANES_ESTUDIO",
-          "rowName": "CURSOS_DE_PLANES_ESTUDIO"
-        },
-        "doc": {
-          "description": "Tabla puente N:N entre cursos y planes de estudio.",
-          "rules": [
-            "PK compuesta (IPLANESTUDIO, ICURSO).",
-            "Permite metadatos del vínculo (orden, obligatoriedad)."
-          ]
-        }
-      },
-      {
-        "id": "5",
+        "id": "7",
         "kind": "table",
         "obj": {
           "tableRef": "CURSOS_PREREQUISITOS",
@@ -98,35 +112,21 @@
         }
       },
       {
-        "id": "6",
-        "kind": "table",
-        "obj": {
-          "tableRef": "ATRIBUTOS_X_DRIVERS",
-          "rowName": "ATRIBUTOS_X_DRIVERS"
-        },
-        "doc": {
-          "description": "Pivote N:N entre atributos y drivers.",
-          "rules": [
-            "PK compuesta (IDRIVER, IATRIBUTO)."
-          ]
-        }
-      },
-      {
-        "id": "7",
-        "kind": "table",
-        "obj": {
-          "tableRef": "DRIVERS",
-          "rowName": "DRIVERS"
-        },
-        "doc": {
-          "description": "Conductores/instructores que pueden ser asignados a cursos o planes.",
-          "rules": [
-            "Una persona física puede tener varios drivers si maneja distintos perfiles."
-          ]
-        }
-      },
-      {
         "id": "8",
+        "kind": "table",
+        "obj": {
+          "tableRef": "PERMISOS",
+          "rowName": "PERMISOS"
+        },
+        "doc": {
+          "description": "Catálogo global de permisos del sistema (no específico de capacitación). Por eso vive sin prefijo.",
+          "rules": [
+            "`IPERMISO` es global; cualquier módulo lo referencia."
+          ]
+        }
+      },
+      {
+        "id": "9",
         "kind": "table",
         "obj": {
           "tableRef": "PLANES_ESTUDIO",
@@ -137,20 +137,6 @@
           "description": "Plan de estudio: el contenedor más alto del módulo de capacitación.",
           "rules": [
             "Un plan agrupa cursos a través de `CURSOS_DE_PLANES_ESTUDIO`."
-          ]
-        }
-      },
-      {
-        "id": "9",
-        "kind": "table",
-        "obj": {
-          "tableRef": "ATRIBUTOS_PLANES",
-          "rowName": "ATRIBUTOS_PLANES"
-        },
-        "doc": {
-          "description": "Atributos extensibles asociados a planes de estudio. Modelo EAV light.",
-          "rules": [
-            "Cada atributo requiere su definición correspondiente en `DRIVERS` / `ATRIBUTOS_X_DRIVERS`."
           ]
         }
       },
@@ -173,15 +159,14 @@
         "id": "11",
         "kind": "table",
         "obj": {
-          "tableRef": "CURSOS",
-          "rowName": "CURSOS",
-          "stack": true
+          "tableRef": "SEGURIDADES_CURSOS",
+          "rowName": "SEGURIDADES_CURSOS"
         },
         "doc": {
-          "description": "Catálogo de cursos. Tabla central del módulo.",
+          "description": "Mapea permisos por curso. Cada fila concede un permiso a un curso específico.",
           "rules": [
-            "`ICURSO` es la PK natural (varchar) usada en relaciones.",
-            "Cambios de duración/instructor se auditan en `HISTORIALCURSO`."
+            "PK compuesta (ICURSO, IPERMISO).",
+            "`BACTIVO` controla el soft-delete: las filas inactivas se ignoran en autorización."
           ]
         }
       },
@@ -189,13 +174,13 @@
         "id": "12",
         "kind": "table",
         "obj": {
-          "tableRef": "ESTRUCTURAS_CURSOS",
-          "rowName": "ESTRUCTURAS_CURSOS"
+          "tableRef": "PERMISOS",
+          "rowName": "PERMISOS"
         },
         "doc": {
-          "description": "Define la estructura jerárquica interna de un curso (módulos, lecciones).",
+          "description": "Catálogo global de permisos del sistema (no específico de capacitación). Por eso vive sin prefijo.",
           "rules": [
-            "El padre se referencia por `IESTRUCTURA_PADRE`; root tiene `IESTRUCTURA_PADRE` nulo."
+            "`IPERMISO` es global; cualquier módulo lo referencia."
           ]
         }
       },
@@ -203,15 +188,60 @@
         "id": "13",
         "kind": "table",
         "obj": {
-          "tableRef": "ESTRUCTURAS_CURSOS",
-          "rowName": "ESTRUCTURAS_CURSOS"
+          "tableRef": "CURSOS_PREREQUISITOS",
+          "rowName": "CURSOS_PREREQUISITOS"
         },
         "doc": {
-          "description": "Define la estructura jerárquica interna de un curso (módulos, lecciones).",
+          "description": "Grafo de prerequisitos entre cursos. (curso, prerequisito).",
           "rules": [
-            "El padre se referencia por `IESTRUCTURA_PADRE`; root tiene `IESTRUCTURA_PADRE` nulo."
+            "Sin ciclos: el cliente debe validar antes de insertar.",
+            "Self-loops prohibidos."
           ]
         }
+      },
+      {
+        "id": "14",
+        "kind": "prefix",
+        "obj": {
+          "rowName": "NUEVO_",
+          "prefix": "NUEVO_"
+        },
+        "wardenAction": {
+          "idaction": "prefix"
+        },
+        "children": [
+          {
+            "id": "14.1",
+            "kind": "table",
+            "obj": {
+              "tableRef": "CURSOS",
+              "rowName": "CURSOS",
+              "stack": true
+            },
+            "doc": {
+              "description": "Catálogo de cursos. Tabla central del módulo.",
+              "rules": [
+                "`ICURSO` es la PK natural (varchar) usada en relaciones.",
+                "Cambios de duración/instructor se auditan en `HISTORIALCURSO`."
+              ]
+            }
+          },
+          {
+            "id": "14.2",
+            "kind": "table",
+            "obj": {
+              "tableRef": "SEGURIDADES_CURSOS",
+              "rowName": "SEGURIDADES_CURSOS"
+            },
+            "doc": {
+              "description": "Mapea permisos por curso. Cada fila concede un permiso a un curso específico.",
+              "rules": [
+                "PK compuesta (ICURSO, IPERMISO).",
+                "`BACTIVO` controla el soft-delete: las filas inactivas se ignoran en autorización."
+              ]
+            }
+          }
+        ]
       }
     ]
   },

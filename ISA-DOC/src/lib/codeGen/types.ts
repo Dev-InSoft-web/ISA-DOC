@@ -1,5 +1,5 @@
 // Tipos para el generador de objetos / controladores ISA-DOC.
-// Toda la config se persiste en localStorage por recurso.
+// La configuración se persiste en el servidor (api/codegen/state).
 
 export type FieldType =
 	| "string"

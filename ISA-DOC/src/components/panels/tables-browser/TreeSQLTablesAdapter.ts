@@ -1,5 +1,6 @@
 import {
 	createEmptyDomain as createEmptyDomainFn,
+	deriveDomainName,
 	loadChildPrefixes,
 	loadDomains,
 	loadPrefixOrders,
@@ -149,6 +150,19 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		}
 	}
 
+	/**
+	 * Doble click / Enter sobre una tabla NO debe abrir el drawer; solo selecciona la tabla
+	 * para que el panel central y derecho actualicen sus formularios.
+	 * Para agrupadores se mantiene el comportamiento por defecto (abre edición).
+	 */
+	override onrowdblclick(node: TTableNodeUX): void {
+		if (node?.kind === "table" && node.tableKey) {
+			this.onTableSelect(node.tableKey);
+			return;
+		}
+		super.onrowdblclick(node);
+	}
+
 	protected override getNodeIcon(node: TTableNodeUX) {
 		if (node?.kind === "domain") {
 			return { icon: "mdi:cube-outline", color: "warning" as const };
@@ -283,6 +297,20 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		this.rebuildRows();
 	}
 
+	/** Recarga el estado persistido (domains/orders/prefixes) desde la caché del stateClient. */
+	reloadFromCache(): DomainsMap {
+		this._domains = loadDomains();
+		this._topOrder = loadTopLevelOrder();
+		this._prefixOrders = loadPrefixOrders();
+		this._emptyPrefixes.clear();
+		const storedChildPrefixes = loadChildPrefixes();
+		for (const [k, v] of Object.entries(storedChildPrefixes)) {
+			if (Array.isArray(v)) this._emptyPrefixes.set(k, v.slice());
+		}
+		this.rebuildRows();
+		return this._domains;
+	}
+
 	/**
 	 * Clave estable para el estado de expansión. Los `rowId` son posicionales
 	 * y cambian al insertar/quitar nodos; en su lugar identificamos el
@@ -307,6 +335,20 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	 */
 	public syncTablesQuiet(tables: ParsedTable[]): void {
 		this._tables = tables;
+		// Re-mapea `tableIndex` de las filas existentes para reflejar el nuevo
+		// orden de `_tables`. Sin esto, futuros `emitChange` resuelven `t` con
+		// índices obsoletos y se cruzan los `originalName` entre tablas vecinas
+		// (corrupción de columnas y formularios mostrando datos de otra tabla).
+		const byKey = new Map<string, number>();
+		tables.forEach((t, i) => {
+			const k = `${t.fragmentId}::${t.originalName}`;
+			if (!byKey.has(k)) byKey.set(k, i);
+		});
+		for (const n of this.obj.rows) {
+			if (n.kind !== "table" || !n.tableKey) continue;
+			const idx = byKey.get(n.tableKey);
+			if (idx !== undefined) n.tableIndex = idx;
+		}
 	}
 
 	get domains(): DomainsMap { return this._domains; }
@@ -327,8 +369,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const effFull = found ? effectiveTableName(found) : tableName;
 		const effFullUpper = upper(effFull);
 		const tablePrefix = found ? (found.effectivePrefix ?? "") : TreeSQLTablesAdapter.detectPrefix(tableName);
-		const bare = (tablePrefix && effFull.startsWith(tablePrefix) ? effFull.slice(tablePrefix.length) : effFull).toLowerCase();
-		const domainName = `Dominio ${bare}`;
+		const domainName = deriveDomainName(effFull, tablePrefix);
 
 		// Localiza el contenedor actual de la tabla (root | prefix | domain) y su índice.
 		let parentDomainId: string | undefined;
@@ -656,11 +697,13 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			cur = this.findNodeById(String(cur.ireference || "").trim());
 			if (!cur) break;
 		}
-		const rootObj = (cur?.obj ?? f.obj) as TTableNodeUX;
+		const rootObj = (cur ?? f) as TTableNodeUX;
 		const rootIdx = this._topOrder.findIndex((e) =>
-			(e.kind === "domain" && rootObj.kind === "domain" && e.key === rootObj.domainId) ||
-			(e.kind === "prefix" && rootObj.kind === "prefix" && e.key === (rootObj.prefix ?? "")) ||
-			(e.kind === "table" && rootObj.kind === "table" && upper(e.key) === upper(rootObj.rowName)),
+			!!e && (
+				(e.kind === "domain" && rootObj.kind === "domain" && e.key === rootObj.domainId) ||
+				(e.kind === "prefix" && rootObj.kind === "prefix" && e.key === (rootObj.prefix ?? "")) ||
+				(e.kind === "table" && rootObj.kind === "table" && upper(e.key) === upper(rootObj.rowName))
+			),
 		);
 		// Determina el contenedor inmediato del foco.
 		const parentId = String(f.ireference || "").trim();
@@ -806,6 +849,55 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				this.onDomainsChange(this._domains);
 			}
 		}
+		if (item && item.kind === "prefix") {
+			const oldPrefix = String(item.prefix ?? "").trim();
+			const rawNext = String(item.rowName ?? "").trim();
+			const normalized = rawNext ? (rawNext.toUpperCase().replace(/_+$/, "") + "_") : "";
+			if (normalized && normalized !== "_" && normalized !== oldPrefix) {
+				// 1) Renombrar la clave en `_prefixOrders` (tablas/dominios listados).
+				if (this._prefixOrders[oldPrefix]) {
+					const arr = this._prefixOrders[oldPrefix];
+					delete this._prefixOrders[oldPrefix];
+					this._prefixOrders[normalized] = arr;
+					savePrefixOrders(this._prefixOrders);
+				}
+				// 2) Renombrar entradas en `_topOrder`.
+				let topChanged = false;
+				this._topOrder = this._topOrder.map((e) => {
+					if (e.kind === "prefix" && e.key === oldPrefix) { topChanged = true; return { ...e, key: normalized }; }
+					return e;
+				});
+				if (topChanged) saveTopLevelOrder(this._topOrder);
+				// 3) Renombrar valores en `_emptyPrefixes` (puede aparecer como hijo de varios padres).
+				let emptyChanged = false;
+				for (const [k, v] of this._emptyPrefixes) {
+					const next = v.map((p) => (p === oldPrefix ? normalized : p));
+					if (next.some((p, i) => p !== v[i])) {
+						this._emptyPrefixes.set(k, next);
+						emptyChanged = true;
+					}
+				}
+				if (emptyChanged) this.persistChildPrefixes();
+				// 4) Renombrar `parentPrefix` en dominios.
+				let domsChanged = false;
+				for (const d of Object.values(this._domains)) {
+					if (d.parentPrefix === oldPrefix) { d.parentPrefix = normalized; domsChanged = true; }
+				}
+				if (domsChanged) {
+					saveDomains(this._domains);
+					this.onDomainsChange(this._domains);
+				}
+				// 5) Reflejar el nuevo prefijo en el nodo: `prefix` y `rowName` quedan
+				//    consistentes para que `chainPrefixOf` produzca el effectivePrefix correcto
+				//    en `emitChange`, que a su vez disparará el rename en las tablas.
+				item.prefix = normalized;
+				item.rowName = normalized;
+				const ok = super.updateNode(item, mutate);
+				// 6) Forzar emit con renames de tablas; el consumidor reasigna effectivePrefix.
+				this.emitChange();
+				return ok;
+			}
+		}
 		return super.updateNode(data, mutate);
 	}
 
@@ -858,6 +950,17 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		}
 		const upper = (s: string) => s.toUpperCase();
 		const tableByUpper = new Map<string, { table: ParsedTable; index: number }>();
+		// Indexa por nombre EFECTIVO (cadena ancestra + bare) y agrega alias por
+		// `originalName`/`name` para tolerar divergencias state \u2194 tables (cuando
+		// un save de `/api/tables` se perdi\u00f3 y el `effectivePrefix` qued\u00f3 desactualizado).
+		// El effectivo gana sobre los alias en caso de colisi\u00f3n.
+		this._tables.forEach((t, index) => {
+			const item = { table: t, index };
+			const origU = upper(t.originalName ?? t.name);
+			const nameU = upper(t.name);
+			if (!tableByUpper.has(origU)) tableByUpper.set(origU, item);
+			if (!tableByUpper.has(nameU)) tableByUpper.set(nameU, item);
+		});
 		this._tables.forEach((t, index) => tableByUpper.set(upper(effectiveTableName(t)), { table: t, index }));
 
 		const claimedUpper = new Set<string>();
@@ -1068,6 +1171,35 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				if ((t.effectivePrefix ?? "") !== fullChain) continue;
 				directTables.push({ table: t, index: i });
 			}
+			// Resiliencia ante divergencia state ↔ tables: si `_prefixOrders[prefix]`
+			// referencia tablas cuyo `effectivePrefix` aún no se actualizó (p.ej. el
+			// save de `/api/tables` se perdió), buscarlas por nombre bare/originalName
+			// y adoptarlas en este nivel para que NO desaparezcan visualmente.
+			const storedRaw = this._prefixOrders[prefix];
+			if (storedRaw && storedRaw.length) {
+				const already = new Set(directTables.map((it) => upper(effectiveTableName(it.table))));
+				for (const e of storedRaw) {
+					if (e.kind !== "table") continue;
+					const keyU = upper(e.key);
+					if (already.has(keyU)) continue;
+					// El key persistido es el nombre EFECTIVO; deriva el bare esperado.
+					const bareU = keyU.startsWith(upper(fullChain)) ? keyU.slice(fullChain.length) : keyU;
+					let idx = -1;
+					for (let i = 0; i < this._tables.length; i += 1) {
+						const t = this._tables[i];
+						if (claimedUpper.has(upper(effectiveTableName(t)))) continue;
+						if (rootTablesUpper.has(upper(effectiveTableName(t)))) continue;
+						if (already.has(upper(effectiveTableName(t)))) continue;
+						const origU = upper(t.originalName ?? t.name);
+						const nameU = upper(t.name);
+						if (origU === bareU || nameU === bareU || origU === keyU || nameU === keyU) { idx = i; break; }
+					}
+					if (idx >= 0) {
+						directTables.push({ table: this._tables[idx], index: idx });
+						already.add(upper(effectiveTableName(this._tables[idx])));
+					}
+				}
+			}
 			// Subprefijos registrados bajo este prefijo. Pueden estar vacíos o tener tablas/dominios.
 			const childPrefixNames = (this._emptyPrefixes.get(`prefix:${prefix}`) ?? []).slice();
 			// Dominios y orden directo bajo este prefijo (sólo aplica al primer nivel
@@ -1173,15 +1305,85 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			}, this.obj));
 		}
 
+		// Defensa: dominios "huérfanos" (sin parentId/parentPrefix válidos y NO en
+		// topOrder) deben renderizarse al final del root. Sin esto, un estado
+		// divergente puede dejar un dominio invisible y arrastrar sus tablas miembro.
+		const renderedDomainIds = new Set<string>();
+		for (const r of rows) if (r.kind === "domain" && r.domainId) renderedDomainIds.add(r.domainId);
+		for (const d of allDomains) {
+			if (renderedDomainIds.has(d.id)) continue;
+			counters[0] = (counters[0] ?? 0) + 1;
+			pushDomainTree(d, "", 0);
+		}
+
 		this.obj.rows = rows;
+		this.renumberRowsCanonically();
 		this.onrefresh();
 		this.syncAllRowAdapters();
 	}
 
 	protected commitFlatList(flat: TTableNodeUX[]): void {
 		this.obj.rows = flat.map((n) => { n.stack = this.obj; n.refreshUX(); return n; });
+		this.renumberRowsCanonically();
 		this.recomputeDomainsFromTree();
 		this.emitChange();
+	}
+
+	/**
+	 * Renumeración canónica y ÚNICA de `flatPath`/`ireference` para TODOS los
+	 * agrupadores. Reglas generales:
+	 * - El orden actual de `this.obj.rows` se respeta como base; los huérfanos
+	 *   (ireference inválida) se reubican en la raíz al final.
+	 * - Cada padre puede declarar `sortChildren` para reordenar sus hijos
+	 *   directos. Es la ÚNICA personalización admitida por agrupador.
+	 * - `flatPath` se asigna posicionalmente: "1", "2", "1.1", "1.2.3", etc.
+	 * - `ireference` se sincroniza al nuevo `flatPath` del padre.
+	 * - Mapea ids antiguos→nuevos y refresca `_expandedNodes`/selección.
+	 */
+	private renumberRowsCanonically(): void {
+		const rows = this.obj.rows;
+		if (!rows.length) return;
+		const oldById = new Map<string, TTableNodeUX>();
+		for (const r of rows) {
+			const id = String(r.flatPath || "").trim();
+			if (id) oldById.set(id, r);
+		}
+		const childrenByParent = new Map<string, TTableNodeUX[]>();
+		const ensure = (k: string): TTableNodeUX[] => {
+			let arr = childrenByParent.get(k);
+			if (!arr) { arr = []; childrenByParent.set(k, arr); }
+			return arr;
+		};
+		for (const r of rows) {
+			const ref = String(r.ireference || "").trim();
+			const parentKey = ref && oldById.has(ref) ? ref : "";
+			ensure(parentKey).push(r);
+		}
+		const idMap = new Map<string, string>();
+		const result: TTableNodeUX[] = [];
+		const visit = (parentOldId: string, parentNewId: string, parent: TTableNodeUX | undefined): void => {
+			const kids = childrenByParent.get(parentOldId) ?? [];
+			let ordered: TTableNodeUX[] = kids;
+			if (parent) {
+				const fn = (parent as unknown as { sortChildren?: (c: TTableNodeUX[]) => TTableNodeUX[] }).sortChildren;
+				if (typeof fn === "function") {
+					const next = fn.call(parent, kids.slice());
+					if (Array.isArray(next) && next.length === kids.length) ordered = next;
+				}
+			}
+			ordered.forEach((child, idx) => {
+				const newId = parentNewId ? `${parentNewId}.${idx + 1}` : String(idx + 1);
+				const oldId = String(child.flatPath || "");
+				if (oldId && oldId !== newId) idMap.set(oldId, newId);
+				child.flatPath = newId;
+				child.ireference = parentNewId;
+				result.push(child);
+				visit(oldId, newId, child);
+			});
+		};
+		visit("", "", undefined);
+		this.obj.rows = result;
+		this.remapExpandedByIdMap(idMap);
 	}
 
 	/**
@@ -1226,13 +1428,22 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			visibleUpper.add(upperFn(eff));
 		}
 
+		// Conjunto de dominios VISIBLES en el árbol actual.
+		const visibleDomainIds = new Set<string>();
+		for (const n of flat) if (n.kind === "domain" && n.domainId) visibleDomainIds.add(n.domainId);
+
 		// Reset parent links de todos los dominios; conserva members invisibles.
+		// Los entries `kind:"domain"` cuyo target es VISIBLE se descartan también: el
+		// walk los re-emitirá según la posición actual; mantenerlos generaba duplicados
+		// que `buildTree` deduplicaba silenciosamente, simulando "desapariciones" tras
+		// movimientos repetidos.
 		const next: DomainsMap = {};
 		for (const id of Object.keys(this._domains)) {
 			const orig = this._domains[id];
 			const keptMembers = orig.members.filter((m) => !visibleUpper.has(upperFn(m)));
 			const keptOrder = (orig.childrenOrder ?? []).filter(
-				(e) => e.kind === "domain" || (e.kind === "table" && !visibleUpper.has(upperFn(e.key))),
+				(e) => (e.kind === "domain" && !visibleDomainIds.has(e.key)) ||
+				       (e.kind === "table" && !visibleUpper.has(upperFn(e.key))),
 			);
 			next[id] = { ...orig, members: keptMembers, parentId: undefined, parentPrefix: undefined, childrenOrder: keptOrder };
 		}
@@ -1335,6 +1546,29 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			if (!stillThere) d.masterTable = d.members[0] ?? "";
 		}
 
+		// Defensa: para dominios que NO aparecieron en `flat` (no se renderizaron),
+		// preservar su `parentId`/`parentPrefix` previo en lugar de dejarlos en undefined.
+		// Sin esto, un dominio cuyo prefijo padre no se materializó queda flotante
+		// (sin parent y sin entrada en topOrder) y desaparece de la UI permanentemente.
+		for (const id of Object.keys(next)) {
+			if (visibleDomainIds.has(id)) continue;
+			const orig = this._domains[id];
+			if (!orig) continue;
+			if (orig.parentId && next[orig.parentId]) next[id].parentId = orig.parentId;
+			else if (orig.parentPrefix) next[id].parentPrefix = orig.parentPrefix;
+		}
+
+		// Defensa: cualquier dominio sin parent y sin entrada en topOrder lo añadimos
+		// al final del topOrder root para que NUNCA quede invisible.
+		for (const id of Object.keys(next)) {
+			const d = next[id];
+			if (d.parentId || d.parentPrefix) continue;
+			const tk = `domain:${id}`;
+			if (seenTop.has(tk)) continue;
+			topOrder.push({ kind: "domain", key: id });
+			seenTop.add(tk);
+		}
+
 		this._domains = next;
 		this._topOrder = topOrder;
 		this._prefixOrders = prefixOrders;
@@ -1373,15 +1607,30 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		// `effectivePrefix`; el nombre real (bare) queda en `name`.
 		const flat = this.obj.rows;
 		const original = this._tables.slice();
+		// Identidad ESTABLE para resolver la `ParsedTable` desde un row.
+		// `n.tableIndex` se vuelve obsoleto en cuanto el padre actualiza `_tables`
+		// (vía `syncTablesQuiet`) sin re-emitir filas: el siguiente `emitChange`
+		// usaría índices que apuntan a otra tabla, pisando `originalName` con el
+		// del vecino. Usamos `n.tableKey` (= `${fragmentId}::${originalName}`)
+		// que se asignó en `rebuildRows` y NO cambia con reorders.
+		const byKey = new Map<string, { table: ParsedTable; index: number }>();
+		original.forEach((t, index) => {
+			const key = `${t.fragmentId}::${t.originalName}`;
+			if (!byKey.has(key)) byKey.set(key, { table: t, index });
+		});
 		const orderedTables: ParsedTable[] = [];
 		const seen = new Set<number>();
 		const renames: Array<{ from: string; to: string }> = [];
 		for (const n of flat) {
 			if (n.kind !== "table") continue;
-			if (n.tableIndex < 0) continue;
-			const t = original[n.tableIndex];
-			if (!t) continue;
-			seen.add(n.tableIndex);
+			let resolved: { table: ParsedTable; index: number } | undefined;
+			if (n.tableKey) resolved = byKey.get(n.tableKey);
+			if (!resolved && n.tableIndex >= 0 && original[n.tableIndex]) {
+				resolved = { table: original[n.tableIndex], index: n.tableIndex };
+			}
+			if (!resolved) continue;
+			const t = resolved.table;
+			seen.add(resolved.index);
 			const chain = this.chainPrefixOf(n.flatPath);
 			const sanitized = String(n.rowName ?? "").trim();
 			const nextEffPrefix = chain || undefined;
