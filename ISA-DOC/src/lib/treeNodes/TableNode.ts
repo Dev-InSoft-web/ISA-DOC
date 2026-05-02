@@ -42,7 +42,14 @@ export class TableNode extends BaseTreeNode<TableObj> {
 	/** `true` si auto-stack activo y la inyección de historial NO está deshabilitada. */
 	get historialEnabled(): boolean { return this.obj.autoStack === true && this.obj.autoStackHistorial !== false; }
 
-	public override allowedChildKinds(): readonly NodeKind[] { return []; }
+	public override acceptsChildKind(_kind: NodeKind): boolean { return false; }
+
+	protected override normalize(): void {
+		// Toda nomenclatura de tabla SQL en MAYÚSCULAS por algoritmo.
+		const ref = (this.obj.tableRef ?? "").toUpperCase();
+		this.obj.tableRef = ref;
+		this.obj.rowName = ref;
+	}
 
 	public override validate(): NodeValidation {
 		const errors: string[] = [];
@@ -50,9 +57,6 @@ export class TableNode extends BaseTreeNode<TableObj> {
 		if (!this.obj.tableRef) errors.push("`tableRef` es obligatorio en un TableNode.");
 		if (this.obj.tableRef !== this.obj.rowName) {
 			warnings.push("`rowName` debe coincidir con `tableRef` en un TableNode.");
-		}
-		if (/[a-z]/.test(this.obj.tableRef)) {
-			warnings.push("Por convención el nombre de tabla debería estar en mayúsculas.");
 		}
 		return { errors, warnings };
 	}

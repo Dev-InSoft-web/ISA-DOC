@@ -1,6 +1,14 @@
 import type { ButtonIconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
 import type { FlexOptionsInput } from "../../Options/FlexOptions.svelte";
-import { type INode, type ITreeData } from "./_defgen/00-tree-data";
+import {
+	type INode,
+	type ITreeData,
+	type NodeRole,
+	type NodeRoleVector,
+	type RoleDimension,
+	ROLE_DEFAULTS,
+	resolveRoleInDimension,
+} from "./_defgen/00-tree-data";
 import { TAMutations } from "./05-mutations";
 
 /**
@@ -80,64 +88,60 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 		return raw.trim().length === 0 ? [] : raw.trim().split(/\s+/);
 	}
 
-	/**
-	 * Grupos de roles actorales que entran en conflicto entre sí. Para cada
-	 * grupo, si un nodo declara más de un miembro, sólo prevalece el de
-	 * **mayor índice** (el último en la lista del grupo). El resto se ignora.
-	 *
-	 * - Contención de hijos: `prison` < `hermetic` < `cell`. Si se declaran
-	 *   "prison hermetic cell", actúa únicamente como `cell`.
-	 * - Ordenamiento: `monarchy` < `freezer`. Si se declaran "monarchy freezer",
-	 *   actúa únicamente como `freezer`.
-	 */
-	private static readonly CONFLICT_GROUPS: ReadonlyArray<readonly string[]> = [
-		["prison", "hermetic", "cell"],
-		["monarchy", "freezer"],
-	];
-
-	/**
-	 * Resuelve la lista de roles eliminando los miembros de cada grupo de
-	 * conflicto que NO sean el de mayor índice declarado. Mantiene el orden
-	 * relativo del resto de roles (no agrupados).
-	 */
-	private resolveActorRoles(roles: readonly string[]): string[] {
-		if (roles.length === 0) return [];
-		const drop = new Set<string>();
-		for (const group of TARoles.CONFLICT_GROUPS) {
-			let bestIdx = -1;
-			for (const r of roles) {
-				const i = group.indexOf(r);
-				if (i > bestIdx) bestIdx = i;
-			}
-			if (bestIdx < 0) continue;
-			const winner = group[bestIdx];
-			for (const member of group) if (member !== winner) drop.add(member);
-		}
-		return roles.filter((r) => !drop.has(r));
+	/** Si el nodo declara un rol actoral concreto (tras resolución de conflictos). */
+	hasActor(node: INode<TWorking>, role: NodeRole): boolean {
+		// `group` y `distracted` son los roles "abiertos" — reconocemos tanto la
+		// declaración explícita como la inferencia desde otros roles del vector.
+		return this.effectiveRole(node, this.dimensionOf(role)) === role;
 	}
 
-	/** Si el nodo declara un rol actoral concreto (tras resolución de conflictos). */
-	hasActor(node: INode<TWorking>, role: "atom" | "group" | "warden" | "prison" | "hermetic" | "cell" | "freezer" | "monarchy"): boolean {
-		const roles = this.resolveActorRoles(this.getActorRoles(node));
-		if (roles.includes(role)) return true;
-		const groupAliases = ["warden", "prison", "hermetic", "cell", "freezer", "monarchy"] as const;
-		if (role === "group") return groupAliases.some((r) => roles.includes(r));
-		return false;
+	/** Devuelve el rol efectivo del nodo en la dimensión indicada. */
+	effectiveRole(node: INode<TWorking>, dim: RoleDimension): NodeRole {
+		// Preferimos el `roleVector` estructurado (clases-nodo de persistencia).
+		// Si está ausente, parseamos la cadena `actor` (modo legacy/UX). Si
+		// ninguno declara nada en esta dimensión, cae al default dimensional.
+		const vec = (node as { roleVector?: NodeRoleVector } | undefined)?.roleVector;
+		if (vec && vec[dim]) return vec[dim] as NodeRole;
+		const actor = (node as { actor?: string } | undefined)?.actor;
+		if (typeof actor === "string" && actor.trim().length > 0) {
+			return resolveRoleInDimension(actor, dim);
+		}
+		return ROLE_DEFAULTS[dim];
+	}
+
+	/** Dimensión a la que pertenece el rol. */
+	private dimensionOf(role: NodeRole): RoleDimension {
+		switch (role) {
+			case "atom": case "group": return "topology";
+			case "prison": case "hermetic": case "cell": return "containment";
+			case "unanchored": case "freezer": case "monarchy": return "mobility";
+			case "distracted": case "warden": return "vigilance";
+		}
+	}
+
+	/** ¿El nodo declaró EXPLÍCITAMENTE este rol (sin defaults dimensionales)? */
+	private hasExplicitActor(node: INode<TWorking>, role: NodeRole): boolean {
+		return this.getActorRoles(node).includes(role);
 	}
 
 	isAtom(node: INode<TWorking>): boolean { return this.hasActor(node, "atom"); }
-	isWarden(node: INode<TWorking>): boolean { return this.hasActor(node, "warden"); }
+	isGroupActor(node: INode<TWorking>): boolean { return this.hasActor(node, "group"); }
 	isPrison(node: INode<TWorking>): boolean { return this.hasActor(node, "prison"); }
 	isHermetic(node: INode<TWorking>): boolean { return this.hasActor(node, "hermetic"); }
 	isCell(node: INode<TWorking>): boolean { return this.hasActor(node, "cell"); }
+	isUnanchored(node: INode<TWorking>): boolean { return this.hasActor(node, "unanchored"); }
 	isFreezer(node: INode<TWorking>): boolean { return this.hasActor(node, "freezer"); }
 	isMonarchy(node: INode<TWorking>): boolean { return this.hasActor(node, "monarchy"); }
-	isGroupActor(node: INode<TWorking>): boolean { return this.hasActor(node, "group"); }
+	isDistracted(node: INode<TWorking>): boolean { return this.hasActor(node, "distracted"); }
+	isWarden(node: INode<TWorking>): boolean { return this.hasActor(node, "warden"); }
 
 	/**
 	 * ¿Los hijos de este agrupador pueden salir (osmosis) vía drag/operaciones?
-	 * Por defecto: sí para `prison` y `cell`; no para `hermetic`/`freezer`/`monarchy`.
-	 * Para nodos sin rol específico, permitir salida (legacy).
+	 * Combina las dos dimensiones que afectan: containment + mobility.
+	 * - `hermetic` (containment) → NO.
+	 * - `freezer`/`monarchy` (mobility) → NO.
+	 * - resto (defaults `prison` + `unanchored` o explícitos `prison|cell`
+	 *   + `unanchored`) → SI.
 	 */
 	allowsChildEscape(node: INode<TWorking>): boolean {
 		if (this.isHermetic(node)) return false;
@@ -181,7 +185,9 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	 */
 	protected actorActions(node: INode<TWorking>): ButtonIconifyProps[] {
 		const out: ButtonIconifyProps[] = [];
-		if (this.isPrison(node)) {
+		// La acción "Liberar" sólo se ofrece cuando el nodo declara explícitamente
+		// `prison` (no por el default dimensional, que aplica a todo el árbol).
+		if (this.hasExplicitActor(node, "prison")) {
 			out.push({
 				icon: "mdi:exit-run",
 				title: "Liberar (los hijos toman su lugar conservando el orden)",
@@ -195,7 +201,8 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	/**
 	 * Devuelve la lista de ancestros que actualmente son `warden`, ordenada
 	 * **closest → farthest** según profundidad relativa. Es la API que un nodo
-	 * usa para conocer qué vigilantes podrían afectarlo.
+	 * usa para conocer qué vigilantes podrían afectarlo. Los ancestros
+	 * `distracted` (default) se omiten — retornan identidad.
 	 */
 	protected wardensOf(node: INode<TWorking>): INode<TWorking>[] {
 		return this.getAncestors(node).filter((a) => this.isWarden(a));
@@ -349,9 +356,9 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 			if (this.isMonarchy(anc)) {
 				this.assertOrderingContract(anc);
 				const fn = (node as unknown as { freeze?: () => boolean }).freeze;
-				if (typeof fn !== "function") {
-					throw new Error(`[TreeAdapter] El nodo '${node.flatPath}' bajo agrupador 'monarchy' '${anc.flatPath}' requiere implementar 'freeze(): boolean'.`);
-				}
+				// monarchy sin `freeze()` definido por el descendiente se
+				// degrada a `unanchored` (no congela).
+				if (typeof fn !== "function") continue;
 				if (fn.call(node)) return true;
 			}
 		}

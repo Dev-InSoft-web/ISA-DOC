@@ -8,21 +8,27 @@
  * tree-adaptados (flatPath, ireference, kind, label, props particulares)
  * en sus propias propiedades. Los hijos siempre son nodos.
  *
- * `obj` es una referencia OPCIONAL al registro original EXTERNO (no
- * adaptado al árbol) — útil para round-trip a la fuente de datos
- * (p.ej. `TableSection` cargado desde el esquema). NO es la auto-referencia
- * al propio nodo, NI duplica los campos del árbol: el nodo SÍ es la
- * estructura adaptada al árbol; `obj` es lo que aún no estaba adaptado.
+ * Modo ESCLAVO (opcional): cuando el árbol se construye a partir de un
+ * objeto-maestro externo (p.ej. un esquema, un curso, un documento crudo)
+ * y los nodos representan/procesan partes de ese maestro, las clases
+ * concretas implementan `INodeSlave<T>` (extiende `INode<T>`) y exponen
+ * `masterstack`/`imasterstack`/`nmasterstack` para ubicarse dentro del
+ * maestro, más `obj?` como referencia al registro original externo.
+ * Los nodos NO esclavos sólo cumplen `INode<T>` y no cargan masterstack
+ * ni `obj`.
  *
  * Cascada de tipos (sin `Omit`/`Pick` — todos los campos enumerados
  * explícitamente):
- *   `INode<TObj>`     → contrato del nodo. `children: INode<TObj>[]`,
- *                       `obj?: TObj`.
- *   `ITreeData<TObj>` → alias retro-compatible de `INode<TObj>`.
- *   `TreeNode<TObj>`  → clase base concreta que implementa `INode<TObj>`.
+ *   `INode<TObj>`        → contrato base del nodo. `children: INode<TObj>[]`.
+ *   `INodeSlave<TObj>`   → extiende `INode<TObj>` con `masterstack`,
+ *                          `imasterstack`, `nmasterstack`, `obj?`.
+ *   `ITreeData<TObj>`    → alias retro-compatible de `INode<TObj>`.
+ *   `TreeNode<TObj>`     → clase base concreta que implementa `INode<TObj>`.
+ *   `TreeNodeSlave<TObj>`→ clase base concreta que implementa
+ *                          `INodeSlave<TObj>` (extiende `TreeNode<TObj>`).
  *
- * Las subclases concretas (`TSqlNodeUX`, `TTableNodeUX`, …) extienden
- * `TreeNode<RawSourceType>` y añaden EXCLUSIVAMENTE las props particulares
+ * Las subclases concretas (`TSqlNodeUX`, `TTableNodeUX`, …) extienden la
+ * clase base que corresponda y añaden EXCLUSIVAMENTE las props particulares
  * de su dominio (rowName, colType, prefix, …) sin redeclarar los campos
  * comunes del árbol ni introducir sinónimos.
  */
@@ -40,29 +46,8 @@ export interface INode<T = any> {
 	kind: string;
 	/** Texto visual primario del nodo. */
 	label: string;
-	/** Stack/contenedor al que pertenece el nodo. */
-	stack: any;
-	/** Identificador del stack (opaco para el adapter). */
-	istack: string;
-	/** Nombre del campo identificador del stack. */
-	nistack: string;
-	/** ¿El nodo es hoja (no admite hijos)? */
-	isLeaf: boolean;
-	/** ¿El nodo es penúltimo nivel (sus hijos directos son hojas)? */
-	isPenultimate: boolean;
-	/** Título del siguiente nivel jerárquico (si aplica). */
-	nextLevelTitle: string;
-	/** ¿El nodo es el último de su nivel? */
-	isLast: boolean;
 	/** Hijos del árbol (SIEMPRE nodos, nunca objetos crudos). */
 	children: T[];
-	/**
-	 * Referencia opcional al registro original externo (NO adaptado al
-	 * árbol) desde donde se trajeron los datos del nodo. P.ej. un
-	 * `TableSection` del esquema crudo. No contiene `flatPath` ni
-	 * `kind` — son responsabilidad del nodo, no del registro fuente.
-	 */
-	obj?: unknown;
 	/** Si el nodo rechaza recibir a `child` como hijo. */
 	acceptsChild?(child: T): boolean;
 	/** Regla opcional de orden de hijos directos (no propaga a nietos). */
@@ -77,8 +62,196 @@ export interface INode<T = any> {
 	[k: string]: any;
 }
 
+/**
+ * Contrato extendido para nodos ESCLAVOS de un objeto-maestro externo.
+ * Aplica cuando el árbol se materializa a partir de un objeto que ya
+ * contiene una estructura jerárquica (un esquema, un curso, un documento
+ * crudo) y los nodos representan/procesan tramos de ese maestro.
+ *
+ * - `masterstack` / `imasterstack` / `nmasterstack` ubican al nodo dentro
+ *   del maestro (contenedor, identificador del contenedor, nombre del
+ *   campo identificador). Son opacos para el adapter.
+ * - `obj?` es la referencia OPCIONAL al registro original externo (NO
+ *   adaptado al árbol) desde donde se trajeron los datos del nodo. NO es
+ *   la auto-referencia al propio nodo NI duplica los campos del árbol.
+ */
+export interface INodeSlave<T = any> extends INode<T> {
+	/** Stack/contenedor del maestro al que pertenece el nodo. */
+	masterstack: any;
+	/** Identificador del masterstack (opaco para el adapter). */
+	imasterstack: string;
+	/** Nombre del campo identificador del masterstack. */
+	nmasterstack: string;
+	/** Registro original externo (no adaptado al árbol). Opcional. */
+	obj?: unknown;
+}
+
 /** Alias retro-compatible: misma forma que `INode<T>`. */
 export type ITreeData<T = any> = INode<T>;
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* Roles actorales del modelo de árbol (vocabulario común a TODA la         */
+/* cascada `_treeAdapter` y a las clases-nodo de persistencia).             */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Roles actorales reconocidos por el TreeView. Se declaran en `node.actor`
+ * como cadena kebab-case separada por espacios (estilo "clases CSS"),
+ * combinables. Vacío = legacy / sin actor (cae a defaults dimensionales).
+ *
+ * El vector de rol se compone en CUATRO DIMENSIONES ortogonales — un nodo
+ * declara como mucho un valor por dimensión; si declara más, prevalece el
+ * de mayor índice; si declara ninguno, aplica el default de la dimensión.
+ *
+ *  1. **topology**     (default `group`):
+ *     - `atom`     : hoja conceptual; sus hijos persisten pero los algoritmos
+ *                    los ignoran (como si estuvieran ocultos).
+ *     - `group`    : agrupador.
+ *
+ *  2. **containment** (default `prison`):
+ *     - `prison`   : agrupador con acción "liberar" (salida explícita de hijos).
+ *     - `hermetic` : agrupador sellado (los hijos no pueden salir).
+ *     - `cell`     : agrupador con osmosis que se extingue al vaciarse.
+ *
+ *  3. **mobility**    (default `unanchored`):
+ *     - `unanchored` : sus hijos pueden moverse libremente.
+ *     - `freezer`    : congelador tautológico (TODOS los descendientes).
+ *     - `monarchy`   : congelador contingente (cada descendiente decide vía
+ *                      `freeze()`); si el nodo no implementa `freeze()`, el
+ *                      adapter lo trata como `unanchored`.
+ *
+ *  4. **vigilance**   (default `distracted`):
+ *     - `distracted` : nunca aplica acciones sobre los hijos (identidad).
+ *     - `warden`     : ancestro que transforma drafts de los descendientes
+ *                      según las acciones declaradas por el consumidor.
+ */
+
+/** Rol en la dimensión de TOPOLOGÍA (hoja vs. agrupador). */
+export type TopologyRole = "atom" | "group";
+/** Rol en la dimensión de CONTAINMENT (cómo se manejan los hijos compartidos). */
+export type ContainmentRole = "prison" | "hermetic" | "cell";
+/** Rol en la dimensión de MOBILITY (restricciones de movimiento sobre los hijos). */
+export type MobilityRole = "unanchored" | "freezer" | "monarchy";
+/** Rol en la dimensión de VIGILANCE (transformación de drafts de descendientes). */
+export type VigilanceRole = "distracted" | "warden";
+
+/** Unión de TODOS los roles. Útil para parseo desde la cadena `actor`. */
+export type NodeRole = TopologyRole | ContainmentRole | MobilityRole | VigilanceRole;
+
+/** Dimensiones ortogonales en las que un nodo puede declarar rol. */
+export type RoleDimension = "topology" | "containment" | "mobility" | "vigilance";
+
+/**
+ * Vector de rol actoral de un nodo. Cada slot es **opcional**: si está
+ * `undefined`, el algoritmo aplica el default dimensional (`group`,
+ * `prison`, `unanchored`, `distracted`) sin quemarlo en la instancia.
+ *
+ * Si el consumidor define un slot, se conserva tal cual y el algoritmo lo
+ * lee como rol efectivo de esa dimensión.
+ */
+export interface NodeRoleVector {
+	topology?: TopologyRole;
+	containment?: ContainmentRole;
+	mobility?: MobilityRole;
+	vigilance?: VigilanceRole;
+}
+
+/**
+ * Miembros de cada dimensión — orden = prioridad creciente: si un nodo
+ * declara más de un miembro de la misma dimensión, prevalece el último.
+ */
+export const ROLE_DIMENSIONS: {
+	readonly topology: readonly TopologyRole[];
+	readonly containment: readonly ContainmentRole[];
+	readonly mobility: readonly MobilityRole[];
+	readonly vigilance: readonly VigilanceRole[];
+} = {
+	topology: ["atom", "group"],
+	containment: ["prison", "hermetic", "cell"],
+	mobility: ["unanchored", "freezer", "monarchy"],
+	vigilance: ["distracted", "warden"],
+};
+
+/** Default de cada dimensión cuando el nodo no declara rol explícito. */
+export const ROLE_DEFAULTS: {
+	readonly topology: TopologyRole;
+	readonly containment: ContainmentRole;
+	readonly mobility: MobilityRole;
+	readonly vigilance: VigilanceRole;
+} = {
+	topology: "group",
+	containment: "prison",
+	mobility: "unanchored",
+	vigilance: "distracted",
+};
+
+/**
+ * Grupos de roles mutuamente excluyentes (alias retro-compatible). Cada
+ * grupo coincide con los miembros de una dimensión: si un nodo declara
+ * varios miembros del mismo grupo, prevalece el de **mayor índice**.
+ */
+export const ROLE_CONFLICT_GROUPS: ReadonlyArray<readonly NodeRole[]> = [
+	ROLE_DIMENSIONS.containment,
+	ROLE_DIMENSIONS.mobility,
+	ROLE_DIMENSIONS.topology,
+	ROLE_DIMENSIONS.vigilance,
+];
+
+/**
+ * Construye un `NodeRoleVector` a partir de un arreglo libre de roles.
+ * Si la entrada es `undefined`/vacía → vector vacío (todos los slots
+ * `undefined`, el algoritmo aplicará defaults). Si declara varios roles
+ * de la misma dimensión, prevalece el de **mayor índice** dentro de
+ * `ROLE_DIMENSIONS`.
+ */
+export function buildRoleVector(roles?: readonly NodeRole[]): NodeRoleVector {
+	if (!roles || roles.length === 0) return {};
+	const set = new Set<NodeRole>(roles);
+	const pick = <R extends NodeRole>(members: readonly R[]): R | undefined => {
+		let best: R | undefined;
+		for (const m of members) if (set.has(m)) best = m;
+		return best;
+	};
+	return {
+		topology: pick(ROLE_DIMENSIONS.topology),
+		containment: pick(ROLE_DIMENSIONS.containment),
+		mobility: pick(ROLE_DIMENSIONS.mobility),
+		vigilance: pick(ROLE_DIMENSIONS.vigilance),
+	};
+}
+
+/** Serializa el vector a la cadena `actor` (kebab-case separada por espacios). */
+export function roleVectorToActor(vec: NodeRoleVector): string {
+	const out: string[] = [];
+	if (vec.topology) out.push(vec.topology);
+	if (vec.containment) out.push(vec.containment);
+	if (vec.mobility) out.push(vec.mobility);
+	if (vec.vigilance) out.push(vec.vigilance);
+	return out.join(" ");
+}
+
+/**
+ * Resuelve el rol efectivo de `node` en la dimensión `dim`. Si declara
+ * más de uno, devuelve el de mayor índice. Si no declara ninguno, devuelve
+ * `ROLE_DEFAULTS[dim]`.
+ */
+export function resolveRoleInDimension(actorString: string | undefined, dim: RoleDimension): NodeRole {
+	const raw = (actorString ?? "").trim();
+	if (raw.length === 0) return ROLE_DEFAULTS[dim];
+	const declared = new Set(raw.split(/\s+/));
+	const members = ROLE_DIMENSIONS[dim] as readonly NodeRole[];
+	let bestIdx = -1;
+	for (let i = 0; i < members.length; i++) if (declared.has(members[i])) bestIdx = i;
+	return bestIdx < 0 ? ROLE_DEFAULTS[dim] : members[bestIdx];
+}
+
+/** Dimensión a la que pertenece un rol concreto. */
+export function dimensionOfRole(role: NodeRole): RoleDimension {
+	for (const dim of Object.keys(ROLE_DIMENSIONS) as RoleDimension[]) {
+		if ((ROLE_DIMENSIONS[dim] as readonly NodeRole[]).includes(role)) return dim;
+	}
+	throw new Error(`[TreeData] Rol desconocido: '${role}'.`);
+}
 
 /* ─────────────────────────────────────────────────────────────────────── */
 /* Clase base de nodo: TODA clase de nodo concreta extiende esta.           */
@@ -99,22 +272,8 @@ export abstract class TreeNode<T = any> implements INode<T> {
 	public ireference: string = "";
 	public kind: string = "";
 	public label: string = "";
-	public stack: any = null;
-	/**
-	 * `istack`/`nistack` son abstractos: cada subclase concreta debe
-	 * exponerlos (getter derivado o campo). El interfaz `INode<T>` los
-	 * requiere y aquí evitamos colisión entre campo de instancia y getter.
-	 */
-	public abstract istack: string;
-	public abstract nistack: string;
-	public isLeaf: boolean = false;
-	public isPenultimate: boolean = false;
-	public nextLevelTitle: string = "";
-	public isLast: boolean = false;
 	/** Hijos del árbol (siempre nodos del mismo tipo recursivo). */
 	public children: T[] = [];
-	/** Registro original externo (no adaptado al árbol). Opcional. */
-	public obj?: unknown;
 
 	/** Banderas adicionales de UX (no parte del contrato genérico). */
 	public depth: number = 0;
@@ -150,6 +309,25 @@ export abstract class TreeNode<T = any> implements INode<T> {
 		c.children = [];
 		return c as T;
 	}
+}
+
+/**
+ * Clase base concreta para nodos ESCLAVOS de un objeto-maestro externo.
+ * Las subclases concretas que procesan un maestro externo (esquema, curso,
+ * documento crudo) extienden esta clase y exponen `imasterstack`/
+ * `nimasterstack` (campo o getter derivado).
+ */
+export abstract class TreeNodeSlave<T = any> extends TreeNode<T> implements INodeSlave<T> {
+	public masterstack: any = null;
+	/**
+	 * `imasterstack`/`nmasterstack` son abstractos: cada subclase concreta
+	 * debe exponerlos (getter derivado o campo). El interfaz `INodeSlave<T>`
+	 * los requiere y aquí evitamos colisión entre campo de instancia y getter.
+	 */
+	public abstract imasterstack: string;
+	public abstract nmasterstack: string;
+	/** Registro original externo (no adaptado al árbol). Opcional. */
+	public obj?: unknown;
 }
 
 /* ─────────────────────────────────────────────────────────────────────── */

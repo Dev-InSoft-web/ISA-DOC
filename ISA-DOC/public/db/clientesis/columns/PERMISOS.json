@@ -1,39 +1,39 @@
 {
-    "version":  3,
-    "kind":  "columns-tree",
-    "tableRef":  "PERMISOS",
-    "tableMeta":  {
-                      "originalName":  "PERMISOS",
-                      "hasIfNotExists":  true
-                  },
-    "root":  {
-                 "id":  "",
-                 "kind":  "root",
-                 "children":  [
-                                  {
-                                      "id":  "1",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IPERMISO",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  true
-                                              }
-                                  },
-                                  {
-                                      "id":  "2",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "NPERMISO",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false
-                                              }
-                                  }
-                              ]
-             },
-    "doc":  {
-                "description":  "Catalogo global de permisos del sistema (sin prefijo).",
-                "rules":  [
-                              "Vive bare bajo root: cualquier modulo lo referencia."
-                          ]
-            }
+  "version": 3,
+  "kind": "columns-tree",
+  "tableRef": "PERMISOS",
+  "tableMeta": {
+    "originalName": "PERMISOS",
+    "hasIfNotExists": true
+  },
+  "root": {
+    "id": "",
+    "kind": "root",
+    "children": [
+      {
+        "id": "1",
+        "kind": "col",
+        "obj": {
+          "name": "IPERMISO",
+          "type": "VARCHAR(255)",
+          "primaryKey": true
+        }
+      },
+      {
+        "id": "2",
+        "kind": "col",
+        "obj": {
+          "name": "NPERMISO",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      }
+    ]
+  },
+  "doc": {
+    "description": "Catalogo global de permisos del sistema (sin prefijo).",
+    "rules": [
+      "Vive bare bajo root: cualquier modulo lo referencia."
+    ]
+  }
 }

@@ -8,7 +8,8 @@ export interface PrefixObj {
 
 /**
  * Nodo agrupador "prefijo SQL". Es un vigilante: al emitir SQL concatena su
- * `prefix` al `rowName` de cada descendiente.
+ * `prefix` al `rowName` de cada descendiente. La nomenclatura SQL
+ * (uppercase) se fuerza automáticamente desde `normalize()`.
  */
 export class PrefixNode extends BaseTreeNode<PrefixObj> {
 	public readonly kind = "prefix" as const;
@@ -19,10 +20,21 @@ export class PrefixNode extends BaseTreeNode<PrefixObj> {
 	}
 
 	get prefix(): string { return this.obj.prefix; }
-	set prefix(v: string) { this.obj.prefix = v; this.obj.rowName = v; }
+	set prefix(v: string) {
+		this.obj.prefix = v;
+		this.obj.rowName = v;
+		this.normalize();
+	}
 
-	public override allowedChildKinds(): readonly NodeKind[] {
-		return ["prefix", "domain", "table"];
+	protected override normalize(): void {
+		// Forzar mayusculas a nivel SQL: tanto `prefix` como `rowName`.
+		const p = (this.obj.prefix ?? "").toUpperCase();
+		this.obj.prefix = p;
+		this.obj.rowName = p;
+	}
+
+	public override acceptsChildKind(kind: NodeKind): boolean {
+		return kind === "prefix" || kind === "domain" || kind === "table";
 	}
 
 	public override validate(): NodeValidation {
@@ -30,11 +42,10 @@ export class PrefixNode extends BaseTreeNode<PrefixObj> {
 		const warnings: string[] = [];
 		const p = this.obj.prefix ?? "";
 		if (!p) errors.push("El prefijo no puede estar vacío.");
-		if (p && !p.endsWith("_")) warnings.push("Por convención el prefijo debe terminar en `_`.");
-		if (p && p !== p.toUpperCase()) warnings.push("Por convención el prefijo debe estar en mayúsculas.");
 		if (this.obj.rowName !== this.obj.prefix) {
 			warnings.push("`rowName` debe coincidir con `prefix` en un PrefixNode.");
 		}
 		return { errors, warnings };
 	}
 }
+

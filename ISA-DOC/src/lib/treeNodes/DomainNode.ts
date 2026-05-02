@@ -14,8 +14,8 @@ export interface DomainObj {
 export class DomainNode extends BaseTreeNode<DomainObj> {
 	public readonly kind = "domain" as const;
 
-	public override allowedChildKinds(): readonly NodeKind[] {
-		return ["table", "prefix"];
+	public override acceptsChildKind(kind: NodeKind): boolean {
+		return kind === "table" || kind === "prefix";
 	}
 
 	public override validate(): NodeValidation {
@@ -25,3 +25,4 @@ export class DomainNode extends BaseTreeNode<DomainObj> {
 		return { errors, warnings: [] };
 	}
 }
+

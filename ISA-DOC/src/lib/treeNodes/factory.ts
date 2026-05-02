@@ -15,10 +15,10 @@ import type { NodeKind, PersistedNodeJSON } from "./types.ts";
  * `node.reindex()`. Así se evitan inconsistencias entre `id`/`ireference`
  * almacenados y la posición estructural real.
  */
-export function nodeFromJSON(json: PersistedNodeJSON, parent: BaseTreeNode | null = null): BaseTreeNode {
+export function nodeFromJSON(json: PersistedNodeJSON, parent: BaseTreeNode<any> | null = null): BaseTreeNode<any> {
 	const kind = json.kind as NodeKind;
 	const obj = (json.obj ?? {}) as Record<string, unknown>;
-	let n: BaseTreeNode;
+	let n: BaseTreeNode<any>;
 	switch (kind) {
 		case "root":
 			n = new RootNode();

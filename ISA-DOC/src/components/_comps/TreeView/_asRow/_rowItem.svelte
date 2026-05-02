@@ -118,7 +118,7 @@
                         </span>
                      {:else if _hasUnfrozenSibling && !rowController.mergedDisabled}
                         <span class="trvwr-drag-handle trvwr-drag-handle--frozen" title="Posición fija (auto-stack u otra regla)" aria-disabled="true">
-                           <Iconify icon="mdi:dots-grid" style="font-size: 1rem; opacity: 0.5" />
+                           <Iconify icon="mdi:hand-back-right-off-outline" style="font-size: 1rem; opacity: 0.3" />
                         </span>
                      {/if}
                      {#if rowController.showCaret}

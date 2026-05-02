@@ -1,86 +1,86 @@
 {
-    "version":  3,
-    "kind":  "columns-tree",
-    "tableRef":  "ATRIBUTOS_X_DRIVERS",
-    "tableMeta":  {
-                      "originalName":  "ATRIBUTOS_X_DRIVERS",
-                      "hasIfNotExists":  true
-                  },
-    "root":  {
-                 "id":  "",
-                 "kind":  "root",
-                 "children":  [
-                                  {
-                                      "id":  "1",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IDRIVER",
-                                                  "type":  "BIGINT",
-                                                  "primaryKey":  true
-                                              }
-                                  },
-                                  {
-                                      "id":  "2",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IATRIBUTO",
-                                                  "type":  "BIGINT",
-                                                  "primaryKey":  true
-                                              }
-                                  },
-                                  {
-                                      "id":  "3",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "QNIVEL",
-                                                  "type":  "TINYINT",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "4",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "NATRIBUTO",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "5",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "BREQUERIDO",
-                                                  "type":  "BIT",
-                                                  "primaryKey":  false,
-                                                  "defaultValue":  "0"
-                                              }
-                                  },
-                                  {
-                                      "id":  "6",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "JCONFIG",
-                                                  "type":  "VARCHAR(MAX)",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "7",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "TDATRIBUTO",
-                                                  "type":  "TINYINT",
-                                                  "primaryKey":  false,
-                                                  "defaultValue":  "0"
-                                              }
-                                  }
-                              ]
-             },
-    "doc":  {
-                "description":  "Pivote N:N entre atributos y drivers.",
-                "rules":  [
-                              "PK compuesta (IDRIVER, IATRIBUTO)."
-                          ]
-            }
+  "version": 3,
+  "kind": "columns-tree",
+  "tableRef": "ATRIBUTOS_X_DRIVERS",
+  "tableMeta": {
+    "originalName": "ATRIBUTOS_X_DRIVERS",
+    "hasIfNotExists": true
+  },
+  "root": {
+    "id": "",
+    "kind": "root",
+    "children": [
+      {
+        "id": "1",
+        "kind": "col",
+        "obj": {
+          "name": "IDRIVER",
+          "type": "BIGINT",
+          "primaryKey": true
+        }
+      },
+      {
+        "id": "2",
+        "kind": "col",
+        "obj": {
+          "name": "IATRIBUTO",
+          "type": "BIGINT",
+          "primaryKey": true
+        }
+      },
+      {
+        "id": "3",
+        "kind": "col",
+        "obj": {
+          "name": "QNIVEL",
+          "type": "TINYINT",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "4",
+        "kind": "col",
+        "obj": {
+          "name": "NATRIBUTO",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "5",
+        "kind": "col",
+        "obj": {
+          "name": "BREQUERIDO",
+          "type": "BIT",
+          "defaultValue": "0",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "6",
+        "kind": "col",
+        "obj": {
+          "name": "JCONFIG",
+          "type": "VARCHAR(MAX)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "7",
+        "kind": "col",
+        "obj": {
+          "name": "TDATRIBUTO",
+          "type": "TINYINT",
+          "defaultValue": "0",
+          "primaryKey": false
+        }
+      }
+    ]
+  },
+  "doc": {
+    "description": "Pivote N:N entre atributos y drivers.",
+    "rules": [
+      "PK compuesta (IDRIVER, IATRIBUTO)."
+    ]
+  }
 }

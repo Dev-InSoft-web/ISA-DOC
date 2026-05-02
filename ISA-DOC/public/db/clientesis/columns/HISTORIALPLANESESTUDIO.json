@@ -1,0 +1,95 @@
+{
+  "version": 3,
+  "kind": "columns-tree",
+  "tableRef": "HISTORIALPLANESESTUDIO",
+  "tableMeta": {
+    "originalName": "HISTORIALPLANESESTUDIO",
+    "hasIfNotExists": true
+  },
+  "root": {
+    "id": "",
+    "kind": "root",
+    "children": [
+      {
+        "id": "1",
+        "kind": "col",
+        "obj": {
+          "name": "IHISTORIALPLANESESTUDIO",
+          "type": "BIGINT",
+          "primaryKey": true,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "2",
+        "kind": "col",
+        "obj": {
+          "name": "IPLANESTUDIO",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "3",
+        "kind": "col",
+        "obj": {
+          "name": "CAMPO",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "4",
+        "kind": "col",
+        "obj": {
+          "name": "VALOR",
+          "type": "TEXT",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "5",
+        "kind": "col",
+        "obj": {
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "6",
+        "kind": "col",
+        "obj": {
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "7",
+        "kind": "col",
+        "obj": {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      },
+      {
+        "id": "8",
+        "kind": "col",
+        "obj": {
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "primaryKey": false,
+          "kind": "col"
+        }
+      }
+    ]
+  }
+}

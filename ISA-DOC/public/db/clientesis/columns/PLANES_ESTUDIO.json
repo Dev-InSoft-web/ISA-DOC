@@ -1,172 +1,172 @@
 {
-    "version":  3,
-    "kind":  "columns-tree",
-    "tableRef":  "PLANES_ESTUDIO",
-    "tableMeta":  {
-                      "originalName":  "PLANES_ESTUDIO",
-                      "hasIfNotExists":  true
-                  },
-    "root":  {
-                 "id":  "",
-                 "kind":  "root",
-                 "children":  [
-                                  {
-                                      "id":  "1",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IPLANESTUDIO",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  true
-                                              }
-                                  },
-                                  {
-                                      "id":  "2",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "NOMBRE",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "3",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "DESCRIPCIONPLAN",
-                                                  "type":  "TEXT",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "4",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "TTDVISUALIZACION",
-                                                  "type":  "VARCHAR(50)",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "5",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "BACTIVO",
-                                                  "type":  "BIT",
-                                                  "primaryKey":  false,
-                                                  "defaultValue":  "1"
-                                              }
-                                  },
-                                  {
-                                      "id":  "6",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "BGENERACERTIFICADOS",
-                                                  "type":  "BIT",
-                                                  "primaryKey":  false,
-                                                  "defaultValue":  "0"
-                                              }
-                                  },
-                                  {
-                                      "id":  "7",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IRECURSO",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false,
-                                                  "nullable":  "NULL"
-                                              }
-                                  },
-                                  {
-                                      "id":  "8",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "AUDITORIA",
-                                                  "primaryKey":  false,
-                                                  "kind":  "optional",
-                                                  "show":  true
-                                              }
-                                  },
-                                  {
-                                      "id":  "9",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IUSUARIOCRE",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "10",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IAPPCRE",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "11",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IPCRE",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "12",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "FHCRE",
-                                                  "type":  "DATETIME2",
-                                                  "primaryKey":  false,
-                                                  "defaultValue":  "GETDATE()"
-                                              }
-                                  },
-                                  {
-                                      "id":  "13",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IUSUARIOULT",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "14",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IAPPULT",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "15",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IPULT",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "16",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "FHULT",
-                                                  "type":  "DATETIME2",
-                                                  "primaryKey":  false,
-                                                  "defaultValue":  "GETDATE()"
-                                              }
-                                  }
-                              ]
-             },
-    "doc":  {
-                "description":  "Plan de estudio: contenedor del modulo de capacitacion.",
-                "rules":  [
-                              "Master del dominio Planes Estudio.",
-                              "stack:true emite tabla virtual HISTORIALPLANESTUDIO."
-                          ]
-            }
+  "version": 3,
+  "kind": "columns-tree",
+  "tableRef": "PLANES_ESTUDIO",
+  "tableMeta": {
+    "originalName": "PLANES_ESTUDIO",
+    "hasIfNotExists": true
+  },
+  "root": {
+    "id": "",
+    "kind": "root",
+    "children": [
+      {
+        "id": "1",
+        "kind": "col",
+        "obj": {
+          "name": "IPLANESTUDIO",
+          "type": "VARCHAR(255)",
+          "primaryKey": true
+        }
+      },
+      {
+        "id": "2",
+        "kind": "col",
+        "obj": {
+          "name": "NOMBRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "3",
+        "kind": "col",
+        "obj": {
+          "name": "DESCRIPCIONPLAN",
+          "type": "TEXT",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "4",
+        "kind": "col",
+        "obj": {
+          "name": "TTDVISUALIZACION",
+          "type": "VARCHAR(50)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "5",
+        "kind": "col",
+        "obj": {
+          "name": "BACTIVO",
+          "type": "BIT",
+          "defaultValue": "1",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "6",
+        "kind": "col",
+        "obj": {
+          "name": "BGENERACERTIFICADOS",
+          "type": "BIT",
+          "defaultValue": "0",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "7",
+        "kind": "col",
+        "obj": {
+          "name": "IRECURSO",
+          "type": "VARCHAR(255)",
+          "nullable": "NULL",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "8",
+        "kind": "col",
+        "obj": {
+          "name": "AUDITORIA",
+          "primaryKey": false,
+          "kind": "optional",
+          "show": true
+        }
+      },
+      {
+        "id": "9",
+        "kind": "col",
+        "obj": {
+          "name": "IUSUARIOCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "10",
+        "kind": "col",
+        "obj": {
+          "name": "IAPPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "11",
+        "kind": "col",
+        "obj": {
+          "name": "IPCRE",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "12",
+        "kind": "col",
+        "obj": {
+          "name": "FHCRE",
+          "type": "DATETIME2",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "13",
+        "kind": "col",
+        "obj": {
+          "name": "IUSUARIOULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "14",
+        "kind": "col",
+        "obj": {
+          "name": "IAPPULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "15",
+        "kind": "col",
+        "obj": {
+          "name": "IPULT",
+          "type": "VARCHAR(255)",
+          "primaryKey": false
+        }
+      },
+      {
+        "id": "16",
+        "kind": "col",
+        "obj": {
+          "name": "FHULT",
+          "type": "DATETIME2",
+          "defaultValue": "GETDATE()",
+          "primaryKey": false
+        }
+      }
+    ]
+  },
+  "doc": {
+    "description": "Plan de estudio: contenedor del modulo de capacitacion.",
+    "rules": [
+      "Master del dominio Planes Estudio.",
+      "stack:true emite tabla virtual HISTORIALPLANESTUDIO."
+    ]
+  }
 }

@@ -7,6 +7,12 @@ export { TableNode, type TableObj } from "./TableNode.ts";
 export { ColumnNode, type ColumnObj } from "./ColumnNode.ts";
 export { nodeFromJSON, rootFromJSON } from "./factory.ts";
 export {
+	defineTreeNode,
+	type DefineTreeNodeSpec,
+	type NodeRole,
+	type NodeRoleVector,
+} from "./defineTreeNode.ts";
+export {
 	historialTableNameOf,
 	deriveHistorialColumns,
 	masterPkOf,

@@ -37,7 +37,13 @@ export class ColumnNode extends BaseTreeNode<ColumnObj> {
 		} as ColumnObj);
 	}
 
-	public override allowedChildKinds(): readonly NodeKind[] { return []; }
+	public override acceptsChildKind(_kind: NodeKind): boolean { return false; }
+
+	protected override normalize(): void {
+		// Tipo SQL en MAYÚSCULAS por algoritmo. El `name` queda libre porque
+		// hay convenciones (`iX`, `nX`, …) que mezclan camelCase intencional.
+		if (this.obj.type) this.obj.type = this.obj.type.toUpperCase();
+	}
 
 	public override validate(): NodeValidation {
 		const errors: string[] = [];
@@ -46,9 +52,6 @@ export class ColumnNode extends BaseTreeNode<ColumnObj> {
 		const isSectionLike = this.obj.kind === "section" || this.obj.kind === "section_end" || this.obj.kind === "optional";
 		if (!this.obj.type && !isSectionLike) {
 			errors.push("`type` es obligatorio en una columna.");
-		}
-		if (this.obj.type && this.obj.type !== this.obj.type.toUpperCase()) {
-			warnings.push("Por convención el tipo SQL debería estar en mayúsculas.");
 		}
 		return { errors, warnings };
 	}

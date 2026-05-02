@@ -1,50 +1,50 @@
 {
-    "version":  3,
-    "kind":  "columns-tree",
-    "tableRef":  "CURSOS_PREREQUISITOS",
-    "tableMeta":  {
-                      "originalName":  "CURSOS_PREREQUISITOS",
-                      "hasIfNotExists":  true
-                  },
-    "root":  {
-                 "id":  "",
-                 "kind":  "root",
-                 "children":  [
-                                  {
-                                      "id":  "1",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "ICURSO",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  true
-                                              }
-                                  },
-                                  {
-                                      "id":  "2",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "ICURSOREQUERIDO",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  true
-                                              }
-                                  },
-                                  {
-                                      "id":  "3",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IPLANESTUDIO",
-                                                  "type":  "VARCHAR(255)",
-                                                  "primaryKey":  true
-                                              }
-                                  }
-                              ]
-             },
-    "doc":  {
-                "description":  "Grafo de prerequisitos entre cursos.",
-                "rules":  [
-                              "PK compuesta.",
-                              "Sin ciclos.",
-                              "Self-loops prohibidos."
-                          ]
-            }
+  "version": 3,
+  "kind": "columns-tree",
+  "tableRef": "CURSOS_PREREQUISITOS",
+  "tableMeta": {
+    "originalName": "CURSOS_PREREQUISITOS",
+    "hasIfNotExists": true
+  },
+  "root": {
+    "id": "",
+    "kind": "root",
+    "children": [
+      {
+        "id": "1",
+        "kind": "col",
+        "obj": {
+          "name": "ICURSO",
+          "type": "VARCHAR(255)",
+          "primaryKey": true
+        }
+      },
+      {
+        "id": "2",
+        "kind": "col",
+        "obj": {
+          "name": "ICURSOREQUERIDO",
+          "type": "VARCHAR(255)",
+          "primaryKey": true
+        }
+      },
+      {
+        "id": "3",
+        "kind": "col",
+        "obj": {
+          "name": "IPLANESTUDIO",
+          "type": "VARCHAR(255)",
+          "primaryKey": true
+        }
+      }
+    ]
+  },
+  "doc": {
+    "description": "Grafo de prerequisitos entre cursos.",
+    "rules": [
+      "PK compuesta.",
+      "Sin ciclos.",
+      "Self-loops prohibidos."
+    ]
+  }
 }
