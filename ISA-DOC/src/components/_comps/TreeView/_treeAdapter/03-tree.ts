@@ -310,10 +310,15 @@ export abstract class TATree<Stacker, TWorking extends ITreeData<TWorking>> exte
 
 	protected remapExpandedByIdMap(idMap: Map<string, string>): void {
 		if (idMap.size === 0) return;
-		for (const node of this._expandedNodes) {
-			const mapped = idMap.get(this.normalizeNodeId(node.flatPath));
-			if (mapped) node.flatPath = mapped;
-		}
+		// IMPORTANTE: NO aplicar `idMap` a `node.flatPath` en `_expandedNodes`.
+		// Los nodos expandidos son REFERENCIAS a los nodos del árbol; su
+		// `flatPath` ya fue actualizado por el traverse. Aplicar `idMap` aquí
+		// causa cascada (chain remap) cuando el `newId` de un nodo coincide
+		// con el `oldId` de otro. Ej.: si "1.3"→"1.2" y "1.2"→"4", aplicar
+		// `idMap.get("1.2")` sobre dom_cursos (que ya quedó en "1.2") lo
+		// reasigna por error a "4", colisionando con dom_drivers.
+		// Solo remapeamos los ids guardados como strings (`_selectedId`,
+		// `_focusedNodeId`) — esos no fueron tocados por el traverse.
 		const sel = idMap.get(this._selectedId);
 		if (sel) this._selectedId = sel;
 		const foc = idMap.get(this._focusedNodeId);
