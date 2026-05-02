@@ -1,9 +1,9 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "TEMAS",
+  "tableref": "SOP_TEMAS",
   "tablemeta": {
-    "originalname": "TEMAS",
+    "originalname": "SOP_TEMAS",
     "hasifnotexists": true
   },
   "nodes": [

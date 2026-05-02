@@ -218,6 +218,23 @@ export interface ParsedTable {
 	 * Si está ausente, los generadores usan defaults inferidos de `name`/columnas.
 	 */
 	customization?: ResourceCustomization;
+	/**
+	 * Banderas de generación por tipo de snippet. `undefined`/`true` =
+	 * generar; `false` = omitir el snippet en la pestaña, en la salida y en
+	 * cualquier procesamiento de codegen. Default: todos `true`.
+	 */
+	snippets?: TableSnippetFlags;
+}
+
+/** Banderas booleanas por tipo de snippet generable a partir de la tabla. */
+export interface TableSnippetFlags {
+	/** Genera (true) u omite (false) el snippet `CREATE TABLE` y la pestaña SQL. */
+	sql?: boolean;
+}
+
+/** ¿La tabla `t` debe generar el snippet de SQL? Default `true`. */
+export function isSqlSnippetEnabled(t: Pick<ParsedTable, "snippets">): boolean {
+	return t.snippets?.sql !== false;
 }
 
 /** Identificador SQL efectivo: cadena heredada + nombre persistido. */
@@ -519,11 +536,23 @@ export function emitTable(t: ParsedTable): string {
 	const innerLines: InnerLine[] = [];
 
 	let openSection: string | null = null;
+	let openSectionStartIdx = -1;
+	let openSectionStmtCount = 0;
 	const closeSection = (): void => {
-		if (openSection) {
+		if (!openSection) return;
+		// Si la sección no emitió ningún statement (todas sus columnas fueron
+		// filtradas o nunca tuvo hijos) NO emitimos el par `#region/#endregion`
+		// vacío: retiramos el marker de apertura para dejar el snippet limpio.
+		// Esto cubre el caso AUDITORIA inactiva que alguna vía de hidratación
+		// no hubiera podido filtrar antes de llegar a este emisor.
+		if (openSectionStmtCount === 0 && openSectionStartIdx >= 0) {
+			innerLines.splice(openSectionStartIdx, 1);
+		} else {
 			innerLines.push({ text: `    -- #endregion ${openSection}`, isStmt: false });
-			openSection = null;
 		}
+		openSection = null;
+		openSectionStartIdx = -1;
+		openSectionStmtCount = 0;
 	};
 
 	let skipUntilSectionEnd = false;
@@ -532,19 +561,31 @@ export function emitTable(t: ParsedTable): string {
 			closeSection();
 			if (r.active === false) { skipUntilSectionEnd = true; continue; }
 			skipUntilSectionEnd = false;
+			openSectionStartIdx = innerLines.length;
 			innerLines.push({ text: `    -- #region ${r.name}`, isStmt: false });
 			openSection = r.name;
+			openSectionStmtCount = 0;
 		} else if (isSectionRow(r)) {
 			closeSection();
 			skipUntilSectionEnd = false;
+			// Defensa adicional: una `section` legacy llamada AUDITORIA con
+			// `active === false` (set por algún flujo de hidratación) NO debe
+			// emitirse. Equivale a una optional inactiva.
+			if ((r as { active?: boolean }).active === false && r.name === "AUDITORIA") {
+				skipUntilSectionEnd = true;
+				continue;
+			}
+			openSectionStartIdx = innerLines.length;
 			innerLines.push({ text: `    -- #region ${r.name}`, isStmt: false });
 			openSection = r.name;
+			openSectionStmtCount = 0;
 		} else if (isSectionEndRow(r)) {
 			closeSection();
 			skipUntilSectionEnd = false;
 		} else {
 			if (skipUntilSectionEnd) continue;
 			innerLines.push({ text: "    " + emitColumn(r), isStmt: true });
+			if (openSection) openSectionStmtCount++;
 		}
 	}
 	closeSection();
@@ -591,10 +632,12 @@ export function emitDropTable(t: ParsedTable): string {
  * delimitar el snippet).
  */
 export function emitTablesAsBody(tables: ParsedTable[]): string {
-	if (tables.length <= 1) {
-		return tables.map(emitTable).join("\n\n") + "\n";
+	const enabled = tables.filter(isSqlSnippetEnabled);
+	if (enabled.length === 0) return "";
+	if (enabled.length === 1) {
+		return enabled.map(emitTable).join("\n\n") + "\n";
 	}
-	const chunks = tables.map((t) => {
+	const chunks = enabled.map((t) => {
 		const id = effectiveTableName(t);
 		return `-- #region ${id}\n${emitTable(t)}\n-- #endregion ${id}`;
 	});

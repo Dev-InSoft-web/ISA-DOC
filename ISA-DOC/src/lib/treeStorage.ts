@@ -84,7 +84,7 @@ const ENTITY_NAME_BY_KIND: Partial<Record<NodeKind, string>> = {
 
 /** Lista declarada de keys camelCase del `obj` de cada kind con entidad. */
 const ENTITY_OBJ_KEYS_BY_KIND: Partial<Record<NodeKind, readonly string[]>> = {
-	table: ["tableRef", "rowName", "autoStack", "autoStackHistorial", "relations"],
+	table: ["tableRef", "rowName", "tableId", "autoStack", "autoStackHistorial", "relations", "customization", "snippets"],
 	col: ["name", "type", "nullable", "defaultValue", "primaryKey", "extra", "kind", "foreignKey"],
 	domain: ["domainId", "masterTable"],
 };

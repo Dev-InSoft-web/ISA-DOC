@@ -109,10 +109,7 @@
         "flatpath": "1.1",
         "tableref": "ATRIBUTOS_X_DRIVERS",
         "rowname": "ATRIBUTOS_X_DRIVERS",
-        "tableid": "tbl_atributos_x_drivers",
-        "snippets": {
-          "sql": false
-        }
+        "tableid": "tbl_atributos_x_drivers"
       },
       {
         "itable": "1.2",

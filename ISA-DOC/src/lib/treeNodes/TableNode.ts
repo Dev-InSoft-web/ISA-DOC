@@ -63,6 +63,19 @@ export interface TableObj {
 	 * tal cual desde `tableSchema.ResourceCustomization`.
 	 */
 	customization?: Record<string, unknown>;
+	/**
+	 * Banderas de generación por tipo de snippet. `undefined`/`true` =
+	 * generar; `false` = omitir el snippet en la pestaña, en la salida y en
+	 * cualquier procesamiento de codegen. Default: todos `true`. Hoy se
+	 * controla `sql` (afecta `emitTable`/`emitTablesAsBody`/preview SQL).
+	 */
+	snippets?: TableSnippetFlags;
+}
+
+/** Banderas booleanas por tipo de snippet generable a partir de la tabla. */
+export interface TableSnippetFlags {
+	/** Genera (true) u omite (false) el snippet `CREATE TABLE` y la pestaña SQL. */
+	sql?: boolean;
 }
 
 /**
@@ -83,6 +96,9 @@ export class TableNode extends BaseTreeNode<TableObj> {
 			relations: Array.isArray(obj.relations) && obj.relations.length ? obj.relations.map((r) => ({ ...r })) : undefined,
 			customization: obj.customization && typeof obj.customization === "object"
 				? { ...obj.customization }
+				: undefined,
+			snippets: obj.snippets && typeof obj.snippets === "object"
+				? { ...obj.snippets }
 				: undefined,
 		} as TableObj);
 	}
@@ -133,6 +149,15 @@ export class TableNode extends BaseTreeNode<TableObj> {
 		}
 		if (this.obj.customization && typeof this.obj.customization === "object" && Object.keys(this.obj.customization).length) {
 			out.customization = { ...this.obj.customization };
+		}
+		if (this.obj.snippets && typeof this.obj.snippets === "object") {
+			// Persistimos sólo los flags explícitamente `false` (los `true` /
+			// `undefined` son el default y no añaden información).
+			const persisted: Record<string, boolean> = {};
+			for (const [k, v] of Object.entries(this.obj.snippets)) {
+				if (v === false) persisted[k] = false;
+			}
+			if (Object.keys(persisted).length) out.snippets = persisted;
 		}
 		return out;
 	}

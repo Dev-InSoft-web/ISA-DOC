@@ -5,6 +5,7 @@
 		emitDropTable,
 		emitTable,
 		effectiveTableName,
+		isSqlSnippetEnabled,
 		newTableId,
 		type ParsedTable,
 	} from "../../lib/tableSchema.ts";
@@ -12,6 +13,7 @@
 	import { genAzureFn, genClient, genModelo, genServer } from "../../lib/codeGen/generators.ts";
 	import { findDomainOf, getSlaves, isMaster as isMasterFn, type DomainsMap } from "../../lib/codeGen/domains.ts";
 	import { getCached, setCached, loadStateFromServer, reloadStateFromServer, onStateChanged } from "../../lib/codeGen/stateClient.ts";
+	import { isRealtimeEnabled } from "../../lib/realtimeFlag.ts";
 	import type { ResourceConfig, FieldDef } from "../../lib/codeGen/types.ts";
 	import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
 	import CodeViewer from "../viewers/CodeViewer.svelte";
@@ -162,7 +164,7 @@
 		// actualizado y no se generen ciclos por estado divergente.
 		(adapter as TreeSQLTablesAdapter).syncTablesQuiet(tables);
 		dirty = true;
-		void save(true);
+		scheduleSave();
 	}
 
 	$: selected = (() => {
@@ -199,7 +201,7 @@
 		tables = tables;
 		adapter.setTables(tables);
 		dirty = true;
-		void save(true);
+		scheduleSave();
 	}
 
 	function buildCustomizationFromMerged(
@@ -266,7 +268,31 @@
 		tables = tables;
 		adapter.setTables(tables);
 		dirty = true;
-		void save(true);
+		scheduleSave();
+	}
+
+	/**
+	 * Activa o desactiva la generación de un snippet (`sql` por ahora) para la
+	 * tabla seleccionada. Persiste el flag en `t.snippets` y, si se desactivó
+	 * el SQL estando en esa pestaña, mueve el foco a otra pestaña visible.
+	 */
+	function setTableSnippet(idx: number, key: "sql", enabled: boolean): void {
+		const t = tables[idx];
+		if (!t) return;
+		const current = (t.snippets ?? {}) as NonNullable<ParsedTable["snippets"]>;
+		const nextFlag: boolean | undefined = enabled ? undefined : false;
+		const nextSnippets: NonNullable<ParsedTable["snippets"]> = { ...current };
+		if (nextFlag === undefined) delete (nextSnippets as Record<string, unknown>)[key];
+		else nextSnippets[key] = nextFlag;
+		const cleaned = Object.keys(nextSnippets).length ? nextSnippets : undefined;
+		tables[idx] = { ...t, snippets: cleaned };
+		tables = tables;
+		adapter.setTables(tables);
+		if (key === "sql" && !enabled && activeCodeTab === "sql") {
+			activeCodeTab = "model";
+		}
+		dirty = true;
+		scheduleSave();
 	}
 
 	async function load(): Promise<void> {
@@ -314,9 +340,27 @@
 		}
 	}
 
+	/**
+	 * Debounce de 1 segundo para guardar el árbol completo. Cada llamada
+	 * cancela el timer pendiente y reagenda el `save(true)`. Esto reemplaza
+	 * la antigua emisión por setter: en lugar de un PUT por cada mutación
+	 * fina, agendamos UN PUT con el snapshot final del árbol cuando el
+	 * usuario deja de tocar por 1 s.
+	 */
+	let saveTimer: number | null = null;
+	function scheduleSave(): void {
+		if (typeof window === "undefined") return;
+		if (saveTimer !== null) window.clearTimeout(saveTimer);
+		saveTimer = window.setTimeout(() => {
+			saveTimer = null;
+			void save(true);
+		}, 1000);
+	}
+
 	/** Notifica a otras pestañas que `/api/tables` cambió para que recarguen. */
 	function broadcastTablesUpdated(): void {
 		if (!tablesChannel) return;
+		if (!isRealtimeEnabled()) return;
 		try {
 			tablesChannel.postMessage({ kind: "tables-updated", senderId: tabId, ts: Date.now() });
 		} catch { /* noop */ }
@@ -326,6 +370,7 @@
 		if (generating) return;
 		generating = true;
 		try {
+			if (saveTimer !== null) { window.clearTimeout(saveTimer); saveTimer = null; }
 			if (dirty) await save(true);
 			const r = await fetch("/api/sql/generate?dry=1", { method: "POST" });
 			const data = (await r.json()) as { ok?: boolean; full?: string; count?: number; error?: string };
@@ -398,6 +443,7 @@
 			tabId = `tab_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
 			tablesChannel = new BroadcastChannel(TABLES_BROADCAST_CHANNEL);
 			tablesChannel.onmessage = (ev) => {
+				if (!isRealtimeEnabled()) return;
 				const msg = ev.data as { kind?: string; senderId?: string } | null;
 				if (!msg || msg.kind !== "tables-updated") return;
 				if (msg.senderId === tabId) return;
@@ -413,6 +459,7 @@
 		// pestaña reordena dominios/prefijos o cambia targetFilePaths, recibimos
 		// la notificación y rehidratamos los dominios sin tocar las tablas.
 		const offStateChanged = onStateChanged(() => {
+			if (!isRealtimeEnabled()) return;
 			if (dirty || saving) return;
 			void reloadStateFromServer().then(() => {
 				domains = adapter.reloadFromCache();
@@ -447,6 +494,7 @@
 				window.removeEventListener("pagehide", flushTablesOnUnload);
 				window.removeEventListener("beforeunload", flushTablesOnUnload);
 			}
+			if (saveTimer !== null) { try { window.clearTimeout(saveTimer); } catch { /* noop */ } saveTimer = null; }
 			if (tablesChannel) {
 				try { tablesChannel.close(); } catch { /* noop */ }
 				tablesChannel = null;
@@ -614,8 +662,27 @@
 							</FlexLayout>
 						</FlexLayout>
 
-						{#if activeCodeTab === "sql"}
+						<FlexLayout items="center" justify="between" style="margin-top: 0.5rem;">
+							<FlexLayout items="center">
+								<Iconify icon="mdi:toggle-switch-outline" />
+								<Text><small>Generar snippets</small></Text>
+							</FlexLayout>
+							<FlexLayout items="center">
+								<label class="snippet-toggle">
+									<input
+										type="checkbox"
+										checked={isSqlSnippetEnabled(t)}
+										on:change={(ev) => setTableSnippet(idx, "sql", (ev.currentTarget as HTMLInputElement).checked)}
+									/>
+									<Text><small>SQL</small></Text>
+								</label>
+							</FlexLayout>
+						</FlexLayout>
+
+						{#if activeCodeTab === "sql" && isSqlSnippetEnabled(t)}
 							<SqlTreeEditor table={t} prefix={t.effectivePrefix ?? ""} readonly={isHistorialDerived(t)} onChange={(nt) => onTableChange(idx, nt)} />
+						{:else if activeCodeTab === "sql" && !isSqlSnippetEnabled(t)}
+							<Text color="neutral"><small>El snippet SQL está desactivado para esta tabla.</small></Text>
 						{:else if cfg && mergedCfg}
 							<ResourceConfigSections
 								resource={mergedCfg}
@@ -647,7 +714,8 @@
 				{@const prodClient = prodFrags.filter((p: any) => p.role === "client")}
 
 				{#key tableKey(t)}
-					{@const sqlCode = `${emitDropTable(t)}\n\n${emitTable(t)}`}
+					{@const sqlEnabled = isSqlSnippetEnabled(t)}
+					{@const sqlCode = sqlEnabled ? `${emitDropTable(t)}\n\n${emitTable(t)}` : ""}
 					{@const modelCode = cfg ? genModelo(cfg, mergedResources) : ""}
 					{@const serverCode = cfg ? genServer(cfg, mergedResources) : ""}
 					{@const clientCode = cfg ? genClient(cfg) : ""}
@@ -655,9 +723,11 @@
 					{@const azureCode = (cfg && selectedIsMaster) ? genAzureFn([cfg, ...slavesCfgs]) : ""}
 					<Card>
 						<div class="code-tabs-bar">
-							<button class="code-tab" class:active={activeCodeTab === "sql"} type="button" on:click={() => (activeCodeTab = "sql")}>
-								<Iconify icon="mdi:database" /> <span>SQL</span>
-							</button>
+							{#if sqlEnabled}
+								<button class="code-tab" class:active={activeCodeTab === "sql"} type="button" on:click={() => (activeCodeTab = "sql")}>
+									<Iconify icon="mdi:database" /> <span>SQL</span>
+								</button>
+							{/if}
 							{#if cfg}
 								<button class="code-tab" class:active={activeCodeTab === "model"} type="button" on:click={() => (activeCodeTab = "model")}>
 									<Iconify icon="mdi:cube-outline" /> <span>Modelo</span>
@@ -676,7 +746,7 @@
 							{/if}
 						</div>
 
-						{#if activeCodeTab === "sql"}
+						{#if activeCodeTab === "sql" && sqlEnabled}
 							<div class="code-card">
 								<FlexLayout items="center" justify="between">
 									<FlexLayout items="center"><Iconify icon="mdi:database" /><Text color="neutral"><small>DROP + CREATE</small></Text></FlexLayout>

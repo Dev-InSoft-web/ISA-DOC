@@ -2,6 +2,8 @@
 // Reemplaza el uso anterior de localStorage. Mantiene una caché síncrona en
 // memoria para no romper la API de los `load*`/`save*` originales.
 
+import { isRealtimeEnabled } from "../realtimeFlag.ts";
+
 const ENDPOINT = "/api/codegen/state";
 const STATE_BROADCAST_CHANNEL = "isa-doc:state";
 
@@ -32,6 +34,8 @@ function ensureStateChannel(): void {
 	stateTabId = `tab_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
 	stateChannel = new BroadcastChannel(STATE_BROADCAST_CHANNEL);
 	stateChannel.onmessage = (ev) => {
+		// Si realtime está suspendido, ignoramos cualquier mensaje entrante.
+		if (!isRealtimeEnabled()) return;
 		const msg = ev.data as { kind?: string; senderId?: string } | null;
 		if (!msg || msg.kind !== "state-updated") return;
 		if (msg.senderId === stateTabId) return;
@@ -46,6 +50,7 @@ function ensureStateChannel(): void {
 
 function broadcastStateUpdated(): void {
 	if (!stateChannel) return;
+	if (!isRealtimeEnabled()) return;
 	try {
 		stateChannel.postMessage({ kind: "state-updated", senderId: stateTabId, ts: Date.now() });
 	} catch { /* noop */ }

@@ -181,6 +181,9 @@ async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<Par
 			customization: table.obj.customization && typeof table.obj.customization === "object"
 				? (JSON.parse(JSON.stringify(table.obj.customization)) as ParsedTable["customization"])
 				: undefined,
+			snippets: table.obj.snippets && typeof table.obj.snippets === "object"
+				? (JSON.parse(JSON.stringify(table.obj.snippets)) as ParsedTable["snippets"])
+				: undefined,
 		} as ParsedTable);
 		if (table.historialEnabled) {
 			const colNodes = (cols.root.children ?? [])
@@ -279,6 +282,7 @@ interface PreservedTreeDocs {
 	stackByTableRef: Map<string, true>;
 	historialDisabledByTableRef: Map<string, true>;
 	customizationByTableRef: Map<string, Record<string, unknown>>;
+	snippetsByTableRef: Map<string, Record<string, unknown>>;
 }
 
 function collectPreservedDocs(tree: PersistedTablesTree | null): PreservedTreeDocs {
@@ -291,6 +295,7 @@ function collectPreservedDocs(tree: PersistedTablesTree | null): PreservedTreeDo
 		stackByTableRef: new Map(),
 		historialDisabledByTableRef: new Map(),
 		customizationByTableRef: new Map(),
+		snippetsByTableRef: new Map(),
 	};
 	if (!tree) return acc;
 	const dfs = (n: PersistedNode): void => {
@@ -304,11 +309,14 @@ function collectPreservedDocs(tree: PersistedTablesTree | null): PreservedTreeDo
 			const key = String(n.obj?.tableRef ?? n.obj?.rowName ?? "");
 			if (key) {
 				if (n.doc) acc.tableDocByRef.set(key, n.doc);
-				const nObj = n.obj as { autoStack?: boolean; stack?: boolean; autoStackHistorial?: boolean; customization?: Record<string, unknown> } | undefined;
+				const nObj = n.obj as { autoStack?: boolean; stack?: boolean; autoStackHistorial?: boolean; customization?: Record<string, unknown>; snippets?: Record<string, unknown> } | undefined;
 				if (nObj?.autoStack === true || nObj?.stack === true) acc.stackByTableRef.set(key, true);
 				if (nObj?.autoStackHistorial === false) acc.historialDisabledByTableRef.set(key, true);
 				if (nObj?.customization && typeof nObj.customization === "object" && Object.keys(nObj.customization).length) {
 					acc.customizationByTableRef.set(key, nObj.customization);
+				}
+				if (nObj?.snippets && typeof nObj.snippets === "object" && Object.keys(nObj.snippets).length) {
+					acc.snippetsByTableRef.set(key, nObj.snippets);
 				}
 			}
 		}
@@ -392,6 +400,9 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 				const customization = (t.customization && Object.keys(t.customization).length
 					? (t.customization as Record<string, unknown>)
 					: preserved.customizationByTableRef.get(t.name));
+				const snippets = (t.snippets && Object.keys(t.snippets).length
+					? (t.snippets as Record<string, unknown>)
+					: preserved.snippetsByTableRef.get(t.name));
 				const tn = new TableNode({
 					tableRef: t.name,
 					rowName: t.name,
@@ -400,6 +411,7 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 					autoStackHistorial: histDisabled ? false : undefined,
 					relations: Array.isArray(t.relations) && t.relations.length ? t.relations.map((r) => ({ ...r })) : undefined,
 					customization: customization ? { ...customization } : undefined,
+					snippets: snippets ? { ...snippets } : undefined,
 				});
 				const tdoc = preserved.tableDocByRef.get(t.name);
 				if (tdoc) tn.doc = { ...tdoc };
@@ -418,6 +430,9 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 			const customization = (t.customization && Object.keys(t.customization).length
 				? (t.customization as Record<string, unknown>)
 				: preserved.customizationByTableRef.get(t.name));
+			const snippets = (t.snippets && Object.keys(t.snippets).length
+				? (t.snippets as Record<string, unknown>)
+				: preserved.snippetsByTableRef.get(t.name));
 			const tn = new TableNode({
 				tableRef: t.name,
 				rowName: t.name,
@@ -426,6 +441,7 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 				autoStackHistorial: histDisabled ? false : undefined,
 				relations: Array.isArray(t.relations) && t.relations.length ? t.relations.map((r) => ({ ...r })) : undefined,
 				customization: customization ? { ...customization } : undefined,
+				snippets: snippets ? { ...snippets } : undefined,
 			});
 			const tdoc = preserved.tableDocByRef.get(t.name);
 			if (tdoc) tn.doc = { ...tdoc };
