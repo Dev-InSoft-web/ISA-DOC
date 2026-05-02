@@ -26,12 +26,24 @@ const HISTORIAL_AUDIT_COLS: ColumnObj[] = [
 	{ name: "FHCRE", type: "DATETIME2", nullable: "", defaultValue: "", primaryKey: false, extra: "", kind: "col" },
 ];
 
+/**
+ * Reglas de nomenclatura de la tabla virtual HISTORIAL:
+ *  - Las columnas de un POJO son alfanuméricas mayúsculas SIN separadores.
+ *    Por eso al derivar nombres se eliminan TODOS los caracteres no
+ *    alfanuméricos del `masterRef`.
+ *  - Ejemplo: master `CURSOS`           -> `HISTORIALCURSOS` / PK `IHISTORIALCURSOS`.
+ *             master `PLANES_ESTUDIO`   -> `HISTORIALPLANESESTUDIO` / PK `IHISTORIALPLANESESTUDIO`.
+ */
+function sanitizeRef(masterRef: string): string {
+	return masterRef.replace(/[^A-Z0-9]/gi, "").toUpperCase();
+}
+
 export function historialTableNameOf(masterRef: string): string {
-	return `HISTORIAL${masterRef}`;
+	return `HISTORIAL${sanitizeRef(masterRef)}`;
 }
 
 export function deriveHistorialColumns(masterRef: string, masterPk: MasterPkInfo): ColumnObj[] {
-	const pkName = `IHISTORIAL${masterRef}`;
+	const pkName = `IHISTORIAL${sanitizeRef(masterRef)}`;
 	const cols: ColumnObj[] = [
 		{ name: pkName, type: "BIGINT", nullable: "", defaultValue: "", primaryKey: true, extra: "", kind: "col" },
 		{ name: masterPk.name, type: masterPk.type, nullable: "", defaultValue: "", primaryKey: false, extra: "", kind: "col" },
@@ -51,5 +63,10 @@ export function masterPkOf(cols: ColumnNode[]): MasterPkInfo | null {
 }
 
 export function isStackMaster(t: TableNode): boolean {
+	return t.hasStack;
+}
+
+/** Alias canon: rol "auto-stack" (master con miembros derivados por algoritmo). */
+export function isAutoStackMaster(t: TableNode): boolean {
 	return t.hasStack;
 }

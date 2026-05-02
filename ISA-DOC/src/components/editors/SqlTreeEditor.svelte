@@ -37,13 +37,20 @@
    $: baseNameDraft = baseName;
 
    let auditarChecked: boolean = adapter.auditEnabled;
+   let historialChecked: boolean = adapter.historialEnabled;
+   let isAutoStack: boolean = adapter.isAutoStackMaster;
    $: {
       void table;
       auditarChecked = adapter.auditEnabled;
+      historialChecked = adapter.historialEnabled;
+      isAutoStack = adapter.isAutoStackMaster;
    }
 
    $: if (typeof auditarChecked === "boolean" && auditarChecked !== adapter.auditEnabled) {
       adapter.setAuditEnabled(auditarChecked);
+   }
+   $: if (typeof historialChecked === "boolean" && isAutoStack && historialChecked !== adapter.historialEnabled) {
+      adapter.setHistorialEnabled(historialChecked);
    }
 
    function commitBaseName(v: string): void {
@@ -73,6 +80,9 @@
          <input class="input-field name-input" type="text" bind:value={baseNameDraft} on:change={(e) => commitBaseName(e.currentTarget.value)} />
       </div>
       <Switch bind:checked={auditarChecked} color="primary" colorFalse="neutral">Auditar</Switch>
+      {#if isAutoStack}
+         <Switch bind:checked={historialChecked} color="primary" colorFalse="neutral">Historial</Switch>
+      {/if}
    </FlexLayout>
 
    <div class="tree-host">

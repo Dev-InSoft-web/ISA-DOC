@@ -298,6 +298,25 @@ export class SqlTreeAdapter extends TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX> 
 		return opt ? !!opt.active : false;
 	}
 
+	/** ¿La tabla es master de un dominio auto-stack? */
+	get isAutoStackMaster(): boolean {
+		return this.obj.parsed.autoStack === true;
+	}
+
+	/** Inyección de tabla virtual de historial dentro del auto-stack (default `true`). */
+	get historialEnabled(): boolean {
+		return this.isAutoStackMaster && this.obj.parsed.autoStackHistorial !== false;
+	}
+
+	/** Activa/desactiva la inyección de la tabla virtual HISTORIAL. */
+	setHistorialEnabled(enabled: boolean): void {
+		if (!this.isAutoStackMaster) return;
+		const current = this.obj.parsed.autoStackHistorial !== false;
+		if (current === enabled) return;
+		this.obj.parsed = { ...this.obj.parsed, autoStackHistorial: enabled ? undefined : false };
+		this.emitChange();
+	}
+
 	/**
 	 * Activa/desactiva el bloque de auditoría:
 	 * - `true`: si está oculta, restaura desde el cache (preserva ediciones).

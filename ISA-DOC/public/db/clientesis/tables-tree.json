@@ -36,7 +36,8 @@
                                                            "obj":  {
                                                                        "tableRef":  "PLANES_ESTUDIO",
                                                                        "rowName":  "PLANES_ESTUDIO",
-                                                                       "stack":  true
+                                                                       "autoStack":  true,
+                                                                       "autoStackHistorial":  true
                                                                    },
                                                            "doc":  {
                                                                        "description":  "Plan de estudio: contenedor del modulo de capacitacion.",
@@ -63,7 +64,8 @@
                                                            "obj":  {
                                                                        "tableRef":  "CURSOS",
                                                                        "rowName":  "CURSOS",
-                                                                       "stack":  true
+                                                                       "autoStack":  true,
+                                                                       "autoStackHistorial":  true
                                                                    },
                                                            "doc":  {
                                                                        "description":  "Catalogo de cursos. Tabla central del modulo.",
@@ -208,8 +210,17 @@
                               "El campo name de la tabla NUNCA incluye el prefijo; se aplica al emitir SQL via warden.",
                               "Los id jerarquicos (ej. 1.2.3) son la fuente de verdad para findNodeById.",
                               "Un nodo vigilante DEBE declarar wardenAction.idaction. Reservados: prefix.",
-                              "stack:true en una tabla maestra emite tabla virtual HISTORIAL\u003cX\u003e en runtime.",
-                              "Los dominios funcionales viven en _state.json (domains map) hasta migrar a kind:domain inline."
+                              "obj.autoStack=true marca la tabla como master de un dominio auto-stack.",
+                              "Los dominios funcionales viven en _state.json (domains map) hasta migrar a kind:domain inline.",
+                              "Convencion de nombres de columnas (validar siempre, sin excepciones):",
+                              "  - SOLO caracteres alfanumericos y mayuscula sostenida: ^[A-Z][A-Z0-9]*$.",
+                              "  - Prohibido cualquier separador (_, -, espacios, puntos, etc.).",
+                              "  - Prohibido iniciar con digito (representan variables en POJO).",
+                              "  - Aplica a TODA columna persistida y a las derivadas (HISTORIAL).",
+                              "Roles del modelo de tabla:",
+                              "  - master (auto-stack): el desarrollador define el master; los miembros se inyectan por algoritmo y NO pueden entrar/salir manualmente.",
+                              "  - slave: tabla normal que pertenece a un dominio funcional definido por el desarrollador.",
+                              "  - bare: tabla sin dominio ni prefijo (vive directo bajo root)."
                           ],
                 "entities":  {
                                  "root":  {
@@ -238,14 +249,16 @@
                                             },
                                  "domain":  {
                                                 "label":  "Dominio funcional",
-                                                "description":  "Agrupador conceptual master/slave.",
+                                                "description":  "Agrupador conceptual master/slave. NO emite SQL.",
                                                 "rules":  [
                                                               "Define una tabla master y N esclavas.",
-                                                              "No emite SQL."
+                                                              "Roles soportados: \u0027user\u0027 (membresia editable) y \u0027auto-stack\u0027 (membresia derivada por algoritmo, sin entrada/salida manual).",
+                                                              "Cuando el master tiene obj.autoStack=true, el dominio es auto-stack y los miembros derivados no pueden eliminarse desde el editor."
                                                           ],
                                                 "objShape":  {
                                                                  "domainId":  "string",
-                                                                 "masterTable":  "string"
+                                                                 "masterTable":  "string",
+                                                                 "role":  "\u0027user\u0027 | \u0027auto-stack\u0027"
                                                              }
                                             },
                                  "table":  {
@@ -254,12 +267,15 @@
                                                "rules":  [
                                                              "obj.tableRef y obj.rowName coinciden y NO incluyen el prefijo.",
                                                              "Eliminar el nodo elimina tambien el archivo de columnas al guardar.",
-                                                             "obj.stack:true marca la tabla maestra como con auditoria historica."
+                                                             "obj.autoStack=true marca la tabla como master de un dominio auto-stack.",
+                                                             "obj.autoStackHistorial=false desactiva la inyeccion de la tabla virtual HISTORIAL en el auto-stack (default true).",
+                                                             "obj.stack es alias legado de obj.autoStack: lectura tolerada, escritura canonica usa autoStack."
                                                          ],
                                                "objShape":  {
                                                                 "tableRef":  "string",
                                                                 "rowName":  "string",
-                                                                "stack":  "boolean?"
+                                                                "autoStack":  "boolean?",
+                                                                "autoStackHistorial":  "boolean?"
                                                             }
                                            },
                                  "col":  {
@@ -268,7 +284,9 @@
                                              "rules":  [
                                                            "primaryKey:true participa en la PK; multiples forman PK compuesta.",
                                                            "type debe estar en mayusculas.",
-                                                           "Las columnas de auditoria (IUSUARIOCRE, FHCRE, IUSUARIOULT, FHULT, IAPPCRE, IPCRE, IAPPULT, IPULT) viven en seccion AUDITORIA y se autogeneran cuando Auditar esta activo."
+                                                           "name debe cumplir ^[A-Z][A-Z0-9]*$ (mayusculas, sin separadores, no inicia en digito).",
+                                                           "Las columnas de auditoria (IUSUARIOCRE, FHCRE, IUSUARIOULT, FHULT, IAPPCRE, IPCRE, IAPPULT, IPULT) viven en seccion AUDITORIA y se autogeneran cuando Auditar esta activo.",
+                                                           "En tablas auto-stack, la PK del HISTORIAL es IHISTORIAL\u003cMASTER\u003e (sin separadores)."
                                                        ],
                                              "objShape":  {
                                                               "name":  "string",

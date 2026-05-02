@@ -119,12 +119,14 @@ async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<Par
 			originalName: meta.originalName ?? table.tableRef,
 			name: table.tableRef,
 			effectivePrefix: effectivePrefix || undefined,
+			autoStack: table.hasStack ? true : undefined,
+			autoStackHistorial: table.hasStack ? (table.obj.autoStackHistorial !== false) : undefined,
 			columns,
 			compositePrimaryKey: [],
 			extraStatements: [],
 			tail: "",
 		} as ParsedTable);
-		if (table.hasStack) {
+		if (table.historialEnabled) {
 			const colNodes = (cols.root.children ?? [])
 				.map((c) => new ColumnNode(c.obj as never));
 			const pk = masterPkOf(colNodes);
@@ -218,6 +220,7 @@ interface PreservedTreeDocs {
 	tableDocByRef: Map<string, PersistedNodeDoc>;
 	prefixWarden: Map<string, { idaction: string }>;
 	stackByTableRef: Map<string, true>;
+	historialDisabledByTableRef: Map<string, true>;
 }
 
 function collectPreservedDocs(tree: PersistedTablesTree | null): PreservedTreeDocs {
@@ -228,6 +231,7 @@ function collectPreservedDocs(tree: PersistedTablesTree | null): PreservedTreeDo
 		tableDocByRef: new Map(),
 		prefixWarden: new Map(),
 		stackByTableRef: new Map(),
+		historialDisabledByTableRef: new Map(),
 	};
 	if (!tree) return acc;
 	const dfs = (n: PersistedNode): void => {
@@ -241,7 +245,9 @@ function collectPreservedDocs(tree: PersistedTablesTree | null): PreservedTreeDo
 			const key = String(n.obj?.tableRef ?? n.obj?.rowName ?? "");
 			if (key) {
 				if (n.doc) acc.tableDocByRef.set(key, n.doc);
-				if (n.obj?.stack === true) acc.stackByTableRef.set(key, true);
+				const nObj = n.obj as { autoStack?: boolean; stack?: boolean; autoStackHistorial?: boolean } | undefined;
+				if (nObj?.autoStack === true || nObj?.stack === true) acc.stackByTableRef.set(key, true);
+				if (nObj?.autoStackHistorial === false) acc.historialDisabledByTableRef.set(key, true);
 			}
 		}
 		for (const ch of n.children ?? []) dfs(ch);
@@ -319,10 +325,13 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 	for (const pfx of prefixOrder) {
 		if (pfx === "") {
 			for (const t of byPrefix.get(pfx)!) {
+				const isMaster = stackMasters.has(t.name.toUpperCase()) || t.autoStack === true;
+				const histDisabled = isMaster && (t.autoStackHistorial === false || preserved.historialDisabledByTableRef.has(t.name));
 				const tn = new TableNode({
 					tableRef: t.name,
 					rowName: t.name,
-					stack: stackMasters.has(t.name.toUpperCase()) ? true : undefined,
+					autoStack: isMaster ? true : undefined,
+					autoStackHistorial: histDisabled ? false : undefined,
 				});
 				const tdoc = preserved.tableDocByRef.get(t.name);
 				if (tdoc) tn.doc = { ...tdoc };
@@ -336,10 +345,13 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 		const pdoc = preserved.prefixDocByPrefix.get(pfx);
 		if (pdoc) pn.doc = { ...pdoc };
 		for (const t of byPrefix.get(pfx)!) {
+			const isMaster = stackMasters.has(t.name.toUpperCase()) || t.autoStack === true;
+			const histDisabled = isMaster && (t.autoStackHistorial === false || preserved.historialDisabledByTableRef.has(t.name));
 			const tn = new TableNode({
 				tableRef: t.name,
 				rowName: t.name,
-				stack: stackMasters.has(t.name.toUpperCase()) ? true : undefined,
+				autoStack: isMaster ? true : undefined,
+				autoStackHistorial: histDisabled ? false : undefined,
 			});
 			const tdoc = preserved.tableDocByRef.get(t.name);
 			if (tdoc) tn.doc = { ...tdoc };

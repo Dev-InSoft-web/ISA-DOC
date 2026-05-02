@@ -12,6 +12,26 @@
                             "ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/PlanDeEstudio.ts"
                         ],
     "domains":  {
+                    "dom_capac_drivers":  {
+                                              "id":  "dom_capac_drivers",
+                                              "name":  "Drivers",
+                                              "masterTable":  "CAPAC_DRIVERS",
+                                              "members":  [
+                                                              "CAPAC_DRIVERS",
+                                                              "CAPAC_ATRIBUTOS_X_DRIVERS"
+                                                          ],
+                                              "parentPrefix":  "CAPAC_",
+                                              "childrenOrder":  [
+                                                                    {
+                                                                        "kind":  "table",
+                                                                        "key":  "CAPAC_DRIVERS"
+                                                                    },
+                                                                    {
+                                                                        "kind":  "table",
+                                                                        "key":  "CAPAC_ATRIBUTOS_X_DRIVERS"
+                                                                    }
+                                                                ]
+                                          },
                     "dom_capac_planes":  {
                                              "id":  "dom_capac_planes",
                                              "name":  "Planes Estudio",
@@ -76,8 +96,8 @@
     "prefixOrders":  {
                          "CAPAC_":  [
                                         {
-                                            "kind":  "table",
-                                            "key":  "CAPAC_DRIVERS"
+                                            "kind":  "domain",
+                                            "key":  "dom_capac_drivers"
                                         },
                                         {
                                             "kind":  "domain",
@@ -90,10 +110,6 @@
                                         {
                                             "kind":  "domain",
                                             "key":  "dom_capac_cursos"
-                                        },
-                                        {
-                                            "kind":  "table",
-                                            "key":  "CAPAC_ATRIBUTOS_X_DRIVERS"
                                         }
                                     ]
                      },

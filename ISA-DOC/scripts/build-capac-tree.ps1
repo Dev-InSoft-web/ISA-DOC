@@ -269,7 +269,7 @@ foreach ($ref in $capacOrder) {
     $ci += 1
     $t = $tableMap[$ref]
     $obj = [ordered]@{ tableRef = $t.ref; rowName = $t.ref }
-    if ($t.stack) { $obj.stack = $true }
+    if ($t.stack) { $obj.autoStack = $true; $obj.autoStackHistorial = $true }
     $node = [ordered]@{
         id = "1.$ci"
         kind = "table"
@@ -305,8 +305,17 @@ $treeDoc = [ordered]@{
         "El campo name de la tabla NUNCA incluye el prefijo; se aplica al emitir SQL via warden.",
         "Los id jerarquicos (ej. 1.2.3) son la fuente de verdad para findNodeById.",
         "Un nodo vigilante DEBE declarar wardenAction.idaction. Reservados: prefix.",
-        "stack:true en una tabla maestra emite tabla virtual HISTORIAL<X> en runtime.",
-        "Los dominios funcionales viven en _state.json (domains map) hasta migrar a kind:domain inline."
+        "obj.autoStack=true marca la tabla como master de un dominio auto-stack.",
+        "Los dominios funcionales viven en _state.json (domains map) hasta migrar a kind:domain inline.",
+        "Convencion de nombres de columnas (validar siempre, sin excepciones):",
+        "  - SOLO caracteres alfanumericos y mayuscula sostenida: ^[A-Z][A-Z0-9]*$.",
+        "  - Prohibido cualquier separador (_, -, espacios, puntos, etc.).",
+        "  - Prohibido iniciar con digito (representan variables en POJO).",
+        "  - Aplica a TODA columna persistida y a las derivadas (HISTORIAL).",
+        "Roles del modelo de tabla:",
+        "  - master (auto-stack): el desarrollador define el master; los miembros se inyectan por algoritmo y NO pueden entrar/salir manualmente.",
+        "  - slave: tabla normal que pertenece a un dominio funcional definido por el desarrollador.",
+        "  - bare: tabla sin dominio ni prefijo (vive directo bajo root)."
     )
     entities = [ordered]@{
         root = [ordered]@{
@@ -327,9 +336,13 @@ $treeDoc = [ordered]@{
         }
         domain = [ordered]@{
             label = "Dominio funcional"
-            description = "Agrupador conceptual master/slave."
-            rules = @("Define una tabla master y N esclavas.", "No emite SQL.")
-            objShape = [ordered]@{ domainId = "string"; masterTable = "string" }
+            description = "Agrupador conceptual master/slave. NO emite SQL."
+            rules = @(
+                "Define una tabla master y N esclavas.",
+                "Roles soportados: 'user' (membresia editable) y 'auto-stack' (membresia derivada por algoritmo, sin entrada/salida manual).",
+                "Cuando el master tiene obj.autoStack=true, el dominio es auto-stack y los miembros derivados no pueden eliminarse desde el editor."
+            )
+            objShape = [ordered]@{ domainId = "string"; masterTable = "string"; role = "'user' | 'auto-stack'" }
         }
         table = [ordered]@{
             label = "Tabla SQL"
@@ -337,9 +350,11 @@ $treeDoc = [ordered]@{
             rules = @(
                 "obj.tableRef y obj.rowName coinciden y NO incluyen el prefijo.",
                 "Eliminar el nodo elimina tambien el archivo de columnas al guardar.",
-                "obj.stack:true marca la tabla maestra como con auditoria historica."
+                "obj.autoStack=true marca la tabla como master de un dominio auto-stack.",
+                "obj.autoStackHistorial=false desactiva la inyeccion de la tabla virtual HISTORIAL en el auto-stack (default true).",
+                "obj.stack es alias legado de obj.autoStack: lectura tolerada, escritura canonica usa autoStack."
             )
-            objShape = [ordered]@{ tableRef = "string"; rowName = "string"; stack = "boolean?" }
+            objShape = [ordered]@{ tableRef = "string"; rowName = "string"; autoStack = "boolean?"; autoStackHistorial = "boolean?" }
         }
         col = [ordered]@{
             label = "Columna SQL"
@@ -347,7 +362,9 @@ $treeDoc = [ordered]@{
             rules = @(
                 "primaryKey:true participa en la PK; multiples forman PK compuesta.",
                 "type debe estar en mayusculas.",
-                "Las columnas de auditoria (IUSUARIOCRE, FHCRE, IUSUARIOULT, FHULT, IAPPCRE, IPCRE, IAPPULT, IPULT) viven en seccion AUDITORIA y se autogeneran cuando Auditar esta activo."
+                "name debe cumplir ^[A-Z][A-Z0-9]*$ (mayusculas, sin separadores, no inicia en digito).",
+                "Las columnas de auditoria (IUSUARIOCRE, FHCRE, IUSUARIOULT, FHULT, IAPPCRE, IPCRE, IAPPULT, IPULT) viven en seccion AUDITORIA y se autogeneran cuando Auditar esta activo.",
+                "En tablas auto-stack, la PK del HISTORIAL es IHISTORIAL<MASTER> (sin separadores)."
             )
             objShape = [ordered]@{
                 name = "string"; type = "string"; nullable = "string"
@@ -394,10 +411,22 @@ $targetFilePaths = @(
 
 $domPlanes = "dom_capac_planes"
 $domCursos = "dom_capac_cursos"
+$domDrivers = "dom_capac_drivers"
 
 $state = [ordered]@{
     targetFilePaths = $targetFilePaths
     domains = [ordered]@{
+        $domDrivers = [ordered]@{
+            id = $domDrivers
+            name = "Drivers"
+            masterTable = "CAPAC_DRIVERS"
+            members = @("CAPAC_DRIVERS", "CAPAC_ATRIBUTOS_X_DRIVERS")
+            parentPrefix = "CAPAC_"
+            childrenOrder = @(
+                @{ kind = "table"; key = "CAPAC_DRIVERS" },
+                @{ kind = "table"; key = "CAPAC_ATRIBUTOS_X_DRIVERS" }
+            )
+        }
         $domPlanes = [ordered]@{
             id = $domPlanes
             name = "Planes Estudio"
@@ -427,11 +456,10 @@ $state = [ordered]@{
     }
     prefixOrders = [ordered]@{
         "CAPAC_" = @(
-            @{ kind = "table";  key = "CAPAC_DRIVERS" },
+            @{ kind = "domain"; key = $domDrivers },
             @{ kind = "domain"; key = $domPlanes },
             @{ kind = "table";  key = "CAPAC_TEMAS" },
-            @{ kind = "domain"; key = $domCursos },
-            @{ kind = "table";  key = "CAPAC_ATRIBUTOS_X_DRIVERS" }
+            @{ kind = "domain"; key = $domCursos }
         )
     }
     topOrder = @(

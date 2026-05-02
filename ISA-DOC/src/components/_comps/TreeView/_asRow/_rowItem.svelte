@@ -111,9 +111,14 @@
                <FloatingComponent showfloat={rowController.floatVisible && rowController.hasRowTools} horizontal="right" vertical="top+50" linearTransform={self.floatCardLinearTransform}>
                   <FlexLayout items="center" class="trvwr-sum-row">
                      <!-- svelte-ignore a11y-no-static-element-interactions a11y-click-events-have-key-events -->
+                     {@const _hasUnfrozenSibling = (nodes ?? []).some((n) => !treeController.isFrozen(n))}
                      {#if rowController.isDraggable}
                         <span class="trvwr-drag-handle" title="Arrastrar para reordenar" draggable={true} on:dragstart={(e) => rowController.ondragstart(e)} on:dragend={(e) => rowController.ondragend(e)}>
                            <Iconify icon="mdi:dots-grid" style="font-size: 1rem; opacity: 0.45" />
+                        </span>
+                     {:else if _hasUnfrozenSibling && !rowController.mergedDisabled}
+                        <span class="trvwr-drag-handle trvwr-drag-handle--frozen" title="Posición fija (auto-stack u otra regla)" aria-disabled="true">
+                           <Iconify icon="mdi:dots-grid" style="font-size: 1rem; opacity: 0.5" />
                         </span>
                      {/if}
                      {#if rowController.showCaret}
@@ -309,6 +314,11 @@
                &:active {
                   cursor: grabbing;
                }
+            }
+            .trvwr-drag-handle--frozen {
+               cursor: not-allowed;
+               opacity: 0.5;
+               &:active { cursor: not-allowed; }
             }
             .trvwr-sum-row {
                width: 100%;

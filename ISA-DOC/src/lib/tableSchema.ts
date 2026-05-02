@@ -104,6 +104,10 @@ export interface ParsedTable {
 	 * Ej.: name="DRIVERS", effectivePrefix="CAPAC_" → SQL: CAPAC_DRIVERS.
 	 */
 	effectivePrefix?: string;
+	/** Master de un dominio auto-stack (rol algorítmico, no editable a mano). */
+	autoStack?: boolean;
+	/** Cuando `autoStack` está activo, controla la inyección de historial. Default `true`. */
+	autoStackHistorial?: boolean;
 	/** Filas de la tabla: columnas reales y secciones (`kind: "section"`). */
 	columns: TableRow[];
 	compositePrimaryKey: string[];
