@@ -850,6 +850,8 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			}
 		}
 		if (item && item.kind === "prefix") {
+			// El form solo edita `rowName`; `prefix` queda como ancla del valor
+			// previo. Así podemos comparar viejo (item.prefix) vs nuevo (item.rowName).
 			const oldPrefix = String(item.prefix ?? "").trim();
 			const rawNext = String(item.rowName ?? "").trim();
 			const normalized = rawNext ? (rawNext.toUpperCase().replace(/_+$/, "") + "_") : "";
@@ -876,6 +878,15 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 						this._emptyPrefixes.set(k, next);
 						emptyChanged = true;
 					}
+				}
+				// 3b) Renombrar la CLAVE `prefix:<oldPrefix>` cuando ese prefijo es padre.
+				const oldKey = `prefix:${oldPrefix}`;
+				const newKey = `prefix:${normalized}`;
+				if (this._emptyPrefixes.has(oldKey)) {
+					const arr = this._emptyPrefixes.get(oldKey)!;
+					this._emptyPrefixes.delete(oldKey);
+					this._emptyPrefixes.set(newKey, arr);
+					emptyChanged = true;
 				}
 				if (emptyChanged) this.persistChildPrefixes();
 				// 4) Renombrar `parentPrefix` en dominios.

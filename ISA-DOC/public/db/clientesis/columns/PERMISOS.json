@@ -1,155 +1,39 @@
 {
-  "version": 3,
-  "kind": "columns-tree",
-  "tableRef": "PERMISOS",
-  "tableMeta": {
-    "originalName": "PERMISOS",
-    "hasIfNotExists": true
-  },
-  "root": {
-    "id": "",
-    "kind": "root",
-    "children": [
-      {
-        "id": "1",
-        "kind": "col",
-        "obj": {
-          "name": "IPLANESTUDIO",
-          "type": "VARCHAR(255)",
-          "primaryKey": true
-        }
-      },
-      {
-        "id": "2",
-        "kind": "col",
-        "obj": {
-          "name": "NOMBRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "3",
-        "kind": "col",
-        "obj": {
-          "name": "DESCRIPCIONPLAN",
-          "type": "TEXT",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "4",
-        "kind": "col",
-        "obj": {
-          "name": "TTDVISUALIZACION",
-          "type": "VARCHAR(50)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "5",
-        "kind": "col",
-        "obj": {
-          "name": "BACTIVO",
-          "type": "BIT",
-          "defaultValue": "1",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "6",
-        "kind": "col",
-        "obj": {
-          "name": "BGENERACERTIFICADOS",
-          "type": "BIT",
-          "defaultValue": "0",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "7",
-        "kind": "col",
-        "obj": {
-          "name": "IRECURSO",
-          "type": "VARCHAR(255)",
-          "nullable": "NULL",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "8",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "9",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "10",
-        "kind": "col",
-        "obj": {
-          "name": "IPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "11",
-        "kind": "col",
-        "obj": {
-          "name": "FHCRE",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "12",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "13",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "14",
-        "kind": "col",
-        "obj": {
-          "name": "IPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false
-        }
-      },
-      {
-        "id": "15",
-        "kind": "col",
-        "obj": {
-          "name": "FHULT",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false
-        }
-      }
-    ]
-  }
+    "version":  3,
+    "kind":  "columns-tree",
+    "tableRef":  "PERMISOS",
+    "tableMeta":  {
+                      "originalName":  "PERMISOS",
+                      "hasIfNotExists":  true
+                  },
+    "root":  {
+                 "id":  "",
+                 "kind":  "root",
+                 "children":  [
+                                  {
+                                      "id":  "1",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "IPERMISO",
+                                                  "type":  "VARCHAR(255)",
+                                                  "primaryKey":  true
+                                              }
+                                  },
+                                  {
+                                      "id":  "2",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "NPERMISO",
+                                                  "type":  "VARCHAR(255)",
+                                                  "primaryKey":  false
+                                              }
+                                  }
+                              ]
+             },
+    "doc":  {
+                "description":  "Catalogo global de permisos del sistema (sin prefijo).",
+                "rules":  [
+                              "Vive bare bajo root: cualquier modulo lo referencia."
+                          ]
+            }
 }

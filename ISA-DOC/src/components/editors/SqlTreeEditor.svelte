@@ -80,13 +80,13 @@
          <svelte:fragment slot="row" let:node>
             {#if node.kind === "section"}
                <FlexLayout items="center" style="flex:1; min-width:0;">
-                  <Chip>{node.flatPath}</Chip>
+                  <span class="tree-row-index" title="Índice">{node.flatPath}</span>
                   <span class="badge badge-section">Sección</span>
                   <Text style="font-weight:bold;" lines={1}>{node.rowName || "(sin nombre)"}</Text>
                </FlexLayout>
             {:else if node.kind === "optional"}
                <FlexLayout items="center" justify="between" style="flex:1; min-width:0;">
-                  <Chip>{node.flatPath}</Chip>
+                  <span class="tree-row-index" title="Índice">{node.flatPath}</span>
                   <span class="badge badge-optional">Opcional</span>
                   <Text style="font-weight:bold;" lines={1}>{node.rowName || "(sin nombre)"}</Text>
                   {#if !node.active}
@@ -96,7 +96,7 @@
             {:else}
                   <FlexLayout items="stretch" justify="between" style="flex: 1 1 auto; min-width: 0;">
                      <FlexLayout items="center">
-                        <Chip>{node.flatPath}</Chip>
+                        <span class="tree-row-index" title="Índice">{node.flatPath}</span>
                         <Text lines={1}>{node.rowName || "(columna)"}</Text>
                      </FlexLayout>
                      <FlexLayout items="center">
@@ -319,6 +319,21 @@
       border-radius: 0.2rem;
       font-size: 0.75rem;
       font-weight: bold;
+   }
+   .tree-row-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.5rem;
+      height: 1.1rem;
+      padding: 0 0.35rem;
+      border-radius: 0.6rem;
+      background: color-mix(in srgb, var(--is-text-neutral, #888) 18%, transparent);
+      color: var(--is-text-neutral, #666);
+      font-size: 0.7rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      flex: 0 0 auto;
    }
    .badge-section {
       background: color-mix(in srgb, var(--is-warning) 25%, transparent);

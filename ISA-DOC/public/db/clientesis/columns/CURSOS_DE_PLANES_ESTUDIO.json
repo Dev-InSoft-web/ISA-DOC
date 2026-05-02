@@ -1,9 +1,9 @@
 {
     "version":  3,
     "kind":  "columns-tree",
-    "tableRef":  "CURSOS",
+    "tableRef":  "CURSOS_DE_PLANES_ESTUDIO",
     "tableMeta":  {
-                      "originalName":  "CURSOS",
+                      "originalName":  "CURSOS_DE_PLANES_ESTUDIO",
                       "hasIfNotExists":  true
                   },
     "root":  {
@@ -14,7 +14,7 @@
                                       "id":  "1",
                                       "kind":  "col",
                                       "obj":  {
-                                                  "name":  "ICURSO",
+                                                  "name":  "IPLANESTUDIO",
                                                   "type":  "VARCHAR(255)",
                                                   "primaryKey":  true
                                               }
@@ -23,17 +23,17 @@
                                       "id":  "2",
                                       "kind":  "col",
                                       "obj":  {
-                                                  "name":  "NCURSO",
+                                                  "name":  "ICURSO",
                                                   "type":  "VARCHAR(255)",
-                                                  "primaryKey":  false
+                                                  "primaryKey":  true
                                               }
                                   },
                                   {
                                       "id":  "3",
                                       "kind":  "col",
                                       "obj":  {
-                                                  "name":  "ITEMA",
-                                                  "type":  "VARCHAR(255)",
+                                                  "name":  "QORDEN",
+                                                  "type":  "INT",
                                                   "primaryKey":  false
                                               }
                                   },
@@ -41,42 +41,14 @@
                                       "id":  "4",
                                       "kind":  "col",
                                       "obj":  {
-                                                  "name":  "DESCRIPCION",
-                                                  "type":  "TEXT",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "5",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "IDRIVER",
-                                                  "type":  "BIGINT",
-                                                  "primaryKey":  false
-                                              }
-                                  },
-                                  {
-                                      "id":  "6",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "BACTIVO",
+                                                  "name":  "BREQUERIDO",
                                                   "type":  "BIT",
                                                   "primaryKey":  false,
                                                   "defaultValue":  "1"
                                               }
                                   },
                                   {
-                                      "id":  "7",
-                                      "kind":  "col",
-                                      "obj":  {
-                                                  "name":  "BGENERACERTIFICADO",
-                                                  "type":  "BIT",
-                                                  "primaryKey":  false,
-                                                  "defaultValue":  "0"
-                                              }
-                                  },
-                                  {
-                                      "id":  "8",
+                                      "id":  "5",
                                       "kind":  "col",
                                       "obj":  {
                                                   "name":  "AUDITORIA",
@@ -86,7 +58,7 @@
                                               }
                                   },
                                   {
-                                      "id":  "9",
+                                      "id":  "6",
                                       "kind":  "col",
                                       "obj":  {
                                                   "name":  "IUSUARIOCRE",
@@ -95,7 +67,7 @@
                                               }
                                   },
                                   {
-                                      "id":  "10",
+                                      "id":  "7",
                                       "kind":  "col",
                                       "obj":  {
                                                   "name":  "IAPPCRE",
@@ -104,7 +76,7 @@
                                               }
                                   },
                                   {
-                                      "id":  "11",
+                                      "id":  "8",
                                       "kind":  "col",
                                       "obj":  {
                                                   "name":  "IPCRE",
@@ -113,7 +85,7 @@
                                               }
                                   },
                                   {
-                                      "id":  "12",
+                                      "id":  "9",
                                       "kind":  "col",
                                       "obj":  {
                                                   "name":  "FHCRE",
@@ -123,7 +95,7 @@
                                               }
                                   },
                                   {
-                                      "id":  "13",
+                                      "id":  "10",
                                       "kind":  "col",
                                       "obj":  {
                                                   "name":  "IUSUARIOULT",
@@ -132,7 +104,7 @@
                                               }
                                   },
                                   {
-                                      "id":  "14",
+                                      "id":  "11",
                                       "kind":  "col",
                                       "obj":  {
                                                   "name":  "IAPPULT",
@@ -141,7 +113,7 @@
                                               }
                                   },
                                   {
-                                      "id":  "15",
+                                      "id":  "12",
                                       "kind":  "col",
                                       "obj":  {
                                                   "name":  "IPULT",
@@ -150,7 +122,7 @@
                                               }
                                   },
                                   {
-                                      "id":  "16",
+                                      "id":  "13",
                                       "kind":  "col",
                                       "obj":  {
                                                   "name":  "FHULT",
@@ -162,10 +134,9 @@
                               ]
              },
     "doc":  {
-                "description":  "Catalogo de cursos. Tabla central del modulo.",
+                "description":  "Pivote N:N entre planes de estudio y cursos.",
                 "rules":  [
-                              "Master del dominio Cursos.",
-                              "stack:true emite HISTORIALCURSO."
+                              "PK compuesta (IPLANESTUDIO, ICURSO)."
                           ]
             }
 }

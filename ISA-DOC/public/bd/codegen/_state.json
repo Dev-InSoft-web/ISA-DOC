@@ -1,121 +1,115 @@
 {
-  "targetFilePaths": [
-    "ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/01.Modelo.ts",
-    "ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/02.Datos.ts",
-    "ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/01.PlanDeEstudio.ts",
-    "ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/130_UlTema.ts",
-    "ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/150_UlPermiso.ts",
-    "ISP-ClientesIS/src/sources/020 Controllers/6.ContaPymeU/2.Capacitacion/UlCapacitacionClient.ts",
-    "ISP-CLientesISServer/src/sources/6.ContaPymeU/2.Capacitacion/01_PlanDeEstudio.ts",
-    "ISP-CLientesISServer/src/sources/6.ContaPymeU/2.Capacitacion/02_Cursos.ts",
-    "ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/Cursos.ts",
-    "ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/PlanDeEstudio.ts"
-  ],
-  "domains": {
-    "dom_1777685622032_jd2ji": {
-      "id": "dom_1777685622032_jd2ji",
-      "name": "Nuevo dominio 2",
-      "masterTable": "",
-      "members": [],
-      "childrenOrder": []
-    },
-    "dom_monp92eh_hl8d": {
-      "id": "dom_monp92eh_hl8d",
-      "name": "Planes Estudio",
-      "masterTable": "",
-      "members": [],
-      "childrenOrder": []
-    }
-  },
-  "prefixOrders": {
-    "NUEVO_": [
-      {
-        "kind": "table",
-        "key": "SEGURIDADES_CURSOS"
-      },
-      {
-        "kind": "table",
-        "key": "CURSOS"
-      },
-      {
-        "kind": "table",
-        "key": "NUEVO_CURSOS"
-      },
-      {
-        "kind": "table",
-        "key": "NUEVO_SEGURIDADES_CURSOS"
-      }
-    ]
-  },
-  "topOrder": [
-    {
-      "kind": "table",
-      "key": "SEGURIDADES_CURSOS"
-    },
-    {
-      "kind": "table",
-      "key": "DRIVERS"
-    },
-    {
-      "kind": "table",
-      "key": "TEMAS"
-    },
-    {
-      "kind": "table",
-      "key": "ATRIBUTOS_X_DRIVERS"
-    },
-    {
-      "kind": "table",
-      "key": "HISTORIALPLANES_ESTUDIO"
-    },
-    {
-      "kind": "table",
-      "key": "ATRIBUTOS_PLANES"
-    },
-    {
-      "kind": "prefix",
-      "key": "NUEVO_"
-    },
-    {
-      "kind": "table",
-      "key": "HISTORIALCURSOS"
-    },
-    {
-      "kind": "table",
-      "key": "ESTRUCTURAS_CURSOS"
-    },
-    {
-      "kind": "domain",
-      "key": "dom_1777685622032_jd2ji"
-    },
-    {
-      "kind": "table",
-      "key": "PLANES_CURSOS"
-    },
-    {
-      "kind": "table",
-      "key": "CURSOS_PREREQUISITOS"
-    },
-    {
-      "kind": "table",
-      "key": "PERMISOS"
-    },
-    {
-      "kind": "domain",
-      "key": "dom_monp92eh_hl8d"
-    },
-    {
-      "kind": "table",
-      "key": "PLANES_ESTUDIO"
-    },
-    {
-      "kind": "table",
-      "key": "NUEVO_SEGURIDADES_CURSOS"
-    }
-  ],
-  "childPrefixes": {
-    "": [
-      "NUEVO_"
-    ]
-  }
+    "targetFilePaths":  [
+                            "ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/01.Modelo.ts",
+                            "ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/02.Datos.ts",
+                            "ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/01.PlanDeEstudio.ts",
+                            "ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/130_UlTema.ts",
+                            "ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/150_UlPermiso.ts",
+                            "ISP-ClientesIS/src/sources/020 Controllers/6.ContaPymeU/2.Capacitacion/UlCapacitacionClient.ts",
+                            "ISP-CLientesISServer/src/sources/6.ContaPymeU/2.Capacitacion/01_PlanDeEstudio.ts",
+                            "ISP-CLientesISServer/src/sources/6.ContaPymeU/2.Capacitacion/02_Cursos.ts",
+                            "ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/Cursos.ts",
+                            "ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/PlanDeEstudio.ts"
+                        ],
+    "domains":  {
+                    "dom_capac_planes":  {
+                                             "id":  "dom_capac_planes",
+                                             "name":  "Planes Estudio",
+                                             "masterTable":  "CAPAC_PLANES_ESTUDIO",
+                                             "members":  [
+                                                             "CAPAC_PLANES_ESTUDIO",
+                                                             "CAPAC_CURSOS_DE_PLANES_ESTUDIO",
+                                                             "CAPAC_ATRIBUTOS_PLANES",
+                                                             "CAPAC_PLANES_CURSOS"
+                                                         ],
+                                             "parentPrefix":  "CAPAC_",
+                                             "childrenOrder":  [
+                                                                   {
+                                                                       "kind":  "table",
+                                                                       "key":  "CAPAC_PLANES_ESTUDIO"
+                                                                   },
+                                                                   {
+                                                                       "kind":  "table",
+                                                                       "key":  "CAPAC_CURSOS_DE_PLANES_ESTUDIO"
+                                                                   },
+                                                                   {
+                                                                       "kind":  "table",
+                                                                       "key":  "CAPAC_ATRIBUTOS_PLANES"
+                                                                   },
+                                                                   {
+                                                                       "kind":  "table",
+                                                                       "key":  "CAPAC_PLANES_CURSOS"
+                                                                   }
+                                                               ]
+                                         },
+                    "dom_capac_cursos":  {
+                                             "id":  "dom_capac_cursos",
+                                             "name":  "Cursos",
+                                             "masterTable":  "CAPAC_CURSOS",
+                                             "members":  [
+                                                             "CAPAC_CURSOS",
+                                                             "CAPAC_CURSOS_PREREQUISITOS",
+                                                             "CAPAC_ESTRUCTURAS_CURSOS",
+                                                             "CAPAC_SEGURIDADES_CURSOS"
+                                                         ],
+                                             "parentPrefix":  "CAPAC_",
+                                             "childrenOrder":  [
+                                                                   {
+                                                                       "kind":  "table",
+                                                                       "key":  "CAPAC_CURSOS"
+                                                                   },
+                                                                   {
+                                                                       "kind":  "table",
+                                                                       "key":  "CAPAC_CURSOS_PREREQUISITOS"
+                                                                   },
+                                                                   {
+                                                                       "kind":  "table",
+                                                                       "key":  "CAPAC_ESTRUCTURAS_CURSOS"
+                                                                   },
+                                                                   {
+                                                                       "kind":  "table",
+                                                                       "key":  "CAPAC_SEGURIDADES_CURSOS"
+                                                                   }
+                                                               ]
+                                         }
+                },
+    "prefixOrders":  {
+                         "CAPAC_":  [
+                                        {
+                                            "kind":  "table",
+                                            "key":  "CAPAC_DRIVERS"
+                                        },
+                                        {
+                                            "kind":  "domain",
+                                            "key":  "dom_capac_planes"
+                                        },
+                                        {
+                                            "kind":  "table",
+                                            "key":  "CAPAC_TEMAS"
+                                        },
+                                        {
+                                            "kind":  "domain",
+                                            "key":  "dom_capac_cursos"
+                                        },
+                                        {
+                                            "kind":  "table",
+                                            "key":  "CAPAC_ATRIBUTOS_X_DRIVERS"
+                                        }
+                                    ]
+                     },
+    "topOrder":  [
+                     {
+                         "kind":  "prefix",
+                         "key":  "CAPAC_"
+                     },
+                     {
+                         "kind":  "table",
+                         "key":  "PERMISOS"
+                     }
+                 ],
+    "childPrefixes":  {
+                          "":  [
+                                   "CAPAC_"
+                               ]
+                      }
 }

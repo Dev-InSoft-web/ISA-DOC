@@ -430,12 +430,13 @@
 											<input
 												class="input-field"
 												type="text"
-												bind:value={frmObj.prefix}
+												bind:value={frmObj.rowName}
 												on:input={(e) => {
 													const v = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_");
-													frmObj.prefix = v;
-												frmObj.rowName = v;
+													frmObj.rowName = v;
 												}}
+												on:change={() => adapter.updateNode(frmObj)}
+												on:blur={() => adapter.updateNode(frmObj)}
 											/>
 										</label>
 										<Text color="neutral"><small>Renombrar el prefijo aplica el cambio a todas las tablas que lo usan al guardar.</small></Text>

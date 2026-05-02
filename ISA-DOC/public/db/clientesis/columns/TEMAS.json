@@ -1,147 +1,120 @@
 {
-  "version": 3,
-  "kind": "columns-tree",
-  "tableRef": "TEMAS",
-  "tableMeta": {
-    "originalName": "TEMAS",
-    "hasIfNotExists": true
-  },
-  "root": {
-    "id": "",
-    "kind": "root",
-    "children": [
-      {
-        "id": "1",
-        "kind": "col",
-        "obj": {
-          "name": "IDRIVER",
-          "type": "BIGINT",
-          "primaryKey": true,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "2",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "3",
-        "kind": "col",
-        "obj": {
-          "name": "FHCRE",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "4",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "5",
-        "kind": "col",
-        "obj": {
-          "name": "NDRIVER",
-          "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "6",
-        "kind": "col",
-        "obj": {
-          "name": "IPCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "7",
-        "kind": "col",
-        "obj": {
-          "name": "IUSUARIOCRE",
-          "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "8",
-        "kind": "col",
-        "obj": {
-          "name": "AUDITORIA",
-          "primaryKey": false,
-          "kind": "optional",
-          "show": true
-        }
-      },
-      {
-        "id": "9",
-        "kind": "col",
-        "obj": {
-          "name": "IAPPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "10",
-        "kind": "col",
-        "obj": {
-          "name": "IPULT",
-          "type": "VARCHAR(255)",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "11",
-        "kind": "col",
-        "obj": {
-          "name": "FHULT",
-          "type": "DATETIME2",
-          "defaultValue": "GETDATE()",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "12",
-        "kind": "col",
-        "obj": {
-          "name": "DESCRIPCION",
-          "type": "TEXT",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      },
-      {
-        "id": "13",
-        "kind": "col",
-        "obj": {
-          "name": "QNIVELES",
-          "type": "TINYINT",
-          "primaryKey": false,
-          "kind": "col"
-        }
-      }
-    ]
-  }
+    "version":  3,
+    "kind":  "columns-tree",
+    "tableRef":  "TEMAS",
+    "tableMeta":  {
+                      "originalName":  "TEMAS",
+                      "hasIfNotExists":  true
+                  },
+    "root":  {
+                 "id":  "",
+                 "kind":  "root",
+                 "children":  [
+                                  {
+                                      "id":  "1",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "ITEMA",
+                                                  "type":  "VARCHAR(255)",
+                                                  "primaryKey":  true
+                                              }
+                                  },
+                                  {
+                                      "id":  "2",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "NTEMA",
+                                                  "type":  "VARCHAR(255)",
+                                                  "primaryKey":  false
+                                              }
+                                  },
+                                  {
+                                      "id":  "3",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "AUDITORIA",
+                                                  "primaryKey":  false,
+                                                  "kind":  "optional",
+                                                  "show":  true
+                                              }
+                                  },
+                                  {
+                                      "id":  "4",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "IUSUARIOCRE",
+                                                  "type":  "VARCHAR(255)",
+                                                  "primaryKey":  false
+                                              }
+                                  },
+                                  {
+                                      "id":  "5",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "IAPPCRE",
+                                                  "type":  "VARCHAR(255)",
+                                                  "primaryKey":  false
+                                              }
+                                  },
+                                  {
+                                      "id":  "6",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "IPCRE",
+                                                  "type":  "VARCHAR(255)",
+                                                  "primaryKey":  false
+                                              }
+                                  },
+                                  {
+                                      "id":  "7",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "FHCRE",
+                                                  "type":  "DATETIME2",
+                                                  "primaryKey":  false,
+                                                  "defaultValue":  "GETDATE()"
+                                              }
+                                  },
+                                  {
+                                      "id":  "8",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "IUSUARIOULT",
+                                                  "type":  "VARCHAR(255)",
+                                                  "primaryKey":  false
+                                              }
+                                  },
+                                  {
+                                      "id":  "9",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "IAPPULT",
+                                                  "type":  "VARCHAR(255)",
+                                                  "primaryKey":  false
+                                              }
+                                  },
+                                  {
+                                      "id":  "10",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "IPULT",
+                                                  "type":  "VARCHAR(255)",
+                                                  "primaryKey":  false
+                                              }
+                                  },
+                                  {
+                                      "id":  "11",
+                                      "kind":  "col",
+                                      "obj":  {
+                                                  "name":  "FHULT",
+                                                  "type":  "DATETIME2",
+                                                  "primaryKey":  false,
+                                                  "defaultValue":  "GETDATE()"
+                                              }
+                                  }
+                              ]
+             },
+    "doc":  {
+                "description":  "Catalogo de temas transversales."
+            }
 }
