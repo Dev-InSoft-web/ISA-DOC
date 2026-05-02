@@ -135,6 +135,12 @@
 		return `${t.fragmentId}::${t.originalName}`;
 	}
 
+	function isHistorialDerived(t: ParsedTable): boolean {
+		// HISTORIAL virtual tables son derivadas de auto-stack: empiezan con
+		// "HISTORIAL" y no llevan la marca autoStack (esa la lleva la maestra).
+		return t.name.startsWith("HISTORIAL") && !t.autoStack;
+	}
+
 	function setTables(list: ParsedTable[]): void {
 		tables = list;
 		adapter.setTables(tables);
@@ -503,7 +509,7 @@
 						</FlexLayout>
 
 						{#if activeCodeTab === "sql"}
-							<SqlTreeEditor table={t} prefix={t.effectivePrefix ?? ""} onChange={(nt) => onTableChange(idx, nt)} />
+							<SqlTreeEditor table={t} prefix={t.effectivePrefix ?? ""} readonly={isHistorialDerived(t)} onChange={(nt) => onTableChange(idx, nt)} />
 						{:else if cfg && mergedCfg}
 							<ResourceConfigSections
 								resource={mergedCfg}
@@ -659,7 +665,7 @@
 			{@const t = selected.table}
 			{@const idx = selected.index}
 			{#key tableKey(t)}
-				<SqlTreeEditor table={t} prefix={t.effectivePrefix ?? ""} onChange={(nt) => onTableChange(idx, nt)} />
+				<SqlTreeEditor table={t} prefix={t.effectivePrefix ?? ""} readonly={isHistorialDerived(t)} onChange={(nt) => onTableChange(idx, nt)} />
 			{/key}
 		{/if}
 	</div>

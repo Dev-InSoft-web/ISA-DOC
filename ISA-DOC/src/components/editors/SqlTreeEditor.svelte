@@ -10,6 +10,7 @@
 
    export let table: ParsedTable;
    export let prefix: string = "";
+   export let readonly: boolean = false;
    export let onChange: (t: ParsedTable) => void = () => {};
 
    function tableKey(t: ParsedTable): string {
@@ -74,19 +75,27 @@
    }
 </script>
 
-<div class="sql-tree-card">
+<div class="sql-tree-card" class:readonly>
+   {#if readonly}
+      <div class="readonly-banner">
+         <Iconify icon="mdi:lock-outline" />
+         <Text color="neutral"><small>Tabla derivada por auto-stack — solo lectura</small></Text>
+      </div>
+   {/if}
    <FlexLayout items="center" justify="between">
       <div class="name-row">
-         <input class="input-field name-input" type="text" bind:value={baseNameDraft} on:change={(e) => commitBaseName(e.currentTarget.value)} />
+         <input class="input-field name-input" type="text" bind:value={baseNameDraft} disabled={readonly} on:change={(e) => commitBaseName(e.currentTarget.value)} />
       </div>
-      <Switch bind:checked={auditarChecked} color="primary" colorFalse="neutral">Auditar</Switch>
-      {#if isAutoStack}
-         <Switch bind:checked={historialChecked} color="primary" colorFalse="neutral">Historial</Switch>
+      {#if !readonly}
+         <Switch bind:checked={auditarChecked} color="primary" colorFalse="neutral">Auditar</Switch>
+         {#if isAutoStack}
+            <Switch bind:checked={historialChecked} color="primary" colorFalse="neutral">Historial</Switch>
+         {/if}
       {/if}
    </FlexLayout>
 
    <div class="tree-host">
-      <TreeView Obj={adapter.obj} itdForm="edit" brapido={true} small={false} readonly={false} bdrag={true} showToolbar={true} CatalogoController={adapter.catalogoController} TreeController={adapter} objWorking={adapter.objWorking}>
+      <TreeView Obj={adapter.obj} itdForm={readonly ? "view" : "edit"} brapido={true} small={false} readonly={readonly} bdrag={!readonly} showToolbar={!readonly} CatalogoController={adapter.catalogoController} TreeController={adapter} objWorking={adapter.objWorking}>
          <svelte:fragment slot="row" let:node>
             {#if node.kind === "section"}
                <FlexLayout items="center" style="flex:1; min-width:0;">
@@ -222,6 +231,18 @@
       min-height: 0;
       flex: 1 1 auto;
       height: 100%;
+   }
+   .sql-tree-card.readonly {
+      background: var(--is-bg-readonly, rgba(127, 127, 127, 0.08));
+   }
+   .readonly-banner {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.5rem;
+      border: 1px dashed var(--is-b-color);
+      border-radius: 4px;
+      opacity: 0.85;
    }
    .tree-host {
       display: flex;
