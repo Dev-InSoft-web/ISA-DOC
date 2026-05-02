@@ -1,17 +1,17 @@
 <!--
-	Bot\u00f3n de informaci\u00f3n + modal que muestra documentaci\u00f3n contextual del
-	\u00e1rbol/nodo. Pensado para humanos y como contrato para agentes IA.
+	Botón de información + modal que muestra documentación contextual del
+	árbol/nodo. Pensado para humanos y como contrato para agentes IA.
 
 	Props:
-	- `query`: par\u00e1metros que se pasan a `/api/tables/doc` (ej. `{ table: "X" }`).
-	- `label`: t\u00edtulo del modal.
+	- `query`: parámetros que se pasan a `/api/tables/doc` (ej. `{ table: "X" }`).
+	- `label`: título del modal.
 -->
 <script lang="ts">
 	import { ButtonIconify, Modal, Text } from "@ingenieria_insoft/ispsveltecomponents";
 
 	export let query: Record<string, string> = {};
-	export const label: string = "Documentaci\u00f3n";
-	export let title: string = "Documentaci\u00f3n";
+	export const label: string = "Documentación";
+	export let title: string = "Documentación";
 
 	let bshow = false;
 	let loading = false;
@@ -62,7 +62,7 @@
 		<div class="doc-modal-body">
 			<h2 class="doc-title">{title}</h2>
 			{#if loading}
-				<Text color="neutral">Cargando documentaci\u00f3n\u2026</Text>
+				<Text color="neutral">Cargando documentación…</Text>
 			{:else if errorMsg}
 				<Text color="danger">{errorMsg}</Text>
 			{:else if payload}
@@ -84,7 +84,7 @@
 
 				{#if treeDoc?.description}
 					<section class="doc-section">
-						<h3>Descripci\u00f3n del \u00e1rbol</h3>
+						<h3>Descripción del árbol</h3>
 						<p>{treeDoc.description}</p>
 					</section>
 				{/if}
@@ -104,7 +104,7 @@
 						{#each Object.entries(asObj(treeDoc.entities) ?? {}) as [k, v]}
 							{@const ent = asObj(v)}
 							<div class="entity">
-								<h4><code>{k}</code> {#if ent?.label}\u2014 {ent.label}{/if}</h4>
+								<h4><code>{k}</code> {#if ent?.label}— {ent.label}{/if}</h4>
 								{#if ent?.description}<p>{ent.description}</p>{/if}
 								{#if asArray(ent?.rules).length}
 									<ul>{#each asArray(ent?.rules) as r}<li>{r}</li>{/each}</ul>
@@ -124,7 +124,7 @@
 
 				{#if rootDoc}
 					<section class="doc-section">
-						<h3>Ra\u00edz</h3>
+						<h3>Raíz</h3>
 						{#if rootDoc.description}<p>{rootDoc.description}</p>{/if}
 						{#if asArray(rootDoc.rules).length}
 							<ul>{#each asArray(rootDoc.rules) as r}<li>{r}</li>{/each}</ul>
@@ -134,7 +134,7 @@
 
 				{#if nodeDoc}
 					<section class="doc-section">
-						<h3>Documentaci\u00f3n del nodo</h3>
+						<h3>Documentación del nodo</h3>
 						{#if nodeDoc.description}<p>{nodeDoc.description}</p>{/if}
 						{#if asArray(nodeDoc.rules).length}
 							<h4>Reglas</h4>
@@ -148,7 +148,7 @@
 				{/if}
 
 				{#if !treeDoc && !rootDoc && !nodeDoc && !tableMeta}
-					<Text color="neutral">No hay documentaci\u00f3n redactada para este \u00e1mbito.</Text>
+					<Text color="neutral">No hay documentación redactada para este ámbito.</Text>
 				{/if}
 			{/if}
 		</div>

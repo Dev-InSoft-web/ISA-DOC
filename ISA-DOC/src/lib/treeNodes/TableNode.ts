@@ -52,7 +52,7 @@ export class TableNode extends BaseTreeNode<TableObj> {
 			warnings.push("`rowName` debe coincidir con `tableRef` en un TableNode.");
 		}
 		if (/[a-z]/.test(this.obj.tableRef)) {
-			warnings.push("Por convenci\u00f3n el nombre de tabla deber\u00eda estar en may\u00fasculas.");
+			warnings.push("Por convención el nombre de tabla debería estar en mayúsculas.");
 		}
 		return { errors, warnings };
 	}

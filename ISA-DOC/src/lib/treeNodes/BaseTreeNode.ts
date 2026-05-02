@@ -7,16 +7,16 @@ import type {
 } from "./types.ts";
 
 /**
- * Clase abstracta com\u00fan a todos los nodos del \u00e1rbol persistido.
+ * Clase abstracta común a todos los nodos del árbol persistido.
  *
  * Responsabilidades:
- *  - Mantener jerarqu\u00eda (parent/children) en memoria.
+ *  - Mantener jerarquía (parent/children) en memoria.
  *  - Serializar/deserializar a JSON estable (`toJSON`).
- *  - Recalcular `id` jer\u00e1rquico (`reindex`) sin almacenarlo redundante.
+ *  - Recalcular `id` jerárquico (`reindex`) sin almacenarlo redundante.
  *  - Validar invariantes propios del kind (`validate`).
- *  - Declarar qu\u00e9 kinds puede tener como hijo (`allowedChildKinds`).
+ *  - Declarar qué kinds puede tener como hijo (`allowedChildKinds`).
  *
- * NO contiene l\u00f3gica de UI; es independiente de Svelte.
+ * NO contiene lógica de UI; es independiente de Svelte.
  */
 export abstract class BaseTreeNode<TObj extends Record<string, unknown> = Record<string, unknown>> {
 	public abstract readonly kind: NodeKind;
@@ -34,11 +34,11 @@ export abstract class BaseTreeNode<TObj extends Record<string, unknown> = Record
 	/** Kinds permitidos como hijos directos. Default: ninguno (hojas). */
 	public allowedChildKinds(): readonly NodeKind[] { return []; }
 
-	/** Validaci\u00f3n por kind. Default: sin reglas. */
+	/** Validación por kind. Default: sin reglas. */
 	public validate(): NodeValidation { return { errors: [], warnings: [] }; }
 
 	/**
-	 * Recalcula el `id` jer\u00e1rquico de este sub\u00e1rbol. La ra\u00edz tiene `id=""`,
+	 * Recalcula el `id` jerárquico de este subárbol. La raíz tiene `id=""`,
 	 * sus hijos `"1"`, `"2"`, ..., y los nietos `"1.1"`, `"1.2"`, etc.
 	 */
 	public reindex(prefix: string = ""): void {
@@ -50,7 +50,7 @@ export abstract class BaseTreeNode<TObj extends Record<string, unknown> = Record
 		});
 	}
 
-	/** Agrega un hijo respetando `allowedChildKinds`. Lanza si no es v\u00e1lido. */
+	/** Agrega un hijo respetando `allowedChildKinds`. Lanza si no es válido. */
 	public addChild(child: BaseTreeNode): void {
 		const allowed = this.allowedChildKinds();
 		if (!allowed.includes(child.kind)) {
@@ -66,7 +66,7 @@ export abstract class BaseTreeNode<TObj extends Record<string, unknown> = Record
 		for (const c of this.children) yield* c.walk();
 	}
 
-	/** Devuelve los kinds de la cadena de ancestros (outermost\u2192parent). */
+	/** Devuelve los kinds de la cadena de ancestros (outermost→parent). */
 	public ancestorChain(): BaseTreeNode[] {
 		const chain: BaseTreeNode[] = [];
 		let cur: BaseTreeNode | null = this.parent;
@@ -77,7 +77,7 @@ export abstract class BaseTreeNode<TObj extends Record<string, unknown> = Record
 		return chain;
 	}
 
-	/** Serializaci\u00f3n com\u00fan; las subclases pueden ajustar `obj`. */
+	/** Serialización común; las subclases pueden ajustar `obj`. */
 	public toJSON(): PersistedNodeJSON {
 		const out: PersistedNodeJSON = { id: this.id, kind: this.kind };
 		const obj = this.serializeObj();
@@ -89,7 +89,7 @@ export abstract class BaseTreeNode<TObj extends Record<string, unknown> = Record
 	}
 
 	/**
-	 * Subclases pueden filtrar/normalizar qu\u00e9 entra al `obj` persistido. Por
+	 * Subclases pueden filtrar/normalizar qué entra al `obj` persistido. Por
 	 * defecto persiste el `obj` completo.
 	 */
 	protected serializeObj(): Record<string, unknown> | undefined {

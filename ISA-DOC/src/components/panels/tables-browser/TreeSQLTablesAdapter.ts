@@ -962,9 +962,9 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const upper = (s: string) => s.toUpperCase();
 		const tableByUpper = new Map<string, { table: ParsedTable; index: number }>();
 		// Indexa por nombre EFECTIVO (cadena ancestra + bare) y agrega alias por
-		// `originalName`/`name` para tolerar divergencias state \u2194 tables (cuando
-		// un save de `/api/tables` se perdi\u00f3 y el `effectivePrefix` qued\u00f3 desactualizado).
-		// El effectivo gana sobre los alias en caso de colisi\u00f3n.
+		// `originalName`/`name` para tolerar divergencias state ↔ tables (cuando
+		// un save de `/api/tables` se perdió y el `effectivePrefix` quedó desactualizado).
+		// El effectivo gana sobre los alias en caso de colisión.
 		this._tables.forEach((t, index) => {
 			const item = { table: t, index };
 			const origU = upper(t.originalName ?? t.name);

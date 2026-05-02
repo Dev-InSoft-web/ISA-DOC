@@ -1,14 +1,14 @@
 /**
  * Tipos compartidos por las clases nodales.
  *
- * Forman el "contrato JSON" del \u00e1rbol persistido. Cada clase nodal sabe
- * serializarse a {@link PersistedNodeJSON} y reconstruirse desde \u00e9l.
+ * Forman el "contrato JSON" del árbol persistido. Cada clase nodal sabe
+ * serializarse a {@link PersistedNodeJSON} y reconstruirse desde él.
  *
  * Diferencias con el formato anterior:
- *  - Sin `ireference`: el padre se conoce por la posici\u00f3n estructural en el
- *    \u00e1rbol cargado en memoria; persistirlo era redundante y fr\u00e1gil.
+ *  - Sin `ireference`: el padre se conoce por la posición estructural en el
+ *    árbol cargado en memoria; persistirlo era redundante y frágil.
  *  - El `comment` "Tabla CAPAC_X" sale del runtime, no del JSON.
- *  - Las tablas de auditor\u00eda (`HISTORIAL<X>`) no se persisten: se derivan de
+ *  - Las tablas de auditoría (`HISTORIAL<X>`) no se persisten: se derivan de
  *    `obj.stack === true` en la tabla maestra.
  */
 

@@ -2,13 +2,13 @@ import type { APIRoute } from "astro";
 import { readPersistedTree, readColumnsTree } from "../../../lib/tablesStore.server.ts";
 
 /**
- * Devuelve documentaci\u00f3n contextual.
+ * Devuelve documentación contextual.
  *
  * Query string:
- * - sin par\u00e1metros: doc del \u00e1rbol completo (`tree-level`) + `entities` y `root`.
- * - `?nodeId=1.2`:    doc del nodo del \u00e1rbol de tablas con ese rowId.
+ * - sin parámetros: doc del árbol completo (`tree-level`) + `entities` y `root`.
+ * - `?nodeId=1.2`:    doc del nodo del árbol de tablas con ese rowId.
  * - `?prefix=CAPAC_`: doc del nodo prefijo (vigilante).
- * - `?table=NAME`:    doc de la tabla y de su \u00e1rbol de columnas.
+ * - `?table=NAME`:    doc de la tabla y de su árbol de columnas.
  * - `?table=NAME&col=NAME`: doc de una columna.
  */
 export const GET: APIRoute = async ({ url }) => {
@@ -31,7 +31,7 @@ export const GET: APIRoute = async ({ url }) => {
 				if (!col) return notFound(`columna '${colName}' en '${tableRef}'`);
 				return ok({ scope: "col", tableRef, colName, doc: col.doc ?? null, obj: col.obj ?? null });
 			}
-			// Calcula el prefijo efectivo en runtime desde el \u00e1rbol (no se persiste).
+			// Calcula el prefijo efectivo en runtime desde el árbol (no se persiste).
 			const effectivePrefix = tree ? computeEffectivePrefix(tree.root, tableRef) : "";
 			return ok({
 				scope: "table",
@@ -99,7 +99,7 @@ function findNodeBy(root: MinimalNode, pred: (n: MinimalNode) => boolean): Minim
 
 /**
  * Calcula la cadena de `PrefixNode` ancestros para una tabla por `tableRef`.
- * Devuelve "" si no se halla o si la tabla est\u00e1 en la ra\u00edz.
+ * Devuelve "" si no se halla o si la tabla está en la raíz.
  */
 function computeEffectivePrefix(root: MinimalNode, tableRef: string): string {
 	const target = String(tableRef);

@@ -29,9 +29,9 @@ export class PrefixNode extends BaseTreeNode<PrefixObj> {
 		const errors: string[] = [];
 		const warnings: string[] = [];
 		const p = this.obj.prefix ?? "";
-		if (!p) errors.push("El prefijo no puede estar vac\u00edo.");
-		if (p && !p.endsWith("_")) warnings.push("Por convenci\u00f3n el prefijo debe terminar en `_`.");
-		if (p && p !== p.toUpperCase()) warnings.push("Por convenci\u00f3n el prefijo debe estar en may\u00fasculas.");
+		if (!p) errors.push("El prefijo no puede estar vacío.");
+		if (p && !p.endsWith("_")) warnings.push("Por convención el prefijo debe terminar en `_`.");
+		if (p && p !== p.toUpperCase()) warnings.push("Por convención el prefijo debe estar en mayúsculas.");
 		if (this.obj.rowName !== this.obj.prefix) {
 			warnings.push("`rowName` debe coincidir con `prefix` en un PrefixNode.");
 		}

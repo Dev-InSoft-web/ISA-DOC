@@ -8,10 +8,10 @@ import { TableNode } from "./TableNode.ts";
  *
  * Forma de la tabla derivada:
  *   - PK `IHISTORIAL<X>` BIGINT
- *   - FK l\u00f3gica al master: misma columna PK del master (mismo nombre y tipo)
- *   - `CAMPO` VARCHAR(255)  \u2014 nombre f\u00edsico de la columna auditada
- *   - `VALOR` TEXT          \u2014 valor nuevo
- *   - Auditor\u00eda CRE \u00fanicamente (insert-only): IUSUARIOCRE, IAPPCRE, IPCRE, FHCRE
+ *   - FK lógica al master: misma columna PK del master (mismo nombre y tipo)
+ *   - `CAMPO` VARCHAR(255)  — nombre físico de la columna auditada
+ *   - `VALOR` TEXT          — valor nuevo
+ *   - Auditoría CRE únicamente (insert-only): IUSUARIOCRE, IAPPCRE, IPCRE, FHCRE
  */
 
 export interface MasterPkInfo {

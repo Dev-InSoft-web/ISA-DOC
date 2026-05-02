@@ -8,8 +8,8 @@ export interface DomainObj {
 
 /**
  * Nodo "dominio funcional". Agrupador conceptual master/slave. No transforma
- * SQL (no tiene `wardenAction`); existe para la navegaci\u00f3n y generaci\u00f3n de
- * c\u00f3digo de m\u00f3dulos.
+ * SQL (no tiene `wardenAction`); existe para la navegación y generación de
+ * código de módulos.
  */
 export class DomainNode extends BaseTreeNode<DomainObj> {
 	public readonly kind = "domain" as const;

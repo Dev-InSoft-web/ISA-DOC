@@ -2,7 +2,7 @@ import { BaseTreeNode } from "./BaseTreeNode.ts";
 import type { NodeKind } from "./types.ts";
 
 /**
- * Ra\u00edz sint\u00e9tica del \u00e1rbol. Su `obj` est\u00e1 vac\u00edo; existe solo como
+ * Raíz sintética del árbol. Su `obj` está vacío; existe solo como
  * contenedor para los hijos de primer nivel (prefijos, dominios y tablas
  * bare).
  */

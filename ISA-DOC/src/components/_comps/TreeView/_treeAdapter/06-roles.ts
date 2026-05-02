@@ -146,11 +146,11 @@ export abstract class TARoles<Stacker, TWorking extends ITreeData<TWorking>> ext
 	}
 
 	/**
-	 * Recorre ancestros hasta el root, **closest \u2192 farthest**, derivando la
-	 * cadena del propio `rowId` (path por puntos: `1.2.3.4` \u2192 ancestros
+	 * Recorre ancestros hasta el root, **closest → farthest**, derivando la
+	 * cadena del propio `rowId` (path por puntos: `1.2.3.4` → ancestros
 	 * `1.2.3`, `1.2`, `1`). Es robusto frente a nodos sin `ireference`
 	 * populado y mantiene el contrato del path como fuente de verdad
-	 * jer\u00e1rquica. Si el nodo carece de `rowId` con puntos, recae en
+	 * jerárquica. Si el nodo carece de `rowId` con puntos, recae en
 	 * `ireference` para garantizar compatibilidad.
 	 */
 	protected getAncestors(node: INode<TWorking>): INode<TWorking>[] {

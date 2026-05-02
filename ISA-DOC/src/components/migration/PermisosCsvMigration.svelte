@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import {
 		Card, Button, H4, Text, Toaster, toastError, toastSuccess,
 		FlexLayout, Iconify,
@@ -48,7 +48,7 @@
 
 	function parseCsv(text: string): { headers: string[]; rows: Row[]; error: string } {
 		const clean = (text ?? "").replace(/\r/g, "").trim();
-		if (!clean) return { headers: [], rows: [], error: "CSV vacÃ­o" };
+		if (!clean) return { headers: [], rows: [], error: "CSV vacío" };
 		const lines = clean.split("\n").filter((l) => l.trim().length > 0);
 		if (lines.length < 2) return { headers: [], rows: [], error: "Se requiere encabezado y al menos una fila" };
 		const hdrs = parseCsvLine(lines[0]).map((h) => h.trim());
@@ -81,8 +81,8 @@
 		if (!rows.length) return "-- Sin filas para migrar";
 		if (!colIpermiso || !colNpermiso) return "-- Selecciona las columnas de origen";
 		const lines: string[] = [];
-		lines.push("-- MigraciÃ³n de PERMISOS desde CSV");
-		lines.push(`-- Origen: ${colIpermiso} â†’ ipermiso, ${colNpermiso} â†’ npermiso`);
+		lines.push("-- Migración de PERMISOS desde CSV");
+		lines.push(`-- Origen: ${colIpermiso} �?' ipermiso, ${colNpermiso} �?' npermiso`);
 		lines.push(`-- Filas: ${rows.length}`);
 		lines.push("");
 		const values: string[] = [];
@@ -95,7 +95,7 @@
 			seen.add(ip);
 			values.push(`    (${escapeSql(ip)}, ${escapeSql(np)})`);
 		}
-		if (!values.length) return "-- No se encontraron valores vÃ¡lidos en la columna ipermiso";
+		if (!values.length) return "-- No se encontraron valores válidos en la columna ipermiso";
 		lines.push(`INSERT INTO ${tableName} (ipermiso, npermiso)`);
 		lines.push("VALUES");
 		lines.push(values.join(",\n") + ";");
@@ -105,7 +105,7 @@
 	$: generatedSql = buildSql();
 
 	function openInModal(): void {
-		modalTitle = `SQL Â· MigraciÃ³n ${tableName}`;
+		modalTitle = `SQL · Migración ${tableName}`;
 		modalValue = generatedSql;
 		modalShow = true;
 	}
@@ -116,15 +116,15 @@
 	}
 
 	async function runSequence(): Promise<void> {
-		if (!approved) { toastError("Aprueba la ejecuciÃ³n antes de continuar"); return; }
+		if (!approved) { toastError("Aprueba la ejecución antes de continuar"); return; }
 		if (!executeSql) { toastError("Ejecutor SQL no disponible"); return; }
-		const ok = confirm(`âš ï¸ Se va a ejecutar el INSERT contra ${tableName} (${rows.length} filas).\n\nÂ¿Continuar?`);
+		const ok = confirm(`�s�️ Se va a ejecutar el INSERT contra ${tableName} (${rows.length} filas).\n\n¿Continuar?`);
 		if (!ok) return;
 		executing = true;
 		try {
 			const res = await executeSql(generatedSql);
-			if (res.ok) toastSuccess(`Secuencia ejecutada Â· ${rows.length} filas`);
-			else toastError(`FallÃ³: ${res.error ?? res.output ?? "desconocido"}`);
+			if (res.ok) toastSuccess(`Secuencia ejecutada · ${rows.length} filas`);
+			else toastError(`Falló: ${res.error ?? res.output ?? "desconocido"}`);
 		} catch (err) {
 			toastError(`Error: ${err instanceof Error ? err.message : String(err)}`);
 		} finally {
@@ -136,7 +136,7 @@
 <Toaster />
 
 <AccordionActions
-	title="Permisos Â· MigraciÃ³n desde CSV"
+	title="Permisos · Migración desde CSV"
 	icon="mdi:file-delimited"
 	count={rows.length}
 	open={false}
@@ -147,13 +147,13 @@
 >
 	<Card variant="flat">
 		<FlexLayout direction="column">
-			<H4>Origen Â· CSV</H4>
-			<Text color="neutral"><small>Encabezado + filas separadas por coma. Edita aquÃ­ el contenido si se necesita ajustar.</small></Text>
+			<H4>Origen · CSV</H4>
+			<Text color="neutral"><small>Encabezado + filas separadas por coma. Edita aquí el contenido si se necesita ajustar.</small></Text>
 			<textarea class="csv-input" bind:value={csvText} spellcheck="false"></textarea>
 			{#if parseError}
 				<Text color="error">{parseError}</Text>
 			{:else}
-				<Text color="neutral"><small>{rows.length} filas Â· {headers.length} columnas</small></Text>
+				<Text color="neutral"><small>{rows.length} filas · {headers.length} columnas</small></Text>
 			{/if}
 		</FlexLayout>
 	</Card>
@@ -161,7 +161,7 @@
 	{#if !parseError && rows.length > 0}
 		<Card variant="flat">
 			<FlexLayout direction="column">
-				<H4>Mapeo de columnas â†’ tabla <code>{tableName}</code></H4>
+				<H4>Mapeo de columnas �?' tabla <code>{tableName}</code></H4>
 				<FlexLayout items="center">
 					<label class="field">
 						<Text color="neutral"><small>ipermiso</small></Text>
@@ -219,8 +219,8 @@
 
 		<Card variant="flat">
 			<FlexLayout direction="column">
-				<H4>EjecuciÃ³n</H4>
-				<Text color="neutral"><small>La secuencia <b>no</b> se ejecuta automÃ¡ticamente. Aprueba y pulsa <b>Ejecutar secuencia</b> para enviar los datos a la tabla.</small></Text>
+				<H4>Ejecución</H4>
+				<Text color="neutral"><small>La secuencia <b>no</b> se ejecuta automáticamente. Aprueba y pulsa <b>Ejecutar secuencia</b> para enviar los datos a la tabla.</small></Text>
 				<label class="approve">
 					<input type="checkbox" bind:checked={approved} />
 					<Text>Aprobado para ejecutar contra la BD</Text>
@@ -233,10 +233,10 @@
 						onClick={runSequence}
 					>
 						<Iconify icon={executing ? "mdi:loading" : "mdi:play"} />
-						{executing ? "Ejecutandoâ€¦" : "Ejecutar secuencia"}
+						{executing ? "Ejecutando�?�" : "Ejecutar secuencia"}
 					</Button>
 					{#if !executeSql}
-						<Text color="error"><small>Sin canal de ejecuciÃ³n (socket no disponible)</small></Text>
+						<Text color="error"><small>Sin canal de ejecución (socket no disponible)</small></Text>
 					{/if}
 				</FlexLayout>
 			</FlexLayout>

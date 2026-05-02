@@ -48,7 +48,7 @@ async function exists(p: string): Promise<boolean> {
 }
 
 // ---------------------------------------------------------------------------
-// Lectura del formato persistido + hidrataci\u00f3n a clases.
+// Lectura del formato persistido + hidratación a clases.
 // ---------------------------------------------------------------------------
 
 export async function readPersistedTree(): Promise<PersistedTablesTree | null> {
@@ -72,14 +72,14 @@ export async function readColumnsTree(tableRef: string): Promise<PersistedColumn
 	return null;
 }
 
-/** Comentario "Tabla X" \u2014 se genera en runtime a partir del nombre efectivo. */
+/** Comentario "Tabla X" — se genera en runtime a partir del nombre efectivo. */
 function runtimeTableComment(effectivePrefix: string | undefined, name: string): string {
 	const full = `${effectivePrefix ?? ""}${name}`;
 	return `Tabla ${full}`;
 }
 
 /**
- * Camina el \u00e1rbol persistido en preorden produciendo, para cada TableNode,
+ * Camina el árbol persistido en preorden produciendo, para cada TableNode,
  * su prefijo efectivo (cadena de PrefixNodes ancestros).
  */
 function* iterateTables(root: BaseTreeNode): IterableIterator<{ table: TableNode; effectivePrefix: string }> {
@@ -98,7 +98,7 @@ function* iterateTables(root: BaseTreeNode): IterableIterator<{ table: TableNode
  * Materializa el array de `ParsedTable` que consume el cliente.
  *  1. Lee cada tabla persistida (con su archivo `columns/<X>.json`).
  *  2. Para cada tabla con `obj.stack === true`, INYECTA una tabla virtual
- *     `HISTORIAL<X>` justo despu\u00e9s del master, derivada en runtime.
+ *     `HISTORIAL<X>` justo después del master, derivada en runtime.
  *  3. Genera `comment` en runtime a partir del prefijo efectivo.
  */
 async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<ParsedTable[]> {
@@ -153,7 +153,7 @@ async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<Par
 }
 
 // ---------------------------------------------------------------------------
-// Migraci\u00f3n legacy (split por fragmento + monol\u00edtico).
+// Migración legacy (split por fragmento + monolítico).
 // ---------------------------------------------------------------------------
 
 async function listLegacyFragmentFiles(): Promise<string[]> {
@@ -210,7 +210,7 @@ async function seedFromSql(): Promise<TablesDoc> {
 }
 
 // ---------------------------------------------------------------------------
-// Construcci\u00f3n del \u00e1rbol persistido a partir de ParsedTable[].
+// Construcción del árbol persistido a partir de ParsedTable[].
 // ---------------------------------------------------------------------------
 
 interface PreservedTreeDocs {
@@ -277,9 +277,9 @@ function collectPreservedColumnsDocs(tree: PersistedColumnsTree | null): Preserv
 }
 
 /**
- * Detecta si una tabla entrante es una HISTORIAL derivada (sint\u00e9tica). Si lo
+ * Detecta si una tabla entrante es una HISTORIAL derivada (sintética). Si lo
  * es, NO se persiste como tabla independiente; se marca su master con
- * `stack: true` para que se vuelva a derivar al pr\u00f3ximo read.
+ * `stack: true` para que se vuelva a derivar al próximo read.
  */
 function detectHistorialMaster(t: ParsedTable, allRefs: Set<string>): string | null {
 	const ref = t.name.toUpperCase();
@@ -293,7 +293,7 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 	const refs = new Set<string>();
 	for (const t of tables) refs.add(t.name.toUpperCase());
 
-	// Particionar: tablas a persistir vs historiales sint\u00e9ticos.
+	// Particionar: tablas a persistir vs historiales sintéticos.
 	const persistable: ParsedTable[] = [];
 	const stackMasters = new Set<string>();
 	for (const t of tables) {
@@ -305,7 +305,7 @@ function buildPersistedTree(tables: ParsedTable[], preserved: PreservedTreeDocs)
 		persistable.push(t);
 	}
 	// Conservar masters que ya estaban marcados aunque la historial no haya
-	// llegado en este batch (p.ej. si el cliente no la materializ\u00f3).
+	// llegado en este batch (p.ej. si el cliente no la materializó).
 	for (const m of preserved.stackByTableRef.keys()) stackMasters.add(m.toUpperCase());
 
 	const root = new RootNode();
@@ -397,7 +397,7 @@ function buildColumnsTree(t: ParsedTable, preserved: PreservedColumnsDocs): Pers
 }
 
 // ---------------------------------------------------------------------------
-// API p\u00fablica.
+// API pública.
 // ---------------------------------------------------------------------------
 
 export async function readTablesDoc(): Promise<TablesDoc> {
@@ -432,7 +432,7 @@ export async function writeTablesDoc(doc: TablesDoc): Promise<void> {
 	await writeFile(tablesTreePath, JSON.stringify(tree, null, 2), "utf8");
 	const writtenColumns = new Set<string>();
 	for (const t of doc.tables) {
-		if (!persistedRefs.has(t.name)) continue; // historiales sint\u00e9ticos no escriben columnas
+		if (!persistedRefs.has(t.name)) continue; // historiales sintéticos no escriben columnas
 		const previousCols = await readColumnsTree(t.name);
 		const preservedCols = collectPreservedColumnsDocs(previousCols);
 		const file = path.join(columnsDir, `${t.name}.json`);

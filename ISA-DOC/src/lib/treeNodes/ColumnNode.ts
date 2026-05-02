@@ -19,7 +19,7 @@ export interface ColumnObj {
 }
 
 /**
- * Nodo "columna". Es la fila del \u00e1rbol de columnas (`columns-tree`).
+ * Nodo "columna". Es la fila del árbol de columnas (`columns-tree`).
  */
 export class ColumnNode extends BaseTreeNode<ColumnObj> {
 	public readonly kind = "col" as const;
@@ -48,7 +48,7 @@ export class ColumnNode extends BaseTreeNode<ColumnObj> {
 			errors.push("`type` es obligatorio en una columna.");
 		}
 		if (this.obj.type && this.obj.type !== this.obj.type.toUpperCase()) {
-			warnings.push("Por convenci\u00f3n el tipo SQL deber\u00eda estar en may\u00fasculas.");
+			warnings.push("Por convención el tipo SQL debería estar en mayúsculas.");
 		}
 		return { errors, warnings };
 	}

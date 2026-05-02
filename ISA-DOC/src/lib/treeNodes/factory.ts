@@ -7,13 +7,13 @@ import { TableNode, type TableObj } from "./TableNode.ts";
 import type { NodeKind, PersistedNodeJSON } from "./types.ts";
 
 /**
- * Reconstruye el \u00e1rbol en memoria a partir de un JSON persistido. Cada
+ * Reconstruye el árbol en memoria a partir de un JSON persistido. Cada
  * `kind` selecciona la clase nodal correspondiente; los campos
  * (`doc`, `wardenAction`, `children`) se hidratan recursivamente.
  *
- * El `id` no se confiar\u00e1 al JSON: se recalcula tras hidratar v\u00eda
- * `node.reindex()`. As\u00ed se evitan inconsistencias entre `id`/`ireference`
- * almacenados y la posici\u00f3n estructural real.
+ * El `id` no se confiará al JSON: se recalcula tras hidratar vía
+ * `node.reindex()`. Así se evitan inconsistencias entre `id`/`ireference`
+ * almacenados y la posición estructural real.
  */
 export function nodeFromJSON(json: PersistedNodeJSON, parent: BaseTreeNode | null = null): BaseTreeNode {
 	const kind = json.kind as NodeKind;
@@ -47,7 +47,7 @@ export function nodeFromJSON(json: PersistedNodeJSON, parent: BaseTreeNode | nul
 	return n;
 }
 
-/** Hidrata y reindexa la ra\u00edz (id="" y descendientes). */
+/** Hidrata y reindexa la raíz (id="" y descendientes). */
 export function rootFromJSON(json: PersistedNodeJSON): RootNode {
 	const root = nodeFromJSON(json) as RootNode;
 	root.reindex("");
