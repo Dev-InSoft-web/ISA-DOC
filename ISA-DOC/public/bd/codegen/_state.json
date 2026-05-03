@@ -3,7 +3,6 @@
     "dom_plan_estudio": {
       "id": "dom_plan_estudio",
       "name": "Plan de Estudio",
-      "parentPrefix": "CAPAC_",
       "masterTable": "tbl_planes_estudio",
       "members": [
         "tbl_planes_estudio",
@@ -28,7 +27,8 @@
           "kind": "table",
           "key": "tbl_planes_cursos"
         }
-      ]
+      ],
+      "parentId": "piv_1777761006578_4ik0q"
     },
     "dom_drivers": {
       "id": "dom_drivers",
@@ -48,12 +48,11 @@
           "key": "tbl_atributos_x_drivers"
         }
       ],
-      "parentPrefix": "CAPAC_"
+      "parentId": "piv_1777761006578_4ik0q"
     },
     "dom_cursos": {
       "id": "dom_cursos",
       "name": "Cursos",
-      "parentPrefix": "CAPAC_",
       "masterTable": "tbl_cursos",
       "members": [
         "tbl_cursos",
@@ -82,6 +81,29 @@
         {
           "kind": "table",
           "key": "tbl_historialcurso"
+        }
+      ],
+      "parentId": "piv_1777761006578_4ik0q"
+    },
+    "piv_1777761006578_4ik0q": {
+      "id": "piv_1777761006578_4ik0q",
+      "name": "Nuevo pivote",
+      "type": "pivot",
+      "masterTable": "",
+      "members": [],
+      "parentPrefix": "CAPAC_",
+      "childrenOrder": [
+        {
+          "kind": "domain",
+          "key": "dom_plan_estudio"
+        },
+        {
+          "kind": "domain",
+          "key": "dom_drivers"
+        },
+        {
+          "kind": "domain",
+          "key": "dom_cursos"
         }
       ]
     }
@@ -120,16 +142,8 @@
   "prefixOrders": {
     "CAPAC_": [
       {
-        "kind": "domain",
-        "key": "dom_plan_estudio"
-      },
-      {
-        "kind": "domain",
-        "key": "dom_cursos"
-      },
-      {
-        "kind": "domain",
-        "key": "dom_drivers"
+        "kind": "pivot",
+        "key": "piv_1777761006578_4ik0q"
       }
     ]
   }

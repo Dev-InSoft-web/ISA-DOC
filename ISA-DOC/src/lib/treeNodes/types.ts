@@ -12,7 +12,7 @@
  *    `obj.stack === true` en la tabla maestra.
  */
 
-export type NodeKind = "root" | "prefix" | "domain" | "table" | "col" | "optional";
+export type NodeKind = "root" | "prefix" | "domain" | "pivot" | "table" | "col" | "optional";
 
 export interface PersistedWardenRefJSON {
 	idaction: string;

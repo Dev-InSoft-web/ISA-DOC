@@ -2,7 +2,7 @@ import { TreeNode } from "../../_comps/TreeView/_treeAdapter/_defgen/00-tree-dat
 import type { WardenAction, WardenDraft } from "../../_comps/TreeView/_treeAdapter/06-roles";
 import type { INode } from "../../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
 
-export type TableTreeKind = "domain" | "prefix" | "table";
+export type TableTreeKind = "domain" | "pivot" | "prefix" | "table";
 
 /**
  * Base de datos del nodo de tablas. Extiende `TreeNode` (la base genérica
@@ -47,15 +47,15 @@ export class TTableNodeUX extends TTableNodeBase {
 		this.depth = this.computeDepthFromPath();
 		this.isLeaf = this.kind === "table";
 		this.isLast = this.kind === "table";
-		this.isPenultimate = this.kind === "prefix" || this.kind === "domain";
-		this.levelTitle = this.kind === "domain" ? "Dominio" : this.kind === "prefix" ? "Prefijo" : "Tabla";
+		this.isPenultimate = this.kind === "prefix" || this.kind === "domain" || this.kind === "pivot";
+		this.levelTitle = this.kind === "domain" ? "Dominio" : this.kind === "pivot" ? "Pivote" : this.kind === "prefix" ? "Prefijo" : "Tabla";
 		this.nextLevelTitle = "Tabla";
 		this.label = this.rowName || "";
 		// Roles actorales (kebab-case, estilo "clases CSS"). Inferidos por kind.
-		// `domain`: prison + monarchy.
+		// `domain`/`pivot`: prison + monarchy (master congelado).
 		// `prefix`: prison + warden → acción declarada en `wardenAction`.
 		// `table`: atom — hoja sin rol especial.
-		this.actor = this.kind === "domain"
+		this.actor = (this.kind === "domain" || this.kind === "pivot")
 			? "group prison monarchy"
 			: this.kind === "prefix"
 				? "group prison warden"
@@ -90,22 +90,25 @@ export class TTableNodeUX extends TTableNodeBase {
 	 * Reglas de aceptación de hijos.
 	 * Default (agrupadores): aceptan a cualquier otro nodo agrupador o hoja.
 	 * Reglas particulares:
-	 * - `domain`: rechaza dominios anidados (regla propia y única del dominio).
+	 * - `domain`: rechaza dominios anidados (regla propia y única del dominio) y rechaza pivots.
+	 * - `pivot`: acepta tablas y dominios. Rechaza otros pivots y prefijos
+	 *   (un pivot agrupa tablas/dominios que se comunican vía GET; no se anidan).
 	 * - `table`: hoja. Nunca acepta hijos.
 	 */
 	acceptsChild(child: TTableNodeUX): boolean {
 		if (this.kind === "table") return false;
-		if (this.kind === "domain" && child.kind === "domain") return false;
+		if (this.kind === "domain" && (child.kind === "domain" || child.kind === "pivot")) return false;
+		if (this.kind === "pivot" && (child.kind === "pivot" || child.kind === "prefix")) return false;
 		return true;
 	}
 
 	/**
 	 * Regla de orden por agrupador:
-	 * - `domain`: master siempre primero; el resto conserva el orden actual.
+	 * - `domain`/`pivot`: master siempre primero; el resto conserva el orden actual.
 	 * - `prefix` y `table`: sin regla (preservar orden visual).
 	 */
 	sortChildren(children: TTableNodeUX[]): TTableNodeUX[] {
-		if (this.kind !== "domain") return children;
+		if (this.kind !== "domain" && this.kind !== "pivot") return children;
 		// `Array.prototype.sort` es estable en JS moderno; los empates conservan el orden.
 		return children.slice().sort((a, b) => {
 			const am = a.isMaster ? 0 : 1;
@@ -115,12 +118,10 @@ export class TTableNodeUX extends TTableNodeBase {
 	}
 
 	/**
-	 * Veto fino de posición: en un dominio, ningún nodo puede quedar antes del master.
-	 * - `before <master>`: prohibido (saldría arriba del master).
-	 * - `after <slave>` ó `before <slave>`: permitido (master ya queda arriba por sortChildren).
+	 * Veto fino de posición: en un dominio o pivote, ningún nodo puede quedar antes del master.
 	 */
 	canPlaceChildAt(src: TTableNodeUX, target: TTableNodeUX, position: "before" | "after"): boolean {
-		if (this.kind !== "domain") return true;
+		if (this.kind !== "domain" && this.kind !== "pivot") return true;
 		if (src.isMaster) return true;
 		if (target.isMaster && position === "before") return false;
 		return true;

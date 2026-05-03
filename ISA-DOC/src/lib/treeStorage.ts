@@ -80,6 +80,7 @@ const ENTITY_NAME_BY_KIND: Partial<Record<NodeKind, string>> = {
 	table: "TABLE",
 	col: "COLUMN",
 	domain: "DOMAIN",
+	pivot: "PIVOT",
 };
 
 /** Lista declarada de keys camelCase del `obj` de cada kind con entidad. */
@@ -87,7 +88,8 @@ const ENTITY_OBJ_KEYS_BY_KIND: Partial<Record<NodeKind, readonly string[]>> = {
 	table: ["tableRef", "rowName", "tableId", "autoStack", "autoStackHistorial", "relations", "customization", "snippets"],
 	col: ["name", "type", "nullable", "defaultValue", "primaryKey", "extra", "kind", "foreignKey"],
 	domain: ["domainId", "masterTable"],
-};
+	pivot: ["domainId", "masterTable"],
+};;
 
 /** Lista declarada de keys camelCase de los nodos estructurales (inline en NodeRow). */
 const STRUCTURAL_INLINE_KEYS_BY_KIND: Partial<Record<NodeKind, readonly string[]>> = {

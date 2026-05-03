@@ -115,6 +115,10 @@
 		adapter.addDomainAtFocus();
 		toastSuccess(`Dominio creado. Marca una tabla como master desde el árbol.`);
 	};
+	adapter.onCascadeAddPivot = () => {
+		adapter.addPivotAtFocus();
+		toastSuccess(`Pivote creado. Marca una tabla como master y agrega dominios o tablas miembros.`);
+	};
 	adapter.onCascadeAddPrefix = () => {
 		adapter.addPrefixAtFocus();
 		toastSuccess(`Prefijo creado. Renómbralo y agrega tablas o subgrupos.`);
@@ -122,6 +126,8 @@
 	adapter.onCascadeAddChildPrefix = (parent) => {
 		const parentKey = parent.kind === "domain"
 			? `domain:${parent.domainId ?? ""}`
+			: parent.kind === "pivot"
+				? `pivot:${parent.domainId ?? ""}`
 			: parent.kind === "prefix"
 				? `prefix:${parent.prefix ?? ""}`
 				: "";
@@ -572,6 +578,12 @@
 									<span class="badge badge-domain">Domain</span>
 									<span class="tree-row-name">{node.rowName}</span>
 								</span>
+							{:else if node.kind === "pivot"}
+								<span class="tree-row">
+									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
+									<span class="badge badge-pivot">Pivot</span>
+									<span class="tree-row-name">{node.rowName}</span>
+								</span>
 							{:else}
 								<span class="tree-row">
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
@@ -612,6 +624,19 @@
 												on:input={() => adapter.updateNode(frmObj)}
 											/>
 										</label>
+									</div>
+								{:else if frmObj.kind === "pivot"}
+									<div class="frm">
+										<label class="field">
+											<Text color="neutral"><small>Nombre del pivote</small></Text>
+											<input
+												class="input-field"
+												type="text"
+												bind:value={frmObj.rowName}
+												on:input={() => adapter.updateNode(frmObj)}
+											/>
+										</label>
+										<Text color="neutral"><small>Un pivote agrupa varias tablas y dominios que se comunican entre sí sólo en GET (no INSERT/UPDATE).</small></Text>
 									</div>
 								{:else}
 									<div class="frm">
@@ -975,6 +1000,10 @@
 	.badge-domain {
 		background: color-mix(in srgb, var(--is-warning) 25%, transparent);
 		color: var(--is-warning);
+	}
+	.badge-pivot {
+		background: color-mix(in srgb, hotpink 25%, transparent);
+		color: hotpink;
 	}
 	.badge-prefix {
 		background: color-mix(in srgb, var(--is-success) 25%, transparent);

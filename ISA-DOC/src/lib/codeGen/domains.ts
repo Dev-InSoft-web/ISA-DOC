@@ -9,14 +9,22 @@
 import { getCached, setCached } from "./stateClient.ts";
 
 export interface DomainChildRef {
-	kind: "table" | "domain";
-	/** Para `kind:"table"`: id estable de la tabla. Para `kind:"domain"`: id del dominio. */
+	kind: "table" | "domain" | "pivot";
+	/** Para `kind:"table"`: id estable de la tabla. Para `kind:"domain"|"pivot"`: id del agrupador. */
 	key: string;
 }
 
 export interface DomainDef {
 	id: string;
 	name: string;
+	/**
+	 * Tipo de agrupador. "domain" (default) es un agrupamiento clásico
+	 * master+slaves. "pivot" es un agrupamiento de relaciones (color
+	 * HotPink) que puede contener tablas Y dominios completos como hijos:
+	 * sus miembros se comunican entre sí sólo en GET (no INSERT/UPDATE
+	 * cruzados). Modela las relaciones del controller server.
+	 */
+	type?: "domain" | "pivot";
 	/** Id estable de la tabla master (no el nombre). Cadena vacía si aún no se asignó. */
 	masterTable: string;
 	/** Ids estables de las tablas miembro (no nombres). */
@@ -223,17 +231,18 @@ export function migrateDomainsAndOrdersToIds(input: {
 	return { domains: nextDomains, topOrder: nextTopOrder, prefixOrders: nextPrefixOrders, changed };
 }
 
-export function createEmptyDomain(domains: DomainsMap, name: string, parentId?: string, parentPrefix?: string): DomainsMap {
-	const id = `dom_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+export function createEmptyDomain(domains: DomainsMap, name: string, parentId?: string, parentPrefix?: string, type: "domain" | "pivot" = "domain"): DomainsMap {
+	const prefix = type === "pivot" ? "piv_" : "dom_";
+	const id = `${prefix}${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 	return {
 		...domains,
-		[id]: { id, name: name || "Nuevo dominio", masterTable: "", members: [], parentId, parentPrefix },
+		[id]: { id, name: name || (type === "pivot" ? "Nuevo pivote" : "Nuevo dominio"), type, masterTable: "", members: [], parentId, parentPrefix },
 	};
 }
 
-/** Orden explícito de los nodos de nivel raíz (dominios, prefijos y tablas mezclados). */
+/** Orden explícito de los nodos de nivel raíz (dominios, pivots, prefijos y tablas mezclados). */
 export interface TopLevelEntry {
-	kind: "domain" | "prefix" | "table";
+	kind: "domain" | "pivot" | "prefix" | "table";
 	key: string;
 }
 
@@ -241,7 +250,7 @@ const TOP_KEY = "topOrder" as const;
 
 export function loadTopLevelOrder(): TopLevelEntry[] {
 	const v = getCached("topOrder");
-	if (Array.isArray(v)) return v.filter((e: any) => e && (e.kind === "domain" || e.kind === "prefix" || e.kind === "table") && typeof e.key === "string") as TopLevelEntry[];
+	if (Array.isArray(v)) return v.filter((e: any) => e && (e.kind === "domain" || e.kind === "pivot" || e.kind === "prefix" || e.kind === "table") && typeof e.key === "string") as TopLevelEntry[];
 	return [];
 }
 
