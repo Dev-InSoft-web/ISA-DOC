@@ -613,25 +613,38 @@
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="badge badge-prefix">Prefixer</span>
 									<span class="tree-row-name">{node.rowName}</span>
-									<span class="tree-row-meta">{node.colCount}</span>
 								</span>
 							{:else if node.kind === "domain"}
 								<span class="tree-row">
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
-									<span class="badge badge-domain">Domain</span>
+									<span class="badge badge-domain">{node.prefix ? "Domain/Prefixer" : "Domain"}</span>
+									{#if node.prefix}<span class="tree-row-name">{node.prefix}</span>{/if}
 								</span>
 							{:else if node.kind === "pivot"}
 								{@const _pivotParent = adapter.findNodeById(String(node.ireference || "").trim()) as unknown as { kind?: string } | null}
 								{@const _pivotInDomain = _pivotParent?.kind === "domain"}
-								<span class="tree-row">
+								{@const _isPD = node.domainType === "pivot-domain"}
+								<span class="tree-row {node.pivotMissingSlave ? 'tree-row-error' : ''}" title={node.pivotMissingSlave ? "Pivot N:N incompleto: agrega la tabla esclava" : ""}>
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
-									<span class="badge {_pivotInDomain ? 'badge-pivot-in-domain' : 'badge-pivot'}">Pivot</span>
+									<span class="badge {_pivotInDomain ? 'badge-pivot-in-domain' : 'badge-pivot'}">{_isPD ? "Pivot Domain" : "Pivot"}</span>
+									{#if node.pivotMissingSlave}<Iconify icon="mdi:alert" color="error" />{/if}
+									{#if node.cardinality}<span class="tree-row-meta tree-row-card" title="Cardinalidad del pivote">{node.cardinality}</span>{/if}
 								</span>
 							{:else}
+								{@const _tableParent = node.isMaster ? (adapter.findNodeById(String(node.ireference || "").trim()) as unknown as { kind?: string; domainType?: string } | null) : null}
+								{@const _isMasterOfDomain = !!_tableParent && _tableParent.kind === "domain"}
 								<span class="tree-row">
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="tree-row-name">{node.rowName}</span>
-									<span class="tree-row-meta">{node.colCount}</span>
+									{#if node.isMaster}
+										{#if _isMasterOfDomain}
+											<span class="tree-row-meta tree-row-master">master</span>
+										{:else}
+											<span class="tree-row-meta tree-row-master-aux" title="Master del pivote">*</span>
+										{/if}
+									{:else if node.slaveCardinality}
+										<span class="tree-row-meta tree-row-card" title="Cardinalidad respecto al master">{node.slaveCardinality}</span>
+									{/if}
 								</span>
 							{/if}
 						</svelte:fragment>
@@ -661,10 +674,51 @@
 								{:else if frmObj.kind === "domain"}
 									<div class="frm">
 										<Text color="neutral"><small>Un dominio agrupa tablas que se exponen como raíz en la API. La tabla master puede leer y modificar a sus esclavas.</small></Text>
+										<label class="field">
+											<Text color="neutral"><small>Prefijo (opcional, convierte el dominio en domain/prefixer)</small></Text>
+											<input
+												class="input-field"
+												type="text"
+												value={frmObj.prefix ?? ""}
+												on:input={(e) => {
+													const v = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_");
+													(e.currentTarget).value = v;
+												}}
+												on:change={(e) => adapter.updateDomainMeta(frmObj.domainId, { prefix: (e.currentTarget).value })}
+											/>
+										</label>
 									</div>
 								{:else if frmObj.kind === "pivot"}
 									<div class="frm">
-										<Text color="neutral"><small>Un pivote agrupa varias tablas y dominios. La dirección de anidación del JSON la indica el master del pivote.</small></Text>
+										<Text color="neutral"><small>Un pivote modela cardinalidad. <strong>Pivot/Domain</strong> envuelve a otro dominio (1:1 ó 1:N). <strong>Pivot N:N</strong> tiene exactamente master + 1 slave.</small></Text>
+										<label class="field">
+											<Text color="neutral"><small>Tipo de pivote</small></Text>
+											<select
+												class="input-field"
+												value={frmObj.domainType === "pivot-domain" ? "pivot-domain" : "pivot"}
+												on:change={(e) => {
+													const t = ((e.currentTarget).value === "pivot-domain") ? "pivot-domain" as const : "pivot" as const;
+													const card = t === "pivot" ? "N:N" as const : "1:N" as const;
+													adapter.updateDomainMeta(frmObj.domainId, { type: t, cardinality: card });
+												}}
+											>
+												<option value="pivot-domain">Pivot/Domain (envuelve dominio · 1:1 ó 1:N)</option>
+												<option value="pivot">Pivot N:N (master + 1 slave)</option>
+											</select>
+										</label>
+										{#if frmObj.domainType === "pivot-domain"}
+											<label class="field">
+												<Text color="neutral"><small>Cardinalidad</small></Text>
+												<select
+													class="input-field"
+													value={frmObj.cardinality || "1:N"}
+													on:change={(e) => adapter.updateDomainMeta(frmObj.domainId, { cardinality: (e.currentTarget).value as "1:1" | "1:N" })}
+												>
+													<option value="1:1">1:1 (uno a uno)</option>
+													<option value="1:N">1:N (uno a muchos)</option>
+												</select>
+											</label>
+										{/if}
 									</div>
 								{:else}
 									<div class="frm">
@@ -677,6 +731,21 @@
 												on:input={(e) => { frmObj.rowName = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_"); }}
 											/>
 										</label>
+										{#if !frmObj.isMaster && frmObj.domainId}
+											<label class="field">
+												<Text color="neutral"><small>Cardinalidad respecto al master</small></Text>
+												<select
+													class="input-field"
+													value={frmObj.slaveCardinality || ""}
+													on:change={(e) => adapter.setSlaveCardinality(frmObj.domainId, frmObj.tableKey, (e.currentTarget).value as "1:1" | "1:N" | "N:N")}
+												>
+													<option value="" disabled>— elige —</option>
+													<option value="1:1">1:1</option>
+													<option value="1:N">1:N</option>
+													<option value="N:N">N:N</option>
+												</select>
+											</label>
+										{/if}
 										<Text color="neutral"><small>El prefijo es una propiedad del grupo padre y no se edita desde aquí. Para editar columnas/secciones, usa el panel SQL.</small></Text>
 									</div>
 								{/if}
@@ -1063,6 +1132,28 @@
 	.badge-prefix {
 		background: color-mix(in srgb, var(--is-success) 25%, transparent);
 		color: var(--is-success);
+	}
+	.tree-row-error {
+		outline: 1px dashed var(--is-error, #e11d48);
+		border-radius: 4px;
+		background: color-mix(in srgb, var(--is-error, #e11d48) 12%, transparent);
+		padding: 0 0.25rem;
+	}
+	.tree-row-card {
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+	}
+	.tree-row-master {
+		text-transform: uppercase;
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.05em;
+		color: var(--is-warning);
+	}
+	.tree-row-master-aux {
+		font-weight: 700;
+		color: var(--is-text-neutral, #888);
+		opacity: 0.7;
 	}
 	:global(.code-pane) > :global(.pane-scroll) > :global(.card-root) {
 		width: 100%;

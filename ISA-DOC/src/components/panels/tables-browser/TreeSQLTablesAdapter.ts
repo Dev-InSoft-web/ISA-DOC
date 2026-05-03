@@ -19,6 +19,7 @@ import {
 	type PrefixOrderMap,
 	type TopLevelEntry
 } from "../../../lib/codeGen/domains.ts";
+import { toastError } from "@ingenieria_insoft/ispsveltecomponents";
 import type { ParsedTable } from "../../../lib/tableSchema";
 import { effectiveTableName } from "../../../lib/tableSchema";
 import { TreeAdapterCatalogoStub } from "../../_comps/TreeView/_treeAdapter/CatalogoStub";
@@ -447,6 +448,24 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		this.onDomainsChange(d);
 	}
 
+	/** Actualiza la cardinalidad y/o el subtipo (`pivot` ↔ `pivot-domain`) de un agrupador. */
+	updateDomainMeta(domainId: string, patch: Partial<Pick<DomainDef, "cardinality" | "type" | "prefix">>): void {
+		const cur = this._domains[domainId];
+		if (!cur) return;
+		const next: DomainsMap = { ...this._domains, [domainId]: { ...cur, ...patch } };
+		this.setDomains(next);
+	}
+
+	/** Establece la cardinalidad de una tabla esclava dentro de su dominio. */
+	setSlaveCardinality(domainId: string, tableId: string, value: "1:1" | "1:N" | "N:N"): void {
+		const cur = this._domains[domainId];
+		if (!cur) return;
+		const map = { ...(cur.slaveCardinalities ?? {}) };
+		map[tableId] = value;
+		const next: DomainsMap = { ...this._domains, [domainId]: { ...cur, slaveCardinalities: map } };
+		this.setDomains(next);
+	}
+
 	/**
 	 * Marca como master la tabla identificada por `tableRef`. Acepta tanto el
 	 * id estable de la tabla (`ParsedTable.id`) como el nombre efectivo, para
@@ -864,7 +883,26 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 
 	/** Crea un pivote vacío en el contenedor del nodo enfocado, justo debajo del foco. */
 	addPivotAtFocus(): void {
+		// Restricción: los pivotes sólo pueden existir dentro de un dominio (o de otro pivote
+		// que esté dentro de un dominio). Bloquea creación a nivel raíz o bajo prefix.
+		const anchor = this.resolveCascadeAnchor();
+		const insideDomain = anchor.parentKey.startsWith("domain:")
+			|| (anchor.parentKey.startsWith("pivot:") && this.isAncestorADomain(anchor.parentKey.slice(6)));
+		if (!insideDomain) {
+			toastError("Los pivotes sólo pueden crearse dentro de un dominio.");
+			return;
+		}
 		this.addGroupAtFocus("pivot");
+	}
+
+	/** Sube por la cadena `parentId` a partir de un pivote y devuelve true si encuentra un dominio. */
+	private isAncestorADomain(domainOrPivotId: string): boolean {
+		let cur: DomainDef | undefined = this._domains[domainOrPivotId];
+		while (cur) {
+			if ((cur.type ?? "domain") === "domain") return true;
+			cur = cur.parentId ? this._domains[cur.parentId] : undefined;
+		}
+		return false;
 	}
 
 	private addGroupAtFocus(type: "domain" | "pivot"): void {
@@ -1238,7 +1276,14 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const pushDomainTree = (d: DomainDef, parentRowId: string, depth: number, isMasterOfParent: boolean = false): void => {
 			counters[depth] = (counters[depth] ?? 0) + 1;
 			const myRowId = parentRowId ? `${parentRowId}.${counters[depth]}` : String(counters[depth]);
-			const nodeKind: "domain" | "pivot" = d.type === "pivot" ? "pivot" : "domain";
+			const dType: "domain" | "pivot" | "pivot-domain" = d.type === "pivot" ? "pivot" : d.type === "pivot-domain" ? "pivot-domain" : "domain";
+			const nodeKind: "domain" | "pivot" = (dType === "pivot" || dType === "pivot-domain") ? "pivot" : "domain";
+			// N:N (`pivot`) requiere exactamente master + 1 slave; menos que eso → marcado de error.
+			let pivotMissingSlave = false;
+			if (dType === "pivot") {
+				const childCount = (d.childrenOrder ?? []).length || d.members.length;
+				pivotMissingSlave = childCount < 2;
+			}
 			rows.push(new TTableNodeUX({
 				flatPath: myRowId,
 				ireference: parentRowId,
@@ -1246,6 +1291,10 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				rowName: d.name,
 				domainId: d.id,
 				isMaster: isMasterOfParent,
+				domainType: dType,
+				cardinality: d.cardinality ?? "",
+				pivotMissingSlave,
+				prefix: dType === "domain" ? (d.prefix ?? "") : "",
 			}, this.obj));
 			counters[depth + 1] = 0;
 			for (const child of orderedChildrenOf(d)) {
@@ -1257,6 +1306,14 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 					if (!found) continue;
 					counters[depth + 1] += 1;
 					const isM = child.key === d.masterTable;
+					// La cardinalidad del esclavo se lee del mapa explícito `slaveCardinalities` del dominio
+					// padre. Para `pivot`/`pivot-domain` se completa con la cardinalidad del pivote.
+					let slaveCard: "1:1" | "1:N" | "N:N" | "" = "";
+					if (!isM) {
+						const explicit = d.slaveCardinalities?.[child.key];
+						if (explicit) slaveCard = explicit;
+						else if (dType === "pivot" || dType === "pivot-domain") slaveCard = (d.cardinality ?? "") as typeof slaveCard;
+					}
 					rows.push(new TTableNodeUX({
 						flatPath: `${myRowId}.${counters[depth + 1]}`,
 						ireference: myRowId,
@@ -1268,6 +1325,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 						prefix: effPrefixOf(found.table),
 						domainId: d.id,
 						isMaster: isM,
+						slaveCardinality: slaveCard,
 					}, this.obj));
 				}
 			}

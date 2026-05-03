@@ -24,6 +24,19 @@ export abstract class TTableNodeBase extends TreeNode<TTableNodeUX> {
 	/** Si la tabla es master de su dominio. */
 	isMaster: boolean = false;
 	/**
+	 * Subtipo del agrupador cuando `kind === "pivot"` o `kind === "domain"`:
+	 * - `domain`: dominio raíz (default cuando kind=domain).
+	 * - `pivot`: pivote N:N (exactamente master + 1 slave).
+	 * - `pivot-domain`: pivote dentro de dominio que envuelve a otro dominio (1:1 ó 1:N).
+	 */
+	domainType: "domain" | "pivot" | "pivot-domain" = "domain";
+	/** Cardinalidad del pivote respecto a su dominio padre. Sólo aplica a pivot/pivot-domain. */
+	cardinality: "1:1" | "1:N" | "N:N" | "" = "";
+	/** Cardinalidad de la tabla esclava respecto a su master (deriva del pivote contenedor o del dominio). */
+	slaveCardinality: "1:1" | "1:N" | "N:N" | "" = "";
+	/** True para un pivot N:N que tiene sólo el master (le falta el slave). UI lo muestra en rojo. */
+	pivotMissingSlave: boolean = false;
+	/**
 	 * Acción vigilante declarada por este nodo (si tiene rol `warden`). Es
 	 * obligatoria para los vigilantes; los nodos no-vigilantes la dejan en
 	 * `undefined`. Se asigna en `refreshUX` para los `prefix`.
@@ -52,17 +65,21 @@ export class TTableNodeUX extends TTableNodeBase {
 		this.nextLevelTitle = "Tabla";
 		this.label = this.rowName || "";
 		// Roles actorales (kebab-case, estilo "clases CSS"). Inferidos por kind.
-		// `domain`/`pivot`: prison + monarchy (master congelado).
+		// `domain`: prison + monarchy; si tiene `prefix` también actúa como `warden` (domain/prefixer)
+		//   para que sus tablas hereden el prefijo (componible con el de un `prefix` padre → doble prefijo).
+		// `pivot`: prison + monarchy.
 		// `prefix`: prison + warden → acción declarada en `wardenAction`.
 		// `table`: atom — hoja sin rol especial.
+		const isDomainPrefixer = this.kind === "domain" && !!this.prefix;
 		this.actor = (this.kind === "domain" || this.kind === "pivot")
-			? "group prison monarchy"
+			? (isDomainPrefixer ? "group prison monarchy warden" : "group prison monarchy")
 			: this.kind === "prefix"
 				? "group prison warden"
 				: "atom";
-		// La acción vigilante se adjunta sólo para `prefix`. El `idaction` es
-		// `"prefix"` y la transformación antepone `prefix` al `rowName` del clon.
-		if (this.kind === "prefix") {
+		// La acción vigilante se adjunta a `prefix` y a `domain` con `prefix` (domain/prefixer).
+		// Antepone el `prefix` al `rowName` del clon. Los wardens se componen en cadena, así un
+		// `prefix` padre + `domain/prefixer` hijo → doble prefijo en las tablas descendientes.
+		if (this.kind === "prefix" || isDomainPrefixer) {
 			const pfx = String(this.prefix || "");
 			this.wardenAction = {
 				idaction: "prefix",

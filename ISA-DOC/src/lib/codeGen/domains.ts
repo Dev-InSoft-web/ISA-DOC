@@ -18,13 +18,24 @@ export interface DomainDef {
 	id: string;
 	name: string;
 	/**
-	 * Tipo de agrupador. "domain" (default) es un agrupamiento clásico
-	 * master+slaves. "pivot" es un agrupamiento de relaciones (color
-	 * HotPink) que puede contener tablas Y dominios completos como hijos:
-	 * sus miembros se comunican entre sí sólo en GET (no INSERT/UPDATE
-	 * cruzados). Modela las relaciones del controller server.
+	 * Tipo de agrupador.
+	 * - `domain` (default): agrupamiento clásico master+slaves. Es la raíz expuesta por la API.
+	 *   Puede definir un prefijo (rol "domain/prefixer") que aplica a sus tablas hijas.
+	 * - `pivot-domain`: pivote dentro de un dominio que envuelve a otro dominio (cardinalidad
+	 *   1:1 ó 1:N). Color naranja en el árbol.
+	 * - `pivot`: pivote N:N. Tiene exactamente un master y un único slave (máx. 2 hijos).
+	 *   Sólo puede existir dentro de un dominio. Color naranja con badge distinto.
 	 */
-	type?: "domain" | "pivot";
+	type?: "domain" | "pivot" | "pivot-domain";
+	/** Cardinalidad del pivote dentro de su dominio padre. Sólo aplica a `pivot` y `pivot-domain`. */
+	cardinality?: "1:1" | "1:N" | "N:N";
+	/** Para `domain` que actúa como `domain/prefixer`: prefijo que aplica a sus tablas. */
+	prefix?: string;
+	/**
+	 * Cardinalidad por tabla esclava respecto a su master, indexada por id estable de tabla.
+	 * Sólo aplica a esclavas (no a la master). Valores: `1:1`, `1:N`, `N:N`.
+	 */
+	slaveCardinalities?: Record<string, "1:1" | "1:N" | "N:N">;
 	/** Id estable de la tabla master (no el nombre). Cadena vacía si aún no se asignó. */
 	masterTable: string;
 	/** Ids estables de las tablas miembro (no nombres). */

@@ -4,11 +4,11 @@
       "id": "dom_plan_estudio",
       "name": "Plan de Estudio",
       "masterTable": "tbl_planes_estudio",
+      "prefix": "CAPAC_",
       "members": [
         "tbl_planes_estudio",
-        "tbl_cursos_de_planes_estudio"
+        "tbl_cursos_prerequisitos"
       ],
-      "parentId": "piv_outer",
       "childrenOrder": [
         {
           "kind": "table",
@@ -16,27 +16,32 @@
         },
         {
           "kind": "table",
-          "key": "tbl_cursos_de_planes_estudio"
+          "key": "tbl_cursos_prerequisitos"
+        },
+        {
+          "kind": "pivot",
+          "key": "piv_nn_cpe_cursos"
         }
       ]
     },
-    "dom_drivers": {
-      "id": "dom_drivers",
-      "name": "Drivers",
-      "masterTable": "tbl_drivers",
+    "piv_nn_cpe_cursos": {
+      "id": "piv_nn_cpe_cursos",
+      "name": "",
+      "type": "pivot",
+      "cardinality": "N:N",
+      "masterTable": "tbl_cursos_de_planes_estudio",
       "members": [
-        "tbl_drivers",
-        "tbl_atributos_x_drivers"
+        "tbl_cursos_de_planes_estudio"
       ],
-      "parentId": "piv_inner",
+      "parentId": "dom_plan_estudio",
       "childrenOrder": [
         {
           "kind": "table",
-          "key": "tbl_drivers"
+          "key": "tbl_cursos_de_planes_estudio"
         },
         {
-          "kind": "table",
-          "key": "tbl_atributos_x_drivers"
+          "kind": "domain",
+          "key": "dom_cursos"
         }
       ]
     },
@@ -46,20 +51,15 @@
       "masterTable": "tbl_cursos",
       "members": [
         "tbl_cursos",
-        "tbl_cursos_prerequisitos",
         "tbl_estructuras_cursos",
         "tbl_seguridades_cursos",
         "tbl_historialcurso"
       ],
-      "parentId": "piv_inner",
+      "parentId": "piv_nn_cpe_cursos",
       "childrenOrder": [
         {
           "kind": "table",
           "key": "tbl_cursos"
-        },
-        {
-          "kind": "table",
-          "key": "tbl_cursos_prerequisitos"
         },
         {
           "kind": "table",
@@ -76,13 +76,18 @@
         {
           "kind": "pivot",
           "key": "piv_planes_curso"
+        },
+        {
+          "kind": "pivot",
+          "key": "piv_drivers"
         }
       ]
     },
     "piv_planes_curso": {
       "id": "piv_planes_curso",
       "name": "",
-      "type": "pivot",
+      "type": "pivot-domain",
+      "cardinality": "1:N",
       "masterTable": "tbl_planes_cursos",
       "members": [
         "tbl_planes_cursos",
@@ -100,39 +105,25 @@
         }
       ]
     },
-    "piv_inner": {
-      "id": "piv_inner",
+    "piv_drivers": {
+      "id": "piv_drivers",
       "name": "",
-      "type": "pivot",
-      "masterTable": "",
-      "members": [],
-      "parentId": "piv_outer",
+      "type": "pivot-domain",
+      "cardinality": "1:1",
+      "masterTable": "tbl_drivers",
+      "members": [
+        "tbl_drivers",
+        "tbl_atributos_x_drivers"
+      ],
+      "parentId": "dom_cursos",
       "childrenOrder": [
         {
-          "kind": "domain",
-          "key": "dom_cursos"
+          "kind": "table",
+          "key": "tbl_drivers"
         },
         {
-          "kind": "domain",
-          "key": "dom_drivers"
-        }
-      ]
-    },
-    "piv_outer": {
-      "id": "piv_outer",
-      "name": "",
-      "type": "pivot",
-      "masterTable": "",
-      "members": [],
-      "parentPrefix": "CAPAC_",
-      "childrenOrder": [
-        {
-          "kind": "domain",
-          "key": "dom_plan_estudio"
-        },
-        {
-          "kind": "pivot",
-          "key": "piv_inner"
+          "kind": "table",
+          "key": "tbl_atributos_x_drivers"
         }
       ]
     }
@@ -149,15 +140,11 @@
     "ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/Cursos.ts",
     "ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/PlanDeEstudio.ts"
   ],
-  "childPrefixes": {
-    "": [
-      "CAPAC_"
-    ]
-  },
+  "childPrefixes": {},
   "topOrder": [
     {
-      "kind": "prefix",
-      "key": "CAPAC_"
+      "kind": "domain",
+      "key": "dom_plan_estudio"
     },
     {
       "kind": "table",
@@ -169,11 +156,5 @@
     }
   ],
   "prefixOrders": {
-    "CAPAC_": [
-      {
-        "kind": "pivot",
-        "key": "piv_outer"
-      }
-    ]
   }
 }
