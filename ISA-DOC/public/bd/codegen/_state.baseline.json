@@ -52,7 +52,6 @@
       "members": [
         "tbl_cursos",
         "tbl_estructuras_cursos",
-        "tbl_seguridades_cursos",
         "tbl_historialcurso"
       ],
       "parentId": "piv_nn_cpe_cursos",
@@ -67,11 +66,11 @@
         },
         {
           "kind": "table",
-          "key": "tbl_seguridades_cursos"
+          "key": "tbl_historialcurso"
         },
         {
-          "kind": "table",
-          "key": "tbl_historialcurso"
+          "kind": "pivot",
+          "key": "piv_seg_permisos"
         },
         {
           "kind": "pivot",
@@ -80,6 +79,27 @@
         {
           "kind": "pivot",
           "key": "piv_drivers"
+        }
+      ]
+    },
+    "piv_seg_permisos": {
+      "id": "piv_seg_permisos",
+      "name": "",
+      "type": "pivot-domain",
+      "cardinality": "1:N",
+      "masterTable": "tbl_seguridades_cursos",
+      "members": [
+        "tbl_seguridades_cursos"
+      ],
+      "parentId": "dom_cursos",
+      "childrenOrder": [
+        {
+          "kind": "table",
+          "key": "tbl_seguridades_cursos"
+        },
+        {
+          "kind": "pointer",
+          "key": "tbl_permisos"
         }
       ]
     },

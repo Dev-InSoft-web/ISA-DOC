@@ -37,6 +37,12 @@ export abstract class TTableNodeBase extends TreeNode<TTableNodeUX> {
 	/** True para un pivot N:N que tiene sólo el master (le falta el slave). UI lo muestra en rojo. */
 	pivotMissingSlave: boolean = false;
 	/**
+	 * `true` si esta fila es un apuntador (espectro) a una tabla definida fuera del dominio padre.
+	 * El `tableKey` y `tableIndex` apuntan a la tabla real para que toda la lógica
+	 * (selección, snippets, formularios) opere sobre ella sin cambios.
+	 */
+	isPointer: boolean = false;
+	/**
 	 * Acción vigilante declarada por este nodo (si tiene rol `warden`). Es
 	 * obligatoria para los vigilantes; los nodos no-vigilantes la dejan en
 	 * `undefined`. Se asigna en `refreshUX` para los `prefix`.

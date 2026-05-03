@@ -185,9 +185,17 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			return { icon: "mdi:tag-outline", color: "success" as const };
 		}
 		if (node?.kind === "table") {
+			if (node.isPointer) {
+				// Apuntador (espectro) a una tabla definida fuera del dominio padre.
+				return { icon: "mdi:ghost", color: "info" as const };
+			}
 			if (node.isMaster) {
 				const parent = this.findNodeById(String(node.ireference || "").trim()) as unknown as TTableNodeUX | null;
 				if (parent?.kind === "pivot") {
+					// pivot-domain: master se muestra como tabla naranja (no corona).
+					if (parent.domainType === "pivot-domain") {
+						return { icon: "mdi:table", style: "color: orange !important;" };
+					}
 					const grand = parent ? (this.findNodeById(String(parent.ireference || "").trim()) as unknown as TTableNodeUX | null) : null;
 					const inDomain = grand?.kind === "domain";
 					return { icon: "mdi:crown", style: inDomain ? "color: orange !important;" : "color: hotpink !important;" };
@@ -1244,7 +1252,8 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				for (const m of d.members) if (!seenT.has(m)) order.push({ kind: "table", key: m });
 				const filtered = order.filter((e) =>
 					((e.kind === "domain" || e.kind === "pivot") && (childrenOfDomain.get(d.id) ?? []).some((s) => s.id === e.key)) ||
-					(e.kind === "table" && d.members.includes(e.key)),
+					(e.kind === "table" && d.members.includes(e.key)) ||
+					(e.kind === "pointer" && tableById.has(e.key)),
 				);
 				return withMasterFirst(filtered);
 			}
@@ -1305,7 +1314,8 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 					const found = tableById.get(child.key);
 					if (!found) continue;
 					counters[depth + 1] += 1;
-					const isM = child.key === d.masterTable;
+					const isPointer = child.kind === "pointer";
+					const isM = !isPointer && child.key === d.masterTable;
 					// La cardinalidad del esclavo se lee del mapa explícito `slaveCardinalities` del dominio
 					// padre. Para `pivot`/`pivot-domain` se completa con la cardinalidad del pivote.
 					let slaveCard: "1:1" | "1:N" | "N:N" | "" = "";
@@ -1326,6 +1336,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 						domainId: d.id,
 						isMaster: isM,
 						slaveCardinality: slaveCard,
+						isPointer,
 					}, this.obj));
 				}
 			}

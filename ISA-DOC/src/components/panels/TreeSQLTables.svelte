@@ -626,17 +626,20 @@
 								{@const _isPD = node.domainType === "pivot-domain"}
 								<span class="tree-row {node.pivotMissingSlave ? 'tree-row-error' : ''}" title={node.pivotMissingSlave ? "Pivot N:N incompleto: agrega la tabla esclava" : ""}>
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
-									<span class="badge {_pivotInDomain ? 'badge-pivot-in-domain' : 'badge-pivot'}">{_isPD ? "Pivot Domain" : "Pivot"}</span>
+									<span class="badge {_pivotInDomain ? 'badge-pivot-in-domain' : 'badge-pivot'}">{_isPD ? "Pivot domain" : "Pivot"}</span>
 									{#if node.pivotMissingSlave}<Iconify icon="mdi:alert" color="error" />{/if}
 									{#if node.cardinality}<span class="tree-row-meta tree-row-card" title="Cardinalidad del pivote">{node.cardinality}</span>{/if}
 								</span>
 							{:else}
 								{@const _tableParent = node.isMaster ? (adapter.findNodeById(String(node.ireference || "").trim()) as unknown as { kind?: string; domainType?: string } | null) : null}
 								{@const _isMasterOfDomain = !!_tableParent && _tableParent.kind === "domain"}
-								<span class="tree-row">
+								<span class="tree-row {node.isPointer ? 'tree-row-pointer' : ''}" title={node.isPointer ? "Pointer to a table defined outside the domain" : ""}>
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
+									{#if node.isPointer}
+										<span class="badge badge-pointer">Pointer</span>
+									{/if}
 									<span class="tree-row-name">{node.rowName}</span>
-									{#if node.isMaster}
+									{#if node.isMaster && !node.isPointer}
 										{#if _isMasterOfDomain}
 											<span class="tree-row-meta tree-row-master">master</span>
 										{:else}
@@ -1133,6 +1136,10 @@
 		background: color-mix(in srgb, var(--is-success) 25%, transparent);
 		color: var(--is-success);
 	}
+	.badge-pointer {
+		background: color-mix(in srgb, var(--is-info) 25%, transparent);
+		color: var(--is-info);
+	}
 	.tree-row-error {
 		outline: 1px dashed var(--is-error, #e11d48);
 		border-radius: 4px;
@@ -1154,6 +1161,10 @@
 		font-weight: 700;
 		color: var(--is-text-neutral, #888);
 		opacity: 0.7;
+	}
+	.tree-row-pointer {
+		font-style: italic;
+		opacity: 0.85;
 	}
 	:global(.code-pane) > :global(.pane-scroll) > :global(.card-root) {
 		width: 100%;

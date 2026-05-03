@@ -9,8 +9,14 @@
 import { getCached, setCached } from "./stateClient.ts";
 
 export interface DomainChildRef {
-	kind: "table" | "domain" | "pivot";
-	/** Para `kind:"table"`: id estable de la tabla. Para `kind:"domain"|"pivot"`: id del agrupador. */
+	kind: "table" | "domain" | "pivot" | "pointer";
+	/**
+	 * Para `kind:"table"|"pointer"`: id estable de la tabla.
+	 * Para `kind:"domain"|"pivot"`: id del agrupador.
+	 * Un `pointer` referencia una tabla que está definida fuera del dominio padre
+	 * (su tabla "real" vive en otra ubicación del árbol). Al seleccionarlo, todas las
+	 * acciones se aplican sobre la tabla apuntada (mismo `tableKey`).
+	 */
 	key: string;
 }
 
