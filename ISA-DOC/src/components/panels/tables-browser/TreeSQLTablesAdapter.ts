@@ -266,30 +266,25 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		if (!node) return [];
 		const parent = this.findNodeById(String(node.ireference || "").trim()) as unknown as TTableNodeUX | null;
 		const inPivot = parent?.kind === "pivot";
+		const pivotMasterBtn = {
+			icon: "mdi:crown-outline",
+			label: "Master de pivote",
+			title: "Marcar como master del pivote",
+			style: "color: hotpink !important;",
+			onClick: () => this.markAsMasterOfPivot(node),
+		};
 		if (node.kind === "table") {
 			const isM = !!node.isMaster;
 			if (inPivot) {
-				return [
-					{
-						icon: isM ? "mdi:crown" : "mdi:crown-outline",
-						label: isM ? "Master del pivote" : "Marcar como master de este pivote",
-						title: isM ? "Master del pivote" : "Marcar como master del pivote",
-						style: "color: hotpink !important;",
-						onClick: () => this.markAsMasterOfPivot(node),
-					},
-				];
+				return isM ? [] : [pivotMasterBtn];
 			}
+			if (isM) return [];
 			const inDom = !!node.domainId;
 			return [
 				{
-					icon: isM ? "mdi:crown" : "mdi:crown-outline",
-					label: isM
-						? "Master del dominio"
-						: inDom
-							? "Marcar como master de este dominio"
-							: "Crear su dominio",
-					title: isM ? "Master del dominio" : "Marcar como master",
-					color: isM ? ("warning" as const) : undefined,
+					icon: "mdi:crown-outline",
+					label: inDom ? "Master de dominio" : "Crear su dominio",
+					title: inDom ? "Marcar como master del dominio" : "Crear su dominio",
 					onClick: () => this.markTableAsMaster(node.rowName),
 				},
 			];
@@ -297,21 +292,15 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		if (node.kind === "domain") {
 			const isM = !!node.isMaster;
 			if (inPivot) {
-				return [[
-					{
-						icon: isM ? "mdi:crown" : "mdi:crown-outline",
-						label: isM ? "Master del pivote" : "Marcar como master de este pivote",
-						title: isM ? "Master del pivote" : "Marcar como master del pivote",
-						style: "color: hotpink !important;",
-						onClick: () => this.markAsMasterOfPivot(node),
-					},
-					{
-						icon: "mdi:tag-plus-outline",
-						label: "Agregar prefijo como hijo",
-						title: "Agregar prefijo como hijo",
-						onClick: () => this.onCascadeAddChildPrefix(node),
-					},
-				]];
+				const arr: any[] = [];
+				if (!isM) arr.push(pivotMasterBtn);
+				arr.push({
+					icon: "mdi:tag-plus-outline",
+					label: "Agregar prefijo como hijo",
+					title: "Agregar prefijo como hijo",
+					onClick: () => this.onCascadeAddChildPrefix(node),
+				});
+				return arr.length > 1 ? [arr] : arr;
 			}
 			return [
 				{
@@ -323,14 +312,16 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			];
 		}
 		if (node.kind === "pivot") {
-			return [
-				{
-					icon: "mdi:tag-plus-outline",
-					label: "Agregar prefijo como hijo",
-					title: "Agregar prefijo como hijo",
-					onClick: () => this.onCascadeAddChildPrefix(node),
-				},
-			];
+			const isM = !!node.isMaster;
+			const arr: any[] = [];
+			if (inPivot && !isM) arr.push(pivotMasterBtn);
+			arr.push({
+				icon: "mdi:tag-plus-outline",
+				label: "Agregar prefijo como hijo",
+				title: "Agregar prefijo como hijo",
+				onClick: () => this.onCascadeAddChildPrefix(node),
+			});
+			return arr.length > 1 ? [arr] : arr;
 		}
 		if (node.kind === "prefix") {
 			return [[

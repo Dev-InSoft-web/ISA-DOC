@@ -19,6 +19,7 @@
 	import CodeViewer from "../viewers/CodeViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
 	import DocInfoModal from "../viewers/DocInfoModal.svelte";
+	import InfoEditModal from "../viewers/InfoEditModal.svelte";
 	import TreeView from "../_comps/TreeView/TreeRowView.svelte";
 	import { TreeSQLTablesAdapter, type TablesBrowserState } from "./tables-browser/TreeSQLTablesAdapter";
 	import ResourceConfigSections from "./tables-browser/ResourceConfigSections.svelte";
@@ -53,6 +54,32 @@
 	let activeCodeTab: "sql" | "model" | "server" | "client" | "azure" = "sql";
 	let targetFilePaths: string[] = [];
 	let domains: DomainsMap = {};
+
+	type NodeInfo = { description?: string; rules?: string };
+	type NodeInfoMap = Record<string, NodeInfo>;
+	let nodeInfo: NodeInfoMap = {};
+	function loadNodeInfo(): void {
+		const v = getCached("nodeInfo");
+		nodeInfo = v && typeof v === "object" ? (v as NodeInfoMap) : {};
+	}
+	function getInfo(key: string): NodeInfo {
+		const e = nodeInfo[key];
+		return { description: e?.description ?? "", rules: e?.rules ?? "" };
+	}
+	function saveInfo(key: string, payload: NodeInfo): void {
+		nodeInfo = { ...nodeInfo, [key]: { description: payload.description ?? "", rules: payload.rules ?? "" } };
+		setCached("nodeInfo", nodeInfo);
+	}
+	const PANEL_INFO_KEY = "panel:sql-tree";
+	$: panelInfo = (nodeInfo[PANEL_INFO_KEY] ?? { description: "", rules: "" }) as NodeInfo;
+
+	function infoKeyOf(obj: { kind?: string; domainId?: string; prefix?: string; rowName?: string; tableKey?: string }): string {
+		if (!obj || !obj.kind) return "";
+		if (obj.kind === "prefix") return `prefix:${String(obj.prefix ?? obj.rowName ?? "")}`;
+		if (obj.kind === "domain" || obj.kind === "pivot") return `domain:${String(obj.domainId ?? "")}`;
+		if (obj.kind === "table") return `table:${String(obj.tableKey ?? "")}`;
+		return "";
+	}
 
 	/** Canal de sincronización entre pestañas del navegador para `/api/tables`. */
 	const TABLES_BROADCAST_CHANNEL = "isa-doc:tables";
@@ -436,6 +463,7 @@
 		void (async () => {
 			await loadStateFromServer();
 			loadTargetFilePaths();
+			loadNodeInfo();
 			domains = adapter.reloadFromCache();
 			void load();
 			void loadProdTs();
@@ -535,6 +563,13 @@
 			</div>
 			<FlexLayout items="center">
 				<DocInfoModal title="Documentación del árbol de tablas" label="Doc del árbol" query={{}} />
+				<InfoEditModal
+					title="Información del panel SQL"
+					buttonTitle="Info del panel"
+					description={panelInfo.description ?? ""}
+					rules={panelInfo.rules ?? ""}
+					on:save={(e) => saveInfo(PANEL_INFO_KEY, e.detail)}
+				/>
 				{#if saving}
 					<FlexLayout items="center"><Iconify icon="mdi:loading" /><Text color="neutral"><small>Guardando…</small></Text></FlexLayout>
 				{/if}
@@ -576,13 +611,11 @@
 								<span class="tree-row">
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="badge badge-domain">Domain</span>
-									<span class="tree-row-name">{node.rowName}</span>
 								</span>
 							{:else if node.kind === "pivot"}
 								<span class="tree-row">
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="badge badge-pivot">Pivot</span>
-									<span class="tree-row-name">{node.rowName}</span>
 								</span>
 							{:else}
 								<span class="tree-row">
@@ -595,6 +628,8 @@
 
 						<svelte:fragment slot="Frm" let:frmObj>
 							{#if frmObj}
+								{@const _infoKey = infoKeyOf(frmObj)}
+								{@const _info = (nodeInfo[_infoKey] ?? { description: "", rules: "" }) as NodeInfo}
 								{#if frmObj.kind === "prefix"}
 									<div class="frm">
 										<label class="field">
@@ -650,6 +685,28 @@
 											/>
 										</label>
 										<Text color="neutral"><small>El prefijo es una propiedad del grupo padre y no se edita desde aquí. Para editar columnas/secciones, usa el panel SQL.</small></Text>
+									</div>
+								{/if}
+								{#if _infoKey}
+									<div class="frm">
+										<label class="field">
+											<Text color="neutral"><small>Descripción</small></Text>
+											<textarea
+												class="input-field"
+												rows="3"
+												value={_info.description ?? ""}
+												on:change={(e) => saveInfo(_infoKey, { description: (e.currentTarget).value, rules: _info.rules ?? "" })}
+											></textarea>
+										</label>
+										<label class="field">
+											<Text color="neutral"><small>Reglas</small></Text>
+											<textarea
+												class="input-field"
+												rows="4"
+												value={_info.rules ?? ""}
+												on:change={(e) => saveInfo(_infoKey, { description: _info.description ?? "", rules: (e.currentTarget).value })}
+											></textarea>
+										</label>
 									</div>
 								{/if}
 							{/if}
@@ -912,7 +969,7 @@
 	}
 	.layout {
 		display: grid;
-		grid-template-columns: minmax(428px, calc(14.4rem + 260px)) minmax(0, 0.818fr) minmax(0, 1fr);
+		grid-template-columns: minmax(358px, calc(14.4rem + 190px)) minmax(0, 0.86fr) minmax(0, 1.07fr);
 		gap: 0.5rem;
 		height: calc(100dvh - 13rem);
 		align-items: stretch;

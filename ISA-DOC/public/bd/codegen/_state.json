@@ -3,7 +3,6 @@
     "dom_plan_estudio": {
       "id": "dom_plan_estudio",
       "name": "Plan de Estudio",
-      "parentPrefix": "CAPAC_",
       "masterTable": "tbl_planes_estudio",
       "members": [
         "tbl_planes_estudio",
@@ -28,7 +27,8 @@
           "kind": "table",
           "key": "tbl_planes_cursos"
         }
-      ]
+      ],
+      "parentId": "piv_1777776038065_outer"
     },
     "dom_drivers": {
       "id": "dom_drivers",
@@ -48,12 +48,11 @@
           "key": "tbl_atributos_x_drivers"
         }
       ],
-      "parentId": "piv_1777775341600_4m4qs"
+      "parentId": "piv_1777776038065_inner"
     },
     "dom_cursos": {
       "id": "dom_cursos",
       "name": "Cursos",
-      "parentPrefix": "CAPAC_",
       "masterTable": "tbl_cursos",
       "members": [
         "tbl_cursos",
@@ -83,25 +82,42 @@
           "kind": "table",
           "key": "tbl_historialcurso"
         }
+      ],
+      "parentId": "piv_1777776038065_inner"
+    },
+    "piv_1777776038065_inner": {
+      "id": "piv_1777776038065_inner",
+      "name": "",
+      "type": "pivot",
+      "masterTable": "dom_cursos",
+      "members": [],
+      "parentId": "piv_1777776038065_outer",
+      "childrenOrder": [
+        {
+          "kind": "domain",
+          "key": "dom_cursos"
+        },
+        {
+          "kind": "domain",
+          "key": "dom_drivers"
+        }
       ]
     },
-    "piv_1777775341600_4m4qs": {
-      "id": "piv_1777775341600_4m4qs",
-      "name": "Nuevo pivote",
+    "piv_1777776038065_outer": {
+      "id": "piv_1777776038065_outer",
+      "name": "",
       "type": "pivot",
-      "masterTable": "tbl_sop_temas",
-      "members": [
-        "tbl_sop_temas"
-      ],
+      "masterTable": "",
+      "members": [],
       "parentPrefix": "CAPAC_",
       "childrenOrder": [
         {
           "kind": "domain",
-          "key": "dom_drivers"
+          "key": "dom_plan_estudio"
         },
         {
-          "kind": "table",
-          "key": "tbl_sop_temas"
+          "kind": "pivot",
+          "key": "piv_1777776038065_inner"
         }
       ]
     }
@@ -130,6 +146,10 @@
     },
     {
       "kind": "table",
+      "key": "tbl_sop_temas"
+    },
+    {
+      "kind": "table",
       "key": "tbl_permisos"
     }
   ],
@@ -148,5 +168,11 @@
         "key": "dom_cursos"
       }
     ]
+  },
+  "nodeInfo": {
+    "panel:sql-tree": {
+      "description": "Panel description test",
+      "rules": "Rule A"
+    }
   }
 }

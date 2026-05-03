@@ -13,6 +13,7 @@ interface StateDoc {
 	prefixOrders?: unknown;
 	childPrefixes?: unknown;
 	targetFilePaths?: unknown;
+	nodeInfo?: unknown;
 }
 
 const cache: StateDoc = {};

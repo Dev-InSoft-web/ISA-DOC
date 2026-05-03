@@ -11,6 +11,7 @@ interface StateDoc {
 	prefixOrders?: unknown;
 	childPrefixes?: unknown;
 	targetFilePaths?: unknown;
+	nodeInfo?: unknown;
 }
 
 async function ensureDir(): Promise<void> {

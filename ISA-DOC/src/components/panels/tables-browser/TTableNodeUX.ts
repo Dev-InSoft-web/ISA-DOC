@@ -98,7 +98,7 @@ export class TTableNodeUX extends TTableNodeBase {
 	acceptsChild(child: TTableNodeUX): boolean {
 		if (this.kind === "table") return false;
 		if (this.kind === "domain" && (child.kind === "domain" || child.kind === "pivot")) return false;
-		if (this.kind === "pivot" && (child.kind === "pivot" || child.kind === "prefix")) return false;
+		if (this.kind === "pivot" && child.kind === "prefix") return false;
 		return true;
 	}
 
