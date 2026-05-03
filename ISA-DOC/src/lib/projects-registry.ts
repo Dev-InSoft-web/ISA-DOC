@@ -41,7 +41,7 @@ export const PROJECTS: ProjectEntry[] = [
 		cwd: `${base}/ClientesIS/ISP-ClientesIS`,
 		group: "clientesis",
 		actions: [
-			{ id: "isp-cli-pub", label: "Publicar (pub-ispclientesis.ps1)", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-ispclientesis.ps1'`, cwd: `${base}/ClientesIS/ISP-ClientesIS`, needsPassword: true, description: "Build + npm publish + git push" },
+			{ id: "isp-cli-pub", label: "Publicar (pub-cli.ps1)", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-isp/clientesis/pub-cli.ps1'`, cwd: `${base}/ClientesIS/ISP-ClientesIS`, needsPassword: true, description: "Build + npm publish + git push" },
 		],
 	},
 
@@ -54,7 +54,7 @@ export const PROJECTS: ProjectEntry[] = [
 		cwd: `${base}/ClientesIS/ISP-CLientesISServer`,
 		group: "clientesis",
 		actions: [
-			{ id: "isp-srv-pub", label: "Publicar (pub-ispclientesisserver.ps1)", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-ispclientesisserver.ps1'`, cwd: `${base}/ClientesIS/ISP-CLientesISServer`, needsPassword: true, description: "Build + npm publish + git push" },
+			{ id: "isp-srv-pub", label: "Publicar (pub-server.ps1)", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-isp/clientesis/pub-server.ps1'`, cwd: `${base}/ClientesIS/ISP-CLientesISServer`, needsPassword: true, description: "Build + npm publish + git push" },
 		],
 	},
 
@@ -111,8 +111,8 @@ export const PROJECTS: ProjectEntry[] = [
 		group: "shared",
 		actions: [
 			{ id: "isp-sc-dev", label: "Dev playground", type: "dev", command: "npm run dev", cwd: `${base}/ISP-SvelteComponents`, description: "Vite dev playground", longRunning: true, hostPattern: URL_PATTERN },
-			{ id: "isp-sc-pub", label: "Publicar (pub.ps1)", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ISP-SvelteComponents/pub.ps1'`, cwd: `${base}/ISP-SvelteComponents`, needsPassword: true, description: "Build + npm publish + git push" },
-			{ id: "isp-sc-link", label: "Link Local → ISW/ISA", type: "sync", command: `powershell -ExecutionPolicy Bypass -File '${base}/ISP-SvelteComponents/relation-local.ps1'`, cwd: `${base}/ISP-SvelteComponents`, description: "Copia build local a ISW e ISA node_modules" },
+			{ id: "isp-sc-pub", label: "Publicar (pub.ps1)", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-isp/sveltecomponents/pub.ps1'`, cwd: `${base}/ISP-SvelteComponents`, needsPassword: true, description: "Build + npm publish + git push" },
+			{ id: "isp-sc-link", label: "Link Local → ISW/ISA", type: "sync", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-isp/sveltecomponents/relation-local.ps1'`, cwd: `${base}/ISP-SvelteComponents`, description: "Copia build local a ISW e ISA node_modules" },
 			{ id: "isp-sc-iconify", label: "Descargar iconos", type: "build", command: "npm run iconify", cwd: `${base}/ISP-SvelteComponents`, description: "Iconify dl → static/icons/iconify" },
 		],
 	},
@@ -126,8 +126,9 @@ export const PROJECTS: ProjectEntry[] = [
 		cwd: `${base}/ClientesIS`,
 		group: "clientesis",
 		actions: [
-			{ id: "sync-all", label: "Sync local", type: "sync", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/sync-local-isp-clientesis.ps1'`, cwd: `${base}/ClientesIS`, description: "Build + copy ISP→ISS/ISW" },
-			{ id: "pub-all-isp", label: "Publicar ISP + ISP-Server", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-all-isp-clientesis.ps1'`, cwd: `${base}/ClientesIS`, needsPassword: true, description: "Publica ispclientesisserver y luego ispclientesis" },
+			{ id: "update-all-local", label: "Update all local", type: "sync", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/update-all-local.ps1'`, cwd: `${base}/ClientesIS`, description: "Sync local ISP-ClientesIS + ISP-Server + ISP-SvelteComponents (sin publicar)" },
+			{ id: "sync-all", label: "Sync local ClientesIS", type: "sync", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/sync-local-isp-clientesis.ps1'`, cwd: `${base}/ClientesIS`, description: "Build + copy ISP→ISS/ISW" },
+			{ id: "pub-all-isp", label: "Publicar ISP + ISP-Server", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-isp/clientesis/pub-all.ps1'`, cwd: `${base}/ClientesIS`, needsPassword: true, description: "Publica ispclientesisserver y luego ispclientesis" },
 		],
 	},
 ];

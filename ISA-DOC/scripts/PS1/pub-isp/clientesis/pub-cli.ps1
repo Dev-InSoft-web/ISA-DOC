@@ -3,10 +3,10 @@
 # 2) Copia .npmrc-publicar.npmrc -> .npmrc (token de publicación)
 # 3) Ejecuta isnode deploy
 # 4) Restaura .npmrc desde .npmrc-descargar.npmrc y el script "deploy" fijo en package.json
-# 5) Opcional: git add ., commit y push (mismo mensaje; pide confirmación)
+# 5) git add ., commit y push (mismo mensaje; pide confirmación con password "1234")
 
 $ErrorActionPreference = "Stop"
-$Root = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..\ISP-ClientesIS")).Path
+$Root = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..\..\..\ISP-ClientesIS")).Path
 Set-Location $Root
 
 $packagePath = Join-Path $Root "package.json"
