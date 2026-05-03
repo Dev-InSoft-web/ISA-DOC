@@ -83,7 +83,7 @@ export class TTableNodeUX extends TTableNodeBase {
 	 * hay que liberar el dominio. Los esclavos NO se congelan.
 	 */
 	freeze(): boolean {
-		return this.kind === "table" && !!this.isMaster;
+		return !!this.isMaster && (this.kind === "table" || this.kind === "domain" || this.kind === "pivot");
 	}
 
 	/**

@@ -173,16 +173,22 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 
 	protected override getNodeIcon(node: TTableNodeUX) {
 		if (node?.kind === "domain") {
+			if (node.isMaster) return { icon: "mdi:crown", style: "color: hotpink !important;" };
 			return { icon: "mdi:cube-outline", color: "warning" as const };
 		}
 		if (node?.kind === "pivot") {
+			if (node.isMaster) return { icon: "mdi:crown", style: "color: hotpink !important;" };
 			return { icon: "mdi:link-variant", style: "color: hotpink !important;" };
 		}
 		if (node?.kind === "prefix") {
 			return { icon: "mdi:tag-outline", color: "success" as const };
 		}
 		if (node?.kind === "table") {
-			if (node.isMaster) return { icon: "mdi:crown", color: "warning" as const };
+			if (node.isMaster) {
+				const parent = this.findNodeById(String(node.ireference || "").trim()) as unknown as TTableNodeUX | null;
+				if (parent?.kind === "pivot") return { icon: "mdi:crown", style: "color: hotpink !important;" };
+				return { icon: "mdi:crown", color: "warning" as const };
+			}
 			return { icon: "mdi:table", color: "info" as const };
 		}
 		return null;
@@ -258,8 +264,21 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 
 	particularcascadeoptionsrow(node: TTableNodeUX): any[] {
 		if (!node) return [];
+		const parent = this.findNodeById(String(node.ireference || "").trim()) as unknown as TTableNodeUX | null;
+		const inPivot = parent?.kind === "pivot";
 		if (node.kind === "table") {
 			const isM = !!node.isMaster;
+			if (inPivot) {
+				return [
+					{
+						icon: isM ? "mdi:crown" : "mdi:crown-outline",
+						label: isM ? "Master del pivote" : "Marcar como master de este pivote",
+						title: isM ? "Master del pivote" : "Marcar como master del pivote",
+						style: "color: hotpink !important;",
+						onClick: () => this.markAsMasterOfPivot(node),
+					},
+				];
+			}
 			const inDom = !!node.domainId;
 			return [
 				{
@@ -275,7 +294,35 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				},
 			];
 		}
-		if (node.kind === "domain" || node.kind === "pivot") {
+		if (node.kind === "domain") {
+			const isM = !!node.isMaster;
+			if (inPivot) {
+				return [[
+					{
+						icon: isM ? "mdi:crown" : "mdi:crown-outline",
+						label: isM ? "Master del pivote" : "Marcar como master de este pivote",
+						title: isM ? "Master del pivote" : "Marcar como master del pivote",
+						style: "color: hotpink !important;",
+						onClick: () => this.markAsMasterOfPivot(node),
+					},
+					{
+						icon: "mdi:tag-plus-outline",
+						label: "Agregar prefijo como hijo",
+						title: "Agregar prefijo como hijo",
+						onClick: () => this.onCascadeAddChildPrefix(node),
+					},
+				]];
+			}
+			return [
+				{
+					icon: "mdi:tag-plus-outline",
+					label: "Agregar prefijo como hijo",
+					title: "Agregar prefijo como hijo",
+					onClick: () => this.onCascadeAddChildPrefix(node),
+				},
+			];
+		}
+		if (node.kind === "pivot") {
 			return [
 				{
 					icon: "mdi:tag-plus-outline",
@@ -890,6 +937,29 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	}
 
 	/**
+	 * Marca un nodo (tabla o dominio) como master del pivote padre.
+	 * Si ya es master, lo desmarca (master vacío). El pivot es un agrupador de
+	 * tablas y dominios que se comunican vía GET; el master no genera dominio
+	 * nuevo (a diferencia de `markTableAsMaster` para dominios).
+	 */
+	markAsMasterOfPivot(node: TTableNodeUX): void {
+		if (!node) return;
+		const parent = this.findNodeById(String(node.ireference || "").trim()) as unknown as TTableNodeUX | null;
+		if (!parent || parent.kind !== "pivot") return;
+		const pivotId = parent.domainId;
+		if (!pivotId) return;
+		const piv = this._domains[pivotId];
+		if (!piv) return;
+		const targetId = node.kind === "table" ? (node.tableKey || "") : (node.domainId || "");
+		if (!targetId) return;
+		const nextMaster = piv.masterTable === targetId ? "" : targetId;
+		this._domains = { ...this._domains, [pivotId]: { ...piv, masterTable: nextMaster } };
+		saveDomains(this._domains);
+		this.onDomainsChange(this._domains);
+		this.rebuildRows();
+	}
+
+	/**
 	 * Crea un prefijo vacío bajo un padre. parentKey: "" para raíz, "prefix:<name>" o "domain:<id>".
 	 * Si ya existe un prefijo con ese nombre detectado en tablas o declarado vacío, no lo duplica.
 	 */
@@ -1121,7 +1191,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			const masterUp = d.masterTable || "";
 			const withMasterFirst = (entries: DomainChildRef[]): DomainChildRef[] => {
 				if (!masterUp) return entries;
-				const idx = entries.findIndex((e) => e.kind === "table" && e.key === masterUp);
+				const idx = entries.findIndex((e) => e.key === masterUp);
 				if (idx <= 0) return entries;
 				const copy = entries.slice();
 				const [m] = copy.splice(idx, 1);
@@ -1149,10 +1219,10 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			const subs = (childrenOfDomain.get(d.id) ?? []).map((s) => ({ kind: (s.type === "pivot" ? "pivot" : "domain") as "domain" | "pivot", key: s.id }));
 			const masterId = d.masterTable || "";
 			const tables = [
-				...(masterId ? [{ kind: "table" as const, key: masterId }] : []),
+				...(masterId && d.members.includes(masterId) ? [{ kind: "table" as const, key: masterId }] : []),
 				...d.members.filter((m) => m !== masterId).map((m) => ({ kind: "table" as const, key: m })),
 			];
-			return [...subs, ...tables];
+			return withMasterFirst([...subs, ...tables]);
 		};
 
 		const pushEmptyChildPrefixes = (parentKey: string, parentRowId: string, depth: number): void => {
@@ -1170,7 +1240,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			}
 		};
 
-		const pushDomainTree = (d: DomainDef, parentRowId: string, depth: number): void => {
+		const pushDomainTree = (d: DomainDef, parentRowId: string, depth: number, isMasterOfParent: boolean = false): void => {
 			counters[depth] = (counters[depth] ?? 0) + 1;
 			const myRowId = parentRowId ? `${parentRowId}.${counters[depth]}` : String(counters[depth]);
 			const nodeKind: "domain" | "pivot" = d.type === "pivot" ? "pivot" : "domain";
@@ -1180,12 +1250,13 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				kind: nodeKind,
 				rowName: d.name,
 				domainId: d.id,
+				isMaster: isMasterOfParent,
 			}, this.obj));
 			counters[depth + 1] = 0;
 			for (const child of orderedChildrenOf(d)) {
 				if (child.kind === "domain" || child.kind === "pivot") {
 					const subDef = this._domains[child.key];
-					if (subDef) pushDomainTree(subDef, myRowId, depth + 1);
+					if (subDef) pushDomainTree(subDef, myRowId, depth + 1, child.key === d.masterTable);
 				} else {
 					const found = tableById.get(child.key);
 					if (!found) continue;

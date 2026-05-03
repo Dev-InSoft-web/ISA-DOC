@@ -912,7 +912,7 @@
 	}
 	.layout {
 		display: grid;
-		grid-template-columns: minmax(228px, calc(14.4rem + 60px)) minmax(0, 0.756fr) minmax(0, 1fr);
+		grid-template-columns: minmax(428px, calc(14.4rem + 260px)) minmax(0, 0.818fr) minmax(0, 1fr);
 		gap: 0.5rem;
 		height: calc(100dvh - 13rem);
 		align-items: stretch;
