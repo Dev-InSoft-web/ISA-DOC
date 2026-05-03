@@ -90,14 +90,14 @@ export class TTableNodeUX extends TTableNodeBase {
 	 * Reglas de aceptación de hijos.
 	 * Default (agrupadores): aceptan a cualquier otro nodo agrupador o hoja.
 	 * Reglas particulares:
-	 * - `domain`: rechaza dominios anidados (regla propia y única del dominio) y rechaza pivots.
-	 * - `pivot`: acepta tablas y dominios. Rechaza otros pivots y prefijos
-	 *   (un pivot agrupa tablas/dominios que se comunican vía GET; no se anidan).
+	 * - `domain`: rechaza dominios anidados (regla propia y única del dominio). Acepta pivots
+	 *   internos: en ese caso el master del dominio puede modificar también a las miembros del pivote.
+	 * - `pivot`: acepta tablas, dominios y otros pivots. Rechaza prefijos.
 	 * - `table`: hoja. Nunca acepta hijos.
 	 */
 	acceptsChild(child: TTableNodeUX): boolean {
 		if (this.kind === "table") return false;
-		if (this.kind === "domain" && (child.kind === "domain" || child.kind === "pivot")) return false;
+		if (this.kind === "domain" && child.kind === "domain") return false;
 		if (this.kind === "pivot" && child.kind === "prefix") return false;
 		return true;
 	}

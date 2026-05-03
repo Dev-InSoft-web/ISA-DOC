@@ -177,8 +177,10 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			return { icon: "mdi:cube-outline", color: "warning" as const };
 		}
 		if (node?.kind === "pivot") {
-			if (node.isMaster) return { icon: "mdi:crown", style: "color: hotpink !important;" };
-			return { icon: "mdi:link-variant", style: "color: hotpink !important;" };
+			const pivotParent = this.findNodeById(String(node.ireference || "").trim()) as unknown as TTableNodeUX | null;
+			const inDomain = pivotParent?.kind === "domain";
+			if (node.isMaster) return { icon: "mdi:crown", style: inDomain ? "color: orange !important;" : "color: hotpink !important;" };
+			return { icon: "mdi:link-variant", style: inDomain ? "color: orange !important;" : "color: hotpink !important;" };
 		}
 		if (node?.kind === "prefix") {
 			return { icon: "mdi:tag-outline", color: "success" as const };
@@ -186,7 +188,11 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		if (node?.kind === "table") {
 			if (node.isMaster) {
 				const parent = this.findNodeById(String(node.ireference || "").trim()) as unknown as TTableNodeUX | null;
-				if (parent?.kind === "pivot") return { icon: "mdi:crown", style: "color: hotpink !important;" };
+				if (parent?.kind === "pivot") {
+					const grand = parent ? (this.findNodeById(String(parent.ireference || "").trim()) as unknown as TTableNodeUX | null) : null;
+					const inDomain = grand?.kind === "domain";
+					return { icon: "mdi:crown", style: inDomain ? "color: orange !important;" : "color: hotpink !important;" };
+				}
 				return { icon: "mdi:crown", color: "warning" as const };
 			}
 			return { icon: "mdi:table", color: "info" as const };

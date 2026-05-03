@@ -67,7 +67,15 @@
 		return { description: e?.description ?? "", rules: e?.rules ?? "" };
 	}
 	function saveInfo(key: string, payload: NodeInfo): void {
-		nodeInfo = { ...nodeInfo, [key]: { description: payload.description ?? "", rules: payload.rules ?? "" } };
+		const existing = nodeInfo[key] ?? { description: "", rules: "" };
+		const nextDesc = (payload.description ?? existing.description ?? "").trim();
+		const nextRules = payload.rules ?? existing.rules ?? "";
+		if (!nextDesc) {
+			toastError("La descripción es obligatoria para todos los nodos.");
+			nodeInfo = { ...nodeInfo };
+			return;
+		}
+		nodeInfo = { ...nodeInfo, [key]: { description: nextDesc, rules: nextRules } };
 		setCached("nodeInfo", nodeInfo);
 	}
 	const PANEL_INFO_KEY = "panel:sql-tree";
@@ -613,9 +621,11 @@
 									<span class="badge badge-domain">Domain</span>
 								</span>
 							{:else if node.kind === "pivot"}
+								{@const _pivotParent = adapter.findNodeById(String(node.ireference || "").trim()) as unknown as { kind?: string } | null}
+								{@const _pivotInDomain = _pivotParent?.kind === "domain"}
 								<span class="tree-row">
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
-									<span class="badge badge-pivot">Pivot</span>
+									<span class="badge {_pivotInDomain ? 'badge-pivot-in-domain' : 'badge-pivot'}">Pivot</span>
 								</span>
 							{:else}
 								<span class="tree-row">
@@ -690,16 +700,17 @@
 								{#if _infoKey}
 									<div class="frm">
 										<label class="field">
-											<Text color="neutral"><small>Descripción</small></Text>
+											<Text color="neutral"><small>Descripción <span style="color: var(--is-error);">*</span></small></Text>
 											<textarea
 												class="input-field"
 												rows="3"
+												required
 												value={_info.description ?? ""}
 												on:change={(e) => saveInfo(_infoKey, { description: (e.currentTarget).value, rules: _info.rules ?? "" })}
 											></textarea>
 										</label>
 										<label class="field">
-											<Text color="neutral"><small>Reglas</small></Text>
+											<Text color="neutral"><small>Reglas <span style="opacity: 0.6;">(opcional)</span></small></Text>
 											<textarea
 												class="input-field"
 												rows="4"
@@ -1061,6 +1072,10 @@
 	.badge-pivot {
 		background: color-mix(in srgb, hotpink 25%, transparent);
 		color: hotpink;
+	}
+	.badge-pivot-in-domain {
+		background: color-mix(in srgb, orange 25%, transparent);
+		color: orange;
 	}
 	.badge-prefix {
 		background: color-mix(in srgb, var(--is-success) 25%, transparent);

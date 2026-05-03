@@ -4,7 +4,7 @@
 	`bind:description` / `bind:rules` y evento `on:save`.
 -->
 <script lang="ts">
-	import { ButtonIconify, Modal, Text } from "@ingenieria_insoft/ispsveltecomponents";
+	import { ButtonIconify, Modal, Text, toastError } from "@ingenieria_insoft/ispsveltecomponents";
 	import { createEventDispatcher } from "svelte";
 
 	export let title: string = "Información";
@@ -27,9 +27,14 @@
 	function close(): void { bshow = false; }
 
 	function save(): void {
-		description = draftDescription;
+		const desc = (draftDescription ?? "").trim();
+		if (!desc) {
+			toastError("La descripción es obligatoria.");
+			return;
+		}
+		description = desc;
 		rules = draftRules;
-		dispatch("save", { description: draftDescription, rules: draftRules });
+		dispatch("save", { description: desc, rules: draftRules });
 		bshow = false;
 	}
 </script>
@@ -47,11 +52,11 @@
 		<div class="info-modal-body">
 			<h2 class="info-title">{title}</h2>
 			<label class="info-field">
-				<Text color="neutral"><small>Descripción</small></Text>
-				<textarea class="info-input" rows="4" bind:value={draftDescription} placeholder="Describe el propósito y contenido de este elemento."></textarea>
+				<Text color="neutral"><small>Descripción <span style="color: var(--is-error);">*</span></small></Text>
+				<textarea class="info-input" rows="4" required bind:value={draftDescription} placeholder="Describe el propósito y contenido de este elemento."></textarea>
 			</label>
 			<label class="info-field">
-				<Text color="neutral"><small>Reglas</small></Text>
+				<Text color="neutral"><small>Reglas <span style="opacity: 0.6;">(opcional)</span></small></Text>
 				<textarea class="info-input" rows="6" bind:value={draftRules} placeholder="Reglas de negocio, restricciones e invariantes."></textarea>
 			</label>
 			<div class="info-actions">

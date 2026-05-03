@@ -6,10 +6,9 @@
       "masterTable": "tbl_planes_estudio",
       "members": [
         "tbl_planes_estudio",
-        "tbl_cursos_de_planes_estudio",
-        "tbl_atributos_planes",
-        "tbl_planes_cursos"
+        "tbl_cursos_de_planes_estudio"
       ],
+      "parentId": "piv_outer",
       "childrenOrder": [
         {
           "kind": "table",
@@ -18,17 +17,8 @@
         {
           "kind": "table",
           "key": "tbl_cursos_de_planes_estudio"
-        },
-        {
-          "kind": "table",
-          "key": "tbl_atributos_planes"
-        },
-        {
-          "kind": "table",
-          "key": "tbl_planes_cursos"
         }
-      ],
-      "parentId": "piv_1777776038065_outer"
+      ]
     },
     "dom_drivers": {
       "id": "dom_drivers",
@@ -38,6 +28,7 @@
         "tbl_drivers",
         "tbl_atributos_x_drivers"
       ],
+      "parentId": "piv_inner",
       "childrenOrder": [
         {
           "kind": "table",
@@ -47,8 +38,7 @@
           "kind": "table",
           "key": "tbl_atributos_x_drivers"
         }
-      ],
-      "parentId": "piv_1777776038065_inner"
+      ]
     },
     "dom_cursos": {
       "id": "dom_cursos",
@@ -61,6 +51,7 @@
         "tbl_seguridades_cursos",
         "tbl_historialcurso"
       ],
+      "parentId": "piv_inner",
       "childrenOrder": [
         {
           "kind": "table",
@@ -81,17 +72,41 @@
         {
           "kind": "table",
           "key": "tbl_historialcurso"
+        },
+        {
+          "kind": "pivot",
+          "key": "piv_planes_curso"
         }
-      ],
-      "parentId": "piv_1777776038065_inner"
+      ]
     },
-    "piv_1777776038065_inner": {
-      "id": "piv_1777776038065_inner",
+    "piv_planes_curso": {
+      "id": "piv_planes_curso",
+      "name": "",
+      "type": "pivot",
+      "masterTable": "tbl_planes_cursos",
+      "members": [
+        "tbl_planes_cursos",
+        "tbl_atributos_planes"
+      ],
+      "parentId": "dom_cursos",
+      "childrenOrder": [
+        {
+          "kind": "table",
+          "key": "tbl_planes_cursos"
+        },
+        {
+          "kind": "table",
+          "key": "tbl_atributos_planes"
+        }
+      ]
+    },
+    "piv_inner": {
+      "id": "piv_inner",
       "name": "",
       "type": "pivot",
       "masterTable": "dom_cursos",
       "members": [],
-      "parentId": "piv_1777776038065_outer",
+      "parentId": "piv_outer",
       "childrenOrder": [
         {
           "kind": "domain",
@@ -103,8 +118,8 @@
         }
       ]
     },
-    "piv_1777776038065_outer": {
-      "id": "piv_1777776038065_outer",
+    "piv_outer": {
+      "id": "piv_outer",
       "name": "",
       "type": "pivot",
       "masterTable": "",
@@ -117,7 +132,7 @@
         },
         {
           "kind": "pivot",
-          "key": "piv_1777776038065_inner"
+          "key": "piv_inner"
         }
       ]
     }
@@ -156,23 +171,9 @@
   "prefixOrders": {
     "CAPAC_": [
       {
-        "kind": "domain",
-        "key": "dom_plan_estudio"
-      },
-      {
-        "kind": "domain",
-        "key": "dom_drivers"
-      },
-      {
-        "kind": "domain",
-        "key": "dom_cursos"
+        "kind": "pivot",
+        "key": "piv_outer"
       }
     ]
-  },
-  "nodeInfo": {
-    "panel:sql-tree": {
-      "description": "Panel description test",
-      "rules": "Rule A"
-    }
   }
 }
