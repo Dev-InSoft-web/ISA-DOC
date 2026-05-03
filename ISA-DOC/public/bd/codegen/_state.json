@@ -89,7 +89,8 @@
       "cardinality": "1:N",
       "masterTable": "tbl_seguridades_cursos",
       "members": [
-        "tbl_seguridades_cursos"
+        "tbl_seguridades_cursos",
+        "tbl_permisos"
       ],
       "parentId": "dom_cursos",
       "childrenOrder": [
@@ -98,7 +99,7 @@
           "key": "tbl_seguridades_cursos"
         },
         {
-          "kind": "pointer",
+          "kind": "table",
           "key": "tbl_permisos"
         }
       ]
@@ -175,6 +176,5 @@
       "key": "tbl_permisos"
     }
   ],
-  "prefixOrders": {
-  }
+  "prefixOrders": {}
 }
