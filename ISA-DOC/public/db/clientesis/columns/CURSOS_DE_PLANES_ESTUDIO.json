@@ -26,11 +26,6 @@
       "flatpath": "4",
       "ireference": "COLUMN",
       "kind": "col"
-    },
-    {
-      "flatpath": "5",
-      "kind": "optional",
-      "name": "AUDITORIA"
     }
   ],
   "entities": {

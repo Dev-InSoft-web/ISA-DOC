@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { Button, ButtonIconify, Card, FlexLayout, H2, H4, Iconify, Modal, Text, Toaster, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, ButtonIconify, Card, FlexLayout, H2, H4, Iconify, Modal, SelectEnum, Text, Toaster, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
+	import SwitchComp from "../_comps/especial/_Switch.svelte";
 	import {
 		emitDropTable,
 		emitTable,
@@ -30,6 +31,8 @@
 	let generating = false;
 	let dirty = false;
 	let selectedKey: string | null = null;
+	let selectedPointerCtx: { isPointer: boolean; domainId?: string } = { isPointer: false };
+	const CardinalityEnum = { "1:1": "1:1", "1:N": "1:N", "N:N": "N:N" } as const;
 	let prodTsMap: Record<string, any[]> = {};
 
 	let modalShow = false;
@@ -144,7 +147,10 @@
 	}
 
 	const adapter = new TreeSQLTablesAdapter([], onAdapterChange);
-	adapter.onTableSelect = (key) => { selectedKey = key; };
+	adapter.onTableSelect = (key, ctx) => {
+		selectedKey = key;
+		selectedPointerCtx = ctx ?? { isPointer: false };
+	};
 	adapter.onDomainsChange = (d) => { domains = d; };
 	adapter.onCascadeAddDomain = () => {
 		adapter.addDomainAtFocus();
@@ -329,9 +335,6 @@
 		tables[idx] = { ...t, snippets: cleaned };
 		tables = tables;
 		adapter.setTables(tables);
-		if (key === "sql" && !enabled && activeCodeTab === "sql") {
-			activeCodeTab = "model";
-		}
 		dirty = true;
 		scheduleSave();
 	}
@@ -737,16 +740,17 @@
 										{#if !frmObj.isMaster && frmObj.domainId}
 											<label class="field">
 												<Text color="neutral"><small>Cardinalidad respecto al master</small></Text>
-												<select
-													class="input-field"
-													value={frmObj.slaveCardinality || ""}
-													on:change={(e) => adapter.setSlaveCardinality(frmObj.domainId, frmObj.tableKey, (e.currentTarget).value as "1:1" | "1:N" | "N:N")}
-												>
-													<option value="" disabled>— elige —</option>
-													<option value="1:1">1:1</option>
-													<option value="1:N">1:N</option>
-													<option value="N:N">N:N</option>
-												</select>
+												<SelectEnum
+													label=""
+													required={true}
+													enumValue={CardinalityEnum}
+													value={frmObj.slaveCardinality || "1:N"}
+													onChange={(v) => {
+														const nv = v as "1:1" | "1:N" | "N:N";
+														if (frmObj.isPointer) adapter.setPointerCardinality(frmObj.domainId, frmObj.tableKey, nv);
+														else adapter.setSlaveCardinality(frmObj.domainId, frmObj.tableKey, nv);
+													}}
+												/>
 											</label>
 										{/if}
 										<Text color="neutral"><small>El prefijo es una propiedad del grupo padre y no se edita desde aquí. Para editar columnas/secciones, usa el panel SQL.</small></Text>
@@ -816,21 +820,53 @@
 								<Text><small>Generar snippets</small></Text>
 							</FlexLayout>
 							<FlexLayout items="center">
-								<label class="snippet-toggle">
-									<input
-										type="checkbox"
-										checked={isSqlSnippetEnabled(t)}
-										on:change={(ev) => setTableSnippet(idx, "sql", (ev.currentTarget as HTMLInputElement).checked)}
-									/>
-									<Text><small>SQL</small></Text>
-								</label>
+								<SwitchComp
+									label="SQL"
+									checked={isSqlSnippetEnabled(t)}
+									on:change={(ev: CustomEvent<boolean> | Event) => {
+										const v = (ev as CustomEvent<boolean>).detail;
+										const checked = typeof v === "boolean" ? v : (ev.target as HTMLInputElement).checked;
+										setTableSnippet(idx, "sql", checked);
+									}}
+								/>
 							</FlexLayout>
 						</FlexLayout>
 
-						{#if activeCodeTab === "sql" && isSqlSnippetEnabled(t)}
+						{#if selectedDomain && !selectedIsMaster}
+							{@const isPtr = selectedPointerCtx.isPointer}
+							{@const ptrDomain = isPtr && selectedPointerCtx.domainId ? domains[selectedPointerCtx.domainId] : undefined}
+							{@const ptrEntry = ptrDomain ? (ptrDomain.childrenOrder ?? []).find((e) => e.kind === "pointer" && e.key === t.id) : undefined}
+							{@const effDomain = isPtr ? ptrDomain : selectedDomain}
+							{@const explicit = isPtr
+								? ptrEntry?.cardinality
+								: effDomain?.slaveCardinalities?.[t.id]}
+							{@const fallback = (effDomain?.type === "pivot" || effDomain?.type === "pivot-domain") ? (effDomain?.cardinality ?? "") : "1:N"}
+							{@const cardValue = (explicit ?? fallback ?? "")}
+							{#if effDomain && (isPtr || effDomain.type !== "pivot")}
+							<FlexLayout items="center" justify="between" style="margin-top: 0.5rem;">
+								<FlexLayout items="center">
+									<Iconify icon="mdi:relation-many-to-many" />
+									<Text><small>Cardinalidad respecto al master {isPtr ? "(pointer)" : ""}</small></Text>
+								</FlexLayout>
+								<div style="max-width: 9rem; min-width: 8rem;">
+									<SelectEnum
+										label=""
+										required={true}
+										enumValue={CardinalityEnum}
+										value={cardValue}
+										onChange={(v) => {
+											const nv = v as "1:1" | "1:N" | "N:N";
+											if (isPtr && effDomain) adapter.setPointerCardinality(effDomain.id, t.id, nv);
+											else if (effDomain) adapter.setSlaveCardinality(effDomain.id, t.id, nv);
+										}}
+									/>
+								</div>
+							</FlexLayout>
+							{/if}
+						{/if}
+
+						{#if activeCodeTab === "sql"}
 							<SqlTreeEditor table={t} prefix={t.effectivePrefix ?? ""} readonly={isHistorialDerived(t)} onChange={(nt) => onTableChange(idx, nt)} />
-						{:else if activeCodeTab === "sql" && !isSqlSnippetEnabled(t)}
-							<Text color="neutral"><small>El snippet SQL está desactivado para esta tabla.</small></Text>
 						{:else if cfg && mergedCfg}
 							<ResourceConfigSections
 								resource={mergedCfg}
@@ -863,7 +899,7 @@
 
 				{#key tableKey(t)}
 					{@const sqlEnabled = isSqlSnippetEnabled(t)}
-					{@const sqlCode = sqlEnabled ? `${emitDropTable(t)}\n\n${emitTable(t)}` : ""}
+					{@const sqlCode = sqlEnabled ? `${emitDropTable(t)}\n\n${emitTable(t)}` : `-- no procesa snippet sql ${t.name}`}
 					{@const modelCode = cfg ? genModelo(cfg, mergedResources) : ""}
 					{@const serverCode = cfg ? genServer(cfg, mergedResources) : ""}
 					{@const clientCode = cfg ? genClient(cfg) : ""}
@@ -871,11 +907,9 @@
 					{@const azureCode = (cfg && selectedIsMaster) ? genAzureFn([cfg, ...slavesCfgs]) : ""}
 					<Card>
 						<div class="code-tabs-bar">
-							{#if sqlEnabled}
-								<button class="code-tab" class:active={activeCodeTab === "sql"} type="button" on:click={() => (activeCodeTab = "sql")}>
-									<Iconify icon="mdi:database" /> <span>SQL</span>
-								</button>
-							{/if}
+							<button class="code-tab" class:active={activeCodeTab === "sql"} type="button" on:click={() => (activeCodeTab = "sql")}>
+								<Iconify icon="mdi:database" /> <span>SQL</span>
+							</button>
 							{#if cfg}
 								<button class="code-tab" class:active={activeCodeTab === "model"} type="button" on:click={() => (activeCodeTab = "model")}>
 									<Iconify icon="mdi:cube-outline" /> <span>Modelo</span>
@@ -894,7 +928,7 @@
 							{/if}
 						</div>
 
-						{#if activeCodeTab === "sql" && sqlEnabled}
+						{#if activeCodeTab === "sql"}
 							<div class="code-card">
 								<FlexLayout items="center" justify="between">
 									<FlexLayout items="center"><Iconify icon="mdi:database" /><Text color="neutral"><small>DROP + CREATE</small></Text></FlexLayout>

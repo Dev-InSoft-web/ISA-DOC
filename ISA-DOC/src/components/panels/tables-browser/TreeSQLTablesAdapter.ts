@@ -60,7 +60,7 @@ function tableKey(t: ParsedTable): string {
 
 export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack, TTableNodeUX> {
 	public onChange: TablesBrowserChangeFn = () => undefined;
-	public onTableSelect: (key: string) => void = () => undefined;
+	public onTableSelect: (key: string, ctx?: { isPointer: boolean; domainId?: string }) => void = () => undefined;
 	public onDomainsChange: (domains: DomainsMap) => void = () => undefined;
 	public onAddRoot: () => void = () => undefined;
 	public onCascadeAddDomain: () => void = () => undefined;
@@ -148,7 +148,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	override onrowclick(node: TTableNodeUX): void {
 		super.onrowclick(node);
 		if (node.kind === "table" && node.tableKey) {
-			this.onTableSelect(node.tableKey);
+			this.onTableSelect(node.tableKey, { isPointer: !!node.isPointer, domainId: node.domainId ?? undefined });
 			return;
 		}
 	}
@@ -160,7 +160,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	 */
 	override onrowdblclick(node: TTableNodeUX): void {
 		if (node?.kind === "table" && node.tableKey) {
-			this.onTableSelect(node.tableKey);
+			this.onTableSelect(node.tableKey, { isPointer: !!node.isPointer, domainId: node.domainId ?? undefined });
 			return;
 		}
 		if (node.kind === "domain" || node.kind === "pivot" || node.kind === "prefix") {
@@ -176,10 +176,11 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			return { icon: "mdi:cube-outline", color: "warning" as const };
 		}
 		if (node?.kind === "pivot") {
-			const pivotParent = this.findNodeById(String(node.ireference || "").trim()) as unknown as TTableNodeUX | null;
-			const inDomain = pivotParent?.kind === "domain";
-			if (node.isMaster) return { icon: "mdi:crown", style: inDomain ? "color: orange !important;" : "color: hotpink !important;" };
-			return { icon: "mdi:link-variant", style: inDomain ? "color: orange !important;" : "color: hotpink !important;" };
+			// pivot-domain → naranja; pivot N:N → hotpink (gran diferencia visual entre ambos tipos).
+			const isPD = node.domainType === "pivot-domain";
+			const color = isPD ? "color: orange !important;" : "color: hotpink !important;";
+			if (node.isMaster) return { icon: "mdi:vector-link", style: color };
+			return { icon: "mdi:link-variant", style: color };
 		}
 		if (node?.kind === "prefix") {
 			return { icon: "mdi:tag-outline", color: "success" as const };
@@ -196,9 +197,8 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 					if (parent.domainType === "pivot-domain") {
 						return { icon: "mdi:table", style: "color: orange !important;" };
 					}
-					const grand = parent ? (this.findNodeById(String(parent.ireference || "").trim()) as unknown as TTableNodeUX | null) : null;
-					const inDomain = grand?.kind === "domain";
-					return { icon: "mdi:crown", style: inDomain ? "color: orange !important;" : "color: hotpink !important;" };
+					// pivot N:N: master con icono hotpink.
+					return { icon: "mdi:vector-link", style: "color: hotpink !important;" };
 				}
 				return { icon: "mdi:crown", color: "warning" as const };
 			}
@@ -471,6 +471,21 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		const map = { ...(cur.slaveCardinalities ?? {}) };
 		map[tableId] = value;
 		const next: DomainsMap = { ...this._domains, [domainId]: { ...cur, slaveCardinalities: map } };
+		this.setDomains(next);
+	}
+
+	/**
+	 * Establece la cardinalidad de un `pointer` dentro de su dominio padre.
+	 * La cardinalidad se almacena en el child ref del pointer (no en
+	 * `slaveCardinalities` del dominio, que es por id de tabla).
+	 */
+	setPointerCardinality(domainId: string, tableId: string, value: "1:1" | "1:N" | "N:N"): void {
+		const cur = this._domains[domainId];
+		if (!cur) return;
+		const order = (cur.childrenOrder ?? []).map((e) =>
+			e.kind === "pointer" && e.key === tableId ? { ...e, cardinality: value } : e,
+		);
+		const next: DomainsMap = { ...this._domains, [domainId]: { ...cur, childrenOrder: order } };
 		this.setDomains(next);
 	}
 
@@ -1318,11 +1333,19 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 					const isM = !isPointer && child.key === d.masterTable;
 					// La cardinalidad del esclavo se lee del mapa explícito `slaveCardinalities` del dominio
 					// padre. Para `pivot`/`pivot-domain` se completa con la cardinalidad del pivote.
+					// Los pointer guardan su propia cardinalidad en el child ref (no en slaveCardinalities).
+					// Para `domain` clásico se asume `1:N` por defecto (la cardinalidad más usual entre
+					// master y slave) si no hay valor explícito.
 					let slaveCard: "1:1" | "1:N" | "N:N" | "" = "";
-					if (!isM) {
+					if (isPointer) {
+						if (child.cardinality) slaveCard = child.cardinality;
+						else if (dType === "pivot" || dType === "pivot-domain") slaveCard = (d.cardinality ?? "") as typeof slaveCard;
+						else slaveCard = "1:N";
+					} else if (!isM) {
 						const explicit = d.slaveCardinalities?.[child.key];
 						if (explicit) slaveCard = explicit;
 						else if (dType === "pivot" || dType === "pivot-domain") slaveCard = (d.cardinality ?? "") as typeof slaveCard;
+						else slaveCard = "1:N";
 					}
 					rows.push(new TTableNodeUX({
 						flatPath: `${myRowId}.${counters[depth + 1]}`,
@@ -1623,7 +1646,9 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			const keptMembers = orig.members.filter((m) => !visibleIds.has(m));
 			const keptOrder = (orig.childrenOrder ?? []).filter(
 				(e) => (e.kind === "domain" && !visibleDomainIds.has(e.key)) ||
-				       (e.kind === "table" && !visibleIds.has(e.key)),
+				       (e.kind === "pivot" && !visibleDomainIds.has(e.key)) ||
+				       (e.kind === "table" && !visibleIds.has(e.key)) ||
+				       (e.kind === "pointer" && !visibleIds.has(e.key)),
 			);
 			next[id] = { ...orig, members: keptMembers, parentId: undefined, parentPrefix: undefined, childrenOrder: keptOrder };
 		}
@@ -1684,6 +1709,18 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 				const sourceTable = n.tableIndex >= 0 ? this._tables[n.tableIndex] : undefined;
 				const tid = sourceTable?.id ?? n.tableKey ?? "";
 				if (!tid) continue;
+				// Apuntadores son nodos independientes: NO entran en `members` y se re-emiten como `pointer`.
+				if (n.isPointer) {
+					if ((enc?.kind === "domain" || enc?.kind === "pivot") && enc.key && next[enc.key]) {
+						const prev = (this._domains[enc.key]?.childrenOrder ?? []).find(
+							(e) => e.kind === "pointer" && e.key === tid,
+						);
+						const ref: { kind: "pointer"; key: string; cardinality?: "1:1" | "1:N" | "N:N" } = { kind: "pointer", key: tid };
+						if (prev?.cardinality) ref.cardinality = prev.cardinality;
+						next[enc.key].childrenOrder!.push(ref);
+					}
+					continue;
+				}
 				if ((enc?.kind === "domain" || enc?.kind === "pivot") && enc.key && next[enc.key]) {
 					if (!next[enc.key].members.includes(tid)) {
 						next[enc.key].members.push(tid);

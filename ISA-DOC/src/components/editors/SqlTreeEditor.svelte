@@ -307,12 +307,15 @@
       width: 100%;
    }
    .select-host :global(select) {
-      height: 28px;
-      padding: 0 0.4rem;
+      width: 100%;
+      min-width: 11rem;
+      height: 32px;
+      padding: 0 1.6rem 0 0.5rem;
       font-size: 0.9rem;
       background-color: var(--is-bg-secondary);
       border: 1px solid var(--is-b-color);
       border-radius: 0.25rem;
+      text-overflow: ellipsis;
    }
    .select-host :global(select:focus) {
       border-color: var(--is-primary);

@@ -18,6 +18,12 @@ export interface DomainChildRef {
 	 * acciones se aplican sobre la tabla apuntada (mismo `tableKey`).
 	 */
 	key: string;
+	/**
+	 * Sólo para `kind:"pointer"`: cardinalidad propia del apuntador respecto al
+	 * master del dominio padre. NO se usa para `table` (esa va en
+	 * `slaveCardinalities` del dominio).
+	 */
+	cardinality?: "1:1" | "1:N" | "N:N";
 }
 
 export interface DomainDef {

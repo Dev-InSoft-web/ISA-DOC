@@ -6,8 +6,7 @@
       "masterTable": "tbl_planes_estudio",
       "prefix": "CAPAC_",
       "members": [
-        "tbl_planes_estudio",
-        "tbl_cursos_prerequisitos"
+        "tbl_planes_estudio"
       ],
       "childrenOrder": [
         {
@@ -15,12 +14,33 @@
           "key": "tbl_planes_estudio"
         },
         {
-          "kind": "table",
-          "key": "tbl_cursos_prerequisitos"
+          "kind": "pivot",
+          "key": "piv_nn_curso_prereq"
         },
         {
           "kind": "pivot",
           "key": "piv_nn_cpe_cursos"
+        }
+      ]
+    },
+    "piv_nn_curso_prereq": {
+      "id": "piv_nn_curso_prereq",
+      "name": "",
+      "type": "pivot",
+      "cardinality": "N:N",
+      "masterTable": "tbl_cursos_prerequisitos",
+      "members": [
+        "tbl_cursos_prerequisitos"
+      ],
+      "parentId": "dom_plan_estudio",
+      "childrenOrder": [
+        {
+          "kind": "table",
+          "key": "tbl_cursos_prerequisitos"
+        },
+        {
+          "kind": "pointer",
+          "key": "tbl_cursos"
         }
       ]
     },

@@ -6,8 +6,7 @@
       "masterTable": "tbl_planes_estudio",
       "prefix": "CAPAC_",
       "members": [
-        "tbl_planes_estudio",
-        "tbl_cursos_prerequisitos"
+        "tbl_planes_estudio"
       ],
       "childrenOrder": [
         {
@@ -15,12 +14,33 @@
           "key": "tbl_planes_estudio"
         },
         {
-          "kind": "table",
-          "key": "tbl_cursos_prerequisitos"
+          "kind": "pivot",
+          "key": "piv_nn_curso_prereq"
         },
         {
           "kind": "pivot",
           "key": "piv_nn_cpe_cursos"
+        }
+      ]
+    },
+    "piv_nn_curso_prereq": {
+      "id": "piv_nn_curso_prereq",
+      "name": "",
+      "type": "pivot",
+      "cardinality": "N:N",
+      "masterTable": "tbl_cursos_prerequisitos",
+      "members": [
+        "tbl_cursos_prerequisitos"
+      ],
+      "parentId": "dom_plan_estudio",
+      "childrenOrder": [
+        {
+          "kind": "table",
+          "key": "tbl_cursos_prerequisitos"
+        },
+        {
+          "kind": "pointer",
+          "key": "tbl_cursos"
         }
       ]
     },
@@ -89,8 +109,7 @@
       "cardinality": "1:N",
       "masterTable": "tbl_seguridades_cursos",
       "members": [
-        "tbl_seguridades_cursos",
-        "tbl_permisos"
+        "tbl_seguridades_cursos"
       ],
       "parentId": "dom_cursos",
       "childrenOrder": [
@@ -99,7 +118,7 @@
           "key": "tbl_seguridades_cursos"
         },
         {
-          "kind": "table",
+          "kind": "pointer",
           "key": "tbl_permisos"
         }
       ]
@@ -176,5 +195,6 @@
       "key": "tbl_permisos"
     }
   ],
-  "prefixOrders": {}
+  "prefixOrders": {
+  }
 }
