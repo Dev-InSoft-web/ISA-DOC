@@ -660,28 +660,11 @@
 									</div>
 								{:else if frmObj.kind === "domain"}
 									<div class="frm">
-										<label class="field">
-											<Text color="neutral"><small>Nombre del dominio</small></Text>
-											<input
-												class="input-field"
-												type="text"
-												bind:value={frmObj.rowName}
-												on:input={() => adapter.updateNode(frmObj)}
-											/>
-										</label>
+										<Text color="neutral"><small>Un dominio agrupa tablas que se exponen como raíz en la API. La tabla master puede leer y modificar a sus esclavas.</small></Text>
 									</div>
 								{:else if frmObj.kind === "pivot"}
 									<div class="frm">
-										<label class="field">
-											<Text color="neutral"><small>Nombre del pivote</small></Text>
-											<input
-												class="input-field"
-												type="text"
-												bind:value={frmObj.rowName}
-												on:input={() => adapter.updateNode(frmObj)}
-											/>
-										</label>
-										<Text color="neutral"><small>Un pivote agrupa varias tablas y dominios que se comunican entre sí sólo en GET (no INSERT/UPDATE).</small></Text>
+										<Text color="neutral"><small>Un pivote agrupa varias tablas y dominios. La dirección de anidación del JSON la indica el master del pivote.</small></Text>
 									</div>
 								{:else}
 									<div class="frm">

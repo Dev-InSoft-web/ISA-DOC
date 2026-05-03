@@ -104,7 +104,7 @@
       "id": "piv_inner",
       "name": "",
       "type": "pivot",
-      "masterTable": "dom_cursos",
+      "masterTable": "",
       "members": [],
       "parentId": "piv_outer",
       "childrenOrder": [

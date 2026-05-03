@@ -150,22 +150,20 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			this.onTableSelect(node.tableKey);
 			return;
 		}
-		// Para agrupadores (domain/prefix) las tablas no tienen panel central
-		// propio: abrimos el drawer de edición para que el usuario pueda
-		// renombrar el agrupador in-situ.
-		if (node.kind === "domain" || node.kind === "pivot" || node.kind === "prefix") {
-			this.openEdit(node);
-		}
 	}
 
 	/**
 	 * Doble click / Enter sobre una tabla NO debe abrir el drawer; solo selecciona la tabla
 	 * para que el panel central y derecho actualicen sus formularios.
-	 * Para agrupadores se mantiene el comportamiento por defecto (abre edición).
+	 * Para agrupadores (domain/pivot/prefix) abre el drawer de edición.
 	 */
 	override onrowdblclick(node: TTableNodeUX): void {
 		if (node?.kind === "table" && node.tableKey) {
 			this.onTableSelect(node.tableKey);
+			return;
+		}
+		if (node.kind === "domain" || node.kind === "pivot" || node.kind === "prefix") {
+			this.openEdit(node);
 			return;
 		}
 		super.onrowdblclick(node);

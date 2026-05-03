@@ -122,7 +122,7 @@
       "id": "piv_outer",
       "name": "",
       "type": "pivot",
-      "masterTable": "",
+      "masterTable": "dom_plan_estudio",
       "members": [],
       "parentPrefix": "CAPAC_",
       "childrenOrder": [
