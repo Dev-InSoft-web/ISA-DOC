@@ -1,0 +1,105 @@
+--- STARTING COMPREHENSIVE API VERIFICATION ---
+--- Report File: C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\ISA-DOC\scripts\verify-api\logs\out20260503_084311.txt ---
+--- Base URL: http://localhost:20040 ---
+[AUTH] Token cargado desde token.json. ✅
+
+===============================================================
+EVALUATING DOMAIN: Driver
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/driver Body (exacto): {"idriver":200,"ndriver":"Driver Prueba","qniveles":2,"descripcion":"Driver POST con atributos anidados","atributos":[{"idriver":200,"iatributo":901,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":902,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":903,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":904,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}}]}
+   Result: HTTP 400 (FAILED) ⛔
+   Error Info: {"encabezado":{"resultado":false,"tiempo":5374,"fhentrada":"2026-05-03T13:43:19.442Z","fhsalida":"2026-05-03T13:43:24.816Z","imensaje":400999,"mensaje":"El recurso a insertar ya existe en la base de datos"}}
+
+===============================================================
+EVALUATING DOMAIN: Curso
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/curso Body (exacto): {"icurso":"CURSOTEST","ncurso":"Curso Prueba","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"idriver":200}
+   Result: POST HTTP 400 — GET confirma el registro; se continúa el CRUL (relaxCreateRecoverGet) ✅
+
+2. PROCESS: READ (Verification)
+   Result: HTTP 200 (Found) ✅
+   -> [Verify Created Data] Coherent: FALSE ⛔. Discrepancies: ncurso: expected 'Curso Prueba', got 'Curso de prueba', descripcion: expected 'Desc — POST mínimo (catálogos anidados eliminados del API)', got '', bactivo: expected 'true', got 'false', idriver: expected '200', got '4'
+      Actual Keys: icurso, itema, idriver, bgeneracertificado, ncurso, descripcion, bactivo, tema, driver, seguridades, estructuras, planescurso, iusuarioult, ipult, fhult, iusuariocre, ipcre, fhcre
+      Actual Data: {"icurso":"CURSOTEST","itema":"","idriver":4,"bgeneracertificado":false,"ncurso":"Curso de prueba","descripcion":"","bactivo":false,"tema":null,"driver":{"idriver":4,"ndriver":"DRIVERTEST","qniveles":4},"seguridades":null,"estructuras":null,"planescurso":[{"iplan":"10.1","icurso":"CURSOTEST","itema":"TEMATEST","iplanpadre":"10","titulo":"Plan anidado en POST curso","atributosplan":[{"iatributo":901,"icurso":"CURSOTEST","iplan":"10.1","valor":"valor-atributo-plan-anidado-901"}],"qnivel":2,"irecurso":12521,"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"iusuarioult":"35","ipult":"191.95.147.34","fhult":"2026-05-03T13:43:39.277Z","iusuariocre":"35","ipcre":"191.95.147.34","fhcre":"2026-05-03T13:43:39.277Z"}],"iusuarioult":"35","ipult":"191.95.147.34","fhult":"2026-04-18T12:08:42.562Z","iusuariocre":"35","ipcre":"191.95.147.34","fhcre":"2026-04-18T12:07:54.371Z"}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/curso/CURSOTEST Body (exacto): {"icurso":"CURSOTEST","ncurso":"Curso Updated"}
+   Result: HTTP 202 (Accepted) ✅
+   Response: {"icurso":"CURSOTEST","itema":"","idriver":4,"bgeneracertificado":false,"ncurso":"Curso Updated","descripcion":"","bactivo":false,"tema":null,"driver":{"idriver":4,"ndriver":"DRIVERTEST","qniveles":4},"seguridades":null,"estructuras":null,"planescurso":[{"iplan":"10.1","icurso":"CURSOTEST","itema":"TEMATEST","iplanpadre":"10","titulo":"Plan anidado en POST curso","atributosplan":[{"iatributo":901,"icurso":"CURSOTEST","iplan":"10.1","valor":"valor-atributo-plan-anidado-901"}],"qnivel":2,"irecurso":12521,"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"iusuarioult":"35","ipult":"191.95.147.34","fhult":"2026-05-03T13:43:44.182Z","iusuariocre":"35","ipcre":"191.95.147.34","fhcre":"2026-05-03T13:43:44.183Z"}],"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-03T13:43:39.683Z","iusuariocre":"35","ipcre":"191.95.147.34","fhcre":"2026-04-18T12:07:54.371Z"}
+
+4. PROCESS: READ (Verify Update)
+   Result: HTTP 200 ✅
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"icurso":"CURSOTEST","itema":"","idriver":4,"bgeneracertificado":false,"ncurso":"Curso Updated","descripcion":"","bactivo":false,"tema":null,"driver":{"idriver":4,"ndriver":"DRIVERTEST","qniveles":4},"seguridades":null,"estructuras":null,"planescurso":[{"iplan":"10.1","icurso":"CURSOTEST","itema":"TEMATEST","iplanpadre":"10","titulo":"Plan anidado en POST curso","atributosplan":[{"iatributo":901,"icurso":"CURSOTEST","iplan":"10.1","valor":"valor-atributo-plan-anidado-901"}],"qnivel":2,"irecurso":12521,"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"iusuarioult":"35","ipult":"191.95.147.34","fhult":"2026-05-03T13:43:46.660Z","iusuariocre":"35","ipcre":"191.95.147.34","fhcre":"2026-05-03T13:43:46.660Z"}],"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-03T13:43:39.683Z","iusuariocre":"35","ipcre":"191.95.147.34","fhcre":"2026-04-18T12:07:54.371Z"}
+
+5. PROCESS: MASS CREATION (x3)
+   Input: POST /api/curso extra Body (exacto): {"ncurso":"Curso Prueba CURSOTEST_1","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"idriver":200,"icurso":"CURSOTEST_1"}
+   Input: POST /api/curso extra Body (exacto): {"ncurso":"Curso Prueba CURSOTEST_2","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"idriver":200,"icurso":"CURSOTEST_2"}
+   Input: POST /api/curso extra Body (exacto): {"ncurso":"Curso Prueba CURSOTEST_3","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"idriver":200,"icurso":"CURSOTEST_3"}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (Check Presence)
+   List: 233 elemento(s) recibido(s) ✅
+   -> Coherence: true ✅
+
+===============================================================
+EVALUATING DOMAIN: PlanEstudio
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/plan/estudio Body (exacto): {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Complex","bactivo":true,"descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false}
+   Result: HTTP 201 (Success) ✅
+   Response: {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Complex","descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"bactivo":true,"cursosdeplanestudio":null,"prerrequisitos":null,"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-03T13:44:09.757Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-03T13:44:09.757Z"}
+
+2. PROCESS: READ (Verification)
+   Result: HTTP 200 (Found) ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Complex","descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"bactivo":true,"cursosdeplanestudio":null,"prerrequisitos":null,"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-03T13:44:09.757Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-03T13:44:09.757Z"}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/plan/estudio/PE_APIVERIFY Body (exacto): {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Updated","bactivo":true}
+   Result: HTTP 202 (Accepted) ✅
+   Response: {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Updated","descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"bactivo":true,"cursosdeplanestudio":null,"prerrequisitos":null,"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-03T13:44:15.722Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-03T13:44:09.757Z"}
+
+4. PROCESS: READ (Verify Update)
+   Result: HTTP 200 ✅
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Updated","descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"bactivo":true,"cursosdeplanestudio":null,"prerrequisitos":null,"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-03T13:44:15.722Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-03T13:44:09.757Z"}
+
+5. PROCESS: MASS CREATION (x3)
+   Input: POST /api/plan/estudio extra Body (exacto): {"nombre":"Plan Complex PE_APIVERIFY_1","bactivo":true,"descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"iplanestudio":"PE_APIVERIFY_1"}
+   Input: POST /api/plan/estudio extra Body (exacto): {"nombre":"Plan Complex PE_APIVERIFY_2","bactivo":true,"descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"iplanestudio":"PE_APIVERIFY_2"}
+   Input: POST /api/plan/estudio extra Body (exacto): {"nombre":"Plan Complex PE_APIVERIFY_3","bactivo":true,"descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"iplanestudio":"PE_APIVERIFY_3"}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (Check Presence)
+   List: 6 elemento(s) recibido(s) ✅
+   -> Coherence: true ✅
+
+###############################################################
+FINAL CLEANUP: DELETE ALL TEST ENTITIES
+###############################################################
+
+--- ✅ Deleting: PlanEstudio ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 2 elemento(s) recibido(s) ✅
+   Result: None of the PlanEstudio test items found. ✅
+
+--- ✅ Deleting: Curso ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 233 elemento(s) recibido(s) ✅
+   Result: Items still present: ["CURSOTEST","CURSOTEST_1","CURSOTEST_2","CURSOTEST_3"] ⛔
+
+--- ✅ Deleting: Driver ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 9 elemento(s) recibido(s) ✅
+   Result: Items still present: [200,201,202,203] ⛔
+
+--- Testing Finished ---

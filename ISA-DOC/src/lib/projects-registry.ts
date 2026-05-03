@@ -41,7 +41,7 @@ export const PROJECTS: ProjectEntry[] = [
 		cwd: `${base}/ClientesIS/ISP-ClientesIS`,
 		group: "clientesis",
 		actions: [
-			{ id: "isp-cli-pub", label: "Publicar (pub.ps1)", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/ISP-ClientesIS/pub.ps1'`, cwd: `${base}/ClientesIS/ISP-ClientesIS`, needsPassword: true, description: "Build + npm publish + git push" },
+			{ id: "isp-cli-pub", label: "Publicar (pub-ispclientesis.ps1)", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-ispclientesis.ps1'`, cwd: `${base}/ClientesIS/ISP-ClientesIS`, needsPassword: true, description: "Build + npm publish + git push" },
 		],
 	},
 
@@ -54,7 +54,7 @@ export const PROJECTS: ProjectEntry[] = [
 		cwd: `${base}/ClientesIS/ISP-CLientesISServer`,
 		group: "clientesis",
 		actions: [
-			{ id: "isp-srv-pub", label: "Publicar (pub.ps1)", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/ISP-CLientesISServer/pub.ps1'`, cwd: `${base}/ClientesIS/ISP-CLientesISServer`, needsPassword: true, description: "Build + npm publish + git push" },
+			{ id: "isp-srv-pub", label: "Publicar (pub-ispclientesisserver.ps1)", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-ispclientesisserver.ps1'`, cwd: `${base}/ClientesIS/ISP-CLientesISServer`, needsPassword: true, description: "Build + npm publish + git push" },
 		],
 	},
 
@@ -126,7 +126,8 @@ export const PROJECTS: ProjectEntry[] = [
 		cwd: `${base}/ClientesIS`,
 		group: "clientesis",
 		actions: [
-			{ id: "sync-all", label: "Sync completo", type: "sync", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/sync-isp-clientesis.ps1'`, cwd: `${base}/ClientesIS`, description: "Build + copy ISP→ISS/ISW" },
+			{ id: "sync-all", label: "Sync local", type: "sync", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/sync-local-isp-clientesis.ps1'`, cwd: `${base}/ClientesIS`, description: "Build + copy ISP→ISS/ISW" },
+			{ id: "pub-all-isp", label: "Publicar ISP + ISP-Server", type: "pub", command: `powershell -ExecutionPolicy Bypass -File '${base}/ClientesIS/doc/ISA-DOC/scripts/PS1/pub-all-isp-clientesis.ps1'`, cwd: `${base}/ClientesIS`, needsPassword: true, description: "Publica ispclientesisserver y luego ispclientesis" },
 		],
 	},
 ];

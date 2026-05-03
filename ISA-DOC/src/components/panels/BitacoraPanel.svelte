@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { FlexLayout, H3, Text } from "@ingenieria_insoft/ispsveltecomponents";
 	import PermisosCsvMigration from "../migration/PermisosCsvMigration.svelte";
+	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
+	import md_2026_05_03_curso_500 from "../../lib/bitacora/2026-05-03-curso-get-update-500.md?raw";
 
 	// La pestaña Bitácora aloja utilidades temporales del desarrollo (one-shots,
 	// migraciones puntuales, scripts de inspección). No comparte canal de
@@ -17,6 +19,12 @@
 			No están pensadas para producción permanente.
 		</small>
 	</Text>
+
+	<H3>Notas para futuros desarrolladores</H3>
+	<BitacoraNote
+		title="2026-05-03 — Curso GET/UPDATE devuelve 500 tras npm i"
+		mdSource={md_2026_05_03_curso_500}
+	/>
 
 	<PermisosCsvMigration {executeSql} tableName="PERMISOS" />
 </FlexLayout>
