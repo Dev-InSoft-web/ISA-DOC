@@ -139,6 +139,10 @@
 	confirmText="Ejecutar"
 	cancelText="Cancelar"
 	kind={confirmKind}
+	confirmVariant="solid"
+	confirmColorOverride="primary"
+	cancelVariant="outlined"
+	cancelColorOverride="neutral"
 	onConfirm={doRun}
 />
 

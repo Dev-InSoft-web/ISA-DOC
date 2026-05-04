@@ -94,6 +94,12 @@
 	confirmText="Marcar todos"
 	cancelText="Desmarcar todos"
 	neutralText="Cancelar"
+	confirmVariant="solid"
+	confirmColorOverride="primary"
+	cancelVariant="outlined"
+	cancelColorOverride="primary"
+	neutralVariant="outlined"
+	neutralColorOverride="neutral"
 	onConfirm={confirmMarkAll}
 	onCancel={confirmUnmarkAll}
 	onDismiss={() => {}}
