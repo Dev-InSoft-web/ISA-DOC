@@ -1,7 +1,7 @@
 {
 	"info": {
 		"name": "ISS-ClientesIS-ContaPymeU",
-		"description": "# ISS · ClientesIS — ContaPymeU\n\n## Qué hace esta API\nMicroservicio Azure Functions que expone el dominio de **Capacitación** de ContaPymeU: **Cursos**, **Planes de Estudio** y **Drivers**.\n\n## URL base\n- Variable: `{{host_contapymeu}}`\n- Patrón: `{{host_contapymeu}}/api/<recurso>/<:pk?>`\n- Filtros de listado: `:filtro` es `btoa(JSON.stringify(filtro))` (`{}` → `e30=`).\n\n## Autenticación\nBearer token en header `Authorization: Bearer {{token}}`.\n\n## Variables\n| Variable | Uso | Ejemplo |\n|---|---|---|\n| `host_contapymeu` | URL base del Function App | `http://localhost:7071` |\n| `token` | JWT del usuario autenticado | `eyJhbGci...` |\n",
+		"description": "# ISS · ClientesIS — ContaPymeU\n\n## Qué hace esta API\nMicroservicio Azure Functions que expone el dominio de **Capacitación** de ContaPymeU: **Cursos**, **Planes de Estudio** y **Drivers**, más catálogos de solo lectura **Permisos** y **Temas** (BtnRef).\n\n## URL base\n- Variable: `{{host_contapymeu}}`\n- Patrón: `{{host_contapymeu}}/api/<recurso>/<:pk?>`\n- Filtros de listado: `:filtro` es `btoa(JSON.stringify(filtro))` (`{}` → `e30=`).\n\n## Autenticación\nBearer token en header `Authorization: Bearer {{token}}`.\n\n## Variables\n| Variable | Uso | Ejemplo |\n|---|---|---|\n| `host_contapymeu` | URL base del Function App | `http://localhost:7071` |\n| `token` | JWT del usuario autenticado | `eyJhbGci...` |\n",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -255,59 +255,6 @@
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 2340,\n    \"fhentrada\": \"2026-04-28T03:08:36.490Z\",\n    \"fhsalida\": \"2026-04-28T03:08:38.830Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"icurso\": \"202\",\n      \"itema\": \"\",\n      \"idriver\": 0,\n      \"bgeneracertificado\": false,\n      \"ncurso\": \"202\",\n      \"descripcion\": \"\",\n      \"bactivo\": true,\n      \"tema\": null,\n      \"driver\": null,\n      \"seguridades\": null,\n      \"estructuras\": [\n        {\n          \"icurso\": \"202\",\n          \"qnivel\": 1,\n          \"nnivel\": \"Capítulo\"\n        },\n        {\n          \"icurso\": \"202\",\n          \"qnivel\": 2,\n          \"nnivel\": \"Título\"\n        }\n      ],\n      \"planescurso\": null,\n      \"fhult\": \"2026-04-08T19:22:57.043Z\",\n      \"fhcre\": \"2026-04-08T19:22:57.043Z\"\n    }\n  }\n}"
 						},
 						{
-							"name": "200 - Curso encontrado",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"description": "## Propósito\nObtiene un único **curso** por su clave primaria.\n\n## Ruta\n`GET /api/curso/:icurso`\n\n## Autorización\nBearer token (`Authorization: Bearer {{token}}`).\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | Identificador del curso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Curso encontrado |\n| 401 | Unauthorized | Token ausente o inválido |\n| 404 | Not Found | El curso no existe |\n| 500 | Internal Server Error | Error inesperado del servidor |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/curso/:icurso",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"curso",
-										":icurso"
-									],
-									"variable": [
-										{
-											"key": "icurso",
-											"value": "CURSO001",
-											"description": "Identificador de curso"
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": {\n    \"icurso\": \"ADMIN-001\",\n    \"ncurso\": \"Administración de bodegas\",\n    \"itema\": \"TEMA-LOG\",\n    \"idriver\": \"DRV-LMS\",\n    \"descripcion\": \"Curso introductorio para personal de bodega\",\n    \"bactivo\": 1\n  }\n}"
-						},
-						{
 							"name": "404 - Curso no existe",
 							"originalRequest": {
 								"auth": {
@@ -458,60 +405,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 392,\n    \"fhentrada\": \"2026-04-28T03:08:38.840Z\",\n    \"fhsalida\": \"2026-04-28T03:08:39.232Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"icurso\": \"202\",\n      \"itema\": \"\",\n      \"idriver\": 0,\n      \"bgeneracertificado\": false,\n      \"ncurso\": \"202\",\n      \"descripcion\": \"\",\n      \"bactivo\": true,\n      \"tema\": null,\n      \"driver\": null,\n      \"seguridades\": null,\n      \"estructuras\": [\n        {\n          \"icurso\": \"202\",\n          \"qnivel\": 1,\n          \"nnivel\": \"Capítulo\"\n        },\n        {\n          \"icurso\": \"202\",\n          \"qnivel\": 2,\n          \"nnivel\": \"Título\"\n        }\n      ],\n      \"planescurso\": [],\n      \"fhult\": \"2026-04-08T19:22:57.043Z\",\n      \"fhcre\": \"2026-04-08T19:22:57.043Z\"\n    }\n  }\n}"
-						},
-						{
-							"name": "200 - Recurso/plan del curso obtenido",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"description": "## Propósito\nObtiene el recurso/plan asociado al **curso** indicado.\n\n## Ruta\n`GET /api/curso/recursoplan/:icurso`\n\n## Autorización\nBearer token (`Authorization: Bearer {{token}}`).\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | Identificador del curso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Recurso/plan obtenido |\n| 401 | Unauthorized | Token ausente o inválido |\n| 404 | Not Found | El curso no existe o no tiene recurso/plan |\n| 500 | Internal Server Error | Error inesperado del servidor |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/curso/recursoplan/:icurso",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"curso",
-										"recursoplan",
-										":icurso"
-									],
-									"variable": [
-										{
-											"key": "icurso",
-											"value": "CURSO001",
-											"description": "Identificador de curso"
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": {\n    \"icurso\": \"ADMIN-001\",\n    \"ncurso\": \"Administración de bodegas\",\n    \"itema\": \"TEMA-LOG\",\n    \"idriver\": \"DRV-LMS\",\n    \"descripcion\": \"Curso introductorio para personal de bodega\",\n    \"bactivo\": 1,\n    \"iplanestudio\": \"PLAN-IND-2026\",\n    \"nombre\": \"Inducción 2026\",\n    \"ttdvisualizacion\": \"ARBOL\"\n  }\n}"
 						}
 					]
 				},
@@ -611,60 +504,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 3633,\n    \"fhentrada\": \"2026-04-28T03:08:41.041Z\",\n    \"fhsalida\": \"2026-04-28T03:08:44.674Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"icurso\": \"TEST9999999\",\n      \"itema\": \"\",\n      \"idriver\": 0,\n      \"bgeneracertificado\": false,\n      \"ncurso\": \"Curso de prueba TEST\",\n      \"descripcion\": \"Registro creado por populate-real-examples\",\n      \"bactivo\": true,\n      \"tema\": null,\n      \"driver\": null,\n      \"seguridades\": null,\n      \"estructuras\": null,\n      \"planescurso\": null,\n      \"iusuarioult\": \"35\",\n      \"ipult\": \"127.0.0.1\",\n      \"fhult\": \"2026-04-28T03:08:41.451Z\",\n      \"iusuariocre\": \"35\",\n      \"ipcre\": \"127.0.0.1\",\n      \"fhcre\": \"2026-04-28T03:08:41.451Z\"\n    }\n  }\n}"
-						},
-						{
-							"name": "201 - Curso creado exitosamente",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"icurso\": \"CURSO001\",\n    \"ncurso\": \"Curso de ejemplo\",\n    \"itema\": \"TEMA001\",\n    \"idriver\": \"DRIVER001\",\n    \"descripcion\": \"Descripción del curso\",\n    \"bactivo\": 1\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"description": "## Propósito\nCrea un nuevo **curso**.\n\n## Ruta\n`POST /api/curso`\n\n## Autorización\nBearer token (`Authorization: Bearer {{token}}`).\n\n## Body (`application/json`)\n| Campo | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | PK del curso |\n| `ncurso` | string | Sí | Nombre del curso |\n| `itema` | string | No | Tema asociado |\n| `idriver` | string | No | Driver al que pertenece |\n| `descripcion` | string | No | Descripción |\n| `bactivo` | boolean | No | Estado activo (1/0) |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 201 | Created | Curso creado correctamente |\n| 400 | Bad Request | Datos inválidos |\n| 401 | Unauthorized | Token ausente o inválido |\n| 409 | Conflict | Ya existe un curso con el mismo `icurso` |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/curso",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"curso"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": {\n    \"icurso\": \"ADMIN-001\",\n    \"ncurso\": \"Administración de bodegas\",\n    \"itema\": \"TEMA-LOG\",\n    \"idriver\": \"DRV-LMS\",\n    \"descripcion\": \"Curso introductorio para personal de bodega\",\n    \"bactivo\": 1\n  }\n}"
 						},
 						{
 							"name": "400 - Datos inválidos",
@@ -834,68 +673,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 4699,\n    \"fhentrada\": \"2026-04-28T03:08:44.681Z\",\n    \"fhsalida\": \"2026-04-28T03:08:49.380Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"icurso\": \"TEST9999999\",\n      \"itema\": \"\",\n      \"idriver\": 0,\n      \"bgeneracertificado\": false,\n      \"ncurso\": \"Curso TEST editado\",\n      \"descripcion\": \"Editado por populate-real-examples\",\n      \"bactivo\": true,\n      \"tema\": null,\n      \"driver\": null,\n      \"seguridades\": null,\n      \"estructuras\": null,\n      \"planescurso\": null,\n      \"iusuarioult\": \"35\",\n      \"ipult\": \"127.0.0.1\",\n      \"fhult\": \"2026-04-28T03:08:45.100Z\",\n      \"iusuariocre\": \"35\",\n      \"ipcre\": \"127.0.0.1\",\n      \"fhcre\": \"2026-04-28T03:08:41.451Z\"\n    }\n  }\n}"
-						},
-						{
-							"name": "200 - Curso actualizado",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"icurso\": \"CURSO001\",\n    \"ncurso\": \"Curso de ejemplo\",\n    \"itema\": \"TEMA001\",\n    \"idriver\": \"DRIVER001\",\n    \"descripcion\": \"Descripción del curso\",\n    \"bactivo\": 1\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"description": "## Propósito\nReemplaza los datos del **curso** indicado.\n\n## Ruta\n`PUT /api/curso/:icurso`\n\n## Body (`application/json`)\n| Campo | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | PK del curso |\n| `ncurso` | string | Sí | Nombre del curso |\n| `itema` | string | No | Tema asociado |\n| `idriver` | string | No | Driver al que pertenece |\n| `descripcion` | string | No | Descripción |\n| `bactivo` | boolean | No | Estado activo (1/0) |\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | Identificador del curso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Curso actualizado |\n| 400 | Bad Request | Datos inválidos |\n| 404 | Not Found | El curso no existe |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/curso/:icurso",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"curso",
-										":icurso"
-									],
-									"variable": [
-										{
-											"key": "icurso",
-											"value": "CURSO001",
-											"description": "Identificador de curso"
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": {\n    \"icurso\": \"ADMIN-001\",\n    \"ncurso\": \"Administración de bodegas\",\n    \"itema\": \"TEMA-LOG\",\n    \"idriver\": \"DRV-LMS\",\n    \"descripcion\": \"Curso introductorio para personal de bodega\",\n    \"bactivo\": 1\n  }\n}"
 						},
 						{
 							"name": "400 - Datos inválidos",
@@ -1170,59 +947,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"mensaje\": \"Curso eliminado correctamente.\"\n}"
-						},
-						{
-							"name": "409 - Curso con dependencias",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"description": "## Propósito\nElimina el **curso** indicado.\n\n## Ruta\n`DELETE /api/curso/:icurso`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `icurso` | string | Sí | Identificador del curso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Curso eliminado |\n| 404 | Not Found | El curso no existe |\n| 409 | Conflict | El curso tiene dependencias activas |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/curso/:icurso",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"curso",
-										":icurso"
-									],
-									"variable": [
-										{
-											"key": "icurso",
-											"value": "CURSO001",
-											"description": "Identificador de curso"
-										}
-									]
-								}
-							},
-							"status": "Conflict",
-							"code": 409,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"error\": {\n    \"code\": \"DEPENDENCIAS\",\n    \"mensaje\": \"El curso tiene dependencias activas.\"\n  }\n}"
 						}
 					]
 				}
@@ -1328,60 +1052,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 2734,\n    \"fhentrada\": \"2026-04-28T03:08:53.941Z\",\n    \"fhsalida\": \"2026-04-28T03:08:56.675Z\"\n  },\n  \"respuesta\": {\n    \"pagina\": 1,\n    \"qregistros\": 1000,\n    \"totalregistros\": 2,\n    \"totalpaginas\": 1,\n    \"datos\": [\n      {\n        \"iplanestudio\": \"abc\",\n        \"nombre\": \"abc\",\n        \"descripcionplan\": \"\",\n        \"ttdvisualizacion\": \"A\",\n        \"bgeneracertificados\": false,\n        \"bactivo\": true,\n        \"iusuarioult\": \"35\",\n        \"ipult\": \"181.59.225.2\",\n        \"fhult\": \"2026-04-08T22:06:50.219Z\",\n        \"iusuariocre\": \"35\",\n        \"ipcre\": \"181.143.252.154\",\n        \"fhcre\": \"2026-04-08T17:04:42.866Z\"\n      },\n      {\n        \"iplanestudio\": \"PLAN001\",\n        \"nombre\": \"Plan Demo\",\n        \"descripcionplan\": \"Descripción\",\n        \"ttdvisualizacion\": null,\n        \"bgeneracertificados\": false,\n        \"bactivo\": true,\n        \"iusuarioult\": \"35\",\n        \"ipult\": \"127.0.0.1\",\n        \"fhult\": \"2026-03-04T20:42:58.434Z\",\n        \"iusuariocre\": \"35\",\n        \"ipcre\": \"127.0.0.1\",\n        \"fhcre\": \"2026-03-04T20:42:58.434Z\"\n      }\n    ]\n  }\n}"
-						},
-						{
-							"name": "200 - Listado de planes de estudio obtenido",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"description": "## Propósito\nObtiene un listado paginado de **planes de estudio** aplicando el filtro Base64 indicado.\n\n## Ruta\n`GET /api/planes/estudio/:filtro`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `filtro` | string | Sí | Filtro en base64 (`btoa(JSON.stringify(filtro))`). |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Operación exitosa |\n| 400 | Bad Request | Filtro inválido |\n| 401 | Unauthorized | Token ausente o inválido |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/planes/estudio/:filtro",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"planes",
-										"estudio",
-										":filtro"
-									],
-									"variable": [
-										{
-											"key": "filtro",
-											"value": "e30=",
-											"description": "Filtro de búsqueda en base64. Default `{}` -> `e30=`."
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": [\n    {\n      \"iplanestudio\": \"PLAN-IND-2026\",\n      \"nombre\": \"Inducción 2026\",\n      \"descripcionplan\": \"Plan de inducción para nuevos colaboradores\",\n      \"ttdvisualizacion\": \"ARBOL\",\n      \"bgeneracertificadog\": false,\n      \"bactivo\": 1\n    }\n  ]\n}"
 						}
 					]
 				},
@@ -1481,60 +1151,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 2438,\n    \"fhentrada\": \"2026-04-28T03:08:56.683Z\",\n    \"fhsalida\": \"2026-04-28T03:08:59.121Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"iplanestudio\": \"abc\",\n      \"nombre\": \"abc\",\n      \"descripcionplan\": \"\",\n      \"ttdvisualizacion\": \"A\",\n      \"bgeneracertificados\": false,\n      \"bactivo\": true,\n      \"cursosdeplanestudio\": [\n        {\n          \"iplanestudio\": \"abc\",\n          \"icurso\": \"ACT-TRIB23\",\n          \"qorden\": 1,\n          \"brequerido\": true,\n          \"curso\": {\n            \"icurso\": \"ACT-TRIB23\",\n            \"idriver\": 2,\n            \"bgeneracertificado\": false,\n            \"ncurso\": \"Curso virtual: Actualización Tributaria 2023\",\n            \"descripcion\": \"Temática:\\r\\n\\r\\n1. Los principales impactos de la reforma tributaria sobre las personas jurídicas y naturales, en materia de impuesto sobre la renta, impuesto al patrimonio, dividendos y ganancias ocasionales.\\r\\n2. Las modificaciones al régimen simple.\\r\\n3. El procedimiento tributario.\\r\\n4. Las sanciones que se pueden presentar.\\r\\n5. Los delitos tributarios.\\r\\n6. Las amnistías.\",\n            \"bactivo\": true,\n            \"driver\": {\n              \"idriver\": 2,\n              \"ndriver\": \"SEC_VIDEOS\",\n              \"descripcion\": \"Descripción de prueba\",\n              \"qniveles\": 2,\n              \"atributos\": [\n                {\n                  \"iatributo\": 1,\n                  \"idriver\": 2,\n                  \"qnivel\": 2,\n                  \"natributo\": \"URL diapositivas\",\n                  \"tdatributo\": 1,\n                  \"brequerido\": false,\n                  \"driver\": {\n                    \"idriver\": 2,\n                    \"ndriver\": \"SEC_VIDEOS\",\n                    \"descripcion\": \"Descripción de prueba\",\n                    \"qniveles\": 2\n                  }\n                },\n                {\n                  \"iatributo\": 2,\n                  \"idriver\": 2,\n                  \"qnivel\": 2,\n                  \"natributo\": \"Imagen del profesor\",\n                  \"tdatributo\": 1,\n                  \"brequerido\": false,\n                  \"driver\": {\n                    \"idriver\": 2,\n                    \"ndriver\": \"SEC_VIDEOS\",\n                    \"descripcion\": \"Descripción de prueba\",\n                    \"qniveles\": 2\n                  }\n                },\n                {\n                  \"iatributo\": 3,\n                  \"idriver\": 2,\n                  \"qnivel\": 2,\n                  \"natributo\": \"Driver de vídeo\",\n                  \"tdatributo\": 1,\n                  \"brequerido\": false,\n                  \"driver\": {\n                    \"idriver\": 2,\n                    \"ndriver\": \"SEC_VIDEOS\",\n                    \"descripcion\": \"Descripción de prueba\",\n                    \"qniveles\": 2\n                  }\n                },\n                {\n                  \"iatributo\": 4,\n                  \"idriver\": 2,\n                  \"qnivel\": 2,\n                  \"natributo\": \"Dificultad\",\n                  \"tdatributo\": 1,\n                  \"brequerido\": false,\n                  \"driver\": {\n                    \"idriver\": 2,\n                    \"ndriver\": \"SEC_VIDEOS\",\n                    \"descripcion\": \"Descripción de prueba\",\n                    \"qniveles\": 2\n                  }\n                }\n              ]\n            },\n            \"seguridades\": [\n              {\n                \"icurso\": \"ACT-TRIB23\",\n                \"ipermiso\": \"GN\"\n              }\n            ],\n            \"estructuras\": [\n              {\n                \"icurso\": \"ACT-TRIB23\",\n                \"qnivel\": 1,\n                \"nnivel\": \"Capítulo\"\n              },\n              {\n                \"icurso\": \"ACT-TRIB23\",\n                \"qnivel\": 2,\n                \"nnivel\": \"Título\"\n              }\n            ],\n            \"planescurso\": [\n              {\n                \"iplan\": \"10\",\n                \"icurso\": \"ACT-TRIB23\",\n                \"titulo\": \"Actualización Tributaria 2023\",\n                \"estructuranivel\": {\n                  \"icurso\": \"ACT-TRIB23\",\n                  \"qnivel\": 1,\n                  \"nnivel\": \"Capítulo\"\n                },\n                \"qnivel\": 1,\n                \"atributosrecurso\": [],\n                \"links\": [],\n                \"participantes\": [],\n                \"mensajes\": [],\n                \"calificaciones\": [],\n                \"fhult\": \"2026-04-28T03:08:59.116Z\",\n                \"fhcre\": \"2026-04-28T03:08:59.116Z\"\n              },\n              {\n                \"iplan\": \"10.10\",\n                \"icurso\": \"ACT-TRIB23\",\n                \"iplanpadre\": \"10\",\n                \"planpadre\": {\n                  \"iplan\": \"10\",\n                  \"icurso\": \"ACT-TRIB23\",\n                  \"titulo\": \"Actualización Tributaria 2023\",\n                  \"qnivel\": 1,\n                  \"atributosrecurso\": [],\n                  \"links\": [],\n                  \"participantes\": [],\n                  \"mensajes\": [],\n                  \"calificaciones\": [],\n                  \"fhult\": \"2026-04-28T03:08:59.116Z\",\n                  \"fhcre\": \"2026-04-28T03:08:59.116Z\"\n                },\n                \"atributosplan\": [\n                  {\n                    \"iatributo\": 3,\n                    \"icurso\": \"ACT-TRIB23\",\n                    \"iplan\": \"10.10\",\n                    \"valor\": \"IMG_GRANDE_INFOPROFESOR\",\n                    \"atributosdriver\": {\n                      \"iatributo\": 3,\n                      \"idriver\": 2,\n                      \"qnivel\": 2,\n                      \"natributo\": \"Driver de vídeo\",\n                      \"tdatributo\": 1,\n                      \"brequerido\": false\n                    }\n                  }\n                ],\n                \"estructuranivel\": {\n                  \"icurso\": \"ACT-TRIB23\",\n                  \"qnivel\": 2,\n                  \"nnivel\": \"Título\"\n                },\n                \"qnivel\": 2,\n                \"irecurso\": 8860,\n                \"atributosrecurso\": [],\n                \"links\": [],\n                \"participantes\": [],\n                \"mensajes\": [],\n                \"calificaciones\": [],\n                \"fhult\": \"2026-04-28T03:08:59.116Z\",\n                \"fhcre\": \"2026-04-28T03:08:59.116Z\"\n              }\n            ],\n            \"fhult\": \"2026-04-28T03:08:59.117Z\",\n            \"fhcre\": \"2026-04-28T03:08:59.117Z\"\n          }\n        },\n        {\n          \"iplanestudio\": \"abc\",\n          \"icurso\": \"AW40MOD170\",\n          \"qorden\": 2,\n          \"brequerido\": true,\n          \"curso\": {\n            \"icurso\": \"AW40MOD170\",\n            \"idriver\": 1,\n            \"bgeneracertificado\": false,\n            \"ncurso\": \"Metodología de costos parciales - Contabilidad simplificada\",\n            \"bactivo\": true,\n            \"driver\": {\n              \"idriver\": 1,\n              \"ndriver\": \"TRES_COLUMNAS\",\n              \"qniveles\": 2,\n              \"atributos\": [\n                {\n                  \"iatributo\": 1,\n                  \"idriver\": 1,\n                  \"qnivel\": 2,\n                  \"natributo\": \"URL diapositivas\",\n                  \"tdatributo\": 1,\n                  \"brequerido\": false,\n                  \"driver\": {\n                    \"idriver\": 1,\n                    \"ndriver\": \"TRES_COLUMNAS\",\n                    \"qniveles\": 2\n                  }\n                },\n                {\n                  \"iatributo\": 2,\n                  \"idriver\": 1,\n                  \"qnivel\": 2,\n                  \"natributo\": \"Imagen del profesor\",\n                  \"tdatributo\": 1,\n                  \"brequerido\": false,\n                  \"driver\": {\n                    \"idriver\": 1,\n                    \"ndriver\": \"TRES_COLUMNAS\",\n                    \"qniveles\": 2\n                  }\n                },\n                {\n                  \"iatributo\": 3,\n                  \"idriver\": 1,\n                  \"qnivel\": 2,\n                  \"natributo\": \"Driver de vídeo\",\n                  \"tdatributo\": 1,\n                  \"brequerido\": false,\n                  \"driver\": {\n                    \"idriver\": 1,\n                    \"ndriver\": \"TRES_COLUMNAS\",\n                    \"qniveles\": 2\n                  }\n                },\n                {\n                  \"iatributo\": 4,\n                  \"idriver\": 1,\n                  \"qnivel\": 2,\n                  \"natributo\": \"Dificultad\",\n                  \"tdatributo\": 1,\n                  \"brequerido\": false,\n                  \"driver\": {\n                    \"idriver\": 1,\n                    \"ndriver\": \"TRES_COLUMNAS\",\n                    \"qniveles\": 2\n                  }\n                }\n              ]\n            },\n            \"estructuras\": [\n              {\n                \"icurso\": \"AW40MOD170\",\n                \"qnivel\": 1,\n                \"nnivel\": \"Capítulo\"\n              },\n              {\n                \"icurso\": \"AW40MOD170\",\n                \"qnivel\": 2,\n                \"nnivel\": \"Título\"\n              }\n            ],\n            \"planescurso\": [\n              {\n                \"iplan\": \"10\",\n                \"icurso\": \"AW40MOD170\",\n                \"titulo\": \"MÉTODO DE COSTOS PARCIALES\",\n                \"estructuranivel\": {\n                  \"icurso\": \"AW40MOD170\",\n                  \"qnivel\": 1,\n                  \"nnivel\": \"Capítulo\"\n                },\n                \"qnivel\": 1,\n                \"atributosrecurso\": [],\n                \"links\": [],\n                \"participantes\": [],\n                \"mensajes\": [],\n                \"calificaciones\": [],\n                \"fhult\": \"2026-04-28T03:08:59.117Z\",\n                \"fhcre\": \"2026-04-28T03:08:59.117Z\"\n              },\n              {\n                \"iplan\": \"10.10\",\n                \"icurso\": \"AW40MOD170\",\n                \"iplanpadre\": \"10\",\n                \"titulo\": \"Metodos de costos parciales\",\n                \"planpadre\": {\n                  \"iplan\": \"10\",\n                  \"icurso\": \"AW40MOD170\",\n                  \"titulo\": \"MÉTODO DE COSTOS PARCIALES\",\n                  \"qnivel\": 1,\n                  \"atributosrecurso\": [],\n                  \"links\": [],\n                  \"participantes\": [],\n                  \"mensajes\": [],\n                  \"calificaciones\": [],\n                  \"fhult\": \"2026-04-28T03:08:59.117Z\",\n                  \"fhcre\": \"2026-04-28T03:08:59.117Z\"\n                },\n                \"atributosplan\": [\n                  {\n                    \"iatributo\": 3,\n                    \"icurso\": \"AW40MOD170\",\n                    \"iplan\": \"10.10\",\n                    \"valor\": \"FULL_NOMBRE_DESCRIPCION\",\n                    \"atributosdriver\": {\n                      \"iatributo\": 3,\n                      \"idriver\": 1,\n                      \"qnivel\": 2,\n                      \"natributo\": \"Driver de vídeo\",\n                      \"tdatributo\": 1,\n                      \"brequerido\": false\n                    }\n                  },\n                  {\n                    \"iatributo\": 4,\n                    \"icurso\": \"AW40MOD170\",\n                    \"iplan\": \"10.10\",\n                    \"valor\": \"B\",\n                    \"atributosdriver\": {\n                      \"iatributo\": 4,\n                      \"idriver\": 1,\n                      \"qnivel\": 2,\n                      \"natributo\": \"Dificultad\",\n                      \"tdatributo\": 1,\n                      \"brequerido\": false\n                    }\n                  }\n                ],\n                \"estructuranivel\": {\n                  \"icurso\": \"AW40MOD170\",\n                  \"qnivel\": 2,\n                  \"nnivel\": \"Título\"\n                },\n                \"qnivel\": 2,\n                \"irecurso\": 186,\n                \"atributosrecurso\": [],\n                \"links\": [],\n                \"participantes\": [],\n                \"mensajes\": [],\n                \"calificaciones\": [],\n                \"fhult\": \"2026-04-28T03:08:59.117Z\",\n                \"fhcre\": \"2026-04-28T03:08:59.117Z\"\n              }\n            ],\n            \"fhult\": \"2026-04-28T03:08:59.117Z\",\n            \"fhcre\": \"2026-04-28T03:08:59.117Z\"\n          }\n        }\n      ],\n      \"prerrequisitos\": null,\n      \"iusuarioult\": \"35\",\n      \"ipult\": \"181.59.225.2\",\n      \"fhult\": \"2026-04-08T22:06:50.219Z\",\n      \"iusuariocre\": \"35\",\n      \"ipcre\": \"181.143.252.154\",\n      \"fhcre\": \"2026-04-08T17:04:42.866Z\"\n    }\n  }\n}"
-						},
-						{
-							"name": "200 - Plan de estudio encontrado",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"description": "## Propósito\nObtiene un único **plan de estudio** por su clave primaria.\n\n## Ruta\n`GET /api/plan/estudio/:iplanestudio`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `iplanestudio` | string | Sí | Identificador del plan de estudio. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Plan encontrado |\n| 404 | Not Found | El plan no existe |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/plan/estudio/:iplanestudio",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"plan",
-										"estudio",
-										":iplanestudio"
-									],
-									"variable": [
-										{
-											"key": "iplanestudio",
-											"value": "PLANESTUDIO001",
-											"description": "Identificador de planestudio"
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": {\n    \"iplanestudio\": \"PLAN-IND-2026\",\n    \"nombre\": \"Inducción 2026\",\n    \"descripcionplan\": \"Plan de inducción para nuevos colaboradores\",\n    \"ttdvisualizacion\": \"ARBOL\",\n    \"bgeneracertificadog\": false,\n    \"bactivo\": 1\n  }\n}"
 						},
 						{
 							"name": "404 - Plan de estudio no existe",
@@ -1690,61 +1306,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 3578,\n    \"fhentrada\": \"2026-04-28T03:09:00.905Z\",\n    \"fhsalida\": \"2026-04-28T03:09:04.483Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"iplanestudio\": \"TEST9999999\",\n      \"nombre\": \"Plan TEST\",\n      \"descripcionplan\": \"Plan TEST creado por script\",\n      \"ttdvisualizacion\": \"ARBOL\",\n      \"bgeneracertificados\": false,\n      \"bactivo\": true,\n      \"cursosdeplanestudio\": null,\n      \"prerrequisitos\": null,\n      \"iusuarioult\": \"35\",\n      \"ipult\": \"127.0.0.1\",\n      \"fhult\": \"2026-04-28T03:09:01.318Z\",\n      \"iusuariocre\": \"35\",\n      \"ipcre\": \"127.0.0.1\",\n      \"fhcre\": \"2026-04-28T03:09:01.318Z\"\n    }\n  }\n}"
-						},
-						{
-							"name": "201 - Plan de estudio creado exitosamente",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"iplanestudio\": \"PLANESTUDIO001\",\n    \"nombre\": \"Plan de Estudio Ejemplo\",\n    \"descripcionplan\": \"Descripción del plan\",\n    \"ttdvisualizacion\": \"ARBOL\",\n    \"bgeneracertificadog\": false,\n    \"bactivo\": 1\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"description": "## Propósito\nCrea un nuevo **plan de estudio**.\n\n## Ruta\n`POST /api/plan/estudio`\n\n## Body (`application/json`)\n| Campo | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `iplanestudio` | string | Sí | PK del plan |\n| `nombre` | string | Sí | Nombre del plan |\n| `descripcionplan` | string | No | Descripción |\n| `ttdvisualizacion` | string | No | `ARBOL` o `LISTA` |\n| `bgeneracertificadog` | boolean | No | Genera certificado global |\n| `bactivo` | boolean | No | Estado activo |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 201 | Created | Plan creado |\n| 400 | Bad Request | Datos inválidos |\n| 409 | Conflict | Ya existe un plan con el mismo `iplanestudio` |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/plan/estudio",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"plan",
-										"estudio"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": {\n    \"iplanestudio\": \"PLAN-IND-2026\",\n    \"nombre\": \"Inducción 2026\",\n    \"descripcionplan\": \"Plan de inducción para nuevos colaboradores\",\n    \"ttdvisualizacion\": \"ARBOL\",\n    \"bgeneracertificadog\": false,\n    \"bactivo\": 1\n  }\n}"
 						},
 						{
 							"name": "400 - Datos inválidos",
@@ -1917,69 +1478,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 4748,\n    \"fhentrada\": \"2026-04-28T03:09:04.494Z\",\n    \"fhsalida\": \"2026-04-28T03:09:09.242Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"iplanestudio\": \"TEST9999999\",\n      \"nombre\": \"Plan TEST editado\",\n      \"descripcionplan\": \"Editado por script\",\n      \"ttdvisualizacion\": \"ARBOL\",\n      \"bgeneracertificados\": false,\n      \"bactivo\": true,\n      \"cursosdeplanestudio\": null,\n      \"prerrequisitos\": null,\n      \"iusuarioult\": \"35\",\n      \"ipult\": \"127.0.0.1\",\n      \"fhult\": \"2026-04-28T03:09:04.911Z\",\n      \"iusuariocre\": \"35\",\n      \"ipcre\": \"127.0.0.1\",\n      \"fhcre\": \"2026-04-28T03:09:01.318Z\"\n    }\n  }\n}"
-						},
-						{
-							"name": "200 - Plan de estudio actualizado",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"iplanestudio\": \"PLANESTUDIO001\",\n    \"nombre\": \"Plan de Estudio Ejemplo\",\n    \"descripcionplan\": \"Descripción del plan\",\n    \"ttdvisualizacion\": \"ARBOL\",\n    \"bgeneracertificadog\": false,\n    \"bactivo\": 1\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"description": "## Propósito\nReemplaza los datos del **plan de estudio** indicado.\n\n## Ruta\n`PUT /api/plan/estudio/:iplanestudio`\n\n## Body (`application/json`)\n| Campo | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `iplanestudio` | string | Sí | PK del plan |\n| `nombre` | string | Sí | Nombre del plan |\n| `descripcionplan` | string | No | Descripción |\n| `ttdvisualizacion` | string | No | `ARBOL` o `LISTA` |\n| `bgeneracertificadog` | boolean | No | Genera certificado global |\n| `bactivo` | boolean | No | Estado activo |\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `iplanestudio` | string | Sí | Identificador del plan de estudio. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Plan actualizado |\n| 400 | Bad Request | Datos inválidos |\n| 404 | Not Found | El plan no existe |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/plan/estudio/:iplanestudio",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"plan",
-										"estudio",
-										":iplanestudio"
-									],
-									"variable": [
-										{
-											"key": "iplanestudio",
-											"value": "PLANESTUDIO001",
-											"description": "Identificador de planestudio"
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": {\n    \"iplanestudio\": \"PLAN-IND-2026\",\n    \"nombre\": \"Inducción 2026\",\n    \"descripcionplan\": \"Plan de inducción para nuevos colaboradores\",\n    \"ttdvisualizacion\": \"ARBOL\",\n    \"bgeneracertificadog\": false,\n    \"bactivo\": 1\n  }\n}"
 						},
 						{
 							"name": "400 - Datos inválidos",
@@ -2259,60 +1757,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"mensaje\": \"Plan de estudio eliminado correctamente.\"\n}"
-						},
-						{
-							"name": "409 - Plan de estudio con dependencias",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "DELETE",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"description": "## Propósito\nElimina el **plan de estudio** indicado.\n\n## Ruta\n`DELETE /api/plan/estudio/:iplanestudio`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `iplanestudio` | string | Sí | Identificador del plan de estudio. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Plan eliminado |\n| 404 | Not Found | El plan no existe |\n| 409 | Conflict | El plan tiene cursos asociados |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/plan/estudio/:iplanestudio",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"plan",
-										"estudio",
-										":iplanestudio"
-									],
-									"variable": [
-										{
-											"key": "iplanestudio",
-											"value": "PLANESTUDIO001",
-											"description": "Identificador de planestudio"
-										}
-									]
-								}
-							},
-							"status": "Conflict",
-							"code": 409,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"error\": {\n    \"code\": \"DEPENDENCIAS\",\n    \"mensaje\": \"El plan de estudio tiene dependencias activas.\"\n  }\n}"
 						}
 					]
 				}
@@ -2416,59 +1860,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 2758,\n    \"fhentrada\": \"2026-04-28T03:09:13.863Z\",\n    \"fhsalida\": \"2026-04-28T03:09:16.621Z\"\n  },\n  \"respuesta\": {\n    \"pagina\": 1,\n    \"qregistros\": 1000,\n    \"totalregistros\": 4,\n    \"totalpaginas\": 1,\n    \"datos\": [\n      {\n        \"idriver\": 1,\n        \"ndriver\": \"TRES_COLUMNAS\",\n        \"descripcion\": \"\",\n        \"qniveles\": 2\n      },\n      {\n        \"idriver\": 2,\n        \"ndriver\": \"SEC_VIDEOS\",\n        \"descripcion\": \"Descripción de prueba\",\n        \"qniveles\": 2\n      },\n      {\n        \"idriver\": 3,\n        \"ndriver\": \"SEC_RELACIONADOS\",\n        \"descripcion\": \"\",\n        \"qniveles\": 2\n      },\n      {\n        \"idriver\": 4,\n        \"ndriver\": \"DRIVERTEST\",\n        \"descripcion\": \"\",\n        \"qniveles\": 4\n      }\n    ]\n  }\n}"
-						},
-						{
-							"name": "200 - Listado de drivers obtenido",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"description": "## Propósito\nObtiene un listado paginado de **drivers** aplicando el filtro Base64 indicado.\n\n## Ruta\n`GET /api/drivers/:filtro`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `filtro` | string | Sí | Filtro en base64 (`btoa(JSON.stringify(filtro))`). |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Operación exitosa |\n| 400 | Bad Request | Filtro inválido |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/drivers/:filtro",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"drivers",
-										":filtro"
-									],
-									"variable": [
-										{
-											"key": "filtro",
-											"value": "e30=",
-											"description": "Filtro de búsqueda en base64. Default `{}` -> `e30=`."
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": [\n    {\n      \"idriver\": \"DRV-LMS\",\n      \"ndriver\": \"LMS Estándar\",\n      \"descripcion\": \"Driver de evidencia LMS con 3 niveles\",\n      \"qniveles\": 3\n    }\n  ]\n}"
 						}
 					]
 				},
@@ -2566,59 +1957,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 2389,\n    \"fhentrada\": \"2026-04-28T03:09:16.626Z\",\n    \"fhsalida\": \"2026-04-28T03:09:19.015Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"idriver\": 1,\n      \"ndriver\": \"TRES_COLUMNAS\",\n      \"descripcion\": \"\",\n      \"qniveles\": 2,\n      \"atributos\": [\n        {\n          \"iatributo\": 1,\n          \"idriver\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"URL diapositivas\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"driver\": {\n            \"idriver\": 1,\n            \"ndriver\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        },\n        {\n          \"iatributo\": 2,\n          \"idriver\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"Imagen del profesor\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"driver\": {\n            \"idriver\": 1,\n            \"ndriver\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        },\n        {\n          \"iatributo\": 3,\n          \"idriver\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"Driver de vídeo\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"driver\": {\n            \"idriver\": 1,\n            \"ndriver\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        },\n        {\n          \"iatributo\": 4,\n          \"idriver\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"Dificultad\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"driver\": {\n            \"idriver\": 1,\n            \"ndriver\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        }\n      ]\n    }\n  }\n}"
-						},
-						{
-							"name": "200 - Driver encontrado",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "GET",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"description": "## Propósito\nObtiene un único **driver** por su clave primaria.\n\n## Ruta\n`GET /api/driver/:idriver`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `idriver` | string | Sí | Identificador del driver. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Driver encontrado |\n| 404 | Not Found | El driver no existe |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/driver/:idriver",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"driver",
-										":idriver"
-									],
-									"variable": [
-										{
-											"key": "idriver",
-											"value": "DRIVER001",
-											"description": "Identificador de driver"
-										}
-									]
-								}
-							},
-							"status": "OK",
-							"code": 200,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": {\n    \"idriver\": \"DRV-LMS\",\n    \"ndriver\": \"LMS Estándar\",\n    \"descripcion\": \"Driver de evidencia LMS con 3 niveles\",\n    \"qniveles\": 3\n  }\n}"
 						},
 						{
 							"name": "404 - Driver no existe",
@@ -2771,60 +2109,6 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 3584,\n    \"fhentrada\": \"2026-04-28T03:09:20.851Z\",\n    \"fhsalida\": \"2026-04-28T03:09:24.435Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"idriver\": 0,\n      \"ndriver\": \"Driver TEST\",\n      \"descripcion\": \"Registro creado por populate-real-examples\",\n      \"qniveles\": 1,\n      \"atributos\": null\n    }\n  }\n}"
-						},
-						{
-							"name": "201 - Driver creado exitosamente",
-							"originalRequest": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{token}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json",
-										"description": "Tipo MIME del cuerpo de la petición."
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"idriver\": \"DRIVER001\",\n    \"ndriver\": \"Driver Ejemplo\",\n    \"descripcion\": \"Descripción\",\n    \"qniveles\": 3\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"description": "## Propósito\nCrea un nuevo **driver**.\n\n## Ruta\n`POST /api/driver`\n\n## Body (`application/json`)\n| Campo | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `idriver` | string | Sí | PK del driver |\n| `ndriver` | string | Sí | Nombre |\n| `descripcion` | string | No | Descripción |\n| `qniveles` | number | Sí | Cantidad de niveles |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 201 | Created | Driver creado |\n| 400 | Bad Request | Datos inválidos |\n| 409 | Conflict | Ya existe un driver con el mismo `idriver` |",
-								"url": {
-									"raw": "{{host_contapymeu}}/api/driver",
-									"host": [
-										"{{host_contapymeu}}"
-									],
-									"path": [
-										"api",
-										"driver"
-									]
-								}
-							},
-							"status": "Created",
-							"code": 201,
-							"_postman_previewlanguage": "json",
-							"header": [
-								{
-									"key": "Content-Type",
-									"value": "application/json"
-								}
-							],
-							"cookie": [],
-							"body": "{\n  \"datos\": {\n    \"idriver\": \"DRV-LMS\",\n    \"ndriver\": \"LMS Estándar\",\n    \"descripcion\": \"Driver de evidencia LMS con 3 niveles\",\n    \"qniveles\": 3\n  }\n}"
 						},
 						{
 							"name": "400 - Datos inválidos",
@@ -3330,9 +2614,59 @@
 							],
 							"cookie": [],
 							"body": "{\n  \"mensaje\": \"Driver eliminado correctamente.\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Permisos",
+			"description": "# Permisos\n\n## Alcance\nCatálogo de **permisos** del módulo de Capacitación. Solo lectura: se exponen `Listar` y `Obtener` para alimentar componentes `BtnRef` desde el front. Las mutaciones están deshabilitadas (no-op).\n\n## Operaciones\n| Método | Endpoint | Descripción |\n|---|---|---|\n| GET | `/api/permisos/:filtro` | Listar |\n| GET | `/api/permiso/:ipermiso` | Obtener |\n\n## Modelo de datos\n| Campo | Tipo | Descripción |\n|---|---|---|\n| ipermiso | string | Identificador del permiso (PK) |\n| npermiso | string | Nombre del permiso |",
+			"item": [
+				{
+					"name": "100 Listar Permisos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
 						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "Tipo MIME del cuerpo de la petición."
+							}
+						],
+						"description": "## Propósito\nObtiene un listado paginado de **permisos** aplicando el filtro Base64 indicado.\n\n## Ruta\n`GET /api/permisos/:filtro`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `filtro` | string | Sí | Filtro en base64 (`btoa(JSON.stringify(filtro))`). |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Operación exitosa |\n| 400 | Bad Request | Filtro inválido |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/permisos/:filtro",
+							"host": [
+								"{{host_contapymeu}}"
+							],
+							"path": [
+								"api",
+								"drivers",
+								":filtro"
+							],
+							"variable": [
+								{
+									"key": "filtro",
+									"value": "e30=",
+									"description": "Filtro de búsqueda en base64. Default `{}` -> `e30=`."
+								}
+							]
+						}
+					},
+					"response": [
 						{
-							"name": "409 - Driver con dependencias",
+							"name": "200 - General esperado",
 							"originalRequest": {
 								"auth": {
 									"type": "bearer",
@@ -3344,7 +2678,7 @@
 										}
 									]
 								},
-								"method": "DELETE",
+								"method": "GET",
 								"header": [
 									{
 										"key": "Content-Type",
@@ -3352,9 +2686,106 @@
 										"description": "Tipo MIME del cuerpo de la petición."
 									}
 								],
-								"description": "## Propósito\nElimina el **driver** indicado.\n\n## Ruta\n`DELETE /api/driver/:idriver`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `idriver` | string | Sí | Identificador del driver. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Driver eliminado |\n| 404 | Not Found | El driver no existe |\n| 409 | Conflict | El driver tiene dependencias activas |",
+								"description": "## Propósito\nObtiene un listado paginado de **permisos** aplicando el filtro Base64 indicado.\n\n## Ruta\n`GET /api/permisos/:filtro`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `filtro` | string | Sí | Filtro en base64 (`btoa(JSON.stringify(filtro))`). |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Operación exitosa |\n| 400 | Bad Request | Filtro inválido |",
 								"url": {
-									"raw": "{{host_contapymeu}}/api/driver/:idriver",
+									"raw": "{{host_contapymeu}}/api/permisos/:filtro",
+									"host": [
+										"{{host_contapymeu}}"
+									],
+									"path": [
+										"api",
+										"drivers",
+										":filtro"
+									],
+									"variable": [
+										{
+											"key": "filtro",
+											"value": "e30=",
+											"description": "Filtro de búsqueda en base64. Default `{}` -> `e30=`."
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 2758,\n    \"fhentrada\": \"2026-04-28T03:09:13.863Z\",\n    \"fhsalida\": \"2026-04-28T03:09:16.621Z\"\n  },\n  \"respuesta\": {\n    \"pagina\": 1,\n    \"qregistros\": 1000,\n    \"totalregistros\": 4,\n    \"totalpaginas\": 1,\n    \"datos\": [\n      {\n        \"ipermiso\": 1,\n        \"npermiso\": \"TRES_COLUMNAS\",\n        \"descripcion\": \"\",\n        \"qniveles\": 2\n      },\n      {\n        \"ipermiso\": 2,\n        \"npermiso\": \"SEC_VIDEOS\",\n        \"descripcion\": \"Descripción de prueba\",\n        \"qniveles\": 2\n      },\n      {\n        \"ipermiso\": 3,\n        \"npermiso\": \"SEC_RELACIONADOS\",\n        \"descripcion\": \"\",\n        \"qniveles\": 2\n      },\n      {\n        \"ipermiso\": 4,\n        \"npermiso\": \"DRIVERTEST\",\n        \"descripcion\": \"\",\n        \"qniveles\": 4\n      }\n    ]\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "110 Obtener Permiso",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "Tipo MIME del cuerpo de la petición."
+							}
+						],
+						"description": "## Propósito\nObtiene un único **permiso** por su clave primaria.\n\n## Ruta\n`GET /api/permiso/:ipermiso`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `ipermiso` | string | Sí | Identificador del permiso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Permiso encontrado |\n| 404 | Not Found | El permiso no existe |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/permiso/:ipermiso",
+							"host": [
+								"{{host_contapymeu}}"
+							],
+							"path": [
+								"api",
+								"driver",
+								":idriver"
+							],
+							"variable": [
+								{
+									"key": "ipermiso",
+									"value": "1",
+									"description": "Identificador de permiso"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - General esperado",
+							"originalRequest": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "Tipo MIME del cuerpo de la petición."
+									}
+								],
+								"description": "## Propósito\nObtiene un único **permiso** por su clave primaria.\n\n## Ruta\n`GET /api/permiso/:ipermiso`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `ipermiso` | string | Sí | Identificador del permiso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Permiso encontrado |\n| 404 | Not Found | El permiso no existe |",
+								"url": {
+									"raw": "{{host_contapymeu}}/api/permiso/:ipermiso",
 									"host": [
 										"{{host_contapymeu}}"
 									],
@@ -3365,15 +2796,68 @@
 									],
 									"variable": [
 										{
-											"key": "idriver",
-											"value": "DRIVER001",
-											"description": "Identificador de driver"
+											"key": "ipermiso",
+											"value": "1",
+											"description": "Identificador de permiso"
 										}
 									]
 								}
 							},
-							"status": "Conflict",
-							"code": 409,
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 2389,\n    \"fhentrada\": \"2026-04-28T03:09:16.626Z\",\n    \"fhsalida\": \"2026-04-28T03:09:19.015Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"ipermiso\": 1,\n      \"npermiso\": \"TRES_COLUMNAS\",\n      \"descripcion\": \"\",\n      \"qniveles\": 2,\n      \"atributos\": [\n        {\n          \"iatributo\": 1,\n          \"ipermiso\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"URL diapositivas\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"permiso\": {\n            \"ipermiso\": 1,\n            \"npermiso\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        },\n        {\n          \"iatributo\": 2,\n          \"ipermiso\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"Imagen del profesor\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"permiso\": {\n            \"ipermiso\": 1,\n            \"npermiso\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        },\n        {\n          \"iatributo\": 3,\n          \"ipermiso\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"Permiso de vídeo\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"permiso\": {\n            \"ipermiso\": 1,\n            \"npermiso\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        },\n        {\n          \"iatributo\": 4,\n          \"ipermiso\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"Dificultad\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"permiso\": {\n            \"ipermiso\": 1,\n            \"npermiso\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        }\n      ]\n    }\n  }\n}"
+						},
+						{
+							"name": "404 - Permiso no existe",
+							"originalRequest": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "Tipo MIME del cuerpo de la petición."
+									}
+								],
+								"description": "## Propósito\nObtiene un único **permiso** por su clave primaria.\n\n## Ruta\n`GET /api/permiso/:ipermiso`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `ipermiso` | string | Sí | Identificador del permiso. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Permiso encontrado |\n| 404 | Not Found | El permiso no existe |",
+								"url": {
+									"raw": "{{host_contapymeu}}/api/permiso/:ipermiso",
+									"host": [
+										"{{host_contapymeu}}"
+									],
+									"path": [
+										"api",
+										"driver",
+										":idriver"
+									],
+									"variable": [
+										{
+											"key": "ipermiso",
+											"value": "DRIVER001",
+											"description": "Identificador de permiso"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
 							"_postman_previewlanguage": "json",
 							"header": [
 								{
@@ -3382,7 +2866,260 @@
 								}
 							],
 							"cookie": [],
-							"body": "{\n  \"error\": {\n    \"code\": \"DEPENDENCIAS\",\n    \"mensaje\": \"El driver tiene dependencias activas.\"\n  }\n}"
+							"body": "{\n  \"error\": {\n    \"code\": \"NO_ENCONTRADO\",\n    \"mensaje\": \"El permiso no existe.\"\n  }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Temas",
+			"description": "# Temas\n\n## Alcance\nCatálogo de **temas** del módulo de Capacitación. Solo lectura: se exponen `Listar` y `Obtener` para alimentar componentes `BtnRef` desde el front. Las mutaciones están deshabilitadas (no-op).\n\n## Operaciones\n| Método | Endpoint | Descripción |\n|---|---|---|\n| GET | `/api/temas/:filtro` | Listar |\n| GET | `/api/tema/:itema` | Obtener |\n\n## Modelo de datos\n| Campo | Tipo | Descripción |\n|---|---|---|\n| itema | string | Identificador del tema (PK) |\n| ntema | string | Nombre del tema |",
+			"item": [
+				{
+					"name": "100 Listar Temas",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "Tipo MIME del cuerpo de la petición."
+							}
+						],
+						"description": "## Propósito\nObtiene un listado paginado de **temas** aplicando el filtro Base64 indicado.\n\n## Ruta\n`GET /api/temas/:filtro`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `filtro` | string | Sí | Filtro en base64 (`btoa(JSON.stringify(filtro))`). |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Operación exitosa |\n| 400 | Bad Request | Filtro inválido |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/temas/:filtro",
+							"host": [
+								"{{host_contapymeu}}"
+							],
+							"path": [
+								"api",
+								"drivers",
+								":filtro"
+							],
+							"variable": [
+								{
+									"key": "filtro",
+									"value": "e30=",
+									"description": "Filtro de búsqueda en base64. Default `{}` -> `e30=`."
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - General esperado",
+							"originalRequest": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "Tipo MIME del cuerpo de la petición."
+									}
+								],
+								"description": "## Propósito\nObtiene un listado paginado de **temas** aplicando el filtro Base64 indicado.\n\n## Ruta\n`GET /api/temas/:filtro`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `filtro` | string | Sí | Filtro en base64 (`btoa(JSON.stringify(filtro))`). |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Operación exitosa |\n| 400 | Bad Request | Filtro inválido |",
+								"url": {
+									"raw": "{{host_contapymeu}}/api/temas/:filtro",
+									"host": [
+										"{{host_contapymeu}}"
+									],
+									"path": [
+										"api",
+										"drivers",
+										":filtro"
+									],
+									"variable": [
+										{
+											"key": "filtro",
+											"value": "e30=",
+											"description": "Filtro de búsqueda en base64. Default `{}` -> `e30=`."
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 2758,\n    \"fhentrada\": \"2026-04-28T03:09:13.863Z\",\n    \"fhsalida\": \"2026-04-28T03:09:16.621Z\"\n  },\n  \"respuesta\": {\n    \"pagina\": 1,\n    \"qregistros\": 1000,\n    \"totalregistros\": 4,\n    \"totalpaginas\": 1,\n    \"datos\": [\n      {\n        \"itema\": 1,\n        \"ntema\": \"TRES_COLUMNAS\",\n        \"descripcion\": \"\",\n        \"qniveles\": 2\n      },\n      {\n        \"itema\": 2,\n        \"ntema\": \"SEC_VIDEOS\",\n        \"descripcion\": \"Descripción de prueba\",\n        \"qniveles\": 2\n      },\n      {\n        \"itema\": 3,\n        \"ntema\": \"SEC_RELACIONADOS\",\n        \"descripcion\": \"\",\n        \"qniveles\": 2\n      },\n      {\n        \"itema\": 4,\n        \"ntema\": \"DRIVERTEST\",\n        \"descripcion\": \"\",\n        \"qniveles\": 4\n      }\n    ]\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "110 Obtener Tema",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": "Tipo MIME del cuerpo de la petición."
+							}
+						],
+						"description": "## Propósito\nObtiene un único **tema** por su clave primaria.\n\n## Ruta\n`GET /api/tema/:itema`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `itema` | string | Sí | Identificador del tema. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Tema encontrado |\n| 404 | Not Found | El tema no existe |",
+						"url": {
+							"raw": "{{host_contapymeu}}/api/tema/:itema",
+							"host": [
+								"{{host_contapymeu}}"
+							],
+							"path": [
+								"api",
+								"driver",
+								":idriver"
+							],
+							"variable": [
+								{
+									"key": "itema",
+									"value": "1",
+									"description": "Identificador de tema"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 - General esperado",
+							"originalRequest": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "Tipo MIME del cuerpo de la petición."
+									}
+								],
+								"description": "## Propósito\nObtiene un único **tema** por su clave primaria.\n\n## Ruta\n`GET /api/tema/:itema`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `itema` | string | Sí | Identificador del tema. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Tema encontrado |\n| 404 | Not Found | El tema no existe |",
+								"url": {
+									"raw": "{{host_contapymeu}}/api/tema/:itema",
+									"host": [
+										"{{host_contapymeu}}"
+									],
+									"path": [
+										"api",
+										"driver",
+										":idriver"
+									],
+									"variable": [
+										{
+											"key": "itema",
+											"value": "1",
+											"description": "Identificador de tema"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"encabezado\": {\n    \"resultado\": true,\n    \"tiempo\": 2389,\n    \"fhentrada\": \"2026-04-28T03:09:16.626Z\",\n    \"fhsalida\": \"2026-04-28T03:09:19.015Z\"\n  },\n  \"respuesta\": {\n    \"datos\": {\n      \"itema\": 1,\n      \"ntema\": \"TRES_COLUMNAS\",\n      \"descripcion\": \"\",\n      \"qniveles\": 2,\n      \"atributos\": [\n        {\n          \"iatributo\": 1,\n          \"itema\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"URL diapositivas\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"tema\": {\n            \"itema\": 1,\n            \"ntema\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        },\n        {\n          \"iatributo\": 2,\n          \"itema\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"Imagen del profesor\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"tema\": {\n            \"itema\": 1,\n            \"ntema\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        },\n        {\n          \"iatributo\": 3,\n          \"itema\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"Tema de vídeo\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"tema\": {\n            \"itema\": 1,\n            \"ntema\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        },\n        {\n          \"iatributo\": 4,\n          \"itema\": 1,\n          \"qnivel\": 2,\n          \"natributo\": \"Dificultad\",\n          \"tdatributo\": 1,\n          \"brequerido\": false,\n          \"tema\": {\n            \"itema\": 1,\n            \"ntema\": \"TRES_COLUMNAS\",\n            \"qniveles\": 2\n          }\n        }\n      ]\n    }\n  }\n}"
+						},
+						{
+							"name": "404 - Tema no existe",
+							"originalRequest": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"description": "Tipo MIME del cuerpo de la petición."
+									}
+								],
+								"description": "## Propósito\nObtiene un único **tema** por su clave primaria.\n\n## Ruta\n`GET /api/tema/:itema`\n\n## Parámetros de path\n| Parámetro | Tipo | Requerido | Descripción |\n|---|---|---|---|\n| `itema` | string | Sí | Identificador del tema. |\n\n## Respuestas\n| Código | Estado | Cuando ocurre |\n|---|---|---|\n| 200 | OK | Tema encontrado |\n| 404 | Not Found | El tema no existe |",
+								"url": {
+									"raw": "{{host_contapymeu}}/api/tema/:itema",
+									"host": [
+										"{{host_contapymeu}}"
+									],
+									"path": [
+										"api",
+										"driver",
+										":idriver"
+									],
+									"variable": [
+										{
+											"key": "itema",
+											"value": "DRIVER001",
+											"description": "Identificador de tema"
+										}
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"error\": {\n    \"code\": \"NO_ENCONTRADO\",\n    \"mensaje\": \"El tema no existe.\"\n  }\n}"
 						}
 					]
 				}

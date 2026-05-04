@@ -4,12 +4,16 @@
 	import CleanupTestDataMigration from "../migration/CleanupTestDataMigration.svelte";
 	import OldRebuildSection from "../migration/OldRebuildSection.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
+	import TicketsSection from "../tickets/TicketsSection.svelte";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
+	import Accordion from "../_comps/containers/Accordion.svelte";
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
 	import DbStatusBanner from "../_comps/status/DbStatusBanner.svelte";
 	import md_2026_05_03_curso_500 from "../../lib/bitacora/2026-05-03-curso-get-update-500.md?raw";
 	import md_cursos_isw_reglas from "../../lib/bitacora/cursos-isw-reglas.md?raw";
-	import md_2026_05_04_resumen from "../../lib/bitacora/2026-05-04-resumen.md?raw";
+	import md_2026_05_04_isa from "../../lib/bitacora/2026-05-04-resumen-isa.md?raw";
+	import md_2026_05_04_isw_isp from "../../lib/bitacora/2026-05-04-resumen-isw-isp.md?raw";
+	import md_2026_05_04_iss from "../../lib/bitacora/2026-05-04-resumen-iss.md?raw";
 	import { REBUILD_TABLES } from "../../lib/migration/oldRebuildTables.ts";
 
 	const REBUILD_STEPS = ["drop", "create", "insert"] as const;
@@ -54,34 +58,68 @@
 		</small>
 	</Text>
 
-	<H3>Notas para futuros desarrolladores</H3>
-
-	<BitacoraNote
-		title="2026-05-04 — Resumen del día"
-		mdSource={md_2026_05_04_resumen}
-	/>
-
-	<!-- ISW siempre primero -->
+	<!-- =================== Secciones FIJAS =================== -->
+	<!-- 1) ISW siempre primero -->
 	<BitacoraNote
 		title="Cursos (ISW) — Reglas, restricciones y avances"
 		mdSource={md_cursos_isw_reglas}
 	/>
 
-	<!-- 2026-05-04 — Tres sub-secciones del mismo día agrupadas -->
-	<AccordionActions
-		title="2026-05-04 — Capacitación: limpieza de prueba, migración IPLANPADRE y reconstrucción CAPAC_*_OLD"
-		icon="mdi:database-cog"
-		count={3}
+	<!-- 2) Tickets siempre como segunda sección -->
+	<TicketsSection />
+
+	<!-- =================== Separador =================== -->
+	<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
+
+	<!-- =================== Secciones por FECHA (DESC) =================== -->
+	<!-- 2026-05-04 -->
+	<Accordion
+		title="2026-05-04 — Capacitación: limpieza, migración IPLANPADRE, reconstrucción CAPAC_*_OLD y snapshots"
+		titleIcon="mdi:calendar"
 		open={false}
 	>
-		<RevisadoCheck slot="title-extra" keys={dayKeys} />
-		<CleanupTestDataMigration {executeSql} inner />
-		<IplanpadreToAtributoMigration {executeSql} inner />
-		<OldRebuildSection {executeSql} date="2026-05-04" inner />
-	</AccordionActions>
+		<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" open={false} inner>
+			<BitacoraNote
+				title="Proyecto ISA-DOC"
+				mdSource={md_2026_05_04_isa}
+				inner
+			/>
+			<BitacoraNote
+				title="ISW / ISP ClientesIS"
+				mdSource={md_2026_05_04_isw_isp}
+				inner
+			/>
+			<BitacoraNote
+				title="ISS ClientesIS-ContaPymeU"
+				mdSource={md_2026_05_04_iss}
+				inner
+			/>
+		</Accordion>
 
-	<BitacoraNote
+		<AccordionActions
+			title="Capacitación: limpieza de prueba, migración IPLANPADRE y reconstrucción CAPAC_*_OLD"
+			icon="mdi:database-cog"
+			count={3}
+			open={false}
+			inner
+		>
+			<RevisadoCheck slot="title-extra" keys={dayKeys} />
+			<CleanupTestDataMigration {executeSql} inner />
+			<IplanpadreToAtributoMigration {executeSql} inner />
+			<OldRebuildSection {executeSql} date="2026-05-04" inner />
+		</AccordionActions>
+	</Accordion>
+
+	<!-- 2026-05-03 -->
+	<Accordion
 		title="2026-05-03 — Curso GET/UPDATE devuelve 500 tras npm i"
-		mdSource={md_2026_05_03_curso_500}
-	/>
+		titleIcon="mdi:calendar"
+		open={false}
+	>
+		<BitacoraNote
+			title="Curso GET/UPDATE devuelve 500 tras npm i"
+			mdSource={md_2026_05_03_curso_500}
+			inner
+		/>
+	</Accordion>
 </FlexLayout>

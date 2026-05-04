@@ -6,6 +6,7 @@
 	export let mdSource: string;
 	export let open: boolean = false;
 	export let flat: boolean = false;
+	export let inner: boolean = false;
 
 	marked.setOptions({ gfm: true, breaks: false });
 
@@ -17,7 +18,7 @@
 		{@html html}
 	</div>
 {:else}
-	<Accordion {title} titleIcon="mdi:notebook-edit-outline" bind:open>
+	<Accordion {title} titleIcon="mdi:notebook-edit-outline" bind:open {inner}>
 		<div class="bitacora-md">
 			{@html html}
 		</div>

@@ -1,0 +1,54 @@
+<script lang="ts">
+	import { Button, FlexLayout, Iconify, Text } from "@ingenieria_insoft/ispsveltecomponents";
+	import Accordion from "../_comps/containers/Accordion.svelte";
+	import { TICKETS, type TicketRegistro } from "../../lib/tickets";
+	import TicketViewerModal from "./TicketViewerModal.svelte";
+
+	let selected: TicketRegistro | null = null;
+	let bshow: boolean = false;
+
+	function abrir(t: TicketRegistro) {
+		selected = t;
+		bshow = true;
+	}
+</script>
+
+<Accordion title="Tickets" titleIcon="mdi:ticket-confirmation-outline" count={TICKETS.length} open={false}>
+	<FlexLayout direction="column" style="padding: 0.5rem;">
+		{#each TICKETS as t (t.id)}
+			<FlexLayout
+				direction="row"
+				items="center"
+				justify="between"
+				style="padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--is-outline, #ddd);"
+			>
+				<FlexLayout direction="column">
+					<FlexLayout direction="row" items="center">
+						<Iconify icon="mdi:ticket-outline" />
+						<strong style="margin-left: 0.4rem;">{t.id}</strong>
+						<span style="margin-left: 0.6rem;">— {t.titulo}</span>
+					</FlexLayout>
+					<Text color="neutral">
+						<small>
+							{t.solicitante} · Solicitud: {t.fechaSolicitud}
+							{#if t.fechaEntrega}· Entrega: {t.fechaEntrega}{/if}
+						</small>
+					</Text>
+					{#if t.enlace}
+						<Text color="neutral">
+							<small>
+								<a href={t.enlace} target="_blank" rel="noopener noreferrer">Estándar de documentación</a>
+							</small>
+						</Text>
+					{/if}
+				</FlexLayout>
+
+				<Button variant="tonal" onClick={() => abrir(t)}>
+					<Iconify icon="mdi:eye-outline" /> Ver
+				</Button>
+			</FlexLayout>
+		{/each}
+	</FlexLayout>
+</Accordion>
+
+<TicketViewerModal ticket={selected} bind:bshow />
