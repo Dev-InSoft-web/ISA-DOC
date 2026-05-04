@@ -61,6 +61,7 @@ function tableKey(t: ParsedTable): string {
 export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack, TTableNodeUX> {
 	public onChange: TablesBrowserChangeFn = () => undefined;
 	public onTableSelect: (key: string, ctx?: { isPointer: boolean; domainId?: string }) => void = () => undefined;
+	public onDomainNodeSelect: (info: { kind: "domain" | "pivot"; domainId: string } | null) => void = () => undefined;
 	public onDomainsChange: (domains: DomainsMap) => void = () => undefined;
 	public onAddRoot: () => void = () => undefined;
 	public onCascadeAddDomain: () => void = () => undefined;
@@ -149,6 +150,11 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 		super.onrowclick(node);
 		if (node.kind === "table" && node.tableKey) {
 			this.onTableSelect(node.tableKey, { isPointer: !!node.isPointer, domainId: node.domainId ?? undefined });
+			this.onDomainNodeSelect(null);
+			return;
+		}
+		if ((node.kind === "domain" || node.kind === "pivot") && node.domainId) {
+			this.onDomainNodeSelect({ kind: node.kind, domainId: node.domainId });
 			return;
 		}
 	}
@@ -156,14 +162,20 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 	/**
 	 * Doble click / Enter sobre una tabla NO debe abrir el drawer; solo selecciona la tabla
 	 * para que el panel central y derecho actualicen sus formularios.
-	 * Para agrupadores (domain/pivot/prefix) abre el drawer de edición.
+	 * Para `pivot` tampoco abre el drawer: el formulario del pivote vive en el panel central
+	 * y las deducciones en el panel derecho. Sólo `domain` y `prefix` abren el drawer de edición.
 	 */
 	override onrowdblclick(node: TTableNodeUX): void {
 		if (node?.kind === "table" && node.tableKey) {
 			this.onTableSelect(node.tableKey, { isPointer: !!node.isPointer, domainId: node.domainId ?? undefined });
+			this.onDomainNodeSelect(null);
 			return;
 		}
-		if (node.kind === "domain" || node.kind === "pivot" || node.kind === "prefix") {
+		if (node.kind === "pivot" && node.domainId) {
+			this.onDomainNodeSelect({ kind: "pivot", domainId: node.domainId });
+			return;
+		}
+		if (node.kind === "domain" || node.kind === "prefix") {
 			this.openEdit(node);
 			return;
 		}

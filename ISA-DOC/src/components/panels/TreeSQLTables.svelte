@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+	import { marked } from "marked";
 	import { Button, ButtonIconify, Card, FlexLayout, H2, H4, Iconify, Modal, SelectEnum, Text, Toaster, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
 	import SwitchComp from "../_comps/especial/_Switch.svelte";
 	import {
@@ -12,7 +13,7 @@
 	} from "../../lib/tableSchema.ts";
 	import { generateResourcesFromTables } from "../../lib/codeGen/autogen.ts";
 	import { genAzureFn, genClient, genModelo, genServer } from "../../lib/codeGen/generators.ts";
-	import { findDomainOf, getSlaves, isMaster as isMasterFn, type DomainsMap } from "../../lib/codeGen/domains.ts";
+	import { findDomainOf, getSlaves, isMaster as isMasterFn, type DomainDef, type DomainsMap } from "../../lib/codeGen/domains.ts";
 	import { getCached, setCached, loadStateFromServer, reloadStateFromServer, onStateChanged } from "../../lib/codeGen/stateClient.ts";
 	import { isRealtimeEnabled } from "../../lib/realtimeFlag.ts";
 	import type { ResourceConfig, FieldDef } from "../../lib/codeGen/types.ts";
@@ -32,6 +33,7 @@
 	let dirty = false;
 	let selectedKey: string | null = null;
 	let selectedPointerCtx: { isPointer: boolean; domainId?: string } = { isPointer: false };
+	let selectedDomainNode: { kind: "domain" | "pivot"; domainId: string } | null = null;
 	const CardinalityEnum = { "1:1": "1:1", "1:N": "1:N", "N:N": "N:N" } as const;
 	let prodTsMap: Record<string, any[]> = {};
 
@@ -92,6 +94,113 @@
 		return "";
 	}
 
+	function collectDomainCardinalities(domainId: string, dm: DomainsMap, tablesArr: ParsedTable[]): Array<{ from: string; to: string; card: string }> {
+		const out: Array<{ from: string; to: string; card: string }> = [];
+		const visited = new Set<string>();
+		const walk = (id: string): void => {
+			if (visited.has(id)) return;
+			visited.add(id);
+			const d = dm[id];
+			if (!d) return;
+			const masterTbl = tablesArr.find((t) => t.id === d.masterTable);
+			const masterName = masterTbl ? effectiveTableName(masterTbl) : "—";
+			for (const memberId of d.members) {
+				if (memberId === d.masterTable) continue;
+				const slaveTbl = tablesArr.find((t) => t.id === memberId);
+				if (!slaveTbl) continue;
+				const card = d.slaveCardinalities?.[memberId] ?? "1:N";
+				out.push({ from: masterName, to: effectiveTableName(slaveTbl), card });
+			}
+			for (const child of d.childrenOrder ?? []) {
+				if (child.kind === "pointer") {
+					const ptrTbl = tablesArr.find((t) => t.id === child.key);
+					if (ptrTbl) out.push({ from: masterName, to: effectiveTableName(ptrTbl), card: child.cardinality ?? "1:N" });
+				}
+			}
+			for (const childDom of Object.values(dm)) {
+				if (childDom.parentId !== id) continue;
+				const childMasterTbl = tablesArr.find((t) => t.id === childDom.masterTable);
+				if (childMasterTbl) {
+					const card = childDom.cardinality ?? "1:N";
+					out.push({ from: masterName, to: effectiveTableName(childMasterTbl), card });
+				}
+				walk(childDom.id);
+			}
+		};
+		walk(domainId);
+		return out;
+	}
+
+	function renderCardinalityTable(rows: Array<{ from: string; to: string; card: string }>): string {
+		if (rows.length === 0) return "_Sin relaciones registradas._";
+		const lines: string[] = [];
+		lines.push(`| Origen | Destino | Cardinalidad |`);
+		lines.push(`| --- | --- | --- |`);
+		for (const r of rows) lines.push(`| \`${r.from}\` | \`${r.to}\` | \`${r.card}\` |`);
+		return lines.join("\n");
+	}
+
+	function buildPivotMarkdown(domainId: string, domainsMap: DomainsMap, tablesArr: ParsedTable[]): string {
+		const d = domainsMap[domainId];
+		if (!d) return "_Sin información del pivote._";
+		const card = d.cardinality ?? "1:N";
+		const parent = d.parentId ? domainsMap[d.parentId] : undefined;
+		const parentName = parent?.name ?? "—";
+		const parentMaster = parent ? tablesArr.find((t) => t.id === parent.masterTable) : undefined;
+		const parentMasterName = parentMaster ? effectiveTableName(parentMaster) : "—";
+		const masterTbl = tablesArr.find((t) => t.id === d.masterTable);
+		const masterName = masterTbl ? effectiveTableName(masterTbl) : "—";
+
+		const lines: string[] = [];
+		lines.push(`## Pivote · ${d.name ?? domainId}`);
+		lines.push("");
+		lines.push(`Pivote dentro del dominio ${parentName} con cardinalidad ${card} respecto al master ${parentMasterName}. La tabla pivote es ${masterName}.`);
+		lines.push("");
+		lines.push(`### Resumen`);
+		lines.push("");
+		lines.push(`| Atributo | Valor |`);
+		lines.push(`| --- | --- |`);
+		lines.push(`| Cardinalidad respecto al padre | \`${card}\` |`);
+		lines.push(`| Dominio padre | \`${parentName}\` |`);
+		lines.push(`| Master del dominio padre | \`${parentMasterName}\` |`);
+		lines.push(`| Master del pivote | \`${masterName}\` |`);
+
+		const rows = collectDomainCardinalities(domainId, domainsMap, tablesArr);
+		lines.push("");
+		lines.push(`### Cardinalidades`);
+		lines.push("");
+		lines.push(renderCardinalityTable(rows));
+		return lines.join("\n");
+	}
+
+	function buildDomainMarkdown(domainId: string, domainsMap: DomainsMap, tablesArr: ParsedTable[]): string {
+		const d = domainsMap[domainId];
+		if (!d) return "_Sin información del dominio._";
+		const masterTbl = tablesArr.find((t) => t.id === d.masterTable);
+		const masterName = masterTbl ? effectiveTableName(masterTbl) : "—";
+
+		const lines: string[] = [];
+		lines.push(`## Dominio · ${d.name ?? domainId}`);
+		lines.push("");
+		lines.push(`Dominio raíz expuesto por la API. Su master es ${masterName}.`);
+		if (d.prefix) lines.push(`Prefijo: \`${d.prefix}\`.`);
+		lines.push("");
+		lines.push(`### Resumen`);
+		lines.push("");
+		lines.push(`| Atributo | Valor |`);
+		lines.push(`| --- | --- |`);
+		lines.push(`| Master | \`${masterName}\` |`);
+		lines.push(`| Tablas miembro | \`${d.members.length}\` |`);
+		if (d.prefix) lines.push(`| Prefijo | \`${d.prefix}\` |`);
+
+		const rows = collectDomainCardinalities(domainId, domainsMap, tablesArr);
+		lines.push("");
+		lines.push(`### Cardinalidades`);
+		lines.push("");
+		lines.push(renderCardinalityTable(rows));
+		return lines.join("\n");
+	}
+
 	/** Canal de sincronización entre pestañas del navegador para `/api/tables`. */
 	const TABLES_BROADCAST_CHANNEL = "isa-doc:tables";
 	let tablesChannel: BroadcastChannel | null = null;
@@ -150,6 +259,11 @@
 	adapter.onTableSelect = (key, ctx) => {
 		selectedKey = key;
 		selectedPointerCtx = ctx ?? { isPointer: false };
+		selectedDomainNode = null;
+	};
+	adapter.onDomainNodeSelect = (info) => {
+		selectedDomainNode = info;
+		if (info) selectedKey = null;
 	};
 	adapter.onDomainsChange = (d) => { domains = d; };
 	adapter.onCascadeAddDomain = () => {
@@ -234,6 +348,16 @@
 	$: selectedSlaves = selected ? getSlaves(domains, selected.table.id) : [];
 	$: selectedSlaveNames = (selectedSlaves ?? []).map((sid) => tables.find((tt) => tt.id === sid)).filter((tt): tt is ParsedTable => !!tt).map((tt) => effectiveTableName(tt));
 	$: selectedDomain = selected ? findDomainOf(domains, selected.table.id) : undefined;
+	$: selectedPivotDomain = selectedDomainNode?.kind === "pivot" ? domains[selectedDomainNode.domainId] : undefined;
+	$: selectedPlainDomain = selectedDomainNode?.kind === "domain" ? domains[selectedDomainNode.domainId] : undefined;
+	$: selectedPivotInfoKey = selectedDomainNode ? `domain:${selectedDomainNode.domainId}` : "";
+	$: selectedPivotInfo = selectedPivotInfoKey ? (nodeInfo[selectedPivotInfoKey] ?? { description: "", rules: "" }) : { description: "", rules: "" };
+	$: selectedDomainNodeMd = selectedDomainNode
+		? (selectedDomainNode.kind === "pivot"
+			? buildPivotMarkdown(selectedDomainNode.domainId, domains, tables)
+			: buildDomainMarkdown(selectedDomainNode.domainId, domains, tables))
+		: "";
+	$: selectedDomainNodeMdHtml = selectedDomainNodeMd ? (marked.parse(selectedDomainNodeMd, { async: false }) as string) : "";
 	$: if (activeCodeTab === "azure" && !selectedIsMaster) activeCodeTab = "sql";
 
 	async function handleCfgChange(id: string): Promise<void> {
@@ -624,13 +748,9 @@
 									{#if node.prefix}<span class="tree-row-name">{node.prefix}</span>{/if}
 								</span>
 							{:else if node.kind === "pivot"}
-								{@const _pivotParent = adapter.findNodeById(String(node.ireference || "").trim()) as unknown as { kind?: string } | null}
-								{@const _pivotInDomain = _pivotParent?.kind === "domain"}
-								{@const _isPD = node.domainType === "pivot-domain"}
-								<span class="tree-row {node.pivotMissingSlave ? 'tree-row-error' : ''}" title={node.pivotMissingSlave ? "Pivot N:N incompleto: agrega la tabla esclava" : ""}>
+								<span class="tree-row">
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
-									<span class="badge {_pivotInDomain ? 'badge-pivot-in-domain' : 'badge-pivot'}">{_isPD ? "Pivot domain" : "Pivot"}</span>
-									{#if node.pivotMissingSlave}<Iconify icon="mdi:alert" color="error" />{/if}
+									<span class="badge badge-pivot">Pivote</span>
 									{#if node.cardinality}<span class="tree-row-meta tree-row-card" title="Cardinalidad del pivote">{node.cardinality}</span>{/if}
 								</span>
 							{:else}
@@ -696,35 +816,7 @@
 									</div>
 								{:else if frmObj.kind === "pivot"}
 									<div class="frm">
-										<Text color="neutral"><small>Un pivote modela cardinalidad. <strong>Pivot/Domain</strong> envuelve a otro dominio (1:1 ó 1:N). <strong>Pivot N:N</strong> tiene exactamente master + 1 slave.</small></Text>
-										<label class="field">
-											<Text color="neutral"><small>Tipo de pivote</small></Text>
-											<select
-												class="input-field"
-												value={frmObj.domainType === "pivot-domain" ? "pivot-domain" : "pivot"}
-												on:change={(e) => {
-													const t = ((e.currentTarget).value === "pivot-domain") ? "pivot-domain" as const : "pivot" as const;
-													const card = t === "pivot" ? "N:N" as const : "1:N" as const;
-													adapter.updateDomainMeta(frmObj.domainId, { type: t, cardinality: card });
-												}}
-											>
-												<option value="pivot-domain">Pivot/Domain (envuelve dominio · 1:1 ó 1:N)</option>
-												<option value="pivot">Pivot N:N (master + 1 slave)</option>
-											</select>
-										</label>
-										{#if frmObj.domainType === "pivot-domain"}
-											<label class="field">
-												<Text color="neutral"><small>Cardinalidad</small></Text>
-												<select
-													class="input-field"
-													value={frmObj.cardinality || "1:N"}
-													on:change={(e) => adapter.updateDomainMeta(frmObj.domainId, { cardinality: (e.currentTarget).value as "1:1" | "1:N" })}
-												>
-													<option value="1:1">1:1 (uno a uno)</option>
-													<option value="1:N">1:N (uno a muchos)</option>
-												</select>
-											</label>
-										{/if}
+										<Text color="neutral"><small>El formulario del pivote vive en el panel central. Selecciona el pivote en el árbol para editarlo allí.</small></Text>
 									</div>
 								{:else}
 									<div class="frm">
@@ -738,25 +830,37 @@
 											/>
 										</label>
 										{#if !frmObj.isMaster && frmObj.domainId}
-											<label class="field">
-												<Text color="neutral"><small>Cardinalidad respecto al master</small></Text>
+											{#if frmObj.isPointer}
+												<div class="pointer-card-box">
+													<Text color="primary"><small><Iconify icon="mdi:link-variant" /> Independiente del elemento apuntado</small></Text>
+													<SelectEnum
+														label="Cardinalidad del pointer"
+														required={true}
+														enumValue={CardinalityEnum}
+														value={frmObj.slaveCardinality || "1:N"}
+														onChange={(v) => {
+															const nv = v as "1:1" | "1:N" | "N:N";
+															adapter.setPointerCardinality(frmObj.domainId, frmObj.tableKey, nv);
+														}}
+													/>
+												</div>
+											{:else}
 												<SelectEnum
-													label=""
+													label="Cardinalidad respecto al master"
 													required={true}
 													enumValue={CardinalityEnum}
 													value={frmObj.slaveCardinality || "1:N"}
 													onChange={(v) => {
 														const nv = v as "1:1" | "1:N" | "N:N";
-														if (frmObj.isPointer) adapter.setPointerCardinality(frmObj.domainId, frmObj.tableKey, nv);
-														else adapter.setSlaveCardinality(frmObj.domainId, frmObj.tableKey, nv);
+														adapter.setSlaveCardinality(frmObj.domainId, frmObj.tableKey, nv);
 													}}
 												/>
-											</label>
+											{/if}
 										{/if}
 										<Text color="neutral"><small>El prefijo es una propiedad del grupo padre y no se edita desde aquí. Para editar columnas/secciones, usa el panel SQL.</small></Text>
 									</div>
 								{/if}
-								{#if _infoKey}
+								{#if _infoKey && frmObj.kind !== "pivot"}
 									<div class="frm">
 										<label class="field">
 											<Text color="neutral"><small>Descripción <span style="color: var(--is-error);">*</span></small></Text>
@@ -765,16 +869,7 @@
 												rows="3"
 												required
 												value={_info.description ?? ""}
-												on:change={(e) => saveInfo(_infoKey, { description: (e.currentTarget).value, rules: _info.rules ?? "" })}
-											></textarea>
-										</label>
-										<label class="field">
-											<Text color="neutral"><small>Reglas <span style="opacity: 0.6;">(opcional)</span></small></Text>
-											<textarea
-												class="input-field"
-												rows="4"
-												value={_info.rules ?? ""}
-												on:change={(e) => saveInfo(_infoKey, { description: _info.description ?? "", rules: (e.currentTarget).value })}
+												on:change={(e) => saveInfo(_infoKey, { description: (e.currentTarget).value, rules: "" })}
 											></textarea>
 										</label>
 									</div>
@@ -789,8 +884,69 @@
 
 		<div class="form-pane">
 			<div class="pane-scroll custom-scrollbar">
-			{#if !selected}
-				<Card variant="flat"><Text color="neutral">Selecciona una tabla del árbol.</Text></Card>
+			{#if selectedPivotDomain}
+				{@const dId = selectedPivotDomain.id}
+				{#key dId}
+					<Card>
+						<FlexLayout items="center" justify="between">
+							<FlexLayout items="center">
+								<Iconify icon="mdi:link-variant" style="color: orange;" />
+								<H4>{selectedPivotDomain.name ?? dId}</H4>
+								<Text color="neutral"><small>Pivote</small></Text>
+							</FlexLayout>
+						</FlexLayout>
+
+						<div class="frm" style="margin-top: 0.5rem;">
+							<Text color="neutral"><small>Un pivote modela cardinalidad respecto al master del dominio padre. Solo existen 1:1 ó 1:N.</small></Text>
+							<label class="field">
+								<Text color="neutral"><small>Cardinalidad respecto al dominio padre</small></Text>
+								<select
+									class="input-field"
+									value={selectedPivotDomain.cardinality === "1:1" ? "1:1" : "1:N"}
+									on:change={(e) => adapter.updateDomainMeta(dId, { cardinality: (e.currentTarget).value as "1:1" | "1:N" })}
+								>
+									<option value="1:1">1:1 (uno a uno)</option>
+									<option value="1:N">1:N (uno a muchos)</option>
+								</select>
+							</label>
+							<label class="field">
+								<Text color="neutral"><small>Descripción <span style="color: var(--is-error);">*</span></small></Text>
+								<textarea
+									class="input-field"
+									rows="3"
+									required
+									value={selectedPivotInfo.description ?? ""}
+									on:change={(e) => saveInfo(selectedPivotInfoKey, { description: (e.currentTarget).value, rules: "" })}
+								></textarea>
+							</label>
+						</div>
+					</Card>
+				{/key}
+			{:else if selectedPlainDomain}
+				{@const dId = selectedPlainDomain.id}
+				{#key dId}
+					<Card>
+						<FlexLayout items="center">
+							<Iconify icon="mdi:folder-outline" style="color: var(--is-primary);" />
+							<H4>{selectedPlainDomain.name ?? dId}</H4>
+							<Text color="neutral"><small>Dominio</small></Text>
+						</FlexLayout>
+						<div class="frm" style="margin-top: 0.5rem;">
+							<label class="field">
+								<Text color="neutral"><small>Descripción <span style="color: var(--is-error);">*</span></small></Text>
+								<textarea
+									class="input-field"
+									rows="4"
+									required
+									value={selectedPivotInfo.description ?? ""}
+									on:change={(e) => saveInfo(selectedPivotInfoKey, { description: (e.currentTarget).value, rules: "" })}
+								></textarea>
+							</label>
+						</div>
+					</Card>
+				{/key}
+			{:else if !selected}
+				<Card variant="flat"><Text color="neutral">Selecciona una tabla o pivote del árbol.</Text></Card>
 			{:else}
 				{@const t = selected.table}
 				{@const idx = selected.index}
@@ -843,25 +999,37 @@
 							{@const fallback = (effDomain?.type === "pivot" || effDomain?.type === "pivot-domain") ? (effDomain?.cardinality ?? "") : "1:N"}
 							{@const cardValue = (explicit ?? fallback ?? "")}
 							{#if effDomain && (isPtr || effDomain.type !== "pivot")}
-							<FlexLayout items="center" justify="between" style="margin-top: 0.5rem;">
+							{#if isPtr}
+							<div class="pointer-card-box" style="margin-top: 0.5rem;">
 								<FlexLayout items="center">
-									<Iconify icon="mdi:relation-many-to-many" />
-									<Text><small>Cardinalidad respecto al master {isPtr ? "(pointer)" : ""}</small></Text>
+									<Iconify icon="mdi:link-variant" color="primary" />
+									<Text color="primary"><small>Independiente del elemento apuntado</small></Text>
 								</FlexLayout>
-								<div style="max-width: 9rem; min-width: 8rem;">
-									<SelectEnum
-										label=""
-										required={true}
-										enumValue={CardinalityEnum}
-										value={cardValue}
-										onChange={(v) => {
-											const nv = v as "1:1" | "1:N" | "N:N";
-											if (isPtr && effDomain) adapter.setPointerCardinality(effDomain.id, t.id, nv);
-											else if (effDomain) adapter.setSlaveCardinality(effDomain.id, t.id, nv);
-										}}
-									/>
-								</div>
-							</FlexLayout>
+								<SelectEnum
+									label="Cardinalidad del pointer"
+									required={true}
+									enumValue={CardinalityEnum}
+									value={cardValue}
+									onChange={(v) => {
+										const nv = v as "1:1" | "1:N" | "N:N";
+										if (effDomain) adapter.setPointerCardinality(effDomain.id, t.id, nv);
+									}}
+								/>
+							</div>
+							{:else}
+							<div style="margin-top: 0.5rem;">
+								<SelectEnum
+									label="Cardinalidad respecto al master"
+									required={true}
+									enumValue={CardinalityEnum}
+									value={cardValue}
+									onChange={(v) => {
+										const nv = v as "1:1" | "1:N" | "N:N";
+										if (effDomain) adapter.setSlaveCardinality(effDomain.id, t.id, nv);
+									}}
+								/>
+							</div>
+							{/if}
 							{/if}
 						{/if}
 
@@ -889,7 +1057,17 @@
 
 		<div class="code-pane">
 			<div class="pane-scroll custom-scrollbar">
-			{#if selected}
+			{#if selectedDomainNode}
+				{#key selectedDomainNode.kind + ":" + selectedDomainNode.domainId}
+					<Card>
+						<FlexLayout items="center">
+							<Iconify icon="mdi:information-outline" />
+							<Text color="neutral"><small>{selectedDomainNode.kind === "pivot" ? "Deducciones del pivote" : "Resumen del dominio"}</small></Text>
+						</FlexLayout>
+						<div class="md-rendered">{@html selectedDomainNodeMdHtml}</div>
+					</Card>
+				{/key}
+			{:else if selected}
 				{@const t = selected.table}
 				{@const cfg = mergedByTable.get(t.name.toUpperCase())}
 				{@const prodFrags = prodTsMap[t.name.toUpperCase()] ?? []}
@@ -1159,10 +1337,6 @@
 		color: var(--is-warning);
 	}
 	.badge-pivot {
-		background: color-mix(in srgb, hotpink 25%, transparent);
-		color: hotpink;
-	}
-	.badge-pivot-in-domain {
 		background: color-mix(in srgb, orange 25%, transparent);
 		color: orange;
 	}
@@ -1173,12 +1347,6 @@
 	.badge-pointer {
 		background: color-mix(in srgb, var(--is-info) 25%, transparent);
 		color: var(--is-info);
-	}
-	.tree-row-error {
-		outline: 1px dashed var(--is-error, #e11d48);
-		border-radius: 4px;
-		background: color-mix(in srgb, var(--is-error, #e11d48) 12%, transparent);
-		padding: 0 0.25rem;
 	}
 	.tree-row-card {
 		font-variant-numeric: tabular-nums;
@@ -1348,4 +1516,25 @@
 		color: inherit;
 		font: inherit;
 	}
+	.pointer-card-box {
+		border: 1.5px solid var(--is-primary, #4ea1ff);
+		border-radius: 6px;
+		padding: 0.5rem 0.75rem;
+		background: color-mix(in srgb, var(--is-primary, #4ea1ff) 6%, transparent);
+	}
+	.md-rendered {
+		padding: 0.5rem 0.25rem;
+		line-height: 1.55;
+		overflow: auto;
+		font-size: 0.9em;
+	}
+	.md-rendered :global(p), .md-rendered :global(li) { font-weight: normal; }
+	.md-rendered :global(strong) { font-weight: normal; }
+	.md-rendered :global(table) { border-collapse: collapse; margin: 0.5rem 0; }
+	.md-rendered :global(th), .md-rendered :global(td) {
+		border: 1px solid var(--is-b-color);
+		padding: 0.3rem 0.6rem;
+	}
+	.md-rendered :global(code) { background: var(--is-bg-secondary); padding: 0.1rem 0.3rem; border-radius: 4px; }
+	.md-rendered :global(pre) { background: var(--is-bg-secondary); padding: 0.6rem; border-radius: 6px; overflow: auto; }
 </style>

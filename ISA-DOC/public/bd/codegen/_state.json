@@ -26,8 +26,8 @@
     "piv_nn_curso_prereq": {
       "id": "piv_nn_curso_prereq",
       "name": "",
-      "type": "pivot",
-      "cardinality": "N:N",
+      "type": "pivot-domain",
+      "cardinality": "1:N",
       "masterTable": "tbl_cursos_prerequisitos",
       "members": [
         "tbl_cursos_prerequisitos"
@@ -47,8 +47,8 @@
     "piv_nn_cpe_cursos": {
       "id": "piv_nn_cpe_cursos",
       "name": "",
-      "type": "pivot",
-      "cardinality": "N:N",
+      "type": "pivot-domain",
+      "cardinality": "1:N",
       "masterTable": "tbl_cursos_de_planes_estudio",
       "members": [
         "tbl_cursos_de_planes_estudio"
@@ -195,6 +195,5 @@
       "key": "tbl_permisos"
     }
   ],
-  "prefixOrders": {
-  }
+  "prefixOrders": {}
 }

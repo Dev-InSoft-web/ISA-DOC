@@ -70,8 +70,35 @@ function safeWrite(m: DomainsMap): void {
 	setCached("domains", m);
 }
 
+/**
+ * Normaliza el modelo legacy de pivotes: se elimina el tipo `"pivot"` (N:N).
+ * Cualquier dominio con `type === "pivot"` se convierte en `"pivot-domain"`
+ * con cardinalidad `"1:N"` por defecto. Cualquier `"pivot-domain"` con
+ * cardinalidad `"N:N"` se baja a `"1:N"`. Devuelve `{ map, changed }`.
+ */
+export function normalizePivots(m: DomainsMap): { map: DomainsMap; changed: boolean } {
+	let changed = false;
+	const next: DomainsMap = {};
+	for (const [id, d] of Object.entries(m)) {
+		let nd = d;
+		if (d.type === ("pivot" as DomainDef["type"])) {
+			const card = d.cardinality === "1:1" ? "1:1" : "1:N";
+			nd = { ...d, type: "pivot-domain", cardinality: card };
+			changed = true;
+		} else if (d.type === "pivot-domain" && d.cardinality === ("N:N" as DomainDef["cardinality"])) {
+			nd = { ...d, cardinality: "1:N" };
+			changed = true;
+		}
+		next[id] = nd;
+	}
+	return { map: next, changed };
+}
+
 export function loadDomains(): DomainsMap {
-	return safeRead();
+	const raw = safeRead();
+	const { map, changed } = normalizePivots(raw);
+	if (changed) safeWrite(map);
+	return map;
 }
 
 export function saveDomains(m: DomainsMap): void {
@@ -255,12 +282,13 @@ export function migrateDomainsAndOrdersToIds(input: {
 }
 
 export function createEmptyDomain(domains: DomainsMap, name: string, parentId?: string, parentPrefix?: string, type: "domain" | "pivot" = "domain"): DomainsMap {
-	const prefix = type === "pivot" ? "piv_" : "dom_";
+	const isPivot = type === "pivot";
+	const prefix = isPivot ? "piv_" : "dom_";
 	const id = `${prefix}${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-	return {
-		...domains,
-		[id]: { id, name: name || (type === "pivot" ? "Nuevo pivote" : "Nuevo dominio"), type, masterTable: "", members: [], parentId, parentPrefix },
-	};
+	const def: DomainDef = isPivot
+		? { id, name: name || "Nuevo pivote", type: "pivot-domain", cardinality: "1:N", masterTable: "", members: [], parentId, parentPrefix }
+		: { id, name: name || "Nuevo dominio", type: "domain", masterTable: "", members: [], parentId, parentPrefix };
+	return { ...domains, [id]: def };
 }
 
 /** Orden explícito de los nodos de nivel raíz (dominios, pivots, prefijos y tablas mezclados). */
