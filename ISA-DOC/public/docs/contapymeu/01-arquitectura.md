@@ -48,5 +48,13 @@ Imágenes alojadas en `public/imgs/` (visibles también en la sub-pestaña
 *Documentación* de la pantalla *Proyectos → ContaPymeU*):
 
 - `030 Capacitación.png` — diagrama UML de componentes.
-- `DER Capacitación.jpg` — DER de las tablas `CAPAC_*`.
-- `DER GET.png` / `DER UPDATE.png` — flujos.
+- `DER Capacitación.jpg` — DER oficial de las tablas `CAPAC_*`
+  (actualizado manualmente; fuente canónica del modelo de datos).
+- `DER GET.png` — propagación de anidamiento al ejecutar `GET` desde
+  las APIs `driver`, `curso` y `plan/estudio`. Los colores sobre cada
+  tabla identifican el origen; dentro del dominio de Capacitación
+  todo se conecta con todo y solo se corta al salir del dominio.
+- `DER UPDATE.png` — propagación de `CREATE/UPDATE/DELETE`. Aquí
+  **sí** hay disrupciones: cada API escribe únicamente en su
+  sub-dominio. Las equis rojas marcan explícitamente las tablas que
+  quedan fuera del mapa de propagación de escritura.

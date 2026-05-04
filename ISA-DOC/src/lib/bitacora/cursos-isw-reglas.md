@@ -123,3 +123,25 @@ Controllers asociados: `ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/Cursos.
   - Estructura: deshabilitado `Crear`/`Eliminar`; filas autogeneradas por driver.
   - Refresh de grid tras `Modificar` (snapshot PK original en `ActVisualizar`).
   - Fix de selección por modal en `BtnRef` de Permiso (Svelte 5 legacy).
+  - **Docs**: DER actualizado a mano en `public/imgs/DER Capacitación.jpg`.
+    Agregadas referencias a `DER GET.png` (propagación de lectura: las APIs
+    `driver`, `curso` y `plan/estudio` leen anidando todo dentro del dominio
+    hasta salir a `RECURSOS`) y `DER UPDATE.png` (en escritura cada API
+    actúa **solo** sobre su sub-dominio; las equis rojas marcan tablas fuera
+    de su propagación). Eliminado el `mermaid` "Mapa de entidades" en
+    `04-iss-capacitacion.md`: ese mapa ya estaba cubierto por el JPG/PNG
+    oficiales y duplicarlo en `mermaid` se quedaba desactualizado.
+
+## 7. Reglas de documentación (DER y diagramas)
+
+- **No crear `mermaid` de relaciones de tablas** si el diagrama equivalente
+  ya existe en `doc/ISA-DOC/public/imgs/`. Antes de generar un nuevo
+  diagrama, revisar:
+  - `DER Capacitación.jpg` — modelo de datos (canónico).
+  - `DER GET.png` — propagación de lectura por API.
+  - `DER UPDATE.png` — propagación de escritura por API.
+  - `030 Capacitación.png` — UML de componentes.
+- El JPG/PNG es la **fuente de verdad**. Si una relación cambia, primero se
+  actualiza la imagen y luego, si aplica, las tablas de `02-modelo-datos.md`.
+- `mermaid` se reserva para flujos que **no** estén ya en una imagen
+  (secuencias de llamadas, máquinas de estado, pipelines).

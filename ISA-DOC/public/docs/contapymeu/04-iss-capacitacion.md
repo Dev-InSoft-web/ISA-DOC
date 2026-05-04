@@ -6,31 +6,11 @@ endpoints CRUD descritos en el [overview](#03-iss-overview), salvo los
 
 ## Mapa de entidades
 
-```mermaid
-flowchart LR
-  Curso((Curso))
-  Plan((Plan de Estudio))
-  Driver((Driver))
-  Permiso((Permiso))
-  Estructura((Estructura))
-  Atributo((Atributos Plan))
-  AtributoDrv((Atributos x Driver))
-  Seg((Seguridades))
-  PlanCurso((Plan-Curso))
-  CursoPlan((Curso-de-Plan-Estudio))
-  Prereq((Curso Prerequisito))
+El mapa oficial de relaciones está en el DER actualizado a mano
+(`public/imgs/DER Capacitación.jpg`). Para los flujos de propagación
+ver [Modelo de Datos → Propagación GET / UPDATE](./02-modelo-datos.md#propagaci%C3%B3n-get--update).
 
-  Curso --- Estructura
-  Curso --- Seg
-  Curso --- CursoPlan
-  Curso --- PlanCurso
-  Plan --- CursoPlan
-  Plan --- Prereq
-  Curso --- Prereq
-  Driver --- AtributoDrv
-  PlanCurso --- Atributo
-  Permiso --- Seg
-```
+![DER de Capacitación](/imgs/DER%20Capacitaci%C3%B3n.jpg)
 
 ## Curso (`curso` / `cursos`)
 

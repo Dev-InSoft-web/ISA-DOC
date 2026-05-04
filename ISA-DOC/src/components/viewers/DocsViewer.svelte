@@ -16,6 +16,7 @@
    let html = "";
    let loading = true;
    let error = "";
+   let contentEl: HTMLElement;
    let markedReady = false;
    let mermaidReady = false;
    let mermaidCounter = 0;
@@ -342,7 +343,7 @@
          const marked = (window as any).marked;
          html = marked.parse(md, { mangle: false, headerIds: true });
          await tick();
-         const container = document.querySelector(".docs-content");
+         const container = contentEl ?? document.querySelector(".docs-content");
          if (container) {
             // Mermaid PRIMERO (consume bloques `language-mermaid`), luego CodeMirror para el resto.
             await renderMermaidBlocks(container as HTMLElement);
@@ -360,12 +361,18 @@
          if (!res.ok) throw new Error(`No se encontró _index.json (HTTP ${res.status})`);
          manifest = await res.json();
          await Promise.all([loadMarked(), loadMermaid(), loadCodeMirror()]);
+         // Render el shell ANTES de cargar la primera sección para que `.docs-content`
+         // exista en el DOM y los post-procesadores (mermaid / CodeMirror / image-crop)
+         // puedan correr en la carga inicial. Sin esto, la primera pestaña entra al
+         // contenedor inexistente y los diagramas mermaid quedan como `<pre><code>`
+         // hasta que el usuario hace clic en otra pestaña.
+         loading = false;
+         await tick();
          if (manifest && manifest.sections.length > 0) {
             await loadSection(manifest.sections[0].slug);
          }
       } catch (e: any) {
          error = e?.message ?? String(e);
-      } finally {
          loading = false;
       }
    });
@@ -398,7 +405,7 @@
             {/each}
          </nav>
       </aside>
-      <article class="docs-content">
+      <article class="docs-content" bind:this={contentEl}>
          {@html html}
       </article>
    </div>

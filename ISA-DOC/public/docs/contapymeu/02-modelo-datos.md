@@ -14,6 +14,29 @@ Capacitación las referencia.
 > representa una FK lógica al dominio de Recursos; no es una tabla
 > `CAPAC_*`.
 
+## Propagación GET / UPDATE
+
+Las tres APIs de Capacitación que ejecutan `GET` (`driver`, `curso`,
+`plan/estudio`) propagan la lectura **a todo el dominio**: dentro de
+Capacitación todo se conecta con todo y solo se corta al salir del
+dominio (p. ej. `RECURSOS`). Los colores sobre las tablas en el
+diagrama identifican qué API origina cada cadena de anidamiento.
+
+![Propagación de GET en Capacitación](/imgs/DER%20GET.png)
+
+En `UPDATE` (incluye `CREATE` y `DELETE`) sí hay disrupciones: cada
+API **solo modifica su propio sub-dominio**. `Plan` no actualiza
+tablas de `Curso` ni de `Driver`, y viceversa. Las equis rojas marcan
+explícitamente las tablas que quedan **fuera** del mapa de
+propagación de escritura de cada API.
+
+![Propagación de UPDATE/CREATE/DELETE en Capacitación](/imgs/DER%20UPDATE.png)
+
+> Regla derivada: una operación de escritura sobre una tabla que
+> pertenezca a otro sub-dominio debe ejecutarse a través de su propia
+> API. No se permite escribir en cascada cruzando fronteras de
+> dominio aunque el GET sí lo lea anidado.
+
 ## Tablas
 
 ### `CAPAC_CURSOS`
