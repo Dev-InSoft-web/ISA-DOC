@@ -32,12 +32,21 @@
 
 	export let config: RebuildTableConfig;
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
+	export let stamp: string = "";
 
 	type Row = Record<string, string>;
 
 	const snapshots: Snapshot[] = snapshotsByTable[config.tableName] ?? [];
-	let selectedFile: string = snapshots[0]?.file ?? "";
-	$: csvText = snapshots.find((s) => s.file === selectedFile)?.content ?? config.csvDefault;
+
+	$: activeSnapshot = (() => {
+		if (stamp) {
+			const hit = snapshots.find((s) => s.date === stamp);
+			if (hit) return hit;
+		}
+		return snapshots[0];
+	})();
+	$: csvText = activeSnapshot?.content ?? config.csvDefault;
+	$: selectedFile = activeSnapshot?.file ?? "";
 
 	let parseError: string = "";
 	let headers: string[] = [];
@@ -189,17 +198,7 @@
 					Ver CSV
 				</Button>
 			</FlexLayout>
-			{#if snapshots.length > 0}
-				<FlexLayout items="center">
-					<Text color="neutral"><small>Fotografía:</small></Text>
-					<select class="input-field" bind:value={selectedFile}>
-						{#each snapshots as s, i (s.file)}
-							<option value={s.file}>{s.file}{i === 0 ? " (más reciente)" : ""}</option>
-						{/each}
-					</select>
-					<Text color="neutral"><small>{snapshots.length} fotografía{snapshots.length === 1 ? "" : "s"}</small></Text>
-				</FlexLayout>
-			{:else}
+			{#if snapshots.length === 0}
 				<Text color="warning">
 					<small>No hay fotografías guardadas para <code>{config.tableName}</code>. Usa <strong>Descargar estado</strong> arriba para crear la primera.</small>
 				</Text>

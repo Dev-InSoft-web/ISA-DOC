@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Iconify, FlexLayout, Text, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, Iconify, FlexLayout, Text, Toaster, SelectObject } from "@ingenieria_insoft/ispsveltecomponents";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import RebuildOldTableMigration from "./RebuildOldTableMigration.svelte";
@@ -14,13 +14,45 @@
 	const STEPS = ["drop", "create", "insert"] as const;
 	$: rebuildKeys = REBUILD_TABLES.flatMap((t) => STEPS.map((s) => `2026-05-04.rebuild.${t.tableName}.${s}`));
 
+	const csvModules = import.meta.glob("../../lib/migration/csv/*.csv", {
+		query: "?raw",
+		import: "default",
+		eager: true,
+	}) as Record<string, string>;
+
+	const stampsSet: Set<string> = new Set();
+	for (const p of Object.keys(csvModules)) {
+		const m = /\/(\d{8}(?:\d{6})?)-(.+)\.csv$/.exec(p);
+		if (m) stampsSet.add(m[1]);
+	}
+	const stamps: string[] = Array.from(stampsSet).sort((a, b) => b.localeCompare(a));
+
+	function formatStamp(stamp: string): string {
+		if (stamp.length === 14) {
+			return `${stamp.slice(0, 4)}-${stamp.slice(4, 6)}-${stamp.slice(6, 8)} ${stamp.slice(8, 10)}:${stamp.slice(10, 12)}:${stamp.slice(12, 14)}`;
+		}
+		if (stamp.length === 8) {
+			return `${stamp.slice(0, 4)}-${stamp.slice(4, 6)}-${stamp.slice(6, 8)}`;
+		}
+		return stamp;
+	}
+
+	const stampOptions: Record<string, { stamp: string; label: string }> = (() => {
+		const out: Record<string, { stamp: string; label: string }> = {};
+		stamps.forEach((s, i) => {
+			const suffix = i === 0 ? " (más reciente)" : "";
+			out[s] = { stamp: s, label: `${formatStamp(s)}${suffix}` };
+		});
+		return out;
+	})();
+
+	let selectedStamp: string = stamps[0] ?? "";
+
 	let downloading: boolean = false;
-	let lastSummary: string = "";
 
 	async function downloadState(): Promise<void> {
 		if (downloading) return;
 		downloading = true;
-		lastSummary = "";
 		try {
 			const r = await fetch("/api/db/take-snapshot", {
 				method: "POST",
@@ -38,8 +70,7 @@
 				return;
 			}
 			const total = (j.results ?? []).reduce((a, x) => a + x.rowCount, 0);
-			lastSummary = `${j.results?.length ?? 0} tablas · ${total} filas · stamp ${j.stamp ?? ""}`;
-			window.alert(`Estado descargado (${lastSummary}).\nLa página se recargará para refrescar las fotografías.`);
+			window.alert(`Estado descargado (${j.results?.length ?? 0} tablas · ${total} filas · ${formatStamp(j.stamp ?? "")}).\nLa página se recargará para refrescar las fotografías.`);
 			window.location.reload();
 		} catch (err) {
 			window.alert(`Error descargando estado: ${err instanceof Error ? err.message : String(err)}`);
@@ -64,9 +95,21 @@
 	<BitacoraNote flat mdSource={sectionMd} />
 
 	<FlexLayout items="center" justify="between">
-		<Text color="neutral">
-			<small>Descarga el estado actual de las {REBUILD_TABLES.length} tablas como fotografía CSV.</small>
-		</Text>
+		<div class="stamp-select">
+			{#if stamps.length > 0}
+				<SelectObject
+					label="Fotografía"
+					Options={stampOptions}
+					fnCaption={(o) => o.label}
+					bind:value={selectedStamp}
+					required={false}
+				/>
+			{:else}
+				<Text color="warning">
+					<small>No hay fotografías guardadas. Pulsa <strong>Descargar estado</strong> para crear la primera.</small>
+				</Text>
+			{/if}
+		</div>
 		<Button
 			variant="solid"
 			color="success"
@@ -80,6 +123,12 @@
 	</FlexLayout>
 
 	{#each REBUILD_TABLES as cfg (cfg.tableName)}
-		<RebuildOldTableMigration config={cfg} {executeSql} />
+		<RebuildOldTableMigration config={cfg} {executeSql} stamp={selectedStamp} />
 	{/each}
 </AccordionActions>
+
+<style>
+	.stamp-select {
+		min-width: 280px;
+	}
+</style>
