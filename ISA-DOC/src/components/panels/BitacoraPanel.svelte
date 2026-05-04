@@ -9,6 +9,7 @@
 	import DbStatusBanner from "../_comps/status/DbStatusBanner.svelte";
 	import md_2026_05_03_curso_500 from "../../lib/bitacora/2026-05-03-curso-get-update-500.md?raw";
 	import md_cursos_isw_reglas from "../../lib/bitacora/cursos-isw-reglas.md?raw";
+	import md_2026_05_04_resumen from "../../lib/bitacora/2026-05-04-resumen.md?raw";
 	import { REBUILD_TABLES } from "../../lib/migration/oldRebuildTables.ts";
 
 	const REBUILD_STEPS = ["drop", "create", "insert"] as const;
@@ -54,6 +55,11 @@
 	</Text>
 
 	<H3>Notas para futuros desarrolladores</H3>
+
+	<BitacoraNote
+		title="2026-05-04 — Resumen del día"
+		mdSource={md_2026_05_04_resumen}
+	/>
 
 	<!-- ISW siempre primero -->
 	<BitacoraNote
