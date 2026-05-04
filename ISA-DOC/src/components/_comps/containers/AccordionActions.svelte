@@ -37,6 +37,7 @@
 
 <FloatingCard showfloat={effShowFloat} {horizontal} {vertical}>
 	<Accordion {...$$restProps} {title} titleIcon={effIcon} {count} {open} {inner} {color}>
+		<svelte:fragment slot="title-extra"><slot name="title-extra" /></svelte:fragment>
 		<slot />
 	</Accordion>
 	<FlexOptions slot="float" actions={actions ?? []} more={more ?? []} />

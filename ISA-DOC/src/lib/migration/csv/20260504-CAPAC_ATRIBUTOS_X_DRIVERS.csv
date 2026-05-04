@@ -1,0 +1,16 @@
+IDRIVER,IATRIBUTO,QNIVEL,NATRIBUTO,BREQUERIDO,JCONFIG,TDATRIBUTO
+1,1,2,URL diapositivas,0,,1
+1,2,2,Imagen del profesor,0,,1
+1,3,2,Driver de vídeo,0,,1
+1,4,2,Dificultad,0,"{""options"":[""B"",""M"",""A""]}",1
+1,5,2,iplanpadre,0,,1
+2,1,2,URL diapositivas,0,,1
+2,2,2,Imagen del profesor,0,,1
+2,3,2,Driver de vídeo,0,,1
+2,4,2,Dificultad,0,"{""options"":[""B"",""M"",""A""]}",1
+2,5,2,iplanpadre,0,,1
+3,1,2,URL diapositivas,0,,1
+3,2,2,Imagen del profesor,0,,1
+3,3,2,Driver de vídeo,0,,1
+3,4,2,Dificultad,0,"{""options"":[""B"",""M"",""A""]}",1
+3,5,2,iplanpadre,0,,1

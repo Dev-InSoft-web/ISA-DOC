@@ -2,20 +2,27 @@
 	import { marked } from "marked";
 	import Accordion from "../_comps/containers/Accordion.svelte";
 
-	export let title: string;
+	export let title: string = "";
 	export let mdSource: string;
 	export let open: boolean = false;
+	export let flat: boolean = false;
 
 	marked.setOptions({ gfm: true, breaks: false });
 
 	$: html = marked.parse(mdSource ?? "") as string;
 </script>
 
-<Accordion {title} titleIcon="mdi:notebook-edit-outline" bind:open>
+{#if flat}
 	<div class="bitacora-md">
 		{@html html}
 	</div>
-</Accordion>
+{:else}
+	<Accordion {title} titleIcon="mdi:notebook-edit-outline" bind:open>
+		<div class="bitacora-md">
+			{@html html}
+		</div>
+	</Accordion>
+{/if}
 
 <style>
 	:global {

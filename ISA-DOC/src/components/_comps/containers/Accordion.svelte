@@ -84,6 +84,7 @@
 						{/if}
 					</Text>
 				</FlexLayout>
+				<slot name="title-extra" />
 				<Iconify class="chevron" icon="mdi:chevron-down" flipv={open} style="font-size: 1.5em; flex-shrink: 0;" />
 			</FlexLayout>
 		</svelte:component>
@@ -110,11 +111,26 @@
 		position: sticky;
 		top: 0;
 		z-index: 6;
-		background: var(--is-bg, var(--is-bg-secondary, #1e1e1e));
+		background-color: var(--is-bg-secondary, #1e1e1e) !important;
+		box-shadow: 0 1px 0 var(--is-b-color, #8885);
+	}
+
+	/* Stacking sticky: cada nivel anidado se sienta debajo del padre */
+	:global(.accordion .accordion .accordion-header) {
+		top: 3.5rem;
+		z-index: 5;
+	}
+	:global(.accordion .accordion .accordion .accordion-header) {
+		top: 7rem;
+		z-index: 4;
+	}
+	:global(.accordion .accordion .accordion .accordion .accordion-header) {
+		top: 10.5rem;
+		z-index: 3;
 	}
 
 	:global(.accordion.accordion--inner .accordion-header) {
-		z-index: 5;
+		background-color: color-mix(in srgb, var(--is-bg-secondary, #1e1e1e), var(--is-color) 4%) !important;
 	}
 
 	:global(.accordion h2),

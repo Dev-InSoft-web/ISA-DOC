@@ -1,15 +1,18 @@
 <script lang="ts">
 	import {
-		Card, Button, H4, Text, Toaster, toastError, toastSuccess,
-		FlexLayout, Iconify,
+		Card, ButtonIconify, H4, Text, Toaster, toastError, toastSuccess,
+		FlexLayout,
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
 	import SqlViewer from "../viewers/SqlViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
+	import RunButton from "../_comps/actions/RunButton.svelte";
+	import ConfirmDialog from "../_comps/overlays/ConfirmDialog.svelte";
 	import { PERMISOS_CSV } from "../../lib/permisosCsv.ts";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
 	export let tableName: string = "PERMISOS";
+	export let date: string = "";
 
 	type Row = Record<string, string>;
 
@@ -82,7 +85,7 @@
 		if (!colIpermiso || !colNpermiso) return "-- Selecciona las columnas de origen";
 		const lines: string[] = [];
 		lines.push("-- Migración de PERMISOS desde CSV");
-		lines.push(`-- Origen: ${colIpermiso} �?' ipermiso, ${colNpermiso} �?' npermiso`);
+		lines.push(`-- Origen: ${colIpermiso} → ipermiso, ${colNpermiso} → npermiso`);
 		lines.push(`-- Filas: ${rows.length}`);
 		lines.push("");
 		const values: string[] = [];
@@ -118,8 +121,11 @@
 	async function runSequence(): Promise<void> {
 		if (!approved) { toastError("Aprueba la ejecución antes de continuar"); return; }
 		if (!executeSql) { toastError("Ejecutor SQL no disponible"); return; }
-		const ok = confirm(`�s�️ Se va a ejecutar el INSERT contra ${tableName} (${rows.length} filas).\n\n¿Continuar?`);
-		if (!ok) return;
+		confirmOpen = true;
+	}
+
+	async function doRunSequence(): Promise<void> {
+		if (!executeSql) return;
 		executing = true;
 		try {
 			const res = await executeSql(generatedSql);
@@ -131,19 +137,17 @@
 			executing = false;
 		}
 	}
+
+	let confirmOpen: boolean = false;
 </script>
 
 <Toaster />
 
 <AccordionActions
-	title="Permisos · Migración desde CSV"
+	title={date ? `${date} — Permisos · Migración desde CSV` : "Permisos · Migración desde CSV"}
 	icon="mdi:file-delimited"
 	count={rows.length}
 	open={false}
-	actions={[
-		{ icon: "mdi:content-copy", label: "Copiar SQL", onClick: copySql },
-		{ icon: "mdi:eye-outline", label: "Ver SQL", onClick: openInModal },
-	]}
 >
 	<Card variant="flat">
 		<FlexLayout direction="column">
@@ -161,7 +165,7 @@
 	{#if !parseError && rows.length > 0}
 		<Card variant="flat">
 			<FlexLayout direction="column">
-				<H4>Mapeo de columnas �?' tabla <code>{tableName}</code></H4>
+				<H4>Mapeo de columnas → tabla <code>{tableName}</code></H4>
 				<FlexLayout items="center">
 					<label class="field">
 						<Text color="neutral"><small>ipermiso</small></Text>
@@ -209,42 +213,36 @@
 			<FlexLayout direction="column">
 				<FlexLayout items="center" justify="between">
 					<H4>SQL generado</H4>
-					<Button variant="outlined" style="width: fit-content;" onClick={openInModal}>
-						<Iconify icon="mdi:eye-outline" /> Abrir
-					</Button>
+					<FlexLayout items="center">
+						<ButtonIconify icon="mdi:content-copy" title="Copiar SQL" on:click={copySql} />
+						<ButtonIconify icon="mdi:eye-outline" title="Abrir SQL" on:click={openInModal} />
+						<RunButton
+							bind:unlocked={approved}
+							busy={executing}
+							runTitle="Ejecutar secuencia"
+							on:run={runSequence}
+						/>
+					</FlexLayout>
 				</FlexLayout>
 				<SqlViewer value={generatedSql} height="240px" />
-			</FlexLayout>
-		</Card>
-
-		<Card variant="flat">
-			<FlexLayout direction="column">
-				<H4>Ejecución</H4>
-				<Text color="neutral"><small>La secuencia <b>no</b> se ejecuta automáticamente. Aprueba y pulsa <b>Ejecutar secuencia</b> para enviar los datos a la tabla.</small></Text>
-				<label class="approve">
-					<input type="checkbox" bind:checked={approved} />
-					<Text>Aprobado para ejecutar contra la BD</Text>
-				</label>
-				<FlexLayout items="center">
-					<Button
-						color="warning"
-						style="width: fit-content;"
-						disabled={!approved || executing || !executeSql}
-						onClick={runSequence}
-					>
-						<Iconify icon={executing ? "mdi:loading" : "mdi:play"} />
-						{executing ? "Ejecutando�?�" : "Ejecutar secuencia"}
-					</Button>
-					{#if !executeSql}
-						<Text color="error"><small>Sin canal de ejecución (socket no disponible)</small></Text>
-					{/if}
-				</FlexLayout>
+				{#if !executeSql}
+					<Text color="error"><small>Sin canal de ejecución (socket no disponible)</small></Text>
+				{/if}
 			</FlexLayout>
 		</Card>
 	{/if}
 </AccordionActions>
 
 <CodeModal bind:bshow={modalShow} title={modalTitle} value={modalValue} language="sql" />
+<ConfirmDialog
+	bind:open={confirmOpen}
+	title="Confirmar ejecución"
+	message={`Se va a ejecutar el INSERT contra ${tableName} (${rows.length} filas).\n\n¿Continuar?`}
+	confirmText="Ejecutar"
+	cancelText="Cancelar"
+	kind="warning"
+	onConfirm={doRunSequence}
+/>
 
 <style>
 	.csv-input {
