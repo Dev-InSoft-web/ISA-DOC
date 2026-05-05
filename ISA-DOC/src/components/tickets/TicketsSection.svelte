@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { Button, FlexLayout, Iconify, Text } from "@ingenieria_insoft/ispsveltecomponents";
-	import Accordion from "../_comps/containers/Accordion.svelte";
+	import { Button, FlexLayout, Iconify, H3 } from "@ingenieria_insoft/ispsveltecomponents";
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
 	import { TICKETS, type TicketRegistro } from "../../lib/tickets";
 	import TicketViewerModal from "./TicketViewerModal.svelte";
@@ -16,39 +15,32 @@
 	}
 </script>
 
-<Accordion title="Tickets" titleIcon="mdi:ticket-confirmation-outline" count={TICKETS.length} open={false}>
-	<RevisadoCheck slot="title-extra" keys={ticketKeys} />
-	<FlexLayout direction="column" style="padding: 0.5rem;">
+<FlexLayout direction="column" style="min-width: 0;">
+	<FlexLayout direction="row" items="center" style="gap: 0.4rem; padding: 0.5rem 0.25rem; min-width: 0; line-height: 1;">
+		<RevisadoCheck keys={ticketKeys} />
+		<H3 style="margin: 0; flex: 1 1 auto; line-height: 1;">Tickets <span style="opacity: 0.7;">({TICKETS.length})</span></H3>
+	</FlexLayout>
+	<FlexLayout direction="column">
 		{#each TICKETS as t (t.id)}
 			<FlexLayout
-				direction="row"
-				items="center"
-				justify="between"
-				style="padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--is-outline, #ddd);"
+				direction="column"
+				style="gap: 0.35rem; padding: 0.5rem 0; min-width: 0;"
 			>
-				<FlexLayout direction="column">
-					<FlexLayout direction="row" items="center">
-						<Iconify icon="mdi:ticket-outline" />
-						<strong style="margin-left: 0.4rem;">{t.id}</strong>
-						<span style="margin-left: 0.6rem;">— {t.titulo}</span>
-					</FlexLayout>
-					<Text color="neutral">
-						<small>
-							{t.solicitante} · Solicitud: {t.fechaSolicitud}
-							{#if t.fechaEntrega}· Entrega: {t.fechaEntrega}{/if}
-						</small>
-					</Text>
-				</FlexLayout>
-
-				<FlexLayout direction="row" items="center" style="gap: 0.5rem; width: fit-content;">
+				<FlexLayout direction="row" items="center" style="gap: 0.4rem; min-width: 0; line-height: 1;">
 					<RevisadoCheck key={`tickets.${t.id}`} />
-					<Button variant="solid" color="primary" style="width: fit-content;" onClick={() => abrir(t)}>
+					<strong style="min-width: 0; word-break: break-word; overflow-wrap: anywhere; line-height: 1;">{t.id}</strong>
+				</FlexLayout>
+				<small style="font-weight: 600; word-break: break-word; overflow-wrap: anywhere; line-height: 1.25;">
+					{t.titulo}
+				</small>
+				<FlexLayout direction="row" items="center" justify="end">
+					<Button variant="solid" color="primary" style="width: 100%;" onClick={() => abrir(t)}>
 						<Iconify icon="mdi:eye-outline" /> Ver
 					</Button>
 				</FlexLayout>
 			</FlexLayout>
 		{/each}
 	</FlexLayout>
-</Accordion>
+</FlexLayout>
 
 <TicketViewerModal ticket={selected} bind:bshow />

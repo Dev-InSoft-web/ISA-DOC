@@ -45,8 +45,18 @@
 {#if ticket}
 	<Modal bind:bshow variant="solid" style="width: min(960px, 95dvw); height: min(85dvh, 800px);">
 		<svelte:fragment slot="title">
-			<strong>{ticket.id} — {ticket.titulo}</strong>
+			<FlexLayout direction="column" style="gap: 0.15rem; min-width: 0;">
+				<strong>{ticket.id} — {ticket.titulo}</strong>
+				<small style="color: gray;">
+					{ticket.solicitante} · Solicitud: {ticket.fechaSolicitud}
+					{#if ticket.fechaEntrega}· Entrega: {ticket.fechaEntrega}{/if}
+				</small>
+			</FlexLayout>
 		</svelte:fragment>
+
+		{#if ticket.resumen}
+			<p class="ticket-resumen">{ticket.resumen}</p>
+		{/if}
 
 		<FlexLayout direction="row" items="center" style="margin-bottom: 0.5rem;">
 			<Switch bind:checked={whiteBg} color="primary" colorFalse="neutral" disabled={showCode}>Fondo blanco</Switch>
@@ -79,9 +89,10 @@
 <style>
 	.ticket-viewer {
 		position: relative;
+		width: 100%;
 	}
 	.ticket-iframe {
-		width: min(900px, 90dvw);
+		width: 100%;
 		height: min(70dvh, 680px);
 		border: 0;
 		background: #ffffff;

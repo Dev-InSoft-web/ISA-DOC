@@ -39,7 +39,7 @@ async function entityCell(entidad: string): Promise<string> {
 	const c = ENTITY_COLOR[entidad] ?? "#666";
 	const ic = i ? await iconSvg(i, { size: 16 }) : "";
 	return (
-		`<span style="display:inline-flex;align-items:center;gap:4px;color:${c};font-weight:600;">` +
+		`<span style="display:inline-flex;align-items:center;gap:1rem;color:${c};font-weight:600;">` +
 		`${ic}<span>${entidad}</span>` +
 		`</span>`
 	);
@@ -120,7 +120,7 @@ async function note(iconName: string, html: string, color: string = NOTE_COLOR):
 	const ic = await iconSvg(iconName, { size: 16 });
 	return (
 		`<li style="border:1px solid #80808030;border-radius:4px;padding:0.5rem;margin-bottom:0.5rem;list-style:none;">` +
-		`<span style="display:inline-flex;align-items:center;gap:4px;color:${color};">` +
+		`<span style="display:inline-flex;align-items:center;gap:1rem;color:${color};">` +
 		`${ic}<span>${html}</span>` +
 		`</span></li>`
 	);
@@ -151,7 +151,7 @@ async function buildNotas(): Promise<string> {
 		),
 	]);
 	return (
-		`<div style="margin-top: 15px;display:inline-flex;align-items:center;gap:4px;color:${NOTE_COLOR};">` +
+		`<div style="margin-top: 15px;display:inline-flex;align-items:center;gap:1rem;color:${NOTE_COLOR};">` +
 		`${headerIcon}<strong>Notas de implementación:</strong></div>` +
 		`<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`
 	);
@@ -163,7 +163,7 @@ async function h3Iconized(iconName: string, label: string): Promise<string> {
 	const c = "#1e90ff";
 	const ic = await iconSvg(iconName, { size: 18 });
 	return (
-		`<h3 style="display:flex;align-items:center;gap:6px;color:${c};margin-top:1.25rem;">` +
+		`<h3 style="display:flex;align-items:center;gap:1rem;color:${c};margin-top:1.25rem;">` +
 		`${ic}<span>${label}</span>` +
 		`</h3>`
 	);

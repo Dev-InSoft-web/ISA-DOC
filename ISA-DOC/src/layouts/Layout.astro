@@ -44,7 +44,11 @@ const currentPath = Astro.url.pathname;
    body {
       background: var(--is-bg-primary);
       color: var(--is-color);
-      min-height: 100vh;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
    }
 
    .isa-header {
@@ -90,6 +94,11 @@ const currentPath = Astro.url.pathname;
    }
 
    .isa-main {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
       padding: 0 1rem 1rem;
+      display: flex;
+      flex-direction: column;
    }
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { FlexLayout, H3, Text } from "@ingenieria_insoft/ispsveltecomponents";
+	import { FlexLayout, H3 } from "@ingenieria_insoft/ispsveltecomponents";
 	import IplanpadreToAtributoMigration from "../migration/IplanpadreToAtributoMigration.svelte";
 	import ImagenDocumentoDriverMigration from "../migration/ImagenDocumentoDriverMigration.svelte";
 	import CleanupTestDataMigration from "../migration/CleanupTestDataMigration.svelte";
@@ -57,90 +57,90 @@
 	}
 </script>
 
-<FlexLayout direction="column" style="padding: 1rem;">
+<FlexLayout direction="column" style="padding: 0; flex: 1 1 auto; min-height: 0; height: 100%; overflow: hidden;">
 	<H3>Bitácora</H3>
 	<DbStatusBanner />
-	<Text color="neutral">
-		<small>
-			Utilidades de desarrollo de ciclo corto (migraciones puntuales, inspecciones).
-			No están pensadas para producción permanente.
-		</small>
-	</Text>
 
-	<!-- =================== Secciones FIJAS =================== -->
-	<!-- 1) ISW siempre primero -->
-	<BitacoraNote
-		title="Cursos (ISW) — Reglas, restricciones y avances"
-		mdSource={md_cursos_isw_reglas}
-	/>
+	<FlexLayout direction="row" items="stretch" style="gap: 1rem; width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden;">
+		<!-- Panel izquierdo (20%): Tickets -->
+		<div class="custom-scrollbar" style="flex: 0 0 20%; min-width: 0; min-height: 0; overflow: auto;">
+			<TicketsSection />
+		</div>
 
-	<!-- 2) Tickets siempre como segunda sección -->
-	<TicketsSection />
-
-	<!-- 3) Construcción CAPAC_* (acceso rápido) -->
-	<OldRebuildSection {executeSql} />
-
-	<!-- =================== Separador =================== -->
-	<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
-
-	<!-- =================== Secciones por FECHA (DESC) =================== -->
-	<!-- 2026-05-05 -->
-	<Accordion
-		title="2026-05-05 — Capacitación: IMAGENDRIVER / DOCUMENTODRIVER → atributos plan"
-		titleIcon="mdi:calendar"
-		open={true}
-	>
-		<RevisadoCheck slot="title-extra" keys={todayKeys} />
-		<ImagenDocumentoDriverMigration {executeSql} inner />
-	</Accordion>
-
-	<!-- 2026-05-04 -->
-	<Accordion
-		title="2026-05-04 — Capacitación: limpieza, migración IPLANPADRE, reconstrucción CAPAC_*_OLD y snapshots"
-		titleIcon="mdi:calendar"
-		open={true}
-	>
-		<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" open={false} inner>
+		<!-- Panel derecho (80%): el resto -->
+		<FlexLayout direction="column" class="custom-scrollbar" style="flex: 1 1 80%; min-width: 0; min-height: 0; overflow: auto;">
+			<!-- 1) ISW siempre primero -->
 			<BitacoraNote
-				title="Proyecto ISA-DOC"
-				mdSource={md_2026_05_04_isa}
-				inner
+				title="Cursos (ISW) — Reglas, restricciones y avances"
+				mdSource={md_cursos_isw_reglas}
 			/>
-			<BitacoraNote
-				title="ISW / ISP ClientesIS"
-				mdSource={md_2026_05_04_isw_isp}
-				inner
-			/>
-			<BitacoraNote
-				title="ISS ClientesIS-ContaPymeU"
-				mdSource={md_2026_05_04_iss}
-				inner
-			/>
-		</Accordion>
 
-		<AccordionActions
-			title="Capacitación: limpieza de prueba e IPLANPADRE"
-			icon="mdi:database-cog"
-			count={2}
-			open={false}
-			inner
-		>
-			<RevisadoCheck slot="title-extra" keys={dayKeys} />
-			<CleanupTestDataMigration {executeSql} inner />
-			<IplanpadreToAtributoMigration {executeSql} inner />
-		</AccordionActions>
-	</Accordion>
+			<!-- 2) Construcción CAPAC_* (acceso rápido) -->
+			<OldRebuildSection {executeSql} />
 
-	<!-- 2026-05-03 -->
-	<Accordion
-		title="2026-05-03 — Curso GET/UPDATE devuelve 500 tras npm i"
-		titleIcon="mdi:calendar"
-		open={false}
-	>
-		<BitacoraNote
-			title="Curso GET/UPDATE devuelve 500 tras npm i"
-			mdSource={md_2026_05_03_curso_500}
-			inner
-		/>
-	</Accordion>
+			<!-- =================== Separador =================== -->
+			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
+
+			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-05-05 -->
+			<Accordion
+				title="2026-05-05 — Capacitación: IMAGENDRIVER / DOCUMENTODRIVER → atributos plan"
+				titleIcon="mdi:calendar"
+				open={true}
+			>
+				<RevisadoCheck slot="title-extra" keys={todayKeys} />
+				<ImagenDocumentoDriverMigration {executeSql} inner />
+			</Accordion>
+
+			<!-- 2026-05-04 -->
+			<Accordion
+				title="2026-05-04 — Capacitación: limpieza, migración IPLANPADRE, reconstrucción CAPAC_*_OLD y snapshots"
+				titleIcon="mdi:calendar"
+				open={true}
+			>
+				<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" open={false} inner>
+					<BitacoraNote
+						title="Proyecto ISA-DOC"
+						mdSource={md_2026_05_04_isa}
+						inner
+					/>
+					<BitacoraNote
+						title="ISW / ISP ClientesIS"
+						mdSource={md_2026_05_04_isw_isp}
+						inner
+					/>
+					<BitacoraNote
+						title="ISS ClientesIS-ContaPymeU"
+						mdSource={md_2026_05_04_iss}
+						inner
+					/>
+				</Accordion>
+
+				<AccordionActions
+					title="Capacitación: limpieza de prueba e IPLANPADRE"
+					icon="mdi:database-cog"
+					count={2}
+					open={false}
+					inner
+				>
+					<RevisadoCheck slot="title-extra" keys={dayKeys} />
+					<CleanupTestDataMigration {executeSql} inner />
+					<IplanpadreToAtributoMigration {executeSql} inner />
+				</AccordionActions>
+			</Accordion>
+
+			<!-- 2026-05-03 -->
+			<Accordion
+				title="2026-05-03 — Curso GET/UPDATE devuelve 500 tras npm i"
+				titleIcon="mdi:calendar"
+				open={true}
+			>
+				<BitacoraNote
+					title="Curso GET/UPDATE devuelve 500 tras npm i"
+					mdSource={md_2026_05_03_curso_500}
+					inner
+				/>
+			</Accordion>
+		</FlexLayout>
+	</FlexLayout>
 </FlexLayout>
