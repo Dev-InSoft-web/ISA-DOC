@@ -363,12 +363,12 @@ function renderCodeInner(src: string, lang?: CodeLang): string {
 		.join("<br>");
 }
 
-import { codeImage } from "./codeImage";
+import { lookupCodeImage, type CodeImageInfo } from "./codeImage";
 
 const CODE_BLOCK_DEFAULT_W = 720;
 const CODE_BLOCK_COMPARE_W = 360;
 
-function renderCodeImg(info: { url: string; width: number; height: number }, targetW: number): string {
+function renderCodeImg(info: CodeImageInfo, targetW: number): string {
 	let w = info.width;
 	let h = info.height;
 	if (w > targetW) {
@@ -382,17 +382,25 @@ function renderCodeImg(info: { url: string; width: number; height: number }, tar
 	);
 }
 
-// Bloque multilínea: `<img>` con el código renderizado por carbon.now.sh
-// (vía proxy carbonara), subido a imgbb. Tema vscode, fondo negro, sin
-// paddings y sin window controls. La imagen se cachea por sha1(lang+src),
-// así que la misma porción de código no se vuelve a generar/subir.
+function renderCodeFallbackPre(src: string, lang: CodeLang): string {
+	return (
+		`<pre style="${CODE_BLOCK_PRE_STYLE}"><code style="${CODE_BLOCK_INNER_STYLE}">` +
+		renderCodeInner(src, lang) +
+		`</code></pre>`
+	);
+}
+
+// Bloque multilínea. Si existe imagen pre-generada (carbon-api → imgbb) en
+// `assets/code-imgs.json`, devuelve `<img>`. Si no, devuelve el fallback
+// `<pre><code>` con highlight Lezer (mismo aspecto vsdark) — esto permite
+// que la página funcione antes de correr el script de build de imágenes.
 export async function codeBlock(
 	src: string,
 	lang: CodeLang = "typescript",
 	targetW: number = CODE_BLOCK_DEFAULT_W,
 ): Promise<string> {
-	const info = await codeImage(src, lang);
-	return renderCodeImg(info, targetW);
+	const info = await lookupCodeImage(src, lang);
+	return info ? renderCodeImg(info, targetW) : renderCodeFallbackPre(src, lang);
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -417,13 +425,14 @@ export async function compareTable(pair: ComparePair): Promise<string> {
 	const kind = pair.kind ?? "code";
 	const beforeLabel = pair.beforeLabel ?? "Antes";
 	const afterLabel = pair.afterLabel ?? "Después";
+	const lang = pair.lang ?? "typescript";
 
 	const isCode = kind === "code";
 	const headerBg = isCode ? "#000000" : "#f5f5f5";
 	const headerFg = isCode ? "#d4d4d4" : "#333333";
 	const headerBorder = isCode ? "#333333" : "#dddddd";
-	const cellBg = isCode ? "#000000" : "#ffffff";
-	const cellFg = isCode ? "#d4d4d4" : "#333333";
+	const cellBg = isCode ? VSDARK_BG : "#ffffff";
+	const cellFg = isCode ? VSDARK_FG : "#333333";
 	const cellBorder = isCode ? "#333333" : "#dddddd";
 	const fontFamily = "Tahoma,Arial,Calibri,sans-serif";
 
@@ -432,21 +441,22 @@ export async function compareTable(pair: ComparePair): Promise<string> {
 		`border:1px solid ${headerBorder};` +
 		`padding:6px 12px;font-family:${fontFamily};font-size:0.92em;` +
 		`font-weight:bold;text-align:left;width:50%;`;
-	const cellStyle =
+
+	const renderCell = async (src: string): Promise<{ html: string; isImg: boolean }> => {
+		if (!isCode) return { html: src, isImg: false };
+		const info = await lookupCodeImage(src, lang);
+		if (info) return { html: renderCodeImg(info, CODE_BLOCK_COMPARE_W), isImg: true };
+		return { html: renderCodeInner(src, lang), isImg: false };
+	};
+
+	const cellStyle = (isImg: boolean): string =>
 		`background-color:${cellBg};color:${cellFg};` +
 		`border:1px solid ${cellBorder};border-top:none;` +
-		`padding:${isCode ? "0" : "10px 12px"};font-family:${fontFamily} !important;` +
+		`padding:${isImg ? "0" : "10px 12px"};font-family:${fontFamily} !important;` +
 		`font-size:0.92em;line-height:1.45;vertical-align:top;` +
 		`width:50%;word-break:break-word;overflow-wrap:anywhere;`;
 
-	const [beforeCell, afterCell] = await Promise.all([
-		isCode
-			? codeImage(pair.before, pair.lang ?? "typescript").then((i) => renderCodeImg(i, CODE_BLOCK_COMPARE_W))
-			: Promise.resolve(pair.before),
-		isCode
-			? codeImage(pair.after, pair.lang ?? "typescript").then((i) => renderCodeImg(i, CODE_BLOCK_COMPARE_W))
-			: Promise.resolve(pair.after),
-	]);
+	const [beforeCell, afterCell] = await Promise.all([renderCell(pair.before), renderCell(pair.after)]);
 
 	return (
 		`<table cellpadding="0" cellspacing="0" border="0" ` +
@@ -457,8 +467,8 @@ export async function compareTable(pair: ComparePair): Promise<string> {
 		`<th style="${headerStyle};border-left:none;">${escapeHtml(afterLabel)}</th>` +
 		`</tr></thead>` +
 		`<tbody><tr>` +
-		`<td style="${cellStyle}">${beforeCell}</td>` +
-		`<td style="${cellStyle};border-left:none;">${afterCell}</td>` +
+		`<td style="${cellStyle(beforeCell.isImg)}">${beforeCell.html}</td>` +
+		`<td style="${cellStyle(afterCell.isImg)};border-left:none;">${afterCell.html}</td>` +
 		`</tr></tbody>` +
 		`</table>`
 	);
