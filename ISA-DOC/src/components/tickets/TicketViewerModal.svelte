@@ -65,7 +65,7 @@
 
 		<div class="ticket-viewer">
 			{#if showCode}
-				<HtmlViewer value={prettyHtml} height="min(70dvh, 680px)" />
+				<HtmlViewer value={prettyHtml} height="100%" />
 				<div class="copy-card" role="group" aria-label="Acciones del contenido">
 					<ButtonIconify
 						icon={copyState === "ok" ? "mdi:check" : copyState === "err" ? "mdi:alert" : "mdi:content-copy"}
@@ -90,10 +90,19 @@
 	.ticket-viewer {
 		position: relative;
 		width: 100%;
+		flex: 1 1 auto;
+		min-height: 0;
+		display: flex;
+		overflow: hidden;
+		/* fallback por si el Modal no es flex-column: descontar header,
+		   resumen, switches y paddings del alto disponible */
+		max-height: calc(min(85dvh, 800px) - 240px);
 	}
 	.ticket-iframe {
 		width: 100%;
-		height: min(70dvh, 680px);
+		height: 100%;
+		flex: 1 1 auto;
+		min-height: 0;
 		border: 0;
 		background: #ffffff;
 		display: block;

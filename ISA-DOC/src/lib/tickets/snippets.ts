@@ -239,11 +239,12 @@ const CODE_BLOCK_PRE_STYLE =
 	`background-color:${VSDARK_BG};color:${VSDARK_FG};` +
 	"border:1px solid #333;border-radius:6px;" +
 	"margin:8px 0;padding:10px 12px;" +
-	"font-family:Calibri,Arial,Tahoma,sans-serif;font-size:0.92em;" +
+	"font-family:Tahoma,Arial,Calibri,sans-serif !important;font-size:0.92em;" +
 	"line-height:1.45;text-shadow:none;" +
 	"white-space:pre-wrap;overflow:auto;max-width:100%;";
 const CODE_BLOCK_INNER_STYLE =
-	`color:${VSDARK_FG};background:transparent;font-family:inherit;font-size:inherit;`;
+	`color:${VSDARK_FG};background:transparent;` +
+	"font-family:Tahoma,Arial,Calibri,sans-serif !important;font-size:inherit;";
 
 // El "class" del Highlighter se inyecta literalmente en el atributo style del
 // <span> que generamos, así que aquí van CSS rules en lugar de class names.
@@ -374,10 +375,15 @@ export function codeBlock(src: string, lang: CodeLang = "typescript"): string {
 // `src` puede ser URL/data URI (recomendado importar con `?inline`).
 // ─────────────────────────────────────────────────────────────────────────
 
-export function img(src: string, width = 720): string {
+export function img(src: string, width = 360): string {
+	const w = Math.max(120, width);
+	// Default w=360. Para imágenes muy apaisadas (h < 300 a w=360) el browser
+	// hace prevalecer min-height:300 conservando aspect-ratio, lo que crece el
+	// ancho por encima de 360 hasta lograr 300 de alto.
 	return (
-		`<img src="${src}" style="display:block;max-width:100%;width:${width}px;` +
-		`height:auto;border:1px solid #ddd;border-radius:4px;margin:0.75rem 0;">`
+		`<img src="${src}" alt="" width="${w}" style="display:block;` +
+		`width:${w}px;height:auto;min-height:300px;max-width:100%;` +
+		`border:1px solid #ddd;border-radius:4px;margin:0.75rem 0;">`
 	);
 }
 

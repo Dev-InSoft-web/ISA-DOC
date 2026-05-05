@@ -53,7 +53,7 @@ export async function buildBodyTK1420755(): Promise<string> {
 		note(
 			"mdi:source-branch",
 			`Comp. asociado en backend: ${codeI("TCursoServer.JData2List")} ya retorna ` +
-			`${codeI("{ tema: {}, driver: {} }")} para alimentar el grid (TK-1420742 / refactor).`,
+			`${codeI("{ tema: {}, driver: {} }")} para alimentar el grid.`,
 		),
 		note(
 			"mdi:rename-box",

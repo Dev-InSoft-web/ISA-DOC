@@ -5,6 +5,7 @@ import { bodyTK1420751 } from "./TK-1420751";
 import { bodyTK1420754 } from "./TK-1420754";
 import { bodyTK1420755 } from "./TK-1420755";
 import { bodyTK1420813 } from "./TK-1420813";
+import { bodyTK1420819 } from "./TK-1420819";
 
 export interface TicketRegistro {
 	id: string;
@@ -18,6 +19,14 @@ export interface TicketRegistro {
 }
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1420819",
+		titulo: "Campos vacíos grid curso",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "05/may./2026 02:03:59 pm",
+		resumen: "En revisión de la grid del catálogo del curso, se identifica que los campos “Tema” y “Driver” aparecen vacíos, aún cuando ya se diligenciaron para los cursos.",
+		body: bodyTK1420819,
+	},
 	{
 		id: "TK-1420813",
 		titulo: "Campos modo visualización en edición de formulario rápido curso",

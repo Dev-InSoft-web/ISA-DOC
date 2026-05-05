@@ -32,11 +32,6 @@ for (let i = Obj.estructuras.length; i < limit; i++) {
 			`Cuando el usuario seleccione drivers de más niveles, basta con extender el mapa ` +
 			`(p. ej. ${codeI('3: ["Tomo", "Capítulo", "Título"]')}).`,
 		),
-		note(
-			"mdi:source-merge",
-			`Implementado dentro del commit que también atendió TK-1420742 ` +
-			`(${codeI("18fcc40")}: fix(Cursos): establecer valores predeterminados para estructuras).`,
-		),
 	]);
 	const fig = img(defaultsImg, 720);
 	return intro + h3 + snippet + fig + `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`;

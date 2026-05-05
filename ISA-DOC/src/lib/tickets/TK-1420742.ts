@@ -38,7 +38,7 @@ export async function buildBodyTK1420742(): Promise<string> {
 		note(
 			"mdi:numeric",
 			`En ${codeI("TEstructuraCursoSlaveController")} se establecieron valores predeterminados para ` +
-			`las estructuras (ver TK-1420754).`,
+			`las estructuras.`,
 		),
 		note(
 			"mdi:format-color-fill",
