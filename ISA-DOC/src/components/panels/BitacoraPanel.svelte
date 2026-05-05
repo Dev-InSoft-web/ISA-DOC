@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { FlexLayout, H3, Text } from "@ingenieria_insoft/ispsveltecomponents";
 	import IplanpadreToAtributoMigration from "../migration/IplanpadreToAtributoMigration.svelte";
+	import ImagenDocumentoDriverMigration from "../migration/ImagenDocumentoDriverMigration.svelte";
 	import CleanupTestDataMigration from "../migration/CleanupTestDataMigration.svelte";
 	import OldRebuildSection from "../migration/OldRebuildSection.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
@@ -26,6 +27,14 @@
 		"2026-05-04.iplanpadre.fase3",
 		"2026-05-04.iplanpadre.fase4",
 		...REBUILD_TABLES.flatMap((t) => REBUILD_STEPS.map((s) => `2026-05-04.rebuild.${t.tableName}.${s}`)),
+	];
+
+	const todayKeys: string[] = [
+		"2026-05-05.imgdoc.fase1a",
+		"2026-05-05.imgdoc.fase1b",
+		"2026-05-05.imgdoc.fase2a",
+		"2026-05-05.imgdoc.fase2b",
+		"2026-05-05.imgdoc.fase2c",
 	];
 
 	// La pestaña Bitácora aloja utilidades temporales del desarrollo (one-shots,
@@ -75,6 +84,16 @@
 	<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 	<!-- =================== Secciones por FECHA (DESC) =================== -->
+	<!-- 2026-05-05 -->
+	<Accordion
+		title="2026-05-05 — Capacitación: IMAGENDRIVER / DOCUMENTODRIVER → atributos plan"
+		titleIcon="mdi:calendar"
+		open={true}
+	>
+		<RevisadoCheck slot="title-extra" keys={todayKeys} />
+		<ImagenDocumentoDriverMigration {executeSql} inner />
+	</Accordion>
+
 	<!-- 2026-05-04 -->
 	<Accordion
 		title="2026-05-04 — Capacitación: limpieza, migración IPLANPADRE, reconstrucción CAPAC_*_OLD y snapshots"
@@ -100,7 +119,7 @@
 		</Accordion>
 
 		<AccordionActions
-			title="Capacitación: limpieza de prueba y migración IPLANPADRE"
+			title="Capacitación: limpieza de prueba e IPLANPADRE"
 			icon="mdi:database-cog"
 			count={2}
 			open={false}

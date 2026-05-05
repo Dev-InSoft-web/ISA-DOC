@@ -1,5 +1,5 @@
 import { buildTicketHtml } from "./template";
-import bodyTK1418894 from "./TK-1418894.html?raw";
+import { bodyTK1418894 } from "./TK-1418894";
 
 export interface TicketRegistro {
 	id: string;

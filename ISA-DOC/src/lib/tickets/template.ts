@@ -6,12 +6,13 @@
 export const TICKET_HTML_PREFIX = `<html>
 <head>
     <style>
-        body { font-family: Tahoma; }
-        h3 { color: DodgerBlue; font-size: 14pt; margin-bottom: 5px; margin-top: 15px; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 10px; }
-        th { background-color: DodgerBlue; color: white; text-align: left; padding: 5px; }
+        body { font-family: Tahoma; color: #777; text-shadow: 0 0 1px rgba(128,128,128,0.35); }
+        h3 { color: DodgerBlue; font-size: 14pt; margin-top: 15px; margin-bottom: 12px; text-shadow: 0 0 1px rgba(30,144,255,0.35); }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 10px; font-size: small; }
+        th { background-color: rgba(30, 144, 255, 0.9); color: white; text-align: left; padding: 5px; text-shadow: 0 0 1px rgba(0,0,0,0.4); }
         td { padding: 5px; }
-        tbody tr:nth-child(odd) { background-color: LightCyan; }
+        tbody tr:nth-child(odd) { background-color: rgba(30, 144, 255, 0.12); }
+        code { font-family: Consolas, "Courier New", monospace; font-size: 0.92em; padding: 1px 5px; border-radius: 3px; background-color: rgba(128,128,128,0.18); color: #888; border: 1px solid rgba(128,128,128,0.25); text-shadow: none; }
     </style>
 </head>
 <body>

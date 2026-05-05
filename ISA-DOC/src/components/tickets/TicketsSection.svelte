@@ -34,16 +34,9 @@
 							{#if t.fechaEntrega}· Entrega: {t.fechaEntrega}{/if}
 						</small>
 					</Text>
-					{#if t.enlace}
-						<Text color="neutral">
-							<small>
-								<a href={t.enlace} target="_blank" rel="noopener noreferrer">Estándar de documentación</a>
-							</small>
-						</Text>
-					{/if}
 				</FlexLayout>
 
-				<Button variant="tonal" onClick={() => abrir(t)}>
+				<Button variant="solid" color="primary" style="width: fit-content;" onClick={() => abrir(t)}>
 					<Iconify icon="mdi:eye-outline" /> Ver
 				</Button>
 			</FlexLayout>
