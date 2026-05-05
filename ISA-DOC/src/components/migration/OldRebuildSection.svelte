@@ -3,6 +3,8 @@
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import RebuildOldTableMigration from "./RebuildOldTableMigration.svelte";
+	import DriverstructToIdriverMigration from "./DriverstructToIdriverMigration.svelte";
+	import MigrateFromOldMigration from "./MigrateFromOldMigration.svelte";
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
 	import { REBUILD_TABLES } from "../../lib/migration/oldRebuildTables.ts";
 	import sectionMd from "../../lib/bitacora/2026-05-04-rebuild-section.md?raw";
@@ -14,15 +16,15 @@
 	const STEPS = ["drop", "create", "insert"] as const;
 	$: rebuildKeys = REBUILD_TABLES.flatMap((t) => STEPS.map((s) => `2026-05-04.rebuild.${t.tableName}.${s}`));
 
-	const csvModules = import.meta.glob("../../lib/migration/csv/*.csv", {
+	const tsvModules = import.meta.glob("../../lib/migration/csv/*.tsv", {
 		query: "?raw",
 		import: "default",
 		eager: true,
 	}) as Record<string, string>;
 
 	const stampsSet: Set<string> = new Set();
-	for (const p of Object.keys(csvModules)) {
-		const m = /\/(\d{8}(?:\d{6})?)-(.+)\.csv$/.exec(p);
+	for (const p of Object.keys(tsvModules)) {
+		const m = /\/(\d{8}(?:\d{6})?)-(.+)\.tsv$/.exec(p);
 		if (m) stampsSet.add(m[1]);
 	}
 	const stamps: string[] = Array.from(stampsSet).sort((a, b) => b.localeCompare(a));
@@ -83,9 +85,7 @@
 <Toaster />
 
 <AccordionActions
-	title={inner
-		? "Reconstrucción CAPAC_*_OLD → CAPAC_* (CSV)"
-		: `${date} — Reconstrucción CAPAC_*_OLD → CAPAC_* (CSV)`}
+	title="Construcción CAPAC_*"
 	icon="mdi:database-import-outline"
 	count={REBUILD_TABLES.length}
 	{inner}
@@ -123,7 +123,14 @@
 	</FlexLayout>
 
 	{#each REBUILD_TABLES as cfg (cfg.tableName)}
-		<RebuildOldTableMigration config={cfg} {executeSql} stamp={selectedStamp} />
+		<RebuildOldTableMigration config={cfg} {executeSql} stamp={selectedStamp}>
+			{#if cfg.oldTableName}
+				<MigrateFromOldMigration config={cfg} {executeSql} />
+			{/if}
+			{#if cfg.tableName === "CAPAC_CURSOS"}
+				<DriverstructToIdriverMigration {executeSql} />
+			{/if}
+		</RebuildOldTableMigration>
 	{/each}
 </AccordionActions>
 

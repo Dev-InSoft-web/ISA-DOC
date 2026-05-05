@@ -33,23 +33,26 @@ export const POST: APIRoute = async ({ request }) => {
 		const r = await pool.request().query(sql);
 		const rows = (r.recordset ?? []) as Array<Record<string, unknown>>;
 		const headers = cfg.columns.map((c) => c.name);
-		const csv = toCsv(headers, rows);
-		return json({ ok: true, csv, rowCount: rows.length });
+		const tsv = toTsv(headers, rows);
+		return json({ ok: true, csv: tsv, rowCount: rows.length });
 	} catch (err) {
 		const msg = err instanceof Error ? err.message : String(err);
 		return json({ ok: false, error: msg }, 500);
 	}
 };
 
-function toCsv(headers: string[], rows: Array<Record<string, unknown>>): string {
+function toTsv(headers: string[], rows: Array<Record<string, unknown>>): string {
 	const esc = (v: unknown): string => {
 		if (v === null || v === undefined) return "";
 		const s = v instanceof Date ? v.toISOString() : typeof v === "boolean" ? (v ? "1" : "0") : String(v);
-		if (/[",\r\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
-		return s;
+		return s
+			.replace(/\\/g, "\\\\")
+			.replace(/\t/g, "\\t")
+			.replace(/\r/g, "\\r")
+			.replace(/\n/g, "\\n");
 	};
-	const out: string[] = [headers.join(",")];
-	for (const row of rows) out.push(headers.map((h) => esc(row[h])).join(","));
+	const out: string[] = [headers.join("\t")];
+	for (const row of rows) out.push(headers.map((h) => esc(row[h])).join("\t"));
 	return out.join("\n");
 }
 

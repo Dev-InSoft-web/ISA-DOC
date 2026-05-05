@@ -68,6 +68,9 @@
 	<!-- 2) Tickets siempre como segunda sección -->
 	<TicketsSection />
 
+	<!-- 3) Construcción CAPAC_* (acceso rápido) -->
+	<OldRebuildSection {executeSql} />
+
 	<!-- =================== Separador =================== -->
 	<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
@@ -97,16 +100,15 @@
 		</Accordion>
 
 		<AccordionActions
-			title="Capacitación: limpieza de prueba, migración IPLANPADRE y reconstrucción CAPAC_*_OLD"
+			title="Capacitación: limpieza de prueba y migración IPLANPADRE"
 			icon="mdi:database-cog"
-			count={3}
+			count={2}
 			open={false}
 			inner
 		>
 			<RevisadoCheck slot="title-extra" keys={dayKeys} />
 			<CleanupTestDataMigration {executeSql} inner />
 			<IplanpadreToAtributoMigration {executeSql} inner />
-			<OldRebuildSection {executeSql} date="2026-05-04" inner />
 		</AccordionActions>
 	</Accordion>
 

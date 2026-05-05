@@ -23,9 +23,15 @@ export interface RebuildTableConfig {
 	createSql: string;
 	columns: RebuildColumn[];
 	csvDefault: string;
+	/**
+	 * Override de SELECT por columna destino. La clave es el nombre de la columna
+	 * destino y el valor es una expresión SQL que la calcula desde la fuente
+	 * (alias `src`). Ej.: { IDRIVER: "(SELECT TOP 1 d.IDRIVER FROM CAPAC_DRIVERS d WHERE d.NDRIVER = src.DRIVERSTRUCT)" }.
+	 */
+	columnOverrides?: Record<string, string>;
 }
 
-const csvHeader = (cols: RebuildColumn[]): string => cols.map((c) => c.name).join(",") + "\n";
+const csvHeader = (cols: RebuildColumn[]): string => cols.map((c) => c.name).join("\t") + "\n";
 
 const ifNotExistsCreate = (table: string, createBody: string): string => {
 	const body = createBody.replace(/;$/, "").trim();
@@ -350,6 +356,9 @@ export const REBUILD_TABLES: RebuildTableConfig[] = [
 		createSql: create_CAPAC_CURSOS,
 		columns: colsCAPAC_CURSOS,
 		csvDefault: csvHeader(colsCAPAC_CURSOS),
+		columnOverrides: {
+			IDRIVER: "(SELECT TOP 1 d.IDRIVER FROM CAPAC_DRIVERS d WHERE d.NDRIVER = src.DRIVERSTRUCT)",
+		},
 	},
 	{
 		icon: "mdi:link-variant",

@@ -12,19 +12,19 @@
 
 	interface Snapshot { file: string; date: string; content: string; }
 
-	const csvModules = import.meta.glob("../../lib/migration/csv/*.csv", {
+	const tsvModules = import.meta.glob("../../lib/migration/csv/*.tsv", {
 		query: "?raw",
 		import: "default",
 		eager: true,
 	}) as Record<string, string>;
 
 	const snapshotsByTable: Record<string, Snapshot[]> = {};
-	for (const [p, text] of Object.entries(csvModules)) {
-		const m = /\/(\d{8}(?:\d{6})?)-(.+)\.csv$/.exec(p);
+	for (const [p, text] of Object.entries(tsvModules)) {
+		const m = /\/(\d{8}(?:\d{6})?)-(.+)\.tsv$/.exec(p);
 		if (!m) continue;
 		const date = m[1];
 		const table = m[2];
-		const file = `${date}-${table}.csv`;
+		const file = `${date}-${table}.tsv`;
 		if (!snapshotsByTable[table]) snapshotsByTable[table] = [];
 		snapshotsByTable[table].push({ file, date, content: text });
 	}
@@ -45,7 +45,7 @@
 		}
 		return snapshots[0];
 	})();
-	$: csvText = activeSnapshot?.content ?? config.csvDefault;
+	$: tsvText = activeSnapshot?.content ?? config.csvDefault;
 	$: selectedFile = activeSnapshot?.file ?? "";
 
 	let parseError: string = "";
@@ -55,45 +55,44 @@
 	let mdModalShow: boolean = false;
 	let decorateMd: boolean = true;
 
-	function parseCsvLine(line: string): string[] {
-		const out: string[] = [];
-		let cur = "";
-		let inQuotes = false;
-		for (let i = 0; i < line.length; i++) {
-			const ch = line[i];
-			if (inQuotes) {
-				if (ch === '"') {
-					if (line[i + 1] === '"') { cur += '"'; i++; }
-					else { inQuotes = false; }
-				} else { cur += ch; }
-			} else {
-				if (ch === ",") { out.push(cur); cur = ""; }
-				else if (ch === '"' && cur === "") { inQuotes = true; }
-				else { cur += ch; }
+	function unescapeTsvCell(s: string): string {
+		// Inverso del escape del endpoint: \\ \t \r \n
+		let out = "";
+		for (let i = 0; i < s.length; i++) {
+			const ch = s[i];
+			if (ch === "\\" && i + 1 < s.length) {
+				const next = s[i + 1];
+				if (next === "\\") { out += "\\"; i++; continue; }
+				if (next === "t")  { out += "\t"; i++; continue; }
+				if (next === "r")  { out += "\r"; i++; continue; }
+				if (next === "n")  { out += "\n"; i++; continue; }
 			}
+			out += ch;
 		}
-		out.push(cur);
 		return out;
 	}
 
-	function parseCsv(text: string): { headers: string[]; rows: Row[]; error: string } {
-		const clean = (text ?? "").replace(/\r/g, "").trim();
-		if (!clean) return { headers: [], rows: [], error: "" };
-		const lines = clean.split("\n").filter((l) => l.trim().length > 0);
-		if (lines.length < 1) return { headers: [], rows: [], error: "CSV vacío" };
-		const hdrs = parseCsvLine(lines[0]).map((h) => h.trim());
+	function parseTsv(text: string): { headers: string[]; rows: Row[]; error: string } {
+		const clean = (text ?? "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+		if (!clean.trim()) return { headers: [], rows: [], error: "" };
+		const lines = clean.split("\n");
+		// quitar líneas totalmente vacías al final
+		while (lines.length > 0 && lines[lines.length - 1] === "") lines.pop();
+		if (lines.length < 1) return { headers: [], rows: [], error: "TSV vacío" };
+		const hdrs = lines[0].split("\t").map((h) => unescapeTsvCell(h).trim());
 		const data: Row[] = [];
 		for (let i = 1; i < lines.length; i++) {
-			const cells = parseCsvLine(lines[i]);
+			if (lines[i] === "") continue;
+			const cells = lines[i].split("\t");
 			const row: Row = {};
-			for (let j = 0; j < hdrs.length; j++) row[hdrs[j]] = (cells[j] ?? "").trim();
+			for (let j = 0; j < hdrs.length; j++) row[hdrs[j]] = unescapeTsvCell(cells[j] ?? "");
 			data.push(row);
 		}
 		return { headers: hdrs, rows: data, error: "" };
 	}
 
 	$: {
-		const r = parseCsv(csvText);
+		const r = parseTsv(tsvText);
 		headers = r.headers;
 		rows = r.rows;
 		parseError = r.error;
@@ -107,8 +106,72 @@
 		return v === "" || v === undefined || v === null;
 	}
 
+	const INSERT_BATCH_SIZE = 900;
+
+	const reInt = /^-?\d+$/;
+	const reDec = /^-?\d+(\.\d+)?$/;
+	const reIso = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,7}))?)?(Z|[+-]\d{2}:?\d{2})?)?$/;
+
+	function isStringType(type: string): boolean {
+		const t = type.toUpperCase();
+		return t.startsWith("VARCHAR") || t.startsWith("NVARCHAR")
+			|| t.startsWith("CHAR") || t.startsWith("NCHAR")
+			|| t === "TEXT" || t === "NTEXT";
+	}
+
+	function isIntType(type: string): boolean {
+		const t = type.toUpperCase();
+		return t === "INT" || t === "BIGINT" || t === "SMALLINT" || t === "TINYINT";
+	}
+
+	function isDecimalType(type: string): boolean {
+		const t = type.toUpperCase();
+		return t.startsWith("DECIMAL") || t.startsWith("NUMERIC")
+			|| t === "FLOAT" || t === "REAL" || t.startsWith("MONEY");
+	}
+
+	function isDateType(type: string): boolean {
+		const t = type.toUpperCase();
+		return t === "DATE" || t === "DATETIME" || t === "DATETIME2"
+			|| t === "SMALLDATETIME" || t === "DATETIMEOFFSET" || t === "TIME";
+	}
+
+	function formatDateLiteral(value: string, type: string): string | null {
+		const m = reIso.exec(value.trim());
+		if (!m) return null;
+		const [, y, mo, d, hh, mi, ss, frac, tz] = m;
+		const t = type.toUpperCase();
+		if (t === "DATE") return `'${y}-${mo}-${d}'`;
+		const time = `${hh ?? "00"}:${mi ?? "00"}:${ss ?? "00"}`;
+		const fracPart = frac ? `.${frac.padEnd(7, "0").slice(0, 7)}` : "";
+		if (t === "DATETIMEOFFSET") {
+			let off = tz ?? "+00:00";
+			if (off === "Z") off = "+00:00";
+			else if (/^[+-]\d{4}$/.test(off)) off = `${off.slice(0, 3)}:${off.slice(3)}`;
+			return `'${y}-${mo}-${d} ${time}${fracPart} ${off}'`;
+		}
+		if (t === "SMALLDATETIME" || t === "DATETIME") {
+			return `'${y}-${mo}-${d} ${time}'`;
+		}
+		// DATETIME2
+		return `'${y}-${mo}-${d} ${time}${fracPart}'`;
+	}
+
 	function castValue(value: string, type: string): string {
 		if (isEmpty(value) || value.toUpperCase() === "NULL") return "NULL";
+		if (isStringType(type)) return escapeStr(value);
+		if (type.toUpperCase() === "BIT") {
+			const v = value.trim().toUpperCase();
+			if (v === "1" || v === "TRUE")  return "1";
+			if (v === "0" || v === "FALSE") return "0";
+			return `TRY_CAST(${escapeStr(value)} AS BIT)`;
+		}
+		if (isIntType(type) && reInt.test(value.trim())) return value.trim();
+		if (isDecimalType(type) && reDec.test(value.trim())) return value.trim();
+		if (isDateType(type)) {
+			const lit = formatDateLiteral(value, type);
+			if (lit) return lit;
+		}
 		return `TRY_CAST(${escapeStr(value)} AS ${type})`;
 	}
 
@@ -126,16 +189,25 @@
 			const vals = cols.map((c: RebuildColumn) => castValue(row[c.name] ?? "", c.type));
 			valuesLines.push(`    (${vals.join(", ")})`);
 		}
+		const batches: string[][] = [];
+		for (let i = 0; i < valuesLines.length; i += INSERT_BATCH_SIZE) {
+			batches.push(valuesLines.slice(i, i + INSERT_BATCH_SIZE));
+		}
 		const lines: string[] = [];
 		lines.push(`-- Paso 3 · Insertar ${rows.length} filas en ${config.tableName} desde CSV (solo si la tabla está vacía)`);
+		lines.push(`-- ${batches.length} lote(s) de hasta ${INSERT_BATCH_SIZE} filas (límite SQL Server: 1000 por INSERT)`);
 		lines.push(`SET XACT_ABORT ON;`);
 		lines.push(`BEGIN TRAN;`);
 		lines.push(``);
 		lines.push(`IF NOT EXISTS (SELECT 1 FROM ${config.tableName})`);
 		lines.push(`BEGIN`);
-		lines.push(`    INSERT INTO ${config.tableName} (${colNames})`);
-		lines.push(`    VALUES`);
-		lines.push(valuesLines.join(",\n") + ";");
+		batches.forEach((batch, idx) => {
+			if (idx > 0) lines.push(``);
+			lines.push(`    -- Lote ${idx + 1}/${batches.length} (${batch.length} filas)`);
+			lines.push(`    INSERT INTO ${config.tableName} (${colNames})`);
+			lines.push(`    VALUES`);
+			lines.push(batch.join(",\n") + ";");
+		});
 		lines.push(`END;`);
 		lines.push(``);
 		lines.push(`COMMIT TRAN;`);
@@ -167,7 +239,7 @@
 <Toaster />
 
 <AccordionActions
-	title="{config.tableName} · Reconstrucción desde CSV"
+	title="{config.tableName} · Construcción desde CSV"
 	icon={config.icon}
 	count={rows.length}
 	inner
@@ -237,7 +309,7 @@
 			{#if decorateMd}
 				<BitacoraNote flat mdSource={csvAsMarkdown} />
 			{:else}
-				<pre class="csv-raw">{csvText}</pre>
+				<pre class="csv-raw">{tsvText}</pre>
 			{/if}
 		</div>
 	</Modal>
@@ -285,6 +357,8 @@
 			height="320px"
 		/>
 	{/if}
+
+	<slot />
 </AccordionActions>
 
 <style>

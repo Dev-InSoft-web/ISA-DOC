@@ -1,0 +1,79 @@
+<script lang="ts">
+	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
+	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
+
+	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
+
+	const sqlActualizarIdriver: string = `-- =====================================================================
+-- Actualizar CAPAC_CURSOS.IDRIVER usando CAPAC_CURSOS_OLD.DRIVERSTRUCT
+-- ---------------------------------------------------------------------
+-- En CAPAC_CURSOS_OLD la columna DRIVERSTRUCT trae el NOMBRE del driver
+-- (no el id). En CAPAC_CURSOS la columna IDRIVER debe ser el ID que vive
+-- en CAPAC_DRIVERS. Este script resuelve el nombre → id por cada curso
+-- y actualiza IDRIVER en CAPAC_CURSOS.
+--
+-- Reglas:
+--  - Match exacto (case-sensitive según el COLLATE de la BD) entre
+--    LTRIM(RTRIM(DRIVERSTRUCT)) y CAPAC_DRIVERS.NDRIVER.
+--  - Si hay más de un driver con el mismo nombre, se toma el de menor
+--    IDRIVER (TOP 1 ORDER BY IDRIVER).
+--  - Sólo actualiza filas donde el IDRIVER actual difiere del resuelto
+--    (idempotente).
+--  - Filas con DRIVERSTRUCT vacío o sin match se ignoran (no se tocan).
+--    Usa el script de diagnóstico previo para detectar pendientes.
+-- =====================================================================
+SET XACT_ABORT ON;
+BEGIN TRAN;
+
+;WITH resolved AS (
+    SELECT
+        c.ICURSO,
+        c.IDRIVER AS CurrentIdriver,
+        d.IDRIVER AS NewIdriver
+    FROM CAPAC_CURSOS c
+    JOIN CAPAC_CURSOS_OLD o ON o.ICURSO = c.ICURSO
+    OUTER APPLY (
+        SELECT TOP 1 dd.IDRIVER
+        FROM CAPAC_DRIVERS dd
+        WHERE dd.NDRIVER = LTRIM(RTRIM(o.DRIVERSTRUCT))
+        ORDER BY dd.IDRIVER
+    ) d
+    WHERE o.DRIVERSTRUCT IS NOT NULL
+      AND LTRIM(RTRIM(o.DRIVERSTRUCT)) <> ''
+      AND d.IDRIVER IS NOT NULL
+)
+UPDATE c
+SET c.IDRIVER = r.NewIdriver
+FROM CAPAC_CURSOS c
+JOIN resolved r ON r.ICURSO = c.ICURSO
+WHERE ISNULL(c.IDRIVER, -1) <> r.NewIdriver;
+
+DECLARE @rows INT = @@ROWCOUNT;
+PRINT CONCAT(N'Filas actualizadas: ', @rows);
+
+COMMIT TRAN;
+`;
+</script>
+
+<Toaster />
+
+<hr class="subtle-sep" />
+
+<SqlExecCard
+	title="UPDATE · CAPAC_CURSOS.IDRIVER ← CAPAC_DRIVERS.IDRIVER (por nombre)"
+	sql={sqlActualizarIdriver}
+	desc="Resuelve DRIVERSTRUCT (nombre) → CAPAC_DRIVERS.IDRIVER y actualiza CAPAC_CURSOS. Idempotente."
+	confirmKind="warning"
+	checkKey="2026-05-04.driverstruct.update"
+	{executeSql}
+	height="320px"
+/>
+
+<style>
+	.subtle-sep {
+		border: 0;
+		border-top: 1px dashed var(--is-b-color, #8885);
+		margin: 0.75rem 0 0.25rem;
+		opacity: 0.6;
+	}
+</style>
