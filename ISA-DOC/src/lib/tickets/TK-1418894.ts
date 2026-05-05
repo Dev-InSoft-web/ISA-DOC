@@ -1,4 +1,4 @@
-import { methodBadge, icon, code as codeI } from "./snippets";
+import { methodBadge, iconSvg, code as codeI } from "./snippets";
 
 const ENTITY_ICON: Record<string, string> = {
 	Permisos: "mdi:shield-key-outline",
@@ -31,24 +31,26 @@ interface Row {
 	operacion: string;
 }
 
-function entityCell(entidad: string): string {
+// Encierra el icono y el texto de la entidad en un único <span> con `color`,
+// usando inline-flex para alinear vertical/horizontalmente. El SVG inline
+// (vía `iconSvg`) hereda el color del ancestro vía `currentColor`.
+async function entityCell(entidad: string): Promise<string> {
 	const i = ENTITY_ICON[entidad];
 	const c = ENTITY_COLOR[entidad] ?? "#666";
-	const ic = i ? icon(i, { size: 16, color: c }) + "&nbsp;" : "";
-	return `${ic}<span>${entidad}</span>`;
+	const ic = i ? await iconSvg(i, { size: 16 }) : "";
+	return (
+		`<span style="display:inline-flex;align-items:center;gap:4px;color:${c};font-weight:600;">` +
+		`${ic}<span>${entidad}</span>` +
+		`</span>`
+	);
 }
 
-function tableCell(entidad: string): string {
-	const t = ENTITY_TABLE[entidad];
-	if (!t) return "";
-	return `${icon("mdi:database-outline", { color: "#888", size: 14 })}&nbsp;${codeI(t)}`;
-}
-
-function row(r: Row): string {
+async function row(r: Row): Promise<string> {
+	const entCell = await entityCell(r.entidad);
 	return (
 		`<tr>` +
-		`<td>${entityCell(r.entidad)}</td>` +
-		`<td>${tableCell(r.entidad)}</td>` +
+		`<td>${entCell}</td>` +
+		`<td>${ENTITY_TABLE[r.entidad] ?? ""}</td>` +
 		`<td>${methodBadge(r.method)}</td>` +
 		`<td>${r.endpoint}</td>` +
 		`<td>${r.operacion}</td>` +
@@ -58,11 +60,11 @@ function row(r: Row): string {
 
 const HEAD =
 	`<thead><tr>` +
-	`<th>${icon("mdi:tag-outline", { color: "#ffffff" })}&nbsp;Entidad</th>` +
-	`<th>${icon("mdi:database-outline", { color: "#ffffff" })}&nbsp;Tabla BD</th>` +
-	`<th>${icon("mdi:swap-horizontal", { color: "#ffffff" })}&nbsp;Método</th>` +
-	`<th>${icon("mdi:link-variant", { color: "#ffffff" })}&nbsp;Endpoint</th>` +
-	`<th>${icon("mdi:format-list-numbered", { color: "#ffffff" })}&nbsp;Operación</th>` +
+	`<th>Entidad</th>` +
+	`<th>Tabla BD</th>` +
+	`<th>Método</th>` +
+	`<th>Endpoint</th>` +
+	`<th>Operación</th>` +
 	`</tr></thead>`;
 
 const COLGROUP =
@@ -100,40 +102,83 @@ const CRUD: Row[] = [
 	{ entidad: "Drivers", method: "DELETE", endpoint: "/api/driver/:idriver", operacion: "400 Eliminar Driver" },
 ];
 
-const tablaReadOnly =
-	`<table border="1">` + COLGROUP + HEAD +
-	`<tbody>` + READONLY.map(row).join("") + `</tbody></table>`;
-
-const tablaCrud =
-	`<table border="1">` + COLGROUP + HEAD +
-	`<tbody>` + CRUD.map(row).join("") + `</tbody></table>`;
+async function buildTabla(rows: Row[]): Promise<string> {
+	const body = (await Promise.all(rows.map(row))).join("");
+	return `<table border="1">${COLGROUP}${HEAD}<tbody>${body}</tbody></table>`;
+}
 
 const intro =
-	`<img src="https://i.ibb.co/99cnjWGK/01.png" style="max-height: 300px; max-width: 100%; display: block; margin-bottom: 15px;">` +
 	`<div>Actualización de la colección de Postman para el módulo de Capacitación. ` +
 	`Se agregaron las carpetas de <strong>Permisos</strong> y <strong>Temas</strong> ` +
 	`como catálogos de solo lectura, orientados a alimentar componentes ${codeI("BtnRef")} ` +
 	`desde el frontend. La descripción general fue actualizada.</div>`;
 
-const notas =
-	`<div style="margin-top: 15px;">` +
-	`${icon("mdi:information-outline", { color: "#3F8AE0", size: 18 })}&nbsp;` +
-	`<strong>Notas de implementación:</strong></div>` +
-	`<ul>` +
-	`<li>${icon("mdi:lock-outline", { color: "#7C5CC1" })}&nbsp;` +
-	`Todos los endpoints requieren el encabezado ${codeI("Authorization: Bearer {{token}}")}.</li>` +
-	`<li>${icon("mdi:filter-variant", { color: "#3F8AE0" })}&nbsp;` +
-	`El parámetro de URL ${codeI(":filtro")} equivale a ${codeI("btoa(JSON.stringify(filtro))")}. ` +
-	`El valor por defecto (${codeI("{}")}) es ${codeI("e30=")}.</li>` +
-	`<li>${icon("mdi:eye-off-outline", { color: "#6c757d" })}&nbsp;` +
-	`Permisos y Temas están registrados como ${codeI("RelNoSysrecurso")} y tienen omitidas las mutaciones en ${codeI("FN-Capacitacion.ts")}.</li>` +
-	`</ul>`;
+// Para alinear icono + texto sin tablas (email-safe). Usamos inline-flex
+// + gap, y el color del icono se sincroniza con el texto vía `currentColor`.
+const NOTE_COLOR = "#777";
+async function note(iconName: string, html: string, color: string = NOTE_COLOR): Promise<string> {
+	const ic = await iconSvg(iconName, { size: 16 });
+	return (
+		`<li style="border:1px solid #80808030;border-radius:4px;padding:0.5rem;margin-bottom:0.5rem;list-style:none;">` +
+		`<span style="display:inline-flex;align-items:center;gap:4px;color:${color};">` +
+		`${ic}<span>${html}</span>` +
+		`</span></li>`
+	);
+}
 
-export const bodyTK1418894: string =
-	intro +
-	`<h3>${icon("mdi:book-open-variant", { color: "#1e90ff", size: 18 })}&nbsp;Catálogos de Solo Lectura (Nuevos):</h3>` +
-	tablaReadOnly +
-	`<h3>${icon("mdi:database-cog-outline", { color: "#1e90ff", size: 18 })}&nbsp;Resumen de Endpoints Principales (CRUD):</h3>` +
-	tablaCrud +
-	notas;
+async function buildNotas(): Promise<string> {
+	const headerIcon = await iconSvg("mdi:information-outline", { size: 18 });
+	const items = await Promise.all([
+		note(
+			"mdi:lock-outline",
+			`Todos los endpoints requieren el encabezado ${codeI("Authorization: Bearer {{token}}")}.`,
+		),
+		note(
+			"mdi:filter-variant",
+			`El parámetro de URL ${codeI(":filtro")} equivale a ${codeI("btoa(JSON.stringify(filtro))")}. ` +
+			`El valor por defecto (${codeI("{}")}) es ${codeI("e30=")}.`,
+		),
+		note(
+			"mdi:eye-off-outline",
+			`No se creó ${codeI("sysrecurso")} para Permisos ni Temas: están registrados como ` +
+			`${codeI("RelNoSysrecurso")} y tienen omitidas las mutaciones en ${codeI("FN-Capacitacion.ts")}. ` +
+			`Por esa razón siempre pueden consultarse vía API y no tienen seguridad implementada.`,
+		),
+		note(
+			"mdi:clock-outline",
+			`La tarea ya estaba terminada antes de la creación de este ticket; la documentación ` +
+			`se demoró por la atención simultánea de otras tareas.`,
+		),
+	]);
+	return (
+		`<div style="margin-top: 15px;display:inline-flex;align-items:center;gap:4px;color:${NOTE_COLOR};">` +
+		`${headerIcon}<strong>Notas de implementación:</strong></div>` +
+		`<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`
+	);
+}
+
+// Color de los <h3> definido en el template (DodgerBlue ≈ #1e90ff). El SVG
+// hereda el color vía `currentColor`.
+async function h3Iconized(iconName: string, label: string): Promise<string> {
+	const c = "#1e90ff";
+	const ic = await iconSvg(iconName, { size: 18 });
+	return (
+		`<h3 style="display:flex;align-items:center;gap:6px;color:${c};margin-top:1.25rem;">` +
+		`${ic}<span>${label}</span>` +
+		`</h3>`
+	);
+}
+
+export async function buildBodyTK1418894(): Promise<string> {
+	const [tablaReadOnly, tablaCrud, h3a, h3b, notas] = await Promise.all([
+		buildTabla(READONLY),
+		buildTabla(CRUD),
+		h3Iconized("mdi:book-open-variant", "Catálogos de Solo Lectura (Nuevos):"),
+		h3Iconized("mdi:database-cog-outline", "Resumen de Endpoints Principales (CRUD):"),
+		buildNotas(),
+	]);
+	return intro + h3a + tablaReadOnly + h3b + tablaCrud + notas;
+}
+
+export const bodyTK1418894: Promise<string> = buildBodyTK1418894();
 

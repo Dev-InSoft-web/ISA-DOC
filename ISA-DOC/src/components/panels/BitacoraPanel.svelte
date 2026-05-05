@@ -98,7 +98,7 @@
 	<Accordion
 		title="2026-05-04 — Capacitación: limpieza, migración IPLANPADRE, reconstrucción CAPAC_*_OLD y snapshots"
 		titleIcon="mdi:calendar"
-		open={false}
+		open={true}
 	>
 		<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" open={false} inner>
 			<BitacoraNote

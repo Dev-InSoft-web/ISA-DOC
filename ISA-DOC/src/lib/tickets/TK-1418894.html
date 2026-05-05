@@ -1,0 +1,46 @@
+<div>Actualización de la colección de Postman para el módulo de Capacitación. Se agregaron las carpetas de <strong>Permisos</strong> y <strong>Temas</strong> como catálogos de solo lectura, orientados a alimentar componentes <code>BtnRef</code> desde el frontend. La descripción general fue actualizada.</div>
+
+<h3>Catálogos de Solo Lectura (Nuevos):</h3>
+<table border="1">
+    <thead>
+        <tr><th>Entidad</th><th>Método</th><th>Endpoint</th><th>Operación</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Permisos</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/permisos/:filtro</td><td>100 Listar Permisos</td></tr>
+        <tr><td>Permisos</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/permiso/:ipermiso</td><td>110 Obtener Permiso</td></tr>
+        <tr><td>Temas</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/temas/:filtro</td><td>100 Listar Temas</td></tr>
+        <tr><td>Temas</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/tema/:itema</td><td>110 Obtener Tema</td></tr>
+    </tbody>
+</table>
+
+<h3>Resumen de Endpoints Principales (CRUD):</h3>
+<table border="1">
+    <thead>
+        <tr><th>Entidad</th><th>Método</th><th>Endpoint</th><th>Operación</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Cursos</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/cursos/:filtro</td><td>100 Listar Cursos</td></tr>
+        <tr><td>Cursos</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/curso/:icurso</td><td>110 Obtener Curso</td></tr>
+        <tr><td>Cursos</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/curso/recursoplan/:icurso</td><td>120 Obtener Recurso/Plan de Curso</td></tr>
+        <tr><td>Cursos</td><td style="font-weight:bold;color:#E2A03F;">POST</td><td>/api/curso</td><td>200 Crear Curso</td></tr>
+        <tr><td>Cursos</td><td style="font-weight:bold;color:#3F8AE0;">PUT</td><td>/api/curso/:icurso</td><td>300 Actualizar Curso</td></tr>
+        <tr><td>Cursos</td><td style="font-weight:bold;color:#D9534F;">DELETE</td><td>/api/curso/:icurso</td><td>400 Eliminar Curso</td></tr>
+        <tr><td>Planes de Estudio</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/planes/estudio/:filtro</td><td>100 Listar Planes de Estudio</td></tr>
+        <tr><td>Planes de Estudio</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/plan/estudio/:iplanestudio</td><td>110 Obtener Plan de Estudio</td></tr>
+        <tr><td>Planes de Estudio</td><td style="font-weight:bold;color:#E2A03F;">POST</td><td>/api/plan/estudio</td><td>200 Crear Plan de Estudio</td></tr>
+        <tr><td>Planes de Estudio</td><td style="font-weight:bold;color:#3F8AE0;">PUT</td><td>/api/plan/estudio/:iplanestudio</td><td>300 Actualizar Plan de Estudio</td></tr>
+        <tr><td>Planes de Estudio</td><td style="font-weight:bold;color:#D9534F;">DELETE</td><td>/api/plan/estudio/:iplanestudio</td><td>400 Eliminar Plan de Estudio</td></tr>
+        <tr><td>Drivers</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/drivers/:filtro</td><td>100 Listar Drivers</td></tr>
+        <tr><td>Drivers</td><td style="font-weight:bold;color:#2EAD56;">GET</td><td>/api/driver/:idriver</td><td>110 Obtener Driver</td></tr>
+        <tr><td>Drivers</td><td style="font-weight:bold;color:#E2A03F;">POST</td><td>/api/driver</td><td>200 Crear Driver</td></tr>
+        <tr><td>Drivers</td><td style="font-weight:bold;color:#3F8AE0;">PUT</td><td>/api/driver/:idriver</td><td>300 Actualizar Driver</td></tr>
+        <tr><td>Drivers</td><td style="font-weight:bold;color:#D9534F;">DELETE</td><td>/api/driver/:idriver</td><td>400 Eliminar Driver</td></tr>
+    </tbody>
+</table>
+
+<div style="margin-top: 15px;"><strong>Notas de implementación:</strong></div>
+<ul>
+    <li>Todos los endpoints requieren el encabezado <code>Authorization: Bearer {{token}}</code>.</li>
+    <li>El parámetro de URL <code>:filtro</code> equivale a <code>btoa(JSON.stringify(filtro))</code>. El valor por defecto (<code>{}</code>) es <code>e30=</code>.</li>
+    <li>Permisos y Temas están registrados como <code>RelNoSysrecurso</code> y tienen omitidas las mutaciones en <code>FN-Capacitacion.ts</code>.</li>
+</ul>

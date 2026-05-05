@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { Button, FlexLayout, Iconify, Text } from "@ingenieria_insoft/ispsveltecomponents";
 	import Accordion from "../_comps/containers/Accordion.svelte";
+	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
 	import { TICKETS, type TicketRegistro } from "../../lib/tickets";
 	import TicketViewerModal from "./TicketViewerModal.svelte";
 
 	let selected: TicketRegistro | null = null;
 	let bshow: boolean = false;
+
+	const ticketKeys: string[] = TICKETS.map((t) => `tickets.${t.id}`);
 
 	function abrir(t: TicketRegistro) {
 		selected = t;
@@ -14,6 +17,7 @@
 </script>
 
 <Accordion title="Tickets" titleIcon="mdi:ticket-confirmation-outline" count={TICKETS.length} open={false}>
+	<RevisadoCheck slot="title-extra" keys={ticketKeys} />
 	<FlexLayout direction="column" style="padding: 0.5rem;">
 		{#each TICKETS as t (t.id)}
 			<FlexLayout
@@ -36,9 +40,12 @@
 					</Text>
 				</FlexLayout>
 
-				<Button variant="solid" color="primary" style="width: fit-content;" onClick={() => abrir(t)}>
-					<Iconify icon="mdi:eye-outline" /> Ver
-				</Button>
+				<FlexLayout direction="row" items="center" style="gap: 0.5rem; width: fit-content;">
+					<RevisadoCheck key={`tickets.${t.id}`} />
+					<Button variant="solid" color="primary" style="width: fit-content;" onClick={() => abrir(t)}>
+						<Iconify icon="mdi:eye-outline" /> Ver
+					</Button>
+				</FlexLayout>
 			</FlexLayout>
 		{/each}
 	</FlexLayout>

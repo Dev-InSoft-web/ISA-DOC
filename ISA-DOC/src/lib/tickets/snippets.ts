@@ -72,6 +72,48 @@ export function icon(name: string, opts: IconOpts = {}): string {
 	);
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// iconSvg(name, opts) — versión asíncrona que **inserta el SVG inline** en
+// el HTML resultante. Usa `loadIcon` de ispsveltecomponents (cache global +
+// fallback iconify.design). Los SVG monocromáticos de Iconify usan
+// `currentColor`, por lo que el color se hereda del ancestro vía CSS
+// (`color:` en el `<span>` envolvente). Esto evita el truco del `?color=…`
+// y deja que el visor renderice la pieza de forma nativa.
+// ─────────────────────────────────────────────────────────────────────────
+import { loadIcon } from "@ingenieria_insoft/ispsveltecomponents";
+
+function injectSvgAttrs(svg: string, size: number, altText: string, extraStyle: string): string {
+	// 1) Quitar width/height/style fijos del SVG raíz para no chocar con los nuestros.
+	// 2) Inyectar width/height + style con tamaño/alineación y aria.
+	const baseStyle = `height:${size}px;width:${size}px;vertical-align:middle;display:inline-block;${extraStyle}`;
+	return svg.replace(/<svg\b([^>]*)>/i, (_m, attrs) => {
+		const cleaned = String(attrs)
+			.replace(/\swidth="[^"]*"/i, "")
+			.replace(/\sheight="[^"]*"/i, "")
+			.replace(/\sstyle="[^"]*"/i, "");
+		const aria = altText ? ` role="img" aria-label="${escapeHtml(altText)}"` : ` aria-hidden="true" focusable="false"`;
+		return `<svg${cleaned} width="${size}" height="${size}" style="${baseStyle}"${aria}>`;
+	});
+}
+
+const ICON_FALLBACK_CACHE = new Map<string, Promise<string>>();
+async function fetchIconSvgRaw(name: string): Promise<string> {
+	if (ICON_FALLBACK_CACHE.has(name)) return ICON_FALLBACK_CACHE.get(name)!;
+	const p = loadIcon(name).catch(() => "");
+	ICON_FALLBACK_CACHE.set(name, p);
+	return p;
+}
+
+export async function iconSvg(name: string, opts: IconOpts = {}): Promise<string> {
+	const size = opts.size ?? 16;
+	const altText = opts.alt ?? "";
+	const extra = opts.style ? `;${opts.style}` : "";
+	const raw = await fetchIconSvgRaw(name);
+	if (raw && raw.includes("<svg")) return injectSvgAttrs(raw, size, altText, extra);
+	// Fallback final: <img> sin ?color= (que el SVG resuelva el color con currentColor).
+	return icon(name, { size, alt: altText, style: opts.style });
+}
+
 export function statusBadge(status: string | number): string {
 	const code = String(status);
 	const n = parseInt(code, 10);

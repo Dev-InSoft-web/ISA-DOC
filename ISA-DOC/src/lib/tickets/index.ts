@@ -8,7 +8,7 @@ export interface TicketRegistro {
 	fechaSolicitud: string;
 	fechaEntrega?: string;
 	enlace?: string;
-	body: string;
+	body: Promise<string>;
 }
 
 export const TICKETS: TicketRegistro[] = [
@@ -23,6 +23,6 @@ export const TICKETS: TicketRegistro[] = [
 	},
 ];
 
-export function getTicketHtml(t: TicketRegistro): string {
-	return buildTicketHtml(t.body);
+export async function getTicketHtml(t: TicketRegistro): Promise<string> {
+	return buildTicketHtml(await t.body);
 }
