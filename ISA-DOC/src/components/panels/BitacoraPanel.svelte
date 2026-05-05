@@ -3,6 +3,7 @@
 	import IplanpadreToAtributoMigration from "../migration/IplanpadreToAtributoMigration.svelte";
 	import ImagenDocumentoDriverMigration from "../migration/ImagenDocumentoDriverMigration.svelte";
 	import CleanupTestDataMigration from "../migration/CleanupTestDataMigration.svelte";
+	import AddAuditColumnsMigration from "../migration/AddAuditColumnsMigration.svelte";
 	import OldRebuildSection from "../migration/OldRebuildSection.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import TicketsSection from "../tickets/TicketsSection.svelte";
@@ -15,6 +16,10 @@
 	import md_2026_05_04_isa from "../../lib/bitacora/2026-05-04-resumen-isa.md?raw";
 	import md_2026_05_04_isw_isp from "../../lib/bitacora/2026-05-04-resumen-isw-isp.md?raw";
 	import md_2026_05_04_iss from "../../lib/bitacora/2026-05-04-resumen-iss.md?raw";
+	import md_2026_05_05_isa from "../../lib/bitacora/2026-05-05-resumen-isa.md?raw";
+	import md_2026_05_05_isw_isp from "../../lib/bitacora/2026-05-05-resumen-isw-isp.md?raw";
+	import md_2026_05_05_iss from "../../lib/bitacora/2026-05-05-resumen-iss.md?raw";
+	import md_2026_05_05_seguimiento from "../../lib/bitacora/2026-05-05-resumen-seguimiento.md?raw";
 	import { REBUILD_TABLES } from "../../lib/migration/oldRebuildTables.ts";
 
 	const REBUILD_STEPS = ["drop", "create", "insert"] as const;
@@ -84,12 +89,37 @@
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
 			<!-- 2026-05-05 -->
 			<Accordion
-				title="2026-05-05 — Capacitación: IMAGENDRIVER / DOCUMENTODRIVER → atributos plan"
+				title="2026-05-05 — Capacitación: IMAGENDRIVER / DOCUMENTODRIVER → atributos plan + auditoría"
 				titleIcon="mdi:calendar"
 				open={true}
 			>
 				<RevisadoCheck slot="title-extra" keys={todayKeys} />
+
+				<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" open={false} inner>
+					<BitacoraNote
+						title="Proyecto ISA-DOC"
+						mdSource={md_2026_05_05_isa}
+						inner
+					/>
+					<BitacoraNote
+						title="ISW / ISP ClientesIS"
+						mdSource={md_2026_05_05_isw_isp}
+						inner
+					/>
+					<BitacoraNote
+						title="ISP-ClientesISServer / ISS-ClientesIS-ContaPymeU"
+						mdSource={md_2026_05_05_iss}
+						inner
+					/>
+					<BitacoraNote
+						title="Avances ContaPymeU (sin ISA-DOC)"
+						mdSource={md_2026_05_05_seguimiento}
+						inner
+					/>
+				</Accordion>
+
 				<ImagenDocumentoDriverMigration {executeSql} inner />
+				<AddAuditColumnsMigration {executeSql} inner />
 			</Accordion>
 
 			<!-- 2026-05-04 -->

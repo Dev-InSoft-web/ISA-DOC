@@ -6,7 +6,6 @@ import { bodyTK1420754 } from "./TK-1420754";
 import { bodyTK1420755 } from "./TK-1420755";
 import { bodyTK1420813 } from "./TK-1420813";
 import { bodyTK1420819 } from "./TK-1420819";
-import { bodyTKAuditCols } from "./TK-AUDIT-COLS";
 
 export interface TicketRegistro {
 	id: string;
@@ -20,14 +19,6 @@ export interface TicketRegistro {
 }
 
 export const TICKETS: TicketRegistro[] = [
-	{
-		id: "TK-AUDIT-COLS",
-		titulo: "Columnas de auditoría en CAPAC_CURSOS / CAPAC_PLANES_ESTUDIO",
-		solicitante: "Equipo Capacitación · Interno",
-		fechaSolicitud: "05/may./2026 03:30:00 pm",
-		resumen: "Script T-SQL idempotente para garantizar las columnas de auditoría (CRE/ULT) en las tablas CAPAC_CURSOS y CAPAC_PLANES_ESTUDIO; verifica cada columna y la crea solo si no existe.",
-		body: bodyTKAuditCols,
-	},
 	{
 		id: "TK-1420819",
 		titulo: "Campos vacíos grid curso",

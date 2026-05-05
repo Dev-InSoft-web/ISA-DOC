@@ -45,7 +45,8 @@
     {
       "flatpath": "8",
       "kind": "optional",
-      "name": "AUDITORIA"
+      "name": "AUDITORIA",
+      "active": true
     }
   ],
   "entities": {

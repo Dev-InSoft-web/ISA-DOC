@@ -45,6 +45,14 @@ export class SqlTreeAdapter extends RealtimeTreeAdapter<TSqlTableUX, TSqlNodeUX>
 		const auditOpt = this.obj.auditOptionalNode();
 		if (auditOpt) {
 			auditOpt.active = !!auditOpt.active;
+			// Si arranca activo pero sin columnas hijas (caso JSON inicial con
+			// `"active": true` y sin entries de COLUMN bajo AUDITORIA), rellenar
+			// con el conjunto por defecto sin emitir cambios.
+			if (auditOpt.active) {
+				const auditId = auditOpt.flatpath;
+				const hasChildren = this.obj.rows.some((r) => r.kind === "column" && r.ireference === auditId);
+				if (!hasChildren) this.setAuditEnabledInternal(true, false);
+			}
 		} else if (auditHiddenByTableId.get(this.obj.tableId) === true && this.obj.hasAudit()) {
 			this.setAuditEnabledInternal(false, false);
 		}

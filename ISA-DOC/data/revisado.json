@@ -47,5 +47,6 @@
   "2026-05-05.imgdoc.fase2a": true,
   "2026-05-05.imgdoc.fase2b": true,
   "2026-05-05.imgdoc.fase2c": true,
-  "tickets.TK-1420819": true
+  "tickets.TK-1420819": true,
+  "2026-05-05.audit.add_columns": true
 }

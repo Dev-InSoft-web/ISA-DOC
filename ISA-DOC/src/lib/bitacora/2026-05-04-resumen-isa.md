@@ -1,4 +1,4 @@
-# 2026-05-04 — ISA-DOC
+# ISA-DOC
 
 ## UI / Componentes
 - `ConfirmDialog`:

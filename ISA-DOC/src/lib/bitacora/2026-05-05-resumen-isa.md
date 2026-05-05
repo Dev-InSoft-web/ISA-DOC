@@ -1,4 +1,4 @@
-# 2026-05-05 — ISA-DOC
+# ISA-DOC
 
 ## Bitácora · pestañas y navegación
 - La home `/` ahora carga el panel **SQL** (la primera pestaña visible). El nav del header marca `SQL` como activa tanto para `/` como para `/sql`.

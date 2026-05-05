@@ -1,4 +1,4 @@
-# 2026-05-04 — ISS ClientesIS-ContaPymeU
+# ISS ClientesIS-ContaPymeU
 
 ## Migraciones de datos (SQL ejecutadas contra la BD del ISS)
 - **Limpieza de datos de prueba** (`CleanupTestDataMigration`): se consolidaron tres SQL idempotentes:

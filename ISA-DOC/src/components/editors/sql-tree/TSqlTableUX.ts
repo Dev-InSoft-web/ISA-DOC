@@ -101,14 +101,16 @@ export class TSqlTableUX {
 	/** Conjunto de columnas de auditoría por defecto (cuando se activa el switch). */
 	static defaultAuditColumns(): TableColumn[] {
 		return [
-			{ kind: "col", name: "IAPPULT", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
-			{ kind: "col", name: "IPULT", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
-			{ kind: "col", name: "IUSUARIOULT", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
-			{ kind: "col", name: "FHULT", type: "DATETIME2", nullable: "", defaultValue: "GETDATE()", primaryKey: false, extra: "" },
-			{ kind: "col", name: "IAPPCRE", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
-			{ kind: "col", name: "IPCRE", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
 			{ kind: "col", name: "IUSUARIOCRE", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IAPPCRE", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IEQUIPOCRE", type: "INT", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IPCRE", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
 			{ kind: "col", name: "FHCRE", type: "DATETIME2", nullable: "", defaultValue: "GETDATE()", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IUSUARIOULT", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IAPPULT", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IEQUIPOULT", type: "INT", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "IPULT", type: "VARCHAR(255)", nullable: "", defaultValue: "", primaryKey: false, extra: "" },
+			{ kind: "col", name: "FHULT", type: "DATETIME2", nullable: "", defaultValue: "GETDATE()", primaryKey: false, extra: "" },
 		];
 	}
 
