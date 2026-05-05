@@ -1,37 +1,54 @@
 import { writable, type Writable } from "svelte/store";
 
-const STORE_KEY = "bitacora.revisado";
-
 type RevisadoMap = Record<string, boolean>;
 
-function load(): RevisadoMap {
-	if (typeof window === "undefined") return {};
+const API_URL = "/api/revisado";
+
+export const revisadoStore: Writable<RevisadoMap> = writable<RevisadoMap>({});
+let loaded = false;
+
+async function loadFromServer(): Promise<void> {
+	if (typeof window === "undefined" || loaded) return;
+	loaded = true;
 	try {
-		const raw = window.localStorage.getItem(STORE_KEY);
-		return raw ? (JSON.parse(raw) as RevisadoMap) : {};
-	} catch {
-		return {};
-	}
+		const res = await fetch(API_URL, { headers: { "accept": "application/json" } });
+		if (!res.ok) return;
+		const data = (await res.json()) as RevisadoMap;
+		revisadoStore.set(data && typeof data === "object" ? data : {});
+	} catch { /* noop */ }
 }
 
-function persist(v: RevisadoMap): void {
+if (typeof window !== "undefined") void loadFromServer();
+
+let pending: Promise<void> = Promise.resolve();
+
+async function pushToServer(updates: RevisadoMap): Promise<void> {
 	if (typeof window === "undefined") return;
-	try { window.localStorage.setItem(STORE_KEY, JSON.stringify(v)); } catch { /* noop */ }
+	try {
+		const res = await fetch(API_URL, {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify(updates),
+		});
+		if (!res.ok) return;
+		const data = (await res.json()) as RevisadoMap;
+		if (data && typeof data === "object") revisadoStore.set(data);
+	} catch { /* noop */ }
 }
 
-export const revisadoStore: Writable<RevisadoMap> = writable<RevisadoMap>(load());
-
-revisadoStore.subscribe((v) => persist(v));
+function commit(updates: RevisadoMap): void {
+	revisadoStore.update((cur) => ({ ...cur, ...updates }));
+	pending = pending.then(() => pushToServer(updates));
+}
 
 export function setRevisado(key: string, value: boolean): void {
-	revisadoStore.update((cur) => ({ ...cur, [key]: value }));
+	if (!key) return;
+	commit({ [key]: value });
 }
 
 export function setRevisadoMany(keys: string[], value: boolean): void {
 	if (!keys.length) return;
-	revisadoStore.update((cur) => {
-		const next = { ...cur };
-		for (const k of keys) next[k] = value;
-		return next;
-	});
+	const updates: RevisadoMap = {};
+	for (const k of keys) if (k) updates[k] = value;
+	commit(updates);
 }

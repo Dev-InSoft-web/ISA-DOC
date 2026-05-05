@@ -2,7 +2,9 @@ import { buildTicketHtml } from "./template";
 import { bodyTK1418894 } from "./TK-1418894";
 import { bodyTK1420742 } from "./TK-1420742";
 import { bodyTK1420751 } from "./TK-1420751";
+import { bodyTK1420754 } from "./TK-1420754";
 import { bodyTK1420755 } from "./TK-1420755";
+import { bodyTK1420813 } from "./TK-1420813";
 
 export interface TicketRegistro {
 	id: string;
@@ -17,12 +19,28 @@ export interface TicketRegistro {
 
 export const TICKETS: TicketRegistro[] = [
 	{
+		id: "TK-1420813",
+		titulo: "Campos modo visualización en edición de formulario rápido curso",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "05/may./2026 12:26:30 pm",
+		resumen: "El ingeniero manifiesta que, al revisar los campos disponibles desde la vista de formulario rápido en el catálogo de curso, varios campos están en modo visualización (mensaje, nombres de la estructura, los de crear con seguridad). Solicita que, siempre que se ingrese por modificar, esos campos sean editables.",
+		body: bodyTK1420813,
+	},
+	{
 		id: "TK-1420755",
 		titulo: "Mostrar fecha de creación de curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 11:34:54 am",
 		resumen: "El ingeniero manifiesta que se debe mostrar la fecha de creación de cada curso en la vista correspondiente, para identificar cuándo fue registrado.",
 		body: bodyTK1420755,
+	},
+	{
+		id: "TK-1420754",
+		titulo: "Nombres en niveles por defecto en creación de curso",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "05/may./2026 11:33:30 am",
+		resumen: "El ingeniero manifiesta que en la pestaña “Estructura”, al momento de crear un curso, deberían mostrarse de manera predeterminada los nombres “Capítulo” y “Título” en los niveles, en lugar de aparecer como “Sin nombre”.",
+		body: bodyTK1420754,
 	},
 	{
 		id: "TK-1420751",
