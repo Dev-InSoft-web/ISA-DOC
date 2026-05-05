@@ -96,6 +96,10 @@ export function broadcastFragmentsInvalidated(): void {
 	state.io.current?.emit("fragments:invalidated", { at: Date.now() });
 }
 
+export function broadcastRevisadoChanged(updates: Record<string, boolean>): void {
+	state.io.current?.emit("revisado:changed", { updates, at: Date.now() });
+}
+
 function handleConnection(socket: Socket): void {
 	socket.emit("status", { running: [...runningProcesses.keys()] });
 	for (const [actionId, host] of detectedHosts.entries()) {

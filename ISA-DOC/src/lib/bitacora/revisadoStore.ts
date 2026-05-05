@@ -1,4 +1,5 @@
 import { writable, type Writable } from "svelte/store";
+import { io as ioClient, type Socket } from "socket.io-client";
 
 type RevisadoMap = Record<string, boolean>;
 
@@ -6,10 +7,10 @@ const API_URL = "/api/revisado";
 
 export const revisadoStore: Writable<RevisadoMap> = writable<RevisadoMap>({});
 let loaded = false;
+let socket: Socket | null = null;
 
 async function loadFromServer(): Promise<void> {
-	if (typeof window === "undefined" || loaded) return;
-	loaded = true;
+	if (typeof window === "undefined") return;
 	try {
 		const res = await fetch(API_URL, { headers: { "accept": "application/json" } });
 		if (!res.ok) return;
@@ -18,7 +19,23 @@ async function loadFromServer(): Promise<void> {
 	} catch { /* noop */ }
 }
 
-if (typeof window !== "undefined") void loadFromServer();
+function startSocket(): void {
+	if (typeof window === "undefined" || socket) return;
+	const url = `http://${location.hostname}:4401`;
+	socket = ioClient(url, { transports: ["websocket"] });
+	socket.on("connect", () => { void loadFromServer(); });
+	socket.on("revisado:changed", (msg: { updates?: RevisadoMap }) => {
+		const updates = msg?.updates;
+		if (!updates || typeof updates !== "object") return;
+		revisadoStore.update((cur) => ({ ...cur, ...updates }));
+	});
+}
+
+if (typeof window !== "undefined" && !loaded) {
+	loaded = true;
+	void loadFromServer();
+	startSocket();
+}
 
 let pending: Promise<void> = Promise.resolve();
 
