@@ -157,8 +157,8 @@ export function genServer(cfg: ResourceConfig, all: ResourceConfig[]): string {
 	const tableExpr = cfg.tableConst ?? `"${cfg.tableName}"`;
 	const baseClass = cfg.parentBaseClass ?? "TCapacitacionServer";
 
-	const todoStruct = cfg.relations.length
-		? `	todoStruct = (extra: iInfo${cfg.id} = {}): iInfo${cfg.id} => ({\n${cfg.relations
+	const JData2HighDetail = cfg.relations.length
+		? `	JData2HighDetail = (extra: iInfo${cfg.id} = {}): iInfo${cfg.id} => ({\n${cfg.relations
 				.map((r) => `		${r.alias}: { todo },`)
 				.join("\n")}\n		...extra,\n	});\n`
 		: "";
@@ -243,7 +243,7 @@ export class ${cfg.className}Server extends ${baseClass}<${cfg.className}> {
 	get Klass(): typeof ${cfg.className} { return ${cfg.className} }
 	get PrimaryKeys(): Array<string> { return [${pks.join(", ")}] }
 
-${todoStruct}${nestedConfig}${orderByMethod}${insertQryDetalle}${customMethods}
+${JData2HighDetail}${nestedConfig}${orderByMethod}${insertQryDetalle}${customMethods}
 }
 `;
 }
