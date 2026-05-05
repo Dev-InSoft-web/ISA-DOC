@@ -1,5 +1,5 @@
 // TK-1420813 — Campos modo visualización en edición de formulario rápido curso.
-import { code as codeI, codeBlock, img } from "./snippets";
+import { code as codeI, compareTable, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
@@ -10,24 +10,25 @@ const intro =
 	`flujo principal (${codeI("itdForm")}) y del propio detalle.</div>`;
 
 export async function buildBodyTK1420813(): Promise<string> {
-	const [h3a, h3b, h3c] = await Promise.all([
-		h3Iconized("mdi:eye-settings-outline", "Nueva firma de isDetailReadonly"),
+	const [h3b, h3c] = await Promise.all([
 		h3Iconized("mdi:file-document-edit-outline", "Detalles afectados"),
-		h3Iconized("mdi:swap-horizontal", "Antes / Después"),
+		h3Iconized("mdi:swap-horizontal", "Antes / Después — isDetailReadonly"),
 	]);
-	const snippetAfter = codeBlock(
-		`// _comps/containers/form/Detail.svelte
-export const isDetailReadonly = (actionParent: TDForm, actionDetail: TDForm): boolean =>
-  actionParent === "view" && actionDetail === "view";`,
-	);
-	const snippetBefore = codeBlock(
-		`// versión anterior (descartada)
+	const compare = await compareTable({
+		kind: "code",
+		lang: "typescript",
+		before:
+			`// versión anterior (descartada)
 export const isDetailReadonly = (
   actionParent: TDForm,
   actionDetail: TDForm,
   brapido: boolean,
 ): boolean => brapido || (actionParent === "view" && actionDetail === "view");`,
-	);
+		after:
+			`// _comps/containers/form/Detail.svelte
+export const isDetailReadonly = (actionParent: TDForm, actionDetail: TDForm): boolean =>
+  actionParent === "view" && actionDetail === "view";`,
+	});
 	const items = await Promise.all([
 		note(
 			"mdi:message-text-outline",
@@ -56,8 +57,7 @@ export const isDetailReadonly = (
 	const figGeneral = img("cursoCrearGeneral.jpg");
 	return (
 		intro + figGeneral +
-		h3a + snippetAfter +
-		h3c + snippetBefore +
+		h3c + compare +
 		h3b + `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`
 	);
 }

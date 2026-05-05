@@ -353,20 +353,114 @@ export function code(src: string): string {
 	return `<code style="${CODE_INLINE_STYLE}">${escapeHtml(src)}</code>`;
 }
 
-// Bloque multilínea: `<pre><code>…</code></pre>` con highlight vsdark sobre
-// fondo oscuro. `lang` permite elegir el parser (default "typescript").
-// Para clientes de email que ignoran `white-space:pre`, convertimos los
-// saltos de línea a <br> y los espacios de indentación a &nbsp;.
-export function codeBlock(src: string, lang: CodeLang = "typescript"): string {
+// Devuelve el contenido resaltado y email-safe (sin envoltorio `<pre>/<code>`),
+// con saltos `<br>` y espacios de indentación `&nbsp;`.
+function renderCodeInner(src: string, lang?: CodeLang): string {
 	const highlighted = highlightCode(src, lang);
-	const emailSafe = highlighted
+	return highlighted
 		.split("\n")
 		.map((line) => line.replace(/^ +/, (m) => "&nbsp;".repeat(m.length)))
 		.join("<br>");
+}
+
+import { codeImage } from "./codeImage";
+
+const CODE_BLOCK_DEFAULT_W = 720;
+const CODE_BLOCK_COMPARE_W = 360;
+
+function renderCodeImg(info: { url: string; width: number; height: number }, targetW: number): string {
+	let w = info.width;
+	let h = info.height;
+	if (w > targetW) {
+		h = Math.round((h * targetW) / w);
+		w = targetW;
+	}
 	return (
-		`<pre style="${CODE_BLOCK_PRE_STYLE}"><code style="${CODE_BLOCK_INNER_STYLE}">` +
-		emailSafe +
-		`</code></pre>`
+		`<img src="${info.url}" alt="" width="${w}" height="${h}" ` +
+		`style="display:block;width:${w}px;height:${h}px;` +
+		`border:0;border-radius:6px;margin:8px 0;background-color:#000;">`
+	);
+}
+
+// Bloque multilínea: `<img>` con el código renderizado por carbon.now.sh
+// (vía proxy carbonara), subido a imgbb. Tema vscode, fondo negro, sin
+// paddings y sin window controls. La imagen se cachea por sha1(lang+src),
+// así que la misma porción de código no se vuelve a generar/subir.
+export async function codeBlock(
+	src: string,
+	lang: CodeLang = "typescript",
+	targetW: number = CODE_BLOCK_DEFAULT_W,
+): Promise<string> {
+	const info = await codeImage(src, lang);
+	return renderCodeImg(info, targetW);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// compareTable — tabla email-safe con dos columnas "Antes / Después".
+// Si `kind:"code"`, las celdas usan el fondo vsdark (#1e1e1e) y se aplica
+// highlight como en `codeBlock` (sin el wrapper `<pre>` para que la celda
+// ocupe el fondo entero, sin doble borde ni doble padding).
+// Si `kind:"html"`, las celdas usan fondo claro y se renderiza el HTML tal
+// cual (útil para texto/listas).
+// ─────────────────────────────────────────────────────────────────────────
+
+export interface ComparePair {
+	before: string;
+	after: string;
+	kind?: "code" | "html";
+	lang?: CodeLang;
+	beforeLabel?: string;
+	afterLabel?: string;
+}
+
+export async function compareTable(pair: ComparePair): Promise<string> {
+	const kind = pair.kind ?? "code";
+	const beforeLabel = pair.beforeLabel ?? "Antes";
+	const afterLabel = pair.afterLabel ?? "Después";
+
+	const isCode = kind === "code";
+	const headerBg = isCode ? "#000000" : "#f5f5f5";
+	const headerFg = isCode ? "#d4d4d4" : "#333333";
+	const headerBorder = isCode ? "#333333" : "#dddddd";
+	const cellBg = isCode ? "#000000" : "#ffffff";
+	const cellFg = isCode ? "#d4d4d4" : "#333333";
+	const cellBorder = isCode ? "#333333" : "#dddddd";
+	const fontFamily = "Tahoma,Arial,Calibri,sans-serif";
+
+	const headerStyle =
+		`background-color:${headerBg};color:${headerFg};` +
+		`border:1px solid ${headerBorder};` +
+		`padding:6px 12px;font-family:${fontFamily};font-size:0.92em;` +
+		`font-weight:bold;text-align:left;width:50%;`;
+	const cellStyle =
+		`background-color:${cellBg};color:${cellFg};` +
+		`border:1px solid ${cellBorder};border-top:none;` +
+		`padding:${isCode ? "0" : "10px 12px"};font-family:${fontFamily} !important;` +
+		`font-size:0.92em;line-height:1.45;vertical-align:top;` +
+		`width:50%;word-break:break-word;overflow-wrap:anywhere;`;
+
+	const [beforeCell, afterCell] = await Promise.all([
+		isCode
+			? codeImage(pair.before, pair.lang ?? "typescript").then((i) => renderCodeImg(i, CODE_BLOCK_COMPARE_W))
+			: Promise.resolve(pair.before),
+		isCode
+			? codeImage(pair.after, pair.lang ?? "typescript").then((i) => renderCodeImg(i, CODE_BLOCK_COMPARE_W))
+			: Promise.resolve(pair.after),
+	]);
+
+	return (
+		`<table cellpadding="0" cellspacing="0" border="0" ` +
+		`style="border-collapse:collapse;width:100%;max-width:100%;` +
+		`table-layout:fixed;margin:8px 0;">` +
+		`<thead><tr>` +
+		`<th style="${headerStyle}">${escapeHtml(beforeLabel)}</th>` +
+		`<th style="${headerStyle};border-left:none;">${escapeHtml(afterLabel)}</th>` +
+		`</tr></thead>` +
+		`<tbody><tr>` +
+		`<td style="${cellStyle}">${beforeCell}</td>` +
+		`<td style="${cellStyle};border-left:none;">${afterCell}</td>` +
+		`</tr></tbody>` +
+		`</table>`
 	);
 }
 

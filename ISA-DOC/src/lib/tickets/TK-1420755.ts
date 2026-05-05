@@ -8,11 +8,10 @@ const intro =
 	`<b>Fecha de creación</b> (y los demás datos del registro) desde el selector de columnas.</div>`;
 
 export async function buildBodyTK1420755(): Promise<string> {
-	const [h3a, h3b] = await Promise.all([
+	const [h3a, h3b, snippet] = await Promise.all([
 		h3Iconized("mdi:table-column-plus-after", "Audit columns al final de cada Columns"),
 		h3Iconized("mdi:autorenew", "Bonus: autocompletado del título de un nodo"),
-	]);
-	const snippet = codeBlock(
+		codeBlock(
 		`Columns: TGridColumn<TCurso> = {
   icurso:  { caption: this.labelPk },
   ncurso:  { caption: "Nombre" },
@@ -25,7 +24,8 @@ export async function buildBodyTK1420755(): Promise<string> {
   ...ColOptionDatosCre, // fhcre, ipcre, itercerocre, igrupocre, irolcre, …
   ...ColOptionDatosUlt, // fhult, ipult, iterceroult, igrupoult, irolult, …
 };`,
-	);
+		),
+	]);
 	const items = await Promise.all([
 		note(
 			"mdi:table-eye",

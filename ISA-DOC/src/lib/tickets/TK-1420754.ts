@@ -8,16 +8,18 @@ const intro =
 	`del driver, dejando “Capítulo” y “Título” cuando son dos niveles.</div>`;
 
 export async function buildBodyTK1420754(): Promise<string> {
-	const h3 = await h3Iconized("mdi:format-list-numbered", "Defaults en TEstructuraCursoSlaveController.ensureLimit");
-	const snippet = codeBlock(
-		`const defaultsByLimit: Record<number, string[]> = { 2: ["Capítulo", "Título"] };
+	const [h3, snippet] = await Promise.all([
+		h3Iconized("mdi:format-list-numbered", "Defaults en TEstructuraCursoSlaveController.ensureLimit"),
+		codeBlock(
+			`const defaultsByLimit: Record<number, string[]> = { 2: ["Capítulo", "Título"] };
 const defaults = defaultsByLimit[limit];
 for (let i = Obj.estructuras.length; i < limit; i++) {
   const newItem = new TEstructuraCurso();
   [newItem.nnivel, newItem.qnivel] = [defaults?.[i] ?? "---", (i + 1).toString()];
   Obj.estructuras.push(newItem);
 }`,
-	);
+		),
+	]);
 	const items = await Promise.all([
 		note(
 			"mdi:map-marker-path",
