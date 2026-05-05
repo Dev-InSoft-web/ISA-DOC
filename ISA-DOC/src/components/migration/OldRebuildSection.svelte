@@ -16,7 +16,7 @@
 	const STEPS = ["drop", "create", "insert"] as const;
 	$: rebuildKeys = REBUILD_TABLES.flatMap((t) => STEPS.map((s) => `2026-05-04.rebuild.${t.tableName}.${s}`));
 
-	const tsvModules = import.meta.glob("../../lib/migration/csv/*.tsv", {
+	const tsvModules = import.meta.glob("../../lib/migration/csv/**/*.tsv", {
 		query: "?raw",
 		import: "default",
 		eager: true,
@@ -24,7 +24,7 @@
 
 	const stampsSet: Set<string> = new Set();
 	for (const p of Object.keys(tsvModules)) {
-		const m = /\/(\d{8}(?:\d{6})?)-(.+)\.tsv$/.exec(p);
+		const m = /(\d{8}(?:\d{6})?)-(.+)\.tsv$/.exec(p);
 		if (m) stampsSet.add(m[1]);
 	}
 	const stamps: string[] = Array.from(stampsSet).sort((a, b) => b.localeCompare(a));

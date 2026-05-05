@@ -12,7 +12,7 @@
 
 	interface Snapshot { file: string; date: string; content: string; }
 
-	const tsvModules = import.meta.glob("../../lib/migration/csv/*.tsv", {
+	const tsvModules = import.meta.glob("../../lib/migration/csv/**/*.tsv", {
 		query: "?raw",
 		import: "default",
 		eager: true,
@@ -20,11 +20,12 @@
 
 	const snapshotsByTable: Record<string, Snapshot[]> = {};
 	for (const [p, text] of Object.entries(tsvModules)) {
-		const m = /\/(\d{8}(?:\d{6})?)-(.+)\.tsv$/.exec(p);
+		const m = /(?:^|\/)((?:\d{4}-\d{2}-\d{2}\/)?)(\d{8}(?:\d{6})?)-(.+)\.tsv$/.exec(p);
 		if (!m) continue;
-		const date = m[1];
-		const table = m[2];
-		const file = `${date}-${table}.tsv`;
+		const dir = m[1];
+		const date = m[2];
+		const table = m[3];
+		const file = `${dir}${date}-${table}.tsv`;
 		if (!snapshotsByTable[table]) snapshotsByTable[table] = [];
 		snapshotsByTable[table].push({ file, date, content: text });
 	}

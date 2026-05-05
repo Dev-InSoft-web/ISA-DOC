@@ -25,6 +25,10 @@ function todayStamp(): string {
 	return `${y}${mo}${dd}${hh}${mi}${ss}`;
 }
 
+function dayFolder(stamp: string): string {
+	return `${stamp.slice(0, 4)}-${stamp.slice(4, 6)}-${stamp.slice(6, 8)}`;
+}
+
 function toTsv(headers: string[], rows: Array<Record<string, unknown>>): string {
 	const esc = (v: unknown): string => {
 		if (v === null || v === undefined) return "";
@@ -57,7 +61,9 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	const stamp = todayStamp();
-	fs.mkdirSync(TSV_DIR, { recursive: true });
+	const dayDir = dayFolder(stamp);
+	const targetDir = path.join(TSV_DIR, dayDir);
+	fs.mkdirSync(targetDir, { recursive: true });
 
 	const writeOne = async (cfg: RebuildTableConfig): Promise<{ table: string; source: string; file: string; rowCount: number }> => {
 		const pool = await getPool();
@@ -90,8 +96,9 @@ export const POST: APIRoute = async ({ request }) => {
 		const rows = (r.recordset ?? []) as Array<Record<string, unknown>>;
 		const tsv = toTsv(destCols, rows);
 		const fileName = `${stamp}-${cfg.tableName}.tsv`;
-		fs.writeFileSync(path.join(TSV_DIR, fileName), tsv, { encoding: "utf8" });
-		return { table: cfg.tableName, source, file: fileName, rowCount: rows.length };
+		const relPath = `${dayDir}/${fileName}`;
+		fs.writeFileSync(path.join(targetDir, fileName), tsv, { encoding: "utf8" });
+		return { table: cfg.tableName, source, file: relPath, rowCount: rows.length };
 	};
 
 	try {
