@@ -48,6 +48,19 @@ LANG_MAP: dict[str, str] = {
 }
 
 
+def _detect_chromium() -> str | None:
+    candidates = [
+        r"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        r"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+        r"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+        r"C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return None
+
+
 async def _render_one(client: Carbon, item: dict[str, Any]) -> None:
     key: str = item["key"]
     src: str = item["src"]
@@ -63,6 +76,12 @@ async def _render_one(client: Carbon, item: dict[str, Any]) -> None:
 
 
 async def main() -> None:
+    # En Windows el stdin por defecto puede ser cp1252; forzamos UTF-8
+    # para que los snippets con tildes/ñ lleguen intactos al renderer.
+    try:
+        sys.stdin.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
     raw = sys.stdin.read()
     if not raw.strip():
         sys.stderr.write("[render-code] stdin vacío, nada para hacer\n")
@@ -72,9 +91,12 @@ async def main() -> None:
         sys.stderr.write("[render-code] manifiesto vacío\n")
         return
     os.makedirs(OUT_DIR, exist_ok=True)
+    chromium_path = os.environ.get("CHROMIUM_PATH") or _detect_chromium()
+    if chromium_path:
+        sys.stderr.write(f"[render-code] usando Chromium local: {chromium_path}\n")
     client = Carbon(
         downloads_dir=OUT_DIR,
-        background_color="rgba(0,0,0,1)",
+        colour="rgba(0,0,0,1)",
         theme="vscode",
         window_controls=False,
         window_theme=None,
@@ -87,6 +109,7 @@ async def main() -> None:
         width_adjustment=True,
         export_size="2x",
         watermark=False,
+        chromium_path=chromium_path,
     )
     for item in items:
         await _render_one(client, item)

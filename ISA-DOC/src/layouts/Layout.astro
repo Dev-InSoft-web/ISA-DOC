@@ -20,11 +20,11 @@ const currentPath = Astro.url.pathname;
          <span class="isa-logo">ISA</span>
          <span class="isa-sep">|</span>
          <nav class="isa-nav">
-            <a href="/sql" class:list={["isa-nav-link", { active: currentPath === "/sql" }]}> SQL </a>
+            <a href="/" class:list={["isa-nav-link", { active: currentPath === "/" || currentPath === "/sql" }]}> SQL </a>
             <a href="/bitacora" class:list={["isa-nav-link", { active: currentPath === "/bitacora" }]}> Bitácora </a>
             <a href="/postman" class:list={["isa-nav-link", { active: currentPath === "/postman" }]}> Postman </a>
             <a href="/contapymeu" class:list={["isa-nav-link", { active: currentPath === "/contapymeu" }]}> Docs </a>
-            <a href="/" class:list={["isa-nav-link", { active: currentPath === "/" }]}> Actions </a>
+            <a href="/actions" class:list={["isa-nav-link", { active: currentPath === "/actions" }]}> Actions </a>
          </nav>
       </header>
       <main class="isa-main">
