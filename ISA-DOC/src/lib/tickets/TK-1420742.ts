@@ -1,9 +1,6 @@
 // TK-1420742 — Opciones para agregar contenido al crear curso.
 import { code as codeI, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
-import { imgUrl } from "./assetsRemote";
-const alertDriverImg = imgUrl("estructuraAlertDriver.jpg");
-const modalDriverImg = imgUrl("driverBtnRefModal.jpg");
 
 const intro =
 	`<div>Se ampliaron las opciones de captura de contenido al crear o editar un curso, ` +
@@ -51,8 +48,8 @@ export async function buildBodyTK1420742(): Promise<string> {
 			`de color para mantener consistencia con ${codeI("Alert.svelte")}.`,
 		),
 	]);
-	const figAlert = img(alertDriverImg, 720);
-	const figModal = img(modalDriverImg, 460);
+	const figAlert = img("estructuraAlertDriver.jpg");
+	const figModal = img("driverBtnRefModal.jpg");
 	return (
 		intro +
 		h3a + figAlert + figModal +

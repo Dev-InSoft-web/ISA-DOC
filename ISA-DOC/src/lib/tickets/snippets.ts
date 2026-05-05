@@ -371,18 +371,48 @@ export function codeBlock(src: string, lang: CodeLang = "typescript"): string {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// img(src, width?) — renderiza un <img> simple, email-safe.
-// `src` puede ser URL/data URI (recomendado importar con `?inline`).
+// img(filename, targetW?) — renderiza un <img> con dimensiones ya calculadas
+// a partir del width/height nativo guardado en `imgbb-map.json`.
+//
+// Algoritmo (determinístico, sin CSS):
+//   1. Por defecto se intenta `w = 360` (configurable por `targetW`).
+//   2. Se proyecta `h = round(w * natH / natW)`.
+//   3. Si `h < 300`, se fuerza `h = 300` y se recalcula `w = round(300 * natW / natH)`.
+//   4. Para imágenes muy verticales: si `h > 600`, se baja a `h = 600` y se
+//      recalcula `w = round(600 * natW / natH)`.
+//
+// Las medidas finales se emiten como atributos HTML `width` y `height` y
+// también en el `style` (sin `max-width`/`min-height`), para que clientes
+// de email respeten el tamaño exacto.
 // ─────────────────────────────────────────────────────────────────────────
 
-export function img(src: string, width = 360): string {
-	const w = Math.max(120, width);
-	// Default w=360. Para imágenes muy apaisadas (h < 300 a w=360) el browser
-	// hace prevalecer min-height:300 conservando aspect-ratio, lo que crece el
-	// ancho por encima de 360 hasta lograr 300 de alto.
+import { imgInfo } from "./assetsRemote";
+
+const IMG_DEFAULT_W = 360;
+const IMG_MIN_H = 300;
+const IMG_MAX_H = 600;
+
+function computeImgDims(natW: number, natH: number, targetW: number): { w: number; h: number } {
+	if (!natW || !natH) return { w: targetW, h: targetW };
+	let w = targetW;
+	let h = Math.round((w * natH) / natW);
+	if (h < IMG_MIN_H) {
+		h = IMG_MIN_H;
+		w = Math.round((h * natW) / natH);
+	}
+	if (h > IMG_MAX_H) {
+		h = IMG_MAX_H;
+		w = Math.round((h * natW) / natH);
+	}
+	return { w, h };
+}
+
+export function img(filename: string, targetW: number = IMG_DEFAULT_W): string {
+	const info = imgInfo(filename);
+	const { w, h } = computeImgDims(info.width, info.height, targetW);
 	return (
-		`<img src="${src}" alt="" width="${w}" style="display:block;` +
-		`width:${w}px;height:auto;min-height:300px;max-width:100%;` +
+		`<img src="${info.url}" alt="" width="${w}" height="${h}" ` +
+		`style="display:block;width:${w}px;height:${h}px;` +
 		`border:1px solid #ddd;border-radius:4px;margin:0.75rem 0;">`
 	);
 }

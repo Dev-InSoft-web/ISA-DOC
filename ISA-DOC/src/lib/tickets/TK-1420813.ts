@@ -1,8 +1,6 @@
 // TK-1420813 — Campos modo visualización en edición de formulario rápido curso.
 import { code as codeI, codeBlock, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
-import { imgUrl } from "./assetsRemote";
-const generalImg = imgUrl("cursoCrearGeneral.jpg");
 
 const intro =
 	`<div>El formulario rápido (${codeI("brapido = true")}) se abre desde el catálogo y debe limitarse a ` +
@@ -55,7 +53,7 @@ export const isDetailReadonly = (
 			`(detalles colapsados, tabs ocultas, fastdata, etc.); la editabilidad la decide el flujo de acción.`,
 		),
 	]);
-	const figGeneral = img(generalImg, 720);
+	const figGeneral = img("cursoCrearGeneral.jpg");
 	return (
 		intro + figGeneral +
 		h3a + snippetAfter +

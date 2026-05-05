@@ -1,8 +1,6 @@
 // TK-1420754 — Nombres en niveles por defecto en creación de curso.
 import { code as codeI, codeBlock, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
-import { imgUrl } from "./assetsRemote";
-const defaultsImg = imgUrl("estructuraDefaults.jpg");
 
 const intro =
 	`<div>Al crear un curso, la pestaña <b>Estructura</b> generaba niveles con la etiqueta ` +
@@ -33,7 +31,7 @@ for (let i = Obj.estructuras.length; i < limit; i++) {
 			`(p. ej. ${codeI('3: ["Tomo", "Capítulo", "Título"]')}).`,
 		),
 	]);
-	const fig = img(defaultsImg, 720);
+	const fig = img("estructuraDefaults.jpg");
 	return intro + h3 + snippet + fig + `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`;
 }
 

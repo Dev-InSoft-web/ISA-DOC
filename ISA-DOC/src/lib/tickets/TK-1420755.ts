@@ -1,9 +1,6 @@
 // TK-1420755 — Mostrar fecha de creación de curso.
 import { code as codeI, codeBlock, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
-import { imgUrl } from "./assetsRemote";
-const columnPickerImg = imgUrl("columnPickerAudit.jpg");
-const listadoImg = imgUrl("cursosListado.jpg");
 
 const intro =
 	`<div>Se incorporaron las columnas de auditoría (creación / última modificación) en todos ` +
@@ -63,8 +60,8 @@ export async function buildBodyTK1420755(): Promise<string> {
 			`(disparado una vez por ${codeI("flatPath")} para evitar sobrescribir ediciones manuales).`,
 		),
 	]);
-	const figListado = img(listadoImg, 720);
-	const figPicker = img(columnPickerImg, 320);
+	const figListado = img("cursosListado.jpg");
+	const figPicker = img("columnPickerAudit.jpg");
 	return (
 		intro + figListado +
 		h3a + snippet + figPicker +

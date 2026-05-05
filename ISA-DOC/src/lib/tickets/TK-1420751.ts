@@ -1,8 +1,6 @@
 // TK-1420751 — Catálogo de temas en cursos.
 import { code as codeI, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
-import { imgUrl } from "./assetsRemote";
-const temaModalImg = imgUrl("temaCatalogoModal.jpg");
 
 const intro =
 	`<div>Se reemplazó el controller de temas embebido en el módulo de Capacitación por el ` +
@@ -38,7 +36,7 @@ export async function buildBodyTK1420751(): Promise<string> {
 			`se refleja inmediatamente en los formularios de Curso, sin duplicar mantenimiento.`,
 		),
 	]);
-	const fig = img(temaModalImg, 460);
+	const fig = img("temaCatalogoModal.jpg");
 	return intro + h3 + fig + `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`;
 }
 
