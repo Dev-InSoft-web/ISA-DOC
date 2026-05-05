@@ -57,7 +57,7 @@
 	<FlexLayout direction="column" style="padding: 1.25rem 1.5rem 1rem;">
 		<Text>
 			{#each message.split("\n") as line}
-				<div style="text-align: center;"><small>{line}</small></div>
+				<div style="text-align: left;"><small>{line}</small></div>
 			{/each}
 		</Text>
 		<hr style="border: none; border-top: 1px solid var(--is-b-color); margin: 0.75rem 0; opacity: 0.6;" />

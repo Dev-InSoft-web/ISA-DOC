@@ -424,14 +424,16 @@
       display: grid;
       grid-template-columns: 280px 1fr;
       gap: 1.25rem;
-      align-items: start;
-      min-height: calc(100vh - 100px);
+      align-items: stretch;
+      flex: 1 1 auto;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
    }
 
    .docs-side {
-      position: sticky;
-      top: 1rem;
-      max-height: calc(100vh - 2rem);
+      height: 100%;
+      min-height: 0;
       overflow-y: auto;
       background: #1a1a1a;
       border: 1px solid #2c2c2c;
@@ -512,7 +514,10 @@
       color: #d4d4d4;
       font-size: 0.92rem;
       line-height: 1.65;
-      overflow-x: auto;
+      height: 100%;
+      min-height: 0;
+      min-width: 0;
+      overflow: auto;
    }
 
    /* Markdown rendered styles (grayscale only) */

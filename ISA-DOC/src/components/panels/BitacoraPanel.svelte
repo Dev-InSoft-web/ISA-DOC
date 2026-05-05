@@ -3,14 +3,20 @@
 	import IplanpadreToAtributoMigration from "../migration/IplanpadreToAtributoMigration.svelte";
 	import ImagenDocumentoDriverMigration from "../migration/ImagenDocumentoDriverMigration.svelte";
 	import CleanupTestDataMigration from "../migration/CleanupTestDataMigration.svelte";
-	import AddAuditColumnsMigration from "../migration/AddAuditColumnsMigration.svelte";
 	import OldRebuildSection from "../migration/OldRebuildSection.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import TicketsSection from "../tickets/TicketsSection.svelte";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
 	import Accordion from "../_comps/containers/Accordion.svelte";
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
+	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
 	import DbStatusBanner from "../_comps/status/DbStatusBanner.svelte";
+	import mdAuditAddIntro from "../../lib/bitacora/audit-cols-intro.md?raw";
+	import mdAuditDropIntro from "../../lib/bitacora/audit-cols-drop-intro.md?raw";
+	import sqlAddAuditColumns from "../../lib/migration/sql/add-audit-columns.sql?raw";
+	import sqlDropAuditColumns from "../../lib/migration/sql/drop-audit-columns.sql?raw";
+	import sqlActivateAllCursos from "../../lib/migration/sql/activate-all-cursos.sql?raw";
+	import sqlDeleteCursosSinDriver from "../../lib/migration/sql/delete-cursos-sin-driver.sql?raw";
 	import md_2026_05_03_curso_500 from "../../lib/bitacora/2026-05-03-curso-get-update-500.md?raw";
 	import md_cursos_isw_reglas from "../../lib/bitacora/cursos-isw-reglas.md?raw";
 	import md_2026_05_04_isa from "../../lib/bitacora/2026-05-04-resumen-isa.md?raw";
@@ -119,7 +125,70 @@
 				</Accordion>
 
 				<ImagenDocumentoDriverMigration {executeSql} inner />
-				<AddAuditColumnsMigration {executeSql} inner />
+
+				<AccordionActions
+					title="Auditoría y activación · Cursos / Planes de Estudio"
+					icon="mdi:database-cog"
+					count={4}
+					open={false}
+					inner
+				>
+					<RevisadoCheck
+						slot="title-extra"
+						keys={[
+							"2026-05-05.audit.add_columns",
+							"2026-05-05.audit.drop_columns",
+							"2026-05-05.cursos.activate_all",
+							"2026-05-05.cursos.delete_sin_driver",
+						]}
+					/>
+
+					<BitacoraNote flat mdSource={mdAuditAddIntro} />
+					<SqlExecCard
+						title="Auditoría · Crear columnas CRE/ULT en CAPAC_CURSOS y CAPAC_PLANES_ESTUDIO"
+						checkKey="2026-05-05.audit.add_columns"
+						sql={sqlAddAuditColumns}
+						desc="Verifica cada columna en CAPAC_CURSOS y CAPAC_PLANES_ESTUDIO; crea solo las que falten. Idempotente."
+						confirmKind="info"
+						confirmMessage={`Se verificarán y crearán (si no existen) las columnas de auditoría CRE/ULT en CAPAC_CURSOS y CAPAC_PLANES_ESTUDIO.\n\n¿Continuar?`}
+						{executeSql}
+						height="320px"
+					/>
+
+					<BitacoraNote flat mdSource={mdAuditDropIntro} />
+					<SqlExecCard
+						title="Auditoría · Eliminar columnas CRE/ULT en entidades distintas a Cursos y Planes de Estudio"
+						checkKey="2026-05-05.audit.drop_columns"
+						sql={sqlDropAuditColumns}
+						desc="Elimina las columnas CRE/ULT en las 7 tablas de Capacitación que no las requieren. Verifica cada columna y constraint antes de borrar. Idempotente."
+						confirmKind="danger"
+						confirmMessage={`Se eliminarán las 10 columnas de auditoría (IUSUARIOCRE/ULT, IAPPCRE/ULT, IEQUIPOCRE/ULT, IPCRE/ULT, FHCRE/ULT) en:\n\n  • CAPAC_DRIVERS\n  • CAPAC_TEMAS\n  • CAPAC_CURSOS_DE_PLANES_ESTUDIO\n  • CAPAC_SEGURIDADES_CURSOS\n  • CAPAC_PLANES_CURSOS\n  • CAPAC_ATRIBUTOS_PLANES\n  • CAPAC_ESTRUCTURAS_CURSOS\n\n¿Continuar?`}
+						{executeSql}
+						height="320px"
+					/>
+
+					<SqlExecCard
+						title="Cursos · Activar todos los registros (BACTIVO = 1)"
+						checkKey="2026-05-05.cursos.activate_all"
+						sql={sqlActivateAllCursos}
+						desc="Marca como activos todos los cursos en CAPAC_CURSOS. Solo actualiza las filas con BACTIVO ≠ 1 o NULL. Idempotente."
+						confirmKind="warning"
+						confirmMessage={`Se actualizarán todas las filas de CAPAC_CURSOS donde BACTIVO sea NULL o distinto de 1.\n\n¿Continuar?`}
+						{executeSql}
+						height="200px"
+					/>
+
+					<SqlExecCard
+						title="Cursos · Eliminar registros sin driver válido"
+						checkKey="2026-05-05.cursos.delete_sin_driver"
+						sql={sqlDeleteCursosSinDriver}
+						desc="Elimina los cursos cuyo IDRIVER es NULL o no referencia a un CAPAC_DRIVERS existente, junto con todas sus filas dependientes (atributos, planes, seguridades, estructuras, prerequisitos, historial). Transaccional e idempotente."
+						confirmKind="danger"
+						confirmMessage={`Se eliminarán de forma permanente los cursos sin driver junto con sus dependencias en:\n\n  • CAPAC_ATRIBUTOS_PLANES\n  • CAPAC_PLANES_CURSOS\n  • CAPAC_SEGURIDADES_CURSOS\n  • CAPAC_ESTRUCTURAS_CURSOS\n  • CAPAC_CURSOS_DE_PLANES_ESTUDIO\n  • CAPAC_CURSOS_PREREQUISITOS\n  • CAPAC_HISTORIALCURSO\n  • CAPAC_CURSOS\n\n¿Continuar?`}
+						{executeSql}
+						height="280px"
+					/>
+				</AccordionActions>
 			</Accordion>
 
 			<!-- 2026-05-04 -->
@@ -148,7 +217,6 @@
 
 				<AccordionActions
 					title="Capacitación: limpieza de prueba e IPLANPADRE"
-					icon="mdi:database-cog"
 					count={2}
 					open={false}
 					inner
