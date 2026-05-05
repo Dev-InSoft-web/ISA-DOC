@@ -12,7 +12,8 @@
 		"typecheck": "tsc --noEmit",
 		"verify:api": "tsx scripts/verify-api/verify_api.ts",
 		"verify:plan-order": "tsx scripts/verify-api/runs/run_plan_order.ts",
-		"postman:gen": "tsx scripts/verify-api/postman/generate_postman_items.ts"
+		"postman:gen": "tsx scripts/verify-api/postman/generate_postman_items.ts",
+		"assets:upload": "node scripts/upload-assets-imgbb.mjs"
 	},
 	"dependencies": {
 		"@astrojs/node": "^9.x",

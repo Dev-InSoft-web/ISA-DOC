@@ -82,17 +82,24 @@ export function icon(name: string, opts: IconOpts = {}): string {
 // ─────────────────────────────────────────────────────────────────────────
 import { loadIcon } from "@ingenieria_insoft/ispsveltecomponents";
 
-function injectSvgAttrs(svg: string, size: number, altText: string, extraStyle: string): string {
+function injectSvgAttrs(svg: string, size: number, altText: string, extraStyle: string, hardColor?: string): string {
 	// 1) Quitar width/height/style fijos del SVG raíz para no chocar con los nuestros.
 	// 2) Inyectar width/height + style con tamaño/alineación y aria.
+	// 3) Si recibimos `hardColor`, reemplazar `currentColor` por ese hex (algunos
+	//    visores no resuelven `currentColor` ni `inherit` correctamente).
 	const baseStyle = `height:${size}px;width:${size}px;vertical-align:middle;display:inline-block;${extraStyle}`;
-	return svg.replace(/<svg\b([^>]*)>/i, (_m, attrs) => {
+	const patched = hardColor
+		? svg.replace(/currentColor/g, hardColor)
+		: svg;
+	const fillAttr = hardColor ? ` fill="${hardColor}"` : "";
+	return patched.replace(/<svg\b([^>]*)>/i, (_m, attrs) => {
 		const cleaned = String(attrs)
 			.replace(/\swidth="[^"]*"/i, "")
 			.replace(/\sheight="[^"]*"/i, "")
-			.replace(/\sstyle="[^"]*"/i, "");
+			.replace(/\sstyle="[^"]*"/i, "")
+			.replace(/\sfill="[^"]*"/i, "");
 		const aria = altText ? ` role="img" aria-label="${escapeHtml(altText)}"` : ` aria-hidden="true" focusable="false"`;
-		return `<svg${cleaned} width="${size}" height="${size}" style="${baseStyle}"${aria}>`;
+		return `<svg${cleaned} width="${size}" height="${size}" style="${baseStyle}"${aria}${fillAttr}>`;
 	});
 }
 
@@ -109,9 +116,9 @@ export async function iconSvg(name: string, opts: IconOpts = {}): Promise<string
 	const altText = opts.alt ?? "";
 	const extra = opts.style ? `;${opts.style}` : "";
 	const raw = await fetchIconSvgRaw(name);
-	if (raw && raw.includes("<svg")) return injectSvgAttrs(raw, size, altText, extra);
-	// Fallback final: <img> sin ?color= (que el SVG resuelva el color con currentColor).
-	return icon(name, { size, alt: altText, style: opts.style });
+	if (raw && raw.includes("<svg")) return injectSvgAttrs(raw, size, altText, extra, opts.color);
+	// Fallback final: <img> con ?color= cuando exista.
+	return icon(name, { size, alt: altText, style: opts.style, color: opts.color });
 }
 
 export function statusBadge(status: string | number): string {
@@ -204,24 +211,98 @@ export function postmanTree(title: string, nodes: PostmanNode[]): string {
 	);
 }
 
-// ----------------------------------------------------------- código en grises
-// Tonos neutros que se ven legibles tanto en fondo claro como oscuro.
+// ----------------------------------------------------------- código (inline + bloque)
+// Inline: color sostenido SteelBlue (sin tokenizar).
+// Bloque: highlight con la API de CodeMirror/Lezer (parser por lenguaje) y
+// tema VSCode Dark+ aplicado como estilos inline (email-safe).
 
-const CODE_BASE_STYLE =
+import { highlightTree, tagHighlighter, tags as t } from "@lezer/highlight";
+import { javascriptLanguage, typescriptLanguage } from "@codemirror/lang-javascript";
+import { jsonLanguage } from "@codemirror/lang-json";
+import { htmlLanguage } from "@codemirror/lang-html";
+import { StandardSQL } from "@codemirror/lang-sql";
+import type { LRLanguage } from "@codemirror/language";
+
+const INLINE_CODE_COLOR = "steelblue";
+
+const CODE_INLINE_STYLE =
 	"font-family:Consolas,'Courier New',monospace;font-size:0.92em;" +
-	"padding:1px 5px;border-radius:3px;" +
-	"background-color:rgba(128,128,128,0.18);" +
-	"border:1px solid rgba(128,128,128,0.25);" +
-	"color:#888;text-shadow:none;";
+	"padding:1px 4px;margin:0;border-radius:3px;" +
+	"background-color:rgba(70,130,180,0.10);" +
+	"border:1px solid rgba(70,130,180,0.25);" +
+	`color:${INLINE_CODE_COLOR};text-shadow:none;font-weight:600;`;
 
-const TOKEN_COLORS = {
-	keyword: "#9aa0a6", // gris medio (más fuerte)
-	fn: "#a0a4a8",
-	string: "#8a8a8a",
-	number: "#909090",
-	punct: "#7a7a7a",
-	ident: "#9e9e9e",
-};
+// VSCode Dark+ palette (subset suficiente para JS/TS/JSON/SQL/HTML).
+const VSDARK_BG = "#1e1e1e";
+const VSDARK_FG = "#d4d4d4";
+const CODE_BLOCK_PRE_STYLE =
+	`background-color:${VSDARK_BG};color:${VSDARK_FG};` +
+	"border:1px solid #333;border-radius:6px;" +
+	"margin:8px 0;padding:10px 12px;" +
+	"font-family:Calibri,Arial,Tahoma,sans-serif;font-size:0.92em;" +
+	"line-height:1.45;text-shadow:none;" +
+	"white-space:pre-wrap;overflow:auto;max-width:100%;";
+const CODE_BLOCK_INNER_STYLE =
+	`color:${VSDARK_FG};background:transparent;font-family:inherit;font-size:inherit;`;
+
+// El "class" del Highlighter se inyecta literalmente en el atributo style del
+// <span> que generamos, así que aquí van CSS rules en lugar de class names.
+const vsdarkHighlighter = tagHighlighter([
+	{ tag: t.comment, class: "color:#6a9955;font-style:italic" },
+	{ tag: t.lineComment, class: "color:#6a9955;font-style:italic" },
+	{ tag: t.blockComment, class: "color:#6a9955;font-style:italic" },
+	{ tag: t.docComment, class: "color:#6a9955;font-style:italic" },
+	{ tag: t.keyword, class: "color:#569cd6;font-weight:600" },
+	{ tag: t.controlKeyword, class: "color:#c586c0;font-weight:600" },
+	{ tag: t.moduleKeyword, class: "color:#c586c0;font-weight:600" },
+	{ tag: t.operatorKeyword, class: "color:#569cd6" },
+	{ tag: t.definitionKeyword, class: "color:#569cd6;font-weight:600" },
+	{ tag: t.modifier, class: "color:#569cd6" },
+	{ tag: t.string, class: "color:#ce9178" },
+	{ tag: t.special(t.string), class: "color:#ce9178" },
+	{ tag: t.regexp, class: "color:#d16969" },
+	{ tag: t.escape, class: "color:#d7ba7d" },
+	{ tag: t.number, class: "color:#b5cea8" },
+	{ tag: t.bool, class: "color:#569cd6" },
+	{ tag: t.null, class: "color:#569cd6" },
+	{ tag: t.atom, class: "color:#569cd6" },
+	{ tag: t.typeName, class: "color:#4ec9b0" },
+	{ tag: t.className, class: "color:#4ec9b0" },
+	{ tag: t.namespace, class: "color:#4ec9b0" },
+	{ tag: t.labelName, class: "color:#c8c8c8" },
+	{ tag: t.function(t.variableName), class: "color:#dcdcaa" },
+	{ tag: t.function(t.propertyName), class: "color:#dcdcaa" },
+	{ tag: t.definition(t.function(t.variableName)), class: "color:#dcdcaa" },
+	{ tag: t.macroName, class: "color:#dcdcaa" },
+	{ tag: t.propertyName, class: "color:#9cdcfe" },
+	{ tag: t.attributeName, class: "color:#9cdcfe" },
+	{ tag: t.variableName, class: "color:#9cdcfe" },
+	{ tag: t.local(t.variableName), class: "color:#9cdcfe" },
+	{ tag: t.special(t.variableName), class: "color:#9cdcfe" },
+	{ tag: t.definition(t.variableName), class: "color:#9cdcfe" },
+	{ tag: t.constant(t.variableName), class: "color:#4fc1ff" },
+	{ tag: t.tagName, class: "color:#569cd6" },
+	{ tag: t.angleBracket, class: "color:#808080" },
+	{ tag: t.bracket, class: "color:#d4d4d4" },
+	{ tag: t.brace, class: "color:#d4d4d4" },
+	{ tag: t.paren, class: "color:#d4d4d4" },
+	{ tag: t.squareBracket, class: "color:#d4d4d4" },
+	{ tag: t.punctuation, class: "color:#d4d4d4" },
+	{ tag: t.separator, class: "color:#d4d4d4" },
+	{ tag: t.operator, class: "color:#d4d4d4" },
+	{ tag: t.derefOperator, class: "color:#d4d4d4" },
+	{ tag: t.updateOperator, class: "color:#d4d4d4" },
+	{ tag: t.arithmeticOperator, class: "color:#d4d4d4" },
+	{ tag: t.logicOperator, class: "color:#d4d4d4" },
+	{ tag: t.bitwiseOperator, class: "color:#d4d4d4" },
+	{ tag: t.compareOperator, class: "color:#d4d4d4" },
+	{ tag: t.heading, class: "color:#569cd6;font-weight:bold" },
+	{ tag: t.emphasis, class: "font-style:italic" },
+	{ tag: t.strong, class: "font-weight:bold" },
+	{ tag: t.link, class: "color:#569cd6;text-decoration:underline" },
+	{ tag: t.url, class: "color:#569cd6;text-decoration:underline" },
+	{ tag: t.invalid, class: "color:#f44747" },
+]);
 
 function escapeHtml(s: string): string {
 	return s
@@ -231,78 +312,73 @@ function escapeHtml(s: string): string {
 		.replace(/"/g, "&quot;");
 }
 
-function token(text: string, color: string, weight?: "bold"): string {
-	const w = weight ? `;font-weight:bold` : "";
-	return `<span style="color:${color}${w}">${escapeHtml(text)}</span>`;
+export type CodeLang = "ts" | "typescript" | "js" | "javascript" | "json" | "sql" | "html";
+
+function pickLanguage(lang?: CodeLang): LRLanguage {
+	switch (lang) {
+		case "json": return jsonLanguage;
+		case "sql": return StandardSQL.language;
+		case "html": return htmlLanguage;
+		case "js":
+		case "javascript": return javascriptLanguage;
+		case "ts":
+		case "typescript":
+		default: return typescriptLanguage;
+	}
 }
 
-// Tokenizador minimalista para JS/TS/expresiones cortas (lo que cabe en `<code>`).
-function tokenizeInline(src: string): string {
-	const KEYWORDS = new Set([
-		"return", "const", "let", "var", "if", "else", "for", "while",
-		"function", "true", "false", "null", "undefined", "new", "typeof",
-		"await", "async",
-	]);
-	const re = /("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`|\b\d+(?:\.\d+)?\b|\b[A-Za-z_$][\w$]*\b|[(){}\[\].,;:?=+\-*/<>!&|%^~]+|\s+)/g;
+// Resalta `src` usando el parser Lezer del lenguaje indicado y el highlighter
+// vsdark (estilos inline en cada <span>). Devuelve sólo el contenido (sin
+// envoltorio <pre>/<code>); el caller decide la presentación.
+function highlightCode(src: string, lang?: CodeLang): string {
+	const tree = pickLanguage(lang).parser.parse(src);
 	let out = "";
-	let m: RegExpExecArray | null;
-	let lastIdent: string | null = null;
-	while ((m = re.exec(src)) !== null) {
-		const t = m[0];
-		if (/^\s+$/.test(t)) {
-			out += escapeHtml(t);
-			lastIdent = null;
-			continue;
-		}
-		if (/^["'`]/.test(t)) {
-			out += token(t, TOKEN_COLORS.string);
-			lastIdent = null;
-			continue;
-		}
-		if (/^\d/.test(t)) {
-			out += token(t, TOKEN_COLORS.number);
-			lastIdent = null;
-			continue;
-		}
-		if (/^[A-Za-z_$]/.test(t)) {
-			if (KEYWORDS.has(t)) {
-				out += token(t, TOKEN_COLORS.keyword, "bold");
-				lastIdent = null;
-			} else {
-				lastIdent = t;
-				// se decide más adelante (si lo sigue '(' es función)
-				out += `__IDENT__${escapeHtml(t)}__/IDENT__`;
-			}
-			continue;
-		}
-		// puntuación
-		if (lastIdent && t.startsWith("(")) {
-			// reemplaza el último identificador como función
-			out = out.replace(
-				`__IDENT__${escapeHtml(lastIdent)}__/IDENT__`,
-				token(lastIdent, TOKEN_COLORS.fn, "bold"),
-			);
-		}
-		out += token(t, TOKEN_COLORS.punct);
-		lastIdent = null;
-	}
-	// identificadores que quedaron sin '(' detrás → ident normal
-	out = out.replace(/__IDENT__(.*?)__\/IDENT__/g, (_, name) => {
-		// 'name' ya viene escapado; reusamos token() de forma segura sin re-escapar
-		return `<span style="color:${TOKEN_COLORS.ident}">${name}</span>`;
+	let pos = 0;
+	highlightTree(tree, vsdarkHighlighter, (from, to, classes) => {
+		if (pos < from) out += escapeHtml(src.slice(pos, from));
+		const slice = escapeHtml(src.slice(from, to));
+		out += classes
+			? `<span style="${classes}">${slice}</span>`
+			: slice;
+		pos = to;
 	});
+	if (pos < src.length) out += escapeHtml(src.slice(pos));
 	return out;
 }
 
-// Inline: `<code>btoa(JSON.stringify(filtro))</code>` con tokens grises.
+// Inline: color SteelBlue sostenido (sin highlight de tokens). Email-safe:
+// fondo y borde sutiles para distinguirlo del párrafo.
 export function code(src: string): string {
-	return `<code style="${CODE_BASE_STYLE}">${tokenizeInline(src)}</code>`;
+	return `<code style="${CODE_INLINE_STYLE}">${escapeHtml(src)}</code>`;
 }
 
-// Bloque multilínea: `<pre><code>…</code></pre>`
-export function codeBlock(src: string): string {
-	const blockStyle =
-		CODE_BASE_STYLE +
-		"display:block;padding:8px 10px;white-space:pre;overflow:auto;";
-	return `<pre style="margin:8px 0;"><code style="${blockStyle}">${tokenizeInline(src)}</code></pre>`;
+// Bloque multilínea: `<pre><code>…</code></pre>` con highlight vsdark sobre
+// fondo oscuro. `lang` permite elegir el parser (default "typescript").
+// Para clientes de email que ignoran `white-space:pre`, convertimos los
+// saltos de línea a <br> y los espacios de indentación a &nbsp;.
+export function codeBlock(src: string, lang: CodeLang = "typescript"): string {
+	const highlighted = highlightCode(src, lang);
+	const emailSafe = highlighted
+		.split("\n")
+		.map((line) => line.replace(/^ +/, (m) => "&nbsp;".repeat(m.length)))
+		.join("<br>");
+	return (
+		`<pre style="${CODE_BLOCK_PRE_STYLE}"><code style="${CODE_BLOCK_INNER_STYLE}">` +
+		emailSafe +
+		`</code></pre>`
+	);
 }
+
+// ─────────────────────────────────────────────────────────────────────────
+// img(src, width?) — renderiza un <img> simple, email-safe.
+// `src` puede ser URL/data URI (recomendado importar con `?inline`).
+// ─────────────────────────────────────────────────────────────────────────
+
+export function img(src: string, width = 720): string {
+	return (
+		`<img src="${src}" style="display:block;max-width:100%;width:${width}px;` +
+		`height:auto;border:1px solid #ddd;border-radius:4px;margin:0.75rem 0;">`
+	);
+}
+
+

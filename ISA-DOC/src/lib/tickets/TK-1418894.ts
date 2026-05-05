@@ -37,7 +37,7 @@ interface Row {
 async function entityCell(entidad: string): Promise<string> {
 	const i = ENTITY_ICON[entidad];
 	const c = ENTITY_COLOR[entidad] ?? "#666";
-	const ic = i ? await iconSvg(i, { size: 16 }) : "";
+	const ic = i ? await iconSvg(i, { size: 16, color: c }) : "";
 	return (
 		`<span style="display:inline-flex;align-items:center;gap:1rem;color:${c};font-weight:600;">` +
 		`${ic}<span>${entidad}</span>` +
@@ -117,17 +117,16 @@ const intro =
 // + gap, y el color del icono se sincroniza con el texto vía `currentColor`.
 const NOTE_COLOR = "#777";
 async function note(iconName: string, html: string, color: string = NOTE_COLOR): Promise<string> {
-	const ic = await iconSvg(iconName, { size: 16 });
+	const ic = await iconSvg(iconName, { size: 16, color });
 	return (
-		`<li style="border:1px solid #80808030;border-radius:4px;padding:0.5rem;margin-bottom:0.5rem;list-style:none;">` +
-		`<span style="display:inline-flex;align-items:center;gap:1rem;color:${color};">` +
-		`${ic}<span>${html}</span>` +
-		`</span></li>`
+		`<li style="border:1px solid #80808030;border-radius:4px;padding:0.5rem;margin-bottom:0.5rem;list-style:none;color:${color};">` +
+		`${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${html}</span>` +
+		`</li>`
 	);
 }
 
 async function buildNotas(): Promise<string> {
-	const headerIcon = await iconSvg("mdi:information-outline", { size: 18 });
+	const headerIcon = await iconSvg("mdi:information-outline", { size: 18, color: NOTE_COLOR });
 	const items = await Promise.all([
 		note(
 			"mdi:lock-outline",
@@ -151,8 +150,8 @@ async function buildNotas(): Promise<string> {
 		),
 	]);
 	return (
-		`<div style="margin-top: 15px;display:inline-flex;align-items:center;gap:1rem;color:${NOTE_COLOR};">` +
-		`${headerIcon}<strong>Notas de implementación:</strong></div>` +
+		`<div style="margin-top: 15px;color:${NOTE_COLOR};">` +
+		`${headerIcon}&nbsp;&nbsp;<strong style="vertical-align:middle;">Notas de implementación:</strong></div>` +
 		`<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`
 	);
 }
@@ -161,10 +160,10 @@ async function buildNotas(): Promise<string> {
 // hereda el color vía `currentColor`.
 async function h3Iconized(iconName: string, label: string): Promise<string> {
 	const c = "#1e90ff";
-	const ic = await iconSvg(iconName, { size: 18 });
+	const ic = await iconSvg(iconName, { size: 18, color: c });
 	return (
-		`<h3 style="display:flex;align-items:center;gap:1rem;color:${c};margin-top:1.25rem;">` +
-		`${ic}<span>${label}</span>` +
+		`<h3 style="color:${c};margin-top:1.25rem;">` +
+		`${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${label}</span>` +
 		`</h3>`
 	);
 }

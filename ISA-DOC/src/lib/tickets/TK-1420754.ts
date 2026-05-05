@@ -1,8 +1,46 @@
 // TK-1420754 — Nombres en niveles por defecto en creación de curso.
-// Cuerpo pendiente: el usuario indicará paso a paso la solución.
+import { code as codeI, codeBlock, img } from "./snippets";
+import { h3Iconized, note } from "./tk-helpers";
+import { imgUrl } from "./assetsRemote";
+const defaultsImg = imgUrl("estructuraDefaults.jpg");
+
+const intro =
+	`<div>Al crear un curso, la pestaña <b>Estructura</b> generaba niveles con la etiqueta ` +
+	`“Sin nombre”. Se introdujo un mapa de nombres por defecto según la cantidad de niveles ` +
+	`del driver, dejando “Capítulo” y “Título” cuando son dos niveles.</div>`;
 
 export async function buildBodyTK1420754(): Promise<string> {
-	return "";
+	const h3 = await h3Iconized("mdi:format-list-numbered", "Defaults en TEstructuraCursoSlaveController.ensureLimit");
+	const snippet = codeBlock(
+		`const defaultsByLimit: Record<number, string[]> = { 2: ["Capítulo", "Título"] };
+const defaults = defaultsByLimit[limit];
+for (let i = Obj.estructuras.length; i < limit; i++) {
+  const newItem = new TEstructuraCurso();
+  [newItem.nnivel, newItem.qnivel] = [defaults?.[i] ?? "---", (i + 1).toString()];
+  Obj.estructuras.push(newItem);
+}`,
+	);
+	const items = await Promise.all([
+		note(
+			"mdi:map-marker-path",
+			`El mapa ${codeI("defaultsByLimit")} se indexa por la cantidad total de niveles. ` +
+			`Para drivers de 2 niveles se aplica ${codeI('["Capítulo", "Título"]')}; ` +
+			`para otras cantidades se mantiene el placeholder ${codeI('"---"')} por nivel.`,
+		),
+		note(
+			"mdi:plus-box-multiple-outline",
+			`Cuando el usuario seleccione drivers de más niveles, basta con extender el mapa ` +
+			`(p. ej. ${codeI('3: ["Tomo", "Capítulo", "Título"]')}).`,
+		),
+		note(
+			"mdi:source-merge",
+			`Implementado dentro del commit que también atendió TK-1420742 ` +
+			`(${codeI("18fcc40")}: fix(Cursos): establecer valores predeterminados para estructuras).`,
+		),
+	]);
+	const fig = img(defaultsImg, 720);
+	return intro + h3 + snippet + fig + `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`;
 }
 
 export const bodyTK1420754: Promise<string> = buildBodyTK1420754();
+

@@ -10,6 +10,7 @@
 	import mdFase2 from "../../lib/bitacora/iplan-fase2.md?raw";
 	import mdFase3 from "../../lib/bitacora/iplan-fase3.md?raw";
 	import mdFase4 from "../../lib/bitacora/iplan-fase4.md?raw";
+	import mdFase5 from "../../lib/bitacora/iplan-fase5.md?raw";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
 	export let date: string = "";
@@ -248,6 +249,32 @@ WHERE LOWER(NATRIBUTO) LIKE N'%dificultad%'
 
 COMMIT TRAN;
 `;
+
+	const sqlLimpiarAuditMigracion: string = `-- =====================================================================
+-- Fase 5 · Vaciar audit fields dejados por la migración
+-- ---------------------------------------------------------------------
+-- Pone a NULL las columnas IUSUARIOCRE / IAPPCRE / IUSUARIOULT / IAPPULT
+-- en CAPAC_ATRIBUTOS_PLANES cuando contengan los marcadores que dejó
+-- la Fase 2 ('migration-iplanpadre' / 'ISA-DOC'). Las filas se conservan;
+-- sólo se limpian esas columnas. Idempotente.
+-- =====================================================================
+SET XACT_ABORT ON;
+BEGIN TRAN;
+
+UPDATE CAPAC_ATRIBUTOS_PLANES
+SET
+    IUSUARIOCRE = CASE WHEN IUSUARIOCRE IN (N'migration-iplanpadre', N'ISA-DOC') THEN NULL ELSE IUSUARIOCRE END,
+    IAPPCRE     = CASE WHEN IAPPCRE     IN (N'migration-iplanpadre', N'ISA-DOC') THEN NULL ELSE IAPPCRE     END,
+    IUSUARIOULT = CASE WHEN IUSUARIOULT IN (N'migration-iplanpadre', N'ISA-DOC') THEN NULL ELSE IUSUARIOULT END,
+    IAPPULT     = CASE WHEN IAPPULT     IN (N'migration-iplanpadre', N'ISA-DOC') THEN NULL ELSE IAPPULT     END
+WHERE
+       IUSUARIOCRE IN (N'migration-iplanpadre', N'ISA-DOC')
+    OR IAPPCRE     IN (N'migration-iplanpadre', N'ISA-DOC')
+    OR IUSUARIOULT IN (N'migration-iplanpadre', N'ISA-DOC')
+    OR IAPPULT     IN (N'migration-iplanpadre', N'ISA-DOC');
+
+COMMIT TRAN;
+`;
 </script>
 
 <Toaster />
@@ -257,7 +284,7 @@ COMMIT TRAN;
 		? "Capacitación · IPLANPADRE → atributo plan"
 		: (date ? `${date} — Capacitación · IPLANPADRE → atributo plan` : "Capacitación · IPLANPADRE → atributo plan")}
 	icon="mdi:database-sync"
-	count={5}
+	count={6}
 	{inner}
 	open={false}
 >
@@ -269,6 +296,7 @@ COMMIT TRAN;
 			"2026-05-04.iplanpadre.fase2",
 			"2026-05-04.iplanpadre.fase3",
 			"2026-05-04.iplanpadre.fase4",
+			"2026-05-04.iplanpadre.fase5",
 		]}
 	/>
 	<BitacoraNote flat mdSource={mdIntro} />
@@ -326,5 +354,16 @@ COMMIT TRAN;
 		checkKey="2026-05-04.iplanpadre.fase4"
 		{executeSql}
 		height="200px"
+	/>
+
+	<BitacoraNote flat mdSource={mdFase5} />
+	<SqlExecCard
+		title="Fase 5 · Limpiar audit fields de migración"
+		sql={sqlLimpiarAuditMigracion}
+		desc="Vacía IUSUARIOCRE/IAPPCRE/IUSUARIOULT/IAPPULT en CAPAC_ATRIBUTOS_PLANES cuando contengan 'migration-iplanpadre' o 'ISA-DOC'."
+		confirmKind="warning"
+		checkKey="2026-05-04.iplanpadre.fase5"
+		{executeSql}
+		height="240px"
 	/>
 </AccordionActions>
