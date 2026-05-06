@@ -52,5 +52,6 @@
   "2026-05-05.audit.drop_columns": true,
   "2026-05-05.cursos.activate_all": true,
   "2026-05-05.cursos.delete_sin_driver": true,
-  "2026-05-06.atributosplan.driver_recurso_codes": true
+  "2026-05-06.atributosplan.driver_recurso_codes": true,
+  "2026-05-06.driver.atributos.jconfig": true
 }
