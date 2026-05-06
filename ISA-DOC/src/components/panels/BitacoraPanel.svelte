@@ -17,6 +17,8 @@
 	import sqlDropAuditColumns from "../../lib/migration/sql/drop-audit-columns.sql?raw";
 	import sqlActivateAllCursos from "../../lib/migration/sql/activate-all-cursos.sql?raw";
 	import sqlDeleteCursosSinDriver from "../../lib/migration/sql/delete-cursos-sin-driver.sql?raw";
+	import sqlUpdateDriverAtributosJConfig from "../../lib/migration/sql/update-driver-atributos-jconfig.sql?raw";
+	import md_2026_05_06_driver_jconfig from "../../lib/bitacora/2026-05-06-driver-atributos-jconfig-intro.md?raw";
 	import md_2026_05_03_curso_500 from "../../lib/bitacora/2026-05-03-curso-get-update-500.md?raw";
 	import md_cursos_isw_reglas from "../../lib/bitacora/cursos-isw-reglas.md?raw";
 	import md_2026_05_04_isa from "../../lib/bitacora/2026-05-04-resumen-isa.md?raw";
@@ -93,6 +95,27 @@
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-05-06 -->
+			<Accordion
+				title="2026-05-06 — Capacitación: JCONFIG de atributos de drivers + tracking temporal de índices"
+				titleIcon="mdi:calendar"
+				open={true}
+			>
+				<RevisadoCheck slot="title-extra" keys={["2026-05-06.driver.atributos.jconfig"]} />
+
+				<BitacoraNote flat mdSource={md_2026_05_06_driver_jconfig} />
+				<SqlExecCard
+					title="Drivers · Completar JCONFIG de los 6 atributos (drivers 1, 2, 3)"
+					checkKey="2026-05-06.driver.atributos.jconfig"
+					sql={sqlUpdateDriverAtributosJConfig}
+					desc="Actualiza JCONFIG en CAPAC_ATRIBUTOS_X_DRIVERS para los drivers 1, 2 y 3 con la configuración interpretada por AtributoInput (text/selectEnum, inputProps, descripcion, readonly). Idempotente."
+					confirmKind="warning"
+					confirmMessage={`Se actualizará JCONFIG de los 6 atributos (IATRIBUTO 1..6) en los drivers 1, 2 y 3 de CAPAC_ATRIBUTOS_X_DRIVERS.\n\n¿Continuar?`}
+					{executeSql}
+					height="320px"
+				/>
+			</Accordion>
+
 			<!-- 2026-05-05 -->
 			<Accordion
 				title="2026-05-05 — Capacitación: IMAGENDRIVER / DOCUMENTODRIVER → atributos plan + auditoría"
