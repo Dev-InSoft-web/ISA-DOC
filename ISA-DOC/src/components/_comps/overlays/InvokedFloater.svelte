@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+﻿<script context="module" lang="ts">
    import { Dialog, type DialogProps } from "@ingenieria_insoft/ispsveltecomponents";
 
    export type FloaterSide = "top" | "right" | "bottom" | "left";

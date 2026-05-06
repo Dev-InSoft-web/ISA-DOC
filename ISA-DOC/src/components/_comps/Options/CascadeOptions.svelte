@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
    import { Button, ButtonIconify, Card, FlexLayout, Iconify, Text, type ButtonProps, type DialogProps } from "@ingenieria_insoft/ispsveltecomponents";
-   import InvokedFloater from "../especial/InvokedFloater.svelte";
-   import Separator from "../especial/Separator.svelte";
+   import InvokedFloater from "../overlays/InvokedFloater.svelte";
+   import Separator from "../primitives/Separator.svelte";
    import type { ButtonOptionProps } from "./_ButtonOption.svelte";
    import type { FlexOptionsAction as CascadeOptionsAction, FlexOptionsInput as CascadeOptionsInput } from "./FlexOptions.svelte";
    import { cubicOut } from "svelte/easing";
