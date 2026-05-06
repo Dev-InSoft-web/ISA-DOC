@@ -11,23 +11,33 @@
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
 	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
 	import DbStatusBanner from "../_comps/status/DbStatusBanner.svelte";
-	import mdAuditAddIntro from "../../lib/bitacora/audit-cols-intro.md?raw";
-	import mdAuditDropIntro from "../../lib/bitacora/audit-cols-drop-intro.md?raw";
+	import mdAuditAddIntro from "../../lib/bitacora/topics/audit/intro.md?raw";
+	import mdAuditDropIntro from "../../lib/bitacora/topics/audit/drop-intro.md?raw";
 	import sqlAddAuditColumns from "../../lib/migration/sql/add-audit-columns.sql?raw";
 	import sqlDropAuditColumns from "../../lib/migration/sql/drop-audit-columns.sql?raw";
 	import sqlActivateAllCursos from "../../lib/migration/sql/activate-all-cursos.sql?raw";
 	import sqlDeleteCursosSinDriver from "../../lib/migration/sql/delete-cursos-sin-driver.sql?raw";
 	import sqlUpdateDriverAtributosJConfig from "../../lib/migration/sql/update-driver-atributos-jconfig.sql?raw";
-	import md_2026_05_06_driver_jconfig from "../../lib/bitacora/2026-05-06-driver-atributos-jconfig-intro.md?raw";
-	import md_2026_05_03_curso_500 from "../../lib/bitacora/2026-05-03-curso-get-update-500.md?raw";
-	import md_cursos_isw_reglas from "../../lib/bitacora/cursos-isw-reglas.md?raw";
-	import md_2026_05_04_isa from "../../lib/bitacora/2026-05-04-resumen-isa.md?raw";
-	import md_2026_05_04_isw_isp from "../../lib/bitacora/2026-05-04-resumen-isw-isp.md?raw";
-	import md_2026_05_04_iss from "../../lib/bitacora/2026-05-04-resumen-iss.md?raw";
-	import md_2026_05_05_isa from "../../lib/bitacora/2026-05-05-resumen-isa.md?raw";
-	import md_2026_05_05_isw_isp from "../../lib/bitacora/2026-05-05-resumen-isw-isp.md?raw";
-	import md_2026_05_05_iss from "../../lib/bitacora/2026-05-05-resumen-iss.md?raw";
-	import md_2026_05_05_seguimiento from "../../lib/bitacora/2026-05-05-resumen-seguimiento.md?raw";
+	import md_2026_05_06_driver_jconfig from "../../lib/bitacora/daily/2026-05-06/driver-atributos-jconfig-intro.md?raw";
+	import JsonViewer from "../viewers/JsonViewer.svelte";
+
+	const driverAtributosJsonItems: ReadonlyArray<{ iatributo: number; natributo: string; jconfig: string }> = [
+		{ iatributo: 1, natributo: "URL diapositivas", jconfig: '{"type":"text","descripcion":"URL pública de las diapositivas asociadas al recurso.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
+		{ iatributo: 2, natributo: "Imagen del profesor", jconfig: '{"type":"text","descripcion":"URL pública de la imagen del profesor.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
+		{ iatributo: 3, natributo: "Driver de video", jconfig: '{"type":"text","descripcion":"Identificador del componente Svelte que procesa los datos del video. No corresponde a un servicio externo.","inputProps":{"placeholder":"VideoPlayerInsoft","maxlength":50}}' },
+		{ iatributo: 4, natributo: "Dificultad", jconfig: '{"type":"selectEnum","options":{"B":"Básico","M":"Medio","A":"Avanzado"},"descripcion":"Nivel de dificultad del contenido."}' },
+		{ iatributo: 5, natributo: "iplanpadre", jconfig: '{"type":"text","readonly":true,"descripcion":"Path del plan padre. Calculado automáticamente desde el árbol de contenidos."}' },
+		{ iatributo: 6, natributo: "Documento", jconfig: '{"type":"text","descripcion":"URL pública del documento adjunto al plan.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
+	];
+	import md_2026_05_03_curso_500 from "../../lib/bitacora/daily/2026-05-03/curso-get-update-500.md?raw";
+	import md_cursos_isw_reglas from "../../lib/bitacora/topics/cursos/cursos-isw-reglas.md?raw";
+	import md_2026_05_04_isa from "../../lib/bitacora/daily/2026-05-04/resumen-isa.md?raw";
+	import md_2026_05_04_isw_isp from "../../lib/bitacora/daily/2026-05-04/resumen-isw-isp.md?raw";
+	import md_2026_05_04_iss from "../../lib/bitacora/daily/2026-05-04/resumen-iss.md?raw";
+	import md_2026_05_05_isa from "../../lib/bitacora/daily/2026-05-05/resumen-isa.md?raw";
+	import md_2026_05_05_isw_isp from "../../lib/bitacora/daily/2026-05-05/resumen-isw-isp.md?raw";
+	import md_2026_05_05_iss from "../../lib/bitacora/daily/2026-05-05/resumen-iss.md?raw";
+	import md_2026_05_05_seguimiento from "../../lib/bitacora/daily/2026-05-05/resumen-seguimiento.md?raw";
 	import { REBUILD_TABLES } from "../../lib/migration/oldRebuildTables.ts";
 
 	const REBUILD_STEPS = ["drop", "create", "insert"] as const;
@@ -104,6 +114,19 @@
 				<RevisadoCheck slot="title-extra" keys={["2026-05-06.driver.atributos.jconfig"]} />
 
 				<BitacoraNote flat mdSource={md_2026_05_06_driver_jconfig} />
+
+				<div class="driver-jconfig-grid">
+					{#each driverAtributosJsonItems as item (item.iatributo)}
+						<div class="driver-jconfig-card">
+							<div class="driver-jconfig-card__head">
+								<span class="driver-jconfig-card__id">IATRIBUTO {item.iatributo}</span>
+								<strong class="driver-jconfig-card__name">{item.natributo}</strong>
+							</div>
+							<JsonViewer value={item.jconfig} height="180px" />
+						</div>
+					{/each}
+				</div>
+
 				<SqlExecCard
 					title="Drivers · Completar JCONFIG de los 6 atributos (drivers 1, 2, 3)"
 					checkKey="2026-05-06.driver.atributos.jconfig"
@@ -265,3 +288,37 @@
 		</FlexLayout>
 	</FlexLayout>
 </FlexLayout>
+
+<style>
+	.driver-jconfig-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		gap: 0.75rem;
+		margin: 0.5rem 0 1rem;
+	}
+	.driver-jconfig-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		padding: 0.6rem;
+		border: 1px solid var(--is-outline, #ccc);
+		border-radius: 6px;
+		background: var(--is-surface, transparent);
+		min-width: 0;
+	}
+	.driver-jconfig-card__head {
+		display: flex;
+		align-items: baseline;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+	.driver-jconfig-card__id {
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--is-on-surface-variant, #888);
+	}
+	.driver-jconfig-card__name {
+		font-size: 0.95rem;
+	}
+</style>

@@ -4,12 +4,12 @@
 	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import mdIntro from "../../lib/bitacora/imgdoc-intro.md?raw";
-	import mdFase1a from "../../lib/bitacora/imgdoc-fase1a.md?raw";
-	import mdFase1b from "../../lib/bitacora/imgdoc-fase1b.md?raw";
-	import mdFase2a from "../../lib/bitacora/imgdoc-fase2a.md?raw";
-	import mdFase2b from "../../lib/bitacora/imgdoc-fase2b.md?raw";
-	import mdFase2c from "../../lib/bitacora/imgdoc-fase2c.md?raw";
+	import mdIntro from "../../lib/bitacora/topics/imgdoc/intro.md?raw";
+	import mdFase1a from "../../lib/bitacora/topics/imgdoc/fase1a.md?raw";
+	import mdFase1b from "../../lib/bitacora/topics/imgdoc/fase1b.md?raw";
+	import mdFase2a from "../../lib/bitacora/topics/imgdoc/fase2a.md?raw";
+	import mdFase2b from "../../lib/bitacora/topics/imgdoc/fase2b.md?raw";
+	import mdFase2c from "../../lib/bitacora/topics/imgdoc/fase2c.md?raw";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
 	export let date: string = "";

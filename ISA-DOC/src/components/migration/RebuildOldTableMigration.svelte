@@ -8,7 +8,7 @@
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import SwitchComp from "../_comps/especial/_Switch.svelte";
 	import type { RebuildTableConfig, RebuildColumn } from "../../lib/migration/oldRebuildTables.ts";
-	import noteMd from "../../lib/bitacora/2026-05-04-rebuild-old-table.md?raw";
+	import noteMd from "../../lib/bitacora/daily/2026-05-04/rebuild-old-table.md?raw";
 
 	interface Snapshot { file: string; date: string; content: string; }
 

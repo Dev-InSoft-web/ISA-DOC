@@ -4,8 +4,8 @@
 	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import mdIntro from "../../lib/bitacora/cleanup-intro.md?raw";
-	import mdOutro from "../../lib/bitacora/cleanup-outro.md?raw";
+	import mdIntro from "../../lib/bitacora/topics/cleanup/intro.md?raw";
+	import mdOutro from "../../lib/bitacora/topics/cleanup/outro.md?raw";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
 	export let date: string = "";

@@ -4,7 +4,7 @@
 	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import mdIntro from "../../lib/bitacora/audit-cols-intro.md?raw";
+	import mdIntro from "../../lib/bitacora/topics/audit/intro.md?raw";
 	import sqlAddAuditColumns from "../../lib/migration/sql/add-audit-columns.sql?raw";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;

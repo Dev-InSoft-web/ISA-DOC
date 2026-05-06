@@ -13,7 +13,7 @@ Completa el campo `JCONFIG` en `CAPAC_ATRIBUTOS_X_DRIVERS` para los 3 drivers ex
 | :-------: | :------------------ | :----------- | :----------------------------------------------------- |
 | 1         | URL diapositivas    | `text`       | URL pública, `maxlength=500`                           |
 | 2         | Imagen del profesor | `text`       | URL pública, `maxlength=500`                           |
-| 3         | Driver de video     | `text`       | URL o identificador (youtube, vimeo, …), `maxlength=255` |
+| 3         | Driver de video     | `text`       | Identificador del componente Svelte que procesa los datos (no es servicio externo), `maxlength=50` |
 | 4         | Dificultad          | `selectEnum` | `{B:"Básico", M:"Medio", A:"Avanzado"}`                |
 | 5         | iplanpadre          | `text`       | `readonly:true` — derivado del árbol                   |
 | 6         | Documento           | `text`       | URL pública, `maxlength=500`                           |

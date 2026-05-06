@@ -5,7 +5,9 @@
 -- Mapeo IATRIBUTO -> NATRIBUTO -> JCONFIG:
 --   1  URL diapositivas    -> text + URL placeholder
 --   2  Imagen del profesor -> text + URL placeholder
---   3  Driver de video     -> text + placeholder driver/URL
+--   3  Driver de video     -> text (identificador del componente Svelte que
+--                              procesa los datos del video; NO es servicio
+--                              externo). maxlength=50.
 --   4  Dificultad          -> selectEnum {B,M,A}
 --   5  iplanpadre          -> text readonly (auto desde árbol)
 --   6  Documento           -> text + URL placeholder
@@ -24,7 +26,7 @@ SET JCONFIG = '{"type":"text","descripcion":"URL pública de la imagen del profe
 WHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO = 2;
 
 UPDATE CAPAC_ATRIBUTOS_X_DRIVERS
-SET JCONFIG = '{"type":"text","descripcion":"Identificador o URL del driver de video.","inputProps":{"placeholder":"youtube | vimeo | https://...","maxlength":255}}'
+SET JCONFIG = '{"type":"text","descripcion":"Identificador del componente Svelte que procesa los datos del video. No corresponde a un servicio externo.","inputProps":{"placeholder":"VideoPlayerInsoft","maxlength":50}}'
 WHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO = 3;
 
 UPDATE CAPAC_ATRIBUTOS_X_DRIVERS
