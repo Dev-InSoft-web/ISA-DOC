@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
-   import { Button, ButtonIconify, Card, FlexLayout, Iconify, Text, bordercolor, resolveColor, type ButtonProps, type DialogProps } from "@ingenieria_insoft/ispsveltecomponents";
+   import { Button, ButtonIconify, Card, FlexLayout, Iconify, Text, type ButtonProps, type DialogProps } from "@ingenieria_insoft/ispsveltecomponents";
    import InvokedFloater from "../especial/InvokedFloater.svelte";
+   import Separator from "../especial/Separator.svelte";
    import type { ButtonOptionProps } from "./_ButtonOption.svelte";
    import type { FlexOptionsAction as CascadeOptionsAction, FlexOptionsInput as CascadeOptionsInput } from "./FlexOptions.svelte";
    import { cubicOut } from "svelte/easing";
@@ -72,7 +73,7 @@
       },
       panel: {
          get style() {
-            return ["padding: 0", "min-width: 10em", "max-width: min(22em, 90dvw)", "max-height: min(80dvh, 600px)", "overflow-y: auto", `--cod-separator-border: ${resolveColor("border")}`].join("; ");
+            return ["padding: 0", "min-width: 10em", "max-width: min(22em, 90dvw)", "max-height: min(80dvh, 600px)", "overflow-y: auto"].join("; ");
          },
       },
       openmenu() {
@@ -126,7 +127,7 @@
             <FlexLayout direction="column" gap="0">
                {#each normalizedItems as item}
                   {#if "separator" in item && item.separator}
-                     <div class="cod-separator" style={"border-top: 1px solid " + bordercolor + ";"}></div>
+                     <Separator startMargin="0.25rem" endMargin="0.25rem" />
                   {:else}
                      {@const action = item as ButtonOptionProps}
                      {@const { onClick: itemOnClick, ...rest } = action}
@@ -154,13 +155,6 @@
 </FlexLayout>
 
 <style>
-   .cod-separator {
-      height: 0;
-      margin: 0.25rem 0.5em;
-      border: none;
-      background: transparent;
-   }
-
    :global {
       .cascade-options {
          vertical-align: middle;
