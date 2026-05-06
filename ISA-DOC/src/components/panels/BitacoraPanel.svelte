@@ -18,13 +18,14 @@
 	import sqlActivateAllCursos from "../../lib/migration/sql/activate-all-cursos.sql?raw";
 	import sqlDeleteCursosSinDriver from "../../lib/migration/sql/delete-cursos-sin-driver.sql?raw";
 	import sqlUpdateDriverAtributosJConfig from "../../lib/migration/sql/update-driver-atributos-jconfig.sql?raw";
+	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
 	import md_2026_05_06_driver_jconfig from "../../lib/bitacora/daily/2026-05-06/driver-atributos-jconfig-intro.md?raw";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 
 	const driverAtributosJsonItems: ReadonlyArray<{ iatributo: number; natributo: string; jconfig: string }> = [
 		{ iatributo: 1, natributo: "URL diapositivas", jconfig: '{"type":"text","descripcion":"URL pública de las diapositivas asociadas al recurso.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
 		{ iatributo: 2, natributo: "Imagen del profesor", jconfig: '{"type":"text","descripcion":"URL pública de la imagen del profesor.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
-		{ iatributo: 3, natributo: "Driver de video", jconfig: '{"type":"text","descripcion":"Identificador del componente Svelte que procesa los datos del video. No corresponde a un servicio externo.","inputProps":{"placeholder":"VideoPlayerInsoft","maxlength":50}}' },
+		{ iatributo: 3, natributo: "Driver de video", jconfig: '{"type":"selectEnum","options":{"1":"Lista con imagen pequeña","2":"Tarjeta con información completa","3":"Tarjeta solo con título","4":"Lista con imagen grande","5":"Lista pequeño"},"descripcion":"Componente Svelte que procesa los datos del video. Lista quemada (TTDriverRecurso); se actualizará cuando se aprueben otros controladores."}' },
 		{ iatributo: 4, natributo: "Dificultad", jconfig: '{"type":"selectEnum","options":{"B":"Básico","M":"Medio","A":"Avanzado"},"descripcion":"Nivel de dificultad del contenido."}' },
 		{ iatributo: 5, natributo: "iplanpadre", jconfig: '{"type":"text","readonly":true,"descripcion":"Path del plan padre. Calculado automáticamente desde el árbol de contenidos."}' },
 		{ iatributo: 6, natributo: "Documento", jconfig: '{"type":"text","descripcion":"URL pública del documento adjunto al plan.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
@@ -111,32 +112,66 @@
 				titleIcon="mdi:calendar"
 				open={true}
 			>
-				<RevisadoCheck slot="title-extra" keys={["2026-05-06.driver.atributos.jconfig"]} />
-
-				<BitacoraNote flat mdSource={md_2026_05_06_driver_jconfig} />
-
-				<div class="driver-jconfig-grid">
-					{#each driverAtributosJsonItems as item (item.iatributo)}
-						<div class="driver-jconfig-card">
-							<div class="driver-jconfig-card__head">
-								<span class="driver-jconfig-card__id">IATRIBUTO {item.iatributo}</span>
-								<strong class="driver-jconfig-card__name">{item.natributo}</strong>
-							</div>
-							<JsonViewer value={item.jconfig} height="180px" />
-						</div>
-					{/each}
-				</div>
-
-				<SqlExecCard
-					title="Drivers · Completar JCONFIG de los 6 atributos (drivers 1, 2, 3)"
-					checkKey="2026-05-06.driver.atributos.jconfig"
-					sql={sqlUpdateDriverAtributosJConfig}
-					desc="Actualiza JCONFIG en CAPAC_ATRIBUTOS_X_DRIVERS para los drivers 1, 2 y 3 con la configuración interpretada por AtributoInput (text/selectEnum, inputProps, descripcion, readonly). Idempotente."
-					confirmKind="warning"
-					confirmMessage={`Se actualizará JCONFIG de los 6 atributos (IATRIBUTO 1..6) en los drivers 1, 2 y 3 de CAPAC_ATRIBUTOS_X_DRIVERS.\n\n¿Continuar?`}
-					{executeSql}
-					height="320px"
+				<RevisadoCheck
+					slot="title-extra"
+					keys={[
+						"2026-05-06.driver.atributos.jconfig",
+						"2026-05-06.atributosplan.driver_recurso_codes",
+					]}
 				/>
+
+				<Accordion
+					title="Drivers · JCONFIG de atributos (configuración de inputs)"
+					titleIcon="mdi:code-json"
+					open={false}
+					inner
+				>
+					<RevisadoCheck slot="title-extra" keys={["2026-05-06.driver.atributos.jconfig"]} />
+
+					<BitacoraNote flat mdSource={md_2026_05_06_driver_jconfig} />
+
+					<div class="driver-jconfig-grid">
+						{#each driverAtributosJsonItems as item (item.iatributo)}
+							<div class="driver-jconfig-card">
+								<div class="driver-jconfig-card__head">
+									<strong class="driver-jconfig-card__name">{item.natributo}</strong>
+								</div>
+								<JsonViewer value={item.jconfig} height="180px" />
+							</div>
+						{/each}
+					</div>
+
+					<SqlExecCard
+						title="Drivers · Completar JCONFIG de los 6 atributos (drivers 1, 2, 3)"
+						checkKey="2026-05-06.driver.atributos.jconfig"
+						sql={sqlUpdateDriverAtributosJConfig}
+						desc="Actualiza JCONFIG en CAPAC_ATRIBUTOS_X_DRIVERS para los drivers 1, 2 y 3 con la configuración interpretada por AtributoInput (text/selectEnum, inputProps, descripcion, readonly). Idempotente."
+						confirmKind="warning"
+						confirmMessage={`Se actualizará JCONFIG de los 6 atributos (IATRIBUTO 1..6) en los drivers 1, 2 y 3 de CAPAC_ATRIBUTOS_X_DRIVERS.\n\n¿Continuar?`}
+						{executeSql}
+						height="320px"
+					/>
+				</Accordion>
+
+				<Accordion
+					title="Atributos de plan · Migrar códigos legacy de TTDriverRecurso a numérico (IATRIBUTO=3)"
+					titleIcon="mdi:numeric"
+					open={false}
+					inner
+				>
+					<RevisadoCheck slot="title-extra" keys={["2026-05-06.atributosplan.driver_recurso_codes"]} />
+
+					<SqlExecCard
+						title="Atributos de plan · Reemplazar códigos legacy por valor numérico (IATRIBUTO=3)"
+						checkKey="2026-05-06.atributosplan.driver_recurso_codes"
+						sql={sqlReplaceDriverRecursoCodes}
+						desc="Convierte en CAPAC_ATRIBUTOS_PLANES.VALOR los códigos legacy (FULL_NOMBRE_DESCRIPCION, MINI_DESCRIP_COMPLETA_PUR, MINI_FULL_INFO, MINI_NOMBRE_DESCRIPCION_VER, MINI_DESCRIP_COMPLETA_VER, GRANDE_FULL, SOLODECRIPCION_IMG) a sus valores numéricos 1..5 según el enum TTDriverRecurso. Idempotente. Cierra con SELECT de filas residuales no numéricas."
+						confirmKind="warning"
+						confirmMessage={`Se reemplazarán los códigos legacy de TTDriverRecurso por sus valores numéricos en CAPAC_ATRIBUTOS_PLANES (IATRIBUTO=3).\n\n¿Continuar?`}
+						{executeSql}
+						height="320px"
+					/>
+				</Accordion>
 			</Accordion>
 
 			<!-- 2026-05-05 -->
@@ -292,9 +327,15 @@
 <style>
 	.driver-jconfig-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 0.75rem;
 		margin: 0.5rem 0 1rem;
+	}
+	@media (max-width: 900px) {
+		.driver-jconfig-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	}
+	@media (max-width: 600px) {
+		.driver-jconfig-grid { grid-template-columns: 1fr; }
 	}
 	.driver-jconfig-card {
 		display: flex;
@@ -311,12 +352,6 @@
 		align-items: baseline;
 		gap: 0.5rem;
 		flex-wrap: wrap;
-	}
-	.driver-jconfig-card__id {
-		font-size: 0.7rem;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		color: var(--is-on-surface-variant, #888);
 	}
 	.driver-jconfig-card__name {
 		font-size: 0.95rem;
