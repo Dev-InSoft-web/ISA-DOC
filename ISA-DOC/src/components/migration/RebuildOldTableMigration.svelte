@@ -12,7 +12,7 @@
 
 	interface Snapshot { file: string; date: string; content: string; }
 
-	const tsvModules = import.meta.glob("../../lib/migration/csv/**/*.tsv", {
+	const tsvModules = import.meta.glob("../../lib/migration/tsv/**/*.tsv", {
 		query: "?raw",
 		import: "default",
 		eager: true,
@@ -285,7 +285,7 @@
 				<Text color="error">{parseError}</Text>
 			{:else}
 				<FlexLayout items="center" justify="between">
-					<Text color="neutral"><small>{rows.length} filas · {headers.length} columnas{selectedFile ? ` · src/lib/migration/csv/${selectedFile}` : ""}</small></Text>
+					<Text color="neutral"><small>{rows.length} filas · {headers.length} columnas{selectedFile ? ` · src/lib/migration/tsv/${selectedFile}` : ""}</small></Text>
 					{#if !csvHeaderMatches && headers.length > 0}
 						<Text color="warning">
 							<small>El encabezado no coincide con las columnas destino esperadas.</small>

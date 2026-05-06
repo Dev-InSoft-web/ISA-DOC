@@ -12,7 +12,7 @@ interface Body {
 	all?: boolean;
 }
 
-const TSV_DIR = path.resolve(fileURLToPath(new URL("../../../lib/migration/csv/", import.meta.url)));
+const TSV_DIR = path.resolve(fileURLToPath(new URL("../../../lib/migration/tsv/", import.meta.url)));
 
 function todayStamp(): string {
 	const d = new Date();

@@ -16,7 +16,7 @@
 	const STEPS = ["drop", "create", "insert"] as const;
 	$: rebuildKeys = REBUILD_TABLES.flatMap((t) => STEPS.map((s) => `2026-05-04.rebuild.${t.tableName}.${s}`));
 
-	const tsvModules = import.meta.glob("../../lib/migration/csv/**/*.tsv", {
+	const tsvModules = import.meta.glob("../../lib/migration/tsv/**/*.tsv", {
 		query: "?raw",
 		import: "default",
 		eager: true,
