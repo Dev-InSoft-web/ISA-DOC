@@ -1,7 +1,6 @@
 <script context="module" lang="ts">
-   import { colorMix, resolveColor, type ComponentColor } from "$lib/UlConst";
-   import type { BlockLayoutProps, BlockLayoutSlots } from "./layout/BlockLayout.svelte";
-   import BlockLayout, { LayoutHelpers } from "./layout/BlockLayout.svelte";
+   import { colorMix, resolveColor, LayoutHelpers, type ComponentColor, type BlockLayoutProps, type BlockLayoutSlots } from "@ingenieria_insoft/ispsveltecomponents";
+   import BlockLayout from "../../node_modules/@ingenieria_insoft/ispsveltecomponents/dist/containers/layout/BlockLayout.svelte";
 
    export const mkDarken = (c: string, p: number = 0): string => colorMix(c, "black", p);
    export const mkLighten = (c: string, p: number = 0): string => colorMix(c, "white", p);
