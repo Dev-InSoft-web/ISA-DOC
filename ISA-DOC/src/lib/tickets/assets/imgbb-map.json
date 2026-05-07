@@ -78,5 +78,45 @@
 		"width": 1280,
 		"height": 720,
 		"size": 143754
+	},
+	"planEstudioCatalogo.jpg": {
+		"sha1": "108f4900624e08f5fbcdc0af42b6b777f25a4ab8",
+		"url": "https://i.ibb.co/Xxh6YMgD/plan-Estudio-Catalogo.jpg",
+		"display_url": "https://i.ibb.co/m5LdNgw0/plan-Estudio-Catalogo.jpg",
+		"thumb": "https://i.ibb.co/MkYKBQ4f/plan-Estudio-Catalogo.jpg",
+		"delete_url": "https://ibb.co/MkYKBQ4f/b8fe4b642af8aaba68a0f988632fb3d0",
+		"width": 1178,
+		"height": 943,
+		"size": 67380
+	},
+	"planEstudioCursosIntegrados.jpg": {
+		"sha1": "cbea8b35fa7abca8a03c921e0d06b990e9255f34",
+		"url": "https://i.ibb.co/27P3QWXV/plan-Estudio-Cursos-Integrados.jpg",
+		"display_url": "https://i.ibb.co/BVj2xc8W/plan-Estudio-Cursos-Integrados.jpg",
+		"thumb": "https://i.ibb.co/1fKG57Hy/plan-Estudio-Cursos-Integrados.jpg",
+		"delete_url": "https://ibb.co/1fKG57Hy/daa6c7393e20647a4052b14daf3a58ec",
+		"width": 1178,
+		"height": 943,
+		"size": 99935
+	},
+	"planEstudioGeneralTab.jpg": {
+		"sha1": "25d6023a3e7b8083b250cacaf5f4f414ddb8d2be",
+		"url": "https://i.ibb.co/tpsFpRC5/plan-Estudio-General-Tab.jpg",
+		"display_url": "https://i.ibb.co/b5BD5tdn/plan-Estudio-General-Tab.jpg",
+		"thumb": "https://i.ibb.co/MkVQkdNL/plan-Estudio-General-Tab.jpg",
+		"delete_url": "https://ibb.co/MkVQkdNL/ef1df4ceacb51de7ecc4686907d88c75",
+		"width": 1178,
+		"height": 943,
+		"size": 75198
+	},
+	"planEstudioPrerequisitos.jpg": {
+		"sha1": "b9d0c7d17dec5e84b3b358350b110b0d4d5962a1",
+		"url": "https://i.ibb.co/N2GLZZKk/plan-Estudio-Prerequisitos.jpg",
+		"display_url": "https://i.ibb.co/60q4ggFp/plan-Estudio-Prerequisitos.jpg",
+		"thumb": "https://i.ibb.co/yFx8WWqM/plan-Estudio-Prerequisitos.jpg",
+		"delete_url": "https://ibb.co/yFx8WWqM/e7883e82500c3184f4d7920e05df618b",
+		"width": 1178,
+		"height": 943,
+		"size": 78473
 	}
 }

@@ -20,6 +20,7 @@ const MAP_FILE = path.join(ASSETS_DIR, "imgbb-map.json");
 const API_KEY = process.env.IMGBB_API_KEY ?? "bd446e4f6fb2260ac3111574c4e7412e";
 
 const VALID_EXT = new Set([".jpg", ".jpeg", ".png", ".gif", ".webp"]);
+const SKIP_DIRS = new Set(["code"]);
 
 async function loadMap() {
 	try {
@@ -32,6 +33,21 @@ async function loadMap() {
 
 async function sha1(buf) {
 	return crypto.createHash("sha1").update(buf).digest("hex");
+}
+
+async function* walkAssets(dir) {
+	const entries = await fs.readdir(dir, { withFileTypes: true });
+	for (const e of entries) {
+		if (e.isDirectory()) {
+			if (SKIP_DIRS.has(e.name)) continue;
+			yield* walkAssets(path.join(dir, e.name));
+			continue;
+		}
+		if (!e.isFile()) continue;
+		const ext = path.extname(e.name).toLowerCase();
+		if (!VALID_EXT.has(ext)) continue;
+		yield path.join(dir, e.name);
+	}
 }
 
 async function uploadOne(name, buf) {
@@ -57,11 +73,8 @@ async function uploadOne(name, buf) {
 
 async function main() {
 	const map = await loadMap();
-	const entries = await fs.readdir(ASSETS_DIR);
-	for (const name of entries) {
-		const ext = path.extname(name).toLowerCase();
-		if (!VALID_EXT.has(ext)) continue;
-		const filePath = path.join(ASSETS_DIR, name);
+	for await (const filePath of walkAssets(ASSETS_DIR)) {
+		const name = path.basename(filePath);
 		const buf = await fs.readFile(filePath);
 		const hash = await sha1(buf);
 		const prev = map[name];

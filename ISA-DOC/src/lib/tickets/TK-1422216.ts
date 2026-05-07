@@ -178,15 +178,17 @@ export async function buildBodyTK1422216(): Promise<string> {
 		),
 	]);
 
-	const figDescripcion = img("planEstudioCrearConfuso.jpg");
-	const figPymeLegacy = img("planEstudioPymeLegacy.jpg");
+	const figCatalogo = img("planEstudioCatalogo.jpg");
+	const figGeneral = img("planEstudioGeneralTab.jpg");
+	const figCursos = img("planEstudioCursosIntegrados.jpg");
+	const figPrereq = img("planEstudioPrerequisitos.jpg");
 
 	return (
-		intro + figDescripcion + figPymeLegacy +
+		intro + figCatalogo +
 		h3Drawer + ulOpen + drawerNotes.join("") + `</ul>` +
-		h3Cursos + ulOpen + cursosNotes.join("") + `</ul>` +
-		h3Prereq + ulOpen + prereqNotes.join("") + `</ul>` +
-		h3General + ulOpen + generalNotes.join("") + `</ul>` +
+		h3Cursos + ulOpen + cursosNotes.join("") + `</ul>` + figCursos +
+		h3Prereq + ulOpen + prereqNotes.join("") + `</ul>` + figPrereq +
+		h3General + ulOpen + generalNotes.join("") + `</ul>` + figGeneral +
 		h3Layout + ulOpen + layoutNotes.join("") + `</ul>`
 	);
 }
