@@ -376,9 +376,12 @@ function renderCodeImg(info: CodeImageInfo, targetW: number): string {
 		w = targetW;
 	}
 	return (
+		`<a href="${info.url}" target="_blank" rel="noopener noreferrer" ` +
+		`style="display:block;margin:8px 0;text-decoration:none;">` +
 		`<img src="${info.url}" alt="" width="${w}" height="${h}" ` +
 		`style="display:block;width:${w}px;height:${h}px;` +
-		`border:0;border-radius:6px;margin:8px 0;background-color:#000;">`
+		`border:0;border-radius:6px;background-color:#000;cursor:zoom-in;">` +
+		`</a>`
 	);
 }
 
@@ -515,9 +518,12 @@ export function img(filename: string, targetW: number = IMG_DEFAULT_W): string {
 	const info = imgInfo(filename);
 	const { w, h } = computeImgDims(info.width, info.height, targetW);
 	return (
+		`<a href="${info.url}" target="_blank" rel="noopener noreferrer" ` +
+		`style="display:block;margin:0.75rem 0;text-decoration:none;">` +
 		`<img src="${info.url}" alt="" width="${w}" height="${h}" ` +
 		`style="display:block;width:${w}px;height:${h}px;` +
-		`border:1px solid #ddd;border-radius:4px;margin:0.75rem 0;">`
+		`border:1px solid #ddd;border-radius:4px;cursor:zoom-in;">` +
+		`</a>`
 	);
 }
 

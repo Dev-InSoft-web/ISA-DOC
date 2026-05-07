@@ -1,180 +1,195 @@
 // TK-1422216 — Función cargar recursos en plan de estudio. Resuelto.
-import { code as codeI, img } from "./snippets";
+import { img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
 	`<div>El formulario rápido del catálogo de <b>Plan de Estudio</b> traía la pestaña ` +
-	`<i>Cursos de plan de estudio</i> con un botón <b>Crear</b> que abría un action drawer ` +
+	`<i>Cursos de plan de estudio</i> con un botón <b>Crear</b> que abría un panel lateral ` +
 	`vacío y daba la impresión de estar creando un recurso. Se rediseñó el flujo para que ` +
-	`se abra el catálogo de cursos como ${codeI("BtnRef")}, se vinculen los datos seleccionados ` +
-	`y, además, se modernizó por completo el resto del catálogo (Plan, Cursos del plan, ` +
-	`Prerrequisitos, Visualización general) — todos los ajustes del día están relacionados.</div>`;
+	`directamente se abra el catálogo de cursos como selector y los datos del curso elegido ` +
+	`queden vinculados al plan. El resto del catálogo (Plan, Cursos del plan, Prerrequisitos ` +
+	`y Visualización general) se ajustó en el mismo trabajo: todos los cambios del día están ` +
+	`relacionados.</div>`;
 
 const ulOpen = `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">`;
 
 export async function buildBodyTK1422216(): Promise<string> {
-	const [h3Drawer, h3Cursos, h3Prereq, h3General, h3Layout] = await Promise.all([
+	const [h3Drawer, h3Cursos, h3Prereq, h3General, h3Layout, h3Deploy] = await Promise.all([
 		h3Iconized("mdi:cursor-default-click-outline", "Drawer Curso de Plan de Estudio"),
 		h3Iconized("mdi:table-eye", "Columnas del grid Cursos integrados"),
 		h3Iconized("mdi:source-branch", "Columnas del grid Prerrequisitos"),
 		h3Iconized("mdi:tune-variant", "Pestaña General — Tipo de visualización"),
 		h3Iconized("mdi:view-dashboard-outline", "Refactor de layout y simplificaciones"),
+		h3Iconized("mdi:rocket-launch-outline", "Despliegue y pruebas"),
 	]);
 
-	// --- Drawer de creación / edición de curso del plan ---
 	const drawerNotes = await Promise.all([
 		note(
 			"mdi:bug-check-outline",
-			`<b>Causa raíz</b>: en el slot del drawer, ${codeI("<BtnRef bind:value={Item.icurso}>")} ` +
-			`y ${codeI("<InputNumber bind:value={Item.qorden}>")} accedían a ${codeI("Item")} cuando aún ` +
-			`era ${codeI("undefined")} (la action ${codeI("syncItem")} corre tras el primer render → crash silencioso). ` +
-			`Los bindings ahora usan directamente el ${codeI("Obj")} del slot vía ` +
-			`${codeI("{@const co = frmObj as TCursoDePlanDeEstudio}")} para conservar el tipo concreto.`,
+			`<b>Causa del drawer en blanco</b>: los campos del formulario intentaban leer el registro ` +
+			`del curso antes de que la inicialización lo creara, y al no encontrarlo el panel se ` +
+			`renderizaba vacío. Ahora los campos toman directamente el objeto que entrega el slot del ` +
+			`formulario, conservando su tipo, lo que evita la condición de carrera.`,
 		),
 		note(
 			"mdi:auto-mode",
-			`<b>Auto-open en create</b>: nueva action ${codeI("self.autoOpenBtnRef")} sobre el wrapper del ` +
-			`${codeI("BtnRef")}. Si ${codeI("itdForm === \"create\"")} y ${codeI("co.icurso")} está vacío, ` +
-			`dispara ${codeI("click()")} en ${codeI(":scope button[aria-label=\"Open BtnRef\"]")} con ` +
-			`${codeI("queueMicrotask")}. Bandera ${codeI("_autoOpenedFor")} por referencia para no re-disparar.`,
+			`<b>Apertura automática del catálogo</b>: cuando se entra a “Crear” y todavía no se ha ` +
+			`elegido curso, el selector de curso se abre solo. Así el usuario llega directamente al ` +
+			`catálogo en lugar de ver un formulario sin contexto.`,
 		),
 		note(
 			"mdi:eye-outline",
-			`<b>Detalles readonly del curso seleccionado</b>: nombre, descripción, tema (${codeI("curso.tema.ntema")}), ` +
-			`driver (${codeI("curso.driver.ndriver")}), recursos, duración, ${codeI("Switch")} de “Curso activo” / ` +
-			`“Genera certificado” deshabilitados. El componente reutilizable se movió a ` +
-			`${codeI("plandeestudio/_Details/utils/CursoReadOnly.svelte")}.`,
+			`<b>Detalle del curso seleccionado en modo solo lectura</b>: una vez elegido el curso se ` +
+			`muestran nombre, descripción, tema, driver, total de recursos, duración y los indicadores ` +
+			`de “Curso activo” y “Genera certificado”, todos no editables. El bloque reutilizable ` +
+			`quedó como componente independiente para usarlo también en otras vistas.`,
 		),
 		note(
 			"mdi:link-variant",
-			`<b>“Carga el nombre pero no setea el id”</b> (mismo patrón histórico que en ${codeI("ListSeguridad.svelte")} ` +
-			`con permisos): ${codeI("bind:value")} a expresión casteada no actúa como setter bidireccional. ` +
-			`Solución replicada: asignación explícita de la PK en el callback (${codeI("co.icurso = record.icurso")}), ` +
-			`reasignación de la entidad anidada (${codeI("co.curso = record")}), trigger con contador ` +
-			`${codeI("refresh++")} + ${codeI("{#key refresh}")} para forzar remontaje del subárbol.`,
+			`<b>“Carga el nombre pero no setea el id”</b>: era el mismo síntoma observado antes en el ` +
+			`módulo de seguridad. Al elegir un curso se mostraba el texto pero la llave no se ` +
+			`guardaba. Se aplicó la misma estrategia ya validada: asignar explícitamente la llave del ` +
+			`registro y refrescar la sección del formulario para que los campos dependientes vean el ` +
+			`nuevo valor.`,
 		),
 		note(
 			"mdi:filter-variant",
-			`Controlador slave: ${codeI("TCursosDePlanDeEstudioControllerSlave")} ` +
-			`(${codeI("APIPivotController(TCursoController)")} con ${codeI("isysrecurso=\"PlanDeEstudio\"")}) — ` +
-			`filtra en su ${codeI("Lista()")} los cursos ya asignados al plan.`,
+			`<b>Filtrado de cursos disponibles</b>: el catálogo que se abre desde el plan ya excluye ` +
+			`los cursos que pertenecen al plan actual, evitando que se agreguen duplicados.`,
 		),
 	]);
 
-	// --- Columnas del grid cursos integrados ---
 	const cursosNotes = await Promise.all([
 		note(
 			"mdi:table-column-plus-after",
-			`Visibles por defecto: ${codeI("icurso")}, ${codeI("ncurso")}, ${codeI("qorden")}, ` +
-			`${codeI("requisitos")} (conteo de prerrequisitos donde ${codeI("p.icurso === obj.icurso")}), ` +
-			`${codeI("brequerido")}, ${codeI("bactivo")}.`,
+			`<b>Columnas visibles por defecto</b>: código del curso, nombre, orden dentro del plan, ` +
+			`cantidad de prerrequisitos asociados, indicador “Requerido” y estado “Activo”.`,
 		),
 		note(
 			"mdi:eye-off-outline",
-			`Ocultas (${codeI("visible: false")}) — disponibles desde el column picker: ${codeI("itema")}, ` +
-			`${codeI("ntema")}, ${codeI("idriver")}, ${codeI("ndriver")}, ${codeI("descripcion")} ` +
-			`(con ${codeI("stripHtml")}), ${codeI("qduracion")}, ${codeI("qtotalrecursos")}, ` +
-			`${codeI("bgeneracertificado")}.`,
+			`<b>Columnas adicionales bajo demanda</b>: tema, driver, descripción (sin etiquetas HTML), ` +
+			`duración, total de recursos y “Genera certificado”. Quedan ocultas por defecto pero ` +
+			`disponibles desde el selector de columnas, sin saturar la vista inicial.`,
 		),
 		note(
 			"mdi:account-clock-outline",
-			`Auditoría completa vía ${codeI("...ColOptionDatosCre, ...ColOptionDatosUlt")} ` +
-			`(${codeI("TCursoDePlanDeEstudio extends TObjectBase")}).`,
+			`<b>Auditoría completa</b>: se incluyeron las columnas estándar de creación y última ` +
+			`modificación (usuario y fecha) para alinearse con el resto de catálogos.`,
 		),
 	]);
 
-	// --- Columnas grid prereq ---
 	const prereqNotes = await Promise.all([
 		note(
 			"mdi:eye-check-outline",
-			`Visibles: ${codeI("cursoOwner")} (Curso) y ${codeI("cursoRequerido")} (Requisito). ` +
-			`Ambos resuelven el ${codeI("ncurso")} buscando dentro de ` +
-			`${codeI("entityMaster.cursosdeplanestudio")} — la lista del API trae solo PKs ` +
-			`(${codeI("icurso")}, ${codeI("icursorequerido")}, ${codeI("iplanestudio")}).`,
+			`<b>Columnas visibles</b>: <i>Curso</i> y <i>Requisito</i>, mostrando el nombre real de ` +
+			`cada uno. Como la lista del API trae sólo las llaves, el nombre se resuelve cruzando ` +
+			`contra los cursos del plan que ya están cargados en memoria.`,
 		),
 		note(
 			"mdi:function-variant",
-			`Helpers como arrow fn: ${codeI("findCursoDePlan(icurso)")} → ${codeI("TCursoDePlanDeEstudio")} ` +
-			`(para acceder a ${codeI("qorden")}); ${codeI("findCursoEnPlan(icurso)")} → ${codeI("TCurso")} ` +
-			`(tema, driver, descripción, duración, recursos, ${codeI("bactivo")}, ${codeI("bgeneracertificado")}).`,
+			`<b>Centralización de la consulta</b>: una sola utilidad localiza el curso del plan a ` +
+			`partir de su llave; tanto la columna del curso como la del requisito la reutilizan, ` +
+			`evitando lógica duplicada.`,
 		),
 		note(
 			"mdi:eye-off-outline",
-			`Ocultas: ${codeI("icurso")}, ${codeI("icursorequerido")}, ${codeI("iplanestudio")} y para ambos ` +
-			`extremos (Owner / Requerido) ${codeI("qorden*")}, ${codeI("itema*")}, ${codeI("ntema*")}, ` +
-			`${codeI("idriver*")}, ${codeI("ndriver*")}, ${codeI("descripcion*")}, ${codeI("qduracion*")}, ` +
-			`${codeI("qtotalrecursos*")}, ${codeI("bactivo*")}, ${codeI("bgeneracertificado*")}.`,
+			`<b>Columnas adicionales</b>: para cada extremo (curso y requisito) se exponen, en modo ` +
+			`opcional, sus datos completos — tema, driver, descripción, duración, recursos, orden, ` +
+			`“Activo” y “Genera certificado” — disponibles desde el selector de columnas.`,
+		),
+		note(
+			"mdi:function-variant-off",
+			`<b>Generación parametrizada</b>: el bloque de columnas adicionales se construye con un ` +
+			`pequeño helper reutilizado dos veces (curso y requisito), reduciendo veinte definiciones ` +
+			`casi idénticas a una sola fuente de verdad.`,
 		),
 		note(
 			"mdi:database-off-outline",
-			`Sin auditoría: ${codeI("TCursoPrerequisito extends TObject")} (no ${codeI("TObjectBase")}), ` +
-			`por lo que no se aplican ${codeI("ColOptionDatosCre")} / ${codeI("ColOptionDatosUlt")}.`,
+			`<b>Sin auditoría</b>: el prerrequisito es una relación pura entre dos cursos, por lo que ` +
+			`no aplica la auditoría de creación/modificación.`,
 		),
 	]);
 
-	// --- General tab ---
 	const generalNotes = await Promise.all([
 		note(
 			"mdi:form-dropdown",
-			`Se reemplazó el ${codeI("SelectEnum")} (que duplicaba opciones cuando ${codeI("fnEnumCaption")} ` +
-			`era función) por un ${codeI("<select>")} nativo con tres opciones: ` +
-			`${codeI("Pestañas")} / ${codeI("Árbol")} / ${codeI("Organigrama")}.`,
+			`<b>Tipo de visualización</b>: se conservó el componente estándar de selector usado en ` +
+			`el resto del sistema, con las opciones <i>Pestañas</i>, <i>Árbol</i> y <i>Organigrama</i>. ` +
+			`Antes había problemas de duplicación y de etiquetas en inglés; ahora se ve igual que los ` +
+			`demás selectores y muestra los nombres en español.`,
+		),
+		note(
+			"mdi:eye-arrow-right-outline",
+			`<b>Previsualización</b>: junto al selector se muestra un recuadro con el ícono y el ` +
+			`nombre del modo elegido, para que el usuario entienda visualmente el efecto sin tener ` +
+			`que cambiar de vista.`,
 		),
 		note(
 			"mdi:toggle-switch-off-outline",
-			`Eliminado el ${codeI("Switch")} “Genera certificados” del bloque editable: pasó al fastdata ` +
-			`para alinear con el comportamiento de los demás campos del plan.`,
+			`<b>Limpieza del bloque general</b>: se retiró el switch “Genera certificados” del ` +
+			`formulario editable porque pertenece a la información rápida del plan, alineándose con el ` +
+			`comportamiento de los demás campos.`,
 		),
 		note(
 			"mdi:view-split-vertical",
-			`Layout responsivo: en ${codeI("md+")} el selector de Tipo de visualización aparece a la ` +
-			`izquierda y la <b>Previsualización</b> a la derecha; en ${codeI("sm")} se apilan. ` +
-			`Previsualización con Iconify dentro de un recuadro punteado, siempre visible.`,
-		),
-		note(
-			"mdi:link-off",
-			`Se eliminó el import circular ${codeI("import { VISUALIZATION_CAPTIONS } from \"…/General.svelte\"")} ` +
-			`hacia ${codeI("PlanDeEstudio.ts")} declarando el mapa local en el controller.`,
+			`<b>Layout adaptable</b>: en pantallas medianas o grandes el selector queda a la izquierda ` +
+			`y la previsualización a la derecha; en pantallas pequeñas se apilan para mantener todo ` +
+			`legible.`,
 		),
 	]);
 
-	// --- Refactor layout ---
 	const layoutNotes = await Promise.all([
 		note(
 			"mdi:flexbox",
-			`Se eliminó el uso manual de ${codeI("display: flex; flex-direction: column;")} y de ` +
-			`${codeI("gap")} en CSS. Toda la maquetación pasó a ${codeI("FlexLayout")} con sus props ` +
-			`(${codeI("direction")}, ${codeI("gap")}, ${codeI("items")}, ${codeI("justify")}, ` +
-			`${codeI("inline")}). No se usa ${codeI("gap")} en ${codeI("FlexLayout")} ni ${codeI("GridLayout")} ` +
-			`anidados redundantes.`,
+			`<b>Maquetación con componentes oficiales</b>: se reemplazaron los CSS manuales por los ` +
+			`componentes de layout del sistema, lo que da un comportamiento responsivo consistente y ` +
+			`evita estilos sueltos que se desincronizan con el resto de la aplicación.`,
 		),
 		note(
 			"mdi:code-tags",
-			`Cuando un ${codeI("FlexLayout")} envolvía a otro, se colapsó al externo. ` +
-			`CSS reducido al mínimo, con anidación nativa y un único bloque ${codeI(":global { … }")} ` +
-			`por archivo. Eliminadas clases utilitarias muertas (${codeI("cro-flags")}, ${codeI("cro-stats")}, ` +
-			`${codeI("cro-desc")}, etc.).`,
+			`<b>CSS reducido al mínimo</b>: se eliminaron envoltorios y clases muertas, dejando ` +
+			`bloques pequeños y autocontenidos por archivo. El mantenimiento posterior es más simple ` +
+			`y los cambios visuales no afectan vistas vecinas.`,
 		),
 		note(
 			"mdi:resize",
-			`<b>Dimensiones del grid de prerrequisitos</b>: cadena ${codeI("flex: 1 1 auto")} + ` +
-			`${codeI("min-height: 0")} desde ${codeI(".cp-form-body")} hasta ${codeI(".cp-prereq-grid")}, ` +
-			`con ${codeI("height: 100%")} en ${codeI(".cp-prereq-tab")} para que el ${codeI("TabItem")} ` +
-			`propague la altura completa al ${codeI("Grid.svelte")}. ` +
-			`Las filas ya se renderizan al insertar prerrequisitos.`,
+			`<b>Dimensiones del grid de prerrequisitos</b>: el grid no aparecía o se quedaba muy ` +
+			`pequeño cuando se insertaban filas. Se ajustó el flujo de alturas desde el contenedor ` +
+			`del formulario hasta el grid para que ocupe el espacio disponible y muestre las filas ` +
+			`tan pronto se agregan.`,
 		),
 		note(
 			"mdi:format-list-numbered",
-			`Archivos tocados en este sweep: ${codeI("ListCursosDePlan.svelte")}, ` +
-			`${codeI("ListPrerequisitosDePlan.svelte")}, ${codeI("CursoReadOnly.svelte")}, ` +
-			`${codeI("General.svelte")}, ${codeI("Acciones.svelte")}, ${codeI("Catalogo.svelte")}, ` +
-			`${codeI("Formulario.svelte")}.`,
+			`<b>Alcance del refactor</b>: la limpieza tocó la lista de cursos del plan, la lista de ` +
+			`prerrequisitos, el detalle de curso en solo lectura, las acciones, el catálogo, la ` +
+			`pestaña general y el formulario principal. Todos quedaron alineados al mismo estándar.`,
 		),
 		note(
 			"mdi:package-up",
-			`Backend: nueva ruta para obtener plan de estudio con detalle (consumida por la UI para ` +
-			`alimentar los detalles readonly del curso). Bump del paquete ` +
-			`${codeI("@ingenieria_insoft/ispclientesis")} a ${codeI("1.0.162")}.`,
+			`<b>Soporte de backend</b>: se publicó una ruta que devuelve el plan con el detalle ` +
+			`completo de sus cursos, lo que permite mostrar la información de solo lectura sin ` +
+			`consultas adicionales desde la UI.`,
+		),
+	]);
+
+	const deployNotes = await Promise.all([
+		note(
+			"mdi:server",
+			`<b>Servidor (ISS)</b>: se actualizó para soportar la asignación de íconos por fila ` +
+			`en los grids del módulo, de modo que el front pueda decorar cada registro según su tipo ` +
+			`o estado sin lógica adicional en el cliente.`,
+		),
+		note(
+			"mdi:package-variant-closed",
+			`<b>Paquetes compartidos (ISP)</b>: se ajustó el detalle alto (<i>jData high detail</i>) ` +
+			`de Plan de Estudio y de Curso para que viajen los datos completos necesarios y los ` +
+			`íconos se apliquen correctamente en las vistas que los consumen.`,
+		),
+		note(
+			"mdi:web",
+			`<b>Cliente web (ISW)</b>: publicado para que las pruebas funcionales puedan hacerse en ` +
+			`<a href="https://clientesis.azurewebsites.net/capacitacion/planes/estudio" target="_blank" rel="noopener" style="color:dodgerblue;">Planes de Estudio</a> ` +
+			`y en <a href="https://clientesis.azurewebsites.net/capacitacion/cursos" target="_blank" rel="noopener" style="color:dodgerblue;">Cursos</a>.`,
 		),
 	]);
 
@@ -189,7 +204,8 @@ export async function buildBodyTK1422216(): Promise<string> {
 		h3Cursos + ulOpen + cursosNotes.join("") + `</ul>` + figCursos +
 		h3Prereq + ulOpen + prereqNotes.join("") + `</ul>` + figPrereq +
 		h3General + ulOpen + generalNotes.join("") + `</ul>` + figGeneral +
-		h3Layout + ulOpen + layoutNotes.join("") + `</ul>`
+		h3Layout + ulOpen + layoutNotes.join("") + `</ul>` +
+		h3Deploy + ulOpen + deployNotes.join("") + `</ul>`
 	);
 }
 
