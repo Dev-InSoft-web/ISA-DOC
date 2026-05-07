@@ -6,6 +6,7 @@ import { bodyTK1420754 } from "./TK-1420754";
 import { bodyTK1420755 } from "./TK-1420755";
 import { bodyTK1420813 } from "./TK-1420813";
 import { bodyTK1420819 } from "./TK-1420819";
+import { bodyTK1422216 } from "./TK-1422216";
 
 export interface TicketRegistro {
 	id: string;
@@ -19,6 +20,14 @@ export interface TicketRegistro {
 }
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1422216",
+		titulo: "Función cargar recursos en plan de estudio",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "07/may./2026 10:37:59 am",
+		resumen: "En revisión del formulario rápido del catálogo de plan de estudio, se identificó que actualmente en la pestaña de “Cursos de plan de estudio”, tiene la opción crear, lo cual es confuso porque da la impresión de que fuera a crear un recurso. Al momento de abrirla se queda el action drawer en blanco. Se debe abrir el catálogo de cursos para seleccionar los cursos que deben quedar dentro del plan.",
+		body: bodyTK1422216,
+	},
 	{
 		id: "TK-1420819",
 		titulo: "Campos vacíos grid curso",
