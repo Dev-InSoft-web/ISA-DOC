@@ -20,6 +20,12 @@
 	import sqlUpdateDriverAtributosJConfig from "../../lib/migration/sql/update-driver-atributos-jconfig.sql?raw";
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
 	import md_2026_05_06_driver_jconfig from "../../lib/bitacora/daily/2026-05-06/driver-atributos-jconfig-intro.md?raw";
+	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05-06/resumen-isa.md?raw";
+	import md_2026_05_06_isw_isp from "../../lib/bitacora/daily/2026-05-06/resumen-isw-isp.md?raw";
+	import md_2026_05_06_iss from "../../lib/bitacora/daily/2026-05-06/resumen-iss.md?raw";
+	import md_2026_05_07_isa from "../../lib/bitacora/daily/2026-05-07/resumen-isa.md?raw";
+	import md_2026_05_07_isw_isp from "../../lib/bitacora/daily/2026-05-07/resumen-isw-isp.md?raw";
+	import md_2026_05_07_iss from "../../lib/bitacora/daily/2026-05-07/resumen-iss.md?raw";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 
 	const driverAtributosJsonItems: ReadonlyArray<{ iatributo: number; natributo: string; jconfig: string }> = [
@@ -106,6 +112,31 @@
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-05-07 -->
+			<Accordion
+				title="2026-05-07 — Capacitación: Plan ↔ Curso (drawer + auto-open BtnRef) y fix de ciclo reactivo en TreeContenidos"
+				titleIcon="mdi:calendar"
+				open={true}
+			>
+				<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" open={true} inner>
+					<BitacoraNote
+						title="Proyecto ISA-DOC"
+						mdSource={md_2026_05_07_isa}
+						inner
+					/>
+					<BitacoraNote
+						title="ISW / ISP ClientesIS"
+						mdSource={md_2026_05_07_isw_isp}
+						inner
+					/>
+					<BitacoraNote
+						title="ISP-ClientesISServer / ISS-ClientesIS-ContaPymeU"
+						mdSource={md_2026_05_07_iss}
+						inner
+					/>
+				</Accordion>
+			</Accordion>
+
 			<!-- 2026-05-06 -->
 			<Accordion
 				title="2026-05-06 — Capacitación: JCONFIG de atributos de drivers + tracking temporal de índices"
@@ -119,6 +150,24 @@
 						"2026-05-06.atributosplan.driver_recurso_codes",
 					]}
 				/>
+
+				<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" open={false} inner>
+					<BitacoraNote
+						title="Proyecto ISA-DOC"
+						mdSource={md_2026_05_06_isa}
+						inner
+					/>
+					<BitacoraNote
+						title="ISW / ISP ClientesIS"
+						mdSource={md_2026_05_06_isw_isp}
+						inner
+					/>
+					<BitacoraNote
+						title="ISP-ClientesISServer / ISS-ClientesIS-ContaPymeU"
+						mdSource={md_2026_05_06_iss}
+						inner
+					/>
+				</Accordion>
 
 				<Accordion
 					title="Drivers · JCONFIG de atributos (configuración de inputs)"
