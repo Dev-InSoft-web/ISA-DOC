@@ -1,5 +1,5 @@
 // TK-1422216 — Función cargar recursos en plan de estudio. Resuelto.
-import { img } from "./snippets";
+import { code, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
@@ -181,15 +181,23 @@ export async function buildBodyTK1422216(): Promise<string> {
 		),
 		note(
 			"mdi:package-variant-closed",
-			`<b>Paquetes compartidos (ISP)</b>: se ajustó el detalle alto (<i>jData high detail</i>) ` +
+			`<b>Paquetes compartidos (ISP)</b>: se ajustó el ${code("JData2HighDetail")} ` +
 			`de Plan de Estudio y de Curso para que viajen los datos completos necesarios y los ` +
-			`íconos se apliquen correctamente en las vistas que los consumen.`,
+			`íconos se apliquen correctamente en las vistas que los consumen. Versiones publicadas: ` +
+			`${code("ispclientesis@1.0.162")} y ${code("ispclientesisserver@1.0.158")}.`,
 		),
 		note(
 			"mdi:web",
 			`<b>Cliente web (ISW)</b>: publicado para que las pruebas funcionales puedan hacerse en ` +
-			`<a href="https://clientesis.azurewebsites.net/capacitacion/planes/estudio" target="_blank" rel="noopener" style="color:dodgerblue;">Planes de Estudio</a> ` +
-			`y en <a href="https://clientesis.azurewebsites.net/capacitacion/cursos" target="_blank" rel="noopener" style="color:dodgerblue;">Cursos</a>.`,
+			`<a href="https://clientesis.azurewebsites.net/capacitacion/planes/estudio" target="_blank" rel="noopener" style="color:dodgerblue;text-decoration:underline;"><span style="color:dodgerblue;">Planes de Estudio</span></a> ` +
+			`y en <a href="https://clientesis.azurewebsites.net/capacitacion/cursos" target="_blank" rel="noopener" style="color:dodgerblue;text-decoration:underline;"><span style="color:dodgerblue;">Cursos</span></a>.`,
+		),
+		note(
+			"mdi:clock-outline",
+			`<b>Cierre del día</b>: la jornada de trabajo sobre este ticket finalizó a las ` +
+			`<b>12:50</b>, tomando <b>20 minutos extra del horario de almuerzo</b> para dejar listo ` +
+			`el despliegue y las pruebas. Se deja constancia como muestra del compromiso con el ` +
+			`proyecto.`,
 		),
 	]);
 

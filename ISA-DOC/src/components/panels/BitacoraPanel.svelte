@@ -26,6 +26,7 @@
 	import md_2026_05_07_isa from "../../lib/bitacora/daily/2026-05-07/resumen-isa.md?raw";
 	import md_2026_05_07_isw_isp from "../../lib/bitacora/daily/2026-05-07/resumen-isw-isp.md?raw";
 	import md_2026_05_07_iss from "../../lib/bitacora/daily/2026-05-07/resumen-iss.md?raw";
+	import md_2026_05_07_seguimiento from "../../lib/bitacora/daily/2026-05-07/resumen-seguimiento.md?raw";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 
 	const driverAtributosJsonItems: ReadonlyArray<{ iatributo: number; natributo: string; jconfig: string }> = [
@@ -132,6 +133,11 @@
 					<BitacoraNote
 						title="ISP-ClientesISServer / ISS-ClientesIS-ContaPymeU"
 						mdSource={md_2026_05_07_iss}
+						inner
+					/>
+					<BitacoraNote
+						title="Avances ContaPymeU (sin ISA-DOC)"
+						mdSource={md_2026_05_07_seguimiento}
 						inner
 					/>
 				</Accordion>
