@@ -118,5 +118,45 @@
 		"width": 1178,
 		"height": 943,
 		"size": 78473
+	},
+	"formularioEtiquetasCapitulo.jpg": {
+		"sha1": "8efaeda4594cdbcb8dc7af3eecb8b0e4e559a816",
+		"url": "https://i.ibb.co/27Pk8hKn/formulario-Etiquetas-Capitulo.jpg",
+		"display_url": "https://i.ibb.co/rGMwb0y7/formulario-Etiquetas-Capitulo.jpg",
+		"thumb": "https://i.ibb.co/gMwRv9gj/formulario-Etiquetas-Capitulo.jpg",
+		"delete_url": "https://ibb.co/gMwRv9gj/bf4e98eb337b8e686d0049e059cebe60",
+		"width": 1242,
+		"height": 866,
+		"size": 66436
+	},
+	"formularioEtiquetasTitulo.jpg": {
+		"sha1": "8395e8c95cd76a24300e0ecac7780324a33f98a0",
+		"url": "https://i.ibb.co/V087dQCq/formulario-Etiquetas-Titulo.jpg",
+		"display_url": "https://i.ibb.co/bjnSx2vK/formulario-Etiquetas-Titulo.jpg",
+		"thumb": "https://i.ibb.co/zWwy1724/formulario-Etiquetas-Titulo.jpg",
+		"delete_url": "https://ibb.co/zWwy1724/5aa0c14bbcce0a6415d7dc6a55e61a49",
+		"width": 1242,
+		"height": 866,
+		"size": 79582
+	},
+	"selectorRecursoAutoOpen.jpg": {
+		"sha1": "07c1cc2cddb5008d91834165404424dce50951c0",
+		"url": "https://i.ibb.co/BSMFcYr/selector-Recurso-Auto-Open.jpg",
+		"display_url": "https://i.ibb.co/n5Jt6Kn/selector-Recurso-Auto-Open.jpg",
+		"thumb": "https://i.ibb.co/76mLj0R/selector-Recurso-Auto-Open.jpg",
+		"delete_url": "https://ibb.co/76mLj0R/ca4f01c56c9589df26ec66c7022638c2",
+		"width": 1280,
+		"height": 720,
+		"size": 87656
+	},
+	"treeContenidos.jpg": {
+		"sha1": "4f071731a5202844d2991ff1e389b5f048d194af",
+		"url": "https://i.ibb.co/VdPcc3f/tree-Contenidos.jpg",
+		"display_url": "https://i.ibb.co/qzP33xT/tree-Contenidos.jpg",
+		"thumb": "https://i.ibb.co/PRfvvtq/tree-Contenidos.jpg",
+		"delete_url": "https://ibb.co/PRfvvtq/160728bbf802cc26f89b8295b0dad795",
+		"width": 924,
+		"height": 897,
+		"size": 80948
 	}
 }

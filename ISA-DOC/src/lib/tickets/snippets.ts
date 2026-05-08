@@ -58,8 +58,10 @@ export interface IconOpts {
 export function icon(name: string, opts: IconOpts = {}): string {
 	const size = opts.size ?? 16;
 	const altText = opts.alt ?? "";
+	// Iconify requiere el '#' en el color (codificado como %23). Sin el '#'
+	// la API responde el SVG en su color original (negro).
 	const colorParam = opts.color
-		? `?color=${encodeURIComponent(opts.color.startsWith("#") ? opts.color.slice(1) : opts.color)}`
+		? `?color=${encodeURIComponent(opts.color.startsWith("#") ? opts.color : `#${opts.color}`)}`
 		: "";
 	const safeName = name.replace(":", "/");
 	const src = `https://api.iconify.design/${safeName}.svg${colorParam}`;

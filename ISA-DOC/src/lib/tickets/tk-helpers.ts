@@ -1,12 +1,16 @@
 // Helpers compartidos entre cuerpos de tickets para mantener un estilo
 // homogéneo (h3 con ícono, notas con borde, lista de notas, etc.).
-import { iconSvg } from "./snippets";
+//
+// Los íconos se renderizan como <img> hacia api.iconify.design con `?color=…`
+// porque algunos clientes de correo (Outlook) no pintan SVG inline. Usar
+// `iconSvg` solo cuando el destino sea un visor web confiable.
+import { icon } from "./snippets";
 
 export const NOTE_COLOR = "#777";
 
 // <h3> con ícono Iconify a la izquierda y color principal del visor.
 export async function h3Iconized(iconName: string, label: string): Promise<string> {
-	const ic = await iconSvg(iconName, { size: 18, color: "#1e90ff" });
+	const ic = icon(iconName, { size: 18, color: "#1e90ff" });
 	return (
 		`<h3 style="color:#1e90ff;margin-top:1.25rem;">` +
 		`${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${label}</span></h3>`
@@ -15,7 +19,7 @@ export async function h3Iconized(iconName: string, label: string): Promise<strin
 
 // Item de nota: <li> con borde, ícono y texto en gris.
 export async function note(iconName: string, html: string): Promise<string> {
-	const ic = await iconSvg(iconName, { size: 16, color: NOTE_COLOR });
+	const ic = icon(iconName, { size: 16, color: NOTE_COLOR });
 	return (
 		`<li style="border:1px solid #80808030;border-radius:4px;padding:0.5rem;margin-bottom:0.5rem;list-style:none;color:${NOTE_COLOR};">` +
 		`${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${html}</span>` +

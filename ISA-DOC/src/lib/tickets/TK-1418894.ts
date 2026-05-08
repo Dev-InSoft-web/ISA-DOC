@@ -1,4 +1,4 @@
-import { methodBadge, iconSvg, code as codeI } from "./snippets";
+import { methodBadge, icon, code as codeI } from "./snippets";
 
 const ENTITY_ICON: Record<string, string> = {
 	Permisos: "mdi:shield-key-outline",
@@ -32,12 +32,12 @@ interface Row {
 }
 
 // Encierra el icono y el texto de la entidad en un único <span> con `color`,
-// usando inline-flex para alinear vertical/horizontalmente. El SVG inline
-// (vía `iconSvg`) hereda el color del ancestro vía `currentColor`.
+// usando inline-flex para alinear vertical/horizontalmente. El icono se
+// renderiza como <img> (email-safe) con `?color=…`.
 async function entityCell(entidad: string): Promise<string> {
 	const i = ENTITY_ICON[entidad];
 	const c = ENTITY_COLOR[entidad] ?? "#666";
-	const ic = i ? await iconSvg(i, { size: 16, color: c }) : "";
+	const ic = i ? icon(i, { size: 16, color: c }) : "";
 	return (
 		`<span style="display:inline-flex;align-items:center;gap:1rem;color:${c};font-weight:600;">` +
 		`${ic}<span>${entidad}</span>` +
@@ -117,7 +117,7 @@ const intro =
 // + gap, y el color del icono se sincroniza con el texto vía `currentColor`.
 const NOTE_COLOR = "#777";
 async function note(iconName: string, html: string, color: string = NOTE_COLOR): Promise<string> {
-	const ic = await iconSvg(iconName, { size: 16, color });
+	const ic = icon(iconName, { size: 16, color });
 	return (
 		`<li style="border:1px solid #80808030;border-radius:4px;padding:0.5rem;margin-bottom:0.5rem;list-style:none;color:${color};">` +
 		`${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${html}</span>` +
@@ -126,7 +126,7 @@ async function note(iconName: string, html: string, color: string = NOTE_COLOR):
 }
 
 async function buildNotas(): Promise<string> {
-	const headerIcon = await iconSvg("mdi:information-outline", { size: 18, color: NOTE_COLOR });
+	const headerIcon = icon("mdi:information-outline", { size: 18, color: NOTE_COLOR });
 	const items = await Promise.all([
 		note(
 			"mdi:lock-outline",
@@ -160,7 +160,7 @@ async function buildNotas(): Promise<string> {
 // hereda el color vía `currentColor`.
 async function h3Iconized(iconName: string, label: string): Promise<string> {
 	const c = "#1e90ff";
-	const ic = await iconSvg(iconName, { size: 18, color: c });
+	const ic = icon(iconName, { size: 18, color: c });
 	return (
 		`<h3 style="color:${c};margin-top:1.25rem;">` +
 		`${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${label}</span>` +

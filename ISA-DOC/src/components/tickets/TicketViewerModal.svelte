@@ -46,7 +46,7 @@
 	<Modal bind:bshow variant="solid" style="width: min(960px, 95dvw); height: min(85dvh, 800px);">
 		<svelte:fragment slot="title">
 			<FlexLayout direction="column" style="gap: 0.15rem; min-width: 0;">
-				<strong>{ticket.id} — {ticket.titulo}</strong>
+				<strong style="font-size: 0.95rem; line-height: 1.25;">{ticket.id} — {ticket.titulo}</strong>
 				<small style="color: gray;">
 					{ticket.solicitante} · Solicitud: {ticket.fechaSolicitud}
 					{#if ticket.fechaEntrega}· Entrega: {ticket.fechaEntrega}{/if}
@@ -55,12 +55,12 @@
 		</svelte:fragment>
 
 		{#if ticket.resumen}
-			<p class="ticket-resumen">{ticket.resumen}</p>
+			<p class="ticket-resumen"><small>{ticket.resumen}</small></p>
 		{/if}
 
 		<FlexLayout direction="row" items="center" style="margin-bottom: 0.5rem;">
-			<Switch bind:checked={whiteBg} color="primary" colorFalse="neutral" disabled={showCode}>Fondo blanco</Switch>
-			<Switch bind:checked={showCode} color="primary" colorFalse="neutral">Ver código HTML</Switch>
+			<Switch bind:checked={whiteBg} color="primary" colorFalse="neutral" disabled={showCode}><small>Fondo blanco</small></Switch>
+			<Switch bind:checked={showCode} color="primary" colorFalse="neutral"><small>Ver código HTML</small></Switch>
 		</FlexLayout>
 
 		<div class="ticket-viewer">

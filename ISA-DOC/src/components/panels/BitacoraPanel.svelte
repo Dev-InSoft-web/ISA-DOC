@@ -5,6 +5,7 @@
 	import CleanupTestDataMigration from "../migration/CleanupTestDataMigration.svelte";
 	import OldRebuildSection from "../migration/OldRebuildSection.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
+	import DailySummaryAccordion from "../bitacora/DailySummaryAccordion.svelte";
 	import TicketsSection from "../tickets/TicketsSection.svelte";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
 	import Accordion from "../_comps/containers/Accordion.svelte";
@@ -27,6 +28,10 @@
 	import md_2026_05_07_isw_isp from "../../lib/bitacora/daily/2026-05-07/resumen-isw-isp.md?raw";
 	import md_2026_05_07_iss from "../../lib/bitacora/daily/2026-05-07/resumen-iss.md?raw";
 	import md_2026_05_07_seguimiento from "../../lib/bitacora/daily/2026-05-07/resumen-seguimiento.md?raw";
+	import md_2026_05_08_isa from "../../lib/bitacora/daily/2026-05-08/resumen-isa.md?raw";
+	import md_2026_05_08_isw_isp from "../../lib/bitacora/daily/2026-05-08/resumen-isw-isp.md?raw";
+	import md_2026_05_08_iss from "../../lib/bitacora/daily/2026-05-08/resumen-iss.md?raw";
+	import md_2026_05_08_seguimiento from "../../lib/bitacora/daily/2026-05-08/resumen-seguimiento.md?raw";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 
 	const driverAtributosJsonItems: ReadonlyArray<{ iatributo: number; natributo: string; jconfig: string }> = [
@@ -113,41 +118,34 @@
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-05-08 -->
+			<DailySummaryAccordion
+				title="2026-05-08 — Capacitación: refactor TreeView (cascada de adaptadores) + cierre del Plan de contenidos del curso"
+				open
+				mdIsa={md_2026_05_08_isa}
+				mdIswIsp={md_2026_05_08_isw_isp}
+				mdIss={md_2026_05_08_iss}
+				mdSeguimiento={md_2026_05_08_seguimiento}
+			/>
+
 			<!-- 2026-05-07 -->
-			<Accordion
+			<DailySummaryAccordion
 				title="2026-05-07 — Capacitación: Plan ↔ Curso (drawer + auto-open BtnRef) y fix de ciclo reactivo en TreeContenidos"
-				titleIcon="mdi:calendar"
-				open={true}
-			>
-				<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" open={true} inner>
-					<BitacoraNote
-						title="Proyecto ISA-DOC"
-						mdSource={md_2026_05_07_isa}
-						inner
-					/>
-					<BitacoraNote
-						title="ISW / ISP ClientesIS"
-						mdSource={md_2026_05_07_isw_isp}
-						inner
-					/>
-					<BitacoraNote
-						title="ISP-ClientesISServer / ISS-ClientesIS-ContaPymeU"
-						mdSource={md_2026_05_07_iss}
-						inner
-					/>
-					<BitacoraNote
-						title="Avances ContaPymeU (sin ISA-DOC)"
-						mdSource={md_2026_05_07_seguimiento}
-						inner
-					/>
-				</Accordion>
-			</Accordion>
+				open
+				mdIsa={md_2026_05_07_isa}
+				mdIswIsp={md_2026_05_07_isw_isp}
+				mdIss={md_2026_05_07_iss}
+				mdSeguimiento={md_2026_05_07_seguimiento}
+			/>
 
 			<!-- 2026-05-06 -->
-			<Accordion
+			<DailySummaryAccordion
 				title="2026-05-06 — Capacitación: JCONFIG de atributos de drivers + tracking temporal de índices"
-				titleIcon="mdi:calendar"
-				open={true}
+				open
+				resumenOpen={false}
+				mdIsa={md_2026_05_06_isa}
+				mdIswIsp={md_2026_05_06_isw_isp}
+				mdIss={md_2026_05_06_iss}
 			>
 				<RevisadoCheck
 					slot="title-extra"
@@ -156,24 +154,6 @@
 						"2026-05-06.atributosplan.driver_recurso_codes",
 					]}
 				/>
-
-				<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" open={false} inner>
-					<BitacoraNote
-						title="Proyecto ISA-DOC"
-						mdSource={md_2026_05_06_isa}
-						inner
-					/>
-					<BitacoraNote
-						title="ISW / ISP ClientesIS"
-						mdSource={md_2026_05_06_isw_isp}
-						inner
-					/>
-					<BitacoraNote
-						title="ISP-ClientesISServer / ISS-ClientesIS-ContaPymeU"
-						mdSource={md_2026_05_06_iss}
-						inner
-					/>
-				</Accordion>
 
 				<Accordion
 					title="Drivers · JCONFIG de atributos (configuración de inputs)"
@@ -227,7 +207,7 @@
 						height="320px"
 					/>
 				</Accordion>
-			</Accordion>
+			</DailySummaryAccordion>
 
 			<!-- 2026-05-05 -->
 			<Accordion
