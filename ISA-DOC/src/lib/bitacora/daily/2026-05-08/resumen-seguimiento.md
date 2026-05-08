@@ -11,12 +11,11 @@ Reporte del día sobre los componentes ContaPymeU
 
 ## 1. Tickets atendidos
 
-### TK-XXX (código por asignar) — Hallazgos en Plan de contenidos del curso
+### TK-1423165 — Hallazgos en Plan de contenidos del curso
 
 El ingeniero reportó cuatro hallazgos del módulo **Capacitación → Cursos →
 Plan de contenidos** (vista del árbol de capítulos/títulos del curso). Se
-atendieron los cuatro en la misma jornada y se documentaron en el ticket
-informal correspondiente (pendiente de asignación de código).
+atendieron los cuatro en la misma jornada.
 
 - **Nomenclatura de campos por nivel.** Antes los campos del formulario del
    nodo del árbol se llamaban genéricamente "Código", "Nombre", "Atributos".
@@ -51,11 +50,8 @@ informal correspondiente (pendiente de asignación de código).
    también abre con los **datos del nuevo registro** (no con los del nodo
    sobre el que se invocó la acción).
 
-**Despliegue y pruebas.** Pendiente de despliegue formal a
-`clientesis.azurewebsites.net` (pendiente de definir ventana). Validado en
-local con QA exhaustivo: insertar arriba/abajo/hijo en cada nivel, abrir
-selector de recurso, autoabrir el modal, seleccionar un recurso y verificar
-que el nombre del título se rellena solo cuando estaba vacío.
+**Despliegue.** Pendiente de despliegue formal a
+`clientesis.azurewebsites.net` (pendiente de definir ventana).
 
 ---
 

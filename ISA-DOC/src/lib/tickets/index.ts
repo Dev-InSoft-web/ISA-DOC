@@ -7,7 +7,7 @@ import { bodyTK1420755 } from "./TK-1420755";
 import { bodyTK1420813 } from "./TK-1420813";
 import { bodyTK1420819 } from "./TK-1420819";
 import { bodyTK1422216 } from "./TK-1422216";
-import { bodyTKXXX } from "./TK-XXX";
+import { bodyTK1423165 } from "./TK-1423165";
 
 export interface TicketRegistro {
 	id: string;
@@ -22,12 +22,12 @@ export interface TicketRegistro {
 
 export const TICKETS: TicketRegistro[] = [
 	{
-		id: "TK-XXX",
+		id: "TK-1423165",
 		titulo: "Plan de contenidos: etiquetas, atributos, autoapertura y padre correcto",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "08/may./2026",
-		resumen: "El ingeniero reportó cuatro hallazgos sobre el plan de contenidos del curso: (1) los campos del formulario del nodo deben usar la nomenclatura del nivel correspondiente para diferenciar capítulo y recurso, (2) los atributos adicionales deben mostrarse solo en el último nivel y no en capítulos intermedios, (3) el catálogo de recurso debe abrirse automáticamente al crear un título nuevo y autocompletar el nombre solo cuando está vacío, y (4) las acciones de insertar arriba, abajo o como hijo deben crear el nuevo nodo bajo el padre correcto. Código de ticket por asignar.",
-		body: bodyTKXXX,
+		resumen: "El ingeniero reportó cuatro hallazgos sobre el plan de contenidos del curso: (1) los campos del formulario del nodo deben usar la nomenclatura del nivel correspondiente para diferenciar capítulo y recurso, (2) los atributos adicionales deben mostrarse solo en el último nivel y no en capítulos intermedios, (3) el catálogo de recurso debe abrirse automáticamente al crear un título nuevo y autocompletar el nombre solo cuando está vacío, y (4) las acciones de insertar arriba, abajo o como hijo deben crear el nuevo nodo bajo el padre correcto.",
+		body: bodyTK1423165,
 	},
 	{
 		id: "TK-1422216",

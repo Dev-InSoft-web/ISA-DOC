@@ -2,27 +2,29 @@
 
 - Bitácora del 2026-05-08 inicializada con tres resúmenes (ISW/ISP, ISS y
    este de seguimiento ISA-DOC).
-- **TK-XXX** (código por asignar) — Documentado el ticket informal
-   recibido del ingeniero con cuatro hallazgos del módulo Capacitación →
-   Plan de contenidos: nomenclatura de campos por nivel, atributos de
-   capítulos por nivel, apertura del catálogo del recurso y creación del
-   recurso bajo el padre correcto.
-- **Migración a íconos email-safe**: los helpers `tk-helpers.ts` (`note`,
-   `h3Iconized`) y los helpers locales del `TK-1418894.ts` dejaron de
-   embeber SVG inline (vía `iconSvg`) y pasaron a renderizar `<img>` hacia
-   `api.iconify.design` con `?color=…` (vía `icon`). Outlook descarta los
-   SVG inline; el `<img>` se renderiza nativo en cualquier cliente.
+- **TK-1423165** — Documentado el ticket recibido del ingeniero con
+   cuatro hallazgos del módulo Capacitación → Plan de contenidos:
+   nomenclatura de campos por nivel, atributos de capítulos por nivel,
+   apertura del catálogo del recurso y creación del recurso bajo el padre
+   correcto.
+- **Íconos en bitácora y tickets — vuelta a SVG inline**: se intentó migrar
+   los helpers `tk-helpers.ts` (`note`, `h3Iconized`) y los helpers locales
+   del `TK-1418894.ts` a `<img>` hacia `api.iconify.design` (vía `icon`)
+   buscando compatibilidad con Outlook, pero la imagen externa terminó
+   bloqueada / no descargada en el cliente y dejaba un hueco. Se revirtió
+   a `iconSvg` (SVG embebido inline), que sí se renderiza nativo dentro
+   del HTML del correo.
 
 ## Estrategias y notas para próximos desarrolladores
 
-### Íconos en bitácora y tickets — usar `<img>` con `?color=`
+### Íconos en bitácora y tickets — usar `iconSvg` (SVG inline)
 
 `snippets.ts` expone dos funciones para íconos:
 
-- `icon(name, { size, color })` → devuelve `<img src="https://api.iconify.design/<icon>.svg?color=…" />` síncrono. **Email-safe** (Outlook lo renderiza). Es la opción por defecto.
-- `iconSvg(name, { size, color })` → asíncrona, embebe el SVG inline con `loadIcon` del paquete `ispsveltecomponents`. Útil solo cuando el destino es un visor web confiable. **No usar para correos**: Outlook descarta el SVG inline y deja un hueco en el HTML.
+- `iconSvg(name, { size, color })` → asíncrona, embebe el SVG inline con `loadIcon` del paquete `ispsveltecomponents`. **Es la opción por defecto** y la que usan los helpers comunes (`tk-helpers.ts → note`, `h3Iconized`). Funciona en visor web y en correo (el SVG va dentro del HTML, no es un recurso externo).
+- `icon(name, { size, color })` → devuelve `<img src="https://api.iconify.design/<icon>.svg?color=…" />` síncrono. Se intentó como alternativa "email-safe", pero Outlook bloquea la descarga de la imagen externa y deja un hueco. **No usar** salvo que el destino sea un visor web confiable que sí descargue imágenes externas y se prefiera evitar el peso del SVG inline.
 
-Los helpers comunes (`tk-helpers.ts → note`, `h3Iconized`) ya usan `icon()`. Los TKs nuevos heredan ese comportamiento sin cambios. Si un TK necesitaba `iconSvg` por motivos especiales (por ejemplo, animaciones CSS sobre el SVG), debe documentar la excepción en una nota local.
+Los helpers comunes (`tk-helpers.ts → note`, `h3Iconized`) y los locales del `TK-1418894.ts` están en `iconSvg`. Los TKs nuevos heredan ese comportamiento sin cambios.
 
 ### Estándar de imágenes en TKs — siempre vía imgbb
 
@@ -38,7 +40,7 @@ Toda evidencia visual de un cambio implementado se anexa al cuerpo del TK como i
 
    El script calcula `sha1` de cada archivo, omite uploads cuyo hash ya está en `assets/imgbb-map.json` y sube solo los nuevos / modificados. Genera y mantiene `assets/imgbb-map.json` con `{ sha1, url, width, height }` por archivo. La key API por defecto está embebida; puede sobreescribirse con `IMGBB_API_KEY=…`.
 
-4. En el `TK-XXX.ts`, importar y usar el helper:
+4. En el `TK-1423165.ts`, importar y usar el helper:
 
    ```ts
    import { code, img } from "./snippets";

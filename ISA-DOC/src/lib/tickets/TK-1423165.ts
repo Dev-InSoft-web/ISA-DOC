@@ -1,18 +1,20 @@
-// TK-XXX — Plan de contenidos del curso: nomenclatura por nivel, atributos
-// por nivel, apertura del catálogo de recurso y creación bajo el padre
-// correcto. Pendiente de asignación de código.
+// TK-1423165 — Plan de contenidos del curso: nomenclatura por nivel,
+// atributos por nivel, apertura del catálogo de recurso y creación bajo el
+// padre correcto.
 import { code, img } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
 	`<div>El ingeniero reportó cuatro hallazgos sobre el módulo ` +
 	`<b>Capacitación → Cursos → Plan de contenidos</b> (vista del árbol de ` +
-	`capítulos / títulos del curso). Los cuatro se atendieron en la misma ` +
-	`jornada y se documentan a continuación. El ticket aún no tiene código ` +
-	`asignado; queda registrado como <b>TK-XXX</b> hasta su numeración ` +
-	`oficial.</div>`;
+	`capítulos / títulos del curso): nomenclatura de los campos del ` +
+	`formulario según el nivel, restricción de atributos al último nivel, ` +
+	`apertura automática del catálogo de recurso al crear un título y ` +
+	`respeto del padre solicitante al insertar arriba, abajo o como hijo. ` +
+	`Los cuatro se atendieron en la misma jornada y se documentan a ` +
+	`continuación.</div>`;
 
-export async function buildBodyTKXXX(): Promise<string> {
+export async function buildBodyTK1423165(): Promise<string> {
 	const [h3Nomen, h3Atribs, h3Apertura, h3Padre, h3Bonus] = await Promise.all([
 		h3Iconized("mdi:label-multiple-outline", "Nomenclatura de campos por nivel"),
 		h3Iconized("mdi:tune-vertical", "Atributos de los capítulos según el nivel"),
@@ -150,13 +152,6 @@ export async function buildBodyTKXXX(): Promise<string> {
 			`de contenidos.`,
 		),
 		note(
-			"mdi:test-tube",
-			`<b>QA local exhaustivo</b>: insertar arriba/abajo/hijo en cada ` +
-			`nivel, abrir selector de recurso, autoabrir el modal, seleccionar ` +
-			`un recurso, verificar que el nombre del título se rellena solo ` +
-			`cuando estaba vacío y que se preserva si ya tenía contenido.`,
-		),
-		note(
 			"mdi:rocket-launch-outline",
 			`<b>Despliegue</b>: pendiente de definir ventana de despliegue a ` +
 			`<a href="https://clientesis.azurewebsites.net/capacitacion/cursos" target="_blank" rel="noopener" style="color:dodgerblue;text-decoration:underline;"><span style="color:dodgerblue;">clientesis.azurewebsites.net/capacitacion/cursos</span></a>. ` +
@@ -179,4 +174,4 @@ export async function buildBodyTKXXX(): Promise<string> {
 	);
 }
 
-export const bodyTKXXX: Promise<string> = buildBodyTKXXX();
+export const bodyTK1423165: Promise<string> = buildBodyTK1423165();
