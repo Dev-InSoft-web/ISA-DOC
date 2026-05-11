@@ -25,8 +25,9 @@ if ($password -ne "1234") {
 }
 
 $npmrcPath = Join-Path $Root ".npmrc"
-$npmrcPublicar = Join-Path $Root ".npmrc-publicar.npmrc"
-$npmrcDescargar = Join-Path $Root ".npmrc-descargar.npmrc"
+$npmrcSrc = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$npmrcPublicar = Join-Path $npmrcSrc ".npmrc-publicar.npmrc"
+$npmrcDescargar = Join-Path $npmrcSrc ".npmrc-descargar.npmrc"
 
 $deployPublish = "npm run build && npm publish"
 $deployRestore = "npm update && npm run build && npm publish && npm run git"
