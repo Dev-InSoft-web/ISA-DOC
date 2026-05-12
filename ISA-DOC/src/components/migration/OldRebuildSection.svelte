@@ -7,7 +7,7 @@
 	import MigrateFromOldMigration from "./MigrateFromOldMigration.svelte";
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
 	import { REBUILD_TABLES } from "../../lib/migration/oldRebuildTables.ts";
-	import sectionMd from "../../lib/bitacora/daily/2026-05-04/rebuild-section.md?raw";
+	import sectionMd from "../../lib/bitacora/daily/2026-05/04/rebuild-section.md?raw";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
 	export let date: string = "2026-05-04";

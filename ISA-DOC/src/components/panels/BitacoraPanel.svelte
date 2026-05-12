@@ -20,18 +20,22 @@
 	import sqlDeleteCursosSinDriver from "../../lib/migration/sql/delete-cursos-sin-driver.sql?raw";
 	import sqlUpdateDriverAtributosJConfig from "../../lib/migration/sql/update-driver-atributos-jconfig.sql?raw";
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
-	import md_2026_05_06_driver_jconfig from "../../lib/bitacora/daily/2026-05-06/driver-atributos-jconfig-intro.md?raw";
-	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05-06/resumen-isa.md?raw";
-	import md_2026_05_06_isw_isp from "../../lib/bitacora/daily/2026-05-06/resumen-isw-isp.md?raw";
-	import md_2026_05_06_iss from "../../lib/bitacora/daily/2026-05-06/resumen-iss.md?raw";
-	import md_2026_05_07_isa from "../../lib/bitacora/daily/2026-05-07/resumen-isa.md?raw";
-	import md_2026_05_07_isw_isp from "../../lib/bitacora/daily/2026-05-07/resumen-isw-isp.md?raw";
-	import md_2026_05_07_iss from "../../lib/bitacora/daily/2026-05-07/resumen-iss.md?raw";
-	import md_2026_05_07_seguimiento from "../../lib/bitacora/daily/2026-05-07/resumen-seguimiento.md?raw";
-	import md_2026_05_08_isa from "../../lib/bitacora/daily/2026-05-08/resumen-isa.md?raw";
-	import md_2026_05_08_isw_isp from "../../lib/bitacora/daily/2026-05-08/resumen-isw-isp.md?raw";
-	import md_2026_05_08_iss from "../../lib/bitacora/daily/2026-05-08/resumen-iss.md?raw";
-	import md_2026_05_08_seguimiento from "../../lib/bitacora/daily/2026-05-08/resumen-seguimiento.md?raw";
+	import md_2026_05_06_driver_jconfig from "../../lib/bitacora/daily/2026-05/06/driver-atributos-jconfig-intro.md?raw";
+	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05/06/resumen-isa.md?raw";
+	import md_2026_05_06_isw_isp from "../../lib/bitacora/daily/2026-05/06/resumen-isw-isp.md?raw";
+	import md_2026_05_06_iss from "../../lib/bitacora/daily/2026-05/06/resumen-iss.md?raw";
+	import md_2026_05_07_isa from "../../lib/bitacora/daily/2026-05/07/resumen-isa.md?raw";
+	import md_2026_05_07_isw_isp from "../../lib/bitacora/daily/2026-05/07/resumen-isw-isp.md?raw";
+	import md_2026_05_07_iss from "../../lib/bitacora/daily/2026-05/07/resumen-iss.md?raw";
+	import md_2026_05_07_seguimiento from "../../lib/bitacora/daily/2026-05/07/resumen-seguimiento.md?raw";
+	import md_2026_05_08_isa from "../../lib/bitacora/daily/2026-05/08/resumen-isa.md?raw";
+	import md_2026_05_08_isw_isp from "../../lib/bitacora/daily/2026-05/08/resumen-isw-isp.md?raw";
+	import md_2026_05_08_iss from "../../lib/bitacora/daily/2026-05/08/resumen-iss.md?raw";
+	import md_2026_05_08_seguimiento from "../../lib/bitacora/daily/2026-05/08/resumen-seguimiento.md?raw";
+	import md_2026_05_11_isa from "../../lib/bitacora/daily/2026-05/11/resumen-isa.md?raw";
+	import md_2026_05_11_isw_isp from "../../lib/bitacora/daily/2026-05/11/resumen-isw-isp.md?raw";
+	import md_2026_05_11_iss from "../../lib/bitacora/daily/2026-05/11/resumen-iss.md?raw";
+	import md_2026_05_11_seguimiento from "../../lib/bitacora/daily/2026-05/11/resumen-seguimiento.md?raw";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 
 	const driverAtributosJsonItems: ReadonlyArray<{ iatributo: number; natributo: string; jconfig: string }> = [
@@ -42,15 +46,15 @@
 		{ iatributo: 5, natributo: "iplanpadre", jconfig: '{"type":"text","readonly":true,"descripcion":"Path del plan padre. Calculado automáticamente desde el árbol de contenidos."}' },
 		{ iatributo: 6, natributo: "Documento", jconfig: '{"type":"text","descripcion":"URL pública del documento adjunto al plan.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
 	];
-	import md_2026_05_03_curso_500 from "../../lib/bitacora/daily/2026-05-03/curso-get-update-500.md?raw";
+	import md_2026_05_03_curso_500 from "../../lib/bitacora/daily/2026-05/03/curso-get-update-500.md?raw";
 	import md_cursos_isw_reglas from "../../lib/bitacora/topics/cursos/cursos-isw-reglas.md?raw";
-	import md_2026_05_04_isa from "../../lib/bitacora/daily/2026-05-04/resumen-isa.md?raw";
-	import md_2026_05_04_isw_isp from "../../lib/bitacora/daily/2026-05-04/resumen-isw-isp.md?raw";
-	import md_2026_05_04_iss from "../../lib/bitacora/daily/2026-05-04/resumen-iss.md?raw";
-	import md_2026_05_05_isa from "../../lib/bitacora/daily/2026-05-05/resumen-isa.md?raw";
-	import md_2026_05_05_isw_isp from "../../lib/bitacora/daily/2026-05-05/resumen-isw-isp.md?raw";
-	import md_2026_05_05_iss from "../../lib/bitacora/daily/2026-05-05/resumen-iss.md?raw";
-	import md_2026_05_05_seguimiento from "../../lib/bitacora/daily/2026-05-05/resumen-seguimiento.md?raw";
+	import md_2026_05_04_isa from "../../lib/bitacora/daily/2026-05/04/resumen-isa.md?raw";
+	import md_2026_05_04_isw_isp from "../../lib/bitacora/daily/2026-05/04/resumen-isw-isp.md?raw";
+	import md_2026_05_04_iss from "../../lib/bitacora/daily/2026-05/04/resumen-iss.md?raw";
+	import md_2026_05_05_isa from "../../lib/bitacora/daily/2026-05/05/resumen-isa.md?raw";
+	import md_2026_05_05_isw_isp from "../../lib/bitacora/daily/2026-05/05/resumen-isw-isp.md?raw";
+	import md_2026_05_05_iss from "../../lib/bitacora/daily/2026-05/05/resumen-iss.md?raw";
+	import md_2026_05_05_seguimiento from "../../lib/bitacora/daily/2026-05/05/resumen-seguimiento.md?raw";
 	import { REBUILD_TABLES } from "../../lib/migration/oldRebuildTables.ts";
 
 	const REBUILD_STEPS = ["drop", "create", "insert"] as const;
@@ -118,6 +122,16 @@
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-05-11 -->
+			<DailySummaryAccordion
+				title="2026-05-11 — Consolidado (09–11): TreeView (historial, candado, ciclos Svelte 5), módulos Capacitación y releases ispsveltecomponents 0.0.106–0.0.108"
+				open
+				mdIsa={md_2026_05_11_isa}
+				mdIswIsp={md_2026_05_11_isw_isp}
+				mdIss={md_2026_05_11_iss}
+				mdSeguimiento={md_2026_05_11_seguimiento}
+			/>
+
 			<!-- 2026-05-08 -->
 			<DailySummaryAccordion
 				title="2026-05-08 — Capacitación: refactor TreeView (cascada de adaptadores) + cierre del Plan de contenidos del curso"
