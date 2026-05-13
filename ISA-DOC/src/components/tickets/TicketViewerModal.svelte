@@ -51,19 +51,20 @@
 					{ticket.solicitante} · Solicitud: {ticket.fechaSolicitud}
 					{#if ticket.fechaEntrega}· Entrega: {ticket.fechaEntrega}{/if}
 				</small>
-				<GridLayout cells="3" items="stretch" style="margin-top: 0.15rem; column-gap: 0.75rem; row-gap: 0.15rem;">
-					<small style="color: gray; line-height: 1.3;"><b>Medio:</b> {ticket.normativa.medioAtencion}</small>
-					<small style="color: gray; line-height: 1.3;"><b>Tipo solicitud:</b> {ticket.normativa.tipoSolicitud}</small>
-					<small style="color: gray; line-height: 1.3;"><b>Estado:</b> {ticket.normativa.estadoSolicitud}</small>
-					<small style="color: gray; line-height: 1.3;"><b>Tipo solución:</b> {ticket.normativa.tipoSolucion}</small>
-					<small style="color: gray; line-height: 1.3;"><b>Cobertura:</b> {ticket.normativa.coberturaEstimada}</small>
-					<small style="color: gray; line-height: 1.3;"><b>Aplicación:</b> {ticket.normativa.aplicacion}</small>
-					<small style="color: gray; line-height: 1.3;"><b>Ambiente:</b> {ticket.normativa.ambiente}</small>
-				</GridLayout>
 			</FlexLayout>
 		</svelte:fragment>
 
 		<div class="ticket-body">
+			<GridLayout cells="3" items="stretch" style="column-gap: 0.75rem; row-gap: 0.15rem;">
+				<small style="color: gray; line-height: 1.3;"><b>Medio:</b> {ticket.normativa.medioAtencion}</small>
+				<small style="color: gray; line-height: 1.3;"><b>Tipo solicitud:</b> {ticket.normativa.tipoSolicitud}</small>
+				<small style="color: gray; line-height: 1.3;"><b>Estado:</b> {ticket.normativa.estadoSolicitud}</small>
+				<small style="color: gray; line-height: 1.3;"><b>Tipo solución:</b> {ticket.normativa.tipoSolucion}</small>
+				<small style="color: gray; line-height: 1.3;"><b>Cobertura:</b> {ticket.normativa.coberturaEstimada}</small>
+				<small style="color: gray; line-height: 1.3;"><b>Aplicación:</b> {ticket.normativa.aplicacion}</small>
+				<small style="color: gray; line-height: 1.3;"><b>Ambiente:</b> {ticket.normativa.ambiente}</small>
+			</GridLayout>
+
 			{#if ticket.resumen}
 				<p class="ticket-resumen"><small><small>{ticket.resumen}</small></small></p>
 			{/if}
