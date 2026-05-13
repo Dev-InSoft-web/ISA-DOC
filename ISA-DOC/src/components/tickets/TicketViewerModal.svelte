@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Modal, Switch, FlexLayout, ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Modal, Switch, FlexLayout, GridLayout, ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
 	import { getTicketHtml, type TicketRegistro } from "../../lib/tickets";
 	import { formatHtml } from "../../lib/format-html";
 	import HtmlViewer from "../viewers/HtmlViewer.svelte";
@@ -51,28 +51,29 @@
 					{ticket.solicitante} · Solicitud: {ticket.fechaSolicitud}
 					{#if ticket.fechaEntrega}· Entrega: {ticket.fechaEntrega}{/if}
 				</small>
-				<small style="color: gray; line-height: 1.3;">
-					<b>Medio:</b> {ticket.normativa.medioAtencion}
-					· <b>Tipo solicitud:</b> {ticket.normativa.tipoSolicitud}
-					· <b>Estado:</b> {ticket.normativa.estadoSolicitud}
-					· <b>Tipo solución:</b> {ticket.normativa.tipoSolucion}
-					· <b>Cobertura:</b> {ticket.normativa.coberturaEstimada}
-					· <b>Aplicación:</b> {ticket.normativa.aplicacion}
-					· <b>Ambiente:</b> {ticket.normativa.ambiente}
-				</small>
+				<GridLayout cells="3" items="stretch" style="margin-top: 0.15rem; column-gap: 0.75rem; row-gap: 0.15rem;">
+					<small style="color: gray; line-height: 1.3;"><b>Medio:</b> {ticket.normativa.medioAtencion}</small>
+					<small style="color: gray; line-height: 1.3;"><b>Tipo solicitud:</b> {ticket.normativa.tipoSolicitud}</small>
+					<small style="color: gray; line-height: 1.3;"><b>Estado:</b> {ticket.normativa.estadoSolicitud}</small>
+					<small style="color: gray; line-height: 1.3;"><b>Tipo solución:</b> {ticket.normativa.tipoSolucion}</small>
+					<small style="color: gray; line-height: 1.3;"><b>Cobertura:</b> {ticket.normativa.coberturaEstimada}</small>
+					<small style="color: gray; line-height: 1.3;"><b>Aplicación:</b> {ticket.normativa.aplicacion}</small>
+					<small style="color: gray; line-height: 1.3;"><b>Ambiente:</b> {ticket.normativa.ambiente}</small>
+				</GridLayout>
 			</FlexLayout>
 		</svelte:fragment>
 
-		{#if ticket.resumen}
-			<p class="ticket-resumen"><small>{ticket.resumen}</small></p>
-		{/if}
+		<div class="ticket-body">
+			{#if ticket.resumen}
+				<p class="ticket-resumen"><small><small>{ticket.resumen}</small></small></p>
+			{/if}
 
-		<FlexLayout direction="row" items="center" style="margin-bottom: 0.5rem;">
-			<Switch bind:checked={whiteBg} color="primary" colorFalse="neutral" disabled={showCode}><small>Fondo blanco</small></Switch>
-			<Switch bind:checked={showCode} color="primary" colorFalse="neutral"><small>Ver código HTML</small></Switch>
-		</FlexLayout>
+			<FlexLayout direction="row" items="center" style="margin-bottom: 0.5rem;">
+				<Switch bind:checked={whiteBg} color="primary" colorFalse="neutral" disabled={showCode}><small>Fondo blanco</small></Switch>
+				<Switch bind:checked={showCode} color="primary" colorFalse="neutral"><small>Ver código HTML</small></Switch>
+			</FlexLayout>
 
-		<div class="ticket-viewer">
+			<div class="ticket-viewer">
 			{#if showCode}
 				<HtmlViewer value={prettyHtml} height="100%" />
 				<div class="copy-card" role="group" aria-label="Acciones del contenido">
@@ -91,11 +92,20 @@
 					{srcdoc}
 				></iframe>
 			{/if}
+			</div>
 		</div>
 	</Modal>
 {/if}
 
 <style>
+	.ticket-body {
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-height: 0;
+		padding: 0.75rem;
+		gap: 0.5rem;
+	}
 	.ticket-viewer {
 		position: relative;
 		width: 100%;
