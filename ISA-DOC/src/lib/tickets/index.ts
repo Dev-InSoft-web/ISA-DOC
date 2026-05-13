@@ -8,6 +8,8 @@ import { bodyTK1420813 } from "./TK-1420813";
 import { bodyTK1420819 } from "./TK-1420819";
 import { bodyTK1422216 } from "./TK-1422216";
 import { bodyTK1423165 } from "./TK-1423165";
+import { bodyTK1424806 } from "./TK-1424806";
+import { bodyTK1424809 } from "./TK-1424809";
 
 export interface TicketNormativa {
 	medioAtencion: string;
@@ -42,6 +44,24 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 };
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1424809",
+		titulo: "Menú de acciones incompleto",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "13/may./2026 09:40:35 am",
+		resumen: "El ingeniero reportó que el menú de acciones de los catálogos Cursos y Planes de estudio mostraba solo cinco acciones (Crear, Visualizar, Modificar, Eliminar y Refrescar) mientras que los demás catálogos maestros exponen también Verificar, Duplicar, Recodificar y Consolidar. El menú contextual del grid (clic derecho) también quedaba recortado a tres opciones.",
+		body: bodyTK1424809,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
+	},
+	{
+		id: "TK-1424806",
+		titulo: "Permisos de modificación con la acción “Visualizar” en el catálogo de cursos",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "13/may./2026 09:33:57 am",
+		resumen: "En revisión de las acciones disponibles del catálogo de cursos se identifica que ingresando por la opción Visualizar, en las pestañas ‘Estructura’ y ‘Seguridad’ se pueden hacer modificaciones o crear información. La idea es que este Visualizar no deje hacer ninguna acción diferente a ver, no más.",
+		body: bodyTK1424806,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
+	},
 	{
 		id: "TK-1423165",
 		titulo: "Plan de contenidos: etiquetas, atributos, autoapertura y padre correcto",
