@@ -37,6 +37,7 @@
 	import md_2026_05_11_iss from "../../lib/bitacora/daily/2026-05/11/resumen-iss.md?raw";
 	import md_2026_05_11_seguimiento from "../../lib/bitacora/daily/2026-05/11/resumen-seguimiento.md?raw";
 	import md_2026_05_13_isa from "../../lib/bitacora/daily/2026-05/13/resumen-isa.md?raw";
+	import md_2026_05_13_isp from "../../lib/bitacora/daily/2026-05/13/resumen-isp.md?raw";
 	import md_2026_05_13_isw_isp from "../../lib/bitacora/daily/2026-05/13/resumen-isw-isp.md?raw";
 	import md_2026_05_13_iss from "../../lib/bitacora/daily/2026-05/13/resumen-iss.md?raw";
 	import md_2026_05_13_seguimiento from "../../lib/bitacora/daily/2026-05/13/resumen-seguimiento.md?raw";
@@ -131,6 +132,7 @@
 				title="2026-05-13 — Cierre QA Capacitación (acciones en list-slaves, scroll Details) y normativa de tiquetes en ISA-DOC"
 				open
 				mdIsa={md_2026_05_13_isa}
+				mdIsp={md_2026_05_13_isp}
 				mdIswIsp={md_2026_05_13_isw_isp}
 				mdIss={md_2026_05_13_iss}
 				mdSeguimiento={md_2026_05_13_seguimiento}

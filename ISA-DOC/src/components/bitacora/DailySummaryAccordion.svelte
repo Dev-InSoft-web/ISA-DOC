@@ -39,6 +39,7 @@
 	// Markdown sources de cada bloque. Si alguno se omite, el bloque no se
 	// renderiza (útil para días sin actividad en ese ámbito).
 	export let mdIsa: string | undefined = undefined;
+	export let mdIsp: string | undefined = undefined;
 	export let mdIswIsp: string | undefined = undefined;
 	export let mdIss: string | undefined = undefined;
 	export let mdSeguimiento: string | undefined = undefined;
@@ -55,6 +56,9 @@
 	<Accordion title={resumenTitle} titleIcon={resumenIcon} open={resumenOpen} inner>
 		{#if mdIsa}
 			<BitacoraNote title="Proyecto ISA-DOC" mdSource={mdIsa} inner />
+		{/if}
+		{#if mdIsp}
+			<BitacoraNote title="ISP-SvelteComponents" mdSource={mdIsp} inner />
 		{/if}
 		{#if mdIswIsp}
 			<BitacoraNote title="ISW / ISP ClientesIS" mdSource={mdIswIsp} inner />
