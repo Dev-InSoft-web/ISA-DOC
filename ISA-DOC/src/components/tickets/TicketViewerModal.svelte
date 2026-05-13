@@ -51,6 +51,15 @@
 					{ticket.solicitante} · Solicitud: {ticket.fechaSolicitud}
 					{#if ticket.fechaEntrega}· Entrega: {ticket.fechaEntrega}{/if}
 				</small>
+				<small style="color: gray; line-height: 1.3;">
+					<b>Medio:</b> {ticket.normativa.medioAtencion}
+					· <b>Tipo solicitud:</b> {ticket.normativa.tipoSolicitud}
+					· <b>Estado:</b> {ticket.normativa.estadoSolicitud}
+					· <b>Tipo solución:</b> {ticket.normativa.tipoSolucion}
+					· <b>Cobertura:</b> {ticket.normativa.coberturaEstimada}
+					· <b>Aplicación:</b> {ticket.normativa.aplicacion}
+					· <b>Ambiente:</b> {ticket.normativa.ambiente}
+				</small>
 			</FlexLayout>
 		</svelte:fragment>
 
