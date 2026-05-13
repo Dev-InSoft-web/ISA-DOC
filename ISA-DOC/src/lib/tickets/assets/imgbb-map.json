@@ -158,5 +158,45 @@
 		"width": 924,
 		"height": 897,
 		"size": 80948
+	},
+	"visualizarEstructura.jpg": {
+		"sha1": "b1a99a49159c264309f77740c291ef76ea7a261d",
+		"url": "https://i.ibb.co/JRmpvd5Z/visualizar-Estructura.jpg",
+		"display_url": "https://i.ibb.co/GvnMWJcm/visualizar-Estructura.jpg",
+		"thumb": "https://i.ibb.co/LzYgxPnK/visualizar-Estructura.jpg",
+		"delete_url": "https://ibb.co/LzYgxPnK/501ea8430d26b3d7a51e325eb91d8cc9",
+		"width": 1317,
+		"height": 943,
+		"size": 81984
+	},
+	"visualizarSeguridad.jpg": {
+		"sha1": "7130294530e3663ed1aba0b940319b872f107a46",
+		"url": "https://i.ibb.co/4ggTRxFC/visualizar-Seguridad.jpg",
+		"display_url": "https://i.ibb.co/Nnnj2zFf/visualizar-Seguridad.jpg",
+		"thumb": "https://i.ibb.co/JFF7jPc8/visualizar-Seguridad.jpg",
+		"delete_url": "https://ibb.co/JFF7jPc8/00d5bf95c14759da2547ecddf6bd83fc",
+		"width": 1317,
+		"height": 943,
+		"size": 83212
+	},
+	"cursosAccionesCompletas.jpg": {
+		"sha1": "59c80303488fe3010ee1fdca42f0f9f56ba17a04",
+		"url": "https://i.ibb.co/7trqDYRr/cursos-Acciones-Completas.jpg",
+		"display_url": "https://i.ibb.co/k2qtTH9q/cursos-Acciones-Completas.jpg",
+		"thumb": "https://i.ibb.co/whpfq0wp/cursos-Acciones-Completas.jpg",
+		"delete_url": "https://ibb.co/whpfq0wp/9b8cf9b51fc16e9b8ee915f0983a5a34",
+		"width": 1317,
+		"height": 943,
+		"size": 163402
+	},
+	"cursosMenuContextual.jpg": {
+		"sha1": "cdd203e5f8708ea7b7c46937ac3adc27b89507fb",
+		"url": "https://i.ibb.co/FbhXkz4z/cursos-Menu-Contextual.jpg",
+		"display_url": "https://i.ibb.co/99phmWHW/cursos-Menu-Contextual.jpg",
+		"thumb": "https://i.ibb.co/kgGJVX2X/cursos-Menu-Contextual.jpg",
+		"delete_url": "https://ibb.co/kgGJVX2X/3dfa4cffd7d649047a084d68c22f3ad8",
+		"width": 1317,
+		"height": 943,
+		"size": 162697
 	}
 }

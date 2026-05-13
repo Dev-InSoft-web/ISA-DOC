@@ -1,5 +1,6 @@
 // TK-1424809 — Menú de acciones incompleto en el catálogo de Cursos.
 // Resuelto.
+import { img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
@@ -65,11 +66,13 @@ export async function buildBodyTK1424809(): Promise<string> {
 	]);
 
 	const ulOpen = `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">`;
+	const figToolbar = img("cursosAccionesCompletas.jpg");
+	const figContexto = img("cursosMenuContextual.jpg");
 	return (
-		intro +
+		intro + figToolbar +
 		h3Causa + ulOpen + causaNotes.join("") + `</ul>` +
 		h3Fix + ulOpen + fixNotes.join("") + `</ul>` +
-		h3Verif + ulOpen + verifNotes.join("") + `</ul>`
+		h3Verif + ulOpen + verifNotes.join("") + `</ul>` + figContexto
 	);
 }
 

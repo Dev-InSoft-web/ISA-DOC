@@ -1,5 +1,6 @@
 // TK-1424806 — Permisos de modificación con la acción "Visualizar" en el
 // catálogo de cursos. Resuelto.
+import { img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
@@ -56,11 +57,13 @@ export async function buildBodyTK1424806(): Promise<string> {
 	]);
 
 	const ulOpen = `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">`;
+	const figEstructura = img("visualizarEstructura.jpg");
+	const figSeguridad = img("visualizarSeguridad.jpg");
 	return (
-		intro +
+		intro + figEstructura +
 		h3Causa + ulOpen + causaNotes.join("") + `</ul>` +
 		h3Fix + ulOpen + fixNotes.join("") + `</ul>` +
-		h3Verif + ulOpen + verifNotes.join("") + `</ul>`
+		h3Verif + ulOpen + verifNotes.join("") + `</ul>` + figSeguridad
 	);
 }
 
