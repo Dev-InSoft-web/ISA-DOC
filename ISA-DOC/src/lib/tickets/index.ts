@@ -10,6 +10,9 @@ import { bodyTK1422216 } from "./TK-1422216";
 import { bodyTK1423165 } from "./TK-1423165";
 import { bodyTK1424806 } from "./TK-1424806";
 import { bodyTK1424809 } from "./TK-1424809";
+import { bodyTK1424892 } from "./TK-1424892";
+import { bodyTK1424911 } from "./TK-1424911";
+import { bodyTK1425173 } from "./TK-1425173";
 
 export interface TicketNormativa {
 	medioAtencion: string;
@@ -44,6 +47,33 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 };
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1425173",
+		titulo: "Asociación del recurso básico a los recursos medio y avanzado",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "13/may./2026 04:12:25 pm",
+		resumen: "El ingeniero solicita que el campo iplanpadre solo aparezca disponible cuando el recurso tenga como dificultad Medio o Avanzado, y que no deba ponerse un número, sino abrirse un catálogo con los recursos con dificultad Básico que sean del mismo capítulo.",
+		body: bodyTK1425173,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Ajuste del sistema" },
+	},
+	{
+		id: "TK-1424911",
+		titulo: "Error botón \"Agregar\" tab \"Contenido\" en catálogo cursos",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "13/may./2026 11:14:07 am",
+		resumen: "Al crear un nuevo curso y agregar contenidos, el botón Agregar abre el formulario, pero al aceptar el nodo no queda persistido y el árbol permanece vacío pese al mensaje de procedimiento finalizado.",
+		body: bodyTK1424911,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
+	},
+	{
+		id: "TK-1424892",
+		titulo: "Acciones en catálogo de pestaña \"Seguridad\" de cursos",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "13/may./2026 10:57:32 am",
+		resumen: "El ingeniero adjunta captura indicando cómo debe verse el catálogo BtnRef de la pestaña Seguridad del curso: toolbar con refrescar, modo filtro y búsqueda, junto a las pestañas laterales de columnas y filtro, alineado con el resto de los catálogos del sistema.",
+		body: bodyTK1424892,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
+	},
 	{
 		id: "TK-1424809",
 		titulo: "Menú de acciones incompleto",
