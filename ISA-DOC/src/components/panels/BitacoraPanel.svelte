@@ -19,6 +19,7 @@
 	import sqlActivateAllCursos from "../../lib/migration/sql/activate-all-cursos.sql?raw";
 	import sqlDeleteCursosSinDriver from "../../lib/migration/sql/delete-cursos-sin-driver.sql?raw";
 	import sqlUpdateDriverAtributosJConfigV2 from "../../lib/migration/sql/update-driver-atributos-jconfig-v2.sql?raw";
+	import sqlDeleteAtributosPlanesVacios from "../../lib/migration/sql/delete-atributos-planes-vacios.sql?raw";
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
 	import md_2026_05_14_driver_jconfig_v2 from "../../lib/bitacora/daily/2026-05/14/driver-atributos-jconfig-v2-intro.md?raw";
 	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05/06/resumen-isa.md?raw";
@@ -173,6 +174,26 @@
 						confirmMessage={`Se actualizará JCONFIG de los 6 atributos (IATRIBUTO 1..6) en los drivers 1, 2 y 3 de CAPAC_ATRIBUTOS_X_DRIVERS con la nueva nomenclatura.\n\n¿Continuar?`}
 						{executeSql}
 						height="320px"
+					/>
+				</Accordion>
+
+				<Accordion
+					title="CAPAC_ATRIBUTOS_PLANES · Limpieza de filas con VALOR vacío"
+					titleIcon="mdi:broom"
+					open={false}
+					inner
+				>
+					<RevisadoCheck slot="title-extra" keys={["2026-05-14.atributos.planes.cleanup.vacios"]} />
+
+					<SqlExecCard
+						title="Atributos de plan · Eliminar filas sin contenido"
+						checkKey="2026-05-14.atributos.planes.cleanup.vacios"
+						sql={sqlDeleteAtributosPlanesVacios}
+						desc="Borra todas las filas de CAPAC_ATRIBUTOS_PLANES cuyo VALOR es NULL, cadena vacía o solo espacios/tabuladores/saltos de línea. Complemento del filtro aplicado en cliente (ISW) y servidor (ISP) para no persistir atributos sin contenido."
+						confirmKind="danger"
+						confirmMessage={`Se eliminarán todas las filas de CAPAC_ATRIBUTOS_PLANES con VALOR vacío. La operación no puede deshacerse.\n\n¿Continuar?`}
+						{executeSql}
+						height="240px"
 					/>
 				</Accordion>
 			</Accordion>
