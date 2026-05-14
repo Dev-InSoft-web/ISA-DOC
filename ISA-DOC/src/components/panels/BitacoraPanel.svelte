@@ -146,24 +146,26 @@
 
 					<BitacoraNote flat mdSource={md_2026_05_14_driver_jconfig_v2} />
 
-					<table class="jconfig-matrix">
-						<thead>
-							<tr>
-								<th>IATRIBUTO</th>
-								<th>NATRIBUTO</th>
-								<th>JCONFIG (v2)</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each driverAtributosJsonItemsV2 as item (item.iatributo)}
+					<div class="jconfig-matrix-wrap">
+						<table class="jconfig-matrix">
+							<thead>
 								<tr>
-									<td class="jconfig-matrix__num">{item.iatributo}</td>
-									<td class="jconfig-matrix__name">{item.natributo}</td>
-									<td class="jconfig-matrix__json"><JsonViewer value={item.jconfig} height="160px" /></td>
+									<th>IATRIBUTO</th>
+									<th>NATRIBUTO</th>
+									<th>JCONFIG (v2)</th>
 								</tr>
-							{/each}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								{#each driverAtributosJsonItemsV2 as item (item.iatributo)}
+									<tr>
+										<td class="jconfig-matrix__num">{item.iatributo}</td>
+										<td class="jconfig-matrix__name">{item.natributo}</td>
+										<td class="jconfig-matrix__json"><JsonViewer value={item.jconfig} height="160px" /></td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
 
 					<SqlExecCard
 						title="Drivers · JCONFIG v2 (renominación + iplanpadre→BtnRef, drivers 1, 2, 3)"
@@ -427,10 +429,18 @@
 </FlexLayout>
 
 <style>
+	.jconfig-matrix-wrap {
+		display: block;
+		width: 100%;
+		max-width: 100%;
+		overflow-x: auto;
+		margin: 0.75rem 0 1rem;
+	}
 	.jconfig-matrix {
 		width: 100%;
+		min-width: 600px;
 		border-collapse: collapse;
-		margin: 0.75rem 0 1rem;
+		margin: 0;
 		font-size: 0.9rem;
 	}
 	.jconfig-matrix th,
