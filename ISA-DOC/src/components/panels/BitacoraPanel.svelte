@@ -19,8 +19,10 @@
 	import sqlActivateAllCursos from "../../lib/migration/sql/activate-all-cursos.sql?raw";
 	import sqlDeleteCursosSinDriver from "../../lib/migration/sql/delete-cursos-sin-driver.sql?raw";
 	import sqlUpdateDriverAtributosJConfig from "../../lib/migration/sql/update-driver-atributos-jconfig.sql?raw";
+	import sqlUpdateIplanpadreJConfigBtnref from "../../lib/migration/sql/update-iplanpadre-jconfig-btnref.sql?raw";
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
 	import md_2026_05_06_driver_jconfig from "../../lib/bitacora/daily/2026-05/06/driver-atributos-jconfig-intro.md?raw";
+	import md_2026_05_14_iplanpadre_btnref from "../../lib/bitacora/daily/2026-05/14/iplanpadre-jconfig-btnref-intro.md?raw";
 	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05/06/resumen-isa.md?raw";
 	import md_2026_05_06_isw_isp from "../../lib/bitacora/daily/2026-05/06/resumen-isw-isp.md?raw";
 	import md_2026_05_06_iss from "../../lib/bitacora/daily/2026-05/06/resumen-iss.md?raw";
@@ -127,6 +129,37 @@
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-05-14 -->
+			<Accordion
+				title="2026-05-14 — Capacitación: iplanpadre pasa de text a btnref en JCONFIG"
+				titleIcon="mdi:calendar"
+				open={true}
+			>
+				<RevisadoCheck slot="title-extra" keys={["2026-05-14.iplanpadre.jconfig.btnref"]} />
+
+				<Accordion
+					title="Drivers · iplanpadre → btnref (controllername=iplanpadre)"
+					titleIcon="mdi:code-json"
+					open={true}
+					inner
+				>
+					<RevisadoCheck slot="title-extra" keys={["2026-05-14.iplanpadre.jconfig.btnref"]} />
+
+					<BitacoraNote flat mdSource={md_2026_05_14_iplanpadre_btnref} />
+
+					<SqlExecCard
+						title="Drivers · Convertir iplanpadre a btnref (IATRIBUTO=5, drivers 1, 2, 3)"
+						checkKey="2026-05-14.iplanpadre.jconfig.btnref"
+						sql={sqlUpdateIplanpadreJConfigBtnref}
+						desc="Actualiza JCONFIG en CAPAC_ATRIBUTOS_X_DRIVERS para IATRIBUTO=5 (iplanpadre) en los drivers 1, 2 y 3. Cambia type=text por type=btnref y agrega controllername='iplanpadre'. El filtrado de hermanos lo aplica el controlador definido en código. Idempotente."
+						confirmKind="warning"
+						confirmMessage={`Se actualizará JCONFIG de iplanpadre (IATRIBUTO=5) en los drivers 1, 2 y 3 de CAPAC_ATRIBUTOS_X_DRIVERS, pasando de text a btnref.\n\n¿Continuar?`}
+						{executeSql}
+						height="260px"
+					/>
+				</Accordion>
+			</Accordion>
+
 			<!-- 2026-05-13 -->
 			<DailySummaryAccordion
 				title="2026-05-13 — Cierre QA Capacitación (acciones en list-slaves, scroll Details) y normativa de tiquetes en ISA-DOC"
