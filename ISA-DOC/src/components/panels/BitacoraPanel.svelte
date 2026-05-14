@@ -19,10 +19,10 @@
 	import sqlActivateAllCursos from "../../lib/migration/sql/activate-all-cursos.sql?raw";
 	import sqlDeleteCursosSinDriver from "../../lib/migration/sql/delete-cursos-sin-driver.sql?raw";
 	import sqlUpdateDriverAtributosJConfig from "../../lib/migration/sql/update-driver-atributos-jconfig.sql?raw";
-	import sqlUpdateIplanpadreJConfigBtnref from "../../lib/migration/sql/update-iplanpadre-jconfig-btnref.sql?raw";
+	import sqlUpdateDriverAtributosJConfigV2 from "../../lib/migration/sql/update-driver-atributos-jconfig-v2.sql?raw";
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
 	import md_2026_05_06_driver_jconfig from "../../lib/bitacora/daily/2026-05/06/driver-atributos-jconfig-intro.md?raw";
-	import md_2026_05_14_iplanpadre_btnref from "../../lib/bitacora/daily/2026-05/14/iplanpadre-jconfig-btnref-intro.md?raw";
+	import md_2026_05_14_driver_jconfig_v2 from "../../lib/bitacora/daily/2026-05/14/driver-atributos-jconfig-v2-intro.md?raw";
 	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05/06/resumen-isa.md?raw";
 	import md_2026_05_06_isw_isp from "../../lib/bitacora/daily/2026-05/06/resumen-isw-isp.md?raw";
 	import md_2026_05_06_iss from "../../lib/bitacora/daily/2026-05/06/resumen-iss.md?raw";
@@ -52,6 +52,15 @@
 		{ iatributo: 4, natributo: "Dificultad", jconfig: '{"type":"selectEnum","options":{"B":"Básico","M":"Medio","A":"Avanzado"},"descripcion":"Nivel de dificultad del contenido."}' },
 		{ iatributo: 5, natributo: "iplanpadre", jconfig: '{"type":"text","readonly":true,"descripcion":"Path del plan padre. Calculado automáticamente desde el árbol de contenidos."}' },
 		{ iatributo: 6, natributo: "Documento", jconfig: '{"type":"text","descripcion":"URL pública del documento adjunto al plan.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
+	];
+
+	const driverAtributosJsonItemsV2: ReadonlyArray<{ iatributo: number; natributo: string; jconfig: string }> = [
+		{ iatributo: 1, natributo: "URL diapositivas", jconfig: '{"type":"InputText","descripcion":"URL pública de las diapositivas asociadas al recurso.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
+		{ iatributo: 2, natributo: "Imagen del profesor", jconfig: '{"type":"InputText","descripcion":"URL pública de la imagen del profesor.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
+		{ iatributo: 3, natributo: "Driver de video", jconfig: '{"type":"SelectObject","options":{"1":"Lista con imagen pequeña","2":"Tarjeta con información completa","3":"Tarjeta solo con título","4":"Lista con imagen grande","5":"Lista pequeño"},"descripcion":"Componente Svelte que procesa los datos del video. Lista quemada (TTDriverRecurso); se actualizará cuando se aprueben otros controladores."}' },
+		{ iatributo: 4, natributo: "Dificultad", jconfig: '{"type":"SelectObject","options":{"B":"Básico","M":"Medio","A":"Avanzado"},"descripcion":"Nivel de dificultad del contenido."}' },
+		{ iatributo: 5, natributo: "iplanpadre", jconfig: '{"type":"BtnRef","controllername":"iplanpadre","descripcion":"Plan padre del contenido. Lista los hermanos del capítulo actual.","inputProps":{"maxlength":500}}' },
+		{ iatributo: 6, natributo: "Documento", jconfig: '{"type":"InputText","descripcion":"URL pública del documento adjunto al plan.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
 	];
 	import md_2026_05_03_curso_500 from "../../lib/bitacora/daily/2026-05/03/curso-get-update-500.md?raw";
 	import md_cursos_isw_reglas from "../../lib/bitacora/topics/cursos/cursos-isw-reglas.md?raw";
@@ -131,31 +140,50 @@
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
 			<!-- 2026-05-14 -->
 			<Accordion
-				title="2026-05-14 — Capacitación: iplanpadre pasa de text a btnref en JCONFIG"
+				title="2026-05-14 — Capacitación: JCONFIG v2 (nomenclatura = componentes) + iplanpadre como BtnRef"
 				titleIcon="mdi:calendar"
 				open={true}
 			>
-				<RevisadoCheck slot="title-extra" keys={["2026-05-14.iplanpadre.jconfig.btnref"]} />
+				<RevisadoCheck slot="title-extra" keys={["2026-05-14.driver.atributos.jconfig.v2"]} />
 
 				<Accordion
-					title="Drivers · iplanpadre → btnref (controllername=iplanpadre)"
+					title="Drivers · JCONFIG v2 (InputText, InputNumber, Switch, RichEditor, SelectObject, BtnRef, CatalogoGen)"
 					titleIcon="mdi:code-json"
 					open={true}
 					inner
 				>
-					<RevisadoCheck slot="title-extra" keys={["2026-05-14.iplanpadre.jconfig.btnref"]} />
+					<RevisadoCheck slot="title-extra" keys={["2026-05-14.driver.atributos.jconfig.v2"]} />
 
-					<BitacoraNote flat mdSource={md_2026_05_14_iplanpadre_btnref} />
+					<BitacoraNote flat mdSource={md_2026_05_14_driver_jconfig_v2} />
+
+					<table class="jconfig-matrix">
+						<thead>
+							<tr>
+								<th>IATRIBUTO</th>
+								<th>NATRIBUTO</th>
+								<th>JCONFIG (v2)</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each driverAtributosJsonItemsV2 as item (item.iatributo)}
+								<tr>
+									<td class="jconfig-matrix__num">{item.iatributo}</td>
+									<td class="jconfig-matrix__name">{item.natributo}</td>
+									<td class="jconfig-matrix__json"><JsonViewer value={item.jconfig} height="160px" /></td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
 
 					<SqlExecCard
-						title="Drivers · Convertir iplanpadre a btnref (IATRIBUTO=5, drivers 1, 2, 3)"
-						checkKey="2026-05-14.iplanpadre.jconfig.btnref"
-						sql={sqlUpdateIplanpadreJConfigBtnref}
-						desc="Actualiza JCONFIG en CAPAC_ATRIBUTOS_X_DRIVERS para IATRIBUTO=5 (iplanpadre) en los drivers 1, 2 y 3. Cambia type=text por type=btnref y agrega controllername='iplanpadre'. El filtrado de hermanos lo aplica el controlador definido en código. Idempotente."
+						title="Drivers · JCONFIG v2 (renominación + iplanpadre→BtnRef, drivers 1, 2, 3)"
+						checkKey="2026-05-14.driver.atributos.jconfig.v2"
+						sql={sqlUpdateDriverAtributosJConfigV2}
+						desc="Actualiza JCONFIG en CAPAC_ATRIBUTOS_X_DRIVERS para los 6 atributos en drivers 1, 2 y 3. Los tipos pasan a coincidir con los nombres de componente (InputText, SelectObject, BtnRef...). iplanpadre cambia de InputText readonly a BtnRef con controllername='iplanpadre'. Idempotente."
 						confirmKind="warning"
-						confirmMessage={`Se actualizará JCONFIG de iplanpadre (IATRIBUTO=5) en los drivers 1, 2 y 3 de CAPAC_ATRIBUTOS_X_DRIVERS, pasando de text a btnref.\n\n¿Continuar?`}
+						confirmMessage={`Se actualizará JCONFIG de los 6 atributos (IATRIBUTO 1..6) en los drivers 1, 2 y 3 de CAPAC_ATRIBUTOS_X_DRIVERS con la nueva nomenclatura.\n\n¿Continuar?`}
 						{executeSql}
-						height="260px"
+						height="320px"
 					/>
 				</Accordion>
 			</Accordion>
@@ -238,6 +266,25 @@
 							</div>
 						{/each}
 					</div>
+
+					<table class="jconfig-matrix">
+						<thead>
+							<tr>
+								<th>IATRIBUTO</th>
+								<th>NATRIBUTO</th>
+								<th>JCONFIG (v1)</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each driverAtributosJsonItems as item (item.iatributo)}
+								<tr>
+									<td class="jconfig-matrix__num">{item.iatributo}</td>
+									<td class="jconfig-matrix__name">{item.natributo}</td>
+									<td class="jconfig-matrix__json"><JsonViewer value={item.jconfig} height="160px" /></td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
 
 					<SqlExecCard
 						title="Drivers · Completar JCONFIG de los 6 atributos (drivers 1, 2, 3)"
@@ -453,5 +500,35 @@
 	}
 	.driver-jconfig-card__name {
 		font-size: 0.95rem;
+	}
+
+	.jconfig-matrix {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 0.75rem 0 1rem;
+		font-size: 0.9rem;
+	}
+	.jconfig-matrix th,
+	.jconfig-matrix td {
+		border: 1px solid var(--is-outline, #ccc);
+		padding: 0.4rem 0.6rem;
+		vertical-align: top;
+	}
+	.jconfig-matrix th {
+		background: var(--is-surface-variant, rgba(0, 0, 0, 0.05));
+		text-align: left;
+		font-weight: 600;
+	}
+	.jconfig-matrix__num {
+		width: 5rem;
+		text-align: center;
+		font-variant-numeric: tabular-nums;
+	}
+	.jconfig-matrix__name {
+		width: 12rem;
+		font-weight: 600;
+	}
+	.jconfig-matrix__json {
+		min-width: 0;
 	}
 </style>
