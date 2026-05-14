@@ -18,10 +18,8 @@
 	import sqlDropAuditColumns from "../../lib/migration/sql/drop-audit-columns.sql?raw";
 	import sqlActivateAllCursos from "../../lib/migration/sql/activate-all-cursos.sql?raw";
 	import sqlDeleteCursosSinDriver from "../../lib/migration/sql/delete-cursos-sin-driver.sql?raw";
-	import sqlUpdateDriverAtributosJConfig from "../../lib/migration/sql/update-driver-atributos-jconfig.sql?raw";
 	import sqlUpdateDriverAtributosJConfigV2 from "../../lib/migration/sql/update-driver-atributos-jconfig-v2.sql?raw";
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
-	import md_2026_05_06_driver_jconfig from "../../lib/bitacora/daily/2026-05/06/driver-atributos-jconfig-intro.md?raw";
 	import md_2026_05_14_driver_jconfig_v2 from "../../lib/bitacora/daily/2026-05/14/driver-atributos-jconfig-v2-intro.md?raw";
 	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05/06/resumen-isa.md?raw";
 	import md_2026_05_06_isw_isp from "../../lib/bitacora/daily/2026-05/06/resumen-isw-isp.md?raw";
@@ -45,18 +43,9 @@
 	import md_2026_05_13_seguimiento from "../../lib/bitacora/daily/2026-05/13/resumen-seguimiento.md?raw";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 
-	const driverAtributosJsonItems: ReadonlyArray<{ iatributo: number; natributo: string; jconfig: string }> = [
-		{ iatributo: 1, natributo: "URL diapositivas", jconfig: '{"type":"text","descripcion":"URL pública de las diapositivas asociadas al recurso.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
-		{ iatributo: 2, natributo: "Imagen del profesor", jconfig: '{"type":"text","descripcion":"URL pública de la imagen del profesor.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
-		{ iatributo: 3, natributo: "Driver de video", jconfig: '{"type":"selectEnum","options":{"1":"Lista con imagen pequeña","2":"Tarjeta con información completa","3":"Tarjeta solo con título","4":"Lista con imagen grande","5":"Lista pequeño"},"descripcion":"Componente Svelte que procesa los datos del video. Lista quemada (TTDriverRecurso); se actualizará cuando se aprueben otros controladores."}' },
-		{ iatributo: 4, natributo: "Dificultad", jconfig: '{"type":"selectEnum","options":{"B":"Básico","M":"Medio","A":"Avanzado"},"descripcion":"Nivel de dificultad del contenido."}' },
-		{ iatributo: 5, natributo: "iplanpadre", jconfig: '{"type":"text","readonly":true,"descripcion":"Path del plan padre. Calculado automáticamente desde el árbol de contenidos."}' },
-		{ iatributo: 6, natributo: "Documento", jconfig: '{"type":"text","descripcion":"URL pública del documento adjunto al plan.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
-	];
-
 	const driverAtributosJsonItemsV2: ReadonlyArray<{ iatributo: number; natributo: string; jconfig: string }> = [
 		{ iatributo: 1, natributo: "URL diapositivas", jconfig: '{"type":"InputText","descripcion":"URL pública de las diapositivas asociadas al recurso.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
-		{ iatributo: 2, natributo: "Imagen del profesor", jconfig: '{"type":"InputText","descripcion":"URL pública de la imagen del profesor.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
+		{ iatributo: 2, natributo: "URL Imágen profesor", jconfig: '{"type":"InputText","descripcion":"URL pública de la imagen del profesor.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
 		{ iatributo: 3, natributo: "Driver de video", jconfig: '{"type":"SelectObject","options":{"1":"Lista con imagen pequeña","2":"Tarjeta con información completa","3":"Tarjeta solo con título","4":"Lista con imagen grande","5":"Lista pequeño"},"descripcion":"Componente Svelte que procesa los datos del video. Lista quemada (TTDriverRecurso); se actualizará cuando se aprueben otros controladores."}' },
 		{ iatributo: 4, natributo: "Dificultad", jconfig: '{"type":"SelectObject","options":{"B":"Básico","M":"Medio","A":"Avanzado"},"descripcion":"Nivel de dificultad del contenido."}' },
 		{ iatributo: 5, natributo: "iplanpadre", jconfig: '{"type":"BtnRef","controllername":"iplanpadre","descripcion":"Plan padre del contenido. Lista los hermanos del capítulo actual.","inputProps":{"maxlength":500}}' },
@@ -231,7 +220,7 @@
 
 			<!-- 2026-05-06 -->
 			<DailySummaryAccordion
-				title="2026-05-06 — Capacitación: JCONFIG de atributos de drivers + tracking temporal de índices"
+				title="2026-05-06 — Capacitación: tracking temporal de índices"
 				open
 				resumenOpen={false}
 				mdIsa={md_2026_05_06_isa}
@@ -241,62 +230,9 @@
 				<RevisadoCheck
 					slot="title-extra"
 					keys={[
-						"2026-05-06.driver.atributos.jconfig",
 						"2026-05-06.atributosplan.driver_recurso_codes",
 					]}
 				/>
-
-				<Accordion
-					title="Drivers · JCONFIG de atributos (configuración de inputs)"
-					titleIcon="mdi:code-json"
-					open={false}
-					inner
-				>
-					<RevisadoCheck slot="title-extra" keys={["2026-05-06.driver.atributos.jconfig"]} />
-
-					<BitacoraNote flat mdSource={md_2026_05_06_driver_jconfig} />
-
-					<div class="driver-jconfig-grid">
-						{#each driverAtributosJsonItems as item (item.iatributo)}
-							<div class="driver-jconfig-card">
-								<div class="driver-jconfig-card__head">
-									<strong class="driver-jconfig-card__name">{item.natributo}</strong>
-								</div>
-								<JsonViewer value={item.jconfig} height="180px" />
-							</div>
-						{/each}
-					</div>
-
-					<table class="jconfig-matrix">
-						<thead>
-							<tr>
-								<th>IATRIBUTO</th>
-								<th>NATRIBUTO</th>
-								<th>JCONFIG (v1)</th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each driverAtributosJsonItems as item (item.iatributo)}
-								<tr>
-									<td class="jconfig-matrix__num">{item.iatributo}</td>
-									<td class="jconfig-matrix__name">{item.natributo}</td>
-									<td class="jconfig-matrix__json"><JsonViewer value={item.jconfig} height="160px" /></td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-
-					<SqlExecCard
-						title="Drivers · Completar JCONFIG de los 6 atributos (drivers 1, 2, 3)"
-						checkKey="2026-05-06.driver.atributos.jconfig"
-						sql={sqlUpdateDriverAtributosJConfig}
-						desc="Actualiza JCONFIG en CAPAC_ATRIBUTOS_X_DRIVERS para los drivers 1, 2 y 3 con la configuración interpretada por AtributoInput (text/selectEnum, inputProps, descripcion, readonly). Idempotente."
-						confirmKind="warning"
-						confirmMessage={`Se actualizará JCONFIG de los 6 atributos (IATRIBUTO 1..6) en los drivers 1, 2 y 3 de CAPAC_ATRIBUTOS_X_DRIVERS.\n\n¿Continuar?`}
-						{executeSql}
-						height="320px"
-					/>
-				</Accordion>
 
 				<Accordion
 					title="Atributos de plan · Migrar códigos legacy de TTDriverRecurso a numérico (IATRIBUTO=3)"
@@ -470,38 +406,6 @@
 </FlexLayout>
 
 <style>
-	.driver-jconfig-grid {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.75rem;
-		margin: 0.5rem 0 1rem;
-	}
-	@media (max-width: 900px) {
-		.driver-jconfig-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-	}
-	@media (max-width: 600px) {
-		.driver-jconfig-grid { grid-template-columns: 1fr; }
-	}
-	.driver-jconfig-card {
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-		padding: 0.6rem;
-		border: 1px solid var(--is-outline, #ccc);
-		border-radius: 6px;
-		background: var(--is-surface, transparent);
-		min-width: 0;
-	}
-	.driver-jconfig-card__head {
-		display: flex;
-		align-items: baseline;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-	}
-	.driver-jconfig-card__name {
-		font-size: 0.95rem;
-	}
-
 	.jconfig-matrix {
 		width: 100%;
 		border-collapse: collapse;

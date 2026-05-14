@@ -2,19 +2,14 @@
 -- Aplica a los drivers 1, 2 y 3 en `CAPAC_ATRIBUTOS_X_DRIVERS`, los 6
 -- atributos compartidos (IATRIBUTO 1..6).
 --
--- Cambios respecto a la versión del 2026-05-06:
---   - Renombra los `type` para que coincidan exactamente con el nombre del
---     componente Svelte que los renderiza:
---       text       -> InputText
---       number     -> InputNumber
---       switch     -> Switch
---       richeditor -> RichEditor
---       selectEnum -> SelectObject
---       btnref     -> BtnRef
---       catalogo   -> CatalogoGen
---   - `iplanpadre` (IATRIBUTO = 5) pasa de `InputText` readonly a `BtnRef`
---     con `controllername: "iplanpadre"`. El controlador (definido en
---     código ISW) filtra los hermanos del capítulo actual.
+-- Tipos válidos en `type` (coinciden exactamente con el componente Svelte):
+--   InputText, InputNumber, Switch, RichEditor, SelectObject, BtnRef, CatalogoGen
+--
+-- Notas:
+--   - `iplanpadre` (IATRIBUTO = 5) se renderiza con `BtnRef` y
+--     `controllername: "iplanpadre"`. El controlador (definido en código
+--     ISW) filtra los hermanos del capítulo actual.
+--   - Renombra NATRIBUTO del IATRIBUTO = 2 a "URL Imágen profesor".
 --
 -- Idempotente: solo SET sobre filas existentes filtradas por IDRIVER IN (1,2,3).
 -- Termina con SELECT de verificación.
@@ -26,7 +21,8 @@ SET JCONFIG = '{"type":"InputText","descripcion":"URL pública de las diapositiv
 WHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO = 1;
 
 UPDATE CAPAC_ATRIBUTOS_X_DRIVERS
-SET JCONFIG = '{"type":"InputText","descripcion":"URL pública de la imagen del profesor.","inputProps":{"placeholder":"https://...","maxlength":500}}'
+SET NATRIBUTO = 'URL Imágen profesor',
+    JCONFIG = '{"type":"InputText","descripcion":"URL pública de la imagen del profesor.","inputProps":{"placeholder":"https://...","maxlength":500}}'
 WHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO = 2;
 
 UPDATE CAPAC_ATRIBUTOS_X_DRIVERS
