@@ -389,20 +389,30 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	].join("\n");
 }
 
-export async function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string, ticketId?: string, festivos?: string[]): Promise<string> {
+export async function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string, ticketId?: string, festivos?: string[], titulo?: string): Promise<string> {
 	const cota = cotaMaximaMinutos(commits);
 	const estimacionCommits = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : 0;
 	const minutosBd = tiempoCambiosBdMin(cambiosBd);
 	const minutosDiligencia = tiempoDiligenciaMin(body ?? "");
 	const cambiosHtml = await buildDbChangesHtml(cambiosBd, ticketId);
 	const resumenTiemposHtml = buildResumenTiemposHtml(estimacionCommits, minutosBd, minutosDiligencia, commits.length, cambiosBd.length);
+	const tituloHtml = buildTituloHtml(ticketId, titulo);
 	return TICKET_HTML_PREFIX
+		+ tituloHtml
 		+ (body ?? "")
 		+ "\n"
 		+ buildCommitsHtml(commits, estimacionCommits || estimacionMin, fechaSolicitud, ticketId, festivos)
 		+ cambiosHtml
 		+ resumenTiemposHtml
 		+ TICKET_HTML_SUFFIX;
+}
+
+function buildTituloHtml(ticketId?: string, titulo?: string): string {
+	if (!titulo && !ticketId) return "";
+	const id = ticketId ? escapeHtml(ticketId) : "";
+	const tit = titulo ? escapeHtml(titulo) : "";
+	const left = id ? `<span style="font-family:Consolas,Menlo,monospace;font-size:11pt;color:#888;background:#f3f3f3;padding:0.1rem 0.5rem;border-radius:0.25rem;margin-right:0.5rem;">${id}</span>` : "";
+	return `<div style="margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid #e0e0e0;"><h1 style="margin:0;font-family:Tahoma;font-size:16pt;color:#333;font-weight:600;line-height:1.3;">${left}${tit}</h1></div>\n`;
 }
 
 // Tiempo estimado de diligenciar el ticket en la bitácora (15-60 min).
@@ -414,18 +424,10 @@ function tiempoDiligenciaMin(body: string): number {
 }
 
 // Tiempo estimado para los cambios en base de datos (trabajo fuera de commits).
-// Cada cambio aporta una base + un componente por tamaño del SQL y por
-// presencia de JSON antes/después que requirieron analizarse.
+// Se asume un costo flat de 10 minutos por cambio (análisis del registro,
+// preparación del SQL y verificación), independiente del tamaño del cuerpo.
 function tiempoCambiosBdMin(cambios: TicketDbChange[]): number {
-	if (!cambios.length) return 0;
-	return cambios.reduce((acc, c) => {
-		let m = 10;
-		const sqlLen = (c.sql ?? "").length;
-		if (sqlLen > 0) m += Math.min(15, Math.round(sqlLen / 120));
-		if ((c.jsonAntes ?? "").trim().length > 0) m += 5;
-		if ((c.jsonDespues ?? "").trim().length > 0) m += 5;
-		return acc + m;
-	}, 0);
+	return cambios.length * 10;
 }
 
 function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligencia: number, nCommits: number, nCambiosBd: number): string {
@@ -445,7 +447,7 @@ function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligenci
 		``,
 		`<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">`,
 		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Resumen general de tiempos</div>`,
-		`<table style="border-collapse:collapse;width:100%;max-width:520px;">`,
+		`<table style="border-collapse:collapse;width:100%;">`,
 		`<tbody>`,
 		filaCommits,
 		filaBd,

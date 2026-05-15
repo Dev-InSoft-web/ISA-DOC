@@ -72,7 +72,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Asociación del recurso básico a los recursos medio y avanzado",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 04:12:25 pm",
-		estimacionMinutos: 240,
+		estimacionMinutos: 200,
 		resumen: "Se solicitó que el campo iplanpadre solo apareciera disponible cuando el recurso tuviera como dificultad Medio o Avanzado, y que no se ingresara un número sino que se abriera un catálogo con los recursos con dificultad Básico del mismo capítulo.",
 		commits: [
 			{ hash: "6fd8618", descripcion: "feat(capacitacion): se muestra iplanpadre solo en dificultad media o avanzada y se limpia en otros casos", repo: "ISW-ClientesIS", ins: 23, del: 4, fecha: "2026-05-14T14:43:05-05:00" },
@@ -105,7 +105,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Error botón \"Agregar\" tab \"Contenido\" en catálogo cursos",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 11:14:07 am",
-		estimacionMinutos: 180,
+		estimacionMinutos: 150,
 		resumen: "Se reportó que al crear un nuevo curso y agregar contenidos, el botón Agregar abría el formulario, pero al aceptar el nodo no quedaba persistido y el árbol permanecía vacío pese al mensaje de procedimiento finalizado.",
 		commits: [
 			{ hash: "94f65a0", descripcion: "fix(capacitacion): se persiste el nodo nuevo cuando el arbol del curso recien creado esta vacio", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-13T16:58:38-05:00" },
@@ -124,7 +124,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Acciones en catálogo de pestaña \"Seguridad\" de cursos",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 10:57:32 am",
-		estimacionMinutos: 360,
+		estimacionMinutos: 240,
 		resumen: "Se adjuntó captura indicando cómo debía verse el catálogo BtnRef de la pestaña Seguridad del curso: toolbar con refrescar, modo filtro y búsqueda, junto a las pestañas laterales de columnas y filtro, alineado con el resto de los catálogos del sistema.",
 		commits: [
 			{ hash: "8553b10", descripcion: "feat(capacitacion): se generaliza la exclusion del valor actual via proxy de controller en el wrapper btnref", repo: "ISW-ClientesIS", ins: 35, del: 6, fecha: "2026-05-15T08:55:37-05:00" },
@@ -218,7 +218,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Menú de acciones incompleto",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 09:40:35 am",
-		estimacionMinutos: 240,
+		estimacionMinutos: 210,
 		resumen: "Se reportó que el menú de acciones de los catálogos Cursos y Planes de estudio mostraba solo cinco acciones (Crear, Visualizar, Modificar, Eliminar y Refrescar) mientras que los demás catálogos maestros exponían también Verificar, Duplicar, Recodificar y Consolidar. El menú contextual del grid (clic derecho) también quedaba recortado a tres opciones.",
 		commits: [
 			{ hash: "d69949a", descripcion: "feat(acciones-gen, catalogo-gen): refactoriza las interfaces y mejora la gestión de propiedades en los componentes", repo: "ISP-SvelteComponents", ins: 169, del: 141, fecha: "2026-05-11T12:10:37-05:00" },
@@ -243,7 +243,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Permisos de modificación con la acción “Visualizar” en el catálogo de cursos",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 09:33:57 am",
-		estimacionMinutos: 120,
+		estimacionMinutos: 90,
 		resumen: "En revisión de las acciones disponibles del catálogo de cursos se identificó que al ingresar por la opción Visualizar, en las pestañas ‘Estructura’ y ‘Seguridad’ se podían realizar modificaciones o crear información. Se solicitó que dicha opción no permitiera ninguna acción distinta a la consulta.",
 		commits: [
 			{ hash: "d170267", descripcion: "fix(capacitacion): se habilitan crear/modificar/eliminar en list-slaves cuando el master esta en edicion y se oculta visualizar del catalogo de permisos", repo: "ISW-ClientesIS", ins: 4, del: 20, fecha: "2026-05-13T10:57:44-05:00" },
@@ -265,7 +265,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Plan de contenidos: etiquetas, atributos, autoapertura y padre correcto",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "08/may./2026",
-		estimacionMinutos: 360,
+		estimacionMinutos: 300,
 		resumen: "Se reportaron cuatro hallazgos sobre el plan de contenidos del curso: (1) los campos del formulario del nodo debían usar la nomenclatura del nivel correspondiente para diferenciar capítulo y recurso, (2) los atributos adicionales debían mostrarse solo en el último nivel y no en capítulos intermedios, (3) el catálogo de recurso debía abrirse automáticamente al crear un título nuevo y autocompletar el nombre solo cuando estuviera vacío, y (4) las acciones de insertar arriba, abajo o como hijo debían crear el nuevo nodo bajo el padre correcto.",
 		commits: [
 			{ hash: "a3b13d5", descripcion: "feat(treeview): se ajustaron las etiquetas del formulario para reflejar el nombre del nivel en codigo, nombre y atributos", repo: "ISW-ClientesIS", ins: 9, del: 8, fecha: "2026-05-08T10:27:51-05:00" },
@@ -361,7 +361,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Función cargar recursos en plan de estudio",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "07/may./2026 10:37:59 am",
-		estimacionMinutos: 300,
+		estimacionMinutos: 240,
 		resumen: "En revisión del formulario rápido del catálogo de plan de estudio, se identificó que en la pestaña de “Cursos de plan de estudio” se exponía la opción Crear, lo cual resultaba confuso porque sugería la creación de un recurso, y al abrirla el action drawer quedaba en blanco. Se solicitó que en su lugar se abriera el catálogo de cursos para seleccionar los que debían quedar dentro del plan.",
 		commits: [
 			{ hash: "8f008b5", descripcion: "feat(TK-1422216): ajustar estilos y logica de visualizacion en la tabla de cursos", repo: "ISW-ClientesIS", ins: 32, del: 13, fecha: "2026-05-07T11:35:09-05:00" },
@@ -389,7 +389,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Campos vacíos grid curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 02:03:59 pm",
-		estimacionMinutos: 240,
+		estimacionMinutos: 210,
 		resumen: "En revisión de la grid del catálogo del curso, se identificó que los campos “Tema” y “Driver” aparecían vacíos aún cuando ya se habían diligenciado para los cursos.",
 		commits: [
 			{ hash: "6ce7d49", descripcion: "feat(cursos): ajustes varios en visualizador de cursos", repo: "ISW-ClientesIS", ins: 61, del: 7, fecha: "2026-05-05T15:34:21-05:00" },
@@ -410,7 +410,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Campos modo visualización en edición de formulario rápido curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 12:26:30 pm",
-		estimacionMinutos: 240,
+		estimacionMinutos: 210,
 		resumen: "Se reportó que, al revisar los campos disponibles desde la vista de formulario rápido del catálogo de curso, varios campos quedaban en modo visualización (mensaje, nombres de la estructura, los de crear con seguridad). Se solicitó que, siempre que se ingresara por modificar, esos campos quedaran editables.",
 		commits: [
 			{ hash: "b4745b8", descripcion: "refactor(TK-1420813): comentar la linea que establece TCapacitacionBaseClient.local como true", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-05T14:14:20-05:00" },
@@ -428,7 +428,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Mostrar fecha de creación de curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 11:34:54 am",
-		estimacionMinutos: 45,
+		estimacionMinutos: 30,
 		resumen: "Se solicitó que se mostrara la fecha de creación de cada curso en la vista correspondiente, para identificar cuándo fue registrado.",
 		commits: [
 			{ hash: "a740dd4", descripcion: "feat(TK-1420755): mejorar la gestion de titulos y recursos en Formulario.svelte y ContenidosTreeAdapter.ts; vincular treeAdapter en TreeContenidos.svelte", repo: "ISW-ClientesIS", ins: 21, del: 1, fecha: "2026-05-05T12:42:23-05:00" },
@@ -445,7 +445,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Nombres en niveles por defecto en creación de curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 11:33:30 am",
-		estimacionMinutos: 30,
+		estimacionMinutos: 15,
 		resumen: "Se solicitó que en la pestaña “Estructura”, al momento de crear un curso, se mostraran de manera predeterminada los nombres “Capítulo” y “Título” en los niveles, en lugar de aparecer como “Sin nombre”.",
 		commits: [
 			{ hash: "644b4da", descripcion: "feat(cursos): se generan automaticamente los niveles de estructura al seleccionar driver con nombres por defecto segun cantidad de niveles", repo: "ISW-ClientesIS", ins: 30, del: 19, fecha: "2026-05-13T13:54:15-05:00" },
@@ -458,7 +458,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Catálogo de temas en cursos",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 11:29:58 am",
-		estimacionMinutos: 180,
+		estimacionMinutos: 75,
 		resumen: "Se solicitó que en los cursos existiera un catálogo de temas reutilizable, de modo que los temas se seleccionaran y asociaran desde un catálogo en lugar de capturarlos manualmente cada vez.",
 		commits: [
 			{ hash: "1cde3e2", descripcion: "refactor(TK-1420751): actualizar importaciones y tipos en General.svelte y Formulario.svelte para mejorar la consistencia", repo: "ISW-ClientesIS", ins: 10, del: 20, fecha: "2026-05-05T11:46:41-05:00" },
@@ -533,7 +533,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Opciones para agregar contenido al crear curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 11:25:13 am",
-		estimacionMinutos: 300,
+		estimacionMinutos: 240,
 		resumen: "Se solicitó que al crear un curso se ofrecieran más opciones para agregar contenido, permitiendo incorporar distintos tipos de material desde el formulario inicial.",
 		commits: [
 			{ hash: "2ca58b1", descripcion: "feat(TK-1420742): ajustar colores y agregar propiedades de estilo en Alert.svelte; actualizar importaciones en ListEstructura.svelte", repo: "ISW-ClientesIS", ins: 12, del: 6, fecha: "2026-05-05T12:26:30-05:00" },
@@ -584,7 +584,7 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "29/abr./2026 05:24:11 pm",
 		fechaEntrega: "jueves 30 abril",
-		estimacionMinutos: 400,
+		estimacionMinutos: 340,
 		enlace: "https://contapyme.sharepoint.com/:w:/s/Gestion_Documental_InSoft/IQBciHWK0N9nS7fos1kyCwxCATNJKQf_PAHwSH-ro5aEj08",
 		resumen: "Se solicitó generar la documentación de la colección Postman con los endpoints del servicio, organizada y lista para consulta y entrega.",
 		body: bodyTK1418894,
@@ -593,5 +593,5 @@ export const TICKETS: TicketRegistro[] = [
 ];
 
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
-	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.fechaSolicitud, t.id, t.festivos);
+	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.fechaSolicitud, t.id, t.festivos, t.titulo);
 }
