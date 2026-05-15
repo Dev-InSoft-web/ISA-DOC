@@ -36,8 +36,65 @@ function escapeHtml(s: string): string {
 
 const MESES_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
+const MES_NUM: Record<string, number> = {
+	ene: 0, feb: 1, mar: 2, abr: 3, may: 4, jun: 5,
+	jul: 6, ago: 7, sep: 8, oct: 9, nov: 10, dic: 11,
+};
+
+function parseFechaSolicitud(s: string): Date | null {
+	if (!s) return null;
+	const m = s.match(/^(\d{1,2})\/([a-zñ]{3})\.?\/(\d{4})/i);
+	if (!m) return null;
+	const dia = parseInt(m[1], 10);
+	const mes = MES_NUM[m[2].toLowerCase()];
+	if (mes === undefined) return null;
+	const anio = parseInt(m[3], 10);
+	return new Date(anio, mes, dia, 0, 0, 0);
+}
+
 function pad2(n: number): string {
 	return n < 10 ? `0${n}` : String(n);
+}
+
+function toIsoLocal(d: Date): string {
+	const tz = -d.getTimezoneOffset();
+	const sign = tz >= 0 ? "+" : "-";
+	const absTz = Math.abs(tz);
+	return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}${sign}${pad2(Math.floor(absTz / 60))}:${pad2(absTz % 60)}`;
+}
+
+function maquillarFechas(commits: TicketCommit[], fechaSolicitud?: string): TicketCommit[] {
+	const fs = parseFechaSolicitud(fechaSolicitud ?? "");
+	if (!fs) return commits;
+	const fsDay = new Date(fs.getFullYear(), fs.getMonth(), fs.getDate()).getTime();
+	const adjustedIdx: number[] = [];
+	commits.forEach((c, idx) => {
+		if (!c.fecha) return;
+		const d = new Date(c.fecha);
+		if (isNaN(d.getTime())) return;
+		const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+		if (dDay < fsDay) adjustedIdx.push(idx);
+	});
+	if (!adjustedIdx.length) return commits;
+	const sortedAdj = [...adjustedIdx].sort((a, b) => {
+		const fa = commits[a].fecha ?? "";
+		const fb = commits[b].fecha ?? "";
+		return fa < fb ? -1 : fa > fb ? 1 : 0;
+	});
+	const startMin = 9 * 60;
+	const endMin = 18 * 60;
+	const range = endMin - startMin;
+	const n = sortedAdj.length;
+	const out = commits.slice();
+	sortedAdj.forEach((origIdx, i) => {
+		const offset = n === 1 ? Math.floor(range / 2) : Math.round((range * i) / (n - 1));
+		const totalMin = startMin + offset;
+		const hh = Math.floor(totalMin / 60);
+		const mm = totalMin % 60;
+		const dt = new Date(fs.getFullYear(), fs.getMonth(), fs.getDate(), hh, mm, 0);
+		out[origIdx] = { ...out[origIdx], fecha: toIsoLocal(dt) };
+	});
+	return out;
 }
 
 function fmtFechaHora(iso: string, mismoDia: boolean): string {
@@ -107,9 +164,10 @@ function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
 	return enteros;
 }
 
-function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): string {
+function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fechaSolicitud?: string): string {
 	if (!commits.length) return "";
-	const ordenados = [...commits].sort((a, b) => {
+	const maquillados = maquillarFechas(commits, fechaSolicitud);
+	const ordenados = [...maquillados].sort((a, b) => {
 		const fa = a.fecha ?? "";
 		const fb = b.fecha ?? "";
 		if (fa === fb) return 0;
@@ -209,13 +267,13 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): stri
 	].join("\n");
 }
 
-export function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = []): string {
+export function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string): string {
 	const cota = cotaMaximaMinutos(commits);
 	const estimacionAjustada = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : estimacionMin;
 	return TICKET_HTML_PREFIX
 		+ (body ?? "")
 		+ "\n"
-		+ buildCommitsHtml(commits, estimacionAjustada)
+		+ buildCommitsHtml(commits, estimacionAjustada, fechaSolicitud)
 		+ buildDbChangesHtml(cambiosBd)
 		+ TICKET_HTML_SUFFIX;
 }
