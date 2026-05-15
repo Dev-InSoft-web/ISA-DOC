@@ -133,6 +133,7 @@
 			<Accordion
 				title="2026-05-15 — Capacitación: alta de acciones extendidas (Verificar / Duplicar / Recodificar / Consolidar / Eliminar) para Cursos y Planes de Estudio"
 				titleIcon="mdi:calendar"
+				open={true}
 			>
 				<RevisadoCheck slot="title-extra" keys={["2026-05-15.seguridad.acciones.cursos.plandeestudio"]} />
 
@@ -141,8 +142,6 @@
 					titleIcon="mdi:shield-key-outline"
 					inner
 				>
-					<RevisadoCheck slot="title-extra" keys={["2026-05-15.seguridad.acciones.cursos.plandeestudio"]} />
-
 					<SqlExecCard
 						title="Seguridad · Alta de Consolidar, Duplicar, Eliminar y Recodificar en Cursos y PlanDeEstudio (INGCP / INGSENIOR)"
 						checkKey="2026-05-15.seguridad.acciones.cursos.plandeestudio"
