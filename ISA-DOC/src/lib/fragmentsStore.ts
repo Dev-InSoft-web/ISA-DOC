@@ -1,5 +1,6 @@
 import { writable, type Readable } from "svelte/store";
 import { io as ioClient, type Socket } from "socket.io-client";
+import { STATIC_MODE } from "./runtime/staticMode";
 
 export type SqlFragmentKind = "table" | "index" | "fk" | "seed" | "raw";
 export interface SqlFragment {
@@ -82,6 +83,7 @@ export function setFragmentsAfterSave(fragments: SqlFragment[]): void {
 }
 
 export function startFragmentsSocket(): void {
+	if (STATIC_MODE) return;
 	if (socketStarted) return;
 	if (typeof window === "undefined") return;
 	socketStarted = true;

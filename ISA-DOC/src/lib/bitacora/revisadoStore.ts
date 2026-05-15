@@ -1,5 +1,6 @@
 import { writable, type Writable } from "svelte/store";
 import { io as ioClient, type Socket } from "socket.io-client";
+import { STATIC_MODE } from "../runtime/staticMode";
 
 type RevisadoMap = Record<string, boolean>;
 
@@ -20,6 +21,7 @@ async function loadFromServer(): Promise<void> {
 }
 
 function startSocket(): void {
+	if (STATIC_MODE) return;
 	if (typeof window === "undefined" || socket) return;
 	const url = `http://${location.hostname}:4401`;
 	socket = ioClient(url, { transports: ["websocket"] });
