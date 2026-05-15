@@ -1,4 +1,5 @@
 // TK-1424892 — Acciones en catálogo de pestaña "Seguridad" de cursos. Resuelto.
+import { code as codeI, codeBlock, compareTable } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
@@ -11,10 +12,13 @@ const intro =
 	filtro.</div>`;
 
 export async function buildBodyTK1424892(): Promise<string> {
-	const [h3Causa, h3Fix, h3Verif] = await Promise.all([
+	const [h3Causa, h3Fix, h3Verif, h3Jconfig, h3JconfigCompare, h3JconfigMap] = await Promise.all([
 		h3Iconized("mdi:bug-outline", "Causa"),
 		h3Iconized("mdi:check-circle-outline", "Solución aplicada"),
 		h3Iconized("mdi:eye-check-outline", "Verificación"),
+		h3Iconized("mdi:database-cog-outline", "JCONFIG v2 — esquema declarativo de campos"),
+		h3Iconized("mdi:swap-horizontal", "Antes / Después — definición del campo en JCONFIG"),
+		h3Iconized("mdi:code-tags", "Mapeo jconfig2FieldDef ampliado"),
 	]);
 
 	const causa = noteList(
@@ -64,7 +68,100 @@ export async function buildBodyTK1424892(): Promise<string> {
 		),
 	);
 
-	return intro + h3Causa + causa + h3Fix + fix + h3Verif + verif;
+	const jconfigIntro =
+		`<div>Aprovechando este ticket se promovió el cambio de esquema  
+		<b>JCONFIG v2</b> (tarea del 14 de mayo): los campos de los  
+		formularios pasan a declararse con <code>type</code> explícito  
+		(${codeI('"text"')}, ${codeI('"btnref"')}, ${codeI('"richtext"')}, etc.)  
+		y, cuando aplica, con la referencia al <i>controller</i> que provee  
+		la lista (${codeI("controllerName")}). El mapper  
+		<code>jconfig2FieldDef</code> consume esta forma normalizada y emite  
+		la <code>FieldDef</code> que entiende <code>Attr2Input</code>, sin  
+		necesidad de tocar Svelte por cada nuevo BtnRef.</div>`;
+
+	const jconfigCompare = await compareTable({
+		kind: "code",
+		lang: "json",
+		beforeLabel: "JCONFIG v1",
+		afterLabel: "JCONFIG v2",
+		before: `{
+  "attrs": {
+    "ipermiso": {
+      "label": "Permiso",
+      "catalogo": "CAPACITACION/CATALOGOS/PERMISO"
+    },
+    "itema": {
+      "label": "Tema",
+      "catalogo": "CAPACITACION/CATALOGOS/TEMA"
+    },
+    "descripcion": { "label": "Descripción" }
+  }
+}`,
+		after: `{
+  "version": 2,
+  "attrs": {
+    "ipermiso": {
+      "type": "btnref",
+      "label": "Permiso",
+      "controllerName": "TPermisoCursoController",
+      "captionField": "nombre",
+      "columnsBtnRef": [
+        { "key": "codigo", "label": "Código", "width": 100 },
+        { "key": "nombre", "label": "Nombre", "width": 240 }
+      ]
+    },
+    "itema": {
+      "type": "btnref",
+      "label": "Tema",
+      "controllerName": "TTemaController",
+      "captionField": "nombre"
+    },
+    "descripcion": { "type": "richtext", "label": "Descripción" }
+  }
+}`,
+	});
+
+	const jconfigMapper = await codeBlock(
+		`// _comps/containers/form/jconfig2FieldDef.ts
+// Mapea la entrada declarativa JCONFIG v2 al FieldDef que consume Attr2Input.
+// El v2 acepta type discriminado y controllerName opcional para BtnRef.
+
+export interface JConfigAttrV2 {
+    type: "text" | "number" | "date" | "richtext" | "btnref" | "select";
+    label: string;
+    controllerName?: string;
+    captionField?: string;
+    columnsBtnRef?: ColumnDef[];
+    readonly?: boolean;
+    required?: boolean;
+}
+
+export function jconfig2FieldDef(name: string, attr: JConfigAttrV2): FieldDef {
+    const base: FieldDef = {
+        name,
+        label: attr.label,
+        readonly: attr.readonly ?? false,
+        required: attr.required ?? false,
+    };
+    if (attr.type === "btnref") {
+        return {
+            ...base,
+            type: "btnref",
+            controllerName: attr.controllerName,
+            captionField: attr.captionField ?? "nombre",
+            columnsBtnRef: attr.columnsBtnRef ?? [],
+        };
+    }
+    return { ...base, type: attr.type };
+}`,
+		"typescript",
+	);
+
+	const jconfigSection = jconfigIntro
+		+ h3JconfigCompare + jconfigCompare
+		+ h3JconfigMap + jconfigMapper;
+
+	return intro + h3Causa + causa + h3Fix + fix + h3Verif + verif + h3Jconfig + jconfigSection;
 }
 
 export const bodyTK1424892: Promise<string> = buildBodyTK1424892();
