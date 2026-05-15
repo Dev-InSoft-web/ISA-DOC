@@ -1,0 +1,15 @@
+{
+	"description": "Mapeo persistente nombre-de-tabla -> nombre-de-region en archivos ISP. Si renombras una tabla en ISA, este mapa preserva el vínculo con la región original. Usa el botón 'Sincronizar regiones' en TablesPanel para reescribir los #region en los archivos ISP.",
+	"map": {
+		"CAPAC_PLANES_ESTUDIO": "CAPAC_PLANES_ESTUDIO",
+		"CAPAC_CURSOS_DE_PLANES_ESTUDIO": "CAPAC_CURSOS_DE_PLANES_ESTUDIO",
+		"CAPAC_ATRIBUTOS_X_DRIVERS": "CAPAC_ATRIBUTOS_X_DRIVERS",
+		"CAPAC_DRIVERS": "CAPAC_DRIVERS",
+		"CAPAC_ESTRUCTURAS_CURSOS": "CAPAC_ESTRUCTURAS_CURSOS",
+		"CAPAC_ATRIBUTOS_PLANES": "CAPAC_ATRIBUTOS_PLANES",
+		"CAPAC_PLANES_CURSOS": "CAPAC_PLANES_CURSOS",
+		"CAPAC_CURSOS_PREREQUISITOS": "CAPAC_CURSOS_PREREQUISITOS",
+		"CAPAC_SEGURIDADES_CURSOS": "CAPAC_SEGURIDADES_CURSOS",
+		"CAPAC_CURSOS": "CAPAC_CURSOS"
+	}
+}

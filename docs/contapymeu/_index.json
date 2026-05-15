@@ -1,0 +1,17 @@
+{
+	"project": "ContaPymeU",
+	"title": "ContaPymeU — Documentación de Ingeniería",
+	"description": "Documentación técnica del módulo Capacitación de ContaPymeU (microservicio Azure Functions ISS-ClientesIS-ContaPymeU + tipos compartidos ISP-ClientesIS + frontend ISW-ClientesIS). Solo se documenta lo que pertenece a Capacitación; otros dominios solo se mencionan como puntos de contacto.",
+	"sections": [
+		{ "slug": "00-overview", "title": "Visión General", "icon": "mdi:book-open-variant" },
+		{ "slug": "01-arquitectura", "title": "Arquitectura", "icon": "mdi:sitemap-outline" },
+		{ "slug": "02-modelo-datos", "title": "Modelo de Datos", "icon": "mdi:database-outline" },
+		{ "slug": "03-iss-overview", "title": "ISS · Backend (Azure Functions)", "icon": "mdi:cloud-cog-outline" },
+		{ "slug": "04-iss-capacitacion", "title": "ISS · Capacitación", "icon": "mdi:school-outline" },
+		{ "slug": "07-isp-types", "title": "ISP · Tipos compartidos", "icon": "mdi:package-variant-closed" },
+		{ "slug": "08-isw-frontend", "title": "ISW · Frontend (Astro + Svelte)", "icon": "mdi:web" },
+		{ "slug": "09-flujos", "title": "Flujos · Obtener / Editar", "icon": "mdi:transit-connection-variant" },
+		{ "slug": "10-postman-openapi", "title": "Postman · OpenAPI", "icon": "mdi:api" },
+		{ "slug": "11-migracion-tbls", "title": "Migración de tablas CAPAC_*_OLD", "icon": "mdi:database-import-outline" }
+	]
+}
