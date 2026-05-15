@@ -161,7 +161,7 @@
 				titleIcon="mdi:calendar"
 				open={true}
 			>
-				<RevisadoCheck slot="title-extra" keys={["2026-05-14.driver.atributos.jconfig.v2"]} />
+				<RevisadoCheck slot="title-extra" keys={["2026-05-14.driver.atributos.jconfig.v2", "2026-05-14.atributos.planes.cleanup.vacios"]} />
 
 				<Accordion
 					title="Drivers · JCONFIG v2 (InputText, InputNumber, Switch, RichEditor, SelectObject, BtnRef, CatalogoGen)"
