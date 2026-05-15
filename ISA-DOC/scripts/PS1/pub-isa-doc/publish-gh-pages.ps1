@@ -41,6 +41,10 @@ function Restore-Skipped {
 }
 
 try {
+    Write-Host "== Snapshots estaticos /api/* =>  public/static-api/ =="
+    npm run snapshot:gh-pages
+    if ($LASTEXITCODE -ne 0) { throw "snapshot fallo" }
+
     Write-Host "== Apartando rutas no estaticas =="
     Move-Skipped
 
