@@ -81,6 +81,59 @@ function snapDownToBusiness(minOfDay: number): number {
 	return -1;
 }
 
+function snapUpToBusiness(minOfDay: number): number {
+	for (let i = 0; i < WORK_SEGMENTS.length; i++) {
+		const [a, b] = WORK_SEGMENTS[i];
+		if (minOfDay <= a) return a;
+		if (minOfDay < b) return minOfDay;
+	}
+	return -1;
+}
+
+function addBusinessMinutes(start: Date, mins: number, festivos: Set<string>): Date {
+	const d = new Date(start);
+	let remaining = mins;
+	const toNextWorkdayStart = (): void => {
+		d.setDate(d.getDate() + 1);
+		while (!isWorkDay(d, festivos)) d.setDate(d.getDate() + 1);
+		d.setHours(8, 0, 0, 0);
+	};
+	if (!isWorkDay(d, festivos)) {
+		toNextWorkdayStart();
+	} else {
+		const minOfDay = d.getHours() * 60 + d.getMinutes();
+		const snapped = snapUpToBusiness(minOfDay);
+		if (snapped < 0) toNextWorkdayStart();
+		else d.setHours(Math.floor(snapped / 60), snapped % 60, 0, 0);
+	}
+	let guard = 0;
+	while (remaining > 0 && guard++ < 50) {
+		const minOfDay = d.getHours() * 60 + d.getMinutes();
+		let segIdx = -1;
+		for (let i = 0; i < WORK_SEGMENTS.length; i++) {
+			const [a, b] = WORK_SEGMENTS[i];
+			if (minOfDay >= a && minOfDay < b) { segIdx = i; break; }
+		}
+		if (segIdx < 0) break;
+		const segEnd = WORK_SEGMENTS[segIdx][1];
+		const available = segEnd - minOfDay;
+		if (remaining <= available) {
+			const newMin = minOfDay + remaining;
+			d.setHours(Math.floor(newMin / 60), newMin % 60, 0, 0);
+			remaining = 0;
+		} else {
+			remaining -= available;
+			if (segIdx < WORK_SEGMENTS.length - 1) {
+				const nextStart = WORK_SEGMENTS[segIdx + 1][0];
+				d.setHours(Math.floor(nextStart / 60), nextStart % 60, 0, 0);
+			} else {
+				toNextWorkdayStart();
+			}
+		}
+	}
+	return d;
+}
+
 function subtractBusinessMinutes(start: Date, mins: number, festivos: Set<string>): Date {
 	const d = new Date(start);
 	let remaining = mins;
@@ -140,7 +193,8 @@ function maquillarFechas(commits: TicketCommit[], fechaSolicitud?: string, festi
 	const fs = parseFechaSolicitud(fechaSolicitud ?? "");
 	if (!fs) return commits;
 	const festSet = new Set(festivos ?? []);
-	const earliest = subtractBusinessMinutes(fs, HORAS_KEEP_PREVIAS * 60, festSet).getTime();
+	const earliestDate = subtractBusinessMinutes(fs, HORAS_KEEP_PREVIAS * 60, festSet);
+	const earliest = earliestDate.getTime();
 	const adjustedIdx: number[] = [];
 	commits.forEach((c, idx) => {
 		if (!c.fecha) return;
@@ -154,17 +208,12 @@ function maquillarFechas(commits: TicketCommit[], fechaSolicitud?: string, festi
 		const fb = commits[b].fecha ?? "";
 		return fa < fb ? -1 : fa > fb ? 1 : 0;
 	});
-	const startMin = 9 * 60;
-	const endMin = 18 * 60;
-	const range = endMin - startMin;
+	const totalBusinessMin = HORAS_KEEP_PREVIAS * 60;
 	const n = sortedAdj.length;
 	const out = commits.slice();
 	sortedAdj.forEach((origIdx, i) => {
-		const offset = n === 1 ? Math.floor(range / 2) : Math.round((range * i) / (n - 1));
-		const totalMin = startMin + offset;
-		const hh = Math.floor(totalMin / 60);
-		const mm = totalMin % 60;
-		const dt = new Date(fs.getFullYear(), fs.getMonth(), fs.getDate(), hh, mm, 0);
+		const offset = Math.round((totalBusinessMin * (i + 1)) / (n + 1));
+		const dt = addBusinessMinutes(earliestDate, offset, festSet);
 		out[origIdx] = { ...out[origIdx], fecha: toIsoLocal(dt) };
 	});
 	return out;
@@ -342,14 +391,71 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 
 export async function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string, ticketId?: string, festivos?: string[]): Promise<string> {
 	const cota = cotaMaximaMinutos(commits);
-	const estimacionAjustada = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : estimacionMin;
+	const estimacionCommits = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : 0;
+	const minutosBd = tiempoCambiosBdMin(cambiosBd);
+	const minutosDiligencia = tiempoDiligenciaMin(body ?? "");
 	const cambiosHtml = await buildDbChangesHtml(cambiosBd, ticketId);
+	const resumenTiemposHtml = buildResumenTiemposHtml(estimacionCommits, minutosBd, minutosDiligencia, commits.length, cambiosBd.length);
 	return TICKET_HTML_PREFIX
 		+ (body ?? "")
 		+ "\n"
-		+ buildCommitsHtml(commits, estimacionAjustada, fechaSolicitud, ticketId, festivos)
+		+ buildCommitsHtml(commits, estimacionCommits || estimacionMin, fechaSolicitud, ticketId, festivos)
 		+ cambiosHtml
+		+ resumenTiemposHtml
 		+ TICKET_HTML_SUFFIX;
+}
+
+// Tiempo estimado de diligenciar el ticket en la bitácora (15-60 min).
+// Crece linealmente con el volumen del body HTML, acotado a [15, 60].
+function tiempoDiligenciaMin(body: string): number {
+	const len = body ? body.length : 0;
+	const raw = 15 + Math.round((len - 500) / 180);
+	return Math.max(15, Math.min(60, raw));
+}
+
+// Tiempo estimado para los cambios en base de datos (trabajo fuera de commits).
+// Cada cambio aporta una base + un componente por tamaño del SQL y por
+// presencia de JSON antes/después que requirieron analizarse.
+function tiempoCambiosBdMin(cambios: TicketDbChange[]): number {
+	if (!cambios.length) return 0;
+	return cambios.reduce((acc, c) => {
+		let m = 10;
+		const sqlLen = (c.sql ?? "").length;
+		if (sqlLen > 0) m += Math.min(15, Math.round(sqlLen / 120));
+		if ((c.jsonAntes ?? "").trim().length > 0) m += 5;
+		if ((c.jsonDespues ?? "").trim().length > 0) m += 5;
+		return acc + m;
+	}, 0);
+}
+
+function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligencia: number, nCommits: number, nCambiosBd: number): string {
+	const total = minCommits + minBd + minDiligencia;
+	if (total <= 0) return "";
+	const tdLabel = "padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#555;border-bottom:1px solid #f0f0f0;";
+	const tdValor = "padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#444;text-align:right;white-space:nowrap;border-bottom:1px solid #f0f0f0;";
+	const tdLabelTot = "padding:0.4rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#333;font-weight:600;border-top:1px solid #999;";
+	const tdValorTot = "padding:0.4rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#222;text-align:right;white-space:nowrap;font-weight:600;border-top:1px solid #999;";
+	const filaCommits = nCommits > 0
+		? `<tr><td style="${tdLabel}">Trabajo en commits <span style="color:#999;">(${nCommits} commits)</span></td><td style="${tdValor}">${fmtMin(minCommits)}</td></tr>`
+		: `<tr><td style="${tdLabel}">Trabajo en commits</td><td style="${tdValor}">${fmtMin(minCommits)}</td></tr>`;
+	const filaBd = `<tr><td style="${tdLabel}">Cambios fuera de commits <span style="color:#999;">(${nCambiosBd} cambios BD)</span></td><td style="${tdValor}">${fmtMin(minBd)}</td></tr>`;
+	const filaDili = `<tr><td style="${tdLabel}">Diligencia del ticket en bitácora</td><td style="${tdValor}">${fmtMin(minDiligencia)}</td></tr>`;
+	const filaTotal = `<tr><td style="${tdLabelTot}">Total estimado</td><td style="${tdValorTot}">${fmtMin(total)}</td></tr>`;
+	return [
+		``,
+		`<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">`,
+		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Resumen general de tiempos</div>`,
+		`<table style="border-collapse:collapse;width:100%;max-width:520px;">`,
+		`<tbody>`,
+		filaCommits,
+		filaBd,
+		filaDili,
+		filaTotal,
+		`</tbody>`,
+		`</table>`,
+		`</div>`,
+		``,
+	].join("\n");
 }
 
 async function buildDbChangesHtml(cambios: TicketDbChange[], ticketId?: string): Promise<string> {
