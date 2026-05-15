@@ -98,7 +98,7 @@ export async function buildBodyTK1422216(): Promise<string> {
 			“Activo” y “Genera certificado” — disponibles desde el selector de columnas.`,
 		),
 		note(
-			"mdi:function-variant-off",
+			"tabler:function-off",
 			`<b>Generación parametrizada</b>: el bloque de columnas adicionales se construye con una  
 			pequeña función auxiliar que se reutiliza para curso y requisito, reduciendo veinte  
 			definiciones casi idénticas a una sola fuente.`,
@@ -140,7 +140,7 @@ export async function buildBodyTK1422216(): Promise<string> {
 
 	const layoutNotes = await Promise.all([
 		note(
-			"mdi:flexbox",
+			"mdi:responsive",
 			`<b>Maquetación con componentes oficiales</b>: se reemplazaron los estilos manuales por  
 			los componentes de presentación del sistema, lo que da un comportamiento responsivo  
 			consistente y evita estilos sueltos que se desincronizan con el resto de la aplicación.`,

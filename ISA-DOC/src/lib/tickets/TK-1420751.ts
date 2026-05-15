@@ -18,7 +18,7 @@ export async function buildBodyTK1420751(): Promise<string> {
 			Soporte</b>, que pasa a ser el único punto de gestión.`,
 		),
 		note(
-			"mdi:type-hierarchy-sub",
+			"codicon:type-hierarchy-sub",
 			`Los formularios de Curso ahora consultan ese catálogo central a  
 			través del selector de referencia estándar, en lugar de mantener  
 			su propia copia local.`,
