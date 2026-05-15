@@ -5,7 +5,7 @@ import { code, img } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
-	`<div>El ingeniero reportó cuatro hallazgos sobre el módulo ` +
+	`<div>Se reportaron cuatro hallazgos sobre el módulo ` +
 	`<b>Capacitación → Cursos → Plan de contenidos</b> (vista del árbol de ` +
 	`capítulos / títulos del curso): nomenclatura de los campos del ` +
 	`formulario según el nivel, restricción de atributos al último nivel, ` +
@@ -46,7 +46,7 @@ export async function buildBodyTK1423165(): Promise<string> {
 			`automáticamente y les asigna un nombre legible derivado del nivel ` +
 			`(en lugar de “Sin nombre” o el código). Esta inyección queda ` +
 			`detrás de un flag QA en falso por defecto: solo se activa cuando el ` +
-			`dataset trae nodos sin sus padres y el ingeniero lo habilita.`,
+			`dataset trae nodos sin sus padres y se habilita manualmente.`,
 		),
 	]);
 
@@ -65,7 +65,7 @@ export async function buildBodyTK1423165(): Promise<string> {
 			`<b>Tema en todos los niveles</b>: el selector de tema sí se mantuvo ` +
 			`disponible en todos los niveles, porque cualquier capítulo ` +
 			`intermedio puede tener un tema asociado. Antes el selector quedó ` +
-			`temporalmente restringido al último nivel; el ingeniero confirmó ` +
+			`temporalmente restringido al último nivel; se confirmó posteriormente ` +
 			`que aplica también a los niveles intermedios.`,
 		),
 		note(

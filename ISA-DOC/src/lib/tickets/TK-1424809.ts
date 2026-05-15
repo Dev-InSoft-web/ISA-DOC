@@ -4,7 +4,7 @@ import { img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
-	`<div>El ingeniero reportó que el menú de acciones de los catálogos ` +
+	`<div>Se reportó que el menú de acciones de los catálogos ` +
 	`<b>Cursos</b> y <b>Planes de estudio</b> mostraba solo cinco acciones ` +
 	`(Crear, Visualizar, Modificar, Eliminar y Refrescar) cuando el resto de ` +
 	`catálogos maestros expone también <i>Verificar</i>, <i>Duplicar</i>, ` +

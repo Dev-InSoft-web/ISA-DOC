@@ -4,10 +4,10 @@ import { img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
-	`<div>El ingeniero reportó que, al ingresar al catálogo de cursos por la ` +
+	`<div>Se reportó que, al ingresar al catálogo de cursos por la ` +
 	`acción <b>Visualizar</b>, en las pestañas <i>Estructura</i> y ` +
 	`<i>Seguridad</i> los grids embebidos seguían permitiendo crear, modificar ` +
-	`y eliminar registros. La acción “Visualizar” debe ser estrictamente de ` +
+	`y eliminar registros. Se solicitó que la acción “Visualizar” fuera estrictamente de ` +
 	`lectura, sin acciones de escritura en ninguna pestaña.</div>`;
 
 export async function buildBodyTK1424806(): Promise<string> {

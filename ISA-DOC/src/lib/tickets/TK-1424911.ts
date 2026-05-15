@@ -3,7 +3,7 @@
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
-	`<div>El ingeniero reportó que, al crear un nuevo curso e ir a la pestaña ` +
+	`<div>Se reportó que, al crear un nuevo curso e ir a la pestaña ` +
 	`<b>Contenido</b>, al pulsar <b>Agregar</b> se abría el formulario del ` +
 	`nodo, se diligenciaban los datos y se pulsaba <b>Aceptar</b>: la ` +
 	`aplicación mostraba el mensaje <i>“Procedimiento finalizado”</i>, pero ` +

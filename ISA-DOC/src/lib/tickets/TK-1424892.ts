@@ -2,10 +2,10 @@
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
-	`<div>El ingeniero reportó que el catálogo embebido de la pestaña ` +
+	`<div>Se reportó que el catálogo embebido de la pestaña ` +
 	`<b>Seguridad</b> del curso no presentaba las acciones esperadas ` +
 	`(refrescar, modo filtro, búsqueda y selección) con el mismo layout que ` +
-	`los demás catálogos de referencia (BtnRef) del sistema. Adjuntó captura ` +
+	`los demás catálogos de referencia (BtnRef) del sistema. Se adjuntó captura ` +
 	`con el aspecto que <i>“debería quedar así”</i>: toolbar compacta con ` +
 	`refrescar/modo filtro/buscar y las pestañas laterales de columnas y ` +
 	`filtro.</div>`;
