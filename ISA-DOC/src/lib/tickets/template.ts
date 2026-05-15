@@ -103,7 +103,7 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): stri
 	const mismoDia = diasUnicos.size === 1;
 	const minutosPorCommit = distribuirMinutos(ordenados, estimacionMin ?? 0);
 	const tdBase = "padding:0.15rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;";
-	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;border-bottom:1px solid #ddd;font-family:Tahoma;font-size:9pt;color:#888;font-weight:600;text-align:left;";
+	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;text-align:left;";
 	const filas = ordenados.map((c, idx) => {
 		const repo = c.repo && REPOS_VALIDOS.has(c.repo) ? c.repo : REPO_DEFAULT;
 		const url = `https://github.com/Dev-InSoft/${repo}/commit/${c.hash}`;
