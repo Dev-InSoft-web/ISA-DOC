@@ -10,7 +10,7 @@
 
 import type { TicketCommit } from "./index";
 
-export const TICKET_HTML_PREFIX = `<div style="font-family:Tahoma;color:#777;font-size:12pt;max-width:100%;text-wrap:balance;">
+export const TICKET_HTML_PREFIX = `<div style="font-family:Tahoma;color:#777;font-size:12pt;max-width:100%;">
 <img src="https://i.ibb.co/99cnjWGK/01.png" style="max-height:300px;max-width:100%;display:block;margin-bottom:15px;">
 `;
 
@@ -62,7 +62,32 @@ function fmtDuracion(ms: number): string {
 	return parts.join(" ") || "0min";
 }
 
-function buildCommitsHtml(commits: TicketCommit[]): string {
+function fmtMin(min: number): string {
+	if (min < 60) return `${min}min`;
+	const h = Math.floor(min / 60);
+	const m = min % 60;
+	return m > 0 ? `${h}h ${m}min` : `${h}h`;
+}
+
+function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
+	if (!commits.length || total <= 0) return commits.map(() => 0);
+	const pesos = commits.map((c) => Math.max(1, (c.ins ?? 0) + (c.del ?? 0)));
+	const suma = pesos.reduce((a, b) => a + b, 0);
+	const crudos = pesos.map((p) => (p / suma) * total);
+	const enteros = crudos.map((v) => Math.floor(v));
+	let asignado = enteros.reduce((a, b) => a + b, 0);
+	const restos = crudos.map((v, i) => ({ i, r: v - Math.floor(v) }));
+	restos.sort((a, b) => b.r - a.r);
+	let k = 0;
+	while (asignado < total && k < restos.length) {
+		enteros[restos[k].i]++;
+		asignado++;
+		k++;
+	}
+	return enteros;
+}
+
+function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): string {
 	if (!commits.length) return "";
 	const ordenados = [...commits].sort((a, b) => {
 		const fa = a.fecha ?? "";
@@ -76,8 +101,9 @@ function buildCommitsHtml(commits: TicketCommit[]): string {
 			.filter((s) => s !== ""),
 	);
 	const mismoDia = diasUnicos.size === 1;
+	const minutosPorCommit = distribuirMinutos(ordenados, estimacionMin ?? 0);
 	const tdBase = "padding:0.15rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;";
-	const filas = ordenados.map((c) => {
+	const filas = ordenados.map((c, idx) => {
 		const repo = c.repo && REPOS_VALIDOS.has(c.repo) ? c.repo : REPO_DEFAULT;
 		const url = `https://github.com/Dev-InSoft/${repo}/commit/${c.hash}`;
 		const hash = escapeHtml(c.hash);
@@ -85,6 +111,10 @@ function buildCommitsHtml(commits: TicketCommit[]): string {
 		const ins = c.ins ?? 0;
 		const del = c.del ?? 0;
 		const fechaTxt = c.fecha ? fmtFechaHora(c.fecha, mismoDia) : "";
+		const minCommit = minutosPorCommit[idx];
+		const fechaCell = minCommit > 0
+			? `${fechaTxt} <span style="color:#bbb;">(${fmtMin(minCommit)})</span>`
+			: fechaTxt;
 		const insCell = ins > 0
 			? `<span style="background:#e6ffed;color:#22863a;padding:0 0.3rem;border-radius:0.2rem;">+${ins}</span>`
 			: "";
@@ -93,11 +123,11 @@ function buildCommitsHtml(commits: TicketCommit[]): string {
 			: "";
 		return [
 			`<tr>`,
-			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;white-space:nowrap;">${fechaTxt}</td>`,
+			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;white-space:nowrap;">${fechaCell}</td>`,
 			`<td style="${tdBase}white-space:nowrap;"><a href="${url}" target="_blank" rel="noopener" style="font-family:Consolas,Menlo,monospace;font-size:10.5pt;background:#f0f0f0;color:#0366d6;padding:0 0.3rem;border-radius:0.2rem;text-decoration:none;">${hash}</a></td>`,
 			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${insCell}</td>`,
 			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${delCell}</td>`,
-			`<td style="${tdBase}font-size:10pt;color:#555;text-wrap:pretty;">${desc}</td>`,
+			`<td style="${tdBase}font-size:10pt;color:#555;">${desc}</td>`,
 			`<td style="${tdBase}font-size:9pt;color:#999;white-space:nowrap;text-align:right;">[${escapeHtml(repo)}]</td>`,
 			`</tr>`,
 		].join("");
@@ -119,9 +149,12 @@ function buildCommitsHtml(commits: TicketCommit[]): string {
 		? `<span style="background:#ffeef0;color:#b31d28;padding:0 0.3rem;border-radius:0.2rem;">-${totalDel}</span>`
 		: "";
 	const filaSeparador = `<tr><td colspan="6" style="padding:0.5rem 0;border:none;"><hr style="border:none;border-top:1px solid #999;opacity:0.5;margin:0;"></td></tr>`;
+	const duracionCell = estimacionMin && estimacionMin > 0
+		? `${duracion} <span style="color:#bbb;">(${fmtMin(estimacionMin)})</span>`
+		: duracion;
 	const filaResumen = [
 		`<tr>`,
-		`<td style="${tdSummary}font-family:Tahoma;font-size:9pt;color:#444;white-space:nowrap;">${duracion}</td>`,
+		`<td style="${tdSummary}font-family:Tahoma;font-size:9pt;color:#444;white-space:nowrap;">${duracionCell}</td>`,
 		`<td style="${tdSummary}font-family:Tahoma;font-size:9pt;color:#444;white-space:nowrap;">Total</td>`,
 		`<td style="${tdSummary}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${insSummary}</td>`,
 		`<td style="${tdSummary}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${delSummary}</td>`,
@@ -145,7 +178,7 @@ function buildCommitsHtml(commits: TicketCommit[]): string {
 	].join("\n");
 }
 
-export function buildTicketHtml(body: string, commits: TicketCommit[] = []): string {
-	return TICKET_HTML_PREFIX + (body ?? "") + "\n" + buildCommitsHtml(commits) + TICKET_HTML_SUFFIX;
+export function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number): string {
+	return TICKET_HTML_PREFIX + (body ?? "") + "\n" + buildCommitsHtml(commits, estimacionMin) + TICKET_HTML_SUFFIX;
 }
 

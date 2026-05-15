@@ -474,5 +474,5 @@ export const TICKETS: TicketRegistro[] = [
 ];
 
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
-	return buildTicketHtml(await t.body, t.commits ?? []);
+	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos);
 }
