@@ -450,8 +450,8 @@ function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligenci
 	const filaCommits = nCommits > 0
 		? `<tr><td style="${tdLabel}">Trabajo en commits <span style="color:#999;">(${nCommits} commits)</span></td><td style="${tdValor}">${fmtMin(minCommits)}</td></tr>`
 		: `<tr><td style="${tdLabel}">Trabajo en commits</td><td style="${tdValor}">${fmtMin(minCommits)}</td></tr>`;
-	const filaBd = `<tr><td style="${tdLabel}">Cambios fuera de commits <span style="color:#999;">(${nCambiosBd} cambios BD)</span></td><td style="${tdValor}">${fmtMin(minBd)}</td></tr>`;
-	const filaDili = `<tr><td style="${tdLabel}">Diligencia del ticket en bitácora</td><td style="${tdValor}">${fmtMin(minDiligencia)}</td></tr>`;
+	const filaBd = `<tr><td style="${tdLabel}">Cambios extra <span style="color:#999;">(${nCambiosBd} cambios BD)</span></td><td style="${tdValor}">${fmtMin(minBd)}</td></tr>`;
+	const filaDili = `<tr><td style="${tdLabel}">Diligencia del ticket</td><td style="${tdValor}">${fmtMin(minDiligencia)}</td></tr>`;
 	const filaTotal = `<tr><td style="${tdLabelTot}">Total estimado</td><td style="${tdValorTot}">${fmtMin(total)}</td></tr>`;
 	return [
 		``,
