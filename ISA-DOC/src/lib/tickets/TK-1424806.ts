@@ -6,9 +6,9 @@ import { h3Iconized, note } from "./tk-helpers";
 const intro =
 	`<div>Se reportó que, al ingresar al catálogo de cursos por la  
 	acción <b>Visualizar</b>, en las pestañas <i>Estructura</i> y  
-	<i>Seguridad</i> los grids embebidos seguían permitiendo crear, modificar  
+	<i>Seguridad</i> las tablas internas seguían permitiendo crear, modificar  
 	y eliminar registros. Se solicitó que la acción “Visualizar” fuera estrictamente de  
-	lectura, sin acciones de escritura en ninguna pestaña.</div>`;
+	lectura, sin opciones de edición en ninguna pestaña.</div>`;
 
 export async function buildBodyTK1424806(): Promise<string> {
 	const [h3Causa, h3Fix, h3Verif] = await Promise.all([
@@ -20,22 +20,23 @@ export async function buildBodyTK1424806(): Promise<string> {
 	const causaNotes = await Promise.all([
 		note(
 			"mdi:share-variant-outline",
-			`Los grids embebidos de las pestañas <i>Estructura</i> (niveles) y  
-			<i>Seguridad</i> (permisos) no recibían el modo <b>readOnly</b> del  
-			formulario contenedor. Aunque el formulario principal entraba en modo  
-			solo lectura por “Visualizar”, los list-slaves anidados conservaban  
-			sus acciones de escritura habilitadas por defecto.`,
+			`Las tablas internas de las pestañas <i>Estructura</i> (niveles) y  
+			<i>Seguridad</i> (permisos) no heredaban el modo de solo lectura  
+			del formulario que las contiene. Aunque el formulario principal  
+			entraba correctamente en consulta por la opción “Visualizar”, las  
+			tablas anidadas mantenían habilitadas sus opciones de edición  
+			como si se estuviera modificando el curso.`,
 		),
 	]);
 
 	const fixNotes = await Promise.all([
 		note(
 			"mdi:lock-outline",
-			`Se propaga el modo de operación del formulario a los list-slaves de  
-			niveles y permisos. Cuando el contenedor está en “Visualizar”, los  
-			grids embebidos quedan en solo lectura y ocultan o deshabilitan las  
-			acciones de Crear, Modificar y Eliminar, dejando solo refrescar y  
-			modo filtro.`,
+			`Se propaga el modo del formulario principal a las tablas internas  
+			de niveles y permisos. Cuando el curso se abre con “Visualizar”, las  
+			tablas anidadas también entran en consulta y ocultan o desactivan las  
+			opciones de crear, modificar y eliminar, dejando únicamente refrescar  
+			y aplicar filtros.`,
 		),
 		note(
 			"mdi:eye-outline",
