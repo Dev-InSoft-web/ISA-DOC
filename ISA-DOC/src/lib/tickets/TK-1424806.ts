@@ -48,11 +48,13 @@ export async function buildBodyTK1424806(): Promise<string> {
 	const verifNotes = await Promise.all([
 		note(
 			"mdi:check-bold",
-			`Probado sobre el curso <i>CP40MOD998 — Curso Prueba CRAMIREZ FR</i>:  
-			al ingresar por “Visualizar”, las pestañas <b>Estructura</b> y  
-			<b>Seguridad</b> ya no permiten crear ni modificar registros. Al  
-			ingresar por “Modificar” todas las acciones vuelven a estar  
-			disponibles.`,
+			`Al ingresar a un curso existente por la acción <i>Visualizar</i>, las  
+			pestañas <b>Estructura</b> y <b>Seguridad</b> dejan de permitir crear,  
+			modificar o eliminar registros y solo habilitan refrescar, filtrar y  
+			consultar el detalle de cada fila. Al ingresar al mismo curso por la  
+			acción <i>Modificar</i>, todas las acciones vuelven a estar  
+			disponibles, confirmando que el cambio solo afecta el modo de solo  
+			lectura.`,
 		),
 	]);
 
