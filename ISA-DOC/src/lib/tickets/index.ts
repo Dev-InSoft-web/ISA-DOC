@@ -206,7 +206,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Mostrar fecha de creación de curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 11:34:54 am",
-		estimacionMinutos: 30,
+		estimacionMinutos: 45,
 		resumen: "El ingeniero manifiesta que se debe mostrar la fecha de creación de cada curso en la vista correspondiente, para identificar cuándo fue registrado.",
 		commits: [
 			{ hash: "a740dd4", descripcion: "feat(TK-1420755): mejorar la gestion de titulos y recursos en Formulario.svelte y ContenidosTreeAdapter.ts; vincular treeAdapter en TreeContenidos.svelte" },
@@ -263,7 +263,7 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "29/abr./2026 05:24:11 pm",
 		fechaEntrega: "jueves 30 abril",
-		estimacionMinutos: 420,
+		estimacionMinutos: 400,
 		enlace: "https://contapyme.sharepoint.com/:w:/s/Gestion_Documental_InSoft/IQBciHWK0N9nS7fos1kyCwxCATNJKQf_PAHwSH-ro5aEj08",
 		resumen: "El ingeniero manifiesta que se debe generar la documentación de la colección Postman con los endpoints del servicio, organizada y lista para consulta y entrega.",
 		body: bodyTK1418894,
@@ -272,5 +272,5 @@ export const TICKETS: TicketRegistro[] = [
 ];
 
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
-	return buildTicketHtml(await t.body);
+	return buildTicketHtml(await t.body, t.commits ?? []);
 }
