@@ -122,11 +122,7 @@ export async function buildBodyTK1424892(): Promise<string> {
 	});
 
 	const jconfigMapper = await codeBlock(
-		`// _comps/containers/form/jconfig2FieldDef.ts
-// Mapea la entrada declarativa JCONFIG v2 al FieldDef que consume Attr2Input.
-// El v2 acepta type discriminado y controllerName opcional para BtnRef.
-
-export interface JConfigAttrV2 {
+		`export interface JConfigAttrV2 {
     type: "text" | "number" | "date" | "richtext" | "btnref" | "select";
     label: string;
     controllerName?: string;

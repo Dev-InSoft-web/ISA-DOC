@@ -389,9 +389,9 @@ function renderCodeImg(info: CodeImageInfo, targetW: number): string {
 
 function renderCodeFallbackPre(src: string, lang: CodeLang): string {
 	return (
-		`<pre style="${CODE_BLOCK_PRE_STYLE}"><code style="${CODE_BLOCK_INNER_STYLE}">` +
+		`<pre style="${CODE_BLOCK_PRE_STYLE}"><code style="${CODE_BLOCK_INNER_STYLE}"><small>` +
 		renderCodeInner(src, lang) +
-		`</code></pre>`
+		`</small></code></pre>`
 	);
 }
 
@@ -451,7 +451,7 @@ export async function compareTable(pair: ComparePair): Promise<string> {
 		if (!isCode) return { html: src, isImg: false };
 		const info = await lookupCodeImage(src, lang);
 		if (info) return { html: renderCodeImg(info, CODE_BLOCK_COMPARE_W), isImg: true };
-		return { html: renderCodeInner(src, lang), isImg: false };
+		return { html: `<small>${renderCodeInner(src, lang)}</small>`, isImg: false };
 	};
 
 	const cellStyle = (isImg: boolean): string =>

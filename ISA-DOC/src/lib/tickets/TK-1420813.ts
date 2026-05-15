@@ -18,15 +18,13 @@ export async function buildBodyTK1420813(): Promise<string> {
 		kind: "code",
 		lang: "typescript",
 		before:
-			`// versión anterior (descartada)
-export const isDetailReadonly = (
+			`export const isDetailReadonly = (
   actionParent: TDForm,
   actionDetail: TDForm,
   brapido: boolean,
 ): boolean => brapido || (actionParent === "view" && actionDetail === "view");`,
 		after:
-			`// _comps/containers/form/Detail.svelte
-export const isDetailReadonly = (actionParent: TDForm, actionDetail: TDForm): boolean =>
+			`export const isDetailReadonly = (actionParent: TDForm, actionDetail: TDForm): boolean =>
   actionParent === "view" && actionDetail === "view";`,
 	});
 	const items = await Promise.all([

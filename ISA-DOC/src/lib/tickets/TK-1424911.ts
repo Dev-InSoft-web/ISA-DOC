@@ -54,8 +54,9 @@ export async function buildBodyTK1424911(): Promise<string> {
 			"mdi:check-bold",
 			`Probado en ${`<code>/capacitacion/cursos/crear?itdform=create</code>`}  
 			con árbol inicialmente vacío: se agregan dos nodos consecutivos y  
-			ambos quedan persistidos en el árbol (<i>PRIMER_NODO_FIX_OK (1|1)</i>  
-			y <i>NODO_TRAS_FIX (2|2)</i>), sin rollback.`,
+			ambos quedan persistidos correctamente, tanto el primer nodo creado  
+			como el siguiente añadido tras el primer fix, sin rollback ni pérdida  
+			visible en el árbol al cerrar el drawer.`,
 		),
 	);
 

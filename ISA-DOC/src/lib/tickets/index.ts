@@ -88,6 +88,14 @@ export const TICKETS: TicketRegistro[] = [
 			{ hash: "d1c54a1", descripcion: "fix(capacitacion): se restaura lista via api en btnref de curso del plan, evita label en rojo", repo: "ISW-ClientesIS", ins: 7, del: 3, fecha: "2026-05-13T09:52:37-05:00" },
 			{ hash: "a2696b3", descripcion: "fix(capacitacion): se normalizan claves de enums de atributos a mayuscula en form y comparacion de dificultad", repo: "ISW-ClientesIS", ins: 10, del: 8, fecha: "2026-05-14T16:56:16-05:00" },
 		],
+		cambiosBd: [
+			{
+				tabla: "CAPAC_ATRIBUTOS_PLANES",
+				registro: "Limpieza de filas con VALOR vacío",
+				intencion: "Se eliminaron las filas de la tabla de atributos de planes cuyo valor estaba vacío o nulo, las cuales fueron generadas por escrituras previas a la normalización de claves de enums y la unificación del manejo del campo iplanpadre. Estas filas no aportaban información y ensuciaban las consultas de hidratación del btnref del recurso padre.",
+				sql: "DELETE FROM CAPAC_ATRIBUTOS_PLANES\n WHERE VALOR IS NULL\n    OR TRIM(VALOR) = '';\nCOMMIT;",
+			},
+		],
 		body: bodyTK1425173,
 		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Ajuste del sistema" },
 	},
