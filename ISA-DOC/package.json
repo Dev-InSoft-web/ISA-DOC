@@ -7,6 +7,8 @@
 		"iconify": "node ./config/downloadIconify.js",
 		"dev": "astro dev --port 4400",
 		"build": "npm run iconify && astro build",
+		"build:gh-pages": "npm run iconify && astro build --config astro.config.gh-pages.ts",
+		"pub:gh-pages": "powershell -ExecutionPolicy Bypass -File ./scripts/PS1/pub-isa-doc/publish-gh-pages.ps1",
 		"start": "node ./dist/server/entry.mjs",
 		"preview": "astro preview",
 		"typecheck": "tsc --noEmit",
