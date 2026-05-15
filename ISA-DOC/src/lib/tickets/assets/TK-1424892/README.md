@@ -1,16 +1,19 @@
 # TK-1424892 — Imágenes pendientes
 
-Coloca aquí la captura adjuntada por el ingeniero (estado esperado del
-catálogo BtnRef en la pestaña Seguridad de cursos) y luego ejecuta:
+Capturas asociadas a la verificación del fix de la pestaña Seguridad.
+
+Sugerencias de nombre:
+
+- `seguridadToolbarOk.jpg` — toolbar de la pestaña Seguridad mostrando
+  Crear / Visualizar / Eliminar / Refrescar / Modo filtro / Buscar y las
+  pestañas laterales de Columnas y Filtro correctamente alineadas tras el
+  fix de envoltorios.
+
+Una vez añadidas, ejecuta:
 
 ```powershell
 node scripts/upload-assets-imgbb.mjs
 ```
 
-Sugerencias de nombre:
-
-- `seguridadBtnRefEsperado.jpg` — captura del catálogo con la toolbar y las
-  pestañas laterales correctamente alineadas.
-
-Una vez subida, agrega la referencia con `img("seguridadBtnRefEsperado.jpg")`
-en `TK-1424892.ts`.
+y luego agrega la referencia con `img("seguridadToolbarOk.jpg")` en
+`TK-1424892.ts`.
