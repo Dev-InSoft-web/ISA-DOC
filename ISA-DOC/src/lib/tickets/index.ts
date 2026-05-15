@@ -88,6 +88,19 @@ export const TICKETS: TicketRegistro[] = [
 		
 			{ hash: "d1c54a1", descripcion: "fix(capacitacion): se restaura lista via api en btnref de curso del plan, evita label en rojo", repo: "ISW-ClientesIS", ins: 7, del: 3, fecha: "2026-05-13T09:52:37-05:00" },
 			{ hash: "a2696b3", descripcion: "fix(capacitacion): se normalizan claves de enums de atributos a mayuscula en form y comparacion de dificultad", repo: "ISW-ClientesIS", ins: 10, del: 8, fecha: "2026-05-14T16:56:16-05:00" },
+			{ hash: "01fada5", descripcion: "refactor(capacitacion): se modela tipInfo/tipWarn y onSelectedRecord en FieldDef/BtnRefDefs y se migra General.svelte a Obj2Inputs con maxcells", repo: "ISW-ClientesIS", ins: 80, del: 56, fecha: "2026-05-13T16:14:17-05:00" },
+			{ hash: "8594842", descripcion: "fix(capacitacion): se castea btnrefdefs a BtnRefDefs base al pasarlo a Attr2Input", repo: "ISW-ClientesIS", ins: 2, del: 1, fecha: "2026-05-13T16:28:36-05:00" },
+			{ hash: "fd4cf7e", descripcion: "fix(cursos): se centra y limita el BtnRef de driver a 350px en el aviso de espera", repo: "ISW-ClientesIS", ins: 5, del: 3, fecha: "2026-05-14T07:37:42-05:00" },
+			{ hash: "55439a0", descripcion: "refactor(form): se renombra btnrefdefs a controladores y se agrega soporte de tipo catalogo en Attr2Input", repo: "ISW-ClientesIS", ins: 49, del: 36, fecha: "2026-05-14T07:46:31-05:00" },
+			{ hash: "9453b9c", descripcion: "feat(form): se mapea type btnref y controllername desde JCONFIG en jconfig2FieldDef", repo: "ISW-ClientesIS", ins: 8, del: 1, fecha: "2026-05-14T09:17:40-05:00" },
+			{ hash: "5b5b6cf", descripcion: "refactor(refbase): se generaliza el bypass del filter2ReturnList ante consultas puntuales por pk para resolver labels del btnref", repo: "ISW-ClientesIS", ins: 14, del: 19, fecha: "2026-05-14T21:41:09-05:00" },
+			{ hash: "8553b10", descripcion: "feat(capacitacion): se generaliza la exclusion del valor actual via proxy de controller en el wrapper btnref", repo: "ISW-ClientesIS", ins: 35, del: 6, fecha: "2026-05-15T08:55:37-05:00" },
+			{ hash: "2041c48", descripcion: "refactor(capacitacion): se generaliza la exclusion del valor actual del btnref vía wrapper local y currentbtnrefvalue en el supercontrolador", repo: "ISW-ClientesIS", ins: 51, del: 17, fecha: "2026-05-15T08:24:06-05:00" },
+			{ hash: "b1f6f03", descripcion: "refactor(capacitacion): se reemplazan los btnref restantes por el wrapper local btnref2", repo: "ISW-ClientesIS", ins: 9, del: 7, fecha: "2026-05-15T08:25:09-05:00" },
+			{ hash: "f5451b0", descripcion: "fix(capacitacion): se corrige la ruta de importacion del wrapper btnref2 en el driver del curso", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-15T08:26:16-05:00" },
+			{ hash: "3d1db79", descripcion: "fix(capacitacion): se anota el tipo del parametro record en el btnref de prerequisitos", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-15T08:29:40-05:00" },
+			{ hash: "9a7e706", descripcion: "fix(clientesis-temas): se muestra solo el nombre en el caption del btnref de tema", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-15T09:07:57-05:00" },
+			{ hash: "32a7b4c", descripcion: "refactor(capacitacion): se sobrescribe columnsbtnref del tema mediante subclase local en cursos", repo: "ISW-ClientesIS", ins: 10, del: 8, fecha: "2026-05-15T09:11:18-05:00" },
 		],
 		cambiosBd: [
 			{
