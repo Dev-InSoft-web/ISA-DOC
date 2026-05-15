@@ -1,5 +1,6 @@
 <script lang="ts">
    import { onMount, tick } from "svelte";
+   import { STATIC_MODE } from "../../lib/runtime/staticMode";
 
    export let project: string = "contapymeu";
 
@@ -335,11 +336,12 @@
       activeSlug = slug;
       html = "";
       try {
-         const res = await fetch(`/docs/${project}/${slug}.md`, { cache: "no-cache" });
+         const docsPath = STATIC_MODE ? `/static-api/docs/${project}/${slug}.md` : `/docs/${project}/${slug}.md`;
+         const res = await fetch(docsPath, { cache: "no-cache" });
          if (!res.ok) throw new Error(`HTTP ${res.status}`);
          let md = await res.text();
          md = expandImageCrops(md);
-         md = await expandSourceIncludes(md);
+         if (!STATIC_MODE) md = await expandSourceIncludes(md);
          const marked = (window as any).marked;
          html = marked.parse(md, { mangle: false, headerIds: true });
          await tick();

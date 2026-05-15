@@ -6,7 +6,10 @@ interface Props {
 }
 
 const { title } = Astro.props;
-const currentPath = Astro.url.pathname;
+const rawBase = import.meta.env.BASE_URL || "/";
+const base = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
+const link = (p: string): string => base + p || "/";
+const currentPath = Astro.url.pathname.replace(rawBase, "/").replace(/\/$/, "") || "/";
 ---
 
 <html lang="es" class="dark">
@@ -14,17 +17,140 @@ const currentPath = Astro.url.pathname;
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>{title}</title>
+      <script is:inline define:vars={{ rawBase }}>
+         // @ts-nocheck
+         // Shim de fetch para gh-pages estatico, instalado SINCRONICAMENTE antes de cualquier
+         // hidratacion de componentes Svelte. Reescribe assets absolutos al base path,
+         // intercepta /api/* devolviendo snapshots o defaults razonables, y absorbe escrituras
+         // para que la UI mantenga el estado local sin enviar nada al servidor.
+         (function () {
+            if (!rawBase || rawBase === "/") return;
+            var BASE_NO_SLASH = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
+            var origFetch = window.fetch.bind(window);
+            var ASSET_PREFIXES = ["/icons/", "/imgs/", "/docs/", "/bd/", "/db/", "/static-api/"];
+            function defaultForPath(p) {
+               if (p === "tables") return { ok: true, version: 1, tables: [] };
+               if (p === "revisado") return {};
+               if (p === "sql/fragments") return { fragments: [], full: "" };
+               if (p === "ts/fragments") return { ok: true, map: {} };
+               if (p === "codegen/state") return { ok: true, state: {} };
+               if (p === "source") return "";
+               return { ok: true, static: true };
+            }
+            window.fetch = function (input, init) {
+               var url = typeof input === "string" ? input : input instanceof URL ? input.href : (input && input.url) || "";
+               for (var i = 0; i < ASSET_PREFIXES.length; i++) {
+                  if (url.indexOf(ASSET_PREFIXES[i]) === 0) {
+                     return origFetch(BASE_NO_SLASH + url, init);
+                  }
+               }
+               var isApi = url.indexOf("/api/") === 0 || url.indexOf(BASE_NO_SLASH + "/api/") === 0;
+               if (!isApi) return origFetch(input, init);
+
+               var method = ((init && init.method) || (input && input.method) || "GET").toUpperCase();
+               var apiIdx = url.indexOf("/api/");
+               var apiPath = url
+                  .slice(apiIdx + 5)
+                  .replace(/\?.*$/, "")
+                  .replace(/\/$/, "");
+
+               if (method !== "GET") {
+                  return Promise.resolve(new Response(JSON.stringify({ ok: true, static: true }), { status: 200, headers: { "content-type": "application/json" } }));
+               }
+
+               return origFetch(BASE_NO_SLASH + "/static-api/" + apiPath + ".json", { cache: "no-cache" })
+                  .then(function (r) {
+                     if (r.ok) return r;
+                     var def = defaultForPath(apiPath);
+                     var body = typeof def === "string" ? def : JSON.stringify(def);
+                     var ct = typeof def === "string" ? "text/plain; charset=utf-8" : "application/json";
+                     return new Response(body, { status: 200, headers: { "content-type": ct } });
+                  })
+                  .catch(function () {
+                     var def = defaultForPath(apiPath);
+                     var body = typeof def === "string" ? def : JSON.stringify(def);
+                     var ct = typeof def === "string" ? "text/plain; charset=utf-8" : "application/json";
+                     return new Response(body, { status: 200, headers: { "content-type": ct } });
+                  });
+            };
+
+            // Reescritura de atributos src/href/srcset absolutos para que
+            // <img>, <a>, <link>, <script>, <source> apunten al base path estatico.
+            // Necesario porque el shim de fetch no intercepta requests originados
+            // por atributos HTML (navegador los hace directamente).
+            var ATTR_PREFIXES = ["/icons/", "/imgs/", "/docs/", "/bd/", "/db/", "/static-api/"];
+            function matchesPrefix(v) {
+               if (!v || typeof v !== "string") return false;
+               for (var i = 0; i < ATTR_PREFIXES.length; i++) {
+                  if (v.indexOf(ATTR_PREFIXES[i]) === 0) return true;
+               }
+               return false;
+            }
+            function rewriteAttr(el, attr) {
+               var v = el.getAttribute(attr);
+               if (matchesPrefix(v)) el.setAttribute(attr, BASE_NO_SLASH + v);
+            }
+            function rewriteSrcset(el) {
+               var v = el.getAttribute("srcset");
+               if (!v) return;
+               var parts = v.split(",").map(function (p) {
+                  var s = p.trim();
+                  var sp = s.split(/\s+/);
+                  if (matchesPrefix(sp[0])) sp[0] = BASE_NO_SLASH + sp[0];
+                  return sp.join(" ");
+               });
+               el.setAttribute("srcset", parts.join(", "));
+            }
+            function rewriteEl(el) {
+               if (!el || el.nodeType !== 1) return;
+               if (el.hasAttribute("src")) rewriteAttr(el, "src");
+               if (el.hasAttribute("href")) rewriteAttr(el, "href");
+               if (el.hasAttribute("srcset")) rewriteSrcset(el);
+               if (el.hasAttribute("poster")) rewriteAttr(el, "poster");
+            }
+            function rewriteSubtree(root) {
+               if (!root || root.nodeType !== 1) return;
+               rewriteEl(root);
+               var nodes = root.querySelectorAll("[src],[href],[srcset],[poster]");
+               for (var i = 0; i < nodes.length; i++) rewriteEl(nodes[i]);
+            }
+            function startObserver() {
+               rewriteSubtree(document.body);
+               var mo = new MutationObserver(function (muts) {
+                  for (var i = 0; i < muts.length; i++) {
+                     var m = muts[i];
+                     if (m.type === "childList") {
+                        for (var j = 0; j < m.addedNodes.length; j++) rewriteSubtree(m.addedNodes[j]);
+                     } else if (m.type === "attributes" && m.target) {
+                        rewriteEl(m.target);
+                     }
+                  }
+               });
+               mo.observe(document.documentElement, {
+                  childList: true,
+                  subtree: true,
+                  attributes: true,
+                  attributeFilter: ["src", "href", "srcset", "poster"],
+               });
+            }
+            if (document.readyState === "loading") {
+               document.addEventListener("DOMContentLoaded", startObserver);
+            } else {
+               startObserver();
+            }
+         })();
+      </script>
    </head>
    <body>
       <header class="isa-header">
          <span class="isa-logo">ISA</span>
          <span class="isa-sep">|</span>
          <nav class="isa-nav">
-            <a href="/" class:list={["isa-nav-link", { active: currentPath === "/" || currentPath === "/sql" }]}> SQL </a>
-            <a href="/bitacora" class:list={["isa-nav-link", { active: currentPath === "/bitacora" }]}> Bitácora </a>
-            <a href="/postman" class:list={["isa-nav-link", { active: currentPath === "/postman" }]}> Postman </a>
-            <a href="/contapymeu" class:list={["isa-nav-link", { active: currentPath === "/contapymeu" }]}> Docs </a>
-            <a href="/actions" class:list={["isa-nav-link", { active: currentPath === "/actions" }]}> Actions </a>
+            <a href={link("/")} class:list={["isa-nav-link", { active: currentPath === "/" || currentPath === "/sql" }]}> SQL </a>
+            <a href={link("/bitacora")} class:list={["isa-nav-link", { active: currentPath === "/bitacora" }]}> Bitácora </a>
+            <a href={link("/postman")} class:list={["isa-nav-link", { active: currentPath === "/postman" }]}> Postman </a>
+            <a href={link("/contapymeu")} class:list={["isa-nav-link", { active: currentPath === "/contapymeu" }]}> Docs </a>
+            <a href={link("/actions")} class:list={["isa-nav-link", { active: currentPath === "/actions" }]}> Actions </a>
          </nav>
       </header>
       <main class="isa-main">
