@@ -69,6 +69,19 @@
 				<p class="ticket-resumen"><small><small>{ticket.resumen}</small></small></p>
 			{/if}
 
+			{#if ticket.commits && ticket.commits.length}
+				<div class="ticket-commits">
+					<small style="color: gray;"><b>Commits relacionados ({ticket.commits.length}):</b></small>
+					<GridLayout cells="3" items="stretch" style="column-gap: 0.5rem; row-gap: 0.15rem; margin-top: 0.15rem;">
+						{#each ticket.commits as c (c.hash)}
+							<small class="commit-item" title={c.descripcion}>
+								<code>{c.hash}</code> {c.descripcion}
+							</small>
+						{/each}
+					</GridLayout>
+				</div>
+			{/if}
+
 			<FlexLayout direction="row" items="center" style="margin-bottom: 0.5rem;">
 				<Switch bind:checked={whiteBg} color="primary" colorFalse="neutral" disabled={showCode}><small>Fondo blanco</small></Switch>
 				<Switch bind:checked={showCode} color="primary" colorFalse="neutral"><small>Ver código HTML</small></Switch>
@@ -140,5 +153,23 @@
 		border-radius: 0.5rem;
 		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 		z-index: 5;
+	}
+	.ticket-commits {
+		border-top: 1px dashed var(--is-border-color, rgba(0, 0, 0, 0.12));
+		padding-top: 0.35rem;
+	}
+	.commit-item {
+		display: block;
+		color: gray;
+		line-height: 1.25;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.commit-item code {
+		background: rgba(0, 0, 0, 0.06);
+		padding: 0 0.25rem;
+		border-radius: 0.2rem;
+		font-size: 0.85em;
 	}
 </style>
