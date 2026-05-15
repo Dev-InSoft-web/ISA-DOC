@@ -105,7 +105,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Acciones en catálogo de pestaña \"Seguridad\" de cursos",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 10:57:32 am",
-		estimacionMinutos: 90,
+		estimacionMinutos: 360,
 		resumen: "Se adjuntó captura indicando cómo debía verse el catálogo BtnRef de la pestaña Seguridad del curso: toolbar con refrescar, modo filtro y búsqueda, junto a las pestañas laterales de columnas y filtro, alineado con el resto de los catálogos del sistema.",
 		commits: [
 			{ hash: "8553b10", descripcion: "feat(capacitacion): se generaliza la exclusion del valor actual via proxy de controller en el wrapper btnref", repo: "ISW-ClientesIS", ins: 35, del: 6, fecha: "2026-05-15T08:55:37-05:00" },
@@ -155,7 +155,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Menú de acciones incompleto",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 09:40:35 am",
-		estimacionMinutos: 75,
+		estimacionMinutos: 240,
 		resumen: "Se reportó que el menú de acciones de los catálogos Cursos y Planes de estudio mostraba solo cinco acciones (Crear, Visualizar, Modificar, Eliminar y Refrescar) mientras que los demás catálogos maestros exponían también Verificar, Duplicar, Recodificar y Consolidar. El menú contextual del grid (clic derecho) también quedaba recortado a tres opciones.",
 		commits: [
 			{ hash: "d69949a", descripcion: "feat(acciones-gen, catalogo-gen): refactoriza las interfaces y mejora la gestión de propiedades en los componentes", repo: "ISP-SvelteComponents", ins: 169, del: 141, fecha: "2026-05-11T12:10:37-05:00" },
@@ -298,7 +298,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Función cargar recursos en plan de estudio",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "07/may./2026 10:37:59 am",
-		estimacionMinutos: 150,
+		estimacionMinutos: 300,
 		resumen: "En revisión del formulario rápido del catálogo de plan de estudio, se identificó que en la pestaña de “Cursos de plan de estudio” se exponía la opción Crear, lo cual resultaba confuso porque sugería la creación de un recurso, y al abrirla el action drawer quedaba en blanco. Se solicitó que en su lugar se abriera el catálogo de cursos para seleccionar los que debían quedar dentro del plan.",
 		commits: [
 			{ hash: "8f008b5", descripcion: "feat(TK-1422216): ajustar estilos y logica de visualizacion en la tabla de cursos", repo: "ISW-ClientesIS", ins: 32, del: 13, fecha: "2026-05-07T11:35:09-05:00" },
@@ -326,7 +326,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Campos vacíos grid curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 02:03:59 pm",
-		estimacionMinutos: 60,
+		estimacionMinutos: 240,
 		resumen: "En revisión de la grid del catálogo del curso, se identificó que los campos “Tema” y “Driver” aparecían vacíos aún cuando ya se habían diligenciado para los cursos.",
 		commits: [
 			{ hash: "6ce7d49", descripcion: "feat(cursos): ajustes varios en visualizador de cursos", repo: "ISW-ClientesIS", ins: 61, del: 7, fecha: "2026-05-05T15:34:21-05:00" },
@@ -347,7 +347,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Campos modo visualización en edición de formulario rápido curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 12:26:30 pm",
-		estimacionMinutos: 90,
+		estimacionMinutos: 240,
 		resumen: "Se reportó que, al revisar los campos disponibles desde la vista de formulario rápido del catálogo de curso, varios campos quedaban en modo visualización (mensaje, nombres de la estructura, los de crear con seguridad). Se solicitó que, siempre que se ingresara por modificar, esos campos quedaran editables.",
 		commits: [
 			{ hash: "b4745b8", descripcion: "refactor(TK-1420813): comentar la linea que establece TCapacitacionBaseClient.local como true", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-05T14:14:20-05:00" },
@@ -382,7 +382,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Nombres en niveles por defecto en creación de curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 11:33:30 am",
-		estimacionMinutos: 45,
+		estimacionMinutos: 30,
 		resumen: "Se solicitó que en la pestaña “Estructura”, al momento de crear un curso, se mostraran de manera predeterminada los nombres “Capítulo” y “Título” en los niveles, en lugar de aparecer como “Sin nombre”.",
 		commits: [
 			{ hash: "644b4da", descripcion: "feat(cursos): se generan automaticamente los niveles de estructura al seleccionar driver con nombres por defecto segun cantidad de niveles", repo: "ISW-ClientesIS", ins: 30, del: 19, fecha: "2026-05-13T13:54:15-05:00" },
@@ -414,7 +414,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Opciones para agregar contenido al crear curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "05/may./2026 11:25:13 am",
-		estimacionMinutos: 120,
+		estimacionMinutos: 300,
 		resumen: "Se solicitó que al crear un curso se ofrecieran más opciones para agregar contenido, permitiendo incorporar distintos tipos de material desde el formulario inicial.",
 		commits: [
 			{ hash: "2ca58b1", descripcion: "feat(TK-1420742): ajustar colores y agregar propiedades de estilo en Alert.svelte; actualizar importaciones en ListEstructura.svelte", repo: "ISW-ClientesIS", ins: 12, del: 6, fecha: "2026-05-05T12:26:30-05:00" },

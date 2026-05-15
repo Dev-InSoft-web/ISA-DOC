@@ -69,6 +69,26 @@ function fmtMin(min: number): string {
 	return m > 0 ? `${h}h ${m}min` : `${h}h`;
 }
 
+// Cota máxima estimada (en minutos) para un conjunto de commits.
+// No pretende ser una predicción exacta sino un techo razonable basado
+// en volumen, cantidad de commits, repos involucrados y un factor de
+// complejidad (investigación, decisiones, pruebas). El tope absoluto
+// se fija en 10 horas (600min) para tareas excepcionalmente complejas.
+export function cotaMaximaMinutos(commits: TicketCommit[]): number {
+	if (!commits.length) return 600;
+	const ins = commits.reduce((a, c) => a + (c.ins ?? 0), 0);
+	const del = commits.reduce((a, c) => a + (c.del ?? 0), 0);
+	const peso = ins + del * 0.5;
+	const baseMin = peso / 2;
+	const reposUnicos = new Set(
+		commits.map((c) => (c.repo && REPOS_VALIDOS.has(c.repo) ? c.repo : REPO_DEFAULT)),
+	).size;
+	const overhead = commits.length * 5 + Math.max(0, reposUnicos - 1) * 15;
+	const complejidad = 1.4;
+	const raw = (baseMin + overhead) * complejidad;
+	return Math.min(600, Math.max(15, Math.round(raw / 5) * 5));
+}
+
 function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
 	if (!commits.length || total <= 0) return commits.map(() => 0);
 	const pesos = commits.map((c) => Math.max(1, (c.ins ?? 0) + (c.del ?? 0)));
@@ -190,6 +210,8 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): stri
 }
 
 export function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number): string {
-	return TICKET_HTML_PREFIX + (body ?? "") + "\n" + buildCommitsHtml(commits, estimacionMin) + TICKET_HTML_SUFFIX;
+	const cota = cotaMaximaMinutos(commits);
+	const estimacionAjustada = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : estimacionMin;
+	return TICKET_HTML_PREFIX + (body ?? "") + "\n" + buildCommitsHtml(commits, estimacionAjustada) + TICKET_HTML_SUFFIX;
 }
 
