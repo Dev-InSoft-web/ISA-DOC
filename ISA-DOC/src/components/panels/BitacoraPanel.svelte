@@ -21,6 +21,7 @@
 	import sqlUpdateDriverAtributosJConfigV2 from "../../lib/migration/sql/update-driver-atributos-jconfig-v2.sql?raw";
 	import sqlDeleteAtributosPlanesVacios from "../../lib/migration/sql/delete-atributos-planes-vacios.sql?raw";
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
+	import sqlSeedAccionesCursosPlanDeEstudio from "../../lib/migration/sql/seed-acciones-cursos-plandeestudio.sql?raw";
 	import md_2026_05_14_driver_jconfig_v2 from "../../lib/bitacora/daily/2026-05/14/driver-atributos-jconfig-v2-intro.md?raw";
 	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05/06/resumen-isa.md?raw";
 	import md_2026_05_06_isw_isp from "../../lib/bitacora/daily/2026-05/06/resumen-isw-isp.md?raw";
@@ -128,6 +129,33 @@
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-05-15 -->
+			<Accordion
+				title="2026-05-15 — Capacitación: alta de acciones extendidas (Verificar / Duplicar / Recodificar / Consolidar / Eliminar) para Cursos y Planes de Estudio"
+				titleIcon="mdi:calendar"
+			>
+				<RevisadoCheck slot="title-extra" keys={["2026-05-15.seguridad.acciones.cursos.plandeestudio"]} />
+
+				<Accordion
+					title="Seguridad · Insertar acciones faltantes en SEG_ACCIONESXROL (Cursos, PlanDeEstudio)"
+					titleIcon="mdi:shield-key-outline"
+					inner
+				>
+					<RevisadoCheck slot="title-extra" keys={["2026-05-15.seguridad.acciones.cursos.plandeestudio"]} />
+
+					<SqlExecCard
+						title="Seguridad · Alta de Consolidar, Duplicar, Eliminar y Recodificar en Cursos y PlanDeEstudio (INGCP / INGSENIOR)"
+						checkKey="2026-05-15.seguridad.acciones.cursos.plandeestudio"
+						sql={sqlSeedAccionesCursosPlanDeEstudio}
+						desc="Inserta en SEG_ACCIONESXROL las cuatro acciones extendidas (Consolidar, Duplicar, Eliminar, Recodificar) para los recursos `Cursos` y `PlanDeEstudio` bajo el rol INGSENIOR del grupo INGCP del tercero 810000630 con VALOR='true'. Hasta ahora estos catálogos solo tenían Compartir/Crear/Exportar/Listar/Modificar/Verificar/Visualizar, por lo que el JWT no incluía las extendidas y la grilla deshabilitaba los botones correspondientes. Idempotente (NOT EXISTS por clave) y cierra con SELECT de verificación."
+						confirmKind="warning"
+						confirmMessage={`Se insertarán hasta 8 filas (4 acciones × 2 recursos) en SEG_ACCIONESXROL para el rol INGCP/INGSENIOR del tercero 810000630.\n\n¿Continuar?`}
+						{executeSql}
+						height="320px"
+					/>
+				</Accordion>
+			</Accordion>
+
 			<!-- 2026-05-14 -->
 			<Accordion
 				title="2026-05-14 — Capacitación: JCONFIG v2 (nomenclatura = componentes) + iplanpadre como BtnRef"
