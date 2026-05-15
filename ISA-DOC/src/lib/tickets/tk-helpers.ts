@@ -13,8 +13,8 @@ export const NOTE_COLOR = "#777";
 export async function h3Iconized(iconName: string, label: string): Promise<string> {
 	const ic = await iconSvg(iconName, { size: 18, color: "#1e90ff" });
 	return (
-		`<h3 style="color:#1e90ff;margin-top:1.25rem;">` +
-		`${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${label}</span></h3>`
+		`<h3 style="color:#1e90ff;margin-top:1.25rem;font-weight:bold;">` +
+		`${ic}&nbsp;&nbsp;<strong style="vertical-align:middle;font-weight:bold;">${label}</strong></h3>`
 	);
 }
 

@@ -410,7 +410,7 @@ export async function buildTicketHtml(body: string, commits: TicketCommit[] = []
 function buildTituloHtml(_ticketId?: string, titulo?: string): string {
 	if (!titulo) return "";
 	const tit = escapeHtml(titulo);
-	return `<div style="margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid #e0e0e0;"><h1 style="margin:0;font-family:Tahoma;font-size:16pt;color:#1e90ff;font-weight:600;line-height:1.3;">${tit}</h1></div>\n`;
+	return `<div style="margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid #e0e0e0;"><h1 style="margin:0;font-family:Tahoma;font-size:16pt;color:#1e90ff;font-weight:bold;line-height:1.3;"><strong style="font-weight:bold;">${tit}</strong></h1></div>\n`;
 }
 
 // Tiempo estimado de diligenciar el ticket en la bitácora (15-90 min).
