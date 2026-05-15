@@ -1,5 +1,5 @@
 // TK-1420755 — Mostrar fecha de creación de curso.
-import { code as codeI, codeBlock, img } from "./snippets";
+import { code as codeI, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
@@ -8,63 +8,48 @@ const intro =
 	<b>Fecha de creación</b> (y los demás datos del registro) desde el selector de columnas.</div>`;
 
 export async function buildBodyTK1420755(): Promise<string> {
-	const [h3a, h3b, snippet] = await Promise.all([
-		h3Iconized("mdi:table-column-plus-after", "Audit columns al final de cada Columns"),
-		h3Iconized("mdi:autorenew", "Bonus: autocompletado del título de un nodo"),
-		codeBlock(
-		`Columns: TGridColumn<TCurso> = {
-  icurso:  { caption: this.labelPk },
-  ncurso:  { caption: "Nombre" },
-  itema:   { visible: false, caption: "Cód Tema" },
-  tema:    { caption: "Tema",   GetDisplayText: (_v, o) => o.tema?.ntema },
-  idriver: { visible: false, caption: "Cód Driver" },
-  driver:  { caption: "Driver", GetDisplayText: (_v, o) => o.driver?.ndriver },
-  bactivo:            { caption: "Activo",            type: "bool" },
-  bgeneracertificado: { caption: "Genera certificado", type: "bool" },
-  ...ColOptionDatosCre, // fhcre, ipcre, itercerocre, igrupocre, irolcre, …
-  ...ColOptionDatosUlt, // fhult, ipult, iterceroult, igrupoult, irolult, …
-};`,
-		),
+	const [h3a, h3b] = await Promise.all([
+		h3Iconized("mdi:table-column-plus-after", "Columnas de auditor\u00eda al final de cada grid"),
+		h3Iconized("mdi:autorenew", "Bonus: autocompletado del t\u00edtulo de un nodo"),
 	]);
 	const items = await Promise.all([
 		note(
 			"mdi:table-eye",
-			`Se aplicó el patrón ${codeI("...ColOptionDatosCre, ...ColOptionDatosUlt")} (importados de  
-			${codeI("$lib/const")}) a todas las ${codeI("Columns")} de los controllers de Capacitación de  
-			Cursos: ${codeI("TCursoController")}, ${codeI("TDriverSlaveController")},  
-			${codeI("TEstructuraCursoSlaveController")}, ${codeI("TPermisoCursoController")} y  
-			${codeI("TSeguridadCursoSlaveController")}.`,
+			`Se aplic\u00f3 a todos los grids de Capacitaci\u00f3n de Cursos el patr\u00f3n est\u00e1ndar  
+			de columnas de auditor\u00eda: fecha y usuario de creaci\u00f3n, fecha y usuario de \u00faltima  
+			modificaci\u00f3n, grupo y rol asociados. Esto cubre los controladores de cursos,  
+			drivers, estructura, permisos y seguridad.`,
 		),
 		note(
 			"mdi:eye-off-outline",
-			`Todas las columnas de auditoría llegan con ${codeI("visible: false")}  
-			(siguiendo el estándar del proyecto). El usuario las activa desde el selector de columnas  
-			del grid según necesidad.`,
+			`Todas las columnas de auditor\u00eda llegan ocultas por defecto (siguiendo el  
+			est\u00e1ndar del proyecto). El usuario las activa desde el selector de columnas  
+			del grid seg\u00fan necesidad.`,
 		),
 		note(
 			"mdi:format-list-bulleted-type",
-			`En ${codeI("TCursoController")} adicionalmente se ocultaron ${codeI("itema")} e  
-			${codeI("idriver")} (FK) dejando visibles solo los nombres  
-			(${codeI("tema.ntema")} / ${codeI("driver.ndriver")}).`,
+			`En el listado principal de cursos adicionalmente se ocultaron las claves for\u00e1neas  
+			${codeI("itema")} e ${codeI("idriver")} dejando visibles solo los nombres del tema y  
+			del driver.`,
 		),
 		note(
 			"mdi:source-branch",
-			`Comp. asociado en backend: ${codeI("TCursoServer.JData2List")} ya retorna  
-			${codeI("{ tema: {}, driver: {} }")} para alimentar el grid.`,
+			`En backend se confirm\u00f3 que la carga del listado de cursos ya retornaba los objetos  
+			anidados de tema y driver necesarios para alimentar el grid.`,
 		),
 		note(
 			"mdi:rename-box",
-			`En el formulario de árbol de contenidos, ${codeI("ContenidosTreeAdapter.prepareLastLevelNodeData")}  
-			y ${codeI("Formulario.svelte")} autocompletan ${codeI("frmObj.titulo")} con  
-			${codeI("recurso.nrecurso")} cuando el usuario asocia un recurso por primera vez  
-			(disparado una vez por ${codeI("flatPath")} para evitar sobrescribir ediciones manuales).`,
+			`En el formulario de \u00e1rbol de contenidos, al asociar un recurso a una hoja por  
+			primera vez se autocompleta el campo <i>t\u00edtulo</i> del nodo con el nombre del  
+			recurso. El autocompletado se dispara una \u00fanica vez por ruta del nodo para no  
+			sobrescribir ediciones manuales posteriores del usuario.`,
 		),
 	]);
 	const figListado = img("cursosListado.jpg");
 	const figPicker = img("columnPickerAudit.jpg");
 	return (
 		intro + figListado +
-		h3a + snippet + figPicker +
+		h3a + figPicker +
 		`<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items[0]}${items[1]}${items[2]}${items[3]}</ul>` +
 		h3b + `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items[4]}</ul>`
 	);

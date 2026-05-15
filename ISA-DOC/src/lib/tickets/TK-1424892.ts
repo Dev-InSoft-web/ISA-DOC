@@ -1,5 +1,5 @@
 // TK-1424892 — Acciones en catálogo de pestaña "Seguridad" de cursos. Resuelto.
-import { code as codeI, codeBlock, compareTable } from "./snippets";
+import { code as codeI, compareTable } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
@@ -12,13 +12,13 @@ const intro =
 	filtro.</div>`;
 
 export async function buildBodyTK1424892(): Promise<string> {
-	const [h3Causa, h3Fix, h3Verif, h3Jconfig, h3JconfigCompare, h3JconfigMap] = await Promise.all([
+	const [h3Causa, h3Fix, h3Verif, h3Jconfig, h3JconfigCompare, h3JconfigImpl] = await Promise.all([
 		h3Iconized("mdi:bug-outline", "Causa"),
 		h3Iconized("mdi:check-circle-outline", "Solución aplicada"),
 		h3Iconized("mdi:eye-check-outline", "Verificación"),
 		h3Iconized("mdi:database-cog-outline", "JCONFIG v2 — esquema declarativo de campos"),
 		h3Iconized("mdi:swap-horizontal", "Antes / Después — definición del campo en JCONFIG"),
-		h3Iconized("mdi:code-tags", "Mapeo jconfig2FieldDef ampliado"),
+		h3Iconized("mdi:application-cog-outline", "Implicación en el cliente"),
 	]);
 
 	const causa = noteList(
@@ -71,13 +71,14 @@ export async function buildBodyTK1424892(): Promise<string> {
 	const jconfigIntro =
 		`<div>Aprovechando este ticket se promovió el cambio de esquema  
 		<b>JCONFIG v2</b> (tarea del 14 de mayo): los campos de los  
-		formularios pasan a declararse con <code>type</code> explícito  
-		(${codeI('"text"')}, ${codeI('"btnref"')}, ${codeI('"richtext"')}, etc.)  
-		y, cuando aplica, con la referencia al <i>controller</i> que provee  
-		la lista (${codeI("controllerName")}). El mapper  
-		<code>jconfig2FieldDef</code> consume esta forma normalizada y emite  
-		la <code>FieldDef</code> que entiende <code>Attr2Input</code>, sin  
-		necesidad de tocar Svelte por cada nuevo BtnRef.</div>`;
+		formularios pasan a declararse en la columna <code>JCONFIG</code> de  
+		la tabla maestra <code>CAPAC_ATRIBUTOS_X_DRIVERS</code> con un  
+		<code>type</code> explícito que nombra al componente de entrada real  
+		(${codeI('"InputText"')}, ${codeI('"SelectObject"')}, ${codeI('"BtnRef"')},  
+		entre otros) y, cuando aplica, con el identificador del controlador que  
+		provee la lista (${codeI('"controllername"')}). Esto permite  
+		incorporar nuevos atributos o catálogos sin modificar el cliente, ya  
+		que la definición vive en la base de datos.</div>`;
 
 	const jconfigCompare = await compareTable({
 		kind: "code",
@@ -101,59 +102,38 @@ export async function buildBodyTK1424892(): Promise<string> {
   "version": 2,
   "attrs": {
     "ipermiso": {
-      "type": "btnref",
+      "type": "BtnRef",
       "label": "Permiso",
       "controllername": "TPermisoCursoController"
     },
     "itema": {
-      "type": "btnref",
+      "type": "BtnRef",
       "label": "Tema",
       "controllername": "TTemaController"
     },
-    "descripcion": { "type": "richeditor", "label": "Descripción" }
+    "descripcion": { "type": "RichEditor", "label": "Descripción" }
   }
 }`,
 	});
 
-	const jconfigMapper = await codeBlock(
-		`export type InputKind = "text" | "number" | "richeditor" | "selectEnum" | "btnref";
-
-export interface JConfigAttrV2 {
-    type?: InputKind;
-    label: string;
-    controllername?: string;
-    options?: string[] | Record<string, string>;
-    readonly?: boolean;
-    required?: boolean;
-    inputProps?: { maxlength?: number };
-}
-
-export function jconfig2FieldDef(jconfig: JConfigAttrV2, label: string): FieldDef {
-    const j = jconfig ?? ({} as JConfigAttrV2);
-    const t = String(j.type ?? "").toLowerCase();
-    const type: InputKind =
-        t === "number" ? "number"
-        : t === "richeditor" ? "richeditor"
-        : t === "selectenum" ? "selectEnum"
-        : t === "btnref" ? "btnref"
-        : "text";
-    const maxlength = Number(j.inputProps?.maxlength ?? 0);
-    return {
-        type,
-        label,
-        options: j.options,
-        controllername: j.controllername,
-        readonly: !!j.readonly,
-        required: !!j.required,
-        maxlength: Number.isFinite(maxlength) && maxlength > 0 ? maxlength : 500,
-    };
-}`,
-		"typescript",
-	);
+	const jconfigImpl =
+		`<div>En el cliente esto se tradujo en que el mapeo de la columna  
+		<code>JCONFIG</code> a la definición que entiende el formulario  
+		pasara a leer el <code>type</code> declarado en la base de datos  
+		y a propagar <code>controllername</code>, <code>options</code>,  
+		<code>inputProps.maxlength</code>, <code>readonly</code> y  
+		<code>required</code> tal como vienen del registro. Se incorporaron  
+		los componentes ${codeI('"InputText"')}, ${codeI('"SelectObject"')},  
+		${codeI('"BtnRef"')} y ${codeI('"RichEditor"')} dentro del kind de  
+		entrada admitido por el formulario, de modo que basta con publicar  
+		un nuevo registro en la tabla para que el campo aparezca con el  
+		control adecuado, sin tocar el cliente. Los cambios concretos en  
+		componentes Svelte/TypeScript del proyecto del cliente quedan  
+		trazados en los commits relacionados.</div>`;
 
 	const jconfigSection = jconfigIntro
 		+ h3JconfigCompare + jconfigCompare
-		+ h3JconfigMap + jconfigMapper;
+		+ h3JconfigImpl + jconfigImpl;
 
 	return intro + h3Causa + causa + h3Fix + fix + h3Verif + verif + h3Jconfig + jconfigSection;
 }

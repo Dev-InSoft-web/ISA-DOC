@@ -1,5 +1,5 @@
 // TK-1420813 — Campos modo visualización en edición de formulario rápido curso.
-import { code as codeI, compareTable, img } from "./snippets";
+import { code as codeI, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
@@ -12,22 +12,19 @@ const intro =
 export async function buildBodyTK1420813(): Promise<string> {
 	const [h3b, h3c] = await Promise.all([
 		h3Iconized("mdi:file-document-edit-outline", "Detalles afectados"),
-		h3Iconized("mdi:swap-horizontal", "Antes / Después — isDetailReadonly"),
+		h3Iconized("mdi:swap-horizontal", "Cambio de criterio en isDetailReadonly"),
 	]);
-	const compare = await compareTable({
-		kind: "code",
-		lang: "typescript",
-		before:
-			`export const isDetailReadonly = (
-  actionParent: TDForm,
-  actionDetail: TDForm,
-  brapido: boolean,
-): boolean => brapido || (actionParent === "view" && actionDetail === "view");`,
-		after:
-			`export const isDetailReadonly = (actionParent: TDForm, actionDetail: TDForm): boolean =>
-  actionParent === "view" && actionDetail === "view";`,
-	});
+	const compareSemantico = note(
+		"mdi:swap-horizontal",
+		`La función que decidía si un detalle del formulario debía ser de solo  
+		lectura combinaba el modo del padre, el del propio detalle y la bandera  
+		<code>brapido</code>. Se eliminó la dependencia de <code>brapido</code>  
+		dejando que la editabilidad dependa exclusivamente de que <i>padre</i>  
+		e <i>hijo</i> est\u00e9n ambos en modo visualización; cuando cualquiera de  
+		los dos est\u00e1 en creación o edición, el detalle vuelve a ser editable.`,
+	);
 	const items = await Promise.all([
+		compareSemantico,
 		note(
 			"mdi:message-text-outline",
 			`<b>Mensaje (RichEditor) en General de Curso</b>: ${codeI("readonly={readonly || brapido}")}  
@@ -55,8 +52,8 @@ export async function buildBodyTK1420813(): Promise<string> {
 	const figGeneral = img("cursoCrearGeneral.jpg");
 	return (
 		intro + figGeneral +
-		h3c + compare +
-		h3b + `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`
+		h3c + (items[0] as string) +
+		h3b + `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.slice(1).join("")}</ul>`
 	);
 }
 

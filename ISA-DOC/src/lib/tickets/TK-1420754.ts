@@ -1,5 +1,5 @@
 // TK-1420754 — Nombres en niveles por defecto en creación de curso.
-import { code as codeI, codeBlock, img } from "./snippets";
+import { code as codeI, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
@@ -8,33 +8,26 @@ const intro =
 	del driver, dejando “Capítulo” y “Título” cuando son dos niveles.</div>`;
 
 export async function buildBodyTK1420754(): Promise<string> {
-	const [h3, snippet] = await Promise.all([
-		h3Iconized("mdi:format-list-numbered", "Defaults en TEstructuraCursoSlaveController.ensureLimit"),
-		codeBlock(
-			`const defaultsByLimit: Record<number, string[]> = { 2: ["Capítulo", "Título"] };
-const defaults = defaultsByLimit[limit];
-for (let i = Obj.estructuras.length; i < limit; i++) {
-  const newItem = new TEstructuraCurso();
-  [newItem.nnivel, newItem.qnivel] = [defaults?.[i] ?? "---", (i + 1).toString()];
-  Obj.estructuras.push(newItem);
-}`,
-		),
-	]);
+	const h3 = await h3Iconized("mdi:format-list-numbered", "Defaults al completar niveles");
 	const items = await Promise.all([
 		note(
 			"mdi:map-marker-path",
-			`El mapa ${codeI("defaultsByLimit")} se indexa por la cantidad total de niveles.  
-			Para drivers de 2 niveles se aplica ${codeI('["Capítulo", "Título"]')};  
-			para otras cantidades se mantiene el placeholder ${codeI('"---"')} por nivel.`,
+			`Al completar los niveles faltantes de un curso reci\u00e9n creado, ahora se  
+			consulta un mapa indexado por la cantidad total de niveles del driver.  
+			Para drivers de 2 niveles se aplican los nombres ${codeI('"Cap\u00edtulo"')} y  
+			${codeI('"T\u00edtulo"')}; para otras cantidades se mantiene el placeholder  
+			${codeI('"---"')} por nivel hasta que se defina la nomenclatura del driver  
+			correspondiente.`,
 		),
 		note(
 			"mdi:plus-box-multiple-outline",
-			`Cuando el usuario seleccione drivers de más niveles, basta con extender el mapa  
-			(p. ej. ${codeI('3: ["Tomo", "Capítulo", "Título"]')}).`,
+			`Cuando se incorporen drivers con m\u00e1s niveles, basta con extender ese mapa  
+			con la nomenclatura propia (por ejemplo, t\u00edtulos como Tomo, Cap\u00edtulo y  
+			T\u00edtulo para tres niveles) sin necesidad de tocar el flujo de creaci\u00f3n.`,
 		),
 	]);
 	const fig = img("estructuraDefaults.jpg");
-	return intro + h3 + snippet + fig + `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`;
+	return intro + h3 + fig + `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`;
 }
 
 export const bodyTK1420754: Promise<string> = buildBodyTK1420754();
