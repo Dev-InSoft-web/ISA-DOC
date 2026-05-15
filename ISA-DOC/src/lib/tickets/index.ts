@@ -172,6 +172,7 @@ export const TICKETS: TicketRegistro[] = [
 				registro: "IATRIBUTO = 1 (URL diapositivas)",
 				intencion: "Se documenta bajo JCONFIG v2 el atributo de URL pública de las diapositivas asociadas al recurso para los drivers 1, 2 y 3. Se declara como InputText con placeholder de URL y límite de 500 caracteres, en reemplazo del JCONFIG plano sin tipo.",
 				sql: "UPDATE CAPAC_ATRIBUTOS_X_DRIVERS\nSET JCONFIG = '{\"type\":\"InputText\",\"descripcion\":\"URL pública de las diapositivas asociadas al recurso.\",\"inputProps\":{\"placeholder\":\"https://...\",\"maxlength\":500}}'\nWHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO = 1;",
+				jsonAntes: "{\n  \"type\": \"text\",\n  \"descripcion\": \"URL pública de las diapositivas asociadas al recurso.\",\n  \"inputProps\": {\n    \"placeholder\": \"https://...\",\n    \"maxlength\": 500\n  }\n}",
 				jsonDespues: "{\n  \"type\": \"InputText\",\n  \"descripcion\": \"URL pública de las diapositivas asociadas al recurso.\",\n  \"inputProps\": {\n    \"placeholder\": \"https://...\",\n    \"maxlength\": 500\n  }\n}",
 			},
 			{
@@ -179,6 +180,7 @@ export const TICKETS: TicketRegistro[] = [
 				registro: "IATRIBUTO = 2 (URL Imágen profesor)",
 				intencion: "Se renombra el atributo a 'URL Imágen profesor' y se declara su JCONFIG v2 como InputText para la URL pública de la imagen del profesor, en los drivers 1, 2 y 3.",
 				sql: "UPDATE CAPAC_ATRIBUTOS_X_DRIVERS\nSET NATRIBUTO = 'URL Imágen profesor',\n    JCONFIG = '{\"type\":\"InputText\",\"descripcion\":\"URL pública de la imagen del profesor.\",\"inputProps\":{\"placeholder\":\"https://...\",\"maxlength\":500}}'\nWHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO = 2;",
+				jsonAntes: "{\n  \"type\": \"text\",\n  \"descripcion\": \"URL pública de la imagen del profesor.\",\n  \"inputProps\": {\n    \"placeholder\": \"https://...\",\n    \"maxlength\": 500\n  }\n}",
 				jsonDespues: "{\n  \"type\": \"InputText\",\n  \"descripcion\": \"URL pública de la imagen del profesor.\",\n  \"inputProps\": {\n    \"placeholder\": \"https://...\",\n    \"maxlength\": 500\n  }\n}",
 			},
 			{
@@ -186,6 +188,7 @@ export const TICKETS: TicketRegistro[] = [
 				registro: "IATRIBUTO = 3 (Driver de video)",
 				intencion: "Se declara el atributo 'Driver de video' como SelectObject con la lista quemada de presentaciones disponibles (lista pequeña/grande, tarjeta completa, tarjeta solo título, lista compacta). Se documenta que la lista provendrá del controlador TTDriverRecurso cuando se aprueben controladores adicionales.",
 				sql: "UPDATE CAPAC_ATRIBUTOS_X_DRIVERS\nSET JCONFIG = '{\"type\":\"SelectObject\",\"options\":{\"1\":\"Lista con imagen pequeña\",\"2\":\"Tarjeta con información completa\",\"3\":\"Tarjeta solo con título\",\"4\":\"Lista con imagen grande\",\"5\":\"Lista pequeño\"},\"descripcion\":\"Componente Svelte que procesa los datos del video. Lista quemada (TTDriverRecurso); se actualizará cuando se aprueben otros controladores.\"}'\nWHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO = 3;",
+				jsonAntes: "{\n  \"type\": \"selectEnum\",\n  \"options\": {\n    \"1\": \"Lista con imagen pequeña\",\n    \"2\": \"Tarjeta con información completa\",\n    \"3\": \"Tarjeta solo con título\",\n    \"4\": \"Lista con imagen grande\",\n    \"5\": \"Lista pequeño\"\n  },\n  \"descripcion\": \"Componente Svelte que procesa los datos del video. Lista quemada (TTDriverRecurso); se actualizará cuando se aprueben otros controladores.\"\n}",
 				jsonDespues: "{\n  \"type\": \"SelectObject\",\n  \"options\": {\n    \"1\": \"Lista con imagen pequeña\",\n    \"2\": \"Tarjeta con información completa\",\n    \"3\": \"Tarjeta solo con título\",\n    \"4\": \"Lista con imagen grande\",\n    \"5\": \"Lista pequeño\"\n  },\n  \"descripcion\": \"Componente Svelte que procesa los datos del video. Lista quemada (TTDriverRecurso); se actualizará cuando se aprueben otros controladores.\"\n}",
 			},
 			{
@@ -193,6 +196,7 @@ export const TICKETS: TicketRegistro[] = [
 				registro: "IATRIBUTO = 4 (Dificultad)",
 				intencion: "Se declara el atributo 'Dificultad' como SelectObject con las opciones Básico/Medio/Avanzado, alineado con el filtrado de iplanpadre y la normalización de claves en mayúscula.",
 				sql: "UPDATE CAPAC_ATRIBUTOS_X_DRIVERS\nSET JCONFIG = '{\"type\":\"SelectObject\",\"options\":{\"B\":\"Básico\",\"M\":\"Medio\",\"A\":\"Avanzado\"},\"descripcion\":\"Nivel de dificultad del contenido.\"}'\nWHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO = 4;",
+				jsonAntes: "{\n  \"type\": \"selectEnum\",\n  \"options\": {\n    \"B\": \"Básico\",\n    \"M\": \"Medio\",\n    \"A\": \"Avanzado\"\n  },\n  \"descripcion\": \"Nivel de dificultad del contenido.\"\n}",
 				jsonDespues: "{\n  \"type\": \"SelectObject\",\n  \"options\": {\n    \"B\": \"Básico\",\n    \"M\": \"Medio\",\n    \"A\": \"Avanzado\"\n  },\n  \"descripcion\": \"Nivel de dificultad del contenido.\"\n}",
 			},
 			{
@@ -200,6 +204,7 @@ export const TICKETS: TicketRegistro[] = [
 				registro: "IATRIBUTO = 5 (iplanpadre)",
 				intencion: "Se declara el atributo 'iplanpadre' como BtnRef con controlador iplanpadre, de modo que el campo se rinda como un catálogo de hermanos del capítulo actual sin requerir cambios en el cliente para nuevos drivers.",
 				sql: "UPDATE CAPAC_ATRIBUTOS_X_DRIVERS\nSET JCONFIG = '{\"type\":\"BtnRef\",\"controllername\":\"iplanpadre\",\"descripcion\":\"Plan padre del contenido. Lista los hermanos del capítulo actual.\",\"inputProps\":{\"maxlength\":500}}'\nWHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO = 5;",
+				jsonAntes: "{\n  \"type\": \"text\",\n  \"readonly\": true,\n  \"descripcion\": \"Path del plan padre. Calculado automáticamente desde el árbol de contenidos.\"\n}",
 				jsonDespues: "{\n  \"type\": \"BtnRef\",\n  \"controllername\": \"iplanpadre\",\n  \"descripcion\": \"Plan padre del contenido. Lista los hermanos del capítulo actual.\",\n  \"inputProps\": {\n    \"maxlength\": 500\n  }\n}",
 			},
 			{
@@ -207,6 +212,7 @@ export const TICKETS: TicketRegistro[] = [
 				registro: "IATRIBUTO = 6 (Documento)",
 				intencion: "Se declara el atributo 'Documento' como InputText para la URL pública del documento adjunto al plan, en los drivers 1, 2 y 3.",
 				sql: "UPDATE CAPAC_ATRIBUTOS_X_DRIVERS\nSET JCONFIG = '{\"type\":\"InputText\",\"descripcion\":\"URL pública del documento adjunto al plan.\",\"inputProps\":{\"placeholder\":\"https://...\",\"maxlength\":500}}'\nWHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO = 6;\n\nSELECT IDRIVER, IATRIBUTO, NATRIBUTO, JCONFIG\n  FROM CAPAC_ATRIBUTOS_X_DRIVERS\n WHERE IDRIVER IN (1, 2, 3) AND IATRIBUTO BETWEEN 1 AND 6\n ORDER BY IDRIVER, IATRIBUTO;",
+				jsonAntes: "{\n  \"type\": \"text\",\n  \"descripcion\": \"URL pública del documento adjunto al plan.\",\n  \"inputProps\": {\n    \"placeholder\": \"https://...\",\n    \"maxlength\": 500\n  }\n}",
 				jsonDespues: "{\n  \"type\": \"InputText\",\n  \"descripcion\": \"URL pública del documento adjunto al plan.\",\n  \"inputProps\": {\n    \"placeholder\": \"https://...\",\n    \"maxlength\": 500\n  }\n}",
 			},
 		],

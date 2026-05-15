@@ -9,7 +9,7 @@
 // contenido, incluyendo imágenes). Todo el estilo va inline en cada nodo.
 
 import type { TicketCommit, TicketDbChange } from "./index";
-import { codeBlock } from "./snippets";
+import { codeBlock, compareTable } from "./snippets";
 
 export const TICKET_HTML_PREFIX = `<div style="font-family:Tahoma;color:#777;font-size:12pt;max-width:100%;">
 <img src="https://i.ibb.co/99cnjWGK/01.png" style="max-height:300px;max-width:100%;display:block;margin-bottom:15px;">
@@ -363,31 +363,36 @@ async function buildDbChangesHtml(cambios: TicketDbChange[], ticketId?: string):
 		const intencion = escapeHtml(c.intencion);
 		const jsonAntesSrc = (c.jsonAntes ?? "").trim();
 		const jsonDespuesSrc = (c.jsonDespues ?? "").trim();
-		const jsonHtmlParts: string[] = [];
-		if (jsonAntesSrc) {
+		let jsonHtml = "";
+		if (jsonAntesSrc && jsonDespuesSrc) {
+			const tabla = await compareTable({
+				kind: "code",
+				lang: "json",
+				beforeLabel: "JSON antes",
+				afterLabel: "JSON después",
+				before: jsonAntesSrc,
+				after: jsonDespuesSrc,
+			});
+			jsonHtml = `<div style="margin-top:0.5rem;">${tabla}</div>`;
+		} else if (jsonAntesSrc) {
 			const html = await codeBlock(jsonAntesSrc, "json");
-			jsonHtmlParts.push(
-				`<div style="margin-top:0.5rem;">`
+			jsonHtml = `<div style="margin-top:0.5rem;">`
 				+ `<div style="font-size:9pt;color:#888;margin-bottom:0.2rem;">JSON antes</div>`
 				+ html
-				+ `</div>`,
-			);
-		}
-		if (jsonDespuesSrc) {
+				+ `</div>`;
+		} else if (jsonDespuesSrc) {
 			const html = await codeBlock(jsonDespuesSrc, "json");
-			jsonHtmlParts.push(
-				`<div style="margin-top:0.5rem;">`
+			jsonHtml = `<div style="margin-top:0.5rem;">`
 				+ `<div style="font-size:9pt;color:#888;margin-bottom:0.2rem;">JSON después</div>`
 				+ html
-				+ `</div>`,
-			);
+				+ `</div>`;
 		}
 		return [
 			`<div style="margin-top:1rem;padding-top:0.6rem;border-top:1px dotted #e0e0e0;">`,
 			`<div style="font-weight:bold;color:#333;font-size:10pt;">${idx + 1}. <span style="font-family:Consolas,Menlo,monospace;color:#444;">${meta}</span></div>`,
 			`<div style="font-size:10pt;color:#555;margin:0.25rem 0 0.4rem;">${intencion}</div>`,
 			sqlHtml,
-			jsonHtmlParts.join(""),
+			jsonHtml,
 			`</div>`,
 		].join("");
 	};
