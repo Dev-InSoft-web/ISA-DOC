@@ -416,6 +416,62 @@ export const TICKETS: TicketRegistro[] = [
 			{ hash: "a2d1fbd", descripcion: "feat(capacitacion): agrega catálogos de permisos y temas en la función de capacitación", repo: "ISS-ClientesIS-ContaPymeU", ins: 8, del: 2, fecha: "2026-05-03T10:54:29-05:00" },
 			{ hash: "439df9d", descripcion: "fix(capacitacion): elimina registro de tema en la función de capacitación", repo: "ISS-ClientesIS-ContaPymeU", ins: 2, del: 3, fecha: "2026-05-05T11:45:03-05:00" },
 		],
+		cambiosBd: [
+			{
+				tabla: "TEMA",
+				registro: "DDL",
+				intencion: "Se crea la tabla maestra de temas reutilizables para asociar a cursos, recursos y contenidos del módulo de capacitación. Incluye PK numérica, código corto único, nombre y campos de auditoría.",
+				sql: "CREATE TABLE TEMA (\n    ITEMA      NUMBER(10) NOT NULL,\n    CODIGO     VARCHAR2(30) NOT NULL,\n    NOMBRE     VARCHAR2(120) NOT NULL,\n    DESCRIPCION VARCHAR2(500),\n    ESTADO     CHAR(1) DEFAULT 'A' NOT NULL,\n    FCREACION  TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,\n    UCREACION  VARCHAR2(30),\n    FULTEDI    TIMESTAMP,\n    UULTEDI    VARCHAR2(30),\n    CONSTRAINT PK_TEMA PRIMARY KEY (ITEMA),\n    CONSTRAINT UK_TEMA_CODIGO UNIQUE (CODIGO),\n    CONSTRAINT CK_TEMA_ESTADO CHECK (ESTADO IN ('A','I'))\n);",
+			},
+			{
+				tabla: "TEMA",
+				registro: "Secuencia",
+				intencion: "Se crea la secuencia que entrega los identificadores autoincrementales de la tabla TEMA, alineada con la convención de las demás tablas maestras del producto.",
+				sql: "CREATE SEQUENCE SEQ_TEMA START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;",
+			},
+			{
+				tabla: "CURSO",
+				registro: "ALTER",
+				intencion: "Se agrega la columna ITEMA a la tabla CURSO para asociar cada curso a un tema del catálogo, con FK opcional para no obligar a temas en cursos preexistentes.",
+				sql: "ALTER TABLE CURSO ADD (ITEMA NUMBER(10) NULL);\nALTER TABLE CURSO ADD CONSTRAINT FK_CURSO_TEMA FOREIGN KEY (ITEMA) REFERENCES TEMA (ITEMA);\nCREATE INDEX IX_CURSO_ITEMA ON CURSO (ITEMA);",
+			},
+			{
+				tabla: "JCONFIG",
+				registro: "ICONFIG = 'CAPACITACION/CATALOGOS/TEMA'",
+				intencion: "Se registra la definición del catálogo de temas dentro del módulo de capacitación: clase de controlador, columnas visibles en grilla, columnas para el BtnRef y acciones permitidas (crear, modificar, eliminar, refrescar, visualizar).",
+				sql: "INSERT INTO JCONFIG (ICONFIG, JDATA, FULTEDI, UULTEDI) VALUES (\n    'CAPACITACION/CATALOGOS/TEMA',\n    :json,\n    SYSTIMESTAMP,\n    'INSTALADOR'\n);",
+				jsonAntes: "",
+				jsonDespues: "{\n  \"controller\": \"TTemaController\",\n  \"server\": \"TTemaServer\",\n  \"titulo\": \"Temas\",\n  \"icon\": \"mdi:tag-text-outline\",\n  \"columns\": [\n    { \"key\": \"codigo\",      \"label\": \"Código\",      \"width\": 100 },\n    { \"key\": \"nombre\",      \"label\": \"Nombre\",      \"width\": 240 },\n    { \"key\": \"descripcion\", \"label\": \"Descripción\", \"width\": 360 },\n    { \"key\": \"estado\",      \"label\": \"Estado\",      \"width\": 80 }\n  ],\n  \"columnsBtnRef\": [\n    { \"key\": \"nombre\", \"label\": \"Tema\", \"width\": 240 }\n  ],\n  \"acciones\": [\"crear\",\"modificar\",\"eliminar\",\"refrescar\",\"visualizar\"]\n}",
+			},
+			{
+				tabla: "JCONFIG",
+				registro: "ICONFIG = 'CAPACITACION/CURSO' (JDATA.attrs.itema)",
+				intencion: "Se agrega el atributo itema al formulario de curso, declarándolo como BtnRef contra el catálogo de temas con autocompletado por nombre y caption simple.",
+				sql: "UPDATE JCONFIG\n   SET JDATA = :json,\n       FULTEDI = SYSTIMESTAMP,\n       UULTEDI = 'INSTALADOR'\n WHERE ICONFIG = 'CAPACITACION/CURSO';",
+				jsonAntes: "{\n  \"attrs\": {\n    \"codigo\":      { \"type\": \"text\",   \"label\": \"Código\" },\n    \"nombre\":      { \"type\": \"text\",   \"label\": \"Nombre\" },\n    \"descripcion\": { \"type\": \"richtext\",\"label\": \"Descripción\" },\n    \"idriver\":     { \"type\": \"btnref\", \"label\": \"Driver\", \"catalogo\": \"CAPACITACION/CATALOGOS/DRIVER\" }\n  }\n}",
+				jsonDespues: "{\n  \"attrs\": {\n    \"codigo\":      { \"type\": \"text\",   \"label\": \"Código\" },\n    \"nombre\":      { \"type\": \"text\",   \"label\": \"Nombre\" },\n    \"descripcion\": { \"type\": \"richtext\",\"label\": \"Descripción\" },\n    \"idriver\":     { \"type\": \"btnref\", \"label\": \"Driver\", \"catalogo\": \"CAPACITACION/CATALOGOS/DRIVER\" },\n    \"itema\":       { \"type\": \"btnref\", \"label\": \"Tema\",   \"catalogo\": \"CAPACITACION/CATALOGOS/TEMA\", \"captionField\": \"nombre\" }\n  }\n}",
+			},
+			{
+				tabla: "JCONFIG",
+				registro: "ICONFIG = 'CAPACITACION/MENU' (nodo Catálogos)",
+				intencion: "Se inserta la entrada de menú del catálogo de temas dentro del submenú Catálogos del módulo de capacitación, ubicada después de Drivers y antes de Permisos.",
+				sql: "UPDATE JCONFIG\n   SET JDATA = :json,\n       FULTEDI = SYSTIMESTAMP,\n       UULTEDI = 'INSTALADOR'\n WHERE ICONFIG = 'CAPACITACION/MENU';",
+				jsonAntes: "{\n  \"items\": [\n    { \"id\": \"catalogos\", \"label\": \"Catálogos\", \"children\": [\n      { \"id\": \"driver\",   \"label\": \"Drivers\",  \"target\": \"CAPACITACION/CATALOGOS/DRIVER\" },\n      { \"id\": \"permiso\",  \"label\": \"Permisos\", \"target\": \"CAPACITACION/CATALOGOS/PERMISO\" }\n    ]}\n  ]\n}",
+				jsonDespues: "{\n  \"items\": [\n    { \"id\": \"catalogos\", \"label\": \"Catálogos\", \"children\": [\n      { \"id\": \"driver\",   \"label\": \"Drivers\",  \"target\": \"CAPACITACION/CATALOGOS/DRIVER\" },\n      { \"id\": \"tema\",     \"label\": \"Temas\",    \"target\": \"CAPACITACION/CATALOGOS/TEMA\" },\n      { \"id\": \"permiso\",  \"label\": \"Permisos\", \"target\": \"CAPACITACION/CATALOGOS/PERMISO\" }\n    ]}\n  ]\n}",
+			},
+			{
+				tabla: "PERMISO_OPCION",
+				registro: "OPCION TEMA_*",
+				intencion: "Se registran las opciones de seguridad asociadas al catálogo de temas para que puedan asignarse a los perfiles existentes desde el módulo de seguridad.",
+				sql: "INSERT INTO PERMISO_OPCION (CODIGO, NOMBRE, MODULO) VALUES ('TEMA_VISUALIZAR','Visualizar temas','CAPACITACION');\nINSERT INTO PERMISO_OPCION (CODIGO, NOMBRE, MODULO) VALUES ('TEMA_CREAR',     'Crear temas',     'CAPACITACION');\nINSERT INTO PERMISO_OPCION (CODIGO, NOMBRE, MODULO) VALUES ('TEMA_MODIFICAR', 'Modificar temas', 'CAPACITACION');\nINSERT INTO PERMISO_OPCION (CODIGO, NOMBRE, MODULO) VALUES ('TEMA_ELIMINAR',  'Eliminar temas',  'CAPACITACION');",
+			},
+			{
+				tabla: "TEMA",
+				registro: "Semilla",
+				intencion: "Se cargan los temas iniciales sugeridos por el solicitante para que el catálogo no quede vacío en la primera apertura tras el despliegue.",
+				sql: "INSERT INTO TEMA (ITEMA, CODIGO, NOMBRE, DESCRIPCION) VALUES (SEQ_TEMA.NEXTVAL, 'GENERAL',     'General',                'Tema general por defecto');\nINSERT INTO TEMA (ITEMA, CODIGO, NOMBRE, DESCRIPCION) VALUES (SEQ_TEMA.NEXTVAL, 'CONTABILIDAD','Contabilidad',           'Cursos del área contable');\nINSERT INTO TEMA (ITEMA, CODIGO, NOMBRE, DESCRIPCION) VALUES (SEQ_TEMA.NEXTVAL, 'NOMINA',      'Nómina',                 'Cursos del área de nómina');\nINSERT INTO TEMA (ITEMA, CODIGO, NOMBRE, DESCRIPCION) VALUES (SEQ_TEMA.NEXTVAL, 'INVENTARIO',  'Inventario',             'Cursos del área de inventario');\nINSERT INTO TEMA (ITEMA, CODIGO, NOMBRE, DESCRIPCION) VALUES (SEQ_TEMA.NEXTVAL, 'TESORERIA',   'Tesorería',              'Cursos del área de tesorería');\nCOMMIT;",
+			},
+		],
 		body: bodyTK1420751,
 		normativa: { ...NORMATIVA_DEFAULT },
 	},
@@ -484,5 +540,5 @@ export const TICKETS: TicketRegistro[] = [
 ];
 
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
-	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.fechaSolicitud);
+	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.fechaSolicitud, t.id);
 }

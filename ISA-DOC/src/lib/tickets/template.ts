@@ -164,7 +164,7 @@ function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
 	return enteros;
 }
 
-function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fechaSolicitud?: string): string {
+function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fechaSolicitud?: string, ticketId?: string): string {
 	if (!commits.length) return "";
 	const maquillados = maquillarFechas(commits, fechaSolicitud);
 	const ordenados = [...maquillados].sort((a, b) => {
@@ -253,7 +253,7 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	return [
 		``,
 		`<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">`,
-		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Commits relacionados (${commits.length}):</div>`,
+		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Commits relacionados${ticketId ? ` a ${escapeHtml(ticketId)}` : ""} (${commits.length}):</div>`,
 		`<table style="border-collapse:collapse;width:100%;font-family:Tahoma;">`,
 		`<thead>${filaCabecera}</thead>`,
 		`<tbody>`,
@@ -267,18 +267,18 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	].join("\n");
 }
 
-export function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string): string {
+export function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string, ticketId?: string): string {
 	const cota = cotaMaximaMinutos(commits);
 	const estimacionAjustada = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : estimacionMin;
 	return TICKET_HTML_PREFIX
 		+ (body ?? "")
 		+ "\n"
-		+ buildCommitsHtml(commits, estimacionAjustada, fechaSolicitud)
-		+ buildDbChangesHtml(cambiosBd)
+		+ buildCommitsHtml(commits, estimacionAjustada, fechaSolicitud, ticketId)
+		+ buildDbChangesHtml(cambiosBd, ticketId)
 		+ TICKET_HTML_SUFFIX;
 }
 
-function buildDbChangesHtml(cambios: TicketDbChange[]): string {
+function buildDbChangesHtml(cambios: TicketDbChange[], ticketId?: string): string {
 	if (!cambios.length) return "";
 	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;text-align:left;";
 	const tdBase = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;";
@@ -306,7 +306,7 @@ function buildDbChangesHtml(cambios: TicketDbChange[]): string {
 	].join("");
 	const tablaSql = [
 		`<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">`,
-		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Cambios en base de datos (${cambios.length}):</div>`,
+		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Cambios en base de datos${ticketId ? ` de ${escapeHtml(ticketId)}` : ""} (${cambios.length}):</div>`,
 		`<table style="border-collapse:collapse;width:100%;font-family:Tahoma;">`,
 		`<thead>${cabecera}</thead>`,
 		`<tbody>${filas.join("\n")}</tbody>`,
@@ -339,7 +339,7 @@ function buildDbChangesHtml(cambios: TicketDbChange[]): string {
 	].join("");
 	const tablaJson = [
 		`<div style="margin-top:1rem;">`,
-		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Detalle de JSON modificados (${conJson.length}):</div>`,
+		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Detalle de JSON modificados${ticketId ? ` de ${escapeHtml(ticketId)}` : ""} (${conJson.length}):</div>`,
 		`<table style="border-collapse:collapse;width:100%;font-family:Tahoma;table-layout:fixed;">`,
 		`<thead>${cabeceraJson}</thead>`,
 		`<tbody>${filasJson.join("\n")}</tbody>`,
