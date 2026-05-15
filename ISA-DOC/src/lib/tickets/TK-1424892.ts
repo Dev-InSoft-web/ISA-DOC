@@ -103,52 +103,50 @@ export async function buildBodyTK1424892(): Promise<string> {
     "ipermiso": {
       "type": "btnref",
       "label": "Permiso",
-      "controllerName": "TPermisoCursoController",
-      "captionField": "nombre",
-      "columnsBtnRef": [
-        { "key": "codigo", "label": "Código", "width": 100 },
-        { "key": "nombre", "label": "Nombre", "width": 240 }
-      ]
+      "controllername": "TPermisoCursoController"
     },
     "itema": {
       "type": "btnref",
       "label": "Tema",
-      "controllerName": "TTemaController",
-      "captionField": "nombre"
+      "controllername": "TTemaController"
     },
-    "descripcion": { "type": "richtext", "label": "Descripción" }
+    "descripcion": { "type": "richeditor", "label": "Descripción" }
   }
 }`,
 	});
 
 	const jconfigMapper = await codeBlock(
-		`export interface JConfigAttrV2 {
-    type: "text" | "number" | "date" | "richtext" | "btnref" | "select";
+		`export type InputKind = "text" | "number" | "richeditor" | "selectEnum" | "btnref";
+
+export interface JConfigAttrV2 {
+    type?: InputKind;
     label: string;
-    controllerName?: string;
-    captionField?: string;
-    columnsBtnRef?: ColumnDef[];
+    controllername?: string;
+    options?: string[] | Record<string, string>;
     readonly?: boolean;
     required?: boolean;
+    inputProps?: { maxlength?: number };
 }
 
-export function jconfig2FieldDef(name: string, attr: JConfigAttrV2): FieldDef {
-    const base: FieldDef = {
-        name,
-        label: attr.label,
-        readonly: attr.readonly ?? false,
-        required: attr.required ?? false,
+export function jconfig2FieldDef(jconfig: JConfigAttrV2, label: string): FieldDef {
+    const j = jconfig ?? ({} as JConfigAttrV2);
+    const t = String(j.type ?? "").toLowerCase();
+    const type: InputKind =
+        t === "number" ? "number"
+        : t === "richeditor" ? "richeditor"
+        : t === "selectenum" ? "selectEnum"
+        : t === "btnref" ? "btnref"
+        : "text";
+    const maxlength = Number(j.inputProps?.maxlength ?? 0);
+    return {
+        type,
+        label,
+        options: j.options,
+        controllername: j.controllername,
+        readonly: !!j.readonly,
+        required: !!j.required,
+        maxlength: Number.isFinite(maxlength) && maxlength > 0 ? maxlength : 500,
     };
-    if (attr.type === "btnref") {
-        return {
-            ...base,
-            type: "btnref",
-            controllerName: attr.controllerName,
-            captionField: attr.captionField ?? "nombre",
-            columnsBtnRef: attr.columnsBtnRef ?? [],
-        };
-    }
-    return { ...base, type: attr.type };
 }`,
 		"typescript",
 	);

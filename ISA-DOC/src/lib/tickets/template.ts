@@ -43,13 +43,85 @@ const MES_NUM: Record<string, number> = {
 
 function parseFechaSolicitud(s: string): Date | null {
 	if (!s) return null;
-	const m = s.match(/^(\d{1,2})\/([a-zñ]{3})\.?\/(\d{4})/i);
+	const m = s.match(/^(\d{1,2})\/([a-zñ]{3})\.?\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(am|pm)?)?/i);
 	if (!m) return null;
 	const dia = parseInt(m[1], 10);
 	const mes = MES_NUM[m[2].toLowerCase()];
 	if (mes === undefined) return null;
 	const anio = parseInt(m[3], 10);
-	return new Date(anio, mes, dia, 0, 0, 0);
+	let hh = m[4] ? parseInt(m[4], 10) : 0;
+	const mm = m[5] ? parseInt(m[5], 10) : 0;
+	const ss = m[6] ? parseInt(m[6], 10) : 0;
+	const ampm = (m[7] ?? "").toLowerCase();
+	if (ampm === "pm" && hh < 12) hh += 12;
+	if (ampm === "am" && hh === 12) hh = 0;
+	return new Date(anio, mes, dia, hh, mm, ss);
+}
+
+const WORK_SEGMENTS: ReadonlyArray<readonly [number, number]> = [
+	[8 * 60, 12 * 60 + 30],
+	[14 * 60, 17 * 60],
+];
+const HORAS_KEEP_PREVIAS = 4;
+
+function isWorkDay(d: Date, festivos: Set<string>): boolean {
+	const dow = d.getDay();
+	if (dow === 0 || dow === 6) return false;
+	const key = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+	return !festivos.has(key);
+}
+
+function snapDownToBusiness(minOfDay: number): number {
+	for (let i = WORK_SEGMENTS.length - 1; i >= 0; i--) {
+		const [a, b] = WORK_SEGMENTS[i];
+		if (minOfDay >= b) return b;
+		if (minOfDay > a) return minOfDay;
+	}
+	return -1;
+}
+
+function subtractBusinessMinutes(start: Date, mins: number, festivos: Set<string>): Date {
+	const d = new Date(start);
+	let remaining = mins;
+	const toPrevWorkdayEnd = (): void => {
+		d.setDate(d.getDate() - 1);
+		while (!isWorkDay(d, festivos)) d.setDate(d.getDate() - 1);
+		d.setHours(17, 0, 0, 0);
+	};
+	if (!isWorkDay(d, festivos)) {
+		toPrevWorkdayEnd();
+	} else {
+		const minOfDay = d.getHours() * 60 + d.getMinutes();
+		const snapped = snapDownToBusiness(minOfDay);
+		if (snapped < 0) toPrevWorkdayEnd();
+		else d.setHours(Math.floor(snapped / 60), snapped % 60, 0, 0);
+	}
+	let guard = 0;
+	while (remaining > 0 && guard++ < 50) {
+		const minOfDay = d.getHours() * 60 + d.getMinutes();
+		let segIdx = -1;
+		for (let i = 0; i < WORK_SEGMENTS.length; i++) {
+			const [a, b] = WORK_SEGMENTS[i];
+			if (minOfDay > a && minOfDay <= b) { segIdx = i; break; }
+		}
+		if (segIdx < 0) break;
+		const segStart = WORK_SEGMENTS[segIdx][0];
+		const available = minOfDay - segStart;
+		if (remaining <= available) {
+			const newMin = minOfDay - remaining;
+			d.setHours(Math.floor(newMin / 60), newMin % 60, 0, 0);
+			remaining = 0;
+		} else {
+			remaining -= available;
+			if (segIdx > 0) {
+				const prevEnd = WORK_SEGMENTS[segIdx - 1][1];
+				d.setHours(Math.floor(prevEnd / 60), prevEnd % 60, 0, 0);
+			} else {
+				toPrevWorkdayEnd();
+			}
+		}
+	}
+	return d;
 }
 
 function pad2(n: number): string {
@@ -63,17 +135,17 @@ function toIsoLocal(d: Date): string {
 	return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}${sign}${pad2(Math.floor(absTz / 60))}:${pad2(absTz % 60)}`;
 }
 
-function maquillarFechas(commits: TicketCommit[], fechaSolicitud?: string): TicketCommit[] {
+function maquillarFechas(commits: TicketCommit[], fechaSolicitud?: string, festivos?: string[]): TicketCommit[] {
 	const fs = parseFechaSolicitud(fechaSolicitud ?? "");
 	if (!fs) return commits;
-	const fsDay = new Date(fs.getFullYear(), fs.getMonth(), fs.getDate()).getTime();
+	const festSet = new Set(festivos ?? []);
+	const earliest = subtractBusinessMinutes(fs, HORAS_KEEP_PREVIAS * 60, festSet).getTime();
 	const adjustedIdx: number[] = [];
 	commits.forEach((c, idx) => {
 		if (!c.fecha) return;
 		const d = new Date(c.fecha);
 		if (isNaN(d.getTime())) return;
-		const dDay = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-		if (dDay < fsDay) adjustedIdx.push(idx);
+		if (d.getTime() < earliest) adjustedIdx.push(idx);
 	});
 	if (!adjustedIdx.length) return commits;
 	const sortedAdj = [...adjustedIdx].sort((a, b) => {
@@ -164,9 +236,9 @@ function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
 	return enteros;
 }
 
-function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fechaSolicitud?: string, ticketId?: string): string {
+function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fechaSolicitud?: string, ticketId?: string, festivos?: string[]): string {
 	if (!commits.length) return "";
-	const maquillados = maquillarFechas(commits, fechaSolicitud);
+	const maquillados = maquillarFechas(commits, fechaSolicitud, festivos);
 	const ordenados = [...maquillados].sort((a, b) => {
 		const fa = a.fecha ?? "";
 		const fb = b.fecha ?? "";
@@ -267,13 +339,13 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	].join("\n");
 }
 
-export function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string, ticketId?: string): string {
+export function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string, ticketId?: string, festivos?: string[]): string {
 	const cota = cotaMaximaMinutos(commits);
 	const estimacionAjustada = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : estimacionMin;
 	return TICKET_HTML_PREFIX
 		+ (body ?? "")
 		+ "\n"
-		+ buildCommitsHtml(commits, estimacionAjustada, fechaSolicitud, ticketId)
+		+ buildCommitsHtml(commits, estimacionAjustada, fechaSolicitud, ticketId, festivos)
 		+ buildDbChangesHtml(cambiosBd, ticketId)
 		+ TICKET_HTML_SUFFIX;
 }

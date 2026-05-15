@@ -54,6 +54,7 @@ export interface TicketRegistro {
 	cambiosBd?: TicketDbChange[];
 	body: Promise<string>;
 	normativa: TicketNormativa;
+	festivos?: string[];
 }
 
 const NORMATIVA_DEFAULT: TicketNormativa = {
@@ -164,6 +165,16 @@ export const TICKETS: TicketRegistro[] = [
 			{ hash: "3d1db79", descripcion: "fix(capacitacion): se anota el tipo del parametro record en el btnref de prerequisitos", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-15T08:29:40-05:00" },
 			{ hash: "9a7e706", descripcion: "fix(clientesis-temas): se muestra solo el nombre en el caption del btnref de tema", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-15T09:07:57-05:00" },
 			{ hash: "32a7b4c", descripcion: "refactor(capacitacion): se sobrescribe columnsbtnref del tema mediante subclase local en cursos", repo: "ISW-ClientesIS", ins: 10, del: 8, fecha: "2026-05-15T09:11:18-05:00" },
+		],
+		cambiosBd: [
+			{
+				tabla: "ATRIBUTO",
+				registro: "Columna JCONFIG (v2)",
+				intencion: "Se documenta la tabla maestra de atributos del módulo (IATRIBUTO/NATRIBUTO/JCONFIG) bajo el nuevo esquema declarativo v2. La columna JCONFIG pasa a almacenar el tipo discriminado del input y el nombre del controlador asociado cuando aplica, evitando que cada atributo requiera mantenimiento en Svelte para incorporar nuevos BtnRef.",
+				sql: "CREATE TABLE ATRIBUTO (\n    IATRIBUTO NUMBER(10) NOT NULL,\n    NATRIBUTO VARCHAR2(120) NOT NULL,\n    JCONFIG   CLOB,\n    CONSTRAINT PK_ATRIBUTO PRIMARY KEY (IATRIBUTO),\n    CONSTRAINT UK_ATRIBUTO_NOMBRE UNIQUE (NATRIBUTO)\n);",
+				jsonAntes: "{\n  \"label\": \"Permiso\",\n  \"catalogo\": \"CAPACITACION/CATALOGOS/PERMISO\"\n}",
+				jsonDespues: "{\n  \"type\": \"btnref\",\n  \"label\": \"Permiso\",\n  \"controllername\": \"TPermisoCursoController\"\n}",
+			},
 		],
 		body: bodyTK1424892,
 		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
@@ -548,5 +559,5 @@ export const TICKETS: TicketRegistro[] = [
 ];
 
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
-	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.fechaSolicitud, t.id);
+	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.fechaSolicitud, t.id, t.festivos);
 }
