@@ -166,7 +166,6 @@
 				<Accordion
 					title="Drivers · JCONFIG v2 (InputText, InputNumber, Switch, RichEditor, SelectObject, BtnRef, CatalogoGen)"
 					titleIcon="mdi:code-json"
-					open={true}
 					inner
 				>
 					<RevisadoCheck slot="title-extra" keys={["2026-05-14.driver.atributos.jconfig.v2"]} />
