@@ -3,9 +3,9 @@ import { code as codeI, codeBlock, img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
-	`<div>Al crear un curso, la pestaña <b>Estructura</b> generaba niveles con la etiqueta ` +
-	`“Sin nombre”. Se introdujo un mapa de nombres por defecto según la cantidad de niveles ` +
-	`del driver, dejando “Capítulo” y “Título” cuando son dos niveles.</div>`;
+	`<div>Al crear un curso, la pestaña <b>Estructura</b> generaba niveles con la etiqueta  
+	“Sin nombre”. Se introdujo un mapa de nombres por defecto según la cantidad de niveles  
+	del driver, dejando “Capítulo” y “Título” cuando son dos niveles.</div>`;
 
 export async function buildBodyTK1420754(): Promise<string> {
 	const [h3, snippet] = await Promise.all([
@@ -23,14 +23,14 @@ for (let i = Obj.estructuras.length; i < limit; i++) {
 	const items = await Promise.all([
 		note(
 			"mdi:map-marker-path",
-			`El mapa ${codeI("defaultsByLimit")} se indexa por la cantidad total de niveles. ` +
-			`Para drivers de 2 niveles se aplica ${codeI('["Capítulo", "Título"]')}; ` +
-			`para otras cantidades se mantiene el placeholder ${codeI('"---"')} por nivel.`,
+			`El mapa ${codeI("defaultsByLimit")} se indexa por la cantidad total de niveles.  
+			Para drivers de 2 niveles se aplica ${codeI('["Capítulo", "Título"]')};  
+			para otras cantidades se mantiene el placeholder ${codeI('"---"')} por nivel.`,
 		),
 		note(
 			"mdi:plus-box-multiple-outline",
-			`Cuando el usuario seleccione drivers de más niveles, basta con extender el mapa ` +
-			`(p. ej. ${codeI('3: ["Tomo", "Capítulo", "Título"]')}).`,
+			`Cuando el usuario seleccione drivers de más niveles, basta con extender el mapa  
+			(p. ej. ${codeI('3: ["Tomo", "Capítulo", "Título"]')}).`,
 		),
 	]);
 	const fig = img("estructuraDefaults.jpg");

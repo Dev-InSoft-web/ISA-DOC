@@ -39,42 +39,42 @@ async function entityCell(entidad: string): Promise<string> {
 	const c = ENTITY_COLOR[entidad] ?? "#666";
 	const ic = i ? await iconSvg(i, { size: 16, color: c }) : "";
 	return (
-		`<span style="display:inline-flex;align-items:center;gap:1rem;color:${c};font-weight:600;">` +
-		`${ic}<span>${entidad}</span>` +
-		`</span>`
+		`<span style="display:inline-flex;align-items:center;gap:1rem;color:${c};font-weight:600;"> 
+		${ic}<span>${entidad}</span> 
+		</span>`
 	);
 }
 
 async function row(r: Row): Promise<string> {
 	const entCell = await entityCell(r.entidad);
 	return (
-		`<tr>` +
-		`<td>${entCell}</td>` +
-		`<td>${ENTITY_TABLE[r.entidad] ?? ""}</td>` +
-		`<td>${methodBadge(r.method)}</td>` +
-		`<td>${r.endpoint}</td>` +
-		`<td>${r.operacion}</td>` +
-		`</tr>`
+		`<tr> 
+		<td>${entCell}</td> 
+		<td>${ENTITY_TABLE[r.entidad] ?? ""}</td> 
+		<td>${methodBadge(r.method)}</td> 
+		<td>${r.endpoint}</td> 
+		<td>${r.operacion}</td> 
+		</tr>`
 	);
 }
 
 const HEAD =
-	`<thead><tr>` +
-	`<th>Entidad</th>` +
-	`<th>Tabla BD</th>` +
-	`<th>Método</th>` +
-	`<th>Endpoint</th>` +
-	`<th>Operación</th>` +
-	`</tr></thead>`;
+	`<thead><tr> 
+	<th>Entidad</th> 
+	<th>Tabla BD</th> 
+	<th>Método</th> 
+	<th>Endpoint</th> 
+	<th>Operación</th> 
+	</tr></thead>`;
 
 const COLGROUP =
-	`<colgroup>` +
-	`<col style="width:18%">` +
-	`<col style="width:18%">` +
-	`<col style="width:10%">` +
-	`<col style="width:28%">` +
-	`<col style="width:26%">` +
-	`</colgroup>`;
+	`<colgroup> 
+	<col style="width:18%"> 
+	<col style="width:18%"> 
+	<col style="width:10%"> 
+	<col style="width:28%"> 
+	<col style="width:26%"> 
+	</colgroup>`;
 
 const READONLY: Row[] = [
 	{ entidad: "Permisos", method: "GET", endpoint: "/api/permisos/:filtro", operacion: "100 Listar Permisos" },
@@ -108,10 +108,10 @@ async function buildTabla(rows: Row[]): Promise<string> {
 }
 
 const intro =
-	`<div>Actualización de la colección de Postman para el módulo de Capacitación. ` +
-	`Se agregaron las carpetas de <strong>Permisos</strong> y <strong>Temas</strong> ` +
-	`como catálogos de solo lectura, orientados a alimentar componentes ${codeI("BtnRef")} ` +
-	`desde el frontend. La descripción general fue actualizada.</div>`;
+	`<div>Actualización de la colección de Postman para el módulo de Capacitación.  
+	Se agregaron las carpetas de <strong>Permisos</strong> y <strong>Temas</strong>  
+	como catálogos de solo lectura, orientados a alimentar componentes ${codeI("BtnRef")}  
+	desde el frontend. La descripción general fue actualizada.</div>`;
 
 // Para alinear icono + texto sin tablas (email-safe). Usamos inline-flex
 // + gap, y el color del icono se sincroniza con el texto vía `currentColor`.
@@ -119,9 +119,9 @@ const NOTE_COLOR = "#777";
 async function note(iconName: string, html: string, color: string = NOTE_COLOR): Promise<string> {
 	const ic = await iconSvg(iconName, { size: 16, color });
 	return (
-		`<li style="border:1px solid #80808030;border-radius:4px;padding:0.5rem;margin-bottom:0.5rem;list-style:none;color:${color};">` +
-		`${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${html}</span>` +
-		`</li>`
+		`<li style="border:1px solid #80808030;border-radius:4px;padding:0.5rem;margin-bottom:0.5rem;list-style:none;color:${color};"> 
+		${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${html}</span> 
+		</li>`
 	);
 }
 
@@ -134,25 +134,25 @@ async function buildNotas(): Promise<string> {
 		),
 		note(
 			"mdi:filter-variant",
-			`El parámetro de URL ${codeI(":filtro")} equivale a ${codeI("btoa(JSON.stringify(filtro))")}. ` +
-			`El valor por defecto (${codeI("{}")}) es ${codeI("e30=")}.`,
+			`El parámetro de URL ${codeI(":filtro")} equivale a ${codeI("btoa(JSON.stringify(filtro))")}.  
+			El valor por defecto (${codeI("{}")}) es ${codeI("e30=")}.`,
 		),
 		note(
 			"mdi:eye-off-outline",
-			`No se creó ${codeI("sysrecurso")} para Permisos ni Temas: están registrados como ` +
-			`${codeI("RelNoSysrecurso")} y tienen omitidas las mutaciones en ${codeI("FN-Capacitacion.ts")}. ` +
-			`Por esa razón siempre pueden consultarse vía API y no tienen seguridad implementada.`,
+			`No se creó ${codeI("sysrecurso")} para Permisos ni Temas: están registrados como  
+			${codeI("RelNoSysrecurso")} y tienen omitidas las mutaciones en ${codeI("FN-Capacitacion.ts")}.  
+			Por esa razón siempre pueden consultarse vía API y no tienen seguridad implementada.`,
 		),
 		note(
 			"mdi:clock-outline",
-			`La tarea ya estaba terminada antes de la creación de este ticket; la documentación ` +
-			`se demoró por la atención simultánea de otras tareas.`,
+			`La tarea ya estaba terminada antes de la creación de este ticket; la documentación  
+			se demoró por la atención simultánea de otras tareas.`,
 		),
 	]);
 	return (
-		`<div style="margin-top: 15px;color:${NOTE_COLOR};">` +
-		`${headerIcon}&nbsp;&nbsp;<strong style="vertical-align:middle;">Notas de implementación:</strong></div>` +
-		`<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`
+		`<div style="margin-top: 15px;color:${NOTE_COLOR};"> 
+		${headerIcon}&nbsp;&nbsp;<strong style="vertical-align:middle;">Notas de implementación:</strong></div> 
+		<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">${items.join("")}</ul>`
 	);
 }
 
@@ -162,9 +162,9 @@ async function h3Iconized(iconName: string, label: string): Promise<string> {
 	const c = "#1e90ff";
 	const ic = await iconSvg(iconName, { size: 18, color: c });
 	return (
-		`<h3 style="color:${c};margin-top:1.25rem;">` +
-		`${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${label}</span>` +
-		`</h3>`
+		`<h3 style="color:${c};margin-top:1.25rem;"> 
+		${ic}&nbsp;&nbsp;<span style="vertical-align:middle;">${label}</span> 
+		</h3>`
 	);
 }
 
