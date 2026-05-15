@@ -42,8 +42,17 @@ function buildCommitsHtml(commits: TicketCommit[]): string {
 			const url = `https://github.com/Dev-InSoft/${repo}/commit/${c.hash}`;
 			const hash = escapeHtml(c.hash);
 			const desc = escapeHtml(c.descripcion);
+			const ins = c.ins ?? 0;
+			const del = c.del ?? 0;
+			const stats = (c.ins != null || c.del != null)
+				? `<span style="display:inline-flex;gap:0.2rem;font-family:Consolas,Menlo,monospace;font-size:9pt;flex:0 0 auto;">`
+					+ `<span style="background:#e6ffed;color:#22863a;padding:0 0.3rem;border-radius:0.2rem;">+${ins}</span>`
+					+ `<span style="background:#ffeef0;color:#b31d28;padding:0 0.3rem;border-radius:0.2rem;">-${del}</span>`
+					+ `</span>`
+				: "";
 			return `<div style="display:flex;gap:0.4rem;align-items:baseline;line-height:1.35;">
 <a href="${url}" target="_blank" rel="noopener" style="font-family:Consolas,Menlo,monospace;font-size:10.5pt;background:#f0f0f0;color:#0366d6;padding:0 0.3rem;border-radius:0.2rem;text-decoration:none;flex:0 0 auto;">${hash}</a>
+${stats}
 <span style="font-size:10pt;color:#555;">${desc}</span>
 <span style="font-size:9pt;color:#999;">[${escapeHtml(repo)}]</span>
 </div>`;
