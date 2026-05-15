@@ -135,11 +135,11 @@ presentación cronológica.
 Distinguir explícitamente los dos tipos:
 
 - **Solución implementada** → cuerpo con `Causa` + `Solución aplicada`
-   + `Verificación` (o `Requerimientos` + `Solución aplicada` cuando es
-   un cambio funcional). Resumen de tiempos visible.
+  `Verificación` (o `Requerimientos` + `Solución aplicada` cuando es
+  un cambio funcional). Resumen de tiempos visible.
 - **Diálogo de alcance** → cuerpo con `Contexto` + `Acuerdo previo` +
-   `Implicaciones de alcance` + `Estado`. Sin bloque de solución. Sin
-   resumen de tiempos. `estimacionMinutos: 0` y `commits: []`.
+  `Implicaciones de alcance` + `Estado`. Sin bloque de solución. Sin
+  resumen de tiempos. `estimacionMinutos: 0` y `commits: []`.
 
 Esto evita confundir tickets que requieren conversación con tickets que
 documentan trabajo entregado.
