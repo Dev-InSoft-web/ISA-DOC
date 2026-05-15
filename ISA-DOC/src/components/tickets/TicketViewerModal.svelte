@@ -57,12 +57,12 @@
 		<div class="ticket-body">
 			<GridLayout cells="3" items="stretch" style="column-gap: 0.75rem; row-gap: 0.15rem;">
 				<small style="color: gray; line-height: 1.3;"><b>Medio:</b> {ticket.normativa.medioAtencion}</small>
-				<small style="color: gray; line-height: 1.3;"><b>Tipo solicitud:</b> {ticket.normativa.tipoSolicitud}</small>
+				<small style="color: gray; line-height: 1.3;"><b>Tipo de solicitud:</b> {ticket.normativa.tipoSolicitud}</small>
 				<small style="color: gray; line-height: 1.3;"><b>Estado:</b> {ticket.normativa.estadoSolicitud}</small>
 				<small style="color: gray; line-height: 1.3;"><b>Tipo solución:</b> {ticket.normativa.tipoSolucion}</small>
 				<small style="color: gray; line-height: 1.3;"><b>Cobertura:</b> {ticket.normativa.coberturaEstimada}</small>
-				<small style="color: gray; line-height: 1.3;"><b>Aplicación:</b> {ticket.normativa.aplicacion}</small>
-				<small style="color: gray; line-height: 1.3;"><b>Ambiente:</b> {ticket.normativa.ambiente}</small>
+				<small style="color: gray; line-height: 1.3;"><b>Cierre:</b> {ticket.normativa.cierre}</small>
+				<small style="color: gray; line-height: 1.3;"><b>Estimación (min):</b> {ticket.estimacionMinutos ?? "—"}</small>
 			</GridLayout>
 
 			{#if ticket.resumen}

@@ -20,8 +20,7 @@ export interface TicketNormativa {
 	estadoSolicitud: string;
 	tipoSolucion: string;
 	coberturaEstimada: string;
-	aplicacion: string;
-	ambiente: string;
+	cierre: string;
 }
 
 export interface TicketRegistro {
@@ -32,6 +31,7 @@ export interface TicketRegistro {
 	fechaEntrega?: string;
 	enlace?: string;
 	resumen?: string;
+	estimacionMinutos?: number;
 	body: Promise<string>;
 	normativa: TicketNormativa;
 }
@@ -42,8 +42,7 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 	estadoSolicitud: "1 - Atención sin novedades",
 	tipoSolucion: "No aplica",
 	coberturaEstimada: "No aplica",
-	aplicacion: "ContaPyme U",
-	ambiente: "Producción",
+	cierre: "Sin cerrar",
 };
 
 export const TICKETS: TicketRegistro[] = [
