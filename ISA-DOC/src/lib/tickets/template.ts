@@ -8,7 +8,7 @@
 // de email descartan esas etiquetas (y al hacerlo arrastran el resto del
 // contenido, incluyendo imágenes). Todo el estilo va inline en cada nodo.
 
-import type { TicketCommit } from "./index";
+import type { TicketCommit, TicketDbChange } from "./index";
 
 export const TICKET_HTML_PREFIX = `<div style="font-family:Tahoma;color:#777;font-size:12pt;max-width:100%;">
 <img src="https://i.ibb.co/99cnjWGK/01.png" style="max-height:300px;max-width:100%;display:block;margin-bottom:15px;">
@@ -174,11 +174,11 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): stri
 		`<tr>`,
 		`<td style="${tdSummary}font-family:Tahoma;font-size:9pt;color:#444;white-space:nowrap;">${duracion}</td>`,
 		`<td style="${tdSummary}font-family:Tahoma;font-size:9pt;color:#444;white-space:nowrap;text-align:right;">${totalEstimado}</td>`,
-		`<td style="${tdSummary}font-family:Tahoma;font-size:9pt;color:#444;white-space:nowrap;">Total</td>`,
+		`<td style="${tdSummary}font-size:9pt;color:#999;white-space:nowrap;">${commits.length} commits</td>`,
 		`<td style="${tdSummary}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${insSummary}</td>`,
 		`<td style="${tdSummary}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${delSummary}</td>`,
 		`<td style="${tdSummary}font-size:10pt;color:#555;">Proyectos afectados: ${reposAfectados.map(escapeHtml).join(", ")}</td>`,
-		`<td style="${tdSummary}font-size:9pt;color:#999;text-align:right;white-space:nowrap;">${commits.length} commits</td>`,
+		`<td style="${tdSummary}font-size:9pt;color:#444;text-align:right;white-space:nowrap;">Total</td>`,
 		`</tr>`,
 	].join("");
 	const filaCabecera = [
@@ -209,9 +209,85 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): stri
 	].join("\n");
 }
 
-export function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number): string {
+export function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = []): string {
 	const cota = cotaMaximaMinutos(commits);
 	const estimacionAjustada = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : estimacionMin;
-	return TICKET_HTML_PREFIX + (body ?? "") + "\n" + buildCommitsHtml(commits, estimacionAjustada) + TICKET_HTML_SUFFIX;
+	return TICKET_HTML_PREFIX
+		+ (body ?? "")
+		+ "\n"
+		+ buildCommitsHtml(commits, estimacionAjustada)
+		+ buildDbChangesHtml(cambiosBd)
+		+ TICKET_HTML_SUFFIX;
+}
+
+function buildDbChangesHtml(cambios: TicketDbChange[]): string {
+	if (!cambios.length) return "";
+	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;text-align:left;";
+	const tdBase = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;";
+	const filas = cambios.map((c) => {
+		const sql = escapeHtml(c.sql.trim());
+		const intencion = escapeHtml(c.intencion);
+		const tabla = escapeHtml(c.tabla ?? "");
+		const registro = escapeHtml(c.registro ?? "");
+		return [
+			`<tr>`,
+			`<td style="${tdBase}font-size:10pt;color:#555;">${intencion}</td>`,
+			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;color:#444;white-space:nowrap;">${tabla}</td>`,
+			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;white-space:nowrap;">${registro}</td>`,
+			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;color:#0366d6;white-space:pre-wrap;word-break:break-word;">${sql}</td>`,
+			`</tr>`,
+		].join("");
+	});
+	const cabecera = [
+		`<tr>`,
+		`<th style="${thBase}">Intención</th>`,
+		`<th style="${thBase}">Tabla</th>`,
+		`<th style="${thBase}">Registro</th>`,
+		`<th style="${thBase}">SQL</th>`,
+		`</tr>`,
+	].join("");
+	const tablaSql = [
+		`<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">`,
+		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Cambios en base de datos (${cambios.length}):</div>`,
+		`<table style="border-collapse:collapse;width:100%;font-family:Tahoma;">`,
+		`<thead>${cabecera}</thead>`,
+		`<tbody>${filas.join("\n")}</tbody>`,
+		`</table>`,
+		`</div>`,
+	].join("\n");
+	const conJson = cambios.filter((c) => (c.jsonAntes ?? "") !== "" || (c.jsonDespues ?? "") !== "");
+	if (!conJson.length) return "\n" + tablaSql + "\n";
+	const tdJson = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Consolas,Menlo,monospace;font-size:9pt;color:#444;white-space:pre-wrap;word-break:break-word;background:#fafafa;";
+	const filasJson = conJson.map((c) => {
+		const intencion = escapeHtml(c.intencion);
+		const tabla = escapeHtml(c.tabla ?? "");
+		const registro = escapeHtml(c.registro ?? "");
+		const antes = escapeHtml(c.jsonAntes ?? "");
+		const despues = escapeHtml(c.jsonDespues ?? "");
+		return [
+			`<tr>`,
+			`<td style="${tdBase}font-size:10pt;color:#555;">${intencion}<div style="font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;margin-top:0.25rem;">${tabla}${registro ? " · " + registro : ""}</div></td>`,
+			`<td style="${tdJson}">${antes}</td>`,
+			`<td style="${tdJson}">${despues}</td>`,
+			`</tr>`,
+		].join("");
+	});
+	const cabeceraJson = [
+		`<tr>`,
+		`<th style="${thBase}">Intención</th>`,
+		`<th style="${thBase}">JSON antes</th>`,
+		`<th style="${thBase}">JSON después</th>`,
+		`</tr>`,
+	].join("");
+	const tablaJson = [
+		`<div style="margin-top:1rem;">`,
+		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Detalle de JSON modificados (${conJson.length}):</div>`,
+		`<table style="border-collapse:collapse;width:100%;font-family:Tahoma;table-layout:fixed;">`,
+		`<thead>${cabeceraJson}</thead>`,
+		`<tbody>${filasJson.join("\n")}</tbody>`,
+		`</table>`,
+		`</div>`,
+	].join("\n");
+	return "\n" + tablaSql + "\n" + tablaJson + "\n";
 }
 

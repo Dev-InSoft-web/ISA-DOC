@@ -32,6 +32,15 @@ export interface TicketCommit {
 	fecha?: string;
 }
 
+export interface TicketDbChange {
+	sql: string;
+	intencion: string;
+	tabla?: string;
+	registro?: string;
+	jsonAntes?: string;
+	jsonDespues?: string;
+}
+
 export interface TicketRegistro {
 	id: string;
 	titulo: string;
@@ -42,6 +51,7 @@ export interface TicketRegistro {
 	resumen?: string;
 	estimacionMinutos?: number;
 	commits?: TicketCommit[];
+	cambiosBd?: TicketDbChange[];
 	body: Promise<string>;
 	normativa: TicketNormativa;
 }
@@ -474,5 +484,5 @@ export const TICKETS: TicketRegistro[] = [
 ];
 
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
-	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos);
+	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? []);
 }
