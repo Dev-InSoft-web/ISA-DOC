@@ -1,5 +1,5 @@
 // TK-1422216 — Función cargar recursos en plan de estudio. Resuelto.
-import { code, img } from "./snippets";
+import { img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
@@ -15,21 +15,21 @@ const ulOpen = `<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;">`;
 
 export async function buildBodyTK1422216(): Promise<string> {
 	const [h3Drawer, h3Cursos, h3Prereq, h3General, h3Layout, h3Deploy] = await Promise.all([
-		h3Iconized("mdi:cursor-default-click-outline", "Drawer Curso de Plan de Estudio"),
-		h3Iconized("mdi:table-eye", "Columnas del grid Cursos integrados"),
-		h3Iconized("mdi:source-branch", "Columnas del grid Prerrequisitos"),
+		h3Iconized("mdi:cursor-default-click-outline", "Panel Curso de Plan de Estudio"),
+		h3Iconized("mdi:table-eye", "Columnas del listado Cursos integrados"),
+		h3Iconized("mdi:source-branch", "Columnas del listado Prerrequisitos"),
 		h3Iconized("mdi:tune-variant", "Pestaña General — Tipo de visualización"),
-		h3Iconized("mdi:view-dashboard-outline", "Refactor de layout y simplificaciones"),
+		h3Iconized("mdi:view-dashboard-outline", "Ajustes de presentación y simplificaciones"),
 		h3Iconized("mdi:rocket-launch-outline", "Despliegue y pruebas"),
 	]);
 
 	const drawerNotes = await Promise.all([
 		note(
 			"mdi:bug-check-outline",
-			`<b>Causa del drawer en blanco</b>: los campos del formulario intentaban leer el registro  
+			`<b>Causa del panel en blanco</b>: los campos del formulario intentaban leer el registro  
 			del curso antes de que la inicialización lo creara, y al no encontrarlo el panel se  
-			renderizaba vacío. Ahora los campos toman directamente el objeto que entrega el slot del  
-			formulario, conservando su tipo, lo que evita la condición de carrera.`,
+			mostraba vacío. Ahora los campos toman directamente el objeto que entrega el formulario,  
+			conservando su tipo, lo que evita el problema de orden de inicialización.`,
 		),
 		note(
 			"mdi:auto-mode",
@@ -46,11 +46,11 @@ export async function buildBodyTK1422216(): Promise<string> {
 		),
 		note(
 			"mdi:link-variant",
-			`<b>“Carga el nombre pero no setea el id”</b>: era el mismo síntoma observado antes en el  
-			módulo de seguridad. Al elegir un curso se mostraba el texto pero la llave no se  
-			guardaba. Se aplicó la misma estrategia ya validada: asignar explícitamente la llave del  
-			registro y refrescar la sección del formulario para que los campos dependientes vean el  
-			nuevo valor.`,
+			`<b>“Carga el nombre pero no guarda el código”</b>: era el mismo síntoma observado antes en  
+			el módulo de seguridad. Al elegir un curso se mostraba el texto pero la referencia interna  
+			no se guardaba. Se aplicó la misma solución ya validada: asignar explícitamente la  
+			referencia del registro y refrescar la sección del formulario para que los campos  
+			dependientes vean el nuevo valor.`,
 		),
 		note(
 			"mdi:filter-variant",
@@ -82,14 +82,14 @@ export async function buildBodyTK1422216(): Promise<string> {
 		note(
 			"mdi:eye-check-outline",
 			`<b>Columnas visibles</b>: <i>Curso</i> y <i>Requisito</i>, mostrando el nombre real de  
-			cada uno. Como la lista del API trae sólo las llaves, el nombre se resuelve cruzando  
-			contra los cursos del plan que ya están cargados en memoria.`,
+			cada uno. Como la consulta devuelve solo las referencias internas, el nombre se resuelve  
+			buscando contra los cursos del plan que ya están cargados en memoria.`,
 		),
 		note(
 			"mdi:function-variant",
-			`<b>Centralización de la consulta</b>: una sola utilidad localiza el curso del plan a  
-			partir de su llave; tanto la columna del curso como la del requisito la reutilizan,  
-			evitando lógica duplicada.`,
+			`<b>Centralización de la búsqueda</b>: una sola utilidad ubica el curso del plan a partir  
+			de su referencia; tanto la columna del curso como la del requisito la reutilizan,  
+			evitando duplicar la lógica.`,
 		),
 		note(
 			"mdi:eye-off-outline",
@@ -99,9 +99,9 @@ export async function buildBodyTK1422216(): Promise<string> {
 		),
 		note(
 			"mdi:function-variant-off",
-			`<b>Generación parametrizada</b>: el bloque de columnas adicionales se construye con un  
-			pequeño helper reutilizado dos veces (curso y requisito), reduciendo veinte definiciones  
-			casi idénticas a una sola fuente de verdad.`,
+			`<b>Generación parametrizada</b>: el bloque de columnas adicionales se construye con una  
+			pequeña función auxiliar que se reutiliza para curso y requisito, reduciendo veinte  
+			definiciones casi idénticas a una sola fuente.`,
 		),
 		note(
 			"mdi:database-off-outline",
@@ -126,9 +126,9 @@ export async function buildBodyTK1422216(): Promise<string> {
 		),
 		note(
 			"mdi:toggle-switch-off-outline",
-			`<b>Limpieza del bloque general</b>: se retiró el switch “Genera certificados” del  
-			formulario editable porque pertenece a la información rápida del plan, alineándose con el  
-			comportamiento de los demás campos.`,
+			`<b>Limpieza del bloque general</b>: se retiró el interruptor “Genera certificados” del  
+			formulario editable porque pertenece a la información rápida del plan, alineándose con  
+			el comportamiento de los demás campos.`,
 		),
 		note(
 			"mdi:view-split-vertical",
@@ -141,54 +141,54 @@ export async function buildBodyTK1422216(): Promise<string> {
 	const layoutNotes = await Promise.all([
 		note(
 			"mdi:flexbox",
-			`<b>Maquetación con componentes oficiales</b>: se reemplazaron los CSS manuales por los  
-			componentes de layout del sistema, lo que da un comportamiento responsivo consistente y  
-			evita estilos sueltos que se desincronizan con el resto de la aplicación.`,
+			`<b>Maquetación con componentes oficiales</b>: se reemplazaron los estilos manuales por  
+			los componentes de presentación del sistema, lo que da un comportamiento responsivo  
+			consistente y evita estilos sueltos que se desincronizan con el resto de la aplicación.`,
 		),
 		note(
 			"mdi:code-tags",
-			`<b>CSS reducido al mínimo</b>: se eliminaron envoltorios y clases muertas, dejando  
-			bloques pequeños y autocontenidos por archivo. El mantenimiento posterior es más simple  
-			y los cambios visuales no afectan vistas vecinas.`,
+			`<b>Estilos reducidos al mínimo</b>: se eliminaron envoltorios y clases sin uso, dejando  
+			bloques pequeños y autocontenidos. El mantenimiento posterior es más simple y los  
+			cambios visuales no afectan vistas vecinas.`,
 		),
 		note(
 			"mdi:resize",
-			`<b>Dimensiones del grid de prerrequisitos</b>: el grid no aparecía o se quedaba muy  
-			pequeño cuando se insertaban filas. Se ajustó el flujo de alturas desde el contenedor  
-			del formulario hasta el grid para que ocupe el espacio disponible y muestre las filas  
-			tan pronto se agregan.`,
+			`<b>Dimensiones del listado de prerrequisitos</b>: el listado no aparecía o se quedaba  
+			muy pequeño cuando se insertaban filas. Se ajustó el flujo de alturas desde el  
+			contenedor del formulario hasta el listado para que ocupe el espacio disponible y  
+			muestre las filas tan pronto se agregan.`,
 		),
 		note(
 			"mdi:format-list-numbered",
-			`<b>Alcance del refactor</b>: la limpieza tocó la lista de cursos del plan, la lista de  
-			prerrequisitos, el detalle de curso en solo lectura, las acciones, el catálogo, la  
-			pestaña general y el formulario principal. Todos quedaron alineados al mismo estándar.`,
+			`<b>Alcance de la limpieza</b>: la simplificación tocó la lista de cursos del plan, la  
+			lista de prerrequisitos, el detalle de curso en solo lectura, las acciones, el catálogo,  
+			la pestaña general y el formulario principal. Todos quedaron alineados al mismo  
+			estándar.`,
 		),
 		note(
 			"mdi:package-up",
-			`<b>Soporte de backend</b>: se publicó una ruta que devuelve el plan con el detalle  
-			completo de sus cursos, lo que permite mostrar la información de solo lectura sin  
-			consultas adicionales desde la UI.`,
+			`<b>Soporte del servidor</b>: se publicó una consulta que devuelve el plan con el detalle  
+			completo de sus cursos, lo que permite mostrar la información de solo lectura sin pedir  
+			datos adicionales desde la aplicación.`,
 		),
 	]);
 
 	const deployNotes = await Promise.all([
 		note(
 			"mdi:server",
-			`<b>Servidor (ISS)</b>: se actualizó para soportar la asignación de íconos por fila  
-			en los grids del módulo, de modo que el front pueda decorar cada registro según su tipo  
-			o estado sin lógica adicional en el cliente.`,
+			`<b>Servidor</b>: se actualizó para soportar la asignación de íconos por fila en los  
+			listados del módulo, de modo que la aplicación pueda decorar cada registro según su  
+			tipo o estado sin tener que calcularlo por su cuenta.`,
 		),
 		note(
 			"mdi:package-variant-closed",
-			`<b>Paquetes compartidos (ISP)</b>: se ajustó el ${code("JData2HighDetail")}  
-			de Plan de Estudio y de Curso para que viajen los datos completos necesarios y los  
-			íconos se apliquen correctamente en las vistas que los consumen. Versiones publicadas:  
-			${code("ispclientesis@1.0.162")} y ${code("ispclientesisserver@1.0.158")}.`,
+			`<b>Librerías compartidas</b>: se ajustaron las estructuras de datos detalladas de Plan  
+			de Estudio y de Curso para que viajen completas y los íconos se apliquen correctamente  
+			en las vistas que las consumen. Se publicaron las nuevas versiones de las librerías.`,
 		),
 		note(
 			"mdi:web",
-			`<b>Cliente web (ISW)</b>: publicado para que las pruebas funcionales puedan hacerse en  
+			`<b>Sitio web</b>: publicado para que las pruebas funcionales puedan hacerse en  
 			<a href="https://clientesis.azurewebsites.net/capacitacion/planes/estudio" target="_blank" rel="noopener" style="color:dodgerblue;text-decoration:underline;"><span style="color:dodgerblue;">Planes de Estudio</span></a>  
 			y en <a href="https://clientesis.azurewebsites.net/capacitacion/cursos" target="_blank" rel="noopener" style="color:dodgerblue;text-decoration:underline;"><span style="color:dodgerblue;">Cursos</span></a>.`,
 		),

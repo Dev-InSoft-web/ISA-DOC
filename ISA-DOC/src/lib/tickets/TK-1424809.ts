@@ -4,12 +4,13 @@ import { img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
-	`<div>Se reportó que el menú de acciones de los catálogos  
-	<b>Cursos</b> y <b>Planes de estudio</b> mostraba solo cinco acciones  
-	(Crear, Visualizar, Modificar, Eliminar y Refrescar) cuando el resto de  
-	catálogos maestros expone también <i>Verificar</i>, <i>Duplicar</i>,  
-	<i>Recodificar</i> y <i>Consolidar</i>. El menú contextual (botón derecho)  
-	también quedaba recortado a tres opciones.</div>`;
+	`<div>Se reportó que el menú de acciones de los listados de  
+	<b>Cursos</b> y <b>Planes de estudio</b> mostraba solo cinco opciones  
+	(Crear, Visualizar, Modificar, Eliminar y Refrescar), cuando los demás  
+	catálogos maestros del sistema también ofrecen <i>Verificar</i>,  
+	<i>Duplicar</i>, <i>Recodificar</i> y <i>Consolidar</i>. El menú que  
+	aparece al hacer clic derecho también quedaba recortado a tres  
+	opciones.</div>`;
 
 export async function buildBodyTK1424809(): Promise<string> {
 	const [h3Causa, h3Fix, h3Verif] = await Promise.all([
@@ -21,47 +22,49 @@ export async function buildBodyTK1424809(): Promise<string> {
 	const causaNotes = await Promise.all([
 		note(
 			"mdi:filter-remove-outline",
-			`En el registro de los catálogos maestros en el servidor se estaba  
-			omitiendo el conjunto de acciones extendido (Verificar, Duplicar,  
-			Recodificar y Consolidar) en <b>Curso</b> y <b>Plan de estudio</b>,  
-			por lo que el cliente solo recibía el subconjunto básico de acciones  
-			y no podía pintarlas en la toolbar ni en el menú contextual.`,
+			`En la configuración de los catálogos del servidor, <b>Curso</b> y  
+			<b>Plan de estudio</b> tenían restringido el conjunto completo  
+			de acciones: se estaban excluyendo <i>Verificar</i>,  
+			<i>Duplicar</i>, <i>Recodificar</i> y <i>Consolidar</i>, por lo  
+			que el sistema solo recibía las acciones básicas y no las  
+			mostraba en la barra superior ni en el menú contextual.`,
 		),
 	]);
 
 	const fixNotes = await Promise.all([
 		note(
 			"mdi:format-list-checks",
-			`Se retiró la omisión de acciones en el registro de los catálogos  
-			<b>Curso</b> y <b>Plan de estudio</b> de la Function App. Ahora  
-			ambos exponen las ocho acciones estándar del maestro: <i>Crear</i>,  
-			<i>Modificar</i>, <i>Visualizar</i> (Obtener), <i>Listar</i>,  
-			<i>Eliminar</i>, <i>Verificar</i>, <i>Duplicar</i>,  
-			<i>Recodificar</i> y <i>Consolidar</i>.`,
+			`Se retiró esa restricción para los catálogos <b>Curso</b> y  
+			<b>Plan de estudio</b>. Ahora ambos exponen las ocho acciones  
+			estándar de los maestros: <i>Crear</i>, <i>Modificar</i>,  
+			<i>Visualizar</i>, <i>Listar</i>, <i>Eliminar</i>,  
+			<i>Verificar</i>, <i>Duplicar</i>, <i>Recodificar</i> y  
+			<i>Consolidar</i>.`,
 		),
 		note(
 			"mdi:menu-open",
-			`La toolbar y el menú contextual del grid construyen las opciones  
-			disponibles a partir de las acciones reportadas por el servidor, por  
-			lo que con el cambio anterior ambos quedan completos sin tocar el  
-			cliente.`,
+			`La barra superior y el menú contextual de cada listado se arman  
+			automáticamente a partir de las acciones que reporta el  
+			servidor, por lo que con el ajuste anterior ambos quedan  
+			completos sin necesidad de tocar la aplicación.`,
 		),
 		note(
 			"mdi:server-network",
 			`Para que el cambio quede activo en el ambiente productivo debe  
-			publicarse la Function App de servicios de ContaPyme U. Mientras  
-			tanto los nuevos endpoints están disponibles en local y  
-			preproducción.`,
+			publicarse la actualización de los servicios de ContaPyme U.  
+			Mientras tanto el cambio ya está funcionando en los ambientes  
+			de pruebas y preproducción.`,
 		),
 	]);
 
 	const verifNotes = await Promise.all([
 		note(
 			"mdi:check-bold",
-			`Probado sobre los catálogos <i>Recursos</i> (referencia con las 8  
-			acciones) y <i>Cursos</i> y <i>Planes de estudio</i> (corregidos).  
-			En los tres se muestran las acciones extendidas en la toolbar y en  
-			el menú contextual.`,
+			`Se validó sobre el catálogo de <i>Recursos</i> (que ya tenía las  
+			ocho acciones) y sobre <i>Cursos</i> y <i>Planes de estudio</i>.  
+			En los tres listados aparecen las acciones extendidas tanto en  
+			la barra superior como en el menú que se despliega al hacer  
+			clic derecho sobre una fila.`,
 		),
 	]);
 

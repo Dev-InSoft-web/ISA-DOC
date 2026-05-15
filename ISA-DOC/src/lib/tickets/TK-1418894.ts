@@ -108,10 +108,11 @@ async function buildTabla(rows: Row[]): Promise<string> {
 }
 
 const intro =
-	`<div>Actualización de la colección de Postman para el módulo de Capacitación.  
-	Se agregaron las carpetas de <strong>Permisos</strong> y <strong>Temas</strong>  
-	como catálogos de solo lectura, orientados a alimentar componentes ${codeI("BtnRef")}  
-	desde el frontend. La descripción general fue actualizada.</div>`;
+	`<div>Actualización de la colección de Postman para el módulo de  
+	Capacitación. Se agregaron las carpetas de <strong>Permisos</strong> y  
+	<strong>Temas</strong> como catálogos de solo lectura, orientados a  
+	alimentar los selectores de referencia que usa la aplicación. La  
+	descripción general fue actualizada.</div>`;
 
 // Para alinear icono + texto sin tablas (email-safe). Usamos inline-flex
 // + gap, y el color del icono se sincroniza con el texto vía `currentColor`.
@@ -139,9 +140,10 @@ async function buildNotas(): Promise<string> {
 		),
 		note(
 			"mdi:eye-off-outline",
-			`No se creó ${codeI("sysrecurso")} para Permisos ni Temas: están registrados como  
-			${codeI("RelNoSysrecurso")} y tienen omitidas las mutaciones en ${codeI("FN-Capacitacion.ts")}.  
-			Por esa razón siempre pueden consultarse vía API y no tienen seguridad implementada.`,
+			`No se creó registro de seguridad para <b>Permisos</b> ni <b>Temas</b>:  
+			están declarados como catálogos sin permisos de modificación y, por  
+			eso, siempre pueden consultarse y no exponen operaciones de  
+			escritura.`,
 		),
 		note(
 			"mdi:clock-outline",

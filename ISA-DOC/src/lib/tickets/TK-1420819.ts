@@ -1,11 +1,11 @@
 // TK-1420819 — Campos vacíos en grid curso (Tema / Driver). Resuelto.
-import { code as codeI, img } from "./snippets";
+import { img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
-	`<div>En el grid del catálogo de cursos las columnas <b>Tema</b> y <b>Driver</b>  
-	aparecían vacías, aunque el detalle del registro sí mostraba los valores.  
-	El ajuste ya está aplicado y verificado.</div>`;
+	`<div>En el listado del catálogo de cursos las columnas <b>Tema</b> y  
+	<b>Driver</b> aparecían vacías, aunque al abrir el detalle del registro sí  
+	se mostraban los valores. El ajuste ya está aplicado y verificado.</div>`;
 
 export async function buildBodyTK1420819(): Promise<string> {
 	const [h3a, h3c] = await Promise.all([
@@ -14,9 +14,9 @@ export async function buildBodyTK1420819(): Promise<string> {
 	]);
 	const fix = await note(
 		"mdi:code-tags-check",
-		`Se ajustó ${codeI("TCursoServer.JData2List")} para incluir los nodos anidados  
-		${codeI("tema")} y ${codeI("driver")} que consume el grid; ahora las columnas  
-		muestran el nombre correctamente.`,
+		`Se ajustó el resumen del curso que entrega el servidor para que incluya  
+		también los datos de <b>Tema</b> y <b>Driver</b> que necesita el  
+		listado; ahora las columnas muestran el nombre correctamente.`,
 	);
 	const obs = await note(
 		"mdi:account-clock-outline",

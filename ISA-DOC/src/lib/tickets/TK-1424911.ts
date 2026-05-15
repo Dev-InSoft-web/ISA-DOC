@@ -5,9 +5,9 @@ import { h3Iconized, note, noteList } from "./tk-helpers";
 const intro =
 	`<div>Se reportó que, al crear un nuevo curso e ir a la pestaña  
 	<b>Contenido</b>, al pulsar <b>Agregar</b> se abría el formulario del  
-	nodo, se diligenciaban los datos y se pulsaba <b>Aceptar</b>: la  
-	aplicación mostraba el mensaje <i>“Procedimiento finalizado”</i>, pero  
-	el árbol quedaba vacío y el nodo no quedaba persistido.</div>`;
+	nuevo nodo, se diligenciaban los datos y al pulsar <b>Aceptar</b> el  
+	sistema mostraba el mensaje <i>“Procedimiento finalizado”</i>, pero el  
+	árbol de contenidos quedaba vacío y el nodo no se guardaba.</div>`;
 
 export async function buildBodyTK1424911(): Promise<string> {
 	const [h3Causa, h3Fix, h3Verif] = await Promise.all([
@@ -19,44 +19,46 @@ export async function buildBodyTK1424911(): Promise<string> {
 	const causa = noteList(
 		await note(
 			"mdi:share-variant-outline",
-			`Al estar la URL en <code>?itdform=create</code>, el componente de  
-			acciones genérico interpretaba el envío del nodo como acción  
-			<code>Crear</code> (no <code>Modificar</code>).`,
+			`Cuando se está creando un curso nuevo, el sistema considera que  
+			todo lo que se haga dentro del formulario es parte de esa  
+			creación, no una modificación. El árbol de contenidos no  
+			contemplaba ese escenario.`,
 		),
 		await note(
 			"mdi:source-branch",
-			`El <code>postSubmit</code> del controlador de árbol sólo manejaba  
-			las acciones <code>Modificar</code> y <code>Eliminar</code>. Con  
-			acción <code>Crear</code>, el indicador interno  
-			<code>_pendingInsertFlatPath</code> nunca se limpiaba.`,
+			`La rutina interna que cierra el guardado de un nodo solo estaba  
+			preparada para los casos de <b>Modificar</b> y <b>Eliminar</b>,  
+			y no para la primera inserción dentro de un curso nuevo. Por  
+			esto, el sistema dejaba una marca interna abierta como si la  
+			operación nunca se hubiera completado.`,
 		),
 		await note(
 			"mdi:undo-variant",
-			`Al cerrar el drawer, el flujo de <code>closeEditForm</code>  
-			detectaba el pending y ejecutaba el rollback del nodo recién  
-			insertado, dejando el árbol vacío.`,
+			`Al cerrar la ventana donde se diligenció el nodo, el árbol  
+			detectaba esa marca abierta y deshacía la inserción que se  
+			acababa de hacer, por lo que el nodo desaparecía y el árbol  
+			quedaba vacío.`,
 		),
 	);
 
 	const fix = noteList(
 		await note(
 			"mdi:plus-circle-outline",
-			`Se ajustó el <code>postSubmit</code> del controlador del árbol para  
-			que la acción <code>Crear</code> se consolide igual que  
-			<code>Modificar</code>: se limpia el <code>_pendingInsertFlatPath</code>,  
-			se refresca el árbol y se sincronizan los adaptadores antes de cerrar  
-			el drawer.`,
+			`Se ajustó el cierre del guardado para que la operación de  
+			<b>crear un nodo</b> se confirme igual que la de modificar:  
+			se cierra la marca interna, se refresca el árbol y los datos  
+			quedan sincronizados antes de cerrar la ventana del nuevo  
+			contenido.`,
 		),
 	);
 
 	const verif = noteList(
 		await note(
 			"mdi:check-bold",
-			`Probado en ${`<code>/capacitacion/cursos/crear?itdform=create</code>`}  
-			con árbol inicialmente vacío: se agregan dos nodos consecutivos y  
-			ambos quedan persistidos correctamente, tanto el primer nodo creado  
-			como el siguiente añadido tras el primer fix, sin rollback ni pérdida  
-			visible en el árbol al cerrar el drawer.`,
+			`Se valida creando un curso nuevo con árbol de contenidos  
+			inicialmente vacío: se agregan dos nodos consecutivos y ambos  
+			quedan guardados correctamente, sin que se deshagan al cerrar  
+			la ventana del nodo.`,
 		),
 	);
 
@@ -64,3 +66,4 @@ export async function buildBodyTK1424911(): Promise<string> {
 }
 
 export const bodyTK1424911: Promise<string> = buildBodyTK1424911();
+

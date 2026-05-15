@@ -3,11 +3,11 @@
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
-	`<div>Se solicitó que el campo <code>iplanpadre</code> del  
-	recurso solo apareciera disponible cuando la dificultad del recurso fuera  
-	<b>Medio</b> o <b>Avanzado</b>, y que su captura no fuera un número libre,  
-	sino la selección desde un catálogo de recursos con dificultad  
-	<b>Básico</b> pertenecientes al mismo capítulo.</div>`;
+	`<div>Se solicitó que el campo <b>Plan padre</b> del recurso solo  
+	apareciera disponible cuando la dificultad del recurso fuera <b>Medio</b>  
+	o <b>Avanzado</b>, y que su captura no fuera un número libre, sino la  
+	selección desde un catálogo de recursos de dificultad <b>Básico</b>  
+	pertenecientes al mismo capítulo.</div>`;
 
 export async function buildBodyTK1425173(): Promise<string> {
 	const [h3Req, h3Plan] = await Promise.all([
@@ -18,19 +18,19 @@ export async function buildBodyTK1425173(): Promise<string> {
 	const req = noteList(
 		await note(
 			"mdi:eye-off-outline",
-			`Ocultar el campo <code>iplanpadre</code> cuando la dificultad del  
+			`Ocultar el campo <b>Plan padre</b> cuando la dificultad del  
 			recurso es <b>Básico</b>.`,
 		),
 		await note(
 			"mdi:eye-outline",
-			`Mostrar el campo <code>iplanpadre</code> sólo cuando la dificultad  
-			del recurso es <b>Medio</b> o <b>Avanzado</b>.`,
+			`Mostrar el campo <b>Plan padre</b> únicamente cuando la  
+			dificultad del recurso es <b>Medio</b> o <b>Avanzado</b>.`,
 		),
 		await note(
 			"mdi:book-search-outline",
-			`Reemplazar la captura libre numérica por un BtnRef que abra un  
-			catálogo filtrado por dificultad <b>Básico</b> y mismo capítulo del  
-			recurso actual.`,
+			`Reemplazar la captura libre por un selector que abra un catálogo  
+			filtrado automáticamente por dificultad <b>Básico</b> y por el  
+			mismo capítulo del recurso actual.`,
 		),
 	);
 

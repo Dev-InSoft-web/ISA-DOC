@@ -1,39 +1,39 @@
 // TK-1420751 — Catálogo de temas en cursos.
-import { code as codeI, img } from "./snippets";
+import { img } from "./snippets";
 import { h3Iconized, note } from "./tk-helpers";
 
 const intro =
-	`<div>Se reemplazó el controller de temas embebido en el módulo de Capacitación por el  
-	<b>catálogo reutilizable de Soporte</b>, de modo que los temas se gestionan en un único  
-	lugar y se referencian desde Cursos vía ${codeI("BtnRef")}.</div>`;
+	`<div>El módulo de Capacitación tenía su propio listado de <b>temas</b>  
+	independiente del que ya existía en el área de Soporte. Se unificó esta  
+	gestión de modo que ahora ambos módulos consultan y mantienen el mismo  
+	catálogo de temas.</div>`;
 
 export async function buildBodyTK1420751(): Promise<string> {
 	const h3 = await h3Iconized("mdi:tag-multiple-outline", "Catálogo unificado de Temas");
 	const items = await Promise.all([
 		note(
 			"mdi:swap-horizontal",
-			`Se eliminó ${codeI("TTemaSlaveController")} de  
-			${codeI("$lib/ContaPymeU/2.Capacitacion/Cursos")} y se sustituyó por  
-			${codeI("TTemaClientesISBtnRef")} ubicado en  
-			${codeI("$lib/3.catalogos/9.Soporte/ClientesIS_Temas")}.`,
+			`Se retiró el listado de temas que vivía dentro del módulo de  
+			Capacitación y se reemplazó por el <b>catálogo de temas de  
+			Soporte</b>, que pasa a ser el único punto de gestión.`,
 		),
 		note(
 			"mdi:type-hierarchy-sub",
-			`El tipo de registro pasó de ${codeI("TTema")} a ${codeI("TTemaSoporte")}  
-			(provisto por ${codeI("@ingenieria_insoft/ispclientesis")}).`,
+			`Los formularios de Curso ahora consultan ese catálogo central a  
+			través del selector de referencia estándar, en lugar de mantener  
+			su propia copia local.`,
 		),
 		note(
 			"mdi:file-document-edit-outline",
-			`Archivos actualizados:  
-			${codeI("cursos/_Details/General.svelte")} y  
-			${codeI("cursos/_Details/TreeContenidos/Formulario.svelte")}  
-			para usar el nuevo controller y el callback ${codeI("onselectedtema")}/ 
-			${codeI("ontemaselected")} con ${codeI("TTemaSoporte")}.`,
+			`Se actualizaron los formularios de la pestaña <b>General</b> del  
+			curso y el formulario de contenidos para que muestren y reciban  
+			el tema desde el nuevo catálogo unificado.`,
 		),
 		note(
 			"mdi:database-check-outline",
-			`Beneficio: cualquier alta o modificación de tema desde el catálogo de Soporte  
-			se refleja inmediatamente en los formularios de Curso, sin duplicar mantenimiento.`,
+			`Beneficio: cualquier alta, edición o eliminación de tema desde  
+			el catálogo de Soporte se refleja de inmediato en los  
+			formularios de Curso, evitando duplicar el mantenimiento.`,
 		),
 	]);
 	const fig = img("temaCatalogoModal.jpg");
@@ -41,4 +41,5 @@ export async function buildBodyTK1420751(): Promise<string> {
 }
 
 export const bodyTK1420751: Promise<string> = buildBodyTK1420751();
+
 
