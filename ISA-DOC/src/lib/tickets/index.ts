@@ -12,6 +12,7 @@ import { bodyTK1424806 } from "./TK-1424806";
 import { bodyTK1424809 } from "./TK-1424809";
 import { bodyTK1424892 } from "./TK-1424892";
 import { bodyTK1424911 } from "./TK-1424911";
+import { bodyTK1425170 } from "./TK-1425170";
 import { bodyTK1425173 } from "./TK-1425173";
 
 export interface TicketNormativa {
@@ -50,6 +51,7 @@ export interface TicketRegistro {
 	enlace?: string;
 	resumen?: string;
 	estimacionMinutos?: number;
+	diligenciaMinutos?: number;
 	commits?: TicketCommit[];
 	cambiosBd?: TicketDbChange[];
 	body: Promise<string>;
@@ -69,10 +71,11 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 export const TICKETS: TicketRegistro[] = [
 	{
 		id: "TK-1425173",
-		titulo: "Asociación del recurso básico a los recursos medio y avanzado",
+		titulo: "Plan padre del recurso como catálogo filtrado",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 04:12:25 pm",
 		estimacionMinutos: 200,
+		diligenciaMinutos: 75,
 		resumen: "Se solicitó que el campo iplanpadre solo apareciera disponible cuando el recurso tuviera como dificultad Medio o Avanzado, y que no se ingresara un número sino que se abriera un catálogo con los recursos con dificultad Básico del mismo capítulo.",
 		commits: [
 			{ hash: "6fd8618", descripcion: "feat(capacitacion): se muestra iplanpadre solo en dificultad media o avanzada y se limpia en otros casos", repo: "ISW-ClientesIS", ins: 23, del: 4, fecha: "2026-05-14T14:43:05-05:00" },
@@ -162,11 +165,24 @@ export const TICKETS: TicketRegistro[] = [
 		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Ajuste del sistema" },
 	},
 	{
+		id: "TK-1425170",
+		titulo: "Atributos del título no cambian con el driver",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "13/may./2026 04:08:20 pm",
+		estimacionMinutos: 0,
+		diligenciaMinutos: 30,
+		resumen: "Se reporta que al seleccionar un título en la pestaña Contenido del curso los atributos mostrados no se filtran según el driver. El alcance requiere diálogo: si se trata de solo lectura no rompe el acuerdo inicial; si implica edición desde el curso, viola el acuerdo de que los recursos no se modifican desde el curso.",
+		commits: [],
+		body: bodyTK1425170,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
+	},
+	{
 		id: "TK-1424911",
 		titulo: "Error botón \"Agregar\" tab \"Contenido\" en catálogo cursos",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 11:14:07 am",
 		estimacionMinutos: 150,
+		diligenciaMinutos: 30,
 		resumen: "Se reportó que al crear un nuevo curso y agregar contenidos, el botón Agregar abría el formulario, pero al aceptar el nodo no quedaba persistido y el árbol permanecía vacío pese al mensaje de procedimiento finalizado.",
 		commits: [
 			{ hash: "94f65a0", descripcion: "fix(capacitacion): se persiste el nodo nuevo cuando el arbol del curso recien creado esta vacio", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-13T16:58:38-05:00" },
@@ -182,11 +198,12 @@ export const TICKETS: TicketRegistro[] = [
 	},
 	{
 		id: "TK-1424892",
-		titulo: "Acciones en catálogo de pestaña \"Seguridad\" de cursos",
+		titulo: "Refactor de BtnRef en planes de estudio y cursos",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 10:57:32 am",
 		estimacionMinutos: 240,
-		resumen: "Se reportó que el listado de la pestaña Seguridad del curso mostraba opciones de más en su barra superior (acciones de mantenimiento de un catálogo maestro) que no aplicaban a un listado de consulta. Se adjuntó captura del aspecto esperado: dejar solo refrescar, filtro, búsqueda y selección, junto a las pestañas laterales de columnas y filtro, alineado con el resto de los listados del sistema.",
+		diligenciaMinutos: 30,
+		resumen: "Se unifica el comportamiento de los BtnRef usados en los catálogos de planes de estudio y cursos: permiso de seguridad, driver del curso, plan padre, tema, prerrequisitos y curso del plan. Se generaliza el wrapper de exclusión del valor actual y se ajusta el catálogo de la pestaña Seguridad a su rol de consulta.",
 		commits: [
 			{ hash: "8553b10", descripcion: "feat(capacitacion): se generaliza la exclusion del valor actual via proxy de controller en el wrapper btnref", repo: "ISW-ClientesIS", ins: 35, del: 6, fecha: "2026-05-15T08:55:37-05:00" },
 			{ hash: "8839b11", descripcion: "fix(cursos): se restaura lista via api en btnref de permiso de seguridad evitando label en rojo al excluir el activo", repo: "ISW-ClientesIS", ins: 7, del: 2, fecha: "2026-05-14T11:52:55-05:00" },
@@ -213,7 +230,6 @@ export const TICKETS: TicketRegistro[] = [
 			{ hash: "fd4cf7e", descripcion: "fix(cursos): se centra y limita el BtnRef de driver a 350px en el aviso de espera", repo: "ISW-ClientesIS", ins: 5, del: 3, fecha: "2026-05-14T07:37:42-05:00" },
 			{ hash: "01e8501", descripcion: "fix(cursos): se muestra el aviso de driver en Seguridad y se alinea el BtnRef a la derecha sin afectar el texto", repo: "ISW-ClientesIS", ins: 49, del: 44, fecha: "2026-05-14T07:40:13-05:00" },
 			{ hash: "55439a0", descripcion: "refactor(form): se renombra btnrefdefs a controladores y se agrega soporte de tipo catalogo en Attr2Input", repo: "ISW-ClientesIS", ins: 49, del: 36, fecha: "2026-05-14T07:46:31-05:00" },
-			{ hash: "9453b9c", descripcion: "feat(form): se mapea type btnref y controllername desde JCONFIG en jconfig2FieldDef", repo: "ISW-ClientesIS", ins: 8, del: 1, fecha: "2026-05-14T09:17:40-05:00" },
 			{ hash: "41d7851", descripcion: "feat(capacitacion): se renderiza iplanpadre como btnref con controlador en memoria de hermanos", repo: "ISW-ClientesIS", ins: 85, del: 2, fecha: "2026-05-14T10:01:08-05:00" },
 			{ hash: "df8c4e2", descripcion: "refactor(capacitacion): se traslada el controlador btnref de plan padre a la capa lib siguiendo la convencion", repo: "ISW-ClientesIS", ins: 35, del: 80, fecha: "2026-05-14T10:19:23-05:00" },
 			{ hash: "ce2cc0a", descripcion: "fix(capacitacion): se excluyen del btnref de planpadre los hermanos que ya tienen un iplanpadre asignado", repo: "ISW-ClientesIS", ins: 89, del: 76, fecha: "2026-05-14T21:22:38-05:00" },
@@ -610,9 +626,9 @@ export const TICKETS: TicketRegistro[] = [
 ];
 
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
-	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.fechaSolicitud, t.id, t.festivos, t.titulo);
+	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.fechaSolicitud, t.id, t.festivos, t.titulo, t.diligenciaMinutos);
 }
 
 export async function getTicketTotalEstimadoMin(t: TicketRegistro): Promise<number> {
-	return tiempoTotalEstimadoMin(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? []);
+	return tiempoTotalEstimadoMin(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.diligenciaMinutos);
 }

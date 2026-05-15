@@ -1,6 +1,10 @@
 // TK-1424911 — Error botón "Agregar" en pestaña "Contenido" al crear curso.
 // Resuelto.
+import { img } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
+
+const figBotonAgregar = img("contenidoBotonAgregar.jpg");
+const figPersistido   = img("contenidoPersistido.jpg");
 
 const intro =
 	`<div>Se reportó que, al crear un nuevo curso e ir a la pestaña  
@@ -16,7 +20,7 @@ export async function buildBodyTK1424911(): Promise<string> {
 		h3Iconized("mdi:eye-check-outline", "Verificación"),
 	]);
 
-	const causa = noteList(
+	const causa = figBotonAgregar + noteList(
 		await note(
 			"mdi:share-variant-outline",
 			`Cuando se está creando un curso nuevo, el sistema considera que  
@@ -52,7 +56,7 @@ export async function buildBodyTK1424911(): Promise<string> {
 		),
 	);
 
-	const verif = noteList(
+	const verif = figPersistido + noteList(
 		await note(
 			"mdi:check-bold",
 			`Se valida creando un curso nuevo con árbol de contenidos  
