@@ -103,6 +103,7 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): stri
 	const mismoDia = diasUnicos.size === 1;
 	const minutosPorCommit = distribuirMinutos(ordenados, estimacionMin ?? 0);
 	const tdBase = "padding:0.15rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;";
+	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;border-bottom:1px solid #ddd;font-family:Tahoma;font-size:9pt;color:#888;font-weight:600;text-align:left;";
 	const filas = ordenados.map((c, idx) => {
 		const repo = c.repo && REPOS_VALIDOS.has(c.repo) ? c.repo : REPO_DEFAULT;
 		const url = `https://github.com/Dev-InSoft/${repo}/commit/${c.hash}`;
@@ -112,9 +113,7 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): stri
 		const del = c.del ?? 0;
 		const fechaTxt = c.fecha ? fmtFechaHora(c.fecha, mismoDia) : "";
 		const minCommit = minutosPorCommit[idx];
-		const fechaCell = minCommit > 0
-			? `${fechaTxt} <span style="color:#bbb;">(${fmtMin(minCommit)})</span>`
-			: fechaTxt;
+		const tiempoCell = minCommit > 0 ? fmtMin(minCommit) : "";
 		const insCell = ins > 0
 			? `<span style="background:#e6ffed;color:#22863a;padding:0 0.3rem;border-radius:0.2rem;">+${ins}</span>`
 			: "";
@@ -123,7 +122,8 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): stri
 			: "";
 		return [
 			`<tr>`,
-			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;white-space:nowrap;">${fechaCell}</td>`,
+			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;white-space:nowrap;">${fechaTxt}</td>`,
+			`<td style="${tdBase}font-family:Tahoma;font-size:9pt;color:#aaa;white-space:nowrap;text-align:right;">${tiempoCell}</td>`,
 			`<td style="${tdBase}white-space:nowrap;"><a href="${url}" target="_blank" rel="noopener" style="font-family:Consolas,Menlo,monospace;font-size:10.5pt;background:#f0f0f0;color:#0366d6;padding:0 0.3rem;border-radius:0.2rem;text-decoration:none;">${hash}</a></td>`,
 			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${insCell}</td>`,
 			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${delCell}</td>`,
@@ -148,13 +148,12 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): stri
 	const delSummary = totalDel > 0
 		? `<span style="background:#ffeef0;color:#b31d28;padding:0 0.3rem;border-radius:0.2rem;">-${totalDel}</span>`
 		: "";
-	const filaSeparador = `<tr><td colspan="6" style="padding:0.5rem 0;border:none;"><hr style="border:none;border-top:1px solid #999;opacity:0.5;margin:0;"></td></tr>`;
-	const duracionCell = estimacionMin && estimacionMin > 0
-		? `${duracion} <span style="color:#bbb;">(${fmtMin(estimacionMin)})</span>`
-		: duracion;
+	const filaSeparador = `<tr><td colspan="7" style="padding:0.5rem 0;border:none;"><hr style="border:none;border-top:1px solid #999;opacity:0.5;margin:0;"></td></tr>`;
+	const totalEstimado = estimacionMin && estimacionMin > 0 ? fmtMin(estimacionMin) : "";
 	const filaResumen = [
 		`<tr>`,
-		`<td style="${tdSummary}font-family:Tahoma;font-size:9pt;color:#444;white-space:nowrap;">${duracionCell}</td>`,
+		`<td style="${tdSummary}font-family:Tahoma;font-size:9pt;color:#444;white-space:nowrap;">${duracion}</td>`,
+		`<td style="${tdSummary}font-family:Tahoma;font-size:9pt;color:#444;white-space:nowrap;text-align:right;">${totalEstimado}</td>`,
 		`<td style="${tdSummary}font-family:Tahoma;font-size:9pt;color:#444;white-space:nowrap;">Total</td>`,
 		`<td style="${tdSummary}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${insSummary}</td>`,
 		`<td style="${tdSummary}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${delSummary}</td>`,
@@ -162,11 +161,23 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number): stri
 		`<td style="${tdSummary}font-size:9pt;color:#999;text-align:right;white-space:nowrap;">${commits.length} commits</td>`,
 		`</tr>`,
 	].join("");
+	const filaCabecera = [
+		`<tr>`,
+		`<th style="${thBase}">Fecha</th>`,
+		`<th style="${thBase}text-align:right;">Tiempo</th>`,
+		`<th style="${thBase}">Hash</th>`,
+		`<th style="${thBase}text-align:right;">Ins</th>`,
+		`<th style="${thBase}text-align:right;">Del</th>`,
+		`<th style="${thBase}">Descripción</th>`,
+		`<th style="${thBase}text-align:right;">Repo</th>`,
+		`</tr>`,
+	].join("");
 	return [
 		``,
 		`<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">`,
 		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Commits relacionados (${commits.length}):</div>`,
 		`<table style="border-collapse:collapse;width:100%;font-family:Tahoma;">`,
+		`<thead>${filaCabecera}</thead>`,
 		`<tbody>`,
 		filas.join("\n"),
 		filaSeparador,
