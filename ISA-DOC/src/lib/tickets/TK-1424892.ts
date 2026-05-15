@@ -1,5 +1,5 @@
 // TK-1424892 — Acciones en catálogo de pestaña "Seguridad" de cursos. Resuelto.
-import { code as codeI, compareTable } from "./snippets";
+import { code as codeI, codeBlock } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
@@ -12,12 +12,12 @@ const intro =
 	filtro.</div>`;
 
 export async function buildBodyTK1424892(): Promise<string> {
-	const [h3Causa, h3Fix, h3Verif, h3Jconfig, h3JconfigCompare, h3JconfigImpl] = await Promise.all([
+	const [h3Causa, h3Fix, h3Verif, h3Jconfig, h3JconfigEjemplo, h3JconfigImpl] = await Promise.all([
 		h3Iconized("mdi:bug-outline", "Causa"),
 		h3Iconized("mdi:check-circle-outline", "Solución aplicada"),
 		h3Iconized("mdi:eye-check-outline", "Verificación"),
 		h3Iconized("mdi:database-cog-outline", "JCONFIG v2 — esquema declarativo de campos"),
-		h3Iconized("mdi:swap-horizontal", "Antes / Después — definición del campo en JCONFIG"),
+		h3Iconized("mdi:code-json", "Ejemplo de definición en JCONFIG"),
 		h3Iconized("mdi:application-cog-outline", "Implicación en el cliente"),
 	]);
 
@@ -80,26 +80,7 @@ export async function buildBodyTK1424892(): Promise<string> {
 		incorporar nuevos atributos o catálogos sin modificar el cliente, ya  
 		que la definición vive en la base de datos.</div>`;
 
-	const jconfigCompare = await compareTable({
-		kind: "code",
-		lang: "json",
-		beforeLabel: "JCONFIG v1",
-		afterLabel: "JCONFIG v2",
-		before: `{
-  "attrs": {
-    "ipermiso": {
-      "label": "Permiso",
-      "catalogo": "CAPACITACION/CATALOGOS/PERMISO"
-    },
-    "itema": {
-      "label": "Tema",
-      "catalogo": "CAPACITACION/CATALOGOS/TEMA"
-    },
-    "descripcion": { "label": "Descripción" }
-  }
-}`,
-		after: `{
-  "version": 2,
+	const jconfigCompare = await codeBlock(`{
   "attrs": {
     "ipermiso": {
       "type": "BtnRef",
@@ -113,8 +94,7 @@ export async function buildBodyTK1424892(): Promise<string> {
     },
     "descripcion": { "type": "RichEditor", "label": "Descripción" }
   }
-}`,
-	});
+}`, "json");
 
 	const jconfigImpl =
 		`<div>En el cliente esto se tradujo en que el mapeo de la columna  
@@ -132,7 +112,7 @@ export async function buildBodyTK1424892(): Promise<string> {
 		trazados en los commits relacionados.</div>`;
 
 	const jconfigSection = jconfigIntro
-		+ h3JconfigCompare + jconfigCompare
+		+ h3JconfigEjemplo + jconfigCompare
 		+ h3JconfigImpl + jconfigImpl;
 
 	return intro + h3Causa + causa + h3Fix + fix + h3Verif + verif + h3Jconfig + jconfigSection;
