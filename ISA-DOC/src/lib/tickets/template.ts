@@ -53,12 +53,12 @@ function buildCommitsHtml(commits: TicketCommit[]): string {
 			return `<div style="display:flex;gap:0.4rem;align-items:baseline;line-height:1.35;">
 <a href="${url}" target="_blank" rel="noopener" style="font-family:Consolas,Menlo,monospace;font-size:10.5pt;background:#f0f0f0;color:#0366d6;padding:0 0.3rem;border-radius:0.2rem;text-decoration:none;flex:0 0 auto;">${hash}</a>
 ${stats}
-<span style="font-size:10pt;color:#555;">${desc}</span>
-<span style="font-size:9pt;color:#999;">[${escapeHtml(repo)}]</span>
+<span style="font-size:10pt;color:#555;flex:1 1 auto;">${desc}</span>
+<span style="font-size:9pt;color:#999;flex:0 0 auto;text-align:right;white-space:nowrap;">[${escapeHtml(repo)}]</span>
 </div>`;
 		})
 		.join("\n");
-	return `\n<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">
+	return `\n<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">c
 <div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Commits relacionados (${commits.length}):</div>
 ${items}
 </div>\n`;
