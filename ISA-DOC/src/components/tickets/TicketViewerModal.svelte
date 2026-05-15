@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Modal, Switch, FlexLayout, GridLayout, ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
-	import { getTicketHtml, type TicketRegistro } from "../../lib/tickets";
+	import { getTicketHtml, getTicketTotalEstimadoMin, type TicketRegistro } from "../../lib/tickets";
 	import { formatHtml } from "../../lib/format-html";
 	import HtmlViewer from "../viewers/HtmlViewer.svelte";
 
@@ -16,6 +16,7 @@
 	// cambia el ticket y derivamos `srcdoc`/`prettyHtml` ya como strings.
 	let srcdoc: string = "";
 	let prettyHtml: string = "";
+	let totalEstimadoMin: number = 0;
 	$: if (ticket) {
 		const t = ticket;
 		getTicketHtml(t).then((html) => {
@@ -24,9 +25,13 @@
 				prettyHtml = formatHtml(html);
 			}
 		});
+		getTicketTotalEstimadoMin(t).then((min) => {
+			if (t === ticket) totalEstimadoMin = min;
+		});
 	} else {
 		srcdoc = "";
 		prettyHtml = "";
+		totalEstimadoMin = 0;
 	}
 
 	async function copyHtml(): Promise<void> {
@@ -62,7 +67,7 @@
 				<small style="color: gray; line-height: 1.3;"><b>Tipo solución:</b> {ticket.normativa.tipoSolucion}</small>
 				<small style="color: gray; line-height: 1.3;"><b>Cobertura:</b> {ticket.normativa.coberturaEstimada}</small>
 				<small style="color: gray; line-height: 1.3;"><b>Cierre:</b> {ticket.normativa.cierre}</small>
-				<small style="color: gray; line-height: 1.3;"><b>Estimación (min):</b> {ticket.estimacionMinutos ?? "—"}</small>
+				<small style="color: gray; line-height: 1.3;"><b>Estimación total (min):</b> {totalEstimadoMin || "—"}</small>
 			</GridLayout>
 
 			{#if ticket.resumen}

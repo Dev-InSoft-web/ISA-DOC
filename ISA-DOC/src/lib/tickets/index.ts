@@ -1,4 +1,4 @@
-import { buildTicketHtml } from "./template";
+import { buildTicketHtml, tiempoTotalEstimadoMin } from "./template";
 import { bodyTK1418894 } from "./TK-1418894";
 import { bodyTK1420742 } from "./TK-1420742";
 import { bodyTK1420751 } from "./TK-1420751";
@@ -594,4 +594,8 @@ export const TICKETS: TicketRegistro[] = [
 
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
 	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.fechaSolicitud, t.id, t.festivos, t.titulo);
+}
+
+export async function getTicketTotalEstimadoMin(t: TicketRegistro): Promise<number> {
+	return tiempoTotalEstimadoMin(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? []);
 }

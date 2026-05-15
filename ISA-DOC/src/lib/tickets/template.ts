@@ -415,19 +415,29 @@ function buildTituloHtml(ticketId?: string, titulo?: string): string {
 	return `<div style="margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid #e0e0e0;"><h1 style="margin:0;font-family:Tahoma;font-size:16pt;color:#333;font-weight:600;line-height:1.3;">${left}${tit}</h1></div>\n`;
 }
 
-// Tiempo estimado de diligenciar el ticket en la bitácora (15-60 min).
-// Crece linealmente con el volumen del body HTML, acotado a [15, 60].
-function tiempoDiligenciaMin(body: string): number {
+// Tiempo estimado de diligenciar el ticket en la bitácora (15-90 min).
+// Crece linealmente con el volumen del body HTML, acotado a [15, 90].
+export function tiempoDiligenciaMin(body: string): number {
 	const len = body ? body.length : 0;
 	const raw = 15 + Math.round((len - 500) / 180);
-	return Math.max(15, Math.min(60, raw));
+	return Math.max(15, Math.min(90, raw));
 }
 
 // Tiempo estimado para los cambios en base de datos (trabajo fuera de commits).
 // Se asume un costo flat de 10 minutos por cambio (análisis del registro,
 // preparación del SQL y verificación), independiente del tamaño del cuerpo.
-function tiempoCambiosBdMin(cambios: TicketDbChange[]): number {
+export function tiempoCambiosBdMin(cambios: TicketDbChange[]): number {
 	return cambios.length * 10;
+}
+
+// Total estimado en minutos: trabajo en commits (acotado por cota) + cambios
+// fuera de commits + diligencia. Refleja exactamente la fila "Total estimado"
+// del resumen renderizado en el HTML.
+export function tiempoTotalEstimadoMin(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = []): number {
+	const cota = cotaMaximaMinutos(commits);
+	const minCommits = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : 0;
+
+	return minCommits + tiempoCambiosBdMin(cambiosBd) + tiempoDiligenciaMin(body ?? "");
 }
 
 function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligencia: number, nCommits: number, nCambiosBd: number): string {
