@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { io, type Socket } from "socket.io-client";
+	import { STATIC_MODE } from "../../lib/runtime/staticMode";
 	import { marked } from "marked";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
@@ -172,6 +173,7 @@
 	}
 
 	function selectSlug(slug: string): void {
+		if (STATIC_MODE) { selectSlugStatic(slug); return; }
 		if (entityDirty && !confirm("Hay cambios sin guardar. ¿Descartar?")) return;
 		selectedSlug = slug;
 		entity = null;
@@ -301,7 +303,52 @@
 		}
 	}
 
+	async function loadStaticPostman(): Promise<void> {
+		const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "/";
+		const baseNoSlash = base.endsWith("/") ? base.slice(0, -1) : base;
+		async function fetchJson(rel: string): Promise<unknown | null> {
+			try {
+				const r = await fetch(`${baseNoSlash}/static-api/${rel}`);
+				if (!r.ok) return null;
+				return await r.json();
+			} catch { return null; }
+		}
+		const [listData, envsData, fullData] = await Promise.all([
+			fetchJson("postman/list.json") as Promise<CollectionMeta | null>,
+			fetchJson("postman/envs.json") as Promise<EnvironmentsFile | null>,
+			fetchJson("postman/full.json"),
+		]);
+		if (listData) {
+			meta = listData;
+			if (!selectedSlug && meta.entities.length) {
+				const firstSlug = meta.entities[0].slug;
+				const ent = (await fetchJson(`postman/entity-${firstSlug}.json`)) as EntityFile | null;
+				if (ent) { selectedSlug = firstSlug; entity = ent; }
+			}
+		}
+		if (envsData) { envs = envsData; activeEnvId = envsData.active; }
+		if (fullData) fullCollection = fullData;
+		loading = false;
+	}
+
+	async function selectSlugStatic(slug: string): Promise<void> {
+		if (entityDirty && !confirm("Hay cambios sin guardar. ¿Descartar?")) return;
+		const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "/";
+		const baseNoSlash = base.endsWith("/") ? base.slice(0, -1) : base;
+		try {
+			const r = await fetch(`${baseNoSlash}/static-api/postman/entity-${slug}.json`);
+			if (!r.ok) { toastError(`No se pudo cargar '${slug}'`); return; }
+			const data = (await r.json()) as EntityFile;
+			selectedSlug = slug;
+			entity = data;
+			entityDirty = false;
+			expandedItem = -1;
+			expandedResponse = {};
+		} catch (e) { toastError((e as Error).message); }
+	}
+
 	onMount(() => {
+		if (STATIC_MODE) { loadStaticPostman(); return; }
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });
 		socket.on("connect", () => { loadList(); loadEnvs(); loadFull(); });

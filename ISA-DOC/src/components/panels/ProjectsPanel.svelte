@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { io, type Socket } from "socket.io-client";
+	import { STATIC_MODE } from "../../lib/runtime/staticMode";
 	import {
 		Card,
 		Button,
@@ -210,6 +211,7 @@
 	}
 
 	onMount(() => {
+		if (STATIC_MODE) { loading = false; return; }
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });
 
