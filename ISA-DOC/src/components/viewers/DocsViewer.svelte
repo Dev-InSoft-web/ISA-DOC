@@ -1,7 +1,7 @@
 <script lang="ts">
    import { onMount, tick } from "svelte";
    import { ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
-   import { STATIC_MODE } from "../../lib/runtime/staticMode";
+   import { STATIC_MODE, withBase } from "../../lib/runtime/staticMode";
 
    export let project: string = "contapymeu";
 
@@ -439,11 +439,12 @@
       const parts: string[] = [`<h1>Recursos insertados</h1>`];
       for (const it of items) {
          const title = it.title ?? it.src.split("/").pop() ?? it.src;
-         const src = escapeAttr(it.src);
+         const resolvedSrc = STATIC_MODE ? withBase(it.src) : it.src;
+         const src = escapeAttr(resolvedSrc);
          if (it.type === "image") {
             parts.push(
                `<figure class="embed-figure">` +
-               `<div class="embed-head">${openBtn(it.src, `Abrir ${title} en otra pestaña`)}</div>` +
+               `<div class="embed-head">${openBtn(resolvedSrc, `Abrir ${title} en otra pestaña`)}</div>` +
                `<img class="embed-image" src="${src}" alt="${escapeAttr(title)}" />` +
                `</figure>`
             );
@@ -453,7 +454,7 @@
                : `/api/embed?path=${encodeURIComponent(it.src.replace(/^\//, ""))}`;
             parts.push(
                `<figure class="embed-figure">` +
-               `<div class="embed-head">${openBtn(it.src, `Abrir ${title} en otra pestaña`)}</div>` +
+               `<div class="embed-head">${openBtn(resolvedSrc, `Abrir ${title} en otra pestaña`)}</div>` +
                `<div class="embed-pdf" data-pdf-src="${inlineSrc}" aria-label="${escapeAttr(title)}">` +
                   `<div class="embed-pdf-loading">Cargando PDF…</div>` +
                `</div>` +
