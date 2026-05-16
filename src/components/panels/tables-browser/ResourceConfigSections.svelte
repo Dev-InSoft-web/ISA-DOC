@@ -54,22 +54,11 @@
 		dispatch("change");
 	}
 
-	function basename(p: string): string {
-		const s = p.replace(/\\/g, "/");
-		const i = s.lastIndexOf("/");
-		return i >= 0 ? s.slice(i + 1) : s;
-	}
+	// `targetFilePaths` se conserva por compatibilidad de la API del componente; no se usa en la UI.
+	void targetFilePaths;
 
-	function setTargetFile(
-		kind: "modelo" | "datos" | "server" | "client" | "webctrl" | "azurefn",
-		value: string,
-	): void {
-		const tf = { ...(resource.targetFiles ?? {}) };
-		const v = value.trim();
-		if (v) tf[kind] = v;
-		else delete tf[kind];
-		resource.targetFiles = Object.keys(tf).length ? tf : undefined;
-		change();
+	function aliasFromTableName(tableName: string): string {
+		return tableName.replace(/^[A-Z]+_/, "").replace(/_/g, "").toLowerCase();
 	}
 
 	function addHelper(): void {
@@ -87,11 +76,23 @@
 	}
 
 	function addRelation(): void {
-		const target = resources.find((r) => r.id !== resource.id)?.id ?? "";
+		const tgt = resources.find((r) => r.id !== resource.id);
+		const target = tgt?.id ?? "";
+		const alias = tgt ? aliasFromTableName(tgt.tableName) : "rel";
 		resource.relations = [
 			...resource.relations,
-			{ alias: "rel", kind: "1-N", target, versus: [], equals: [], insertEffect: "ignore" },
+			{ alias, kind: "1-N", target, versus: [], equals: [], insertEffect: "ignore" },
 		];
+		change();
+	}
+	function onRelTargetChange(rel: RelationDef, newTarget: string): void {
+		const prevTgt = resources.find((r) => r.id === rel.target);
+		const prevAlias = prevTgt ? aliasFromTableName(prevTgt.tableName) : "";
+		rel.target = newTarget;
+		const nextTgt = resources.find((r) => r.id === newTarget);
+		if (nextTgt && (!rel.alias || rel.alias === "rel" || rel.alias === prevAlias)) {
+			rel.alias = aliasFromTableName(nextTgt.tableName);
+		}
 		change();
 	}
 	function removeRelation(i: number): void {
@@ -197,224 +198,15 @@
 	</Card>
 
 	<Card>
-		<H4>Archivos destino</H4>
-		<div class="two-cols">
-			<label class="field">
-				<Text color="neutral"><small>modelo</small></Text>
-				<select
-					class="input-field"
-					value={resource.targetFiles?.modelo ?? ""}
-					on:change={(e) => setTargetFile("modelo", (e.target as HTMLSelectElement).value)}
-				>
-					<option value="">— (default) —</option>
-					{#each targetFilePaths as p (p)}
-						<option value={p}>{basename(p)}</option>
-					{/each}
-				</select>
-			</label>
-			<label class="field">
-				<Text color="neutral"><small>datos</small></Text>
-				<select
-					class="input-field"
-					value={resource.targetFiles?.datos ?? ""}
-					on:change={(e) => setTargetFile("datos", (e.target as HTMLSelectElement).value)}
-				>
-					<option value="">— (default) —</option>
-					{#each targetFilePaths as p (p)}
-						<option value={p}>{basename(p)}</option>
-					{/each}
-				</select>
-			</label>
-		</div>
-	</Card>
-{:else if section === "server"}
-	<Card>
-		<FlexLayout items="center">
-			<Iconify icon="mdi:server" />
-			<H4>Server · API y base</H4>
-		</FlexLayout>
-		<div class="two-cols">
-			<label class="field">
-				<Text color="neutral"><small>isysRecurso</small></Text>
-				<input class="input-field" bind:value={resource.isysRecurso} on:input={change} />
-			</label>
-			<label class="field">
-				<Text color="neutral"><small>Server base class</small></Text>
-				<input class="input-field" bind:value={resource.parentBaseClass} on:input={change} />
-			</label>
-			<label class="field">
-				<Text color="neutral"><small>API singular</small></Text>
-				<input class="input-field" bind:value={resource.singularApi} on:input={change} />
-			</label>
-			<label class="field">
-				<Text color="neutral"><small>API plural</small></Text>
-				<input class="input-field" bind:value={resource.pluralApi} on:input={change} />
-			</label>
-			<label class="field">
-				<Text color="neutral"><small>Caption singular</small></Text>
-				<input class="input-field" bind:value={resource.singularCaption} on:input={change} />
-			</label>
-			<label class="field">
-				<Text color="neutral"><small>Caption plural</small></Text>
-				<input class="input-field" bind:value={resource.pluralCaption} on:input={change} />
-			</label>
-		</div>
-	</Card>
-
-	<Card>
-		<FlexLayout items="center" justify="between">
-			<H4>Helpers</H4>
-			<Button_ variant="outlined" onClick={addHelper}>
-				<Iconify icon="mdi:plus" /> Añadir
-			</Button_>
-		</FlexLayout>
-		<Text color="neutral">
-			<small>Métodos manuales que se anexan a la clase. Tipo <code>get</code> (computed) o <code>fn</code> (método).</small>
-		</Text>
-		{#each resource.helpers ?? [] as h, i}
-			<FloatingCard
-				variant="flat"
-				horizontal="right"
-				vertical="top"
-				class="rel-fc"
-				style="padding: 0; margin: 0.35rem 0;"
-			>
-				<div class="rel">
-					<div class="row">
-						<select class="input-field" bind:value={h.kind} on:change={change}>
-							<option value="get">get</option>
-							<option value="fn">fn</option>
-						</select>
-						<input class="input-field" placeholder="nombre" bind:value={h.name} on:input={change} />
-						<input
-							class="input-field"
-							placeholder="tipo retorno (ej: number)"
-							bind:value={h.returnType}
-							on:input={change}
-						/>
-					</div>
-					{#if h.kind === "fn"}
-						<input
-							class="input-field"
-							placeholder="params, ej: (x: number)"
-							bind:value={h.params}
-							on:input={change}
-						/>
-					{/if}
-					<textarea
-						class="input-field code-area"
-						rows="3"
-						placeholder={'return this.iplan ? String(this.iplan).split(".").filter(Boolean).length : 0'}
-						bind:value={h.body}
-						on:input={change}
-					></textarea>
-				</div>
-				<div slot="float" style="padding: 0;">
-					<ButtonIconify
-						color="danger"
-						icon="mdi:close"
-						onClick={() => removeHelper(i)}
-						title="Eliminar"
-					/>
-				</div>
-			</FloatingCard>
-		{/each}
-	</Card>
-
-	<Card>
-		<H4>FN-Módulo · acciones a omitir</H4>
-		<Text color="neutral">
-			<small>Acciones a omitir en <code>registerCatalogoGenAzureFunction</code>:</small>
-		</Text>
-		<div class="col-checks">
-			{#each OMIT_OPS as op (op)}
-				<label class="col-check">
-					<input
-						type="checkbox"
-						checked={(resource.omitOps ?? []).includes(op)}
-						on:change={(e) => toggleOmitOp(op, (e.target as HTMLInputElement).checked)}
-					/>
-					<span>{op}</span>
-				</label>
-			{/each}
-		</div>
-	</Card>
-
-	<Card>
-		<FlexLayout items="center" justify="between">
-			<H4>Hooks personalizados</H4>
-			<Button_ variant="outlined" onClick={addHook}>
-				<Iconify icon="mdi:plus" /> Añadir
-			</Button_>
-		</FlexLayout>
-		{#if resource.customHooks.length === 0}
-			<Text color="neutral">
-				<small>Sin hooks. Ej: <code>Get_Recurso_PlanCurso</code>.</small>
-			</Text>
-		{/if}
-		{#each resource.customHooks as h, i}
-			<FloatingCard
-				variant="flat"
-				horizontal="right"
-				vertical="top"
-				class="rel-fc"
-				style="padding: 0; margin: 0.35rem 0;"
-			>
-				<div class="rel">
-					<div class="row">
-						<input
-							class="input-field"
-							placeholder="nombre Server"
-							bind:value={h.name}
-							on:input={change}
-						/>
-						<input
-							class="input-field"
-							placeholder="signature"
-							bind:value={h.signature}
-							on:input={change}
-						/>
-					</div>
-					<div class="row">
-						<select class="input-field" bind:value={h.clientMethod} on:change={change}>
-							<option value="GET">GET</option>
-							<option value="POST">POST</option>
-							<option value="PUT">PUT</option>
-							<option value="DELETE">DELETE</option>
-						</select>
-						<input
-							class="input-field flex-1"
-							placeholder="path API"
-							bind:value={h.clientPath}
-							on:input={change}
-						/>
-						<input
-							class="input-field"
-							placeholder="fn cliente"
-							bind:value={h.clientFnName}
-							on:input={change}
-						/>
-					</div>
-				</div>
-				<div slot="float" style="padding: 0;">
-					<ButtonIconify
-						color="danger"
-						icon="mdi:close"
-						onClick={() => removeHook(i)}
-						title="Eliminar"
-					/>
-				</div>
-			</FloatingCard>
-		{/each}
-	</Card>
-
-	<Card>
 		<FlexLayout items="center" justify="between">
 			<H4>Relaciones (conceptuales)</H4>
 			<Button_ variant="outlined" onClick={addRelation}>
 				<Iconify icon="mdi:plus" /> Añadir
 			</Button_>
 		</FlexLayout>
+		<Text color="neutral">
+			<small>Pivotes y maestros relacionados con esta entidad. <code>1-N</code> emite <code>TArray&lt;…&gt;</code>; <code>1-1</code> emite la clase directa.</small>
+		</Text>
 		{#if resource.relations.length === 0}
 			<Text color="neutral"><small>Sin relaciones. Añade para generar nestedConfig().</small></Text>
 		{/if}
@@ -439,11 +231,15 @@
 								<option value={k}>{k}</option>
 							{/each}
 						</select>
-						<select class="input-field" bind:value={r.target} on:change={change}>
+						<select
+							class="input-field"
+							value={r.target}
+							on:change={(e) => onRelTargetChange(r, (e.target as HTMLSelectElement).value)}
+						>
 							<option value="">— recurso destino —</option>
 							{#each resources as o (o.id)}
 								{#if o.id !== resource.id}
-									<option value={o.id}>{o.id}</option>
+									<option value={o.id}>{o.id} ({o.tableName})</option>
 								{/if}
 							{/each}
 						</select>
@@ -592,36 +388,185 @@
 	</Card>
 
 	<Card>
-		<H4>Archivos destino</H4>
+		<FlexLayout items="center" justify="between">
+			<H4>Helpers</H4>
+			<Button_ variant="outlined" onClick={addHelper}>
+				<Iconify icon="mdi:plus" /> Añadir
+			</Button_>
+		</FlexLayout>
+		<Text color="neutral">
+			<small>Propiedades extra del modelo (no inferibles del diagrama). <code>get</code> (computed) o <code>fn</code> (método).</small>
+		</Text>
+		{#each resource.helpers ?? [] as h, i}
+			<FloatingCard
+				variant="flat"
+				horizontal="right"
+				vertical="top"
+				class="rel-fc"
+				style="padding: 0; margin: 0.35rem 0;"
+			>
+				<div class="rel">
+					<div class="row">
+						<select class="input-field" bind:value={h.kind} on:change={change}>
+							<option value="get">get</option>
+							<option value="fn">fn</option>
+						</select>
+						<input class="input-field" placeholder="nombre" bind:value={h.name} on:input={change} />
+						<input
+							class="input-field"
+							placeholder="tipo retorno (ej: number)"
+							bind:value={h.returnType}
+							on:input={change}
+						/>
+					</div>
+					{#if h.kind === "fn"}
+						<input
+							class="input-field"
+							placeholder="params, ej: (x: number)"
+							bind:value={h.params}
+							on:input={change}
+						/>
+					{/if}
+					<textarea
+						class="input-field code-area"
+						rows="3"
+						placeholder={'return this.iplan ? String(this.iplan).split(".").filter(Boolean).length : 0'}
+						bind:value={h.body}
+						on:input={change}
+					></textarea>
+				</div>
+				<div slot="float" style="padding: 0;">
+					<ButtonIconify
+						color="danger"
+						icon="mdi:close"
+						onClick={() => removeHelper(i)}
+						title="Eliminar"
+					/>
+				</div>
+			</FloatingCard>
+		{/each}
+	</Card>
+{:else if section === "server"}
+	<Card>
+		<FlexLayout items="center">
+			<Iconify icon="mdi:server" />
+			<H4>Server · API y base</H4>
+		</FlexLayout>
 		<div class="two-cols">
 			<label class="field">
-				<Text color="neutral"><small>server</small></Text>
-				<select
-					class="input-field"
-					value={resource.targetFiles?.server ?? ""}
-					on:change={(e) => setTargetFile("server", (e.target as HTMLSelectElement).value)}
-				>
-					<option value="">— (default) —</option>
-					{#each targetFilePaths as p (p)}
-						<option value={p}>{basename(p)}</option>
-					{/each}
-				</select>
+				<Text color="neutral"><small>isysRecurso</small></Text>
+				<input class="input-field" bind:value={resource.isysRecurso} on:input={change} />
 			</label>
 			<label class="field">
-				<Text color="neutral"><small>azurefn</small></Text>
-				<select
-					class="input-field"
-					value={resource.targetFiles?.azurefn ?? ""}
-					on:change={(e) => setTargetFile("azurefn", (e.target as HTMLSelectElement).value)}
-				>
-					<option value="">— (default) —</option>
-					{#each targetFilePaths as p (p)}
-						<option value={p}>{basename(p)}</option>
-					{/each}
-				</select>
+				<Text color="neutral"><small>Server base class</small></Text>
+				<input class="input-field" bind:value={resource.parentBaseClass} on:input={change} />
+			</label>
+			<label class="field">
+				<Text color="neutral"><small>API singular</small></Text>
+				<input class="input-field" bind:value={resource.singularApi} on:input={change} />
+			</label>
+			<label class="field">
+				<Text color="neutral"><small>API plural</small></Text>
+				<input class="input-field" bind:value={resource.pluralApi} on:input={change} />
+			</label>
+			<label class="field">
+				<Text color="neutral"><small>Caption singular</small></Text>
+				<input class="input-field" bind:value={resource.singularCaption} on:input={change} />
+			</label>
+			<label class="field">
+				<Text color="neutral"><small>Caption plural</small></Text>
+				<input class="input-field" bind:value={resource.pluralCaption} on:input={change} />
 			</label>
 		</div>
 	</Card>
+
+	<Card>
+		<H4>FN-Módulo · acciones a omitir</H4>
+		<Text color="neutral">
+			<small>Acciones a omitir en <code>registerCatalogoGenAzureFunction</code>:</small>
+		</Text>
+		<div class="col-checks">
+			{#each OMIT_OPS as op (op)}
+				<label class="col-check">
+					<input
+						type="checkbox"
+						checked={(resource.omitOps ?? []).includes(op)}
+						on:change={(e) => toggleOmitOp(op, (e.target as HTMLInputElement).checked)}
+					/>
+					<span>{op}</span>
+				</label>
+			{/each}
+		</div>
+	</Card>
+
+	<Card>
+		<FlexLayout items="center" justify="between">
+			<H4>Hooks personalizados</H4>
+			<Button_ variant="outlined" onClick={addHook}>
+				<Iconify icon="mdi:plus" /> Añadir
+			</Button_>
+		</FlexLayout>
+		{#if resource.customHooks.length === 0}
+			<Text color="neutral">
+				<small>Sin hooks. Ej: <code>Get_Recurso_PlanCurso</code>.</small>
+			</Text>
+		{/if}
+		{#each resource.customHooks as h, i}
+			<FloatingCard
+				variant="flat"
+				horizontal="right"
+				vertical="top"
+				class="rel-fc"
+				style="padding: 0; margin: 0.35rem 0;"
+			>
+				<div class="rel">
+					<div class="row">
+						<input
+							class="input-field"
+							placeholder="nombre Server"
+							bind:value={h.name}
+							on:input={change}
+						/>
+						<input
+							class="input-field"
+							placeholder="signature"
+							bind:value={h.signature}
+							on:input={change}
+						/>
+					</div>
+					<div class="row">
+						<select class="input-field" bind:value={h.clientMethod} on:change={change}>
+							<option value="GET">GET</option>
+							<option value="POST">POST</option>
+							<option value="PUT">PUT</option>
+							<option value="DELETE">DELETE</option>
+						</select>
+						<input
+							class="input-field flex-1"
+							placeholder="path API"
+							bind:value={h.clientPath}
+							on:input={change}
+						/>
+						<input
+							class="input-field"
+							placeholder="fn cliente"
+							bind:value={h.clientFnName}
+							on:input={change}
+						/>
+					</div>
+				</div>
+				<div slot="float" style="padding: 0;">
+					<ButtonIconify
+						color="danger"
+						icon="mdi:close"
+						onClick={() => removeHook(i)}
+						title="Eliminar"
+					/>
+				</div>
+			</FloatingCard>
+		{/each}
+	</Card>
+
 {:else if section === "client"}
 	<Card>
 		<FlexLayout items="center">
@@ -637,38 +582,6 @@
 		<FlexLayout items="center">
 			<Switch_ label="Exponer driver en FN-Módulo" bind:checked={exposeOn} />
 		</FlexLayout>
-	</Card>
-
-	<Card>
-		<H4>Archivos destino</H4>
-		<div class="two-cols">
-			<label class="field">
-				<Text color="neutral"><small>client</small></Text>
-				<select
-					class="input-field"
-					value={resource.targetFiles?.client ?? ""}
-					on:change={(e) => setTargetFile("client", (e.target as HTMLSelectElement).value)}
-				>
-					<option value="">— (default) —</option>
-					{#each targetFilePaths as p (p)}
-						<option value={p}>{basename(p)}</option>
-					{/each}
-				</select>
-			</label>
-			<label class="field">
-				<Text color="neutral"><small>webctrl</small></Text>
-				<select
-					class="input-field"
-					value={resource.targetFiles?.webctrl ?? ""}
-					on:change={(e) => setTargetFile("webctrl", (e.target as HTMLSelectElement).value)}
-				>
-					<option value="">— (default) —</option>
-					{#each targetFilePaths as p (p)}
-						<option value={p}>{basename(p)}</option>
-					{/each}
-				</select>
-			</label>
-		</div>
 	</Card>
 {:else if section === "azure"}
 	<Card>
@@ -697,23 +610,6 @@
 				{/if}
 			</div>
 		</FlexLayout>
-
-		<H4 style="margin: 0.75rem 0 0.5rem 0;">Archivo destino</H4>
-		<div class="two-cols">
-			<label class="field">
-				<Text color="neutral"><small>azurefn</small></Text>
-				<select
-					class="input-field"
-					value={resource.targetFiles?.azurefn ?? ""}
-					on:change={(e) => setTargetFile("azurefn", (e.target as HTMLSelectElement).value)}
-				>
-					<option value="">— (default) —</option>
-					{#each targetFilePaths as p (p)}
-						<option value={p}>{basename(p)}</option>
-					{/each}
-				</select>
-			</label>
-		</div>
 	</Card>
 {/if}
 

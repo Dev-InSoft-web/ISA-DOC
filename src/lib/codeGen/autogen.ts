@@ -164,7 +164,7 @@ function inferRelations(cfg: ResourceConfig, t: ParsedTable, tables: ParsedTable
 		// Si el otro tiene PK más ancha (incluye la mía como prefijo), es mi hijo.
 		if (otherPkCount <= myPkCols.length) continue;
 		const kind: "1-N" = "1-N";
-		const alias = targetId.toLowerCase();
+		const alias = aliasFromTableName(other.name);
 		const key = `${alias}|${kind}`;
 		if (seen.has(key)) continue;
 		seen.add(key);
@@ -202,6 +202,10 @@ function tableToResourceId(tableName: string): string {
 function stripTablePrefix(name: string): string {
 	for (const p of TABLE_PREFIXES) if (name.startsWith(p)) return name.slice(p.length);
 	return name;
+}
+
+function aliasFromTableName(tableName: string): string {
+	return stripTablePrefix(tableName.toUpperCase()).replace(/_/g, "").toLowerCase();
 }
 
 function singularize(s: string): string {
