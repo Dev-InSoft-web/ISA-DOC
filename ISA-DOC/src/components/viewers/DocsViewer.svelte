@@ -616,8 +616,8 @@
 {/if}
 
 {#if modalOpen}
-   <div class="md-modal-backdrop" on:click={closeFullMdModal} role="presentation">
-      <div class="md-modal" on:click|stopPropagation role="dialog" aria-modal="true">
+   <div class="md-modal-backdrop" on:click={closeFullMdModal} on:keydown={(e) => { if (e.key === "Escape") closeFullMdModal(); }} role="presentation">
+      <div class="md-modal" on:click|stopPropagation role="dialog" aria-modal="true" tabindex="-1">
          <header class="md-modal-head">
             <h3>📄 Documentación completa — {project}</h3>
             <div class="md-modal-actions">
