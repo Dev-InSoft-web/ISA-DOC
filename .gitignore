@@ -1,3 +1,7 @@
-**node_modules**
-ISA-DOC/package-lock.json
-ISA-DOC/.env
+node_modules/
+dist/
+dist-gh-pages/
+.gh-pages-skip/
+.astro/
+.env
+public/static-api/
