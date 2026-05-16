@@ -9,7 +9,16 @@ const { title } = Astro.props;
 const rawBase = import.meta.env.BASE_URL || "/";
 const base = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
 const link = (p: string): string => base + p || "/";
-const currentPath = Astro.url.pathname.replace(rawBase, "/").replace(/\/$/, "") || "/";
+// Quita el prefijo base del pathname de forma robusta (con o sin barra final
+// en `base`), evita generar `//patyia/...` cuando `rawBase` no termina en `/`.
+function stripBase(pathname: string): string {
+   let p = pathname;
+   if (base && p.startsWith(base)) p = p.slice(base.length);
+   if (!p.startsWith("/")) p = "/" + p;
+   p = p.replace(/\/$/, "");
+   return p || "/";
+}
+const currentPath = stripBase(Astro.url.pathname);
 
 type ProjectKey = "clientesis" | "patyia";
 const project: ProjectKey = currentPath === "/patyia" || currentPath.startsWith("/patyia/") ? "patyia" : "clientesis";
