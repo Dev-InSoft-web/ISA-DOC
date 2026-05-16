@@ -62,7 +62,9 @@ try {
     if (Test-Path $ghCache) { Remove-Item -Recurse -Force $ghCache }
 
     Write-Host "== Publicando en $repoUrl ($branch) =="
-    npx -y gh-pages -d dist-gh-pages -b $branch -t -r $repoUrl
+    # --depth 1 evita clonar todo el historial de gh-pages (que crece con cada publish)
+    # y mitiga errores tipo "fatal: fetch-pack: invalid index-pack output" en redes lentas.
+    npx -y gh-pages -d dist-gh-pages -b $branch -t -r $repoUrl --depth 1
     if ($LASTEXITCODE -ne 0) { throw "gh-pages fallo" }
 
     Write-Host "OK: publicado en https://dev-insoft-web.github.io/ISA-DOC/"
