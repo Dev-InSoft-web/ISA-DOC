@@ -9,8 +9,6 @@
 		Text,
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import type {
-		RelationDef,
-		RelationKind,
 		ResourceConfig,
 	} from "../../../lib/codeGen/types.ts";
 	import FloatingCard from "../../_comps/containers/FloatingCard.svelte";
@@ -30,7 +28,6 @@
 
 	const dispatch = createEventDispatcher<{ change: void }>();
 
-	const REL_KINDS: RelationKind[] = ["1-1", "1-N"];
 	const OMIT_OPS: string[] = ["Verificar", "Duplicar", "Recodificar", "Consolidar"];
 
 	let exposeOn: boolean = resource.exposeInFn !== false;
@@ -57,10 +54,6 @@
 	// `targetFilePaths` se conserva por compatibilidad de la API del componente; no se usa en la UI.
 	void targetFilePaths;
 
-	function aliasFromTableName(tableName: string): string {
-		return tableName.replace(/^[A-Z]+_/, "").replace(/_/g, "").toLowerCase();
-	}
-
 	function addHelper(): void {
 		const helpers = resource.helpers ?? [];
 		resource.helpers = [
@@ -73,83 +66,6 @@
 		if (!resource.helpers) return;
 		resource.helpers = resource.helpers.filter((_, k) => k !== i);
 		change();
-	}
-
-	function addRelation(): void {
-		const tgt = resources.find((r) => r.id !== resource.id);
-		const target = tgt?.id ?? "";
-		const alias = tgt ? aliasFromTableName(tgt.tableName) : "rel";
-		resource.relations = [
-			...resource.relations,
-			{ alias, kind: "1-N", target, versus: [], equals: [], insertEffect: "ignore" },
-		];
-		change();
-	}
-	function onRelTargetChange(rel: RelationDef, newTarget: string): void {
-		const prevTgt = resources.find((r) => r.id === rel.target);
-		const prevAlias = prevTgt ? aliasFromTableName(prevTgt.tableName) : "";
-		rel.target = newTarget;
-		const nextTgt = resources.find((r) => r.id === newTarget);
-		if (nextTgt && (!rel.alias || rel.alias === "rel" || rel.alias === prevAlias)) {
-			rel.alias = aliasFromTableName(nextTgt.tableName);
-		}
-		change();
-	}
-	function removeRelation(i: number): void {
-		resource.relations = resource.relations.filter((_, k) => k !== i);
-		change();
-	}
-	function addVersus(rel: RelationDef): void {
-		const subCol = relTargetColumns(rel)[0] ?? "";
-		const parentCol = currentColumns()[0] ?? "";
-		rel.versus = [...(rel.versus ?? []), { sub: subCol, parent: parentCol }];
-		change();
-	}
-	function removeVersus(rel: RelationDef, idx: number): void {
-		rel.versus = (rel.versus ?? []).filter((_, k) => k !== idx);
-		change();
-	}
-	function addEqual(rel: RelationDef): void {
-		const tgtCols = relTargetColumns(rel);
-		const col = tgtCols[0] ?? "";
-		const type = relTargetFieldType(rel, col);
-		rel.equals = [
-			...(rel.equals ?? []),
-			{ col, value: type === "bool" ? "1" : type === "number" ? "0" : "", type },
-		];
-		change();
-	}
-	function removeEqual(rel: RelationDef, idx: number): void {
-		rel.equals = (rel.equals ?? []).filter((_, k) => k !== idx);
-		change();
-	}
-	function onEqualColChange(rel: RelationDef, idx: number, col: string): void {
-		const e = rel.equals[idx];
-		e.col = col;
-		const t = relTargetFieldType(rel, col);
-		if (t !== e.type) {
-			e.type = t;
-			e.value = t === "bool" ? "1" : t === "number" ? "0" : "";
-		}
-		change();
-	}
-	function relTargetColumns(rel: RelationDef): string[] {
-		const tgt = resources.find((r) => r.id === rel.target);
-		if (!tgt) return [];
-		return tgt.fields.map((f) => (f.column ?? f.name).toUpperCase());
-	}
-	function currentColumns(): string[] {
-		return resource.fields.map((f) => (f.column ?? f.name).toUpperCase());
-	}
-	function relTargetFieldType(rel: RelationDef, col: string): "bool" | "number" | "string" {
-		const tgt = resources.find((r) => r.id === rel.target);
-		const f = tgt?.fields.find(
-			(x) => (x.column ?? x.name).toUpperCase() === col.toUpperCase(),
-		);
-		if (!f) return "string";
-		if (f.type === "bool") return "bool";
-		if (f.type === "number") return "number";
-		return "string";
 	}
 
 	function toggleOmitOp(op: string, on: boolean): void {
@@ -198,192 +114,33 @@
 	</Card>
 
 	<Card>
-		<FlexLayout items="center" justify="between">
-			<H4>Relaciones (conceptuales)</H4>
-			<Button_ variant="outlined" onClick={addRelation}>
-				<Iconify icon="mdi:plus" /> Añadir
-			</Button_>
+		<FlexLayout items="center">
+			<Iconify icon="mdi:graph-outline" />
+			<H4>Relaciones (automáticas)</H4>
 		</FlexLayout>
 		<Text color="neutral">
-			<small>Pivotes y maestros relacionados con esta entidad. <code>1-N</code> emite <code>TArray&lt;…&gt;</code>; <code>1-1</code> emite la clase directa.</small>
+			<small>Derivadas del dominio: si otra tabla comparte la PK de ésta y la extiende, se considera hija (<code>1-N</code> → <code>TArray&lt;…&gt;</code>). No se editan: la estructura las define.</small>
 		</Text>
 		{#if resource.relations.length === 0}
-			<Text color="neutral"><small>Sin relaciones. Añade para generar nestedConfig().</small></Text>
+			<Text color="neutral"><small>Sin tablas hijas detectadas en el dominio.</small></Text>
 		{/if}
-		{#each resource.relations as r, i}
-			<FloatingCard
-				variant="flat"
-				horizontal="right"
-				vertical="top"
-				class="rel-fc"
-				style="padding: 0; margin: 0.35rem 0;"
-			>
-				<div class="rel">
-					<div class="row">
-						<input
-							class="input-field"
-							placeholder="alias"
-							bind:value={r.alias}
-							on:input={change}
-						/>
-						<select class="input-field" bind:value={r.kind} on:change={change}>
-							{#each REL_KINDS as k}
-								<option value={k}>{k}</option>
-							{/each}
-						</select>
-						<select
-							class="input-field"
-							value={r.target}
-							on:change={(e) => onRelTargetChange(r, (e.target as HTMLSelectElement).value)}
-						>
-							<option value="">— recurso destino —</option>
-							{#each resources as o (o.id)}
-								{#if o.id !== resource.id}
-									<option value={o.id}>{o.id} ({o.tableName})</option>
-								{/if}
-							{/each}
-						</select>
-					</div>
-
-					<div class="sub">
-						<FlexLayout items="center" justify="between">
-							<Text>
-								<small><strong>Versus</strong> — <code>sub.col</code> = <code>parent.col</code></small>
-							</Text>
-							<Button_ variant="outlined" onClick={() => addVersus(r)}>
-								<Iconify icon="mdi:plus" /> Versus
-							</Button_>
-						</FlexLayout>
-						{#each r.versus ?? [] as v, vi}
-							<div class="row">
-								<select class="input-field" bind:value={v.sub} on:change={change}>
-									{#each relTargetColumns(r) as c (c)}
-										<option value={c}>sub.{c}</option>
-									{/each}
-								</select>
-								<span class="vs-eq">=</span>
-								<select class="input-field" bind:value={v.parent} on:change={change}>
-									{#each currentColumns() as c (c)}
-										<option value={c}>parent.{c}</option>
-									{/each}
-								</select>
-								<span class="btn-fit">
-									<ButtonIconify
-										color="danger"
-										icon="mdi:close"
-										onClick={() => removeVersus(r, vi)}
-										title="Eliminar"
-									/>
-								</span>
-							</div>
-						{:else}
-							<Text color="neutral"><small>Sin pares versus.</small></Text>
+		{#each resource.relations as r}
+			{@const tgt = resources.find((x) => x.id === r.target)}
+			<div class="rel-ro">
+				<div class="row">
+					<code class="alias">{r.alias}</code>
+					<span class="kind">{r.kind}</span>
+					<Iconify icon="mdi:arrow-right" />
+					<code>{tgt?.tableName ?? r.target}</code>
+				</div>
+				{#if r.versus?.length}
+					<div class="vs-list">
+						{#each r.versus as v}
+							<small><code>sub.{v.sub}</code> = <code>parent.{v.parent}</code></small>
 						{/each}
 					</div>
-
-					<div class="sub">
-						<FlexLayout items="center" justify="between">
-							<Text>
-								<small><strong>Equals</strong> — <code>sub.col = valor</code></small>
-							</Text>
-							<Button_ variant="outlined" onClick={() => addEqual(r)}>
-								<Iconify icon="mdi:plus" /> Equal
-							</Button_>
-						</FlexLayout>
-						{#each r.equals ?? [] as eq, ei}
-							<div class="row">
-								<select
-									class="input-field"
-									value={eq.col}
-									on:change={(e) =>
-										onEqualColChange(r, ei, (e.target as HTMLSelectElement).value)}
-								>
-									{#each relTargetColumns(r) as c (c)}
-										<option value={c}>sub.{c}</option>
-									{/each}
-								</select>
-								<span class="vs-eq">=</span>
-								<select class="input-field input-type" bind:value={eq.type} on:change={change}>
-									<option value="bool">bool</option>
-									<option value="number">number</option>
-									<option value="string">string</option>
-								</select>
-								{#if eq.type === "bool"}
-									<select class="input-field" bind:value={eq.value} on:change={change}>
-										<option value="1">true (1)</option>
-										<option value="0">false (0)</option>
-									</select>
-								{:else if eq.type === "number"}
-									<input
-										class="input-field"
-										type="number"
-										bind:value={eq.value}
-										on:input={change}
-									/>
-								{:else}
-									<input
-										class="input-field"
-										type="text"
-										placeholder="valor"
-										bind:value={eq.value}
-										on:input={change}
-									/>
-								{/if}
-								<ButtonIconify
-									color="danger"
-									icon="mdi:close"
-									onClick={() => removeEqual(r, ei)}
-									title="Eliminar"
-								/>
-							</div>
-						{:else}
-							<Text color="neutral"><small>Sin equals.</small></Text>
-						{/each}
-					</div>
-
-					<div class="sub">
-						<Text>
-							<small>
-								<strong>WHERE custom</strong> — cuerpo de <code>(sub, parent) =&gt; ...</code>
-							</small>
-						</Text>
-						<textarea
-							class="input-field code-area"
-							rows="2"
-							placeholder={'(parent.startsWith(pivot) ? `${sub}.IPLAN=${parent}.IPLANESTUDIO` : "")'}
-							value={r.customWhere ?? ""}
-							on:input={(e) => {
-								r.customWhere = (e.target as HTMLTextAreaElement).value || undefined;
-								change();
-							}}
-						></textarea>
-					</div>
-
-					<div class="row">
-						<div class="field">
-							<Text color="neutral"><small>Insert</small></Text>
-							<Switch_
-								label="syncDetails"
-								checked={r.insertEffect === "syncDetails"}
-								on:change={(e) => {
-									r.insertEffect = (e.target as HTMLInputElement).checked
-										? "syncDetails"
-										: "ignore";
-									change();
-								}}
-							/>
-						</div>
-					</div>
-				</div>
-				<div slot="float" style="padding: 0;">
-					<ButtonIconify
-						color="danger"
-						icon="mdi:close"
-						onClick={() => removeRelation(i)}
-						title="Eliminar"
-					/>
-				</div>
-			</FloatingCard>
+				{/if}
+			</div>
 		{/each}
 	</Card>
 

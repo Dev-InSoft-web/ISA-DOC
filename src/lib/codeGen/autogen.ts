@@ -46,11 +46,11 @@ export function generateResourcesFromTables(tables: ParsedTable[]): AutogenResul
 		resources.push(cfg);
 	}
 
+	// Las relaciones SIEMPRE se derivan de la estructura (PKs compartidas).
+	// No se persisten en customization: el dominio es la única fuente de verdad.
 	for (const cfg of resources) {
 		const t = tables.find((x) => x.name.toUpperCase() === cfg.tableName.toUpperCase());
 		if (!t) continue;
-		// Si la entidad ya trae relaciones de recurso persistidas, respetarlas.
-		if (Array.isArray(t.customization?.relations) && t.customization!.relations!.length) continue;
 		cfg.relations = inferRelations(cfg, t, tables, idByTable);
 	}
 
@@ -104,17 +104,7 @@ function buildResource(id: string, t: ParsedTable, idByTable: Map<string, string
 		clientBaseClass: cust.clientBaseClass ?? "TCapacitacionBaseClient",
 		uiBaseKind: cust.uiBaseKind ?? "CRUD",
 		fields,
-		relations: Array.isArray(cust.relations) && cust.relations.length
-			? cust.relations.map((r) => ({
-				alias: r.alias,
-				kind: r.kind,
-				target: r.target,
-				versus: r.versus.map((v) => ({ ...v })),
-				equals: r.equals.map((e) => ({ ...e })),
-				insertEffect: r.insertEffect,
-				customWhere: r.customWhere,
-			}))
-			: [],
+		relations: [],
 		customHooks: Array.isArray(cust.customHooks) ? cust.customHooks.map((h) => ({ ...h })) : [],
 		helpers: Array.isArray(cust.helpers) ? cust.helpers.map((h) => ({ ...h })) : undefined,
 		omitOps: Array.isArray(cust.omitOps) ? [...cust.omitOps] : ["Verificar", "Duplicar", "Recodificar", "Consolidar"],

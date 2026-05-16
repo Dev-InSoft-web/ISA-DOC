@@ -396,17 +396,7 @@
 		if (!eq(merged.omitOps ?? [], inferred.omitOps ?? [])) out.omitOps = merged.omitOps ? [...merged.omitOps] : undefined;
 		if ((merged.exposeInFn ?? undefined) !== (inferred.exposeInFn ?? undefined)) out.exposeInFn = merged.exposeInFn;
 		if ((merged.orderBy ?? undefined) !== (inferred.orderBy ?? undefined)) out.orderBy = merged.orderBy;
-		if (!eq(merged.relations ?? [], inferred.relations ?? [])) {
-			out.relations = (merged.relations ?? []).map((r) => ({
-				alias: r.alias,
-				kind: r.kind,
-				target: r.target,
-				versus: r.versus.map((v) => ({ ...v })),
-				equals: r.equals.map((e) => ({ ...e })),
-				insertEffect: r.insertEffect,
-				customWhere: r.customWhere,
-			}));
-		}
+		// Las relaciones se derivan SIEMPRE de la estructura (PKs compartidas); no se persisten.
 		if (!eq(merged.customHooks ?? [], inferred.customHooks ?? [])) {
 			out.customHooks = (merged.customHooks ?? []).map((h) => ({ ...h }));
 		}
