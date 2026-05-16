@@ -10,6 +10,34 @@ const rawBase = import.meta.env.BASE_URL || "/";
 const base = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
 const link = (p: string): string => base + p || "/";
 const currentPath = Astro.url.pathname.replace(rawBase, "/").replace(/\/$/, "") || "/";
+
+type ProjectKey = "clientesis" | "patyia";
+const project: ProjectKey = currentPath === "/patyia" || currentPath.startsWith("/patyia/") ? "patyia" : "clientesis";
+
+const projects: Array<{ key: ProjectKey; label: string; home: string }> = [
+   { key: "clientesis", label: "ClientesIS", home: "/" },
+   { key: "patyia", label: "PatyIA", home: "/patyia" },
+];
+
+type SubTab = { label: string; cliPath: string; patPath: string };
+const subTabs: SubTab[] = [
+   { label: "SQL", cliPath: "/sql", patPath: "/patyia/sql" },
+   { label: "Bitácora", cliPath: "/bitacora", patPath: "/patyia/bitacora" },
+   { label: "Postman", cliPath: "/postman", patPath: "/patyia/postman" },
+   { label: "Docs", cliPath: "/contapymeu", patPath: "/patyia/contapymeu" },
+   { label: "Actions", cliPath: "/actions", patPath: "/patyia/actions" },
+];
+
+const isCliSqlActive = currentPath === "/" || currentPath === "/sql";
+const isPatSqlActive = currentPath === "/patyia" || currentPath === "/patyia/sql";
+function isSubActive(t: SubTab): boolean {
+   if (project === "clientesis") {
+      if (t.label === "SQL") return isCliSqlActive;
+      return currentPath === t.cliPath;
+   }
+   if (t.label === "SQL") return isPatSqlActive;
+   return currentPath === t.patPath;
+}
 ---
 
 <html lang="es" class="dark">
@@ -143,14 +171,27 @@ const currentPath = Astro.url.pathname.replace(rawBase, "/").replace(/\/$/, "") 
    </head>
    <body>
       <header class="isa-header">
-         <span class="isa-logo">ISA</span>
-         <span class="isa-sep">|</span>
-         <nav class="isa-nav">
-            <a href={link("/")} class:list={["isa-nav-link", { active: currentPath === "/" || currentPath === "/sql" }]}> SQL </a>
-            <a href={link("/bitacora")} class:list={["isa-nav-link", { active: currentPath === "/bitacora" }]}> Bitácora </a>
-            <a href={link("/postman")} class:list={["isa-nav-link", { active: currentPath === "/postman" }]}> Postman </a>
-            <a href={link("/contapymeu")} class:list={["isa-nav-link", { active: currentPath === "/contapymeu" }]}> Docs </a>
-            <a href={link("/actions")} class:list={["isa-nav-link", { active: currentPath === "/actions" }]}> Actions </a>
+         <div class="isa-header-top">
+            <span class="isa-logo">ISA</span>
+            <span class="isa-sep">|</span>
+            <nav class="isa-nav isa-nav-projects">
+               {
+                  projects.map((p) => (
+                     <a href={link(p.home)} class:list={["isa-nav-link isa-nav-project", { active: project === p.key }]}>
+                        {p.label}
+                     </a>
+                  ))
+               }
+            </nav>
+         </div>
+         <nav class="isa-nav isa-nav-subtabs">
+            {
+               subTabs.map((t) => (
+                  <a href={link(project === "clientesis" ? t.cliPath : t.patPath)} class:list={["isa-nav-link isa-nav-subtab", { active: isSubActive(t) }]}>
+                     {t.label}
+                  </a>
+               ))
+            }
          </nav>
       </header>
       <main class="isa-main">
@@ -179,11 +220,17 @@ const currentPath = Astro.url.pathname.replace(rawBase, "/").replace(/\/$/, "") 
 
    .isa-header {
       display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.75rem 1.5rem;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0.5rem 1.5rem 0.4rem;
       background: var(--is-bg-secondary);
       border-bottom: 1px solid var(--is-b-color);
+   }
+
+   .isa-header-top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
    }
 
    .isa-logo {
@@ -219,11 +266,26 @@ const currentPath = Astro.url.pathname.replace(rawBase, "/").replace(/\/$/, "") 
       color: white;
    }
 
+   .isa-nav-projects {
+      font-size: 0.95rem;
+      font-weight: 600;
+   }
+
+   .isa-nav-project {
+      padding: 0.3rem 0.9rem;
+   }
+
+   .isa-nav-subtabs {
+      padding-left: calc(2.25rem + 1ch);
+      border-top: 1px dashed var(--is-b-color);
+      padding-top: 0.4rem;
+   }
+
    .isa-main {
       flex: 1 1 auto;
       min-height: 0;
       overflow: hidden;
-      padding: 0 1rem 1rem;
+      padding: 0.5rem 1rem 1rem;
       display: flex;
       flex-direction: column;
    }

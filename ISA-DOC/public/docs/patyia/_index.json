@@ -1,0 +1,19 @@
+{
+	"project": "PatyIA",
+	"title": "PatyIA — Documentación de Ingeniería",
+	"description": "Documentación técnica inicial del proyecto Ayudas ContaPyme IA (PatyIA): microservicio Azure Functions AYUDASCP-IA que orquesta un asistente OpenAI con vector storage (RAG) sobre la base de datos AYUDASCP_IA, expuesto al Portal de Clientes y autenticado mediante DSCLIENTES.",
+	"sections": [
+		{ "slug": "00-overview", "title": "Visión General", "icon": "mdi:book-open-variant" },
+		{ "slug": "01-arquitectura", "title": "Arquitectura", "icon": "mdi:sitemap-outline" },
+		{ "slug": "02-modelo-datos", "title": "Modelo de Datos", "icon": "mdi:database-outline" },
+		{ "slug": "03-flujo-asistente", "title": "Flujo del Asistente", "icon": "mdi:transit-connection-variant" },
+		{ "slug": "04-endpoints", "title": "Endpoints HTTP", "icon": "mdi:api" },
+		{ "slug": "99-recursos", "title": "Recursos", "icon": "mdi:folder-multiple-outline", "kind": "embeds" }
+	],
+	"embeds": [
+		{ "type": "pdf",   "src": "/imgs/patyia/notebooklm/PatyIA_Architectural_Blueprint.pdf", "title": "PatyIA — Architectural Blueprint" },
+		{ "type": "pdf",   "src": "/imgs/patyia/notebooklm/PatyIA_Technical_Architecture.pdf", "title": "PatyIA — Technical Architecture" },
+		{ "type": "image", "src": "/imgs/patyia/notebooklm/unnamed.png", "title": "Diagrama NotebookLM (1)" },
+		{ "type": "image", "src": "/imgs/patyia/notebooklm/unnamed (1).png", "title": "Diagrama NotebookLM (2)" }
+	]
+}

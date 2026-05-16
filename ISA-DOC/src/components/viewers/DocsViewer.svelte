@@ -1,15 +1,18 @@
 <script lang="ts">
    import { onMount, tick } from "svelte";
+   import { ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
    import { STATIC_MODE } from "../../lib/runtime/staticMode";
 
    export let project: string = "contapymeu";
 
-   type Section = { slug: string; title: string; icon?: string };
+   type Section = { slug: string; title: string; icon?: string; kind?: "md" | "embeds" };
+   type Embed = { type: "image" | "pdf"; src: string; title?: string };
    type Manifest = {
       project: string;
       title: string;
       description?: string;
       sections: Section[];
+      embeds?: Embed[];
    };
 
    let manifest: Manifest | null = null;
@@ -58,31 +61,39 @@
       }
       try {
          await loadScript("https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js");
+         // Resuelve la paleta desde las variables globales --is-* del documento.
+         const css = getComputedStyle(document.documentElement);
+         const v = (name: string, fallback: string): string => (css.getPropertyValue(name).trim() || fallback);
+         const bgPrimary = v("--is-bg-primary", "#0c1222");
+         const bgSecondary = v("--is-bg-secondary", "#041c34");
+         const bgReadonly = v("--is-bg-readonly", "#001327");
+         const accent = v("--is-primary", "#3a8bff");
+         const fg = v("--is-color", "#dfe9f7");
+         const border = v("--is-b-color", "#8885");
          (window as any).mermaid.initialize({
             startOnLoad: false,
             theme: "dark",
             themeVariables: {
-               background: "#0f1117",
-               // Acento azul (dodgerblue para dark) en nodos y aristas.
-               primaryColor: "#0b3a66",
-               primaryBorderColor: "#3a8bff",
-               primaryTextColor: "#dfe9f7",
-               lineColor: "#3a8bff",
-               secondaryColor: "#13243d",
-               tertiaryColor: "#0b1626",
-               nodeBorder: "#3a8bff",
-               clusterBkg: "#0e1b2d",
-               clusterBorder: "#1f4a7e",
-               edgeLabelBackground: "#0e1b2d",
-               textColor: "#dfe9f7",
+               background: bgPrimary,
+               primaryColor: bgSecondary,
+               primaryBorderColor: accent,
+               primaryTextColor: fg,
+               lineColor: accent,
+               secondaryColor: bgReadonly,
+               tertiaryColor: bgPrimary,
+               nodeBorder: accent,
+               clusterBkg: bgSecondary,
+               clusterBorder: border,
+               edgeLabelBackground: bgSecondary,
+               textColor: fg,
                // Sequence / class / state extras
-               actorBkg: "#0b3a66",
-               actorBorder: "#3a8bff",
-               actorTextColor: "#dfe9f7",
-               labelBoxBkgColor: "#0e1b2d",
-               labelBoxBorderColor: "#3a8bff",
-               signalColor: "#3a8bff",
-               signalTextColor: "#dfe9f7",
+               actorBkg: bgSecondary,
+               actorBorder: accent,
+               actorTextColor: fg,
+               labelBoxBkgColor: bgSecondary,
+               labelBoxBorderColor: accent,
+               signalColor: accent,
+               signalTextColor: fg,
             },
             flowchart: { curve: "step", htmlLabels: true, useMaxWidth: true },
          });
@@ -335,6 +346,13 @@
    async function loadSection(slug: string) {
       activeSlug = slug;
       html = "";
+      const section = manifest?.sections.find((s) => s.slug === slug);
+      if (section?.kind === "embeds") {
+         html = renderEmbeds(manifest?.embeds ?? []);
+         await tick();
+         if (contentEl) await renderPdfEmbeds(contentEl);
+         return;
+      }
       try {
          const docsPath = STATIC_MODE ? `/static-api/docs/${project}/${slug}.md` : `/docs/${project}/${slug}.md`;
          const res = await fetch(docsPath, { cache: "no-cache" });
@@ -355,6 +373,180 @@
       } catch (e: any) {
          html = `<p class="docs-error">Error cargando <code>${slug}.md</code>: ${e?.message ?? e}</p>`;
       }
+   }
+
+   const PDFJS_VER = "3.11.174";
+   let pdfJsReady = false;
+
+   async function loadPdfJs(): Promise<void> {
+      if (pdfJsReady && (window as any).pdfjsLib) return;
+      const base = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VER}`;
+      if (!(window as any).pdfjsLib) {
+         await loadScript(`${base}/pdf.min.js`);
+      }
+      const lib = (window as any).pdfjsLib;
+      if (lib?.GlobalWorkerOptions) {
+         lib.GlobalWorkerOptions.workerSrc = `${base}/pdf.worker.min.js`;
+      }
+      pdfJsReady = !!lib;
+   }
+
+   async function renderPdfEmbeds(container: HTMLElement) {
+      const hosts = Array.from(container.querySelectorAll<HTMLDivElement>(".embed-pdf[data-pdf-src]"));
+      if (!hosts.length) return;
+      try {
+         await loadPdfJs();
+      } catch {
+         hosts.forEach((h) => { h.innerHTML = `<div class="embed-pdf-error">No se pudo cargar el visor de PDF.</div>`; });
+         return;
+      }
+      const lib = (window as any).pdfjsLib;
+      if (!lib) return;
+      await Promise.all(hosts.map(async (host) => {
+         const src = host.dataset.pdfSrc;
+         if (!src) return;
+         try {
+            const task = lib.getDocument({ url: src });
+            const pdf = await task.promise;
+            host.innerHTML = "";
+            const scaleBase = Math.max(1, Math.min(2, (host.clientWidth || 800) / 700));
+            for (let n = 1; n <= pdf.numPages; n++) {
+               const page = await pdf.getPage(n);
+               const viewport = page.getViewport({ scale: scaleBase });
+               const canvas = document.createElement("canvas");
+               canvas.className = "embed-pdf-page";
+               canvas.width = Math.round(viewport.width);
+               canvas.height = Math.round(viewport.height);
+               host.appendChild(canvas);
+               const ctx = canvas.getContext("2d");
+               if (!ctx) continue;
+               await page.render({ canvasContext: ctx, viewport }).promise;
+            }
+         } catch (e: any) {
+            host.innerHTML = `<div class="embed-pdf-error">Error al renderizar el PDF: ${e?.message ?? e}</div>`;
+         }
+      }));
+   }
+
+   function renderEmbeds(items: Embed[]): string {
+      if (!items.length) {
+         return `<p class="docs-error">No hay recursos configurados.</p>`;
+      }
+      const escapeAttr = (s: string) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+      const openIcon = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M14 3v2h3.59L7.76 14.83l1.41 1.41L19 6.41V10h2V3h-7zM19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7z"/></svg>`;
+      const openBtn = (href: string, label: string) =>
+         `<a class="embed-open" href="${escapeAttr(href)}" target="_blank" rel="noopener" title="${escapeAttr(label)}" aria-label="${escapeAttr(label)}">${openIcon}</a>`;
+      const parts: string[] = [`<h1>Recursos insertados</h1>`];
+      for (const it of items) {
+         const title = it.title ?? it.src.split("/").pop() ?? it.src;
+         const src = escapeAttr(it.src);
+         if (it.type === "image") {
+            parts.push(
+               `<figure class="embed-figure">` +
+               `<div class="embed-head">${openBtn(it.src, `Abrir ${title} en otra pestaña`)}</div>` +
+               `<img class="embed-image" src="${src}" alt="${escapeAttr(title)}" />` +
+               `</figure>`
+            );
+         } else if (it.type === "pdf") {
+            const inlineSrc = STATIC_MODE
+               ? src
+               : `/api/embed?path=${encodeURIComponent(it.src.replace(/^\//, ""))}`;
+            parts.push(
+               `<figure class="embed-figure">` +
+               `<div class="embed-head">${openBtn(it.src, `Abrir ${title} en otra pestaña`)}</div>` +
+               `<div class="embed-pdf" data-pdf-src="${inlineSrc}" aria-label="${escapeAttr(title)}">` +
+                  `<div class="embed-pdf-loading">Cargando PDF…</div>` +
+               `</div>` +
+               `</figure>`
+            );
+         }
+      }
+      return parts.join("\n");
+   }
+
+   let buildingAll = false;
+   let modalOpen = false;
+   let fullMd = "";
+   let cmHostEl: HTMLDivElement | null = null;
+   let cmFullInstance: { setValue(v: string): void; refresh(): void } | null = null;
+   let copyFlash = false;
+
+   async function buildJoinedMd(): Promise<string> {
+      if (!manifest) return "";
+      const baseDir = STATIC_MODE ? `/static-api/docs/${project}` : `/docs/${project}`;
+      const parts: string[] = [];
+      const header = `# ${manifest.title}\n\n${manifest.description ?? ""}`.trim();
+      parts.push(header);
+      for (const s of manifest.sections) {
+         if (s.kind === "embeds") continue;
+         const res = await fetch(`${baseDir}/${s.slug}.md`, { cache: "no-cache" });
+         if (!res.ok) continue;
+         let md = await res.text();
+         md = expandImageCrops(md);
+         if (!STATIC_MODE) md = await expandSourceIncludes(md);
+         parts.push(`\n\n<!-- ===== ${s.slug} — ${s.title} ===== -->\n\n${md.trim()}`);
+      }
+      return parts.join("\n\n");
+   }
+
+   async function openFullMdModal() {
+      if (buildingAll) return;
+      buildingAll = true;
+      try {
+         fullMd = await buildJoinedMd();
+         modalOpen = true;
+         await tick();
+         await mountFullMdEditor();
+      } finally {
+         buildingAll = false;
+      }
+   }
+
+   async function mountFullMdEditor() {
+      if (!cmHostEl || !(window as any).CodeMirror) return;
+      await loadCmMode("markdown");
+      const CM = (window as any).CodeMirror;
+      cmHostEl.innerHTML = "";
+      cmFullInstance = CM(cmHostEl, {
+         value: fullMd,
+         mode: "text/x-markdown",
+         theme: "isadocs",
+         lineNumbers: true,
+         readOnly: "nocursor",
+         viewportMargin: Infinity,
+         lineWrapping: true,
+         tabSize: 2,
+         indentUnit: 2,
+      });
+      await tick();
+      cmFullInstance?.refresh();
+   }
+
+   function closeFullMdModal() {
+      modalOpen = false;
+      cmFullInstance = null;
+   }
+
+   async function copyFullMd() {
+      try {
+         await navigator.clipboard.writeText(fullMd);
+         copyFlash = true;
+         setTimeout(() => { copyFlash = false; }, 1500);
+      } catch {
+         /* clipboard puede fallar en contextos inseguros */
+      }
+   }
+
+   function downloadFullMd() {
+      const blob = new Blob([fullMd], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${project}-doc.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
    }
 
    onMount(async () => {
@@ -392,6 +584,15 @@
             {#if manifest.description}
                <p class="docs-desc">{manifest.description}</p>
             {/if}
+            <button
+               type="button"
+               class="docs-dl-all"
+               on:click={openFullMdModal}
+               disabled={buildingAll}
+               title="Ver el .md completo (todas las secciones unidas) en un visor"
+            >
+               {buildingAll ? "Generando…" : "📄 Ver MD completo"}
+            </button>
          </div>
          <nav class="docs-nav">
             {#each manifest.sections as s}
@@ -413,13 +614,50 @@
    </div>
 {/if}
 
+{#if modalOpen}
+   <div class="md-modal-backdrop" on:click={closeFullMdModal} role="presentation">
+      <div class="md-modal" on:click|stopPropagation role="dialog" aria-modal="true">
+         <header class="md-modal-head">
+            <h3>📄 Documentación completa — {project}</h3>
+            <div class="md-modal-actions">
+               <ButtonIconify
+                  icon={copyFlash ? "mdi:check" : "mdi:content-copy"}
+                  color={copyFlash ? "success" : "primary"}
+                  title={copyFlash ? "Copiado" : "Copiar al portapapeles"}
+                  on:click={copyFullMd}
+               />
+               <ButtonIconify
+                  icon="mdi:download"
+                  color="primary"
+                  title="Descargar como .md"
+                  on:click={downloadFullMd}
+               />
+               <ButtonIconify
+                  icon="mdi:close"
+                  title="Cerrar"
+                  on:click={closeFullMdModal}
+               />
+            </div>
+         </header>
+         <div class="md-modal-body">
+            <div class="md-cm-host" bind:this={cmHostEl}></div>
+         </div>
+      </div>
+   </div>
+{/if}
+
 <style>
    .docs-loading,
    .docs-error {
       padding: 1.5rem;
-      color: #888;
+      color: var(--is-color);
+      opacity: 0.75;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 0.85rem;
+   }
+   .docs-error {
+      color: var(--is-error);
+      opacity: 1;
    }
 
    .docs-shell {
@@ -433,26 +671,27 @@
       overflow: hidden;
    }
 
+   /* ----------------------- Sidebar ----------------------- */
    .docs-side {
       height: 100%;
       min-height: 0;
       overflow-y: auto;
-      background: #1a1a1a;
-      border: 1px solid #2c2c2c;
-      border-radius: 6px;
+      background: var(--is-bg-secondary);
+      border: 1px solid var(--is-b-color);
+      border-radius: 8px;
       padding: 1rem;
    }
 
    .docs-side-head {
       padding-bottom: 0.75rem;
       margin-bottom: 0.75rem;
-      border-bottom: 1px solid #2c2c2c;
+      border-bottom: 1px solid var(--is-b-color);
    }
 
    .docs-title {
       margin: 0 0 0.35rem 0;
       font-size: 0.95rem;
-      color: #e0e0e0;
+      color: var(--is-primary);
       font-weight: 600;
    }
 
@@ -460,7 +699,86 @@
       margin: 0;
       font-size: 0.75rem;
       line-height: 1.4;
-      color: #888;
+      color: var(--is-color);
+      opacity: 0.7;
+   }
+
+   .docs-dl-all {
+      margin-top: 0.6rem;
+      width: 100%;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--is-primary);
+      background: color-mix(in srgb, var(--is-primary) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--is-primary) 45%, transparent);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+   }
+   .docs-dl-all:hover:not(:disabled) {
+      background: var(--is-primary);
+      color: var(--is-bg-primary);
+   }
+   .docs-dl-all:disabled {
+      opacity: 0.6;
+      cursor: progress;
+   }
+
+   /* ----------------------- Modal MD completo ----------------------- */
+   .md-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 2rem;
+   }
+   .md-modal {
+      background: var(--is-bg-primary);
+      border: 1px solid var(--is-b-color);
+      border-radius: 10px;
+      width: min(1100px, 100%);
+      height: min(85vh, 900px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+   }
+   .md-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      background: var(--is-bg-secondary);
+      border-bottom: 1px solid var(--is-b-color);
+   }
+   .md-modal-head h3 {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--is-primary);
+      font-weight: 600;
+   }
+   .md-modal-actions {
+      display: flex;
+      gap: 0.4rem;
+   }
+   .md-modal-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      background: var(--is-bg-readonly);
+   }
+   .md-cm-host {
+      width: 100%;
+      height: 100%;
+   }
+   .md-cm-host :global(.CodeMirror) {
+      height: 100% !important;
+      font-size: 0.82rem;
    }
 
    .docs-nav {
@@ -477,23 +795,25 @@
       background: transparent;
       border: 1px solid transparent;
       border-radius: 4px;
-      color: #bbb;
+      color: var(--is-color);
+      opacity: 0.85;
       font-size: 0.8rem;
       text-align: left;
       cursor: pointer;
-      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      transition: background 0.12s, color 0.12s, border-color 0.12s, opacity 0.12s;
       font-family: inherit;
    }
 
    .docs-nav-item:hover {
-      background: #232323;
-      color: #e0e0e0;
+      background: var(--is-bg-readonly);
+      opacity: 1;
    }
 
    .docs-nav-item.active {
-      background: #2a2a2a;
-      color: #f0f0f0;
-      border-color: #3a3a3a;
+      background: var(--is-primary);
+      color: white;
+      opacity: 1;
+      border-color: transparent;
    }
 
    .docs-nav-num {
@@ -501,19 +821,20 @@
       min-width: 1.5em;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 0.7rem;
-      color: #666;
+      opacity: 0.55;
    }
 
    .docs-nav-item.active .docs-nav-num {
-      color: #999;
+      opacity: 0.85;
    }
 
+   /* ----------------------- Content ----------------------- */
    .docs-content {
-      background: #161616;
-      border: 1px solid #262626;
-      border-radius: 6px;
+      background: var(--is-bg-secondary);
+      border: 1px solid var(--is-b-color);
+      border-radius: 8px;
       padding: 2rem 2.25rem;
-      color: #d4d4d4;
+      color: var(--is-color);
       font-size: 0.92rem;
       line-height: 1.65;
       height: 100%;
@@ -522,32 +843,33 @@
       overflow: auto;
    }
 
-   /* Markdown rendered styles (grayscale only) */
+   /* Markdown — alineado con la paleta global (--is-*) */
    :global(.docs-content h1) {
       font-size: 1.7rem;
-      color: #f0f0f0;
+      color: var(--is-primary);
       margin: 0 0 1rem 0;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid #2c2c2c;
+      border-bottom: 1px solid var(--is-b-color);
       font-weight: 600;
    }
    :global(.docs-content h2) {
       font-size: 1.25rem;
-      color: #e8e8e8;
+      color: var(--is-color);
       margin: 2rem 0 0.75rem 0;
       padding-bottom: 0.35rem;
-      border-bottom: 1px solid #232323;
+      border-bottom: 1px solid var(--is-b-color);
       font-weight: 600;
    }
    :global(.docs-content h3) {
       font-size: 1.05rem;
-      color: #dcdcdc;
+      color: var(--is-color);
       margin: 1.5rem 0 0.5rem 0;
       font-weight: 600;
    }
    :global(.docs-content h4) {
       font-size: 0.95rem;
-      color: #cfcfcf;
+      color: var(--is-color);
+      opacity: 0.9;
       margin: 1.25rem 0 0.35rem 0;
       font-weight: 600;
    }
@@ -555,13 +877,13 @@
       margin: 0.6rem 0;
    }
    :global(.docs-content a) {
-      color: #cfcfcf;
+      color: var(--is-primary);
       text-decoration: underline;
-      text-decoration-color: #555;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
    }
    :global(.docs-content a:hover) {
-      color: #ffffff;
-      text-decoration-color: #999;
+      filter: brightness(1.15);
    }
    :global(.docs-content ul),
    :global(.docs-content ol) {
@@ -572,18 +894,18 @@
       margin: 0.2rem 0;
    }
    :global(.docs-content code) {
-      background: #1f1f1f;
-      border: 1px solid #2a2a2a;
+      background: var(--is-bg-readonly);
+      border: 1px solid var(--is-b-color);
       border-radius: 3px;
       padding: 0.05rem 0.35rem;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 0.85em;
-      color: #e0e0e0;
+      color: var(--is-color);
    }
    :global(.docs-content pre) {
-      background: #0f0f0f;
-      border: 1px solid #262626;
-      border-radius: 5px;
+      background: var(--is-bg-readonly);
+      border: 1px solid var(--is-b-color);
+      border-radius: 6px;
       padding: 0.85rem 1rem;
       overflow-x: auto;
       font-size: 0.82rem;
@@ -594,15 +916,17 @@
       background: transparent;
       border: 0;
       padding: 0;
-      color: #d4d4d4;
+      color: var(--is-color);
    }
    :global(.docs-content blockquote) {
       margin: 0.75rem 0;
-      padding: 0.4rem 0.9rem;
-      border-left: 3px solid #444;
-      background: #1a1a1a;
-      color: #b8b8b8;
+      padding: 0.5rem 0.9rem;
+      border-left: 3px solid var(--is-primary);
+      background: var(--is-bg-readonly);
+      color: var(--is-color);
+      opacity: 0.9;
       font-style: italic;
+      border-radius: 0 4px 4px 0;
    }
    :global(.docs-content table) {
       border-collapse: collapse;
@@ -612,31 +936,28 @@
    }
    :global(.docs-content th),
    :global(.docs-content td) {
-      border: 1px solid #2a2a2a;
+      border: 1px solid var(--is-b-color);
       padding: 0.4rem 0.65rem;
       text-align: left;
       vertical-align: top;
    }
    :global(.docs-content th) {
-      background: #1c1c1c;
-      color: #e0e0e0;
+      background: var(--is-bg-readonly);
+      color: var(--is-primary);
       font-weight: 600;
    }
    :global(.docs-content tr:nth-child(even) td) {
-      background: #161616;
-   }
-   :global(.docs-content tr:nth-child(odd) td) {
-      background: #1a1a1a;
+      background: color-mix(in srgb, var(--is-bg-readonly) 50%, transparent);
    }
    :global(.docs-content hr) {
       border: 0;
-      border-top: 1px solid #2a2a2a;
+      border-top: 1px solid var(--is-b-color);
       margin: 1.5rem 0;
    }
    :global(.docs-content img) {
       max-width: 100%;
-      border-radius: 4px;
-      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      border: 1px solid var(--is-b-color);
    }
    /* Imagen recortada server-side: el filtro ya viene aplicado por el endpoint. */
    :global(.docs-content img.is-imgcrop) { filter: none; }
@@ -644,12 +965,80 @@
       display: block;
       max-width: 100%;
       margin: 0.6rem auto;
-      border: 1px solid #2a2a2a;
-      border-radius: 4px;
+      border: 1px solid var(--is-b-color);
+      border-radius: 6px;
+   }
+
+   /* ----------------------- Recursos insertados ----------------------- */
+   :global(.docs-content .embed-figure) {
+      margin: 1.25rem 0 1.75rem;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+   }
+   :global(.docs-content .embed-head) {
+      display: flex;
+      justify-content: flex-end;
+   }
+   :global(.docs-content .embed-open) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      color: var(--is-primary);
+      background: color-mix(in srgb, var(--is-primary) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--is-primary) 45%, transparent);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+   }
+   :global(.docs-content .embed-open:hover) {
+      background: var(--is-primary);
+      color: var(--is-bg-primary);
+   }
+   :global(.docs-content .embed-image) {
+      max-width: 100%;
+      border-radius: 6px;
+      border: 1px solid var(--is-b-color);
+      background: #fff;
+   }
+   :global(.docs-content .embed-pdf) {
+      width: 100%;
+      max-height: 78vh;
+      overflow: auto;
+      border: 1px solid var(--is-b-color);
+      border-radius: 6px;
+      background: #2b2b2b;
+      padding: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+   }
+   :global(.docs-content .embed-pdf-page) {
+      max-width: 100%;
+      height: auto;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+      border-radius: 2px;
+   }
+   :global(.docs-content .embed-pdf-loading),
+   :global(.docs-content .embed-pdf-error) {
+      color: var(--is-color);
+      opacity: 0.75;
+      font-size: 0.85rem;
+      padding: 1rem;
+      text-align: center;
+   }
+   :global(.docs-content .embed-pdf-error) {
+      color: var(--is-error);
+      opacity: 1;
    }
    :global(.docs-content .mermaid) {
-      background: #141414;
-      border: 1px solid #2a2a2a;
+      background: var(--is-bg-readonly);
+      border: 1px solid var(--is-b-color);
       border-radius: 6px;
       padding: 1rem;
       margin: 0.9rem 0;
@@ -662,23 +1051,23 @@
    }
 
    /* ------------------------------------------------------------- */
-   /* CodeMirror — bloque y tema oscuro grayscale (cm-s-isadocs)    */
+   /* CodeMirror — syntax highlight (VS Code-like) sobre paleta     */
    /* ------------------------------------------------------------- */
    :global(.docs-content .is-codeblock) {
       margin: 0.85rem 0;
-      border: 1px solid #2d2d2d;
+      border: 1px solid var(--is-b-color);
       border-radius: 6px;
-      background: #1e1e1e;
+      background: var(--is-bg-readonly);
       overflow: hidden;
    }
    :global(.docs-content .is-codeblock-tag) {
       display: inline-block;
       padding: 0.15rem 0.55rem;
-      background: #252526;
-      border-bottom: 1px solid #2d2d2d;
-      border-right: 1px solid #2d2d2d;
+      background: var(--is-bg-secondary);
+      border-bottom: 1px solid var(--is-b-color);
+      border-right: 1px solid var(--is-b-color);
       border-bottom-right-radius: 4px;
-      color: #9cdcfe;
+      color: var(--is-primary);
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       font-size: 0.7rem;
       letter-spacing: 0.04em;
@@ -688,49 +1077,49 @@
       font-size: 0.82rem;
       line-height: 1.55;
    }
-   :global(.docs-content .CodeMirror.cm-s-isadocs) {
+   :global(.CodeMirror.cm-s-isadocs) {
       height: auto;
-      background: #1e1e1e;
-      color: #d4d4d4;
+      background: var(--is-bg-readonly);
+      color: var(--is-color);
       font-family: ui-monospace, "Cascadia Code", SFMono-Regular, Menlo, monospace;
    }
-   :global(.docs-content .cm-s-isadocs .CodeMirror-gutters) {
-      background: #1e1e1e;
-      border-right: 1px solid #2d2d2d;
+   :global(.cm-s-isadocs .CodeMirror-gutters) {
+      background: var(--is-bg-readonly);
+      border-right: 1px solid var(--is-b-color);
    }
-   :global(.docs-content .cm-s-isadocs .CodeMirror-linenumber) {
-      color: #858585;
+   :global(.cm-s-isadocs .CodeMirror-linenumber) {
+      color: var(--is-color);
+      opacity: 0.4;
       padding: 0 0.5rem 0 0.35rem;
       font-size: 0.72rem;
    }
-   :global(.docs-content .cm-s-isadocs .CodeMirror-cursor) { display: none; }
-   :global(.docs-content .cm-s-isadocs .CodeMirror-selected) { background: #264f78 !important; }
-   :global(.docs-content .cm-s-isadocs .CodeMirror-line) {
-      color: #d4d4d4;
-   }
-   :global(.docs-content .cm-s-isadocs .cm-comment)   { color: #6a9955; font-style: italic; }
-   :global(.docs-content .cm-s-isadocs .cm-keyword)   { color: #569cd6; }
-   :global(.docs-content .cm-s-isadocs .cm-atom)      { color: #569cd6; }
-   :global(.docs-content .cm-s-isadocs .cm-number)    { color: #b5cea8; }
-   :global(.docs-content .cm-s-isadocs .cm-def)       { color: #dcdcaa; }
-   :global(.docs-content .cm-s-isadocs .cm-variable)  { color: #9cdcfe; }
-   :global(.docs-content .cm-s-isadocs .cm-variable-2){ color: #9cdcfe; }
-   :global(.docs-content .cm-s-isadocs .cm-variable-3){ color: #4ec9b0; }
-   :global(.docs-content .cm-s-isadocs .cm-property)  { color: #9cdcfe; }
-   :global(.docs-content .cm-s-isadocs .cm-operator)  { color: #d4d4d4; }
-   :global(.docs-content .cm-s-isadocs .cm-string)    { color: #ce9178; }
-   :global(.docs-content .cm-s-isadocs .cm-string-2)  { color: #ce9178; }
-   :global(.docs-content .cm-s-isadocs .cm-meta)      { color: #d4d4d4; }
-   :global(.docs-content .cm-s-isadocs .cm-builtin)   { color: #4ec9b0; }
-   :global(.docs-content .cm-s-isadocs .cm-tag)       { color: #569cd6; }
-   :global(.docs-content .cm-s-isadocs .cm-attribute) { color: #9cdcfe; }
-   :global(.docs-content .cm-s-isadocs .cm-type)      { color: #4ec9b0; }
-   :global(.docs-content .cm-s-isadocs .cm-qualifier) { color: #4ec9b0; }
-   :global(.docs-content .cm-s-isadocs .cm-bracket)   { color: #d4d4d4; }
-   :global(.docs-content .cm-s-isadocs .cm-error)     { color: #f44747; }
-   :global(.docs-content .cm-s-isadocs .CodeMirror-matchingbracket) {
-      color: #fff !important;
-      outline: 1px solid #555;
+   :global(.cm-s-isadocs .CodeMirror-cursor) { display: none; }
+   :global(.cm-s-isadocs .CodeMirror-selected) { background: color-mix(in srgb, var(--is-primary) 35%, transparent) !important; }
+   :global(.cm-s-isadocs .CodeMirror-line) { color: var(--is-color); }
+   /* VS Code Dark-like syntax colors */
+   :global(.cm-s-isadocs .cm-comment)   { color: #6a9955; font-style: italic; }
+   :global(.cm-s-isadocs .cm-keyword)   { color: #569cd6; }
+   :global(.cm-s-isadocs .cm-atom)      { color: #569cd6; }
+   :global(.cm-s-isadocs .cm-number)    { color: #b5cea8; }
+   :global(.cm-s-isadocs .cm-def)       { color: #dcdcaa; }
+   :global(.cm-s-isadocs .cm-variable)  { color: #9cdcfe; }
+   :global(.cm-s-isadocs .cm-variable-2){ color: #9cdcfe; }
+   :global(.cm-s-isadocs .cm-variable-3){ color: #4ec9b0; }
+   :global(.cm-s-isadocs .cm-property)  { color: #9cdcfe; }
+   :global(.cm-s-isadocs .cm-operator)  { color: inherit; }
+   :global(.cm-s-isadocs .cm-string)    { color: #ce9178; }
+   :global(.cm-s-isadocs .cm-string-2)  { color: #ce9178; }
+   :global(.cm-s-isadocs .cm-meta)      { color: inherit; }
+   :global(.cm-s-isadocs .cm-builtin)   { color: #4ec9b0; }
+   :global(.cm-s-isadocs .cm-tag)       { color: #569cd6; }
+   :global(.cm-s-isadocs .cm-attribute) { color: #9cdcfe; }
+   :global(.cm-s-isadocs .cm-type)      { color: #4ec9b0; }
+   :global(.cm-s-isadocs .cm-qualifier) { color: #4ec9b0; }
+   :global(.cm-s-isadocs .cm-bracket)   { color: inherit; }
+   :global(.cm-s-isadocs .cm-error)     { color: var(--is-error); }
+   :global(.cm-s-isadocs .CodeMirror-matchingbracket) {
+      color: var(--is-primary) !important;
+      outline: 1px solid var(--is-b-color);
    }
 
    @media (max-width: 900px) {
