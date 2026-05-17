@@ -61,10 +61,10 @@ export type HelperKind = "get" | "fn" | "field";
 export interface HelperDef {
 	name: string;              // ej: "qnivel"
 	kind: HelperKind;
-	returnType?: string;       // ej: "number"
+	returnType?: string;       // tipo TS (ej: "number", "string", "boolean", "object", "void", "any")
 	body?: string;             // cuerpo (sin llaves); requerido para get/fn
 	params?: string;           // solo si kind="fn", ej: "(x: number)"
-	type?: FieldType;          // solo si kind="field"; define get/set tipados
+	type?: string;             // tipo TS para kind="field" (ej: "string","number","boolean","object")
 }
 
 export interface ResourceConfig {

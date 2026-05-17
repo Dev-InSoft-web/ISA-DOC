@@ -164,7 +164,7 @@ export interface ResourceHelperDef {
 	returnType?: string;
 	body?: string;
 	params?: string;
-	type?: "string" | "number" | "bool" | "json" | "date" | "enum";
+	type?: string;
 }
 
 export interface ParsedTable {

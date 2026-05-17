@@ -162,19 +162,17 @@
 							<select class="input-field" bind:value={h.type} on:change={change}>
 								<option value="string">string</option>
 								<option value="number">number</option>
-								<option value="bool">bool</option>
-								<option value="json">json</option>
-								<option value="date">date</option>
-								<option value="enum">enum</option>
+								<option value="boolean">boolean</option>
+								<option value="object">object</option>
 							</select>
 						{:else}
 							<select class="input-field" bind:value={h.returnType} on:change={change}>
+								<option value="void">void</option>
 								<option value="string">string</option>
 								<option value="number">number</option>
-								<option value="bool">bool</option>
-								<option value="json">json</option>
-								<option value="date">date</option>
-								<option value="enum">enum</option>
+								<option value="boolean">boolean</option>
+								<option value="object">object</option>
+								<option value="any">any</option>
 							</select>
 						{/if}
 					</div>
