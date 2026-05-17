@@ -71,7 +71,9 @@ function renderHelpers(helpers: HelperDef[] | undefined): string {
 			continue;
 		}
 		const body = (h.body ?? "").trim();
-		const ret = h.returnType ? `: ${h.returnType}` : "";
+		const rt = h.returnType;
+		const tsRet = rt && (rt in TS_TYPE) ? TS_TYPE[rt as FieldDef["type"]] : rt;
+		const ret = tsRet ? `: ${tsRet}` : "";
 		if (h.kind === "get") {
 			lines.push(`\tget ${h.name}()${ret} { ${body} }`);
 		} else {

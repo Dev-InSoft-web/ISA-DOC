@@ -168,12 +168,14 @@
 								<option value="enum">enum</option>
 							</select>
 						{:else}
-							<input
-								class="input-field"
-								placeholder="tipo retorno (ej: number)"
-								bind:value={h.returnType}
-								on:input={change}
-							/>
+							<select class="input-field" bind:value={h.returnType} on:change={change}>
+								<option value="string">string</option>
+								<option value="number">number</option>
+								<option value="bool">bool</option>
+								<option value="json">json</option>
+								<option value="date">date</option>
+								<option value="enum">enum</option>
+							</select>
 						{/if}
 					</div>
 					{#if h.kind === "fn"}
