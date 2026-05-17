@@ -103,7 +103,7 @@ function buildResource(id: string, t: ParsedTable, idByTable: Map<string, string
 		id: resourceId,
 		className: cust.className ?? "T" + resourceId,
 		tableName: t.name,
-		tableConst: cust.tableConst,
+		tableConst: cust.tableConst ?? defaultTableConst(t.name),
 		module: cust.module ?? "ContaPymeU/Capacitacion",
 		singularApi: cust.singularApi ?? idLower,
 		pluralApi: cust.pluralApi ?? pluralize(idLower),
@@ -296,6 +296,11 @@ function pluralize(s: string): string {
 
 function toPascal(s: string): string {
 	return s.split(/[\s_\-]+/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join("");
+}
+
+function defaultTableConst(tableName: string): string {
+	const pascal = toPascal(tableName.toLowerCase());
+	return `tablas.ntbl${pascal}`;
 }
 
 function prettyCaption(col: string): string {

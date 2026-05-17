@@ -273,25 +273,6 @@
 	</Card>
 
 	<Card>
-		<H4>FN-Módulo · acciones a omitir</H4>
-		<Text color="neutral">
-			<small>Acciones a omitir en <code>registerCatalogoGenAzureFunction</code>:</small>
-		</Text>
-		<div class="col-checks">
-			{#each OMIT_OPS as op (op)}
-				<label class="col-check">
-					<input
-						type="checkbox"
-						checked={(resource.omitOps ?? []).includes(op)}
-						on:change={(e) => toggleOmitOp(op, (e.target as HTMLInputElement).checked)}
-					/>
-					<span>{op}</span>
-				</label>
-			{/each}
-		</div>
-	</Card>
-
-	<Card>
 		<FlexLayout items="center" justify="between">
 			<H4>Hooks personalizados</H4>
 			<Button_ variant="outlined" onClick={addHook}>
@@ -402,6 +383,25 @@
 				{/if}
 			</div>
 		</FlexLayout>
+	</Card>
+
+	<Card>
+		<H4>FN-Módulo · acciones a omitir</H4>
+		<Text color="neutral">
+			<small>Acciones a omitir en <code>registerCatalogoGenAzureFunction</code>:</small>
+		</Text>
+		<div class="col-checks">
+			{#each OMIT_OPS as op (op)}
+				<label class="col-check">
+					<input
+						type="checkbox"
+						checked={(resource.omitOps ?? []).includes(op)}
+						on:change={(e) => toggleOmitOp(op, (e.target as HTMLInputElement).checked)}
+					/>
+					<span>{op}</span>
+				</label>
+			{/each}
+		</div>
 	</Card>
 {/if}
 
