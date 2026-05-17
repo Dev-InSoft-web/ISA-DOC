@@ -119,7 +119,7 @@
 			<H4>Relaciones (automáticas)</H4>
 		</FlexLayout>
 		<Text color="neutral">
-			<small>Derivadas del dominio: si otra tabla comparte la PK de ésta y la extiende, se considera hija (<code>1-N</code> → <code>TArray&lt;…&gt;</code>). No se editan: la estructura las define.</small>
+			<small>Derivadas del dominio. El nombre (alias) es editable y se usa como propiedad de la clase. El mapeo entre columnas se configura en la sección <code>Server</code>.</small>
 		</Text>
 		{#if resource.relations.length === 0}
 			<Text color="neutral"><small>Sin tablas hijas detectadas en el dominio.</small></Text>
@@ -128,18 +128,11 @@
 			{@const tgt = resources.find((x) => x.id === r.target)}
 			<div class="rel-ro">
 				<div class="row">
-					<code class="alias">{r.alias}</code>
+					<input class="input-field alias-input" bind:value={r.alias} on:input={change} />
 					<span class="kind">{r.kind}</span>
 					<Iconify icon="mdi:arrow-right" />
 					<code>{tgt?.tableName ?? r.target}</code>
 				</div>
-				{#if r.versus?.length}
-					<div class="vs-list">
-						{#each r.versus as v}
-							<small><code>sub.{v.sub}</code> = <code>parent.{v.parent}</code></small>
-						{/each}
-					</div>
-				{/if}
 			</div>
 		{/each}
 	</Card>
@@ -235,6 +228,39 @@
 				<input class="input-field" bind:value={resource.pluralCaption} on:input={change} />
 			</label>
 		</div>
+	</Card>
+
+	<Card>
+		<FlexLayout items="center">
+			<Iconify icon="mdi:table-arrow-right" />
+			<H4>Relaciones · mapeo de columnas</H4>
+		</FlexLayout>
+		<Text color="neutral">
+			<small>Para cada relación, las columnas de la tabla hija (<code>sub</code>) que se alinean con las de esta tabla (<code>parent</code>). Derivadas de las PK compartidas.</small>
+		</Text>
+		{#if resource.relations.length === 0}
+			<Text color="neutral"><small>Sin relaciones.</small></Text>
+		{/if}
+		{#each resource.relations as r}
+			{@const tgt = resources.find((x) => x.id === r.target)}
+			<div class="rel-ro">
+				<div class="row">
+					<code class="alias">{r.alias}</code>
+					<span class="kind">{r.kind}</span>
+					<Iconify icon="mdi:arrow-right" />
+					<code>{tgt?.tableName ?? r.target}</code>
+				</div>
+				{#if r.versus?.length}
+					<div class="vs-list">
+						{#each r.versus as v}
+							<small><code>sub.{v.sub}</code> = <code>parent.{v.parent}</code></small>
+						{/each}
+					</div>
+				{:else}
+					<div class="vs-list"><small>Sin columnas compartidas detectadas.</small></div>
+				{/if}
+			</div>
+		{/each}
 	</Card>
 
 	<Card>

@@ -34,14 +34,15 @@ function fieldGetter(f: FieldDef, enumImports: Set<string>): string {
 function relationGetter(r: RelationDef, allRes: Map<string, ResourceConfig>): string {
 	const target = allRes.get(r.target);
 	const targetClass = target?.className ?? `T${r.target}`;
+	const tableTag = target?.tableName ? `  // ${target.tableName}` : "";
 	if (r.kind === "1-N") {
 		return [
-			`	get ${r.alias}(): TArray<${targetClass}> { return this.f.${r.alias} }`,
+			`	get ${r.alias}(): TArray<${targetClass}> { return this.f.${r.alias} }${tableTag}`,
 			`	set ${r.alias}(v: any) { this.f.${r.alias} = val2TArray(v, ${targetClass}, new TArray<${targetClass}>()) }`,
 		].join("\n");
 	}
 	return [
-		`	get ${r.alias}(): ${targetClass} { return this.f.${r.alias} }`,
+		`	get ${r.alias}(): ${targetClass} { return this.f.${r.alias} }${tableTag}`,
 		`	set ${r.alias}(v: any) { this.f.${r.alias} = val2TObject(v, ${targetClass}) }`,
 	].join("\n");
 }
@@ -84,11 +85,15 @@ export function genModelo(cfg: ResourceConfig, all: ResourceConfig[]): string {
 	const enumLine = enumImports.size
 		? `import { ${Array.from(enumImports).sort().join(", ")} } from "../../../UlConst";\n`
 		: "";
-	const targetClasses = Array.from(
-		new Set(cfg.relations.map((r) => map.get(r.target)?.className ?? `T${r.target}`)),
-	);
-	const targetsLine = targetClasses.length
-		? `// TODO: importar ${targetClasses.join(", ")} desde su módulo correspondiente\n`
+	const targets = cfg.relations
+		.map((r) => {
+			const t = map.get(r.target);
+			return { className: t?.className ?? `T${r.target}`, tableName: t?.tableName ?? r.target };
+		});
+	const seenCls = new Set<string>();
+	const targetEntries = targets.filter((t) => (seenCls.has(t.className) ? false : (seenCls.add(t.className), true)));
+	const targetsLine = targetEntries.length
+		? `// TODO: importar ${targetEntries.map((t) => `${t.className} (${t.tableName})`).join(", ")} desde su módulo correspondiente\n`
 		: "";
 
 	return `import { ${imports.join(", ")} } from "@ingenieria_insoft/ispgen";

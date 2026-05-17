@@ -53,7 +53,15 @@ export function generateResourcesFromTables(tables: ParsedTable[], domains?: Dom
 		const t = tables.find((x) => x.name.toUpperCase() === cfg.tableName.toUpperCase());
 		if (!t) continue;
 		const fromDomain = domains ? inferRelationsFromDomains(t, tables, idByTable, domains) : null;
-		cfg.relations = fromDomain ?? inferRelations(cfg, t, tables, idByTable);
+		const rels = fromDomain ?? inferRelations(cfg, t, tables, idByTable);
+		const aliasOv = t.customization?.relationAliases;
+		if (aliasOv) {
+			for (const r of rels) {
+				const ov = aliasOv[r.target];
+				if (ov && ov.trim()) r.alias = ov.trim();
+			}
+		}
+		cfg.relations = rels;
 	}
 
 	return { resources, tables, warnings };

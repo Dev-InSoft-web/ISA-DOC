@@ -120,6 +120,8 @@ export interface ResourceCustomization {
 	exposeInFn?: boolean;
 	orderBy?: string;
 	relations?: ResourceRelationDef[];
+	/** Overrides de alias por relación: clave = id del recurso destino, valor = alias custom. */
+	relationAliases?: Record<string, string>;
 	customHooks?: ResourceCustomHookDef[];
 	helpers?: ResourceHelperDef[];
 	/** Override por columna: caption/visible/required/defaultValue/fk. */

@@ -397,6 +397,14 @@
 		if ((merged.exposeInFn ?? undefined) !== (inferred.exposeInFn ?? undefined)) out.exposeInFn = merged.exposeInFn;
 		if ((merged.orderBy ?? undefined) !== (inferred.orderBy ?? undefined)) out.orderBy = merged.orderBy;
 		// Las relaciones se derivan SIEMPRE de la estructura (PKs compartidas); no se persisten.
+		// Sólo se conservan overrides de alias por relación (target → alias custom).
+		const infAliasByTarget = new Map(inferred.relations.map((r) => [r.target, r.alias]));
+		const aliasOv: Record<string, string> = {};
+		for (const r of merged.relations) {
+			const infAlias = infAliasByTarget.get(r.target);
+			if (infAlias && r.alias && r.alias !== infAlias) aliasOv[r.target] = r.alias;
+		}
+		if (Object.keys(aliasOv).length) out.relationAliases = aliasOv;
 		if (!eq(merged.customHooks ?? [], inferred.customHooks ?? [])) {
 			out.customHooks = (merged.customHooks ?? []).map((h) => ({ ...h }));
 		}
