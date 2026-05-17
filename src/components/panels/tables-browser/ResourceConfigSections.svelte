@@ -116,22 +116,15 @@
 	<Card>
 		<FlexLayout items="center">
 			<Iconify icon="mdi:graph-outline" />
-			<H4>Relaciones (automáticas)</H4>
+			<H4>Relaciones del diagrama</H4>
 		</FlexLayout>
-		<Text color="neutral">
-			<small>Derivadas del dominio. El nombre (alias) es editable y se usa como propiedad de la clase. El mapeo entre columnas se configura en la sección <code>Server</code>.</small>
-		</Text>
 		{#if resource.relations.length === 0}
 			<Text color="neutral"><small>Sin tablas hijas detectadas en el dominio.</small></Text>
 		{/if}
 		{#each resource.relations as r}
-			{@const tgt = resources.find((x) => x.id === r.target)}
 			<div class="rel-ro">
 				<div class="row">
 					<input class="input-field alias-input" bind:value={r.alias} on:input={change} />
-					<span class="kind">{r.kind}</span>
-					<Iconify icon="mdi:arrow-right" />
-					<code>{tgt?.tableName ?? r.target}</code>
 				</div>
 			</div>
 		{/each}

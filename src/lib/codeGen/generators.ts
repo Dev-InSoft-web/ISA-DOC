@@ -34,16 +34,16 @@ function fieldGetter(f: FieldDef, enumImports: Set<string>): string {
 function relationGetter(r: RelationDef, allRes: Map<string, ResourceConfig>): string {
 	const target = allRes.get(r.target);
 	const targetClass = target?.className ?? `T${r.target}`;
-	const tableTag = target?.tableName ? `  // ${target.tableName}` : "";
+	const header = target?.tableName ? `\t// ${target.tableName}\n` : "";
 	if (r.kind === "1-N") {
 		return [
-			`	get ${r.alias}(): TArray<${targetClass}> { return this.f.${r.alias} }${tableTag}`,
-			`	set ${r.alias}(v: any) { this.f.${r.alias} = val2TArray(v, ${targetClass}, new TArray<${targetClass}>()) }`,
+			`${header}\tget ${r.alias}(): TArray<${targetClass}> { return this.f.${r.alias} }`,
+			`\tset ${r.alias}(v: any) { this.f.${r.alias} = val2TArray(v, ${targetClass}, new TArray<${targetClass}>()) }`,
 		].join("\n");
 	}
 	return [
-		`	get ${r.alias}(): ${targetClass} { return this.f.${r.alias} }${tableTag}`,
-		`	set ${r.alias}(v: any) { this.f.${r.alias} = val2TObject(v, ${targetClass}) }`,
+		`${header}\tget ${r.alias}(): ${targetClass} { return this.f.${r.alias} }`,
+		`\tset ${r.alias}(v: any) { this.f.${r.alias} = val2TObject(v, ${targetClass}) }`,
 	].join("\n");
 }
 
