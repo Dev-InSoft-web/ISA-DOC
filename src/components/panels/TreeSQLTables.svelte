@@ -335,9 +335,9 @@
 		return { table: tables[idx], index: idx };
 	})();
 
-	$: autogen = generateResourcesFromTables(tables);
+	$: autogen = generateResourcesFromTables(tables, domains);
 	$: tablesPlain = tables.map((t) => ({ ...t, customization: undefined }));
-	$: inferredAutogen = generateResourcesFromTables(tablesPlain);
+	$: inferredAutogen = generateResourcesFromTables(tablesPlain, domains);
 	$: resByTable = new Map(autogen.resources.map((r) => [r.tableName.toUpperCase(), r]));
 	$: inferredById = Object.fromEntries(inferredAutogen.resources.map((r) => [r.id, r])) as Record<string, ResourceConfig>;
 	$: mergedResources = autogen.resources;

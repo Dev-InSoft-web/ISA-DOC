@@ -1,5 +1,6 @@
 // Auto-generación de ResourceConfig a partir de fragmentos SQL parseados.
 import { parseTableFragment, tableColumns, type ParsedTable, type TableColumn } from "../tableSchema.js";
+import type { DomainsMap } from "./domains.ts";
 import type { FieldDef, FieldType, RelationDef, ResourceConfig } from "./types.js";
 
 interface SqlFragment { id: string; name: string; body: string; kind?: string; description?: string; }
@@ -30,7 +31,7 @@ export function parseAllTables(fragments: SqlFragment[]): ParsedTable[] {
 	return out;
 }
 
-export function generateResourcesFromTables(tables: ParsedTable[]): AutogenResult {
+export function generateResourcesFromTables(tables: ParsedTable[], domains?: DomainsMap): AutogenResult {
 	const warnings: string[] = [];
 	const resources: ResourceConfig[] = [];
 	const idByTable = new Map<string, string>();
@@ -46,12 +47,13 @@ export function generateResourcesFromTables(tables: ParsedTable[]): AutogenResul
 		resources.push(cfg);
 	}
 
-	// Las relaciones SIEMPRE se derivan de la estructura (PKs compartidas).
+	// Las relaciones SIEMPRE se derivan de la estructura (dominios + PKs compartidas).
 	// No se persisten en customization: el dominio es la única fuente de verdad.
 	for (const cfg of resources) {
 		const t = tables.find((x) => x.name.toUpperCase() === cfg.tableName.toUpperCase());
 		if (!t) continue;
-		cfg.relations = inferRelations(cfg, t, tables, idByTable);
+		const fromDomain = domains ? inferRelationsFromDomains(t, tables, idByTable, domains) : null;
+		cfg.relations = fromDomain ?? inferRelations(cfg, t, tables, idByTable);
 	}
 
 	return { resources, tables, warnings };
@@ -130,6 +132,79 @@ function columnToField(c: TableColumn, t: ParsedTable, idByTable: Map<string, st
 	if (fk) field.fk = fk;
 	if (c.defaultValue) field.defaultValue = c.defaultValue;
 	return field;
+}
+
+function inferRelationsFromDomains(
+	t: ParsedTable,
+	tables: ParsedTable[],
+	idByTable: Map<string, string>,
+	domains: DomainsMap,
+): RelationDef[] | null {
+	const owner = Object.values(domains).find((d) => d.masterTable === t.id);
+	if (!owner) return null;
+	const tableById = new Map(tables.map((x) => [x.id, x]));
+	const myPk = (t.compositePrimaryKey.length
+		? t.compositePrimaryKey
+		: tableColumns(t).filter((c) => c.primaryKey).map((c) => c.name)
+	).map((s) => s.toUpperCase());
+
+	const rels: RelationDef[] = [];
+	const seen = new Set<string>();
+	const seenTableIds = new Set<string>();
+
+	const pushRel = (other: ParsedTable, card: "1:1" | "1:N" | "N:N" | undefined): void => {
+		const targetResId = idByTable.get(other.name.toUpperCase());
+		if (!targetResId) return;
+		const otherCols = tableColumns(other).map((c) => c.name.toUpperCase());
+		const sharedPk = myPk.filter((p) => otherCols.includes(p));
+		const kind: "1-1" | "1-N" = card === "1:1" ? "1-1" : "1-N";
+		const alias = aliasFromTableName(other.name);
+		const key = `${alias}|${kind}`;
+		if (seen.has(key)) return;
+		seen.add(key);
+		rels.push({
+			alias,
+			kind,
+			target: targetResId,
+			versus: sharedPk.map((c) => ({ sub: c, parent: c })),
+			equals: [],
+			insertEffect: kind === "1-N" ? "syncDetails" : "ignore",
+		});
+	};
+
+	if (owner.childrenOrder?.length) {
+		for (const ref of owner.childrenOrder) {
+			if (ref.kind === "table") {
+				if (ref.key === t.id) continue;
+				const tt = tableById.get(ref.key);
+				if (!tt) continue;
+				seenTableIds.add(ref.key);
+				pushRel(tt, owner.slaveCardinalities?.[ref.key]);
+			} else if (ref.kind === "pointer") {
+				const tt = tableById.get(ref.key);
+				if (!tt) continue;
+				seenTableIds.add(ref.key);
+				pushRel(tt, ref.cardinality);
+			} else if (ref.kind === "domain" || ref.kind === "pivot") {
+				const sub = domains[ref.key];
+				if (!sub?.masterTable) continue;
+				const tt = tableById.get(sub.masterTable);
+				if (!tt) continue;
+				seenTableIds.add(sub.masterTable);
+				pushRel(tt, sub.cardinality);
+			}
+		}
+	}
+
+	for (const memberId of owner.members) {
+		if (memberId === t.id) continue;
+		if (seenTableIds.has(memberId)) continue;
+		const tt = tableById.get(memberId);
+		if (!tt) continue;
+		pushRel(tt, owner.slaveCardinalities?.[memberId]);
+	}
+
+	return rels;
 }
 
 function inferRelations(cfg: ResourceConfig, t: ParsedTable, tables: ParsedTable[], idByTable: Map<string, string>): RelationDef[] {
