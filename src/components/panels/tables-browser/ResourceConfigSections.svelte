@@ -122,9 +122,11 @@
 			<Text color="neutral"><small>Sin tablas hijas detectadas en el dominio.</small></Text>
 		{/if}
 		{#each resource.relations as r}
+			{@const tgt = resources.find((x) => x.id === r.target)}
 			<div class="rel-ro">
 				<div class="row">
 					<input class="input-field alias-input" bind:value={r.alias} on:input={change} />
+					<Text color="neutral"><small>{tgt?.tableName ?? r.target}</small></Text>
 				</div>
 			</div>
 		{/each}
