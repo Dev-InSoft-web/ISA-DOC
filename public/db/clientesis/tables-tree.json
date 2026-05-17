@@ -135,7 +135,36 @@
         "flatpath": "1",
         "tableref": "PLANES_ESTUDIO",
         "rowname": "PLANES_ESTUDIO",
-        "tableid": "tbl_planes_estudio"
+        "tableid": "tbl_planes_estudio",
+        "customization": {
+          "helpers": [
+            {
+              "name": "qprogreso",
+              "kind": "field",
+              "type": "number"
+            },
+            {
+              "name": "qtotalcursos",
+              "kind": "field",
+              "type": "number"
+            },
+            {
+              "name": "qtotalrecursos",
+              "kind": "field",
+              "type": "number"
+            },
+            {
+              "name": "qduracion",
+              "kind": "field",
+              "type": "number"
+            },
+            {
+              "name": "irecursocontinuar",
+              "kind": "field",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "itable": "2",

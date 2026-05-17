@@ -56,14 +56,15 @@ export interface CustomHookDef {
 	notes?: string;
 }
 
-export type HelperKind = "get" | "fn";
+export type HelperKind = "get" | "fn" | "field";
 
 export interface HelperDef {
 	name: string;              // ej: "qnivel"
 	kind: HelperKind;
 	returnType?: string;       // ej: "number"
-	body: string;              // cuerpo (sin llaves), ej: "return this.iplan ? ... : 0"
+	body?: string;             // cuerpo (sin llaves); requerido para get/fn
 	params?: string;           // solo si kind="fn", ej: "(x: number)"
+	type?: FieldType;          // solo si kind="field"; define get/set tipados
 }
 
 export interface ResourceConfig {

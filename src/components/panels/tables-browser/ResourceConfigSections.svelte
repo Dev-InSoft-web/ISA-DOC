@@ -153,14 +153,26 @@
 						<select class="input-field" bind:value={h.kind} on:change={change}>
 							<option value="get">get</option>
 							<option value="fn">fn</option>
+							<option value="field">field</option>
 						</select>
 						<input class="input-field" placeholder="nombre" bind:value={h.name} on:input={change} />
-						<input
-							class="input-field"
-							placeholder="tipo retorno (ej: number)"
-							bind:value={h.returnType}
-							on:input={change}
-						/>
+						{#if h.kind === "field"}
+							<select class="input-field" bind:value={h.type} on:change={change}>
+								<option value="string">string</option>
+								<option value="number">number</option>
+								<option value="bool">bool</option>
+								<option value="json">json</option>
+								<option value="date">date</option>
+								<option value="enum">enum</option>
+							</select>
+						{:else}
+							<input
+								class="input-field"
+								placeholder="tipo retorno (ej: number)"
+								bind:value={h.returnType}
+								on:input={change}
+							/>
+						{/if}
 					</div>
 					{#if h.kind === "fn"}
 						<input
@@ -170,13 +182,15 @@
 							on:input={change}
 						/>
 					{/if}
-					<textarea
-						class="input-field code-area"
-						rows="3"
-						placeholder={'return this.iplan ? String(this.iplan).split(".").filter(Boolean).length : 0'}
-						bind:value={h.body}
-						on:input={change}
-					></textarea>
+					{#if h.kind !== "field"}
+						<textarea
+							class="input-field code-area"
+							rows="3"
+							placeholder={'return this.iplan ? String(this.iplan).split(".").filter(Boolean).length : 0'}
+							bind:value={h.body}
+							on:input={change}
+						></textarea>
+					{/if}
 				</div>
 				<div slot="float" style="padding: 0;">
 					<ButtonIconify

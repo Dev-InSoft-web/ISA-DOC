@@ -160,10 +160,11 @@ export interface ResourceCustomHookDef {
 
 export interface ResourceHelperDef {
 	name: string;
-	kind: "get" | "fn";
+	kind: "get" | "fn" | "field";
 	returnType?: string;
-	body: string;
+	body?: string;
 	params?: string;
+	type?: "string" | "number" | "bool" | "json" | "date" | "enum";
 }
 
 export interface ParsedTable {

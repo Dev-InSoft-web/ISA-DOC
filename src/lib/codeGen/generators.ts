@@ -54,6 +54,9 @@ function valImports(cfg: ResourceConfig): string[] {
 		used.add(r.kind === "1-N" ? "val2TArray" : "val2TObject");
 		if (r.kind === "1-N") used.add("TArray");
 	}
+	for (const h of cfg.helpers ?? []) {
+		if (h.kind === "field") used.add(VAL_FN[h.type ?? "string"]);
+	}
 	return Array.from(used).sort();
 }
 
@@ -61,6 +64,12 @@ function renderHelpers(helpers: HelperDef[] | undefined): string {
 	if (!helpers || helpers.length === 0) return "";
 	const lines: string[] = ["\n\t// helpers"];
 	for (const h of helpers) {
+		if (h.kind === "field") {
+			const t = h.type ?? "string";
+			lines.push(`\tget ${h.name}(): ${TS_TYPE[t]} { return this.f.${h.name} }`);
+			lines.push(`\tset ${h.name}(v: any) { this.f.${h.name} = ${VAL_FN[t]}(v) }`);
+			continue;
+		}
 		const body = (h.body ?? "").trim();
 		const ret = h.returnType ? `: ${h.returnType}` : "";
 		if (h.kind === "get") {
