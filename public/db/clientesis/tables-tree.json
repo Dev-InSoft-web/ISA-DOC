@@ -137,11 +137,15 @@
         "rowname": "PLANES_ESTUDIO",
         "tableid": "tbl_planes_estudio",
         "customization": {
+          "relationAliases": {
+            "CursosPrerequisito": "prerrequisitos"
+          },
           "helpers": [
             {
               "name": "qprogreso",
               "kind": "field",
-              "type": "number"
+              "type": "number",
+              "returnType": "json"
             },
             {
               "name": "qtotalcursos",
@@ -171,7 +175,10 @@
         "flatpath": "2",
         "tableref": "CURSOS_PREREQUISITOS",
         "rowname": "CURSOS_PREREQUISITOS",
-        "tableid": "tbl_cursos_prerequisitos"
+        "tableid": "tbl_cursos_prerequisitos",
+        "customization": {
+          "className": "TCursosPrerequisito2"
+        }
       },
       {
         "itable": "3",
