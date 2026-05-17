@@ -9,11 +9,13 @@
 		Text,
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import type {
+		DetailNode,
 		ResourceConfig,
 	} from "../../../lib/codeGen/types.ts";
 	import FloatingCard from "../../_comps/containers/FloatingCard.svelte";
 	import Button_ from "../../_comps/especial/Button_.svelte";
 	import Switch_ from "../../_comps/especial/_Switch.svelte";
+	import DetailSpecNode from "./DetailSpecNode.svelte";
 
 	export let resource: ResourceConfig;
 	export let resources: ResourceConfig[];
@@ -91,6 +93,23 @@
 	}
 	function removeHook(i: number): void {
 		resource.customHooks = resource.customHooks.filter((_, k) => k !== i);
+		change();
+	}
+
+	function detailNodeFor(alias: string): DetailNode {
+		resource.detailSpec = resource.detailSpec ?? {};
+		if (!resource.detailSpec[alias]) resource.detailSpec[alias] = { todo: true };
+		return resource.detailSpec[alias];
+	}
+
+	function onDetailChange(): void {
+		if (resource.detailSpec) {
+			for (const k of Object.keys(resource.detailSpec)) {
+				const n = resource.detailSpec[k];
+				if (!n.todo && !n.children) delete resource.detailSpec[k];
+			}
+			if (!Object.keys(resource.detailSpec).length) resource.detailSpec = undefined;
+		}
 		change();
 	}
 </script>
@@ -221,14 +240,6 @@
 				<input class="input-field" bind:value={resource.parentBaseClass} on:input={change} />
 			</label>
 			<label class="field">
-				<Text color="neutral"><small>API singular</small></Text>
-				<input class="input-field" bind:value={resource.singularApi} on:input={change} />
-			</label>
-			<label class="field">
-				<Text color="neutral"><small>API plural</small></Text>
-				<input class="input-field" bind:value={resource.pluralApi} on:input={change} />
-			</label>
-			<label class="field">
 				<Text color="neutral"><small>Caption singular</small></Text>
 				<input class="input-field" bind:value={resource.singularCaption} on:input={change} />
 			</label>
@@ -237,6 +248,37 @@
 				<input class="input-field" bind:value={resource.pluralCaption} on:input={change} />
 			</label>
 		</div>
+	</Card>
+
+	<Card>
+		<FlexLayout items="center">
+			<Iconify icon="mdi:file-tree" />
+			<H4>JData2HighDetail · detalles a hidratar</H4>
+		</FlexLayout>
+		<Text color="neutral">
+			<small>
+				Por relación: marca <code>todo</code> para emitir <code>{`{ todo }`}</code>; desmárcalo y marca subrelaciones para emitir un objeto anidado; sin marcas emite <code>{`{}`}</code>.
+			</small>
+		</Text>
+		{#if resource.relations.length === 0}
+			<Text color="neutral"><small>Sin relaciones.</small></Text>
+		{/if}
+		{#each resource.relations as r (r.alias)}
+			{@const tgt = resources.find((x) => x.id === r.target)}
+			<div class="dspec-rel">
+				<div class="row">
+					<code class="alias">{r.alias}</code>
+					<Iconify icon="mdi:arrow-right" />
+					<code>{tgt?.tableName ?? r.target}</code>
+				</div>
+				<DetailSpecNode
+					node={detailNodeFor(r.alias)}
+					targetCfg={tgt}
+					{resources}
+					on:change={onDetailChange}
+				/>
+			</div>
+		{/each}
 	</Card>
 
 	<Card>
@@ -350,6 +392,14 @@
 			<label class="field">
 				<Text color="neutral"><small>Client base class</small></Text>
 				<input class="input-field" bind:value={resource.clientBaseClass} on:input={change} />
+			</label>
+			<label class="field">
+				<Text color="neutral"><small>Entry (singular)</small></Text>
+				<input class="input-field" bind:value={resource.singularApi} on:input={change} />
+			</label>
+			<label class="field">
+				<Text color="neutral"><small>Entries (plural)</small></Text>
+				<input class="input-field" bind:value={resource.pluralApi} on:input={change} />
 			</label>
 		</div>
 		<FlexLayout items="center">
@@ -490,6 +540,15 @@
 		border: 1px solid var(--is-b-color, #444);
 		border-radius: 4px;
 		background: var(--is-bg-readonly, #1e1e1e);
+	}
+	.dspec-rel {
+		padding: 0.4rem 0.5rem;
+		border: 1px solid var(--is-b-color, #444);
+		border-radius: 4px;
+		background: var(--is-bg-readonly, #1e1e1e);
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
 	}
 	.col-check {
 		display: inline-flex;

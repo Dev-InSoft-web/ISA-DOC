@@ -119,6 +119,8 @@ export interface ResourceCustomization {
 	omitOps?: string[];
 	exposeInFn?: boolean;
 	orderBy?: string;
+	/** Árbol de detalles a hidratar por relación en JData2HighDetail. */
+	detailSpec?: Record<string, { todo?: boolean; children?: Record<string, unknown> }>;
 	relations?: ResourceRelationDef[];
 	/** Overrides de alias por relación: clave = id del recurso destino, valor = alias custom. */
 	relationAliases?: Record<string, string>;

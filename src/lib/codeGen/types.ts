@@ -56,6 +56,11 @@ export interface CustomHookDef {
 	notes?: string;
 }
 
+export interface DetailNode {
+	todo?: boolean;
+	children?: Record<string, DetailNode>;
+}
+
 export type HelperKind = "get" | "fn" | "field";
 
 export interface HelperDef {
@@ -88,6 +93,7 @@ export interface ResourceConfig {
 	omitOps?: string[];
 	exposeInFn?: boolean;
 	orderBy?: string;            // cuerpo de getOrderBy(Alias) => string
+	detailSpec?: Record<string, DetailNode>; // por alias de relación: árbol de detalles a hidratar en JData2HighDetail
 	targetFiles?: Partial<Record<SnippetKind, string>>;
 }
 

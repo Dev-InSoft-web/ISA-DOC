@@ -120,6 +120,7 @@ function buildResource(id: string, t: ParsedTable, idByTable: Map<string, string
 		omitOps: Array.isArray(cust.omitOps) ? [...cust.omitOps] : ["Verificar", "Duplicar", "Recodificar", "Consolidar"],
 		exposeInFn: cust.exposeInFn,
 		orderBy: cust.orderBy,
+		detailSpec: cust.detailSpec ? JSON.parse(JSON.stringify(cust.detailSpec)) : undefined,
 		targetFiles: cust.targetFiles ? { ...cust.targetFiles } : undefined,
 	};
 }

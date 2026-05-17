@@ -396,6 +396,9 @@
 		if (!eq(merged.omitOps ?? [], inferred.omitOps ?? [])) out.omitOps = merged.omitOps ? [...merged.omitOps] : undefined;
 		if ((merged.exposeInFn ?? undefined) !== (inferred.exposeInFn ?? undefined)) out.exposeInFn = merged.exposeInFn;
 		if ((merged.orderBy ?? undefined) !== (inferred.orderBy ?? undefined)) out.orderBy = merged.orderBy;
+		if (!eq(merged.detailSpec ?? {}, inferred.detailSpec ?? {})) {
+			out.detailSpec = merged.detailSpec ? JSON.parse(JSON.stringify(merged.detailSpec)) : undefined;
+		}
 		// Las relaciones se derivan SIEMPRE de la estructura (PKs compartidas); no se persisten.
 		// Sólo se conservan overrides de alias por relación (target → alias custom).
 		const infAliasByTarget = new Map(inferred.relations.map((r) => [r.target, r.alias]));

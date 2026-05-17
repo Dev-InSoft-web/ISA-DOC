@@ -1,4 +1,4 @@
-import type { FieldDef, HelperDef, RelationDef, ResourceConfig } from "./types.js";
+import type { DetailNode, FieldDef, HelperDef, RelationDef, ResourceConfig } from "./types.js";
 
 const VAL_FN: Record<FieldDef["type"], string> = {
 	string: "val2Str",
@@ -184,6 +184,18 @@ export function genDatos(cfg: ResourceConfig, all: ResourceConfig[]): string {
 // ─────────────────────────────────────────────────────────────────────────────
 // 3) SERVER  (ISP-CLientesISServer/.../<Recurso>Server.ts)
 // ─────────────────────────────────────────────────────────────────────────────
+function renderDetailNode(node: DetailNode, targetCfg: ResourceConfig | undefined, map: Map<string, ResourceConfig>): string {
+	if (node.todo) return "{ todo }";
+	const entries = Object.entries(node.children ?? {});
+	if (!entries.length) return "{}";
+	const inner = entries.map(([alias, sub]) => {
+		const relDef = targetCfg?.relations.find((r) => r.alias === alias);
+		const childCfg = relDef ? map.get(relDef.target) : undefined;
+		return `${alias}: ${renderDetailNode(sub, childCfg, map)}`;
+	}).join(", ");
+	return `{ ${inner} }`;
+}
+
 export function genServer(cfg: ResourceConfig, all: ResourceConfig[]): string {
 	const map = new Map(all.map((r) => [r.id, r]));
 	const pks = cfg.fields.filter((f) => f.pk).map((f) => `"${f.name}"`);
@@ -192,7 +204,11 @@ export function genServer(cfg: ResourceConfig, all: ResourceConfig[]): string {
 
 	const JData2HighDetail = cfg.relations.length
 		? `	JData2HighDetail = (extra: iInfo${cfg.id} = {}): iInfo${cfg.id} => ({\n${cfg.relations
-				.map((r) => `		${r.alias}: { todo },`)
+				.map((r) => {
+					const node = cfg.detailSpec?.[r.alias] ?? { todo: true };
+					const tgt = map.get(r.target);
+					return `		${r.alias}: ${renderDetailNode(node, tgt, map)},`;
+				})
 				.join("\n")}\n		...extra,\n	});\n`
 		: "";
 
