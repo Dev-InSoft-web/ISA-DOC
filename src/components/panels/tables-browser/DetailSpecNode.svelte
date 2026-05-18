@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
+	import { Switch } from "@ingenieria_insoft/ispsveltecomponents";
 	import Self from "./DetailSpecNode.svelte";
 	import type { DetailNode, RelationDef, ResourceConfig } from "../../../lib/codeGen/types.ts";
 
@@ -53,38 +54,22 @@
 
 <div class="dnode" style="margin-left: {depth * 0.75}rem;">
 	<div class="row mode-row">
-		<label class="switch" title="Incluir todos los detalles">
-			<input
-				type="checkbox"
-				checked={todoOn}
-				on:change={(e) => toggleTodo((e.target as HTMLInputElement).checked)}
-			/>
-			<span class="slider"></span>
-			<span class="lbl"><code>todo</code></span>
-		</label>
-		<label class="switch" title="No incluir ningún detalle">
-			<input
-				type="checkbox"
-				checked={nadaOn}
-				on:change={(e) => toggleNada((e.target as HTMLInputElement).checked)}
-			/>
-			<span class="slider"></span>
-			<span class="lbl"><code>nada</code></span>
-		</label>
+		<span class="sw-wrap" on:change={(e) => toggleTodo((e.target as HTMLInputElement).checked)}>
+			<Switch small checked={todoOn} title="Incluir todos los detalles"><code>todo</code></Switch>
+		</span>
+		<span class="sw-wrap" on:change={(e) => toggleNada((e.target as HTMLInputElement).checked)}>
+			<Switch small checked={nadaOn} title="No incluir ningún detalle"><code>nada</code></Switch>
+		</span>
 	</div>
 	{#if !todoOn && relations.length > 0}
 		<div class="children">
 			{#each relations as r (r.alias)}
 				{@const childOn = !!childrenMap[r.alias]}
-				<label class="switch">
-					<input
-						type="checkbox"
-						checked={childOn}
-						on:change={(e) => toggleChild(r.alias, (e.target as HTMLInputElement).checked)}
-					/>
-					<span class="slider"></span>
-					<span class="lbl"><code>{r.alias}</code> <small>→ {relTargetCfg(r)?.tableName ?? r.target}</small></span>
-				</label>
+				<span class="sw-wrap" on:change={(e) => toggleChild(r.alias, (e.target as HTMLInputElement).checked)}>
+					<Switch small checked={childOn}>
+						<code>{r.alias}</code> <small>→ {relTargetCfg(r)?.tableName ?? r.target}</small>
+					</Switch>
+				</span>
 				{#if childOn}
 					<Self
 						node={childrenMap[r.alias]}
@@ -110,51 +95,9 @@
 		align-items: center;
 		gap: 1rem;
 	}
-	.switch {
+	.sw-wrap {
 		display: inline-flex;
-		align-items: center;
-		gap: 0.4rem;
 		font-size: 0.85rem;
-		cursor: pointer;
-		user-select: none;
-	}
-	.switch input {
-		position: absolute;
-		opacity: 0;
-		width: 0;
-		height: 0;
-		pointer-events: none;
-	}
-	.slider {
-		position: relative;
-		display: inline-block;
-		width: 1.8rem;
-		height: 0.9rem;
-		background: color-mix(in srgb, var(--is-color, #888) 25%, transparent);
-		border-radius: 999px;
-		transition: background 0.15s ease;
-		flex: 0 0 auto;
-	}
-	.slider::before {
-		content: "";
-		position: absolute;
-		top: 0.1rem;
-		left: 0.1rem;
-		width: 0.7rem;
-		height: 0.7rem;
-		background: #fff;
-		border-radius: 50%;
-		transition: transform 0.15s ease;
-	}
-	.switch input:checked + .slider {
-		background: var(--is-primary, #2a9df4);
-	}
-	.switch input:checked + .slider::before {
-		transform: translateX(0.9rem);
-	}
-	.switch input:focus-visible + .slider {
-		outline: 2px solid var(--is-primary, #2a9df4);
-		outline-offset: 2px;
 	}
 	.children {
 		display: flex;
