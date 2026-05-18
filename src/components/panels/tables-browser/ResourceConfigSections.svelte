@@ -98,18 +98,11 @@
 
 	function detailNodeFor(alias: string): DetailNode {
 		resource.detailSpec = resource.detailSpec ?? {};
-		if (!resource.detailSpec[alias]) resource.detailSpec[alias] = { todo: true };
+		resource.detailSpec[alias] ??= { todo: true };
 		return resource.detailSpec[alias];
 	}
 
 	function onDetailChange(): void {
-		if (resource.detailSpec) {
-			for (const k of Object.keys(resource.detailSpec)) {
-				const n = resource.detailSpec[k];
-				if (!n.todo && !n.children) delete resource.detailSpec[k];
-			}
-			if (!Object.keys(resource.detailSpec).length) resource.detailSpec = undefined;
-		}
 		change();
 	}
 </script>
