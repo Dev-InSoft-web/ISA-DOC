@@ -4,5 +4,40 @@ import BitacoraPanel from "../components/panels/BitacoraPanel.svelte";
 ---
 
 <Layout title="ISA — Bitácora">
-   <BitacoraPanel client:only="svelte" />
+   <BitacoraPanel client:only="svelte">
+      <div slot="fallback" class="bitacora-fallback">
+         <div class="spinner" aria-hidden="true"></div>
+         <p>Cargando bitácora…</p>
+      </div>
+   </BitacoraPanel>
 </Layout>
+
+<style>
+   .bitacora-fallback {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex: 1 1 auto;
+      min-height: 0;
+      height: 100%;
+      color: var(--is-color, #e5e7eb);
+      opacity: 0.85;
+   }
+   .bitacora-fallback p {
+      margin: 0;
+      font-size: 0.95rem;
+   }
+   .spinner {
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 3px solid color-mix(in srgb, var(--is-primary, #38bdf8) 25%, transparent);
+      border-top-color: var(--is-primary, #38bdf8);
+      border-radius: 50%;
+      animation: bitacora-spin 0.8s linear infinite;
+   }
+   @keyframes bitacora-spin {
+      to { transform: rotate(360deg); }
+   }
+</style>
