@@ -8,34 +8,39 @@
 	export let resources: ResourceConfig[];
 	export let depth: number = 0;
 
-	const dispatch = createEventDispatcher<{ change: void }>();
+	const dispatch = createEventDispatcher<{ change: DetailNode }>();
 
 	$: relations = (targetCfg?.relations ?? []) as RelationDef[];
+	$: todoOn = !!node.todo;
+	$: childrenMap = node.children ?? {};
+
+	function emit(next: DetailNode): void {
+		dispatch("change", next);
+	}
 
 	function toggleTodo(on: boolean): void {
-		node.todo = on || undefined;
-		if (on) node.children = undefined;
-		dispatch("change");
+		if (on) emit({ todo: true });
+		else emit({});
 	}
 
 	function toggleChild(alias: string, on: boolean): void {
-		const children = { ...(node.children ?? {}) };
+		const children: Record<string, DetailNode> = { ...childrenMap };
 		if (on) children[alias] = children[alias] ?? { todo: true };
 		else delete children[alias];
-		node.children = Object.keys(children).length ? children : undefined;
-		dispatch("change");
+		const next: DetailNode = {};
+		if (Object.keys(children).length) next.children = children;
+		emit(next);
 	}
 
-	function isChildOn(alias: string): boolean {
-		return !!node.children?.[alias];
+	function onChildChange(alias: string, ev: CustomEvent<DetailNode>): void {
+		const children: Record<string, DetailNode> = { ...childrenMap, [alias]: ev.detail };
+		const next: DetailNode = {};
+		if (Object.keys(children).length) next.children = children;
+		emit(next);
 	}
 
 	function relTargetCfg(r: RelationDef): ResourceConfig | undefined {
 		return resources.find((x) => x.id === r.target);
-	}
-
-	function onChildChange(): void {
-		dispatch("change");
 	}
 </script>
 
@@ -43,29 +48,30 @@
 	<label class="row">
 		<input
 			type="checkbox"
-			checked={!!node.todo}
+			checked={todoOn}
 			on:change={(e) => toggleTodo((e.target as HTMLInputElement).checked)}
 		/>
 		<span><code>todo</code></span>
 	</label>
-	{#if !node.todo && relations.length > 0}
+	{#if !todoOn && relations.length > 0}
 		<div class="children">
 			{#each relations as r (r.alias)}
+				{@const childOn = !!childrenMap[r.alias]}
 				<label class="row">
 					<input
 						type="checkbox"
-						checked={isChildOn(r.alias)}
+						checked={childOn}
 						on:change={(e) => toggleChild(r.alias, (e.target as HTMLInputElement).checked)}
 					/>
 					<span><code>{r.alias}</code> <small>→ {relTargetCfg(r)?.tableName ?? r.target}</small></span>
 				</label>
-				{#if isChildOn(r.alias) && node.children?.[r.alias]}
+				{#if childOn}
 					<Self
-						bind:node={node.children[r.alias]}
+						node={childrenMap[r.alias]}
 						targetCfg={relTargetCfg(r)}
 						{resources}
 						depth={depth + 1}
-						on:change={onChildChange}
+						on:change={(ev) => onChildChange(r.alias, ev)}
 					/>
 				{/if}
 			{/each}

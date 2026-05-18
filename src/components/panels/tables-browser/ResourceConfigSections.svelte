@@ -96,13 +96,10 @@
 		change();
 	}
 
-	function detailNodeFor(alias: string): DetailNode {
-		resource.detailSpec = resource.detailSpec ?? {};
-		resource.detailSpec[alias] ??= { todo: true };
-		return resource.detailSpec[alias];
-	}
-
-	function onDetailChange(): void {
+	function onDetailNodeChange(alias: string, ev: CustomEvent<DetailNode>): void {
+		const spec = { ...(resource.detailSpec ?? {}) };
+		spec[alias] = ev.detail;
+		resource.detailSpec = spec;
 		change();
 	}
 </script>
@@ -265,10 +262,10 @@
 					<code>{tgt?.tableName ?? r.target}</code>
 				</div>
 				<DetailSpecNode
-					node={detailNodeFor(r.alias)}
+					node={resource.detailSpec?.[r.alias] ?? { todo: true }}
 					targetCfg={tgt}
 					{resources}
-					on:change={onDetailChange}
+					on:change={(ev) => onDetailNodeChange(r.alias, ev)}
 				/>
 			</div>
 		{/each}
