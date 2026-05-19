@@ -124,6 +124,11 @@ export interface ResourceCustomization {
 	relations?: ResourceRelationDef[];
 	/** Overrides de alias por relación: clave = id del recurso destino, valor = alias custom. */
 	relationAliases?: Record<string, string>;
+	/** Overrides de versus/equals por relación: clave = id del recurso destino. */
+	relationOverrides?: Record<string, {
+		versus?: Array<{ sub: string; parent: string }>;
+		equals?: Array<{ col: string; value: string; type: "bool" | "number" | "string" }>;
+	}>;
 	customHooks?: ResourceCustomHookDef[];
 	helpers?: ResourceHelperDef[];
 	/** Override por columna: caption/visible/required/defaultValue/fk. */

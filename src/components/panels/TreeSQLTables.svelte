@@ -16,7 +16,7 @@
 	import { findDomainOf, getSlaves, isMaster as isMasterFn, type DomainDef, type DomainsMap } from "../../lib/codeGen/domains.ts";
 	import { getCached, setCached, loadStateFromServer, reloadStateFromServer, onStateChanged } from "../../lib/codeGen/stateClient.ts";
 	import { isRealtimeEnabled } from "../../lib/realtimeFlag.ts";
-	import type { ResourceConfig, FieldDef } from "../../lib/codeGen/types.ts";
+	import type { ResourceConfig, FieldDef, RelationDef } from "../../lib/codeGen/types.ts";
 	import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
 	import CodeViewer from "../viewers/CodeViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
@@ -400,14 +400,20 @@
 			out.detailSpec = merged.detailSpec ? JSON.parse(JSON.stringify(merged.detailSpec)) : undefined;
 		}
 		// Las relaciones se derivan SIEMPRE de la estructura (PKs compartidas); no se persisten.
-		// Sólo se conservan overrides de alias por relación (target → alias custom).
-		const infAliasByTarget = new Map(inferred.relations.map((r) => [r.target, r.alias]));
+		// Sólo se conservan overrides de alias y de versus/equals por relación (clave = target).
+		const infByTarget = new Map(inferred.relations.map((r) => [r.target, r]));
 		const aliasOv: Record<string, string> = {};
+		const relOv: Record<string, { versus?: RelationDef["versus"]; equals?: RelationDef["equals"] }> = {};
 		for (const r of merged.relations) {
-			const infAlias = infAliasByTarget.get(r.target);
-			if (infAlias && r.alias && r.alias !== infAlias) aliasOv[r.target] = r.alias;
+			const inf = infByTarget.get(r.target);
+			if (inf && r.alias && r.alias !== inf.alias) aliasOv[r.target] = r.alias;
+			const ov: { versus?: RelationDef["versus"]; equals?: RelationDef["equals"] } = {};
+			if (inf && !eq(r.versus ?? [], inf.versus ?? [])) ov.versus = (r.versus ?? []).map((v) => ({ ...v }));
+			if (inf && !eq(r.equals ?? [], inf.equals ?? [])) ov.equals = (r.equals ?? []).map((e) => ({ ...e }));
+			if (ov.versus || ov.equals) relOv[r.target] = ov;
 		}
 		if (Object.keys(aliasOv).length) out.relationAliases = aliasOv;
+		if (Object.keys(relOv).length) out.relationOverrides = relOv;
 		if (!eq(merged.customHooks ?? [], inferred.customHooks ?? [])) {
 			out.customHooks = (merged.customHooks ?? []).map((h) => ({ ...h }));
 		}

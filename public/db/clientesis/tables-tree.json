@@ -152,6 +152,15 @@
             "CursosPrerequisito": "prerrequisitos",
             "CursosDePlanesEstudio": "cursosdeplanestudio"
           },
+          "customHooks": [
+            {
+              "name": "Custom_Action",
+              "signature": "(o: TPlanesEstudio): Promise<void>",
+              "clientPath": "/api/planesestudio/custom/{ipk}",
+              "clientMethod": "GET",
+              "clientFnName": "customAction"
+            }
+          ],
           "helpers": [
             {
               "name": "qprogreso",

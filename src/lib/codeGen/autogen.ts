@@ -61,6 +61,15 @@ export function generateResourcesFromTables(tables: ParsedTable[], domains?: Dom
 				if (ov && ov.trim()) r.alias = ov.trim();
 			}
 		}
+		const relOv = t.customization?.relationOverrides;
+		if (relOv) {
+			for (const r of rels) {
+				const ov = relOv[r.target];
+				if (!ov) continue;
+				if (ov.versus) r.versus = ov.versus.map((v) => ({ ...v }));
+				if (ov.equals) r.equals = ov.equals.map((e) => ({ ...e }));
+			}
+		}
 		cfg.relations = rels;
 	}
 
