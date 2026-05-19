@@ -159,6 +159,7 @@ export interface ResourceRelationDef {
 export interface ResourceCustomHookDef {
 	name: string;
 	signature: string;
+	body?: string;
 	clientPath?: string;
 	clientMethod?: "GET" | "POST" | "PUT" | "DELETE";
 	clientFnName?: string;

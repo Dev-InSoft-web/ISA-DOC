@@ -50,6 +50,7 @@ export interface RelationDef {
 export interface CustomHookDef {
 	name: string;              // ej: "Get_Recurso_PlanCurso"
 	signature: string;          // ej: "(curso: TCurso): Promise<TCurso>"
+	body?: string;              // cuerpo del método (sin llaves externas); si no se define, se emite stub
 	clientPath?: string;        // ej: "/api/curso/recursoplan/{icurso}"
 	clientMethod?: "GET" | "POST" | "PUT" | "DELETE";
 	clientFnName?: string;      // ej: "recursoPlan"

@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { createEventDispatcher } from "svelte";
 	import {
-		ButtonIconify,
-		Card,
-		FlexLayout,
-		H4,
-		Iconify,
-		SelectEnum,
-		Switch,
-		Text,
+	   ButtonIconify,
+	   Card,
+	   FlexLayout,
+	   H4,
+	   Iconify,
+	   SelectEnum,
+	   Switch,
+	   Text,
 	} from "@ingenieria_insoft/ispsveltecomponents";
+	import { createEventDispatcher } from "svelte";
 	import type {
-		DetailNode,
-		RelationDef,
-		ResourceConfig,
+	   DetailNode,
+	   RelationDef,
+	   ResourceConfig,
 	} from "../../../lib/codeGen/types.ts";
 	import FloatingCard from "../../_comps/containers/FloatingCard.svelte";
 	import Button_ from "../../_comps/especial/Button_.svelte";
@@ -32,6 +32,20 @@
 	void inferred;
 
 	const dispatch = createEventDispatcher<{ change: void }>();
+
+	let editingHookIdx: number | null = null;
+	let showHookModal: boolean = false;
+
+	$: editingHook = editingHookIdx != null ? resource.customHooks[editingHookIdx] : null;
+	$: showHookModal = editingHookIdx != null;
+	$: if (!showHookModal) editingHookIdx = null;
+
+	function saveHookBody(ev: CustomEvent<{ value: string }>): void {
+		if (editingHookIdx == null) return;
+		resource.customHooks[editingHookIdx].body = ev.detail.value;
+		resource.customHooks = resource.customHooks;
+		change();
+	}
 
 	const OMIT_OPS: string[] = ["Verificar", "Duplicar", "Recodificar", "Consolidar"];
 
@@ -82,11 +96,13 @@
 	}
 
 	function addHook(): void {
+		const arg = resource.className.replace(/^T/, "").charAt(0).toLowerCase() + resource.className.replace(/^T/, "").slice(1);
 		resource.customHooks = [
 			...resource.customHooks,
 			{
 				name: "Custom_Action",
-				signature: "(o: " + resource.className + "): Promise<void>",
+				signature: "(" + (arg || "o") + ": " + resource.className + "): Promise<" + resource.className + ">",
+				body: "",
 				clientPath: "/api/" + resource.singularApi + "/custom/{ipk}",
 				clientMethod: "GET",
 				clientFnName: "customAction",
@@ -480,6 +496,11 @@
 				</div>
 				<div slot="float" style="padding: 0;">
 					<ButtonIconify
+						icon="mdi:code-braces"
+						onClick={() => (editingHookIdx = i)}
+						title="Editar cuerpo"
+					/>
+					<ButtonIconify
 						color="danger"
 						icon="mdi:close"
 						onClick={() => removeHook(i)}
@@ -562,6 +583,13 @@
 		</div>
 	</Card>
 {/if}
+
+<HookBodyModal
+	bind:bshow={showHookModal}
+	title={editingHook ? `${resource.className} · ${editingHook.name}${editingHook.signature}` : ""}
+	value={editingHook?.body ?? ""}
+	on:save={saveHookBody}
+/>
 
 <style>
 	.two-cols {

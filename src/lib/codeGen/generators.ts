@@ -268,13 +268,17 @@ ${insertDetalles
 		: "";
 
 	const customMethods = cfg.customHooks
-		.map(
-			(h) => `	async ${h.name}${h.signature} {
+		.map((h) => {
+			const body = (h.body ?? "").replace(/\s+$/, "");
+			if (body) {
+				return `	async ${h.name}${h.signature} {\n${body}\n\t}`;
+			}
+			return `	async ${h.name}${h.signature} {
 		// TODO: implementar lógica particular para ${h.name}
 		${h.notes ? `// ${h.notes}` : ""}
 		throw new Error("not-implemented");
-	}`,
-		)
+	}`;
+		})
 		.join("\n\n");
 
 	const iInfoLine =
