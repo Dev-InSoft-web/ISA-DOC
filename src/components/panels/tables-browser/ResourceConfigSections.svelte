@@ -367,7 +367,7 @@
 									onChange={() => change()}
 								/>
 							</div>
-							<ButtonIconify icon="mdi:delete-outline" title="Quitar versus" on:click={() => removeVersus(r, i)} />
+							<ButtonIconify icon="mdi:delete-outline" color="danger" title="Quitar versus" on:click={() => removeVersus(r, i)} />
 						</div>
 					{/each}
 				</div>
@@ -406,7 +406,7 @@
 								<option value="bool">bool</option>
 								<option value="string">string</option>
 							</select>
-							<ButtonIconify icon="mdi:delete-outline" title="Quitar equals" on:click={() => removeEqual(r, i)} />
+							<ButtonIconify icon="mdi:delete-outline" color="danger" title="Quitar equals" on:click={() => removeEqual(r, i)} />
 						</div>
 					{/each}
 				</div>
