@@ -37,8 +37,6 @@
 
 	let editingHookIdx: number | null = null;
 
-	const HTTP_METHODS: Record<string, string> = { GET: "GET", POST: "POST", PUT: "PUT", DELETE: "DELETE" };
-
 	$: editingHook = editingHookIdx != null ? resource.customHooks[editingHookIdx] : null;
 
 	function closeHookModal(): void {
@@ -102,16 +100,12 @@
 	}
 
 	function addHook(): void {
-		const arg = resource.className.replace(/^T/, "").charAt(0).toLowerCase() + resource.className.replace(/^T/, "").slice(1);
 		resource.customHooks = [
 			...resource.customHooks,
 			{
 				name: "Custom_Action",
-				signature: "(" + (arg || "o") + ": " + resource.className + "): Promise<" + resource.className + ">",
+				argName: "o",
 				body: "",
-				clientPath: "/api/" + resource.singularApi + "/custom/{ipk}",
-				clientMethod: "GET",
-				clientFnName: "customAction",
 			},
 		];
 		change();
@@ -466,15 +460,9 @@
 			>
 				<div class="rel">
 					<div class="row">
-						<Input label="nombre Server" bind:value={h.name} onChange={change} />
-						<Input label="signature" bind:value={h.signature} onChange={change} />
-					</div>
-					<div class="row">
-						<SelectEnum label="método" enumValue={HTTP_METHODS} bind:value={h.clientMethod} onChange={change} />
-						<div class="grow">
-							<Input label="path API" bind:value={h.clientPath} onChange={change} />
-						</div>
-						<Input label="fn cliente" bind:value={h.clientFnName} onChange={change} />
+						<Input label="nombre método" bind:value={h.name} onChange={change} />
+						<Input label="arg" bind:value={h.argName} onChange={change} />
+						<Text color="neutral"><small><code>: {resource.className}): Promise&lt;{resource.className}&gt;</code></small></Text>
 					</div>
 				</div>
 				<div slot="float" style="padding: 0;">
@@ -569,7 +557,7 @@
 
 <HookBodyModal
 	bshow={editingHookIdx != null}
-	title={editingHook ? `${resource.className} · ${editingHook.name}${editingHook.signature}` : ""}
+	title={editingHook ? `${resource.className} · ${editingHook.name}(${editingHook.argName ?? "o"}: ${resource.className}): Promise<${resource.className}>` : ""}
 	value={editingHook?.body ?? ""}
 	on:save={saveHookBody}
 	on:close={closeHookModal}

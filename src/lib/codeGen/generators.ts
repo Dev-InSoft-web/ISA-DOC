@@ -269,11 +269,13 @@ ${insertDetalles
 
 	const customMethods = cfg.customHooks
 		.map((h) => {
+			const arg = h.argName?.trim() || "o";
+			const sig = `(${arg}: ${cfg.className}): Promise<${cfg.className}>`;
 			const body = (h.body ?? "").replace(/\s+$/, "");
 			if (body) {
-				return `	async ${h.name}${h.signature} {\n${body}\n\t}`;
+				return `	async ${h.name}${sig} {\n${body}\n\t}`;
 			}
-			return `	async ${h.name}${h.signature} {
+			return `	async ${h.name}${sig} {
 		// TODO: implementar lógica particular para ${h.name}
 		${h.notes ? `// ${h.notes}` : ""}
 		throw new Error("not-implemented");
