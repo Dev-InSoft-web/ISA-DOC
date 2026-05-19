@@ -351,7 +351,7 @@
 						<div class="row">
 							<div class="grow">
 								<SelectEnum
-									label=""
+									label="sub"
 									required={false}
 									enumValue={subCols}
 									bind:value={v.sub}
@@ -361,7 +361,7 @@
 							<span class="eq-sign">=</span>
 							<div class="grow">
 								<SelectEnum
-									label=""
+									label="parent"
 									required={false}
 									enumValue={parentCols}
 									bind:value={v.parent}
@@ -389,7 +389,7 @@
 						<div class="row">
 							<div class="grow">
 								<SelectEnum
-									label=""
+									label="col (sub)"
 									required={false}
 									enumValue={subCols}
 									bind:value={e.col}
