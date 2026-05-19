@@ -139,30 +139,14 @@
         "customization": {
           "detailSpec": {
             "prerrequisitos": {
-              "children": {
-                "cursos": {
-                  "children": {
-                    "historialcurso": {},
-                    "seguridadescursos": {
-                      "children": {
-                        "permisos": {}
-                      }
-                    },
-                    "planescursos": {
-                      "children": {
-                        "atributosplanes": {
-                          "todo": true
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              "todo": true
             },
             "cursosdeplanesestudio": {
               "todo": true
             },
-            "cursosdeplanestudio": {}
+            "cursosdeplanestudio": {
+              "todo": true
+            }
           },
           "relationAliases": {
             "CursosPrerequisito": "prerrequisitos",

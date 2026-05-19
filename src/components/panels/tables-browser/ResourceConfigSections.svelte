@@ -12,6 +12,7 @@
 		DetailNode,
 		ResourceConfig,
 	} from "../../../lib/codeGen/types.ts";
+	import { renderJData2HighDetailSnippet } from "../../../lib/codeGen/generators.ts";
 	import FloatingCard from "../../_comps/containers/FloatingCard.svelte";
 	import Button_ from "../../_comps/especial/Button_.svelte";
 	import Switch_ from "../../_comps/especial/_Switch.svelte";
@@ -245,12 +246,9 @@
 			<Iconify icon="mdi:file-tree" />
 			<H4>JData2HighDetail · detalles a hidratar</H4>
 		</FlexLayout>
-		<Text color="neutral">
-			<small>
-				Por relación: marca <code>todo</code> para emitir <code>{`{ todo }`}</code>; desmárcalo y marca subrelaciones para emitir un objeto anidado; sin marcas emite <code>{`{}`}</code>.
-			</small>
-		</Text>
-		{#if resource.relations.length === 0}
+		{#if resource.relations.length > 0}
+			<pre class="jdata-snippet"><code>{renderJData2HighDetailSnippet(resource, resources)}</code></pre>
+		{:else}
 			<Text color="neutral"><small>Sin relaciones.</small></Text>
 		{/if}
 		{#each resource.relations as r (r.alias)}
@@ -258,8 +256,6 @@
 			<div class="dspec-rel">
 				<div class="row">
 					<code class="alias">{r.alias}</code>
-					<Iconify icon="mdi:arrow-right" />
-					<code>{tgt?.tableName ?? r.target}</code>
 				</div>
 				<DetailSpecNode
 					node={resource.detailSpec?.[r.alias] ?? { todo: true }}
@@ -539,6 +535,17 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.3rem;
+	}
+	.jdata-snippet {
+		margin: 0.25rem 0 0.5rem;
+		padding: 0.4rem 0.5rem;
+		border: 1px solid var(--is-b-color, #444);
+		border-radius: 4px;
+		background: var(--is-bg-readonly, #1e1e1e);
+		font-family: ui-monospace, Menlo, monospace;
+		font-size: 0.75rem;
+		white-space: pre-wrap;
+		overflow-x: auto;
 	}
 	.col-check {
 		display: inline-flex;

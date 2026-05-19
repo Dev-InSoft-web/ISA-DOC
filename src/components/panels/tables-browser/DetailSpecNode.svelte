@@ -66,7 +66,7 @@
 				{@const childOn = !!childrenMap[r.alias]}
 				<span class="sw-wrap" on:change={(e) => toggleChild(r.alias, (e.target as HTMLInputElement).checked)}>
 					<Switch checked={childOn} color="primary" colorFalse="neutral">
-						<code>{r.alias}</code> <small>→ {relTargetCfg(r)?.tableName ?? r.target}</small>
+						<code>{r.alias}</code>
 					</Switch>
 				</span>
 				{#if childOn}
