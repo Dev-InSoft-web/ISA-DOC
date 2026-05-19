@@ -20,6 +20,7 @@
 	import Button_ from "../../_comps/especial/Button_.svelte";
 	import Switch_ from "../../_comps/especial/_Switch.svelte";
 	import DetailSpecNode from "./DetailSpecNode.svelte";
+	import HookBodyModal from "../../viewers/HookBodyModal.svelte";
 
 	export let resource: ResourceConfig;
 	export let resources: ResourceConfig[];
