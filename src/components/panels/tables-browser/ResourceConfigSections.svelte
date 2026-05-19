@@ -6,6 +6,7 @@
 		FlexLayout,
 		H4,
 		Iconify,
+		Switch,
 		Text,
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import type {
@@ -120,6 +121,13 @@
 		rel.equals = (rel.equals ?? []).filter((_, k) => k !== i);
 		change();
 	}
+
+	let versusOpen: Record<string, boolean> = {};
+	let equalsOpen: Record<string, boolean> = {};
+	$: resource.relations.forEach((r) => {
+		if (versusOpen[r.alias] === undefined) versusOpen[r.alias] = (r.versus?.length ?? 0) > 0;
+		if (equalsOpen[r.alias] === undefined) equalsOpen[r.alias] = (r.equals?.length ?? 0) > 0;
+	});
 </script>
 
 {#if section === "model"}
@@ -295,8 +303,19 @@
 		{#each resource.relations as r}
 			{@const tgt = resources.find((x) => x.id === r.target)}
 			<div class="rel-ro">
-				<H4>{tgt?.tableName ?? r.target} <small>({r.alias})</small></H4>
+				<FlexLayout items="center" justify="between">
+					<H4>{tgt?.tableName ?? r.target} <small>({r.alias})</small></H4>
+					<FlexLayout items="center">
+						<Switch bind:checked={versusOpen[r.alias]} color="primary" colorFalse="neutral">
+							<small>versus</small>
+						</Switch>
+						<Switch bind:checked={equalsOpen[r.alias]} color="primary" colorFalse="neutral">
+							<small>equals</small>
+						</Switch>
+					</FlexLayout>
+				</FlexLayout>
 
+				{#if versusOpen[r.alias]}
 				<div class="cmp-section">
 					<FlexLayout items="center" justify="between">
 						<Text color="neutral"><small>versus (sub ↔ parent)</small></Text>
@@ -326,7 +345,9 @@
 						</div>
 					{/each}
 				</div>
+				{/if}
 
+				{#if equalsOpen[r.alias]}
 				<div class="cmp-section">
 					<FlexLayout items="center" justify="between">
 						<Text color="neutral"><small>equals (sub.COL = valor literal)</small></Text>
@@ -361,6 +382,7 @@
 						</div>
 					{/each}
 				</div>
+				{/if}
 			</div>
 		{/each}
 	</Card>
