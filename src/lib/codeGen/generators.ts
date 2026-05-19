@@ -204,13 +204,13 @@ export function genServer(cfg: ResourceConfig, all: ResourceConfig[]): string {
 	const baseClass = cfg.parentBaseClass ?? "TCapacitacionServer";
 
 	const JData2HighDetail = cfg.relations.length
-		? `	JData2HighDetail = (extra: iInfo${cfg.id} = {}): iInfo${cfg.id} => ({\n${cfg.relations
+		? `	JData2HighDetail = (): iInfo${cfg.id} => ({ ${cfg.relations
 				.map((r) => {
 					const node = cfg.detailSpec?.[r.alias] ?? { todo: true };
 					const tgt = map.get(r.target);
-					return `		${r.alias}: ${renderDetailNode(node, tgt, map)},`;
+					return `${r.alias}: ${renderDetailNode(node, tgt, map)}`;
 				})
-				.join("\n")}\n		...extra,\n	});\n`
+				.join(", ")} });\n`
 		: "";
 
 	const nestedConfig = cfg.relations.length
