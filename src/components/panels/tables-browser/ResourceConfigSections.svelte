@@ -340,7 +340,7 @@
 				<div class="cmp-section">
 					<FlexLayout items="center" justify="end">
 						<Button_ variant="outlined" onClick={() => addVersus(r)}>
-							<Iconify icon="mdi:plus" /> versus
+							<Iconify icon="mdi:plus" /> <small>versus</small>
 						</Button_>
 					</FlexLayout>
 					{#if !(r.versus?.length)}
@@ -377,7 +377,7 @@
 				<div class="cmp-section">
 					<FlexLayout items="center" justify="end">
 						<Button_ variant="outlined" onClick={() => addEqual(r)}>
-							<Iconify icon="mdi:plus" /> equals
+							<Iconify icon="mdi:plus" /> <small>equals</small>
 						</Button_>
 					</FlexLayout>
 					{#if !(r.equals?.length)}
