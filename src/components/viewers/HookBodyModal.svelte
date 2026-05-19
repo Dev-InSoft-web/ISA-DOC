@@ -14,7 +14,7 @@
 	export let title: string = "";
 	export let value: string = "";
 
-	const dispatch = createEventDispatcher<{ save: { value: string } }>();
+	const dispatch = createEventDispatcher<{ save: { value: string }; close: void }>();
 
 	let host: HTMLDivElement;
 	let view: EditorView | null = null;
@@ -73,9 +73,11 @@
 		const next = view?.state.doc.toString() ?? "";
 		dispatch("save", { value: next });
 		bshow = false;
+		dispatch("close");
 	}
 	function close(): void {
 		bshow = false;
+		dispatch("close");
 	}
 
 	onMount(() => {

@@ -5,6 +5,7 @@
 	   FlexLayout,
 	   H4,
 	   Iconify,
+	   Input,
 	   SelectEnum,
 	   Switch,
 	   Text,
@@ -34,17 +35,21 @@
 	const dispatch = createEventDispatcher<{ change: void }>();
 
 	let editingHookIdx: number | null = null;
-	let showHookModal: boolean = false;
+
+	const HTTP_METHODS: Record<string, string> = { GET: "GET", POST: "POST", PUT: "PUT", DELETE: "DELETE" };
 
 	$: editingHook = editingHookIdx != null ? resource.customHooks[editingHookIdx] : null;
-	$: showHookModal = editingHookIdx != null;
-	$: if (!showHookModal) editingHookIdx = null;
+
+	function closeHookModal(): void {
+		editingHookIdx = null;
+	}
 
 	function saveHookBody(ev: CustomEvent<{ value: string }>): void {
 		if (editingHookIdx == null) return;
 		resource.customHooks[editingHookIdx].body = ev.detail.value;
 		resource.customHooks = resource.customHooks;
 		change();
+		closeHookModal();
 	}
 
 	const OMIT_OPS: string[] = ["Verificar", "Duplicar", "Recodificar", "Consolidar"];
@@ -460,38 +465,15 @@
 			>
 				<div class="rel">
 					<div class="row">
-						<input
-							class="input-field"
-							placeholder="nombre Server"
-							bind:value={h.name}
-							on:input={change}
-						/>
-						<input
-							class="input-field"
-							placeholder="signature"
-							bind:value={h.signature}
-							on:input={change}
-						/>
+						<Input label="nombre Server" bind:value={h.name} onChange={change} />
+						<Input label="signature" bind:value={h.signature} onChange={change} />
 					</div>
 					<div class="row">
-						<select class="input-field" bind:value={h.clientMethod} on:change={change}>
-							<option value="GET">GET</option>
-							<option value="POST">POST</option>
-							<option value="PUT">PUT</option>
-							<option value="DELETE">DELETE</option>
-						</select>
-						<input
-							class="input-field flex-1"
-							placeholder="path API"
-							bind:value={h.clientPath}
-							on:input={change}
-						/>
-						<input
-							class="input-field"
-							placeholder="fn cliente"
-							bind:value={h.clientFnName}
-							on:input={change}
-						/>
+						<SelectEnum label="método" enumValue={HTTP_METHODS} bind:value={h.clientMethod} onChange={change} />
+						<div class="grow">
+							<Input label="path API" bind:value={h.clientPath} onChange={change} />
+						</div>
+						<Input label="fn cliente" bind:value={h.clientFnName} onChange={change} />
 					</div>
 				</div>
 				<div slot="float" style="padding: 0;">
@@ -585,10 +567,11 @@
 {/if}
 
 <HookBodyModal
-	bind:bshow={showHookModal}
+	bshow={editingHookIdx != null}
 	title={editingHook ? `${resource.className} · ${editingHook.name}${editingHook.signature}` : ""}
 	value={editingHook?.body ?? ""}
 	on:save={saveHookBody}
+	on:close={closeHookModal}
 />
 
 <style>
