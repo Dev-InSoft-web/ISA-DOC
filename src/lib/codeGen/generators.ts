@@ -186,6 +186,7 @@ export function genDatos(cfg: ResourceConfig, all: ResourceConfig[]): string {
 // ─────────────────────────────────────────────────────────────────────────────
 function renderDetailNode(node: DetailNode, targetCfg: ResourceConfig | undefined, map: Map<string, ResourceConfig>): string {
 	if (node.todo) return "{ todo }";
+	if (node.nada) return "{}";
 	const entries = Object.entries(node.children ?? {});
 	if (!entries.length) return "{}";
 	const inner = entries.map(([alias, sub]) => {

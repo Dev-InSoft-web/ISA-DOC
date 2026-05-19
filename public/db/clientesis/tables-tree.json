@@ -137,8 +137,36 @@
         "rowname": "PLANES_ESTUDIO",
         "tableid": "tbl_planes_estudio",
         "customization": {
+          "detailSpec": {
+            "prerrequisitos": {
+              "children": {
+                "cursos": {
+                  "children": {
+                    "historialcurso": {},
+                    "seguridadescursos": {
+                      "children": {
+                        "permisos": {}
+                      }
+                    },
+                    "planescursos": {
+                      "children": {
+                        "atributosplanes": {
+                          "todo": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "cursosdeplanesestudio": {
+              "todo": true
+            },
+            "cursosdeplanestudio": {}
+          },
           "relationAliases": {
-            "CursosPrerequisito": "prerrequisitos"
+            "CursosPrerequisito": "prerrequisitos",
+            "CursosDePlanesEstudio": "cursosdeplanestudio"
           },
           "helpers": [
             {

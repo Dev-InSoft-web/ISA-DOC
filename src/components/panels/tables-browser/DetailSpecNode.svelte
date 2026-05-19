@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import Switch from "../../_comps/primitives/Switch.svelte";
+	import { Switch } from "@ingenieria_insoft/ispsveltecomponents";
 	import Self from "./DetailSpecNode.svelte";
 	import type { DetailNode, RelationDef, ResourceConfig } from "../../../lib/codeGen/types.ts";
 
@@ -13,9 +13,8 @@
 
 	$: relations = (targetCfg?.relations ?? []) as RelationDef[];
 	$: todoOn = !!node.todo;
+	$: nadaOn = !!node.nada;
 	$: childrenMap = node.children ?? {};
-	$: hasChildren = Object.keys(childrenMap).length > 0;
-	$: nadaOn = !todoOn && !hasChildren;
 
 	function emit(next: DetailNode): void {
 		dispatch("change", next);
@@ -27,8 +26,8 @@
 	}
 
 	function toggleNada(on: boolean): void {
-		if (on) emit({});
-		else emit({ todo: true });
+		if (on) emit({ nada: true });
+		else emit({});
 	}
 
 	function toggleChild(alias: string, on: boolean): void {
@@ -55,10 +54,10 @@
 <div class="dnode" style="margin-left: {depth * 0.75}rem;">
 	<div class="row mode-row">
 		<span class="sw-wrap" on:change={(e) => toggleTodo((e.target as HTMLInputElement).checked)}>
-			<Switch small checked={todoOn} title="Incluir todos los detalles"><code>todo</code></Switch>
+			<Switch checked={todoOn} color="primary" colorFalse="neutral" title="Incluir todos los detalles"><code>todo</code></Switch>
 		</span>
 		<span class="sw-wrap" on:change={(e) => toggleNada((e.target as HTMLInputElement).checked)}>
-			<Switch small checked={nadaOn} title="No incluir ningún detalle"><code>nada</code></Switch>
+			<Switch checked={nadaOn} color="primary" colorFalse="neutral" title="No incluir ningún detalle"><code>nada</code></Switch>
 		</span>
 	</div>
 	{#if !todoOn && !nadaOn && relations.length > 0}
@@ -66,7 +65,7 @@
 			{#each relations as r (r.alias)}
 				{@const childOn = !!childrenMap[r.alias]}
 				<span class="sw-wrap" on:change={(e) => toggleChild(r.alias, (e.target as HTMLInputElement).checked)}>
-					<Switch small checked={childOn}>
+					<Switch checked={childOn} color="primary" colorFalse="neutral">
 						<code>{r.alias}</code> <small>→ {relTargetCfg(r)?.tableName ?? r.target}</small>
 					</Switch>
 				</span>

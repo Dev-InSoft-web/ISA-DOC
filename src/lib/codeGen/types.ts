@@ -58,6 +58,7 @@ export interface CustomHookDef {
 
 export interface DetailNode {
 	todo?: boolean;
+	nada?: boolean;
 	children?: Record<string, DetailNode>;
 }
 
