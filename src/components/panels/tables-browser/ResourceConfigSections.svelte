@@ -6,6 +6,7 @@
 		FlexLayout,
 		H4,
 		Iconify,
+		SelectEnum,
 		Switch,
 		Text,
 	} from "@ingenieria_insoft/ispsveltecomponents";
@@ -128,6 +129,24 @@
 		if (versusOpen[r.alias] === undefined) versusOpen[r.alias] = (r.versus?.length ?? 0) > 0;
 		if (equalsOpen[r.alias] === undefined) equalsOpen[r.alias] = (r.equals?.length ?? 0) > 0;
 	});
+
+	const AUDIT_COLS = new Set([
+		"IUSUARIOCRE", "IUSUARIOULT",
+		"IAPPCRE", "IAPPULT",
+		"IEQUIPOCRE", "IEQUIPOULT",
+		"IPCRE", "IPULT",
+		"FHCRE", "FHULT",
+	]);
+	function colsOf(cfg: ResourceConfig | undefined): Record<string, string> {
+		const out: Record<string, string> = { "": "—" };
+		if (!cfg) return out;
+		for (const f of cfg.fields) {
+			const col = (f.column ?? f.name).toUpperCase();
+			if (AUDIT_COLS.has(col)) continue;
+			out[col] = col;
+		}
+		return out;
+	}
 </script>
 
 {#if section === "model"}
@@ -302,6 +321,8 @@
 		{/if}
 		{#each resource.relations as r}
 			{@const tgt = resources.find((x) => x.id === r.target)}
+			{@const subCols = colsOf(tgt)}
+			{@const parentCols = colsOf(resource)}
 			<div class="rel-ro">
 				<FlexLayout items="center" justify="between">
 					<H4>{tgt?.tableName ?? r.target} <small>({r.alias})</small></H4>
@@ -328,19 +349,25 @@
 					{/if}
 					{#each r.versus ?? [] as v, i}
 						<div class="row">
-							<input
-								class="input-field"
-								placeholder="sub.COL"
-								bind:value={v.sub}
-								on:input={change}
-							/>
+							<div class="grow">
+								<SelectEnum
+									label=""
+									required={false}
+									enumValue={subCols}
+									value={v.sub}
+									onChange={(nv) => { v.sub = (nv as string) ?? ""; change(); }}
+								/>
+							</div>
 							<span class="eq-sign">=</span>
-							<input
-								class="input-field"
-								placeholder="parent.COL (vacío = igual al sub)"
-								bind:value={v.parent}
-								on:input={change}
-							/>
+							<div class="grow">
+								<SelectEnum
+									label=""
+									required={false}
+									enumValue={parentCols}
+									value={v.parent}
+									onChange={(nv) => { v.parent = (nv as string) ?? ""; change(); }}
+								/>
+							</div>
 							<ButtonIconify icon="mdi:delete-outline" title="Quitar versus" on:click={() => removeVersus(r, i)} />
 						</div>
 					{/each}
@@ -360,12 +387,15 @@
 					{/if}
 					{#each r.equals ?? [] as e, i}
 						<div class="row">
-							<input
-								class="input-field"
-								placeholder="COL"
-								bind:value={e.col}
-								on:input={change}
-							/>
+							<div class="grow">
+								<SelectEnum
+									label=""
+									required={false}
+									enumValue={subCols}
+									value={e.col}
+									onChange={(nv) => { e.col = (nv as string) ?? ""; change(); }}
+								/>
+							</div>
 							<span class="eq-sign">=</span>
 							<input
 								class="input-field"
@@ -636,6 +666,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.35rem;
+	}
+	.cmp-section .grow {
+		flex: 1 1 110px;
+		min-width: 80px;
 	}
 	.eq-sign {
 		font-family: ui-monospace, Menlo, monospace;
