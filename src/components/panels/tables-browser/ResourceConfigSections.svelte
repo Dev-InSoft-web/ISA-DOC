@@ -12,7 +12,6 @@
 		DetailNode,
 		ResourceConfig,
 	} from "../../../lib/codeGen/types.ts";
-	import { renderJData2HighDetailSnippet } from "../../../lib/codeGen/generators.ts";
 	import FloatingCard from "../../_comps/containers/FloatingCard.svelte";
 	import Button_ from "../../_comps/especial/Button_.svelte";
 	import Switch_ from "../../_comps/especial/_Switch.svelte";
@@ -244,11 +243,9 @@
 	<Card>
 		<FlexLayout items="center">
 			<Iconify icon="mdi:file-tree" />
-			<H4>JData2HighDetail · detalles a hidratar</H4>
+			<H4>JData2HighDetail</H4>
 		</FlexLayout>
-		{#if resource.relations.length > 0}
-			<pre class="jdata-snippet"><code>{renderJData2HighDetailSnippet(resource, resources)}</code></pre>
-		{:else}
+		{#if resource.relations.length === 0}
 			<Text color="neutral"><small>Sin relaciones.</small></Text>
 		{/if}
 		{#each resource.relations as r (r.alias)}
@@ -535,17 +532,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.3rem;
-	}
-	.jdata-snippet {
-		margin: 0.25rem 0 0.5rem;
-		padding: 0.4rem 0.5rem;
-		border: 1px solid var(--is-b-color, #444);
-		border-radius: 4px;
-		background: var(--is-bg-readonly, #1e1e1e);
-		font-family: ui-monospace, Menlo, monospace;
-		font-size: 0.75rem;
-		white-space: pre-wrap;
-		overflow-x: auto;
 	}
 	.col-check {
 		display: inline-flex;

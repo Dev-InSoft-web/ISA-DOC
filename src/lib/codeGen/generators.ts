@@ -184,18 +184,6 @@ export function genDatos(cfg: ResourceConfig, all: ResourceConfig[]): string {
 // ─────────────────────────────────────────────────────────────────────────────
 // 3) SERVER  (ISP-CLientesISServer/.../<Recurso>Server.ts)
 // ─────────────────────────────────────────────────────────────────────────────
-export function renderJData2HighDetailSnippet(cfg: ResourceConfig, all: ResourceConfig[]): string {
-	if (!cfg.relations.length) return "";
-	const map = new Map(all.map((r) => [r.id, r]));
-	const parts = cfg.relations.map((r) => {
-		const node = cfg.detailSpec?.[r.alias] ?? { todo: true };
-		const tgt = map.get(r.target);
-		return `${r.alias}: ${renderDetailNode(node, tgt, map)}`;
-	}).join(", ");
-
-	return `JData2HighDetail = (): iInfo${cfg.id} => ({ ${parts} })`;
-}
-
 function renderDetailNode(node: DetailNode, targetCfg: ResourceConfig | undefined, map: Map<string, ResourceConfig>): string {
 	if (node.todo) return "{ todo }";
 	if (node.nada) return "{}";
