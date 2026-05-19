@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import { Switch } from "@ingenieria_insoft/ispsveltecomponents";
+	import Switch from "../../_comps/primitives/Switch.svelte";
 	import Self from "./DetailSpecNode.svelte";
 	import type { DetailNode, RelationDef, ResourceConfig } from "../../../lib/codeGen/types.ts";
 
@@ -61,7 +61,7 @@
 			<Switch small checked={nadaOn} title="No incluir ningún detalle"><code>nada</code></Switch>
 		</span>
 	</div>
-	{#if !todoOn && relations.length > 0}
+	{#if !todoOn && !nadaOn && relations.length > 0}
 		<div class="children">
 			{#each relations as r (r.alias)}
 				{@const childOn = !!childrenMap[r.alias]}
