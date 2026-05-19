@@ -339,9 +339,11 @@
 				{#if versusOpen[r.alias]}
 				<div class="cmp-section">
 					<FlexLayout items="center" justify="end">
-						<Button_ variant="outlined" onClick={() => addVersus(r)}>
-							<Iconify icon="mdi:plus" /> <small>versus</small>
-						</Button_>
+						<small>
+							<Button_ variant="outlined" onClick={() => addVersus(r)}>
+								<Iconify icon="mdi:plus" /> versus
+							</Button_>
+						</small>
 					</FlexLayout>
 					{#if !(r.versus?.length)}
 						<small class="muted">Sin versus.</small>
@@ -376,9 +378,11 @@
 				{#if equalsOpen[r.alias]}
 				<div class="cmp-section">
 					<FlexLayout items="center" justify="end">
-						<Button_ variant="outlined" onClick={() => addEqual(r)}>
-							<Iconify icon="mdi:plus" /> <small>equals</small>
-						</Button_>
+						<small>
+							<Button_ variant="outlined" onClick={() => addEqual(r)}>
+								<Iconify icon="mdi:plus" /> equals
+							</Button_>
+						</small>
 					</FlexLayout>
 					{#if !(r.equals?.length)}
 						<small class="muted">Sin equals.</small>
