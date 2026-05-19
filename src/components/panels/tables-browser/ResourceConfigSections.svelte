@@ -138,11 +138,11 @@
 		"FHCRE", "FHULT",
 	]);
 	function colsOf(cfg: ResourceConfig | undefined): Record<string, string> {
-		const out: Record<string, string> = { "": "—" };
+		const out: Record<string, string> = {};
 		if (!cfg) return out;
 		for (const f of cfg.fields) {
 			const col = (f.column ?? f.name).toUpperCase();
-			if (AUDIT_COLS.has(col)) continue;
+			if (!col || AUDIT_COLS.has(col)) continue;
 			out[col] = col;
 		}
 		return out;
@@ -326,11 +326,11 @@
 			<div class="rel-ro">
 				<FlexLayout items="center" justify="between">
 					<H4>{tgt?.tableName ?? r.target} <small>({r.alias})</small></H4>
-					<FlexLayout items="center">
-						<Switch bind:checked={versusOpen[r.alias]} color="primary" colorFalse="neutral">
+					<FlexLayout direction="column" items="start" gap="0.1rem">
+						<Switch bind:checked={versusOpen[r.alias]} small color="primary" colorFalse="neutral">
 							<small>versus</small>
 						</Switch>
-						<Switch bind:checked={equalsOpen[r.alias]} color="primary" colorFalse="neutral">
+						<Switch bind:checked={equalsOpen[r.alias]} small color="primary" colorFalse="neutral">
 							<small>equals</small>
 						</Switch>
 					</FlexLayout>
@@ -354,8 +354,8 @@
 									label=""
 									required={false}
 									enumValue={subCols}
-									value={v.sub}
-									onChange={(nv) => { v.sub = (nv as string) ?? ""; change(); }}
+									bind:value={v.sub}
+									onChange={() => change()}
 								/>
 							</div>
 							<span class="eq-sign">=</span>
@@ -364,8 +364,8 @@
 									label=""
 									required={false}
 									enumValue={parentCols}
-									value={v.parent}
-									onChange={(nv) => { v.parent = (nv as string) ?? ""; change(); }}
+									bind:value={v.parent}
+									onChange={() => change()}
 								/>
 							</div>
 							<ButtonIconify icon="mdi:delete-outline" title="Quitar versus" on:click={() => removeVersus(r, i)} />
@@ -392,8 +392,8 @@
 									label=""
 									required={false}
 									enumValue={subCols}
-									value={e.col}
-									onChange={(nv) => { e.col = (nv as string) ?? ""; change(); }}
+									bind:value={e.col}
+									onChange={() => change()}
 								/>
 							</div>
 							<span class="eq-sign">=</span>
