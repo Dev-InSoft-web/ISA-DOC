@@ -323,6 +323,7 @@
 			{@const tgt = resources.find((x) => x.id === r.target)}
 			{@const subCols = colsOf(tgt)}
 			{@const parentCols = colsOf(resource)}
+			<hr class="sep" />
 			<div class="rel-ro">
 				<FlexLayout items="center" justify="between">
 					<H4>{tgt?.tableName ?? r.target} <small>({r.alias})</small></H4>
