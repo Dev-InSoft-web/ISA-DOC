@@ -282,29 +282,20 @@
 		{/each}
 	</Card>
 
+	<hr class="sep" />
+
 	<Card>
 		<FlexLayout items="center">
 			<Iconify icon="mdi:table-arrow-right" />
-			<H4>Relaciones · mapeo de columnas</H4>
+			<H4>Relaciones</H4>
 		</FlexLayout>
-		<Text color="neutral">
-			<small>
-				Por cada relación se construye <code>comparacion: [...]</code>. Cada entrada puede ser:
-				un <strong>versus</strong> entre columnas (sub vs. parent) — si los nombres difieren se emite <code>"SUB|PARENT"</code>, si son iguales <code>"COL"</code> — o un <strong>equals</strong> que fija una columna del <code>sub</code> a un valor literal, ej. <code>"BACTIVO=1"</code>.
-			</small>
-		</Text>
 		{#if resource.relations.length === 0}
 			<Text color="neutral"><small>Sin relaciones.</small></Text>
 		{/if}
 		{#each resource.relations as r}
 			{@const tgt = resources.find((x) => x.id === r.target)}
 			<div class="rel-ro">
-				<div class="row">
-					<code class="alias">{r.alias}</code>
-					<span class="kind">{r.kind}</span>
-					<Iconify icon="mdi:arrow-right" />
-					<code>{tgt?.tableName ?? r.target}</code>
-				</div>
+				<H4>{tgt?.tableName ?? r.target} <small>({r.alias})</small></H4>
 
 				<div class="cmp-section">
 					<FlexLayout items="center" justify="between">
@@ -373,6 +364,8 @@
 			</div>
 		{/each}
 	</Card>
+
+	<hr class="sep" />
 
 	<Card>
 		<FlexLayout items="center" justify="between">
@@ -629,6 +622,11 @@
 	.muted {
 		opacity: 0.6;
 		font-style: italic;
+	}
+	.sep {
+		border: none;
+		border-top: 1px solid var(--is-b-color, #444);
+		margin: 0.75rem 0;
 	}
 	.col-check {
 		display: inline-flex;
