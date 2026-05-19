@@ -152,6 +152,17 @@
             "CursosPrerequisito": "prerrequisitos",
             "CursosDePlanesEstudio": "cursosdeplanestudio"
           },
+          "relationOverrides": {
+            "CursosPrerequisito": {
+              "equals": [
+                {
+                  "col": "",
+                  "value": "",
+                  "type": "number"
+                }
+              ]
+            }
+          },
           "customHooks": [
             {
               "name": "Custom_Action",

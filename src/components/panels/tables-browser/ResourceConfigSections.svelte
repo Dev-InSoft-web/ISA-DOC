@@ -400,12 +400,12 @@
 							</div>
 							<span class="eq-sign">=</span>
 							<input
-								class="input-field"
+								class="input-field grow"
 								placeholder="valor"
 								bind:value={e.value}
 								on:input={change}
 							/>
-							<select class="input-field" bind:value={e.type} on:change={change}>
+							<select class="input-field type-sel" bind:value={e.type} on:change={change}>
 								<option value="number">number</option>
 								<option value="bool">bool</option>
 								<option value="string">string</option>
@@ -667,11 +667,16 @@
 	.cmp-section .row {
 		display: flex;
 		align-items: center;
+		flex-wrap: nowrap;
 		gap: 0.35rem;
 	}
 	.cmp-section .grow {
 		flex: 1 1 110px;
 		min-width: 80px;
+	}
+	.cmp-section .type-sel {
+		flex: 0 0 6rem;
+		min-width: 0;
 	}
 	.eq-sign {
 		font-family: ui-monospace, Menlo, monospace;
