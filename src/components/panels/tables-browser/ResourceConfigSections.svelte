@@ -10,6 +10,7 @@
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import type {
 		DetailNode,
+		RelationDef,
 		ResourceConfig,
 	} from "../../../lib/codeGen/types.ts";
 	import FloatingCard from "../../_comps/containers/FloatingCard.svelte";
@@ -100,6 +101,23 @@
 		const spec = { ...(resource.detailSpec ?? {}) };
 		spec[alias] = ev.detail;
 		resource.detailSpec = spec;
+		change();
+	}
+
+	function addVersus(rel: RelationDef): void {
+		rel.versus = [...(rel.versus ?? []), { sub: "", parent: "" }];
+		change();
+	}
+	function removeVersus(rel: RelationDef, i: number): void {
+		rel.versus = (rel.versus ?? []).filter((_, k) => k !== i);
+		change();
+	}
+	function addEqual(rel: RelationDef): void {
+		rel.equals = [...(rel.equals ?? []), { col: "", value: "", type: "number" }];
+		change();
+	}
+	function removeEqual(rel: RelationDef, i: number): void {
+		rel.equals = (rel.equals ?? []).filter((_, k) => k !== i);
 		change();
 	}
 </script>
@@ -270,7 +288,10 @@
 			<H4>Relaciones · mapeo de columnas</H4>
 		</FlexLayout>
 		<Text color="neutral">
-			<small>Para cada relación, las columnas de la tabla hija (<code>sub</code>) que se alinean con las de esta tabla (<code>parent</code>). Derivadas de las PK compartidas.</small>
+			<small>
+				Por cada relación se construye <code>comparacion: [...]</code>. Cada entrada puede ser:
+				un <strong>versus</strong> entre columnas (sub vs. parent) — si los nombres difieren se emite <code>"SUB|PARENT"</code>, si son iguales <code>"COL"</code> — o un <strong>equals</strong> que fija una columna del <code>sub</code> a un valor literal, ej. <code>"BACTIVO=1"</code>.
+			</small>
 		</Text>
 		{#if resource.relations.length === 0}
 			<Text color="neutral"><small>Sin relaciones.</small></Text>
@@ -284,15 +305,71 @@
 					<Iconify icon="mdi:arrow-right" />
 					<code>{tgt?.tableName ?? r.target}</code>
 				</div>
-				{#if r.versus?.length}
-					<div class="vs-list">
-						{#each r.versus as v}
-							<small><code>sub.{v.sub}</code> = <code>parent.{v.parent}</code></small>
-						{/each}
-					</div>
-				{:else}
-					<div class="vs-list"><small>Sin columnas compartidas detectadas.</small></div>
-				{/if}
+
+				<div class="cmp-section">
+					<FlexLayout items="center" justify="between">
+						<Text color="neutral"><small>versus (sub ↔ parent)</small></Text>
+						<Button_ variant="outlined" onClick={() => addVersus(r)}>
+							<Iconify icon="mdi:plus" /> versus
+						</Button_>
+					</FlexLayout>
+					{#if !(r.versus?.length)}
+						<small class="muted">Sin versus.</small>
+					{/if}
+					{#each r.versus ?? [] as v, i}
+						<div class="row">
+							<input
+								class="input-field"
+								placeholder="sub.COL"
+								bind:value={v.sub}
+								on:input={change}
+							/>
+							<span class="eq-sign">=</span>
+							<input
+								class="input-field"
+								placeholder="parent.COL (vacío = igual al sub)"
+								bind:value={v.parent}
+								on:input={change}
+							/>
+							<ButtonIconify icon="mdi:delete-outline" title="Quitar versus" on:click={() => removeVersus(r, i)} />
+						</div>
+					{/each}
+				</div>
+
+				<div class="cmp-section">
+					<FlexLayout items="center" justify="between">
+						<Text color="neutral"><small>equals (sub.COL = valor literal)</small></Text>
+						<Button_ variant="outlined" onClick={() => addEqual(r)}>
+							<Iconify icon="mdi:plus" /> equals
+						</Button_>
+					</FlexLayout>
+					{#if !(r.equals?.length)}
+						<small class="muted">Sin equals.</small>
+					{/if}
+					{#each r.equals ?? [] as e, i}
+						<div class="row">
+							<input
+								class="input-field"
+								placeholder="COL"
+								bind:value={e.col}
+								on:input={change}
+							/>
+							<span class="eq-sign">=</span>
+							<input
+								class="input-field"
+								placeholder="valor"
+								bind:value={e.value}
+								on:input={change}
+							/>
+							<select class="input-field" bind:value={e.type} on:change={change}>
+								<option value="number">number</option>
+								<option value="bool">bool</option>
+								<option value="string">string</option>
+							</select>
+							<ButtonIconify icon="mdi:delete-outline" title="Quitar equals" on:click={() => removeEqual(r, i)} />
+						</div>
+					{/each}
+				</div>
 			</div>
 		{/each}
 	</Card>
@@ -532,6 +609,26 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.3rem;
+	}
+	.cmp-section {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		padding: 0.3rem 0;
+		border-top: 1px dashed var(--is-b-color, #444);
+	}
+	.cmp-section .row {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+	.eq-sign {
+		font-family: ui-monospace, Menlo, monospace;
+		opacity: 0.7;
+	}
+	.muted {
+		opacity: 0.6;
+		font-style: italic;
 	}
 	.col-check {
 		display: inline-flex;
