@@ -338,8 +338,7 @@
 
 				{#if versusOpen[r.alias]}
 				<div class="cmp-section">
-					<FlexLayout items="center" justify="between">
-						<Text color="neutral"><small>versus (sub ↔ parent)</small></Text>
+					<FlexLayout items="center" justify="end">
 						<Button_ variant="outlined" onClick={() => addVersus(r)}>
 							<Iconify icon="mdi:plus" /> versus
 						</Button_>
@@ -376,8 +375,7 @@
 
 				{#if equalsOpen[r.alias]}
 				<div class="cmp-section">
-					<FlexLayout items="center" justify="between">
-						<Text color="neutral"><small>equals (sub.COL = valor literal)</small></Text>
+					<FlexLayout items="center" justify="end">
 						<Button_ variant="outlined" onClick={() => addEqual(r)}>
 							<Iconify icon="mdi:plus" /> equals
 						</Button_>
