@@ -12,6 +12,12 @@
 		open?: boolean;
 		inner?: boolean;
 		count?: number | null;
+		// Estándar: cuando un accordion agrupa contenido revisable (uno o más
+		// `checkKey` de los hijos), se muestra el `RevisadoCheck` agregado en el
+		// header automáticamente. Solo aplica cuando NO se entrega el slot
+		// `title-extra` (el slot custom tiene prioridad).
+		checkKey?: string;
+		checkKeys?: string[];
 	}
 </script>
 
@@ -26,6 +32,7 @@
 		Text,
 		FlexLayout,
 	} from "@ingenieria_insoft/ispsveltecomponents";
+	import RevisadoCheck from "../actions/RevisadoCheck.svelte";
 
 	type $$Props = AccordionProps;
 
@@ -38,9 +45,12 @@
 	export let open = false;
 	export let inner = false;
 	export let count: number | null | undefined = undefined;
+	export let checkKey: string | undefined = undefined;
+	export let checkKeys: string[] | undefined = undefined;
 
 	$: relieveAccordion = inner ? 75 : undefined;
 	$: statusDotsUnique = statusDots?.length ? [...new Set(statusDots)] : [];
+	$: hasCheck = !!(checkKey || (checkKeys && checkKeys.length > 0));
 </script>
 
 <Card
@@ -84,7 +94,11 @@
 						{/if}
 					</Text>
 				</FlexLayout>
-				<slot name="title-extra" />
+				{#if $$slots["title-extra"]}
+					<slot name="title-extra" />
+				{:else if hasCheck}
+					<RevisadoCheck key={checkKey ?? ""} keys={checkKeys ?? []} />
+				{/if}
 				<Iconify class="chevron" icon="mdi:chevron-down" flipv={open} style="font-size: 1.5em; flex-shrink: 0;" />
 			</FlexLayout>
 		</svelte:component>
