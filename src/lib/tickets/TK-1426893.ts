@@ -1,43 +1,71 @@
 // TK-1426893 — Catálogo de curso vacío desde el plan de estudio
-// al crear desde la pestaña "Cursos integrados".
+// al crear desde la pestaña "Requisitos".
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
 	`<div>Se reporta que en el catálogo de <b>Planes de estudio</b>,  
-	pestaña <b>Cursos integrados</b>, al ejecutar la acción <b>Crear</b>  
-	se abre el catálogo de cursos <b>vacío</b> (sin filas para  
-	seleccionar) pese a existir cursos definidos en el sistema.</div>`;
+	en la pestaña de <b>Requisitos</b> entre cursos, al pulsar  
+	<b>Crear</b> el selector de cursos aparece <b>vacío</b>. Tras  
+	analizar el flujo, <b>no se trata de un error funcional</b>: el  
+	selector solo lista cursos del plan y, sin al menos dos cursos  
+	integrados, no existen candidatos válidos para establecer una  
+	relación curso → curso requerido.</div>`;
 
 export async function buildBodyTK1426893(): Promise<string> {
-	const [h3Contexto, h3Estado] = await Promise.all([
-		h3Iconized("mdi:information-outline", "Contexto"),
+	const [h3Aclaracion, h3Solucion, h3Estado] = await Promise.all([
+		h3Iconized("mdi:information-outline", "Aclaración"),
+		h3Iconized("mdi:tools", "Solución aplicada"),
 		h3Iconized("mdi:forum-outline", "Estado"),
 	]);
 
-	const contexto = noteList(
+	const aclaracion = noteList(
 		await note(
-			"mdi:book-open-page-variant-outline",
-			`Se ingresa a un plan de estudio y a la pestaña <b>Cursos  
-			integrados</b>; al pulsar <b>Crear</b> se despliega un  
-			selector de cursos.`,
+			"mdi:link-variant",
+			`Un requisito relaciona dos cursos del mismo plan  
+			(<b>curso</b> y <b>curso requerido</b>). Si el plan tiene  
+			menos de dos cursos integrados, no hay combinaciones  
+			posibles y el selector queda sin filas. El comportamiento  
+			es el esperado, pero la <b>experiencia</b> resulta confusa  
+			porque no se comunica el motivo.`,
 		),
 		await note(
-			"mdi:database-off-outline",
-			`El selector aparece con el mensaje <i>"No hay filas para  
-			mostrar"</i>, aunque el catálogo de cursos del sistema sí  
-			contiene registros.`,
+			"mdi:database-check-outline",
+			`El catálogo general de cursos del sistema sí contiene  
+			registros; lo que se filtra es la lista restringida al  
+			plan de estudio actual.`,
+		),
+	);
+
+	const solucion = noteList(
+		await note(
+			"mdi:button-cursor",
+			`La acción <b>Crear</b> de requisitos queda <b>deshabilitada</b>  
+			mientras el plan no tenga al menos <b>2 cursos integrados</b>.`,
+		),
+		await note(
+			"mdi:alert-circle-outline",
+			`Se muestra un <b>alert</b> informativo en la cabecera de  
+			la pestaña indicando el requisito mínimo y el número  
+			actual de cursos integrados.`,
+		),
+		await note(
+			"mdi:broom",
+			`Si el plan tiene requisitos cuyos cursos ya no están  
+			integrados (huérfanos), se <b>eliminan localmente</b> de  
+			forma reactiva al cargar/editar el formulario y la  
+			eliminación se persiste al hacer <b>submit</b>.`,
 		),
 	);
 
 	const estado = noteList(
 		await note(
-			"mdi:progress-wrench",
-			`Ticket abierto. Por revisar la consulta/filtro del catálogo  
-			de cursos en el contexto del plan de estudio.`,
+			"mdi:check-circle-outline",
+			`Ajuste entregado en el frontend del plan de estudio,  
+			pestaña <b>Requisitos</b>.`,
 		),
 	);
 
-	return intro + h3Contexto + contexto + h3Estado + estado;
+	return intro + h3Aclaracion + aclaracion + h3Solucion + solucion + h3Estado + estado;
 }
 
 export const bodyTK1426893: Promise<string> = buildBodyTK1426893();
