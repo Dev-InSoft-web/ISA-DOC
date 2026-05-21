@@ -159,7 +159,7 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "19/may./2026 09:08:28 am",
 		estimacionMinutos: 90,
-		diligenciaMinutos: 30,
+		diligenciaMinutos: 45,
 		resumen: "Se identificó que los clientes de Curso y Plan de Estudio heredaban los endpoints base sin sobreescribirlos, por lo que las acciones extendidas Verificación, Duplicar, Recodificar y Consolidar enviaban la petición a una ruta inexistente. Se definieron explícitamente los cuatro endpoints en cada cliente con el segmento del recurso correspondiente. QA contra el servidor confirma que las ocho llamadas llegan al manejador correcto y que la Verificación responde satisfactoriamente en ambas entidades. Las otras tres acciones quedan pendientes por un error server-side independiente en la validación SQL del parámetro de auditoría, reportado como issue aparte.",
 		commits: [
 			{ hash: "76edff7", descripcion: "feat(plan-estudio, curso): se agregan endpoints de verificar, duplicar, recodificar y consolidar en los clientes (TK-1426681)", repo: "ISP-ClientesIS", ins: 8, del: 0, fecha: "2026-05-21T10:15:34-05:00" },
