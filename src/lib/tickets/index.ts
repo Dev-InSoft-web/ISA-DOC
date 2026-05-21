@@ -14,6 +14,11 @@ import { bodyTK1424892 } from "./TK-1424892";
 import { bodyTK1424911 } from "./TK-1424911";
 import { bodyTK1425170 } from "./TK-1425170";
 import { bodyTK1425173 } from "./TK-1425173";
+import { bodyTK1426669 } from "./TK-1426669";
+import { bodyTK1426681 } from "./TK-1426681";
+import { bodyTK1426728 } from "./TK-1426728";
+import { bodyTK1426893 } from "./TK-1426893";
+import { bodyTK1426900 } from "./TK-1426900";
 
 export interface TicketNormativa {
 	medioAtencion: string;
@@ -69,6 +74,66 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 };
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1426900",
+		titulo: "Acción modificar en \"Cursos integrados\" plan de estudio",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "19/may./2026 12:14:17 pm",
+		estimacionMinutos: 0,
+		diligenciaMinutos: 0,
+		resumen: "Al dar clic en la acción Modificar, dentro de la pestaña \"Cursos integrados\" de un plan de estudio, el campo del curso aparece en modo visualización y no permite modificar ni reemplazar el curso actual.",
+		commits: [],
+		body: bodyTK1426900,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
+	},
+	{
+		id: "TK-1426893",
+		titulo: "Catálogo de curso vacío desde el plan de estudio",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "19/may./2026 12:07:31 pm",
+		estimacionMinutos: 0,
+		diligenciaMinutos: 0,
+		resumen: "En el catálogo de planes de estudio, pestaña \"Cursos integrados\", al pulsar Crear se abre el catálogo de cursos vacío pese a existir cursos definidos en el sistema.",
+		commits: [],
+		body: bodyTK1426893,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
+	},
+	{
+		id: "TK-1426728",
+		titulo: "Información vacía del curso en pestaña \"Contenido\" del curso",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "19/may./2026 09:35:39 am",
+		estimacionMinutos: 0,
+		diligenciaMinutos: 0,
+		resumen: "Al agregar un nuevo nodo bajo un capítulo en la pestaña Contenido del catálogo de cursos, el registro se inserta pero no carga la información del recurso (por ejemplo el nombre/título queda vacío).",
+		commits: [],
+		body: bodyTK1426728,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
+	},
+	{
+		id: "TK-1426681",
+		titulo: "Error funcional de acciones Duplicar, Recodificar, Verificación y Consolidar",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "19/may./2026 09:08:28 am",
+		estimacionMinutos: 0,
+		diligenciaMinutos: 0,
+		resumen: "Se reportan errores en las acciones Duplicar, Recodificar, Verificación y Consolidar dentro del catálogo de cursos, con mensajes en pantalla del tipo \"No se pudo consolidar\" y \"No se pudo duplicar\".",
+		commits: [],
+		body: bodyTK1426681,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
+	},
+	{
+		id: "TK-1426669",
+		titulo: "Forma del campo \"Nombre de permiso\" en seguridad del curso",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "19/may./2026 09:03:21 am",
+		estimacionMinutos: 0,
+		diligenciaMinutos: 0,
+		resumen: "Al crear un nuevo registro de seguridad dentro de un curso, el campo \"Nombre de permiso\" tiene una forma distinta a la del resto de campos del formulario, rompiendo la consistencia visual.",
+		commits: [],
+		body: bodyTK1426669,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Ajuste del sistema" },
+	},
 	{
 		id: "TK-1425173",
 		titulo: "Plan padre del recurso como catálogo filtrado",
