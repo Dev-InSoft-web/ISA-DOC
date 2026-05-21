@@ -23,7 +23,12 @@
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
 	import sqlSeedAccionesCursosPlanDeEstudio from "../../lib/migration/sql/seed-acciones-cursos-plandeestudio.sql?raw";
 	import md_2026_05_14_driver_jconfig_v2 from "../../lib/bitacora/daily/2026-05/14/driver-atributos-jconfig-v2-intro.md?raw";
-	import md_2026_05_21_isa from "../../lib/bitacora/daily/2026-05/21/resumen-isa.md?raw";
+	import md_2026_05_21_cierre_tk from "../../lib/bitacora/daily/2026-05/21/01-cierre-tk1426681.md?raw";
+	import md_2026_05_21_img_imgbb from "../../lib/bitacora/daily/2026-05/21/02-img-imgbb.md?raw";
+	import md_2026_05_21_simple_table from "../../lib/bitacora/daily/2026-05/21/03-simple-table.md?raw";
+	import md_2026_05_21_icon_color from "../../lib/bitacora/daily/2026-05/21/04-icon-img-color.md?raw";
+	import md_2026_05_21_accordion_checks from "../../lib/bitacora/daily/2026-05/21/05-accordion-checks.md?raw";
+	import md_2026_05_21_commits_tiempos from "../../lib/bitacora/daily/2026-05/21/06-commits-tiempos-obligatorios.md?raw";
 	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05/06/resumen-isa.md?raw";
 	import md_2026_05_06_isw_isp from "../../lib/bitacora/daily/2026-05/06/resumen-isw-isp.md?raw";
 	import md_2026_05_06_iss from "../../lib/bitacora/daily/2026-05/06/resumen-iss.md?raw";
@@ -136,7 +141,29 @@
 				titleIcon="mdi:calendar"
 				open={true}
 			>
-				<BitacoraNote flat mdSource={md_2026_05_21_isa} />
+				<Accordion title="Cierre del TK-1426681 (Cursos / Planes de Estudio)" titleIcon="mdi:check-decagram" inner>
+					<BitacoraNote flat mdSource={md_2026_05_21_cierre_tk} />
+				</Accordion>
+
+				<Accordion title="Estándar de imágenes para tickets (img() + imgbb)" titleIcon="mdi:image-multiple-outline" inner>
+					<BitacoraNote flat mdSource={md_2026_05_21_img_imgbb} />
+				</Accordion>
+
+				<Accordion title="Helper simpleTable y tablas email-safe centralizadas" titleIcon="mdi:table" inner>
+					<BitacoraNote flat mdSource={md_2026_05_21_simple_table} />
+				</Accordion>
+
+				<Accordion title="Iconos como &lt;img&gt; con color por query y min/max width" titleIcon="mdi:image-outline" inner>
+					<BitacoraNote flat mdSource={md_2026_05_21_icon_color} />
+				</Accordion>
+
+				<Accordion title="Accordion con checkKey/checkKeys (auto RevisadoCheck)" titleIcon="mdi:check-circle-outline" inner>
+					<BitacoraNote flat mdSource={md_2026_05_21_accordion_checks} />
+				</Accordion>
+
+				<Accordion title="Estándar: commits + resumen de tiempos al culminar un TK" titleIcon="mdi:source-commit" inner>
+					<BitacoraNote flat mdSource={md_2026_05_21_commits_tiempos} />
+				</Accordion>
 			</Accordion>
 
 			<!-- 2026-05-15 -->
