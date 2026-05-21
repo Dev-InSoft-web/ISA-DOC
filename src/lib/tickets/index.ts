@@ -19,6 +19,7 @@ import { bodyTK1426681 } from "./TK-1426681";
 import { bodyTK1426728 } from "./TK-1426728";
 import { bodyTK1426893 } from "./TK-1426893";
 import { bodyTK1426900 } from "./TK-1426900";
+import { bodyTK1428161 } from "./TK-1428161";
 
 export interface TicketNormativa {
 	medioAtencion: string;
@@ -64,6 +65,7 @@ export interface TicketRegistro {
 	body: Promise<string>;
 	normativa: TicketNormativa;
 	festivos?: string[];
+	noMaquillarFechas?: boolean;
 }
 
 const NORMATIVA_DEFAULT: TicketNormativa = {
@@ -76,6 +78,30 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 };
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1428161",
+		titulo: "Guardar visualización de columnas en catálogo de cursos",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "21/may./2026 04:26:36 pm",
+		estimacionMinutos: 180,
+		diligenciaMinutos: 20,
+		noMaquillarFechas: true,
+		resumen: "Solicitud de persistencia de la selección de columnas visibles en los catálogos: al refrescar la página, las columnas no predeterminadas se volvían a ocultar. Se entregó la semana del 13/may./2026 una capa de persistencia en localStorage por controlador (clave con entrie) con rehidratación síncrona en el constructor / field initializer, aplicada de forma transversal a todos los catálogos de ContaPyme U.",
+		commits: [
+			{ hash: "67ccd5d", descripcion: "feat(contapymeu): se persisten visible y orderby de columnas por controlador en localStorage para todos los catalogos", repo: "ISW-ClientesIS", ins: 36, del: 1, fecha: "2026-05-13T11:41:57-05:00" },
+			{ hash: "c021141", descripcion: "refactor(contapymeu): se anidan tipos de persistencia de columnas dentro del helper", repo: "ISW-ClientesIS", ins: 2, del: 3, fecha: "2026-05-13T11:43:31-05:00" },
+			{ hash: "8e397c2", descripcion: "fix(contapymeu): se aplica persistencia de columnas de forma sincrona en el constructor para que el grid lea los valores ya rehidratados", repo: "ISW-ClientesIS", ins: 27, del: 17, fecha: "2026-05-13T11:47:23-05:00" },
+			{ hash: "18fe88f", descripcion: "fix(contapymeu): se rehidrata el localStorage de columnas dentro del field initializer para que la grilla aplique persistencia desde el primer render", repo: "ISW-ClientesIS", ins: 29, del: 34, fecha: "2026-05-13T12:13:17-05:00" },
+			{ hash: "22cda2c", descripcion: "refactor(contapymeu): se centraliza la definicion de columnas y se unifica el wrapper de lista para catalogos", repo: "ISW-ClientesIS", ins: 63, del: 71, fecha: "2026-05-13T12:28:25-05:00" },
+			{ hash: "755a768", descripcion: "refactor(contapymeu): se incluye entrie en la clave de persistencia de columnas para reducir colisiones", repo: "ISW-ClientesIS", ins: 3, del: 2, fecha: "2026-05-13T12:33:26-05:00" },
+			{ hash: "aca8048", descripcion: "feat(contapymeu): se registran las claves de columnas en un indice global y se expone una utilidad para reiniciar el estado almacenado", repo: "ISW-ClientesIS", ins: 24, del: 0, fecha: "2026-05-13T13:36:51-05:00" },
+			{ hash: "d8b113d", descripcion: "refactor(contapymeu): se encapsula el registro de columnas en un singleton anonimo hermetico", repo: "ISW-ClientesIS", ins: 21, del: 22, fecha: "2026-05-13T13:37:49-05:00" },
+			{ hash: "7c39581", descripcion: "refactor(contapymeu): se consolida la persistencia de columnas y se centraliza el proxy de acciones y la referencia comun", repo: "ISW-ClientesIS", ins: 28, del: 24, fecha: "2026-05-13T13:41:49-05:00" },
+			{ hash: "93441f2", descripcion: "refactor(contapymeu): se anida el tipo auxiliar de columna en la unica funcion que lo consume", repo: "ISW-ClientesIS", ins: 1, del: 4, fecha: "2026-05-13T13:44:20-05:00" },
+		],
+		body: bodyTK1428161,
+		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Ajuste del sistema" },
+	},
 	{
 		id: "TK-1426900",
 		titulo: "Acción modificar en \"Cursos integrados\" plan de estudio",
@@ -724,7 +750,7 @@ export const TICKETS: TicketRegistro[] = [
 ];
 
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
-	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.fechaSolicitud, t.id, t.festivos, t.titulo, t.diligenciaMinutos, t.extraMinutos, t.extraDescripcion);
+	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.noMaquillarFechas ? undefined : t.fechaSolicitud, t.id, t.festivos, t.titulo, t.diligenciaMinutos, t.extraMinutos, t.extraDescripcion);
 }
 
 export async function getTicketTotalEstimadoMin(t: TicketRegistro): Promise<number> {
