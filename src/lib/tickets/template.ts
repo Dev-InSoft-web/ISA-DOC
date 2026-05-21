@@ -24,6 +24,7 @@ const REPOS_VALIDOS = new Set([
 	"ISP-ClientesIS",
 	"ISP-CLientesISServer",
 	"ISS-ClientesIS-ContaPymeU",
+	"ISA-DOC",
 ]);
 
 function escapeHtml(s: string): string {
