@@ -7,6 +7,7 @@
 // correctamente vía lookup por PK (antes aparecía en rojo por la regla de
 // exclusión).
 import { h3Iconized, note, noteList } from "./tk-helpers";
+import { img } from "./snippets";
 
 const intro =
 	`<div>Se reporta que dentro de un curso, al crear o visualizar un  
@@ -75,30 +76,18 @@ export async function buildBodyTK1426669(): Promise<string> {
 	const evidencia = noteList(
 		await note(
 			"mdi:table-eye",
-			`Listado de seguridad del curso con el registro existente.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426669/seguridad-lista.png"  
-			alt="Listado de seguridad del curso"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			`Listado de seguridad del curso con el registro existente.` + img("seguridad-lista.png"),
 		),
 		await note(
 			"mdi:eye-outline",
 			`Formulario en modo <b>Visualizar</b>: el nombre del  
 			permiso ahora se resuelve correctamente (sin texto en  
-			rojo) y se ve con la misma forma que en modo edición.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426669/seguridad-form-view.png"  
-			alt="Formulario de seguridad en modo Visualizar"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			rojo) y se ve con la misma forma que en modo edición.` + img("seguridad-form-view.png"),
 		),
 		await note(
 			"mdi:plus-box-outline",
 			`Formulario en modo <b>Crear</b>: un único BtnRef de  
-			Permiso, consistente con la vista de visualización.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426669/seguridad-form-crear.png"  
-			alt="Formulario de seguridad en modo Crear"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			Permiso, consistente con la vista de visualización.` + img("seguridad-form-crear.png"),
 		),
 	);
 

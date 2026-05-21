@@ -438,5 +438,45 @@
 		"width": 1566,
 		"height": 943,
 		"size": 169694
+	},
+	"seguridad-form-crear.png": {
+		"sha1": "d0ec2b3445d27eb1779828b9ba745eabb9dc799f",
+		"url": "https://i.ibb.co/5h7nvwhy/seguridad-form-crear.png",
+		"display_url": "https://i.ibb.co/CKrMvDKZ/seguridad-form-crear.png",
+		"thumb": "https://i.ibb.co/4RQYM3RG/seguridad-form-crear.png",
+		"delete_url": "https://ibb.co/4RQYM3RG/77fa10abe9016a67278cbbb1ad76a21d",
+		"width": 1218,
+		"height": 943,
+		"size": 110598
+	},
+	"seguridad-form-view.png": {
+		"sha1": "73f4883a65dcc8a9c014adfcc2eb6792722abae0",
+		"url": "https://i.ibb.co/7JT7njtS/seguridad-form-view.png",
+		"display_url": "https://i.ibb.co/TBnz4YMw/seguridad-form-view.png",
+		"thumb": "https://i.ibb.co/8DRFrNgm/seguridad-form-view.png",
+		"delete_url": "https://ibb.co/8DRFrNgm/fdd16e70d1877c4ac1d65978b5dabace",
+		"width": 1218,
+		"height": 943,
+		"size": 112022
+	},
+	"seguridad-lista.png": {
+		"sha1": "3eb54c9eda4f2b603ab34beb11b1ea1204c87c90",
+		"url": "https://i.ibb.co/FkXmNWFy/seguridad-lista.png",
+		"display_url": "https://i.ibb.co/XfDjN4qK/seguridad-lista.png",
+		"thumb": "https://i.ibb.co/xKYXPsNB/seguridad-lista.png",
+		"delete_url": "https://ibb.co/xKYXPsNB/971baa30ddc21f0225b2c6fae3995224",
+		"width": 1218,
+		"height": 943,
+		"size": 74264
+	},
+	"contenido-curso-edit.png": {
+		"sha1": "6af48359c43dbb5c8e8e77f1a0af0bb6b6c7176e",
+		"url": "https://i.ibb.co/C5mFsNFf/contenido-curso-edit.png",
+		"display_url": "https://i.ibb.co/BVcRKdR9/contenido-curso-edit.png",
+		"thumb": "https://i.ibb.co/bgQnRqnk/contenido-curso-edit.png",
+		"delete_url": "https://ibb.co/bgQnRqnk/05aa959e4f63eac8e8cdc4cc6be22d2e",
+		"width": 1218,
+		"height": 943,
+		"size": 96619
 	}
 }
