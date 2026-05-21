@@ -6,7 +6,7 @@
 # 5) git add ., commit y push (mismo mensaje; pide confirmación con password "1234")
 
 $ErrorActionPreference = "Stop"
-$Root = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..\..\..\ISP-ClientesIS")).Path
+$Root = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..\..\ClientesIS\ISP-ClientesIS")).Path
 Set-Location $Root
 
 $packagePath = Join-Path $Root "package.json"
