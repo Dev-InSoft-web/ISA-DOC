@@ -3,6 +3,7 @@
 // recargas. Atendida la semana del 13/may./2026 como mejora transversal
 // a todos los catálogos de ContaPyme U.
 import { h3Iconized, note, noteList } from "./tk-helpers";
+import { img } from "./snippets";
 
 const intro =
 	`<div>Se solicita que cuando el usuario selecciona columnas adicionales  
@@ -78,7 +79,8 @@ export async function buildBodyTK1428161(): Promise<string> {
 			wrapper de lista para que todos los catálogos hereden la  
 			persistencia sin código duplicado. La rehidratación se hace de  
 			forma síncrona en el constructor / field initializer para que la  
-			grilla pinte ya con los valores guardados.`,
+			grilla pinte ya con los valores guardados.` +
+			img("tk1428161-selector-columnas.png"),
 		),
 	);
 
@@ -89,7 +91,10 @@ export async function buildBodyTK1428161(): Promise<string> {
 			<code>13/may./2026</code>, distribuida en una serie de commits  
 			(feature + ajustes sucesivos de rehidratación, clave de  
 			persistencia y consolidación de columnas). Aplicada a todos los  
-			catálogos de ContaPyme U que usan el wrapper común.`,
+			catálogos de ContaPyme U que usan el wrapper común. Verificada la  
+			persistencia: al refrescar la página las columnas adicionales  
+			seleccionadas se conservan visibles.` +
+			img("tk1428161-persistencia-tras-recarga.png"),
 		),
 		await note(
 			"mdi:forum-outline",
