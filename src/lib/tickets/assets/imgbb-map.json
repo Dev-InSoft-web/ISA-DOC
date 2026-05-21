@@ -438,5 +438,85 @@
 		"width": 1566,
 		"height": 943,
 		"size": 169694
+	},
+	"seguridad-form-crear.png": {
+		"sha1": "d0ec2b3445d27eb1779828b9ba745eabb9dc799f",
+		"url": "https://i.ibb.co/5h7nvwhy/seguridad-form-crear.png",
+		"display_url": "https://i.ibb.co/CKrMvDKZ/seguridad-form-crear.png",
+		"thumb": "https://i.ibb.co/4RQYM3RG/seguridad-form-crear.png",
+		"delete_url": "https://ibb.co/4RQYM3RG/77fa10abe9016a67278cbbb1ad76a21d",
+		"width": 1218,
+		"height": 943,
+		"size": 110598
+	},
+	"seguridad-form-view.png": {
+		"sha1": "73f4883a65dcc8a9c014adfcc2eb6792722abae0",
+		"url": "https://i.ibb.co/7JT7njtS/seguridad-form-view.png",
+		"display_url": "https://i.ibb.co/TBnz4YMw/seguridad-form-view.png",
+		"thumb": "https://i.ibb.co/8DRFrNgm/seguridad-form-view.png",
+		"delete_url": "https://ibb.co/8DRFrNgm/fdd16e70d1877c4ac1d65978b5dabace",
+		"width": 1218,
+		"height": 943,
+		"size": 112022
+	},
+	"seguridad-lista.png": {
+		"sha1": "3eb54c9eda4f2b603ab34beb11b1ea1204c87c90",
+		"url": "https://i.ibb.co/FkXmNWFy/seguridad-lista.png",
+		"display_url": "https://i.ibb.co/XfDjN4qK/seguridad-lista.png",
+		"thumb": "https://i.ibb.co/xKYXPsNB/seguridad-lista.png",
+		"delete_url": "https://ibb.co/xKYXPsNB/971baa30ddc21f0225b2c6fae3995224",
+		"width": 1218,
+		"height": 943,
+		"size": 74264
+	},
+	"contenido-curso-edit.png": {
+		"sha1": "6af48359c43dbb5c8e8e77f1a0af0bb6b6c7176e",
+		"url": "https://i.ibb.co/C5mFsNFf/contenido-curso-edit.png",
+		"display_url": "https://i.ibb.co/BVcRKdR9/contenido-curso-edit.png",
+		"thumb": "https://i.ibb.co/bgQnRqnk/contenido-curso-edit.png",
+		"delete_url": "https://ibb.co/bgQnRqnk/05aa959e4f63eac8e8cdc4cc6be22d2e",
+		"width": 1218,
+		"height": 943,
+		"size": 96619
+	},
+	"tk1426900-cursos-integrados-modificar.png": {
+		"sha1": "393cbd3e91423a3a9716f806d6283eb85c5c19e5",
+		"url": "https://i.ibb.co/PvKfQKrb/tk1426900-cursos-integrados-modificar.png",
+		"display_url": "https://i.ibb.co/Nd5HS5Fk/tk1426900-cursos-integrados-modificar.png",
+		"thumb": "https://i.ibb.co/jPm1Rm8x/tk1426900-cursos-integrados-modificar.png",
+		"delete_url": "https://ibb.co/jPm1Rm8x/55b1a7b71d788c8abc8a8dfd86327a0b",
+		"width": 1303,
+		"height": 943,
+		"size": 164991
+	},
+	"tk1426900-fix-aviso.png": {
+		"sha1": "651f140f8f9c30f55009aa35dff89130730ee8b4",
+		"url": "https://i.ibb.co/BVF5jv9b/tk1426900-fix-aviso.png",
+		"display_url": "https://i.ibb.co/FbCLJcF2/tk1426900-fix-aviso.png",
+		"thumb": "https://i.ibb.co/tMFTcn9g/tk1426900-fix-aviso.png",
+		"delete_url": "https://ibb.co/tMFTcn9g/77cfb8a95fb0aec9bc0c70166ffcc767",
+		"width": 1303,
+		"height": 943,
+		"size": 173648
+	},
+	"tk1428161-persistencia-tras-recarga.png": {
+		"sha1": "69e07826581affde55a38a01ed85250e632a4933",
+		"url": "https://i.ibb.co/ZPbsSvQ/tk1428161-persistencia-tras-recarga.png",
+		"display_url": "https://i.ibb.co/RmJnNtX/tk1428161-persistencia-tras-recarga.png",
+		"thumb": "https://i.ibb.co/FMdvXcQ/tk1428161-persistencia-tras-recarga.png",
+		"delete_url": "https://ibb.co/FMdvXcQ/2867e7742e9610f266a7477f0c6a7bd8",
+		"width": 1303,
+		"height": 943,
+		"size": 106773
+	},
+	"tk1428161-selector-columnas.png": {
+		"sha1": "a1e3253a422486abc1ec49322e58ee1e0a523e20",
+		"url": "https://i.ibb.co/WpgHX5wF/tk1428161-selector-columnas.png",
+		"display_url": "https://i.ibb.co/k6QGTBf0/tk1428161-selector-columnas.png",
+		"thumb": "https://i.ibb.co/Lhn0yRW6/tk1428161-selector-columnas.png",
+		"delete_url": "https://ibb.co/Lhn0yRW6/e3de40b78f1be65e8c0d8932fbaac2cc",
+		"width": 1303,
+		"height": 943,
+		"size": 132111
 	}
 }
