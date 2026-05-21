@@ -42,7 +42,12 @@ export async function buildBodyTK1426728(): Promise<string> {
 			reporte sobre cursos de prueba (capítulos vacíos y con  
 			hijos previos, distintos drivers, modos crear/modificar).  
 			En todos los escenarios probados el nodo se insertó y los  
-			atributos del recurso se hidrataron correctamente.`,
+			atributos del recurso se hidrataron correctamente.  
+			<br/><br/>  
+			<img src="/imgs/tickets/TK-1426728/contenido-curso-edit.png"  
+			alt="Pestaña Contenido del curso en modo edición con nodos  
+			hidratados correctamente"  
+			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
 		),
 		await note(
 			"mdi:alert-circle-outline",
