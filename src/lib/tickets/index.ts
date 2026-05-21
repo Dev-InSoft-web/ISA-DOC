@@ -99,7 +99,10 @@ export const TICKETS: TicketRegistro[] = [
 		extraDescripcion: "Análisis del flujo y reinterpretación del reporte",
 		resumen: "Tras analizar el flujo, no se trata de un error funcional: el selector de la pestaña Requisitos sólo lista cursos del propio plan y, sin al menos dos cursos integrados, no hay combinaciones válidas. Se aplicó una mejora de experiencia: el botón Crear queda deshabilitado, se muestra un alert con el motivo y los requisitos huérfanos se eliminan localmente y se persisten al hacer submit.",
 		commits: [
-			{ hash: "ec9d12b", descripcion: "feat(plan-estudio, requisitos): se desactiva crear requisitos sin minimo de cursos integrados y se limpian huerfanos (TK-1426893)", repo: "ISW-ClientesIS", ins: 17, del: 1, fecha: "2026-05-21T12:01:57-05:00" },
+			{ hash: "eb99421", descripcion: "feat(TK-1426893): se desactiva crear requisitos sin minimo de cursos integrados y se limpian huerfanos", repo: "ISW-ClientesIS", ins: 17, del: 1, fecha: "2026-05-21T12:01:57-05:00" },
+			{ hash: "24d8f7a", descripcion: "feat(TK-1426893): mejora la lógica de creación de prerrequisitos y se agrega un nuevo botón para selección automática", repo: "ISW-ClientesIS", ins: 33, del: 22, fecha: "2026-05-21T16:22:57-05:00" },
+			{ hash: "4766a2e", descripcion: "feat(TK-1426893): integra GridResponsiveForm en MainFormLayout y actualiza la estructura del formulario", repo: "ISW-ClientesIS", ins: 3, del: 2, fecha: "2026-05-21T16:23:06-05:00" },
+			{ hash: "3e74432", descripcion: "feat(TK-1426893): agrega soporte para filtrado y paginación en la lista de cursos y mejora la definición de columnas", repo: "ISW-ClientesIS", ins: 29, del: 2, fecha: "2026-05-21T16:23:20-05:00" },
 		],
 		body: bodyTK1426893,
 		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
