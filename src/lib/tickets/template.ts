@@ -24,8 +24,18 @@ const REPOS_VALIDOS = new Set([
 	"ISP-ClientesIS",
 	"ISP-CLientesISServer",
 	"ISS-ClientesIS-ContaPymeU",
+]);
+
+// Repos internos del flujo de bitácora/documentación. Se mantienen en
+// `index.ts` como referencia local pero NUNCA deben aparecer en los
+// tickets enviados al cliente (commits, tablas ni resumen de tiempos).
+const REPOS_INTERNOS = new Set([
 	"ISA-DOC",
 ]);
+
+function filtrarCommitsExternos(commits: TicketCommit[]): TicketCommit[] {
+	return commits.filter((c) => !c.repo || !REPOS_INTERNOS.has(c.repo));
+}
 
 function escapeHtml(s: string): string {
 	return s
@@ -400,18 +410,19 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 }
 
 export async function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string, ticketId?: string, festivos?: string[], titulo?: string, diligenciaMin?: number): Promise<string> {
-	const cota = cotaMaximaMinutos(commits);
+	const commitsExternos = filtrarCommitsExternos(commits);
+	const cota = cotaMaximaMinutos(commitsExternos);
 	const estimacionCommits = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : 0;
 	const minutosBd = tiempoCambiosBdMin(cambiosBd);
 	const minutosDiligencia = diligenciaMin && diligenciaMin > 0 ? diligenciaMin : tiempoDiligenciaMin(body ?? "");
 	const cambiosHtml = await buildDbChangesHtml(cambiosBd, ticketId);
-	const resumenTiemposHtml = buildResumenTiemposHtml(estimacionCommits, minutosBd, minutosDiligencia, commits.length, cambiosBd.length);
+	const resumenTiemposHtml = buildResumenTiemposHtml(estimacionCommits, minutosBd, minutosDiligencia, commitsExternos.length, cambiosBd.length);
 	const tituloHtml = buildTituloHtml(ticketId, titulo);
 	return TICKET_HTML_PREFIX
 		+ tituloHtml
 		+ (body ?? "")
 		+ "\n"
-		+ buildCommitsHtml(commits, estimacionCommits || estimacionMin, fechaSolicitud, ticketId, festivos)
+		+ buildCommitsHtml(commitsExternos, estimacionCommits || estimacionMin, fechaSolicitud, ticketId, festivos)
 		+ cambiosHtml
 		+ resumenTiemposHtml
 		+ TICKET_HTML_SUFFIX;
@@ -442,7 +453,8 @@ export function tiempoCambiosBdMin(cambios: TicketDbChange[]): number {
 // fuera de commits + diligencia. Refleja exactamente la fila "Total estimado"
 // del resumen renderizado en el HTML.
 export function tiempoTotalEstimadoMin(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], diligenciaMin?: number): number {
-	const cota = cotaMaximaMinutos(commits);
+	const commitsExternos = filtrarCommitsExternos(commits);
+	const cota = cotaMaximaMinutos(commitsExternos);
 	const minCommits = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : 0;
 	const minDiligencia = diligenciaMin && diligenciaMin > 0 ? diligenciaMin : tiempoDiligenciaMin(body ?? "");
 
