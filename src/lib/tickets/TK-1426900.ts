@@ -1,6 +1,7 @@
 // TK-1426900 — Acción "Modificar" en "Cursos integrados" del plan de estudio
 // no permite editar: el campo aparece en modo visualización.
 import { h3Iconized, note, noteList } from "./tk-helpers";
+import { img } from "./snippets";
 
 const intro =
 	`<div>Se reporta que al dar clic en la acción <b>Modificar</b> de  
@@ -9,8 +10,10 @@ const intro =
 	modificar ni reemplazar el curso actual.</div>`;
 
 export async function buildBodyTK1426900(): Promise<string> {
-	const [h3Contexto, h3Estado] = await Promise.all([
+	const [h3Contexto, h3Replica, h3Analisis, h3Estado] = await Promise.all([
 		h3Iconized("mdi:information-outline", "Contexto"),
+		h3Iconized("mdi:camera-outline", "Réplica"),
+		h3Iconized("mdi:magnify-scan", "Análisis técnico"),
 		h3Iconized("mdi:forum-outline", "Estado"),
 	]);
 
@@ -29,16 +32,56 @@ export async function buildBodyTK1426900(): Promise<string> {
 		),
 	);
 
-	const estado = noteList(
+	const replica = noteList(
 		await note(
-			"mdi:progress-wrench",
-			`Ticket abierto. Pendiente de análisis del controlador del  
-			catálogo de cursos integrados para habilitar la edición del  
-			curso seleccionado.`,
+			"mdi:image-outline",
+			`Replicado sobre el plan <code>PLAN_REC1</code> en  
+			<i>Cursos integrados</i>. Al abrir <b>Modificar</b> sobre la  
+			fila <code>ACT-TRIB24</code>, el campo <b>Curso *</b> y su  
+			botón de selección aparecen deshabilitados (modo lectura).` +
+			img("tk1426900-cursos-integrados-modificar.png"),
 		),
 	);
 
-	return intro + h3Contexto + contexto + h3Estado + estado;
+	const analisis = noteList(
+		await note(
+			"mdi:source-branch",
+			`La causa se localiza en el catálogo de cursos del plan  
+			(<code>CtlgoCursosDePlan.svelte</code>), donde el  
+			<code>BtnRefAutoOpen</code> del campo curso recibe  
+			<code>itdForm</code> condicionado por  
+			<code>pkReadonly(frmItd, Item)</code>.`,
+		),
+		await note(
+			"mdi:key-variant",
+			`El item del detalle <code>TCursoDePlanDeEstudio</code>  
+			tiene como llave compuesta <code>(iplanestudio, icurso)</code>;  
+			por ello <code>pkReadonly</code> devuelve <b>true</b> al  
+			modificar un registro existente y fuerza el modo  
+			<code>"view"</code> sobre el selector de curso.`,
+		),
+		await note(
+			"mdi:lightbulb-on-outline",
+			`Opciones de solución bajo evaluación: (a) permitir que la  
+			acción <b>Modificar</b> reasigne el curso (omitiendo el  
+			<code>pkReadonly</code> sobre ese campo, asumiendo que el  
+			backend maneje el cambio como reemplazo); (b) restringir la  
+			acción <b>Modificar</b> a campos no llave del detalle y  
+			canalizar el reemplazo de curso por  
+			<b>Eliminar + Crear</b>.`,
+		),
+	);
+
+	const estado = noteList(
+		await note(
+			"mdi:progress-wrench",
+			`Ticket abierto. Bug replicado y causa raíz identificada.  
+			Pendiente de validación funcional para escoger la estrategia  
+			de corrección.`,
+		),
+	);
+
+	return intro + h3Contexto + contexto + h3Replica + replica + h3Analisis + analisis + h3Estado + estado;
 }
 
 export const bodyTK1426900: Promise<string> = buildBodyTK1426900();
