@@ -1,35 +1,22 @@
 // TK-1426681 — Error funcional de acciones Duplicar, Recodificar,
 // Verificación y Consolidar en los catálogos de Cursos y Planes de Estudio.
 import { h3Iconized, note, noteList } from "./tk-helpers";
-import { img } from "./snippets";
+import { img, simpleTable } from "./snippets";
 
 type QaStep = { entidad: string; accion: string; resultado: string; img: string };
 
-const tStyleTable = `border-collapse:collapse;width:100%;font-family:Tahoma;margin:0.25rem 0 0.5rem 0;`;
-const tStyleTh = `padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;text-align:left;`;
-const tStyleTd = `padding:0.15rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Tahoma;font-size:10pt;color:#555;`;
-const tStyleStep = `padding:0.15rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;text-align:right;white-space:nowrap;`;
-
-const renderStepsTable = (steps: QaStep[]): string => {
-	const head = `<tr>`
-		+ `<th style="${tStyleTh}text-align:right;">#</th>`
-		+ `<th style="${tStyleTh}">Entidad</th>`
-		+ `<th style="${tStyleTh}">Acción</th>`
-		+ `<th style="${tStyleTh}">Resultado</th>`
-		+ `<th style="${tStyleTh}">Evidencia</th>`
-		+ `</tr>`;
-	const rows = steps.map((s, i) =>
-		`<tr>`
-		+ `<td style="${tStyleStep}">${i + 1}</td>`
-		+ `<td style="${tStyleTd}font-weight:600;color:#444;white-space:nowrap;">${s.entidad}</td>`
-		+ `<td style="${tStyleTd}white-space:nowrap;">${s.accion}</td>`
-		+ `<td style="${tStyleTd}">${s.resultado}</td>`
-		+ `<td style="${tStyleTd}">${img(s.img, 240)}</td>`
-		+ `</tr>`,
-	).join("");
-
-	return `<table style="${tStyleTable}"><thead>${head}</thead><tbody>${rows}</tbody></table>`;
-};
+const renderStepsTable = (steps: QaStep[]): string =>
+	simpleTable(
+		["#", "Entidad", "Acción", "Resultado", "Evidencia"],
+		steps.map((s, i) => [
+			String(i + 1),
+			`<b>${s.entidad}</b>`,
+			s.accion,
+			s.resultado,
+			img(s.img, 240),
+		]),
+		{ aligns: ["center", "left", "left", "left", "left"], firstColIsStep: true },
+	);
 
 const intro =
 	`<div>Se reporta error en el funcionamiento de las acciones  
