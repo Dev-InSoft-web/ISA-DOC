@@ -1,7 +1,53 @@
 // TK-1426681 — Error funcional de acciones Duplicar, Recodificar,
 // Verificación y Consolidar en los catálogos de Cursos y Planes de Estudio.
 import { h3Iconized, note, noteList } from "./tk-helpers";
-import { img, simpleTable } from "./snippets";
+import { img } from "./snippets";
+
+type QaStep = { entidad: string; accion: string; resultado: string; img: string };
+type CommitRow = { repo: string; sha: string; msg: string };
+
+const tStyleTable = `width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;margin:8px 0;`;
+const tStyleTh = `background:#f0f0f0;border:1px solid #ccc;padding:6px 8px;text-align:left;font-weight:600;`;
+const tStyleTd = `border:1px solid #ddd;padding:6px 8px;vertical-align:top;`;
+const tStyleStep = `border:1px solid #ddd;padding:6px 8px;vertical-align:top;text-align:center;font-weight:600;background:#fafafa;width:48px;`;
+
+const renderStepsTable = (steps: QaStep[]): string => {
+	const head = `<tr>`
+		+ `<th style="${tStyleTh}">#</th>`
+		+ `<th style="${tStyleTh}">Entidad</th>`
+		+ `<th style="${tStyleTh}">Acción</th>`
+		+ `<th style="${tStyleTh}">Resultado</th>`
+		+ `<th style="${tStyleTh}">Evidencia</th>`
+		+ `</tr>`;
+	const rows = steps.map((s, i) =>
+		`<tr>`
+		+ `<td style="${tStyleStep}">${i + 1}</td>`
+		+ `<td style="${tStyleTd}"><b>${s.entidad}</b></td>`
+		+ `<td style="${tStyleTd}">${s.accion}</td>`
+		+ `<td style="${tStyleTd}">${s.resultado}</td>`
+		+ `<td style="${tStyleTd}">${img(s.img, 240)}</td>`
+		+ `</tr>`,
+	).join("");
+
+	return `<table style="${tStyleTable}">${head}${rows}</table>`;
+};
+
+const renderCommitsTable = (commits: CommitRow[]): string => {
+	const head = `<tr>`
+		+ `<th style="${tStyleTh}">Repositorio</th>`
+		+ `<th style="${tStyleTh}">SHA</th>`
+		+ `<th style="${tStyleTh}">Mensaje</th>`
+		+ `</tr>`;
+	const rows = commits.map((c) =>
+		`<tr>`
+		+ `<td style="${tStyleTd}"><b>${c.repo}</b></td>`
+		+ `<td style="${tStyleTd}"><code>${c.sha}</code></td>`
+		+ `<td style="${tStyleTd}">${c.msg}</td>`
+		+ `</tr>`,
+	).join("");
+
+	return `<table style="${tStyleTable}">${head}${rows}</table>`;
+};
 
 const intro =
 	`<div>Se reporta error en el funcionamiento de las acciones  
@@ -12,11 +58,12 @@ const intro =
 	consolidar"</i>.</div>`;
 
 export async function buildBodyTK1426681(): Promise<string> {
-	const [h3Contexto, h3Causa, h3Solucion, h3Evidencia, h3Estado] = await Promise.all([
+	const [h3Contexto, h3Causa, h3Solucion, h3Evidencia, h3Commits, h3Estado] = await Promise.all([
 		h3Iconized("mdi:information-outline", "Contexto"),
 		h3Iconized("mdi:bug-outline", "Causa raíz"),
 		h3Iconized("mdi:wrench-outline", "Solución aplicada"),
 		h3Iconized("mdi:image-multiple-outline", "Timeline de QA"),
+		h3Iconized("mdi:source-commit", "Commits relacionados"),
 		h3Iconized("mdi:forum-outline", "Estado"),
 	]);
 
@@ -111,24 +158,33 @@ export async function buildBodyTK1426681(): Promise<string> {
 		),
 	);
 
-	const evidencia = simpleTable(
-		["#", "Entidad", "Acción", "Resultado", "Evidencia"],
-		[
-			["1", "<b>Curso</b>", "Verificar", "Petición correcta, respuesta satisfactoria sin observaciones.", img("qa-curso-verificar-ok.png", 240)],
-			["2", "<b>Curso</b>", "Duplicar", "El diálogo opera y el servidor responde con el nuevo registro.", img("qa-curso-duplicar-ok.png", 240)],
-			["3", "<b>Curso</b>", "Recodificar", "El formulario captura el nuevo código y la petición se ejecuta correctamente.", img("qa-curso-recodificar-ok.png", 240)],
-			["4", "<b>Curso</b>", "Consolidar", "Tras la migración <code>TEXT→VARCHAR(MAX)</code> retorna <code>202</code> y consolida.", img("qa-curso-consolidar-ok.png", 240)],
-			["5", "<b>Curso</b>", "Crear", "El <code>POST</code> persiste el nuevo registro.", img("qa-curso-crear-ok.png", 240)],
-			["6", "<b>Curso</b>", "Eliminar", "El <code>DELETE</code> retorna <code>200</code> eliminando el registro.", img("qa-curso-eliminar-ok.png", 240)],
-			["7", "<b>Plan de Estudio</b>", "Verificar", "Petición correcta, respuesta satisfactoria sin observaciones.", img("qa-plan-verificar-ok.png", 240)],
-			["8", "<b>Plan de Estudio</b>", "Duplicar", "El diálogo opera y el servidor responde con el nuevo plan duplicado.", img("qa-plan-duplicar-ok.png", 240)],
-			["9", "<b>Plan de Estudio</b>", "Recodificar", "Formulario activo y solicitud ejecutada satisfactoriamente.", img("qa-plan-recodificar-ok.png", 240)],
-			["10", "<b>Plan de Estudio</b>", "Consolidar", "Tras la migración retorna <code>202</code> y consolida el plan.", img("qa-plan-consolidar-ok.png", 240)],
-			["11", "<b>Plan de Estudio</b>", "Crear", "El <code>POST</code> persiste el nuevo plan.", img("qa-plan-crear-ok.png", 240)],
-			["12", "<b>Plan de Estudio</b>", "Eliminar", "El <code>DELETE</code> retorna <code>200</code> eliminando el plan.", img("qa-plan-eliminar-ok.png", 240)],
-		],
-		{ firstColIsStep: true },
-	);
+	const evidencia = renderStepsTable([
+		{ entidad: "Curso", accion: "Verificar", resultado: "Petición correcta, respuesta satisfactoria sin observaciones.", img: "qa-curso-verificar-ok.png" },
+		{ entidad: "Curso", accion: "Duplicar", resultado: "El diálogo opera y el servidor responde con el nuevo registro.", img: "qa-curso-duplicar-ok.png" },
+		{ entidad: "Curso", accion: "Recodificar", resultado: "El formulario captura el nuevo código y la petición se ejecuta correctamente.", img: "qa-curso-recodificar-ok.png" },
+		{ entidad: "Curso", accion: "Consolidar", resultado: "Tras la migración <code>TEXT→VARCHAR(MAX)</code> retorna <code>202</code> y consolida.", img: "qa-curso-consolidar-ok.png" },
+		{ entidad: "Curso", accion: "Crear", resultado: "El <code>POST</code> persiste el nuevo registro.", img: "qa-curso-crear-ok.png" },
+		{ entidad: "Curso", accion: "Eliminar", resultado: "El <code>DELETE</code> retorna <code>200</code> eliminando el registro.", img: "qa-curso-eliminar-ok.png" },
+		{ entidad: "Plan de Estudio", accion: "Verificar", resultado: "Petición correcta, respuesta satisfactoria sin observaciones.", img: "qa-plan-verificar-ok.png" },
+		{ entidad: "Plan de Estudio", accion: "Duplicar", resultado: "El diálogo opera y el servidor responde con el nuevo plan duplicado.", img: "qa-plan-duplicar-ok.png" },
+		{ entidad: "Plan de Estudio", accion: "Recodificar", resultado: "Formulario activo y solicitud ejecutada satisfactoriamente.", img: "qa-plan-recodificar-ok.png" },
+		{ entidad: "Plan de Estudio", accion: "Consolidar", resultado: "Tras la migración retorna <code>202</code> y consolida el plan.", img: "qa-plan-consolidar-ok.png" },
+		{ entidad: "Plan de Estudio", accion: "Crear", resultado: "El <code>POST</code> persiste el nuevo plan.", img: "qa-plan-crear-ok.png" },
+		{ entidad: "Plan de Estudio", accion: "Eliminar", resultado: "El <code>DELETE</code> retorna <code>200</code> eliminando el plan.", img: "qa-plan-eliminar-ok.png" },
+	]);
+
+	const commits = renderCommitsTable([
+		{ repo: "ISP-ClientesIS", sha: "30d501e", msg: "feat(plan-estudio, curso): agrega nuevos endpoints para verificar, duplicar, recodificar y consolidar" },
+		{ repo: "ISP-CLientesISServer", sha: "e8fbe42", msg: "fix(capacitacion): se ajustan campos de auditoria para duplicar recodificar y consolidar (tk-1426681)" },
+		{ repo: "ISW-ClientesIS", sha: "1d45c43", msg: "fix(capacitacion): se habilita modo local en cliente base de cursos (tk-1426681)" },
+		{ repo: "ISA-DOC", sha: "ddc5304", msg: "fix(tk-1426681): se migran columnas de descripcion de text a varchar max en tablas de capacitacion" },
+		{ repo: "ISA-DOC", sha: "65d8c08", msg: "docs(tk-1426681): se agregan capturas de qa para verificar duplicar recodificar y consolidar de cursos y planes" },
+		{ repo: "ISA-DOC", sha: "6ed6e10", msg: "docs(tk-1426681): se actualiza descripcion del ticket con causas raiz y solucion completa" },
+		{ repo: "ISA-DOC", sha: "4c362e5", msg: "docs(tk-1426681): se agregan capturas de qa para crear y eliminar de cursos y planes de estudio" },
+		{ repo: "ISA-DOC", sha: "256b347", msg: "docs(tk-1426681): se documentan en el ticket las acciones crear y eliminar validadas en qa" },
+		{ repo: "ISA-DOC", sha: "8b61b9b", msg: "docs(tk-1426681): se reorganizan capturas al estandar imgbb y se eliminan capturas obsoletas con error previo" },
+		{ repo: "ISA-DOC", sha: "5b285ec", msg: "docs(tk-1426681): se refactoriza el ticket para usar el helper de imagenes con tamano estandar" },
+	]);
 
 	const estado = noteList(
 		await note(
@@ -148,6 +204,7 @@ export async function buildBodyTK1426681(): Promise<string> {
 		+ h3Causa + causa
 		+ h3Solucion + solucion
 		+ h3Evidencia + evidencia
+		+ h3Commits + commits
 		+ h3Estado + estado;
 }
 
