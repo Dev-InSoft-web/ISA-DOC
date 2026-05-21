@@ -409,14 +409,15 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	].join("\n");
 }
 
-export async function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string, ticketId?: string, festivos?: string[], titulo?: string, diligenciaMin?: number): Promise<string> {
+export async function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string, ticketId?: string, festivos?: string[], titulo?: string, diligenciaMin?: number, extraMin?: number, extraDesc?: string): Promise<string> {
 	const commitsExternos = filtrarCommitsExternos(commits);
 	const cota = cotaMaximaMinutos(commitsExternos);
 	const estimacionCommits = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : 0;
 	const minutosBd = tiempoCambiosBdMin(cambiosBd);
 	const minutosDiligencia = diligenciaMin && diligenciaMin > 0 ? diligenciaMin : tiempoDiligenciaMin(body ?? "");
+	const minutosExtra = extraMin && extraMin > 0 ? extraMin : 0;
 	const cambiosHtml = await buildDbChangesHtml(cambiosBd, ticketId);
-	const resumenTiemposHtml = buildResumenTiemposHtml(estimacionCommits, minutosBd, minutosDiligencia, commitsExternos.length, cambiosBd.length);
+	const resumenTiemposHtml = buildResumenTiemposHtml(estimacionCommits, minutosBd, minutosDiligencia, commitsExternos.length, cambiosBd.length, minutosExtra, extraDesc);
 	const tituloHtml = buildTituloHtml(ticketId, titulo);
 	return TICKET_HTML_PREFIX
 		+ tituloHtml
@@ -453,17 +454,18 @@ export function tiempoCambiosBdMin(cambios: TicketDbChange[]): number {
 // Total estimado en minutos: trabajo en commits (acotado por cota) + cambios
 // fuera de commits + diligencia. Refleja exactamente la fila "Total estimado"
 // del resumen renderizado en el HTML.
-export function tiempoTotalEstimadoMin(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], diligenciaMin?: number): number {
+export function tiempoTotalEstimadoMin(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], diligenciaMin?: number, extraMin?: number): number {
 	const commitsExternos = filtrarCommitsExternos(commits);
 	const cota = cotaMaximaMinutos(commitsExternos);
 	const minCommits = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : 0;
 	const minDiligencia = diligenciaMin && diligenciaMin > 0 ? diligenciaMin : tiempoDiligenciaMin(body ?? "");
+	const minExtra = extraMin && extraMin > 0 ? extraMin : 0;
 
-	return minCommits + tiempoCambiosBdMin(cambiosBd) + minDiligencia;
+	return minCommits + tiempoCambiosBdMin(cambiosBd) + minDiligencia + minExtra;
 }
 
-function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligencia: number, nCommits: number, nCambiosBd: number): string {
-	const total = minCommits + minBd + minDiligencia;
+function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligencia: number, nCommits: number, nCambiosBd: number, minExtra: number = 0, extraDesc?: string): string {
+	const total = minCommits + minBd + minDiligencia + minExtra;
 	if (total <= 0) return "";
 	const tdLabel = "padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#555;border-bottom:1px solid #f0f0f0;";
 	const tdValor = "padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#444;text-align:right;white-space:nowrap;border-bottom:1px solid #f0f0f0;";
@@ -472,6 +474,10 @@ function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligenci
 	const filas: string[] = [];
 	if (nCommits > 0) filas.push(`<tr><td style="${tdLabel}">Trabajo en commits <span style="color:#999;">(${nCommits} commits)</span></td><td style="${tdValor}">${fmtMin(minCommits)}</td></tr>`);
 	if (nCambiosBd > 0) filas.push(`<tr><td style="${tdLabel}">Cambios extra <span style="color:#999;">(${nCambiosBd} cambios BD)</span></td><td style="${tdValor}">${fmtMin(minBd)}</td></tr>`);
+	if (minExtra > 0) {
+		const desc = extraDesc ? ` <span style="color:#999;">(${escapeHtml(extraDesc)})</span>` : "";
+		filas.push(`<tr><td style="${tdLabel}">Trabajo extra${desc}</td><td style="${tdValor}">${fmtMin(minExtra)}</td></tr>`);
+	}
 	if (minDiligencia > 0) filas.push(`<tr><td style="${tdLabel}">Diligencia del ticket</td><td style="${tdValor}">${fmtMin(minDiligencia)}</td></tr>`);
 	filas.push(`<tr><td style="${tdLabelTot}">Total estimado</td><td style="${tdValorTot}">${fmtMin(total)}</td></tr>`);
 	return [
