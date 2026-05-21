@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "Relacion local de @ingenieria_insoft/ispsveltecomponents" -ForegroundColor Cyan
 
-$PackageRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..\..\..\..\ISP-SvelteComponents")).Path
+$PackageRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..\..\ISP-SvelteComponents")).Path
 $PackageFolder = "node_modules\@ingenieria_insoft\ispsveltecomponents"
 $DistDir = Join-Path $PackageRoot "dist"
 

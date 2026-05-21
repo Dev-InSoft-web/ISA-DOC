@@ -124,7 +124,7 @@ function Copy-BuildToNodeModules {
 # ============================================================================
 # Rutas Base del Proyecto
 # ============================================================================
-$BaseDir = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..")).Path
+$BaseDir = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\ClientesIS")).Path
 $ISPDir = Join-Path $BaseDir "ISP-ClientesIS"
 $ISPServerDir = Join-Path $BaseDir "ISP-CLientesISServer"
 $ISSDir = Join-Path $BaseDir "ISS-ClientesIS-ContaPymeU"
