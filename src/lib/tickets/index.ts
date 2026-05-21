@@ -127,8 +127,8 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Forma del campo \"Nombre de permiso\" en seguridad del curso",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "19/may./2026 09:03:21 am",
-		estimacionMinutos: 0,
-		diligenciaMinutos: 45,
+		estimacionMinutos: 30,
+		diligenciaMinutos: 20,
 		resumen: "Se unificó el formulario de seguridad del curso dejando un único BtnRef de permiso tanto en crear/modificar como en visualizar, y se ajustó el controlador para resolver el caption del permiso ya seleccionado en lookups por PK, evitando que el nombre apareciera en rojo.",
 		commits: [
 			{ hash: "8ff29ec", descripcion: "fix(TK-1426669): se unifica el form de seguridad del curso con un solo btnref de permiso y se permite resolver caption en lookup por pk", repo: "ISW-ClientesIS", ins: 3, del: 23, fecha: "2026-05-21T08:34:38-05:00" },
