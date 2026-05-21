@@ -186,14 +186,56 @@ export async function buildBodyTK1426681(): Promise<string> {
 			alt="Consolidación de plan de estudio exitosa"  
 			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
 		),
+		await note(
+			"mdi:plus-box-outline",
+			`<b>Curso → Crear</b>: se diligencia el formulario,  
+			se envía el <code>POST</code> y el servidor responde  
+			satisfactoriamente con el nuevo registro persistido.  
+			<br/><br/>  
+			<img src="/imgs/tickets/TK-1426681/qa-curso-crear-ok.png"  
+			alt="Creación de curso exitosa"  
+			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+		),
+		await note(
+			"mdi:trash-can-outline",
+			`<b>Curso → Eliminar</b>: se confirma el código y la  
+			petición <code>DELETE</code> retorna <code>200</code>  
+			eliminando el registro de la grilla.  
+			<br/><br/>  
+			<img src="/imgs/tickets/TK-1426681/qa-curso-eliminar-ok.png"  
+			alt="Eliminación de curso exitosa"  
+			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+		),
+		await note(
+			"mdi:plus-box-outline",
+			`<b>Plan de Estudio → Crear</b>: se diligencia el  
+			formulario, se envía el <code>POST</code> y el servidor  
+			responde satisfactoriamente con el nuevo plan  
+			persistido.  
+			<br/><br/>  
+			<img src="/imgs/tickets/TK-1426681/qa-plan-crear-ok.png"  
+			alt="Creación de plan de estudio exitosa"  
+			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+		),
+		await note(
+			"mdi:trash-can-outline",
+			`<b>Plan de Estudio → Eliminar</b>: se confirma el código  
+			y la petición <code>DELETE</code> retorna  
+			<code>200</code> eliminando el plan de la grilla.  
+			<br/><br/>  
+			<img src="/imgs/tickets/TK-1426681/qa-plan-eliminar-ok.png"  
+			alt="Eliminación de plan de estudio exitosa"  
+			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+		),
 	);
 
 	const estado = noteList(
 		await note(
 			"mdi:check-circle-outline",
-			`<b>Culminado.</b> Las cuatro acciones extendidas de  
+			`<b>Culminado.</b> Las seis acciones de  
 			<b>Cursos</b> y <b>Planes de Estudio</b>  
-			(<b>Verificar</b>, <b>Duplicar</b>, <b>Recodificar</b> y  
+			(<b>Crear</b>, <b>Eliminar</b>, <b>Verificar</b>,  
+			<b>Duplicar</b>, <b>Recodificar</b> y  
 			<b>Consolidar</b>) fueron validadas <i>end-to-end</i>  
 			contra el servidor con respuesta satisfactoria  
 			(<code>200/202</code>).`,
