@@ -531,4 +531,44 @@ export function img(filename: string, targetW: number = IMG_DEFAULT_W): string {
 	);
 }
 
+// simpleTable — tabla email-safe homogénea con el mismo estilo que la tabla
+// de "Commits relacionados" de la bitácora (header fondo negro, font Tahoma,
+// celdas con borde inferior gris). Acepta celdas como HTML ya escapado.
+//
+// Uso:
+//   simpleTable(["#", "Acción", "Resultado"], [
+//     ["1", "Crear", "OK"],
+//     ["2", "Eliminar", "OK"],
+//   ]);
+//
+// Las celdas son HTML — el llamador es responsable de escapar el texto si
+// proviene de fuentes externas (los TKs construyen contenido literal).
+export function simpleTable(
+	headers: string[],
+	rows: string[][],
+	opts?: { aligns?: Array<"left" | "right" | "center">; firstColIsStep?: boolean },
+): string {
+	const aligns = opts?.aligns ?? [];
+	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;";
+	const tdBase = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Tahoma;font-size:10pt;color:#555;";
+	const tdStep = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;text-align:center;background:#fafafa;width:36px;";
+	const alignOf = (i: number): string => `text-align:${aligns[i] ?? "left"};`;
 
+	const head = `<tr>`
+		+ headers.map((h, i) => `<th style="${thBase}${alignOf(i)}">${h}</th>`).join("")
+		+ `</tr>`;
+
+	const body = rows.map((row) =>
+		`<tr>`
+		+ row.map((cell, i) => {
+			if (i === 0 && opts?.firstColIsStep) return `<td style="${tdStep}">${cell}</td>`;
+			return `<td style="${tdBase}${alignOf(i)}">${cell}</td>`;
+		}).join("")
+		+ `</tr>`,
+	).join("");
+
+	return `<table style="border-collapse:collapse;width:100%;font-family:Tahoma;margin:8px 0;">`
+		+ `<thead>${head}</thead>`
+		+ `<tbody>${body}</tbody>`
+		+ `</table>`;
+}
