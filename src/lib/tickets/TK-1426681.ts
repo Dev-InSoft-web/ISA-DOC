@@ -4,16 +4,15 @@ import { h3Iconized, note, noteList } from "./tk-helpers";
 import { img } from "./snippets";
 
 type QaStep = { entidad: string; accion: string; resultado: string; img: string };
-type CommitRow = { repo: string; sha: string; msg: string };
 
-const tStyleTable = `width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:13px;margin:8px 0;`;
-const tStyleTh = `background:#f0f0f0;border:1px solid #ccc;padding:6px 8px;text-align:left;font-weight:600;`;
-const tStyleTd = `border:1px solid #ddd;padding:6px 8px;vertical-align:top;`;
-const tStyleStep = `border:1px solid #ddd;padding:6px 8px;vertical-align:top;text-align:center;font-weight:600;background:#fafafa;width:48px;`;
+const tStyleTable = `border-collapse:collapse;width:100%;font-family:Tahoma;margin:0.25rem 0 0.5rem 0;`;
+const tStyleTh = `padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;text-align:left;`;
+const tStyleTd = `padding:0.15rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Tahoma;font-size:10pt;color:#555;`;
+const tStyleStep = `padding:0.15rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;text-align:right;white-space:nowrap;`;
 
 const renderStepsTable = (steps: QaStep[]): string => {
 	const head = `<tr>`
-		+ `<th style="${tStyleTh}">#</th>`
+		+ `<th style="${tStyleTh}text-align:right;">#</th>`
 		+ `<th style="${tStyleTh}">Entidad</th>`
 		+ `<th style="${tStyleTh}">Acción</th>`
 		+ `<th style="${tStyleTh}">Resultado</th>`
@@ -22,31 +21,14 @@ const renderStepsTable = (steps: QaStep[]): string => {
 	const rows = steps.map((s, i) =>
 		`<tr>`
 		+ `<td style="${tStyleStep}">${i + 1}</td>`
-		+ `<td style="${tStyleTd}"><b>${s.entidad}</b></td>`
-		+ `<td style="${tStyleTd}">${s.accion}</td>`
+		+ `<td style="${tStyleTd}font-weight:600;color:#444;white-space:nowrap;">${s.entidad}</td>`
+		+ `<td style="${tStyleTd}white-space:nowrap;">${s.accion}</td>`
 		+ `<td style="${tStyleTd}">${s.resultado}</td>`
 		+ `<td style="${tStyleTd}">${img(s.img, 240)}</td>`
 		+ `</tr>`,
 	).join("");
 
-	return `<table style="${tStyleTable}">${head}${rows}</table>`;
-};
-
-const renderCommitsTable = (commits: CommitRow[]): string => {
-	const head = `<tr>`
-		+ `<th style="${tStyleTh}">Repositorio</th>`
-		+ `<th style="${tStyleTh}">SHA</th>`
-		+ `<th style="${tStyleTh}">Mensaje</th>`
-		+ `</tr>`;
-	const rows = commits.map((c) =>
-		`<tr>`
-		+ `<td style="${tStyleTd}"><b>${c.repo}</b></td>`
-		+ `<td style="${tStyleTd}"><code>${c.sha}</code></td>`
-		+ `<td style="${tStyleTd}">${c.msg}</td>`
-		+ `</tr>`,
-	).join("");
-
-	return `<table style="${tStyleTable}">${head}${rows}</table>`;
+	return `<table style="${tStyleTable}"><thead>${head}</thead><tbody>${rows}</tbody></table>`;
 };
 
 const intro =
@@ -58,12 +40,11 @@ const intro =
 	consolidar"</i>.</div>`;
 
 export async function buildBodyTK1426681(): Promise<string> {
-	const [h3Contexto, h3Causa, h3Solucion, h3Evidencia, h3Commits, h3Estado] = await Promise.all([
+	const [h3Contexto, h3Causa, h3Solucion, h3Evidencia, h3Estado] = await Promise.all([
 		h3Iconized("mdi:information-outline", "Contexto"),
 		h3Iconized("mdi:bug-outline", "Causa raíz"),
 		h3Iconized("mdi:wrench-outline", "Solución aplicada"),
 		h3Iconized("mdi:image-multiple-outline", "Timeline de QA"),
-		h3Iconized("mdi:source-commit", "Commits relacionados"),
 		h3Iconized("mdi:forum-outline", "Estado"),
 	]);
 
@@ -173,19 +154,6 @@ export async function buildBodyTK1426681(): Promise<string> {
 		{ entidad: "Plan de Estudio", accion: "Eliminar", resultado: "El <code>DELETE</code> retorna <code>200</code> eliminando el plan.", img: "qa-plan-eliminar-ok.png" },
 	]);
 
-	const commits = renderCommitsTable([
-		{ repo: "ISP-ClientesIS", sha: "30d501e", msg: "feat(plan-estudio, curso): agrega nuevos endpoints para verificar, duplicar, recodificar y consolidar" },
-		{ repo: "ISP-CLientesISServer", sha: "e8fbe42", msg: "fix(capacitacion): se ajustan campos de auditoria para duplicar recodificar y consolidar (tk-1426681)" },
-		{ repo: "ISW-ClientesIS", sha: "1d45c43", msg: "fix(capacitacion): se habilita modo local en cliente base de cursos (tk-1426681)" },
-		{ repo: "ISA-DOC", sha: "ddc5304", msg: "fix(tk-1426681): se migran columnas de descripcion de text a varchar max en tablas de capacitacion" },
-		{ repo: "ISA-DOC", sha: "65d8c08", msg: "docs(tk-1426681): se agregan capturas de qa para verificar duplicar recodificar y consolidar de cursos y planes" },
-		{ repo: "ISA-DOC", sha: "6ed6e10", msg: "docs(tk-1426681): se actualiza descripcion del ticket con causas raiz y solucion completa" },
-		{ repo: "ISA-DOC", sha: "4c362e5", msg: "docs(tk-1426681): se agregan capturas de qa para crear y eliminar de cursos y planes de estudio" },
-		{ repo: "ISA-DOC", sha: "256b347", msg: "docs(tk-1426681): se documentan en el ticket las acciones crear y eliminar validadas en qa" },
-		{ repo: "ISA-DOC", sha: "8b61b9b", msg: "docs(tk-1426681): se reorganizan capturas al estandar imgbb y se eliminan capturas obsoletas con error previo" },
-		{ repo: "ISA-DOC", sha: "5b285ec", msg: "docs(tk-1426681): se refactoriza el ticket para usar el helper de imagenes con tamano estandar" },
-	]);
-
 	const estado = noteList(
 		await note(
 			"mdi:check-circle-outline",
@@ -204,7 +172,6 @@ export async function buildBodyTK1426681(): Promise<string> {
 		+ h3Causa + causa
 		+ h3Solucion + solucion
 		+ h3Evidencia + evidencia
-		+ h3Commits + commits
 		+ h3Estado + estado;
 }
 
