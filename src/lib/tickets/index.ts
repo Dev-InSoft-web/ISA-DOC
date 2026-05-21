@@ -105,6 +105,7 @@ export const TICKETS: TicketRegistro[] = [
 			{ hash: "3e74432", descripcion: "feat(TK-1426893): agrega soporte para filtrado y paginación en la lista de cursos y mejora la definición de columnas", repo: "ISW-ClientesIS", ins: 29, del: 2, fecha: "2026-05-21T16:23:20-05:00" },
 			{ hash: "aa42b5c", descripcion: "fix(TK-1426893): el grid responsive del formulario calcula breakpoints por viewport y expone lerpw", repo: "ISW-ClientesIS", ins: 23, del: 3, fecha: "2026-05-21T16:30:35-05:00" },
 			{ hash: "21ed486", descripcion: "fix(TK-1426893): el grid responsive del form usa block layout para medir el ancho del contenedor", repo: "ISW-ClientesIS", ins: 8, del: 27, fecha: "2026-05-21T16:32:20-05:00" },
+			{ hash: "436a122", descripcion: "fix(TK-1426893): se estira el wrap del grid responsive al ancho completo del contenedor", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-21T16:35:49-05:00" },
 		],
 		body: bodyTK1426893,
 		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
