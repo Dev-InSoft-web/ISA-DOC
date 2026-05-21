@@ -51,9 +51,14 @@ export async function buildBodyTK1426728(): Promise<string> {
 		),
 		await note(
 			"mdi:alert-circle-outline",
-			`<b>No se logró replicar el problema reportado.</b> Por  
-			ello no fue posible identificar una causa raíz concreta a  
-			partir de la evidencia recibida.`,
+			`<b>No se logró replicar el problema reportado.</b> En  
+			todos los escenarios probados — tanto en el entorno  
+			<b>local</b> de desarrollo como en el ambiente publicado  
+			en <a href="https://clientesis.azurewebsites.net/"  
+			target="_blank" rel="noopener">  
+			clientesis.azurewebsites.net</a> — se observó que la  
+			funcionalidad opera correctamente: el nodo se inserta y  
+			los atributos del recurso se hidratan como se espera.`,
 		),
 	);
 

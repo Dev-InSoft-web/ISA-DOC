@@ -105,7 +105,7 @@ export const TICKETS: TicketRegistro[] = [
 		fechaSolicitud: "19/may./2026 09:35:39 am",
 		estimacionMinutos: 0,
 		diligenciaMinutos: 60,
-		resumen: "El problema reportado no logró replicarse en distintos escenarios de prueba. Se aprovechó la revisión para optimizar la reactividad del árbol de contenido del curso, sin alterar la lógica funcional. Queda a la espera de pasos detallados o sesión guiada para reproducir el caso exacto.",
+		resumen: "El problema reportado no logró replicarse en distintos escenarios de prueba, tanto en el entorno local como en el ambiente publicado en clientesis.azurewebsites.net, donde se observó que la funcionalidad opera correctamente. Se aprovechó la revisión para optimizar la reactividad del árbol de contenido del curso, sin alterar la lógica funcional. Queda a la espera de pasos detallados o sesión guiada para reproducir el caso exacto.",
 		commits: [],
 		body: bodyTK1426728,
 		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
