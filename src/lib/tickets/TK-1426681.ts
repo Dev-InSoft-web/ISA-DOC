@@ -15,7 +15,7 @@ const renderStepsTable = (steps: QaStep[]): string =>
 			s.resultado,
 			img(s.img, 240),
 		]),
-		{ aligns: ["center", "left", "left", "left", "left"], firstColIsStep: true },
+		{ aligns: ["center", "left", "left", "left", "left"], firstColIsStep: true, widths: ["36px", "12%", "12%", "20%", "auto"] },
 	);
 
 const intro =

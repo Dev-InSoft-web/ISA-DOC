@@ -548,28 +548,35 @@ export function img(filename: string, targetW: number = IMG_DEFAULT_W): string {
 export function simpleTable(
 	headers: string[],
 	rows: string[][],
-	opts?: { aligns?: Array<"left" | "right" | "center">; firstColIsStep?: boolean },
+	opts?: { aligns?: Array<"left" | "right" | "center">; firstColIsStep?: boolean; widths?: Array<string | undefined> },
 ): string {
 	const aligns = opts?.aligns ?? [];
+	const widths = opts?.widths ?? [];
 	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;";
 	const tdBase = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Tahoma;font-size:10pt;color:#555;";
 	const tdStep = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;text-align:center;background:#fafafa;width:36px;";
 	const alignOf = (i: number): string => `text-align:${aligns[i] ?? "left"};`;
+	const widthOf = (i: number): string => (widths[i] ? `width:${widths[i]};` : "");
+
+	const colgroup = widths.length
+		? `<colgroup>${headers.map((_, i) => `<col${widths[i] ? ` style="width:${widths[i]};"` : ""}>`).join("")}</colgroup>`
+		: "";
 
 	const head = `<tr>`
-		+ headers.map((h, i) => `<th style="${thBase}${alignOf(i)}">${h}</th>`).join("")
+		+ headers.map((h, i) => `<th style="${thBase}${alignOf(i)}${widthOf(i)}">${h}</th>`).join("")
 		+ `</tr>`;
 
 	const body = rows.map((row) =>
 		`<tr>`
 		+ row.map((cell, i) => {
 			if (i === 0 && opts?.firstColIsStep) return `<td style="${tdStep}">${cell}</td>`;
-			return `<td style="${tdBase}${alignOf(i)}">${cell}</td>`;
+			return `<td style="${tdBase}${alignOf(i)}${widthOf(i)}">${cell}</td>`;
 		}).join("")
 		+ `</tr>`,
 	).join("");
 
-	return `<table style="border-collapse:collapse;width:100%;font-family:Tahoma;margin:8px 0;">`
+	return `<table style="border-collapse:collapse;width:100%;font-family:Tahoma;margin:8px 0;${widths.length ? "table-layout:fixed;" : ""}">`
+		+ colgroup
 		+ `<thead>${head}</thead>`
 		+ `<tbody>${body}</tbody>`
 		+ `</table>`;
