@@ -15,6 +15,7 @@ export async function buildBodyTK1426900(): Promise<string> {
 		h3Iconized("mdi:camera-outline", "Réplica"),
 		h3Iconized("mdi:magnify-scan", "Análisis técnico"),
 		h3Iconized("mdi:tools", "Solución aplicada"),
+		h3Iconized("mdi:forum-outline", "Estado"),
 	]);
 
 	const contexto = noteList(
