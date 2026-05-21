@@ -145,7 +145,7 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "19/may./2026 09:35:39 am",
 		estimacionMinutos: 0,
-		diligenciaMinutos: 30,
+		diligenciaMinutos: 20,
 		extraMinutos: 20,
 		extraDescripcion: "Revisión y ajuste de optimización",
 		resumen: "El problema reportado no logró replicarse en distintos escenarios de prueba, tanto en el entorno local como en el ambiente publicado en clientesis.azurewebsites.net, donde se observó que la funcionalidad opera correctamente. Se aprovechó la revisión para optimizar la reactividad del árbol de contenido del curso, sin alterar la lógica funcional. Queda a la espera de pasos detallados o sesión guiada para reproducir el caso exacto.",
