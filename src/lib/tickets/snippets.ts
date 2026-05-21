@@ -65,8 +65,10 @@ export function icon(name: string, opts: IconOpts = {}): string {
 		: "";
 	const safeName = name.replace(":", "/");
 	const src = `https://api.iconify.design/${safeName}.svg${colorParam}`;
-	const baseStyle =
-		`height:${size}px;width:${size}px;vertical-align:middle;display:inline-block;`;
+	// width/height fijos + min/max para que clientes de correo no reescalen
+	// la imagen según viewport (Outlook web, Gmail mobile estiran <img> sin
+	// width fijo o sin max-width si el contenedor es más ancho).
+	const baseStyle = `width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;vertical-align:middle;display:inline-block;`;
 	const fullStyle = opts.style ? baseStyle + opts.style : baseStyle;
 	return (
 		`<img src="${src}" alt="${escapeHtml(altText)}" ` +
