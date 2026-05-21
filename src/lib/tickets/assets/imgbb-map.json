@@ -318,5 +318,125 @@
 		"width": 1271,
 		"height": 799,
 		"size": 75413
+	},
+	"qa-curso-consolidar-ok.png": {
+		"sha1": "1c6c23e0a71dc324aa71ef7004f9f138d0e0ddd1",
+		"url": "https://i.ibb.co/d0rkQbX0/qa-curso-consolidar-ok.png",
+		"display_url": "https://i.ibb.co/SXPVKQHX/qa-curso-consolidar-ok.png",
+		"thumb": "https://i.ibb.co/sv2sF5cv/qa-curso-consolidar-ok.png",
+		"delete_url": "https://ibb.co/sv2sF5cv/1be8187dfcae91b0fc94e459a479783e",
+		"width": 1566,
+		"height": 943,
+		"size": 66103
+	},
+	"qa-curso-crear-ok.png": {
+		"sha1": "c81bbf8b1c25ecf066d0188beb68a711bbd3594f",
+		"url": "https://i.ibb.co/WvyS6tw0/qa-curso-crear-ok.png",
+		"display_url": "https://i.ibb.co/MkVqs64f/qa-curso-crear-ok.png",
+		"thumb": "https://i.ibb.co/QvNsfdRk/qa-curso-crear-ok.png",
+		"delete_url": "https://ibb.co/QvNsfdRk/18972bdb07364dc8ccf328091c473e95",
+		"width": 1290,
+		"height": 943,
+		"size": 66934
+	},
+	"qa-curso-duplicar-ok.png": {
+		"sha1": "c1653a57fb455111fcbbcbcf5ed7206ff04a7367",
+		"url": "https://i.ibb.co/JRKNBWyd/qa-curso-duplicar-ok.png",
+		"display_url": "https://i.ibb.co/C5zq1pMt/qa-curso-duplicar-ok.png",
+		"thumb": "https://i.ibb.co/bgPxWj23/qa-curso-duplicar-ok.png",
+		"delete_url": "https://ibb.co/bgPxWj23/48b4c07c9f4f7d6ade16e8c246d51f6c",
+		"width": 1566,
+		"height": 943,
+		"size": 120531
+	},
+	"qa-curso-eliminar-ok.png": {
+		"sha1": "fae2043bba1d0b6475ce350b0f171c9291a845b3",
+		"url": "https://i.ibb.co/dwQLYmZg/qa-curso-eliminar-ok.png",
+		"display_url": "https://i.ibb.co/Hfrx8hZd/qa-curso-eliminar-ok.png",
+		"thumb": "https://i.ibb.co/S4KdCfSr/qa-curso-eliminar-ok.png",
+		"delete_url": "https://ibb.co/S4KdCfSr/c9f9664cbbc5fd423849dfa664b3d41a",
+		"width": 1290,
+		"height": 943,
+		"size": 64981
+	},
+	"qa-curso-recodificar-ok.png": {
+		"sha1": "30bd316f3109c7459640fab52505271fa98d5609",
+		"url": "https://i.ibb.co/JR2YDr8D/qa-curso-recodificar-ok.png",
+		"display_url": "https://i.ibb.co/gMw0ktQk/qa-curso-recodificar-ok.png",
+		"thumb": "https://i.ibb.co/0jZ0HY1H/qa-curso-recodificar-ok.png",
+		"delete_url": "https://ibb.co/0jZ0HY1H/40fcb5a321c1f9e558d05406563226a0",
+		"width": 1290,
+		"height": 943,
+		"size": 118006
+	},
+	"qa-curso-verificar-ok.png": {
+		"sha1": "ce42c334401706bc315e229a146321ff7f010974",
+		"url": "https://i.ibb.co/rfH2rFw6/qa-curso-verificar-ok.png",
+		"display_url": "https://i.ibb.co/x86qTX7j/qa-curso-verificar-ok.png",
+		"thumb": "https://i.ibb.co/Fqz4TmDw/qa-curso-verificar-ok.png",
+		"delete_url": "https://ibb.co/Fqz4TmDw/3fdd3a99b02d247fc3f11d2cca01b8b5",
+		"width": 1290,
+		"height": 943,
+		"size": 300936
+	},
+	"qa-plan-consolidar-ok.png": {
+		"sha1": "d7561c0d16f2780969672afee63d860ecaa62778",
+		"url": "https://i.ibb.co/rRPtMPDL/qa-plan-consolidar-ok.png",
+		"display_url": "https://i.ibb.co/9kXv2XQf/qa-plan-consolidar-ok.png",
+		"thumb": "https://i.ibb.co/mVsBtsfY/qa-plan-consolidar-ok.png",
+		"delete_url": "https://ibb.co/mVsBtsfY/d92c613362e708c087fbe010060cac8d",
+		"width": 1566,
+		"height": 943,
+		"size": 66318
+	},
+	"qa-plan-crear-ok.png": {
+		"sha1": "00393c85d0a1ae557b6530fc1590a9e19d12f4f7",
+		"url": "https://i.ibb.co/BHnk0fMw/qa-plan-crear-ok.png",
+		"display_url": "https://i.ibb.co/4w1khFrJ/qa-plan-crear-ok.png",
+		"thumb": "https://i.ibb.co/HLhZ5K8X/qa-plan-crear-ok.png",
+		"delete_url": "https://ibb.co/HLhZ5K8X/7794466d45660abf6d6b84db1c16c65f",
+		"width": 1290,
+		"height": 943,
+		"size": 67032
+	},
+	"qa-plan-duplicar-ok.png": {
+		"sha1": "30f7bac5a7a4b78e515f88d84d67f497c2291a6c",
+		"url": "https://i.ibb.co/NGZrKR6/qa-plan-duplicar-ok.png",
+		"display_url": "https://i.ibb.co/gczdJYM/qa-plan-duplicar-ok.png",
+		"thumb": "https://i.ibb.co/vMZhk9x/qa-plan-duplicar-ok.png",
+		"delete_url": "https://ibb.co/vMZhk9x/2d748810b27c3d08dd5dd26e4a09a85a",
+		"width": 1566,
+		"height": 943,
+		"size": 66326
+	},
+	"qa-plan-eliminar-ok.png": {
+		"sha1": "9a7b5bde9e9cefadd25f46b8d26fc58059b368cf",
+		"url": "https://i.ibb.co/5gDpbMkj/qa-plan-eliminar-ok.png",
+		"display_url": "https://i.ibb.co/v65y0whd/qa-plan-eliminar-ok.png",
+		"thumb": "https://i.ibb.co/nN2dxgB1/qa-plan-eliminar-ok.png",
+		"delete_url": "https://ibb.co/nN2dxgB1/bd070cc4b60dd55c721a3ff28650b97c",
+		"width": 1290,
+		"height": 943,
+		"size": 65167
+	},
+	"qa-plan-recodificar-ok.png": {
+		"sha1": "4354041d8fd338b8bd190cd555186e42ae013ece",
+		"url": "https://i.ibb.co/rfXdzFG4/qa-plan-recodificar-ok.png",
+		"display_url": "https://i.ibb.co/6JqXTrRg/qa-plan-recodificar-ok.png",
+		"thumb": "https://i.ibb.co/Kz8KfbjF/qa-plan-recodificar-ok.png",
+		"delete_url": "https://ibb.co/Kz8KfbjF/143b2962c467db19fb5b726ed1d6e460",
+		"width": 1566,
+		"height": 943,
+		"size": 66342
+	},
+	"qa-plan-verificar-ok.png": {
+		"sha1": "9ac61586d2ca47b0ced48b68d0d842611c4c6b24",
+		"url": "https://i.ibb.co/Z1xs5LL3/qa-plan-verificar-ok.png",
+		"display_url": "https://i.ibb.co/BKBDbzzm/qa-plan-verificar-ok.png",
+		"thumb": "https://i.ibb.co/6JFhznn2/qa-plan-verificar-ok.png",
+		"delete_url": "https://ibb.co/6JFhznn2/33ff2161fd72a5ed5dd8730b25e0010c",
+		"width": 1566,
+		"height": 943,
+		"size": 169694
 	}
 }
