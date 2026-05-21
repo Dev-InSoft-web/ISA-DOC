@@ -7,10 +7,10 @@ const imgStyle =
 	`max-width:100%;max-height:380px;display:block;margin:0.5rem 0;border:1px solid #80808030;border-radius:4px;`;
 
 const evidenciaContexto =
-	`<img src="${IMG_BASE}/01-cursos-integrados-vacio.png" alt="Pestaña Cursos integrados sin filas para el plan PLAN002" style="${imgStyle}">`;
+	`<img src="${IMG_BASE}/01-requisitos-pestana.png" alt="Pestaña Requisitos para cursos del plan con botón Crear habilitado tras integrar cursos" style="${imgStyle}">`;
 
 const evidenciaSolucion =
-	`<img src="${IMG_BASE}/02-alert-deshabilitado.png" alt="Alert informativo y botón Crear deshabilitado en la pestaña Requisitos para cursos" style="${imgStyle}">`;
+	`<img src="${IMG_BASE}/02-dialog-prerrequisito.png" alt="Diálogo Prerrequisito con el selector de cursos del plan mostrando opciones disponibles" style="${imgStyle}">`;
 
 const intro =
 	`<div>Se reporta que en el catálogo de <b>Planes de estudio</b>,  
