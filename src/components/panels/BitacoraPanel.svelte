@@ -23,6 +23,7 @@
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
 	import sqlSeedAccionesCursosPlanDeEstudio from "../../lib/migration/sql/seed-acciones-cursos-plandeestudio.sql?raw";
 	import md_2026_05_14_driver_jconfig_v2 from "../../lib/bitacora/daily/2026-05/14/driver-atributos-jconfig-v2-intro.md?raw";
+	import md_2026_05_21_isa from "../../lib/bitacora/daily/2026-05/21/resumen-isa.md?raw";
 	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05/06/resumen-isa.md?raw";
 	import md_2026_05_06_isw_isp from "../../lib/bitacora/daily/2026-05/06/resumen-isw-isp.md?raw";
 	import md_2026_05_06_iss from "../../lib/bitacora/daily/2026-05/06/resumen-iss.md?raw";
@@ -129,6 +130,15 @@
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-05-21 -->
+			<Accordion
+				title="2026-05-21 — Cierre TK-1426681 (Cursos/Planes) + estandarización de helpers de tickets y Accordion"
+				titleIcon="mdi:calendar"
+				open={true}
+			>
+				<BitacoraNote flat mdSource={md_2026_05_21_isa} />
+			</Accordion>
+
 			<!-- 2026-05-15 -->
 			<Accordion
 				title="2026-05-15 — Capacitación: alta de acciones extendidas (Verificar / Duplicar / Recodificar / Consolidar / Eliminar) para Cursos y Planes de Estudio"
