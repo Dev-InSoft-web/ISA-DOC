@@ -434,12 +434,13 @@ function buildTituloHtml(_ticketId?: string, titulo?: string): string {
 	return `<div style="margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid #e0e0e0;"><h1 style="margin:0;font-family:Tahoma;font-size:16pt;color:#1e90ff;font-weight:bold;line-height:1.3;"><strong style="font-weight:bold;">${tit}</strong></h1></div>\n`;
 }
 
-// Tiempo estimado de diligenciar el ticket en la bitácora (15-90 min).
-// Crece linealmente con el volumen del body HTML, acotado a [15, 90].
+// Tiempo estimado de diligenciar el ticket en la bitácora (15-30 min).
+// Se parte de la premisa de que ya hay helpers para fabricar los tickets,
+// por lo que el costo de redacción está acotado.
 export function tiempoDiligenciaMin(body: string): number {
 	const len = body ? body.length : 0;
 	const raw = 15 + Math.round((len - 500) / 180);
-	return Math.max(15, Math.min(90, raw));
+	return Math.max(15, Math.min(30, raw));
 }
 
 // Tiempo estimado para los cambios en base de datos (trabajo fuera de commits).

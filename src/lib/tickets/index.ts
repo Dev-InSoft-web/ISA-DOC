@@ -104,7 +104,7 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "19/may./2026 09:35:39 am",
 			estimacionMinutos: 0,
-		diligenciaMinutos: 60,
+		diligenciaMinutos: 30,
 		resumen: "El problema reportado no logró replicarse en distintos escenarios de prueba, tanto en el entorno local como en el ambiente publicado en clientesis.azurewebsites.net, donde se observó que la funcionalidad opera correctamente. Se aprovechó la revisión para optimizar la reactividad del árbol de contenido del curso, sin alterar la lógica funcional. Queda a la espera de pasos detallados o sesión guiada para reproducir el caso exacto.",
 		commits: [],
 		body: bodyTK1426728,
@@ -116,7 +116,7 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "19/may./2026 09:08:28 am",
 		estimacionMinutos: 90,
-		diligenciaMinutos: 75,
+		diligenciaMinutos: 30,
 		resumen: "Se identificó que los clientes de Curso y Plan de Estudio heredaban los endpoints base sin sobreescribirlos, por lo que las acciones extendidas Verificación, Duplicar, Recodificar y Consolidar enviaban la petición a una ruta inexistente. Se definieron explícitamente los cuatro endpoints en cada cliente con el segmento del recurso correspondiente. QA contra el servidor confirma que las ocho llamadas llegan al manejador correcto y que la Verificación responde satisfactoriamente en ambas entidades. Las otras tres acciones quedan pendientes por un error server-side independiente en la validación SQL del parámetro de auditoría, reportado como issue aparte.",
 		commits: [
 			{ hash: "30d501e", descripcion: "feat(plan-estudio, curso): se agregan endpoints de verificar, duplicar, recodificar y consolidar en los clientes", repo: "ISP-ClientesIS", ins: 8, del: 0, fecha: "2026-05-21T10:15:34-05:00" },
@@ -156,7 +156,7 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 04:12:25 pm",
 		estimacionMinutos: 200,
-		diligenciaMinutos: 75,
+		diligenciaMinutos: 30,
 		resumen: "Se solicitó que el campo iplanpadre solo apareciera disponible cuando el recurso tuviera como dificultad Medio o Avanzado, y que no se ingresara un número sino que se abriera un catálogo con los recursos con dificultad Básico del mismo capítulo.",
 		commits: [
 			{ hash: "6fd8618", descripcion: "feat(capacitacion): se muestra iplanpadre solo en dificultad media o avanzada y se limpia en otros casos", repo: "ISW-ClientesIS", ins: 23, del: 4, fecha: "2026-05-14T14:43:05-05:00" },
