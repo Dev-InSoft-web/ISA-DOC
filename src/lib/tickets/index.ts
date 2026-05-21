@@ -121,7 +121,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Catálogo de curso vacío al crear requisitos en plan de estudio",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "19/may./2026 12:07:31 pm",
-		estimacionMinutos: 30,
+		estimacionMinutos: 150,
 		diligenciaMinutos: 30,
 		extraMinutos: 20,
 		extraDescripcion: "Análisis del flujo y reinterpretación del reporte",
