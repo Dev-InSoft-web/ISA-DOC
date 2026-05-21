@@ -83,8 +83,10 @@ export const TICKETS: TicketRegistro[] = [
 		fechaSolicitud: "19/may./2026 12:14:17 pm",
 		estimacionMinutos: 0,
 		diligenciaMinutos: 0,
-		resumen: "Al dar clic en la acción Modificar, dentro de la pestaña \"Cursos integrados\" de un plan de estudio, el campo del curso aparece en modo visualización y no permite modificar ni reemplazar el curso actual.",
-		commits: [],
+		resumen: "Al dar clic en la acción Modificar, dentro de la pestaña \"Cursos integrados\" de un plan de estudio, el campo del curso aparece en modo visualización y no permite modificar ni reemplazar el curso actual. Se mantiene el bloqueo por integridad referencial (el curso es llave del detalle) y se añade un aviso informativo guiando al usuario a usar Eliminar + Crear para reemplazar el curso.",
+		commits: [
+			{ hash: "e3b1ea3", descripcion: "fix(TK-1426900): se anade aviso cuando el curso integrado no puede reemplazarse en accion modificar", repo: "ISW-ClientesIS", ins: 5, del: 0, fecha: "2026-05-21T17:14:02-05:00" },
+		],
 		body: bodyTK1426900,
 		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
 	},

@@ -10,11 +10,11 @@ const intro =
 	modificar ni reemplazar el curso actual.</div>`;
 
 export async function buildBodyTK1426900(): Promise<string> {
-	const [h3Contexto, h3Replica, h3Analisis, h3Estado] = await Promise.all([
+	const [h3Contexto, h3Replica, h3Analisis, h3Solucion, h3Estado] = await Promise.all([
 		h3Iconized("mdi:information-outline", "Contexto"),
 		h3Iconized("mdi:camera-outline", "Réplica"),
 		h3Iconized("mdi:magnify-scan", "Análisis técnico"),
-		h3Iconized("mdi:forum-outline", "Estado"),
+		h3Iconized("mdi:tools", "Solución aplicada"),
 	]);
 
 	const contexto = noteList(
@@ -72,16 +72,30 @@ export async function buildBodyTK1426900(): Promise<string> {
 		),
 	);
 
-	const estado = noteList(
+	const solucion = noteList(
 		await note(
-			"mdi:progress-wrench",
-			`Ticket abierto. Bug replicado y causa raíz identificada.  
-			Pendiente de validación funcional para escoger la estrategia  
-			de corrección.`,
+			"mdi:check-decagram-outline",
+			`Se mantiene el bloqueo del selector de curso por integridad  
+			referencial (la llave del detalle se conserva). Para guiar al  
+			usuario se añade un <b>aviso informativo</b> bajo el campo  
+			Curso cuando el formulario está en modo <b>Modificar</b> y el  
+			campo es llave: explica que para reemplazar el curso debe  
+			eliminar la fila y crearla de nuevo, y que el orden y los  
+			prerrequisitos sí son editables desde aquí.` +
+			img("tk1426900-fix-aviso.png"),
 		),
 	);
 
-	return intro + h3Contexto + contexto + h3Replica + replica + h3Analisis + analisis + h3Estado + estado;
+	const estado = noteList(
+		await note(
+			"mdi:check-circle-outline",
+			`Ticket atendido. Bug replicado, causa raíz documentada y  
+			corrección de UX aplicada. Pendiente de validación funcional  
+			con el solicitante.`,
+		),
+	);
+
+	return intro + h3Contexto + contexto + h3Replica + replica + h3Analisis + analisis + h3Solucion + solucion + h3Estado + estado;
 }
 
 export const bodyTK1426900: Promise<string> = buildBodyTK1426900();
