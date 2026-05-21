@@ -36,9 +36,9 @@ export async function buildBodyTK1426900(): Promise<string> {
 	const replica = noteList(
 		await note(
 			"mdi:image-outline",
-			`Replicado sobre el plan <code>PLAN_REC1</code> en  
+			`Replicado sobre el plan <b>PLAN_REC1</b> en  
 			<i>Cursos integrados</i>. Al abrir <b>Modificar</b> sobre la  
-			fila <code>ACT-TRIB24</code>, el campo <b>Curso *</b> y su  
+			fila <b>ACT-TRIB24</b>, el campo <b>Curso *</b> y su  
 			botón de selección aparecen deshabilitados (modo lectura).` +
 			img("tk1426900-cursos-integrados-modificar.png"),
 		),
@@ -47,29 +47,26 @@ export async function buildBodyTK1426900(): Promise<string> {
 	const analisis = noteList(
 		await note(
 			"mdi:source-branch",
-			`La causa se localiza en el catálogo de cursos del plan  
-			(<code>CtlgoCursosDePlan.svelte</code>), donde el  
-			<code>BtnRefAutoOpen</code> del campo curso recibe  
-			<code>itdForm</code> condicionado por  
-			<code>pkReadonly(frmItd, Item)</code>.`,
+			`La causa se localiza en el catálogo de cursos del plan, donde  
+			el selector del campo <b>Curso</b> recibe el formulario del  
+			detalle en modo lectura cuando el registro existe.`,
 		),
 		await note(
 			"mdi:key-variant",
-			`El item del detalle <code>TCursoDePlanDeEstudio</code>  
-			tiene como llave compuesta <code>(iplanestudio, icurso)</code>;  
-			por ello <code>pkReadonly</code> devuelve <b>true</b> al  
-			modificar un registro existente y fuerza el modo  
-			<code>"view"</code> sobre el selector de curso.`,
+			`El detalle de cursos del plan de estudio se identifica por la  
+			combinación de plan de estudio y curso (llave compuesta);  
+			por convención, los campos que conforman la llave se bloquean  
+			en modo modificar para preservar la integridad referencial,  
+			lo que fuerza el selector de curso a quedar en solo lectura.`,
 		),
 		await note(
 			"mdi:lightbulb-on-outline",
 			`Opciones de solución bajo evaluación: (a) permitir que la  
-			acción <b>Modificar</b> reasigne el curso (omitiendo el  
-			<code>pkReadonly</code> sobre ese campo, asumiendo que el  
-			backend maneje el cambio como reemplazo); (b) restringir la  
-			acción <b>Modificar</b> a campos no llave del detalle y  
-			canalizar el reemplazo de curso por  
-			<b>Eliminar + Crear</b>.`,
+			acción <b>Modificar</b> reasigne el curso, omitiendo el  
+			bloqueo sobre ese campo y asumiendo que el servidor maneje  
+			el cambio como reemplazo; (b) restringir la acción  
+			<b>Modificar</b> a los campos no llave del detalle y  
+			canalizar el reemplazo de curso por <b>Eliminar + Crear</b>.`,
 		),
 	);
 

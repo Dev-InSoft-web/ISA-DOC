@@ -39,23 +39,27 @@ export async function buildBodyTK1428161(): Promise<string> {
 	const analisis = noteList(
 		await note(
 			"mdi:source-branch",
-			`El estado de columnas (<code>visible</code> y <code>orderby</code>)  
-			vive en el controlador de cada catálogo, que se reinstancia en cada  
-			render. Sin un almacén externo, cualquier cambio se descarta.`,
+			`El estado de columnas (qué columnas son visibles y en qué orden  
+			están) vive en el controlador de cada catálogo, que se reinstancia  
+			en cada render. Sin un almén externo, cualquier cambio se  
+			descarta al volver a entrar.`,
 		),
 		await note(
 			"mdi:database-cog-outline",
-			`Se opta por <b>localStorage</b> como capa de persistencia local  
-			(no requiere endpoint nuevo, es por navegador y por usuario). La  
-			clave debe identificar de forma única la grilla: controlador + entry  
-			point, evitando colisiones entre catálogos con columnas homónimas.`,
+			`Se opta por una capa de persistencia local en el navegador  
+			(no requiere servicios nuevos, es por navegador y por usuario).  
+			La clave de almacenamiento debe identificar de forma única la  
+			grilla a la que pertenece la configuración, evitando  
+			colisiones entre catálogos que tienen columnas con el mismo  
+			nombre.`,
 		),
 		await note(
 			"mdi:sync-alert",
-			`La rehidratación debe ocurrir <b>antes</b> del primer render de la  
-			grilla. Aplicarla en <code>onMount</code> deja un frame con los  
-			valores por defecto, por eso se mueve al <i>field initializer</i> y  
-			al constructor del controlador.`,
+			`La rehidratación debe ocurrir <b>antes</b> del primer render  
+			de la grilla. Si se aplica después de montar el componente, la  
+			grilla se pinta primero con la configuración por defecto y  
+			luego salta a la guardada; por eso la carga del estado se hace  
+			en la inicialización del controlador.`,
 		),
 	);
 
@@ -63,9 +67,9 @@ export async function buildBodyTK1428161(): Promise<string> {
 		await note(
 			"mdi:check-decagram-outline",
 			`Se introduce un <b>helper único de persistencia de columnas</b>  
-			que serializa <code>visible</code> y <code>orderby</code> por  
-			controlador en <code>localStorage</code>, con clave compuesta por  
-			el id del controlador y el <code>entrie</code> activo.`,
+			que guarda, para cada grilla, qué columnas son visibles y en  
+			qué orden están, identificando la grilla por el catálogo y la  
+			vista activa.`,
 		),
 		await note(
 			"mdi:package-variant-closed",
@@ -77,9 +81,9 @@ export async function buildBodyTK1428161(): Promise<string> {
 			"mdi:layers-triple-outline",
 			`Se centraliza la <b>definición de columnas</b> y se unifica el  
 			wrapper de lista para que todos los catálogos hereden la  
-			persistencia sin código duplicado. La rehidratación se hace de  
-			forma síncrona en el constructor / field initializer para que la  
-			grilla pinte ya con los valores guardados.` +
+			persistencia sin duplicidad. La rehidratación se hace de  
+			forma síncrona durante la inicialización del controlador para  
+			que la grilla pinte ya con los valores guardados.` +
 			img("tk1428161-selector-columnas.png"),
 		),
 	);
@@ -88,12 +92,12 @@ export async function buildBodyTK1428161(): Promise<string> {
 		await note(
 			"mdi:check-circle-outline",
 			`Funcionalidad <b>ya entregada</b> en la iteración del  
-			<code>13/may./2026</code>, distribuida en una serie de commits  
-			(feature + ajustes sucesivos de rehidratación, clave de  
-			persistencia y consolidación de columnas). Aplicada a todos los  
-			catálogos de ContaPyme U que usan el wrapper común. Verificada la  
-			persistencia: al refrescar la página las columnas adicionales  
-			seleccionadas se conservan visibles.` +
+			13 de mayo de 2026, distribuida en una serie de commits  
+			(funcionalidad inicial más ajustes sucesivos de rehidratación,  
+			clave de persistencia y consolidación de columnas). Aplicada  
+			a todos los catálogos de ContaPyme U que usan el wrapper  
+			común. Verificada la persistencia: al refrescar la página las  
+			columnas adicionales seleccionadas se conservan visibles.` +
 			img("tk1428161-persistencia-tras-recarga.png"),
 		),
 		await note(

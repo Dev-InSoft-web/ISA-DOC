@@ -55,72 +55,66 @@ export async function buildBodyTK1426681(): Promise<string> {
 		await note(
 			"mdi:source-branch",
 			`<b>Causa 1 — Clientes:</b> los clientes de <b>Curso</b> y  
-			<b>Plan de Estudio</b> heredaban los <i>endpoints</i> base  
-			sin sobreescribirlos. Por convención del framework el  
-			cliente debe declarar el endpoint con el segmento del  
-			recurso (por ejemplo <code>/api/curso/verificar</code>);  
-			al heredar el valor base (<code>/api/verificar</code>) el  
-			servidor no encontraba la ruta y la acción fallaba.`,
+			<b>Plan de Estudio</b> heredaban las rutas base de las  
+			acciones sin sobreescribirlas. Por convención del framework  
+			cada cliente debe declarar la ruta con el segmento del  
+			recurso correspondiente; al heredar la ruta genérica el  
+			servidor no encontraba el manejador y la acción fallaba.`,
 		),
 		await note(
 			"mdi:database-alert-outline",
-			`<b>Causa 2 — Auditoría server-side:</b> el override base  
-			de campos de auditoría enviaba <code>IUSUARIOULT</code>  
-			como entero (i-contacto) cuando el esquema lo define  
-			<code>VARCHAR</code>, y además intercambiaba los valores  
-			de <code>IEQUIPOCRE</code> y <code>FHCRE</code>, lo que  
-			provocaba errores de conversión SQL en las acciones  
-			<b>Duplicar</b>, <b>Recodificar</b> y <b>Consolidar</b>.`,
+			`<b>Causa 2 — Auditoría server-side:</b> el manejo base de los  
+			campos de auditoría enviaba el identificador del usuario como  
+			valor numérico cuando el esquema en base de datos lo espera  
+			como cadena, y además intercambiaba los campos de equipo y  
+			fecha de creación. Esto provocaba errores de conversión en  
+			base de datos al ejecutar las acciones <b>Duplicar</b>,  
+			<b>Recodificar</b> y <b>Consolidar</b>.`,
 		),
 		await note(
 			"mdi:table-column",
-			`<b>Causa 3 — Esquema BD (Consolidar):</b> las columnas  
-			<code>CAPAC_CURSOS.DESCRIPCION</code>,  
-			<code>CAPAC_PLANES_ESTUDIO.DESCRIPCIONPLAN</code> y  
-			<code>CAPAC_DRIVERS.DESCRIPCION</code> estaban definidas  
-			como tipo <code>TEXT</code> (deprecado desde SQL Server  
-			2005). El motor de <b>Consolidar</b> genera expresiones  
-			<code>NULLIF(col, '')</code> que no son compatibles con  
-			<code>TEXT</code>, lo que producía el error  
-			<i>«The data types text and varchar are incompatible in  
-			the equal to operator»</i>.`,
+			`<b>Causa 3 — Esquema BD (Consolidar):</b> las columnas de  
+			descripción de cursos, planes de estudio y drivers de  
+			capacitación estaban definidas con un tipo de dato heredado  
+			(en desuso desde hace varios años) que no admite las  
+			comparaciones que ejecuta internamente el proceso de  
+			<b>Consolidar</b>. Como consecuencia el motor de base de  
+			datos respondía con un error de incompatibilidad de tipos al  
+			intentar consolidar.`,
 		),
 	);
 
 	const solucion = noteList(
 		await note(
 			"mdi:code-tags",
-			`<b>Fix clientes:</b> se declararon explícitamente en los  
-			clientes de <b>Curso</b> y <b>Plan de Estudio</b> los  
-			cuatro endpoints: <b>verificar</b>, <b>duplicar</b>,  
-			<b>recodificar</b> y <b>consolidar</b>, anteponiendo el  
-			segmento del recurso (<code>/api/curso/...</code> y  
-			<code>/api/plan/estudio/...</code>).`,
+			`<b>Ajuste en clientes:</b> se declararon explícitamente en los  
+			clientes de <b>Curso</b> y <b>Plan de Estudio</b> las cuatro  
+			acciones (<b>verificar</b>, <b>duplicar</b>, <b>recodificar</b>  
+			y <b>consolidar</b>), apuntando a la ruta del recurso que les  
+			corresponde para que las peticiones lleguen al servidor.`,
 		),
 		await note(
 			"mdi:server-network",
-			`<b>Fix servidor (auditoría):</b> en <code>TCapacitacionServer</code>  
-			se sobrescribieron <code>camposAuditoriaUpdate()</code> y  
-			<code>camposAuditoriaInsert()</code> para enviar  
-			<code>IUSUARIOULT</code> e <code>IUSUARIOCRE</code> como  
-			cadena (vía <code>val2Str(this.icontacto)</code>) y para  
-			corregir el cruce entre <code>IEQUIPOCRE</code> y  
-			<code>FHCRE</code>.`,
+			`<b>Ajuste en servidor (auditoría):</b> en el servicio de  
+			capacitación se sobrescribió el manejo de los campos de  
+			auditoría para que el identificador de usuario viaje como  
+			cadena de texto (acorde al esquema) y para corregir el  
+			cruce entre los campos de equipo y fecha de creación.`,
 		),
 		await note(
 			"mdi:database-cog-outline",
-			`<b>Fix base de datos (Consolidar):</b> se ejecutó la  
-			migración <code>migrate-descripcion-text-to-varchar-max.sql</code>  
-			que convierte las tres columnas afectadas de  
-			<code>TEXT</code> a <code>VARCHAR(MAX)</code> de forma  
-			idempotente. Además se actualizó  
-			<code>init_capacitacion.sql</code> para que las nuevas  
-			instalaciones ya nazcan con <code>VARCHAR(MAX)</code>.`,
+			`<b>Ajuste en base de datos (Consolidar):</b> se ejecutó una  
+			migración idempotente que actualiza el tipo de las columnas  
+			de descripción afectadas a un tipo compatible con las  
+			comparaciones del proceso de <b>Consolidar</b>. Además se  
+			actualizó el script de inicialización del módulo de  
+			capacitación para que las nuevas instalaciones nazcan con  
+			el tipo correcto.`,
 		),
 		await note(
 			"mdi:package-variant-closed",
 			`Se publicaron las correcciones en los paquetes de cliente  
-			y servidor y se validó end-to-end contra el ambiente  
+			y servidor y se validó <i>end-to-end</i> contra el ambiente  
 			local que las cuatro acciones responden correctamente en  
 			ambas entidades.`,
 		),
@@ -130,15 +124,15 @@ export async function buildBodyTK1426681(): Promise<string> {
 		{ entidad: "Curso", accion: "Verificar", resultado: "Petición correcta, respuesta satisfactoria sin observaciones.", img: "qa-curso-verificar-ok.png" },
 		{ entidad: "Curso", accion: "Duplicar", resultado: "El diálogo opera y el servidor responde con el nuevo registro.", img: "qa-curso-duplicar-ok.png" },
 		{ entidad: "Curso", accion: "Recodificar", resultado: "El formulario captura el nuevo código y la petición se ejecuta correctamente.", img: "qa-curso-recodificar-ok.png" },
-		{ entidad: "Curso", accion: "Consolidar", resultado: "Tras la migración <code>TEXT→VARCHAR(MAX)</code> retorna <code>202</code> y consolida.", img: "qa-curso-consolidar-ok.png" },
-		{ entidad: "Curso", accion: "Crear", resultado: "El <code>POST</code> persiste el nuevo registro.", img: "qa-curso-crear-ok.png" },
-		{ entidad: "Curso", accion: "Eliminar", resultado: "El <code>DELETE</code> retorna <code>200</code> eliminando el registro.", img: "qa-curso-eliminar-ok.png" },
+		{ entidad: "Curso", accion: "Consolidar", resultado: "Tras el ajuste de tipos en base de datos, la acción finaliza correctamente y consolida.", img: "qa-curso-consolidar-ok.png" },
+		{ entidad: "Curso", accion: "Crear", resultado: "La acción persiste el nuevo registro sin observaciones.", img: "qa-curso-crear-ok.png" },
+		{ entidad: "Curso", accion: "Eliminar", resultado: "La acción elimina el registro sin observaciones.", img: "qa-curso-eliminar-ok.png" },
 		{ entidad: "Plan de Estudio", accion: "Verificar", resultado: "Petición correcta, respuesta satisfactoria sin observaciones.", img: "qa-plan-verificar-ok.png" },
 		{ entidad: "Plan de Estudio", accion: "Duplicar", resultado: "El diálogo opera y el servidor responde con el nuevo plan duplicado.", img: "qa-plan-duplicar-ok.png" },
 		{ entidad: "Plan de Estudio", accion: "Recodificar", resultado: "Formulario activo y solicitud ejecutada satisfactoriamente.", img: "qa-plan-recodificar-ok.png" },
-		{ entidad: "Plan de Estudio", accion: "Consolidar", resultado: "Tras la migración retorna <code>202</code> y consolida el plan.", img: "qa-plan-consolidar-ok.png" },
-		{ entidad: "Plan de Estudio", accion: "Crear", resultado: "El <code>POST</code> persiste el nuevo plan.", img: "qa-plan-crear-ok.png" },
-		{ entidad: "Plan de Estudio", accion: "Eliminar", resultado: "El <code>DELETE</code> retorna <code>200</code> eliminando el plan.", img: "qa-plan-eliminar-ok.png" },
+		{ entidad: "Plan de Estudio", accion: "Consolidar", resultado: "Tras el ajuste de tipos en base de datos, la acción finaliza correctamente y consolida el plan.", img: "qa-plan-consolidar-ok.png" },
+		{ entidad: "Plan de Estudio", accion: "Crear", resultado: "La acción persiste el nuevo plan sin observaciones.", img: "qa-plan-crear-ok.png" },
+		{ entidad: "Plan de Estudio", accion: "Eliminar", resultado: "La acción elimina el plan sin observaciones.", img: "qa-plan-eliminar-ok.png" },
 	]);
 
 	const estado = noteList(
@@ -149,8 +143,7 @@ export async function buildBodyTK1426681(): Promise<string> {
 			(<b>Crear</b>, <b>Eliminar</b>, <b>Verificar</b>,  
 			<b>Duplicar</b>, <b>Recodificar</b> y  
 			<b>Consolidar</b>) fueron validadas <i>end-to-end</i>  
-			contra el servidor con respuesta satisfactoria  
-			(<code>200/202</code>).`,
+			contra el servidor con respuesta satisfactoria.`,
 		),
 	);
 

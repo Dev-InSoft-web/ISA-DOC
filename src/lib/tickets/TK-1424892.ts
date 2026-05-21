@@ -104,10 +104,10 @@ export async function buildBodyTK1424892(): Promise<string> {
 		),
 		await note(
 			"mdi:tools",
-			`Se introdujo el método <code>toBtnRef</code> del controlador  
-			base, que oculta las acciones de mantenimiento antes de exponer  
-			el controlador a un BtnRef. Esto deja a todos los BtnRef de  
-			catálogos en modo consulta de forma consistente.`,
+			`Se introdujo un mecanismo en el controlador base que oculta  
+			las acciones de mantenimiento antes de exponer el controlador  
+			a un BtnRef. Esto deja a todos los BtnRef de cat\u00e1logos en  
+			modo consulta de forma consistente.`,
 		),
 	);
 
