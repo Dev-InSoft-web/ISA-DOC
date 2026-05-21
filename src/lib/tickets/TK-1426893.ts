@@ -2,6 +2,16 @@
 // al crear desde la pestaña "Requisitos".
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
+const IMG_BASE = "/imgs/tickets/TK-1426893";
+const imgStyle =
+	`max-width:100%;max-height:380px;display:block;margin:0.5rem 0;border:1px solid #80808030;border-radius:4px;`;
+
+const evidenciaContexto =
+	`<img src="${IMG_BASE}/01-cursos-integrados-vacio.png" alt="Pestaña Cursos integrados sin filas para el plan PLAN002" style="${imgStyle}">`;
+
+const evidenciaSolucion =
+	`<img src="${IMG_BASE}/02-alert-deshabilitado.png" alt="Alert informativo y botón Crear deshabilitado en la pestaña Requisitos para cursos" style="${imgStyle}">`;
+
 const intro =
 	`<div>Se reporta que en el catálogo de <b>Planes de estudio</b>,  
 	en la pestaña de <b>Requisitos</b> entre cursos, al pulsar  
@@ -65,7 +75,7 @@ export async function buildBodyTK1426893(): Promise<string> {
 		),
 	);
 
-	return intro + h3Aclaracion + aclaracion + h3Solucion + solucion + h3Estado + estado;
+	return intro + h3Aclaracion + aclaracion + evidenciaContexto + h3Solucion + solucion + evidenciaSolucion + h3Estado + estado;
 }
 
 export const bodyTK1426893: Promise<string> = buildBodyTK1426893();
