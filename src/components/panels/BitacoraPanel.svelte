@@ -29,6 +29,8 @@
 	import md_2026_05_21_icon_color from "../../lib/bitacora/daily/2026-05/21/04-icon-img-color.md?raw";
 	import md_2026_05_21_accordion_checks from "../../lib/bitacora/daily/2026-05/21/05-accordion-checks.md?raw";
 	import md_2026_05_21_commits_tiempos from "../../lib/bitacora/daily/2026-05/21/06-commits-tiempos-obligatorios.md?raw";
+	import md_2026_05_21_tickets_cursos from "../../lib/bitacora/daily/2026-05/21/07-tickets-cerrados-cursos.md?raw";
+	import md_2026_05_21_fix_mapa_iconos from "../../lib/bitacora/daily/2026-05/21/08-fix-bitacora-mapa-iconos.md?raw";
 	import md_2026_05_06_isa from "../../lib/bitacora/daily/2026-05/06/resumen-isa.md?raw";
 	import md_2026_05_06_isw_isp from "../../lib/bitacora/daily/2026-05/06/resumen-isw-isp.md?raw";
 	import md_2026_05_06_iss from "../../lib/bitacora/daily/2026-05/06/resumen-iss.md?raw";
@@ -137,7 +139,7 @@
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
 			<!-- 2026-05-21 -->
 			<Accordion
-				title="2026-05-21 — Cierre TK-1426681 (Cursos/Planes) + estandarización de helpers de tickets y Accordion"
+				title="2026-05-21 — Cierre TK-1426681/1426900/1428161 + estandarización de helpers de tickets y Accordion"
 				titleIcon="mdi:calendar"
 				open={true}
 			>
@@ -163,6 +165,14 @@
 
 				<Accordion title="Estándar: commits + resumen de tiempos al culminar un TK" titleIcon="mdi:source-commit" inner>
 					<BitacoraNote flat mdSource={md_2026_05_21_commits_tiempos} />
+				</Accordion>
+
+				<Accordion title="Cierre TK-1426900 y TK-1428161 (Cursos integrados + persistencia de columnas)" titleIcon="mdi:ticket-confirmation-outline" inner>
+					<BitacoraNote flat mdSource={md_2026_05_21_tickets_cursos} />
+				</Accordion>
+
+				<Accordion title="Fix: merge remoto borró entradas de imgbb-map.json + iconos faltantes" titleIcon="mdi:alert-circle-outline" inner>
+					<BitacoraNote flat mdSource={md_2026_05_21_fix_mapa_iconos} />
 				</Accordion>
 			</Accordion>
 
