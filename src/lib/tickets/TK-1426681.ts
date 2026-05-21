@@ -1,6 +1,7 @@
 // TK-1426681 — Error funcional de acciones Duplicar, Recodificar,
 // Verificación y Consolidar en los catálogos de Cursos y Planes de Estudio.
 import { h3Iconized, note, noteList } from "./tk-helpers";
+import { img } from "./snippets";
 
 const intro =
 	`<div>Se reporta error en el funcionamiento de las acciones  
@@ -114,118 +115,69 @@ export async function buildBodyTK1426681(): Promise<string> {
 		await note(
 			"mdi:check-decagram-outline",
 			`<b>Curso → Verificar</b>: petición correcta, respuesta  
-			satisfactoria sin observaciones.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/curso-verificar.png"  
-			alt="Verificación de curso exitosa"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			satisfactoria sin observaciones.` + img("qa-curso-verificar-ok.png"),
 		),
 		await note(
 			"mdi:content-duplicate",
-			`<b>Curso → Duplicar</b>: el diálogo se abre y la petición  
-			llega al endpoint correcto del servidor.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/curso-duplicar-500.png"  
-			alt="Diálogo Duplicar curso"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			`<b>Curso → Duplicar</b>: el diálogo opera y el servidor  
+			responde satisfactoriamente con el nuevo registro.` + img("qa-curso-duplicar-ok.png"),
 		),
 		await note(
 			"mdi:rename-box-outline",
 			`<b>Curso → Recodificar</b>: el formulario captura el  
-			nuevo código y dispara la petición a la ruta esperada.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/curso-recodificar.png"  
-			alt="Diálogo Recodificar curso"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			nuevo código y la petición se ejecuta correctamente.` + img("qa-curso-recodificar-ok.png"),
 		),
 		await note(
 			"mdi:merge",
 			`<b>Curso → Consolidar</b>: tras la migración de columnas  
 			<code>TEXT</code> a <code>VARCHAR(MAX)</code> la  
 			operación retorna <code>202</code> y consolida los  
-			registros correctamente.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/qa-curso-consolidar-ok.png"  
-			alt="Consolidación de curso exitosa"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
-		),
-		await note(
-			"mdi:check-decagram-outline",
-			`<b>Plan de Estudio → Verificar</b>: petición correcta,  
-			respuesta satisfactoria sin observaciones.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/plan-verificar.png"  
-			alt="Verificación de plan de estudio exitosa"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
-		),
-		await note(
-			"mdi:content-duplicate",
-			`<b>Plan de Estudio → Duplicar</b>: el diálogo opera y la  
-			petición se dirige a la ruta correcta.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/plan-duplicar.png"  
-			alt="Diálogo Duplicar plan de estudio"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
-		),
-		await note(
-			"mdi:rename-box-outline",
-			`<b>Plan de Estudio → Recodificar</b>: formulario activo  
-			y solicitud bien formada.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/plan-recodificar.png"  
-			alt="Diálogo Recodificar plan de estudio"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
-		),
-		await note(
-			"mdi:merge",
-			`<b>Plan de Estudio → Consolidar</b>: tras la migración la  
-			operación retorna <code>202</code> y consolida el plan  
-			correctamente.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/qa-plan-consolidar-ok.png"  
-			alt="Consolidación de plan de estudio exitosa"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			registros correctamente.` + img("qa-curso-consolidar-ok.png"),
 		),
 		await note(
 			"mdi:plus-box-outline",
 			`<b>Curso → Crear</b>: se diligencia el formulario,  
-			se envía el <code>POST</code> y el servidor responde  
-			satisfactoriamente con el nuevo registro persistido.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/qa-curso-crear-ok.png"  
-			alt="Creación de curso exitosa"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			se envía el <code>POST</code> y el servidor persiste  
+			el nuevo registro.` + img("qa-curso-crear-ok.png"),
 		),
 		await note(
 			"mdi:trash-can-outline",
 			`<b>Curso → Eliminar</b>: se confirma el código y la  
 			petición <code>DELETE</code> retorna <code>200</code>  
-			eliminando el registro de la grilla.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/qa-curso-eliminar-ok.png"  
-			alt="Eliminación de curso exitosa"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			eliminando el registro de la grilla.` + img("qa-curso-eliminar-ok.png"),
+		),
+		await note(
+			"mdi:check-decagram-outline",
+			`<b>Plan de Estudio → Verificar</b>: petición correcta,  
+			respuesta satisfactoria sin observaciones.` + img("qa-plan-verificar-ok.png"),
+		),
+		await note(
+			"mdi:content-duplicate",
+			`<b>Plan de Estudio → Duplicar</b>: el diálogo opera y  
+			el servidor responde con el nuevo plan duplicado.` + img("qa-plan-duplicar-ok.png"),
+		),
+		await note(
+			"mdi:rename-box-outline",
+			`<b>Plan de Estudio → Recodificar</b>: formulario activo  
+			y solicitud ejecutada satisfactoriamente.` + img("qa-plan-recodificar-ok.png"),
+		),
+		await note(
+			"mdi:merge",
+			`<b>Plan de Estudio → Consolidar</b>: tras la migración la  
+			operación retorna <code>202</code> y consolida el plan  
+			correctamente.` + img("qa-plan-consolidar-ok.png"),
 		),
 		await note(
 			"mdi:plus-box-outline",
 			`<b>Plan de Estudio → Crear</b>: se diligencia el  
 			formulario, se envía el <code>POST</code> y el servidor  
-			responde satisfactoriamente con el nuevo plan  
-			persistido.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/qa-plan-crear-ok.png"  
-			alt="Creación de plan de estudio exitosa"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			persiste el nuevo plan.` + img("qa-plan-crear-ok.png"),
 		),
 		await note(
 			"mdi:trash-can-outline",
 			`<b>Plan de Estudio → Eliminar</b>: se confirma el código  
 			y la petición <code>DELETE</code> retorna  
-			<code>200</code> eliminando el plan de la grilla.  
-			<br/><br/>  
-			<img src="/imgs/tickets/TK-1426681/qa-plan-eliminar-ok.png"  
-			alt="Eliminación de plan de estudio exitosa"  
-			style="max-width:100%;border:1px solid #80808055;border-radius:4px;margin-top:0.5rem;" />`,
+			<code>200</code> eliminando el plan de la grilla.` + img("qa-plan-eliminar-ok.png"),
 		),
 	);
 
