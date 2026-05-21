@@ -103,6 +103,7 @@ export const TICKETS: TicketRegistro[] = [
 			{ hash: "24d8f7a", descripcion: "feat(TK-1426893): mejora la lógica de creación de prerrequisitos y se agrega un nuevo botón para selección automática", repo: "ISW-ClientesIS", ins: 33, del: 22, fecha: "2026-05-21T16:22:57-05:00" },
 			{ hash: "4766a2e", descripcion: "feat(TK-1426893): integra GridResponsiveForm en MainFormLayout y actualiza la estructura del formulario", repo: "ISW-ClientesIS", ins: 3, del: 2, fecha: "2026-05-21T16:23:06-05:00" },
 			{ hash: "3e74432", descripcion: "feat(TK-1426893): agrega soporte para filtrado y paginación en la lista de cursos y mejora la definición de columnas", repo: "ISW-ClientesIS", ins: 29, del: 2, fecha: "2026-05-21T16:23:20-05:00" },
+			{ hash: "aa42b5c", descripcion: "fix(TK-1426893): el grid responsive del formulario calcula breakpoints por viewport y expone lerpw", repo: "ISW-ClientesIS", ins: 23, del: 3, fecha: "2026-05-21T16:30:35-05:00" },
 		],
 		body: bodyTK1426893,
 		normativa: { ...NORMATIVA_DEFAULT, tipoSolicitud: "1 - PQR Error del sistema" },
