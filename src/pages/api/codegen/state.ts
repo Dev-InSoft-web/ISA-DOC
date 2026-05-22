@@ -10,7 +10,6 @@ interface StateDoc {
 	topOrder?: unknown;
 	prefixOrders?: unknown;
 	childPrefixes?: unknown;
-	targetFilePaths?: unknown;
 	nodeInfo?: unknown;
 }
 

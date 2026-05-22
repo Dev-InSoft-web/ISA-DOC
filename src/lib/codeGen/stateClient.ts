@@ -12,7 +12,6 @@ interface StateDoc {
 	topOrder?: unknown;
 	prefixOrders?: unknown;
 	childPrefixes?: unknown;
-	targetFilePaths?: unknown;
 	nodeInfo?: unknown;
 }
 
@@ -76,7 +75,6 @@ export function purgeBrowserStorage(): void {
 		"isa-doc:codegen:topOrder",
 		"isa-doc:codegen:prefixOrder",
 		"isa-doc:codegen:childPrefixes",
-		"isa-doc:codegen:targetFilePaths",
 		"isa-sql:fragments-cache:v1",
 	];
 	for (const k of known) {
