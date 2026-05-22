@@ -1,9 +1,9 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "CAPAC_TEMAS",
+  "tableref": "SOP_TEMAS_V2",
   "tablemeta": {
-    "originalname": "CAPAC_TEMAS",
+    "originalname": "SOP_TEMAS_V2",
     "hasifnotexists": true
   },
   "nodes": [

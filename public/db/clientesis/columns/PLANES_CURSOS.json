@@ -4,7 +4,8 @@
   "tableref": "PLANES_CURSOS",
   "tablemeta": {
     "originalname": "PLANES_CURSOS",
-    "hasifnotexists": true
+    "hasifnotexists": true,
+    "extendsmodel": "Recurso"
   },
   "nodes": [
     {

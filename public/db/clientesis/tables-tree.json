@@ -126,11 +126,6 @@
       "flatpath": "25",
       "ireference": "TABLE",
       "kind": "table"
-    },
-    {
-      "flatpath": "26",
-      "ireference": "TABLE",
-      "kind": "table"
     }
   ],
   "entities": {
@@ -289,9 +284,9 @@
       {
         "itable": "13",
         "flatpath": "13",
-        "tableref": "CAPAC_TEMAS",
-        "rowname": "CAPAC_TEMAS",
-        "tableid": "tbl_capac_temas",
+        "tableref": "SOP_TEMAS_V2",
+        "rowname": "SOP_TEMAS_V2",
+        "tableid": "tbl_sop_temas_v2",
         "snippets": {
           "sql": false
         }
@@ -376,13 +371,6 @@
       {
         "itable": "25",
         "flatpath": "25",
-        "tableref": "PERMISOSCONTACTO",
-        "rowname": "PERMISOSCONTACTO",
-        "tableid": "tbl_permisoscontacto"
-      },
-      {
-        "itable": "26",
-        "flatpath": "26",
         "tableref": "RECURSOS",
         "rowname": "RECURSOS",
         "tableid": "tbl_recursos"
