@@ -1,4 +1,4 @@
-import { TreeNode } from "../../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
+﻿import { TreeNode } from "../../_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data";
 import type { TableColumn, TableSection, TableOptional } from "../../../lib/tableSchema";
 
 export type SqlNodeKind = "section" | "column" | "optional";

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Sincronización entre usuarios del TreeAdapter — específica del editor SQL.
  *
  * NOTA: Este archivo y todo `_sync/` son ESPECÍFICOS del editor SQL. No
@@ -12,7 +12,7 @@
  * el `senderId` para que se descarte localmente).
  */
 
-import type { NodeRow, ObjRow } from "../../../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
+import type { NodeRow, ObjRow } from "../../../_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data";
 
 /** Patch sobre una fila de `nodes`. Identificada por `oldFlatpath` (o `flatpath` si no cambió). */
 export interface NodePatch {

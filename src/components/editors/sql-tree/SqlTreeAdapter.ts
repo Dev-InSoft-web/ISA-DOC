@@ -1,6 +1,6 @@
-import type { TreeViewProps } from "../../_comps/TreeView/TreeRowView.svelte";
-import { TreeRowViewAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
-import { TreeAdapterCatalogoStub } from "../../_comps/TreeView/_treeAdapter/CatalogoStub";
+﻿import type { TreeViewProps } from "../../_comps/TreeViewLegacy/TreeRowView.svelte";
+import { TreeRowViewAdapterLegacy } from "../../_comps/TreeViewLegacy/TreeRowView.svelte";
+import { TreeAdapterCatalogoStub } from "../../_comps/TreeViewLegacy/_treeAdapter/CatalogoStub";
 import type { ParsedTable } from "../../../lib/tableSchema";
 import { TSqlNodeUX } from "./TSqlNodeUX";
 import type { SqlNodeKind } from "./TSqlNodeUX";
@@ -31,7 +31,7 @@ export class SqlTreeAdapter extends RealtimeTreeAdapter<TSqlTableUX, TSqlNodeUX>
 			showToolbar: true,
 			bdrag: true,
 			CatalogoController: stub as unknown as TreeViewProps<TSqlTableUX, TSqlNodeUX>["CatalogoController"],
-			TreeController: undefined as unknown as TreeRowViewAdapter<TSqlTableUX, TSqlNodeUX>,
+			TreeController: undefined as unknown as TreeRowViewAdapterLegacy<TSqlTableUX, TSqlNodeUX>,
 		} as TreeViewProps<TSqlTableUX, TSqlNodeUX>);
 		this.context.TreeController = this;
 		const self = this;

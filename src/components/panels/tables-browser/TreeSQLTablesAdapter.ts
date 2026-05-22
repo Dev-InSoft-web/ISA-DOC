@@ -1,4 +1,4 @@
-import {
+﻿import {
 	createEmptyDomain as createEmptyDomainFn,
 	deriveDomainName,
 	loadChildPrefixes,
@@ -22,9 +22,9 @@ import {
 import { toastError } from "@ingenieria_insoft/ispsveltecomponents";
 import type { ParsedTable } from "../../../lib/tableSchema";
 import { effectiveTableName } from "../../../lib/tableSchema";
-import { TreeAdapterCatalogoStub } from "../../_comps/TreeView/_treeAdapter/CatalogoStub";
-import type { TreeViewProps } from "../../_comps/TreeView/TreeRowView.svelte";
-import { TreeRowViewAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
+import { TreeAdapterCatalogoStub } from "../../_comps/TreeViewLegacy/_treeAdapter/CatalogoStub";
+import type { TreeViewProps } from "../../_comps/TreeViewLegacy/TreeRowView.svelte";
+import { TreeRowViewAdapterLegacy } from "../../_comps/TreeViewLegacy/TreeRowView.svelte";
 import { TTableNodeUX } from "./TTableNodeUX";
 
 export type TablesBrowserChangeFn = (next: TablesBrowserState) => void;
@@ -58,7 +58,7 @@ function tableKey(t: ParsedTable): string {
 	return t.id;
 }
 
-export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack, TTableNodeUX> {
+export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowserStack, TTableNodeUX> {
 	public onChange: TablesBrowserChangeFn = () => undefined;
 	public onTableSelect: (key: string, ctx?: { isPointer: boolean; domainId?: string }) => void = () => undefined;
 	public onDomainNodeSelect: (info: { kind: "domain" | "pivot"; domainId: string } | null) => void = () => undefined;
@@ -94,7 +94,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapter<TablesBrowserStack,
 			showToolbar: false,
 			bdrag: true,
 			CatalogoController: stub as unknown as TreeViewProps<TablesBrowserStack, TTableNodeUX>["CatalogoController"],
-			TreeController: undefined as unknown as TreeRowViewAdapter<TablesBrowserStack, TTableNodeUX>,
+			TreeController: undefined as unknown as TreeRowViewAdapterLegacy<TablesBrowserStack, TTableNodeUX>,
 		} as TreeViewProps<TablesBrowserStack, TTableNodeUX>);
 		this.context.TreeController = this;
 		const self = this;

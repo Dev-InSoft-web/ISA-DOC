@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Mutaciones diff-only del NodeStore (específico del editor SQL).
  *
  * - `applyPatches(store, msg)` aplica los patches en este orden: deletes
@@ -8,7 +8,7 @@
  *   estructurales (unicidad de flatpath, join node↔obj, padre por prefijo).
  */
 
-import type { NodeRow, NodeStore, ObjRow } from "../../../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
+import type { NodeRow, NodeStore, ObjRow } from "../../../_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data";
 import type { NodePatch, ObjPatch, SyncMessage } from "./sync-channel";
 
 function findNodeRow(store: NodeStore, flatpath: string): NodeRow | undefined {

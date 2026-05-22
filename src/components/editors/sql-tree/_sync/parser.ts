@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Parser del NodeStore plano → árbol de nodos materializados.
  * Específico del editor SQL realtime.
  */
@@ -9,7 +9,7 @@ import {
 	getChildRows,
 	type NodeRow,
 	type NodeStore,
-} from "../../../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
+} from "../../../_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data";
 import type { KindRegistry } from "./kind-registry";
 
 /**

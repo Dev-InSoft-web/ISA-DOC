@@ -1,10 +1,10 @@
-import { BaseTreeNode } from "./BaseTreeNode.ts";
+﻿import { BaseTreeNode } from "./BaseTreeNode.ts";
 import type { NodeKind, NodeValidation, PersistedWardenRefJSON } from "./types.ts";
 import {
 	buildRoleVector,
 	type NodeRole,
 	type NodeRoleVector,
-} from "../../components/_comps/TreeView/_treeAdapter/_defgen/00-tree-data.ts";
+} from "../../components/_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data.ts";
 
 export type { NodeRole, NodeRoleVector };
 

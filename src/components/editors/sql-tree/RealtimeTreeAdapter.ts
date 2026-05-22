@@ -1,7 +1,7 @@
-/**
+﻿/**
  * Cascada realtime para el editor SQL.
  *
- * Extiende `TreeRowViewAdapter` (la cascada genérica de TreeView, que NO
+ * Extiende `TreeRowViewAdapterLegacy` (la cascada genérica de TreeView, que NO
  * conoce sockets) y añade EXCLUSIVAMENTE el comportamiento de tiempo
  * real:
  *  - Registro `kind → class` (`KindRegistry`).
@@ -14,15 +14,15 @@
  *  - Stores reactivos `syncStatus` y `storeEpoch` para overlays/UX.
  *
  * `SqlTreeAdapter` hereda de esta cascada — sistemas sin sockets pueden
- * seguir usando `TreeRowViewAdapter` directamente.
+ * seguir usando `TreeRowViewAdapterLegacy` directamente.
  */
 
 import { writable, type Writable } from "svelte/store";
-import { TreeRowViewAdapter } from "../../_comps/TreeView/TreeRowView.svelte";
+import { TreeRowViewAdapterLegacy } from "../../_comps/TreeViewLegacy/TreeRowView.svelte";
 import {
 	type ITreeData,
 	type NodeStore,
-} from "../../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
+} from "../../_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data";
 import { KindRegistry } from "./_sync/kind-registry";
 import { parseStore } from "./_sync/parser";
 import { applyPatches, hasStoreIncoherence } from "./_sync/mutations";
@@ -33,7 +33,7 @@ import {
 	type TreeSync,
 } from "./_sync/sync-channel";
 
-export abstract class RealtimeTreeAdapter<Stacker, TWorking extends ITreeData<TWorking>> extends TreeRowViewAdapter<Stacker, TWorking> {
+export abstract class RealtimeTreeAdapter<Stacker, TWorking extends ITreeData<TWorking>> extends TreeRowViewAdapterLegacy<Stacker, TWorking> {
 	/** Registro `kind → ClassNode` específico de esta instancia. */
 	readonly kindRegistry: KindRegistry<TWorking> = new KindRegistry<TWorking>();
 

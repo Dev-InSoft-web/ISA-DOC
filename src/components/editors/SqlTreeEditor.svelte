@@ -2,7 +2,7 @@
    import { onDestroy } from "svelte";
    import { FlexLayout, Text, Iconify, Switch, SelectEnum } from "@ingenieria_insoft/ispsveltecomponents";
    import Chip from "../_comps/Chip.svelte";
-   import TreeView from "../_comps/TreeView/TreeRowView.svelte";
+   import TreeView from "../_comps/TreeViewLegacy/TreeRowView.svelte";
    import type { ParsedTable } from "../../lib/tableSchema";
    import { COMMON_COLUMN_TYPES } from "../../lib/tableSchema";
    import { SqlTreeAdapter } from "./sql-tree/SqlTreeAdapter";

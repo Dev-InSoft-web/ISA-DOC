@@ -1,11 +1,11 @@
-import type {
+﻿import type {
 	NodeKind,
 	NodeValidation,
 	PersistedNodeDocJSON,
 	PersistedNodeJSON,
 	PersistedWardenRefJSON,
 } from "./types.ts";
-import type { NodeRoleVector } from "../../components/_comps/TreeView/_treeAdapter/_defgen/00-tree-data.ts";
+import type { NodeRoleVector } from "../../components/_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data.ts";
 
 /**
  * Clase abstracta común a todos los nodos del árbol persistido.

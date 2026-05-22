@@ -1,6 +1,6 @@
-import { TreeNode } from "../../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
-import type { WardenAction, WardenDraft } from "../../_comps/TreeView/_treeAdapter/06-roles";
-import type { INode } from "../../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
+﻿import { TreeNode } from "../../_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data";
+import type { WardenAction, WardenDraft } from "../../_comps/TreeViewLegacy/_treeAdapter/06-roles";
+import type { INode } from "../../_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data";
 
 export type TableTreeKind = "domain" | "pivot" | "prefix" | "table";
 

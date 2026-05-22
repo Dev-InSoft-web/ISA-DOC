@@ -22,7 +22,7 @@
 	import CodeModal from "../viewers/CodeModal.svelte";
 	import DocInfoModal from "../viewers/DocInfoModal.svelte";
 	import InfoEditModal from "../viewers/InfoEditModal.svelte";
-	import TreeView from "../_comps/TreeView/TreeRowView.svelte";
+	import TreeView from "../_comps/TreeViewLegacy/TreeRowView.svelte";
 	import { TreeSQLTablesAdapter, type TablesBrowserState } from "./tables-browser/TreeSQLTablesAdapter";
 	import ResourceConfigSections from "./tables-browser/ResourceConfigSections.svelte";
 

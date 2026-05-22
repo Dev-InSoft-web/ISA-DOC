@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Wrappers reactivos para `NodeRow` y `ObjRow` — específicos del editor SQL.
  *
  * Cada fila se envuelve en un Proxy que intercepta `set`. Cada asignación:
@@ -10,8 +10,8 @@
  * emisión SINGULAR.
  */
 
-import type { NodeRow, NodeStore, ObjRow } from "../../../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
-import { findObjRowFor } from "../../../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
+import type { NodeRow, NodeStore, ObjRow } from "../../../_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data";
+import { findObjRowFor } from "../../../_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data";
 import type { NodePatch, ObjPatch } from "./sync-channel";
 
 export interface ReactiveSyncHost {
