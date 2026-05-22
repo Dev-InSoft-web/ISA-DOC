@@ -60,8 +60,33 @@
 	let derScale: number = 1;
 	let derTx: number = 0;
 	let derTy: number = 0;
-	$: derTransform = `translate(${derTx}px, ${derTy}px) scale(${derScale})`;
+	$: derTransform = `translate(${derTx}px, ${derTy}px)`;
+	$: void applyDerSvgScale(derScale, derSvg);
 	let derViewport: HTMLDivElement | undefined;
+
+	function derSvgNaturalSize(svg: SVGSVGElement): { w: number; h: number } {
+		const vb = svg.viewBox?.baseVal;
+		if (vb && vb.width && vb.height) return { w: vb.width, h: vb.height };
+		const rect = svg.getBoundingClientRect();
+		return { w: rect.width, h: rect.height };
+	}
+
+	function applyDerSvgScale(scale: number, _svgHtml: string): void {
+		if (typeof document === "undefined" || !derViewport) return;
+		requestAnimationFrame(() => {
+			const svg = derViewport?.querySelector("svg") as SVGSVGElement | null;
+			if (!svg) return;
+			if (!svg.dataset.derNatural) {
+				const nat = derSvgNaturalSize(svg);
+				svg.dataset.derNatural = `${nat.w}x${nat.h}`;
+			}
+			const [w, h] = (svg.dataset.derNatural || "0x0").split("x").map(Number);
+			if (!w || !h) return;
+			svg.style.width = `${w * scale}px`;
+			svg.style.height = `${h * scale}px`;
+			svg.style.maxWidth = "none";
+		});
+	}
 
 	function zoomBy(factor: number, cx?: number, cy?: number): void {
 		const rect = derViewport?.getBoundingClientRect();
@@ -80,18 +105,44 @@
 		derTy = 0;
 	}
 
+	function fitDerView(): void {
+		if (!derViewport) return;
+		const svg = derViewport.querySelector("svg") as SVGSVGElement | null;
+		if (!svg) { resetDerView(); return; }
+		const host = derViewport.getBoundingClientRect();
+		const nat = derSvgNaturalSize(svg);
+		if (!nat.w || !nat.h) return;
+		const pad = 24;
+		const sx = (host.width - pad * 2) / nat.w;
+		const sy = (host.height - pad * 2) / nat.h;
+		const s = Math.max(0.1, Math.min(8, Math.min(sx, sy)));
+		derScale = s;
+		derTx = (host.width - nat.w * s) / 2;
+		derTy = (host.height - nat.h * s) / 2;
+	}
+
 	function attachDerPanZoom(node: HTMLDivElement): { destroy(): void } {
 		derViewport = node;
 		let dragging = false;
 		let lastX = 0;
 		let lastY = 0;
+		const PAN_STEP = 1;
 		const onWheel = (e: WheelEvent): void => {
 			e.preventDefault();
-			const rect = node.getBoundingClientRect();
-			const cx = e.clientX - rect.left;
-			const cy = e.clientY - rect.top;
-			const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
-			zoomBy(factor, cx, cy);
+			if (e.ctrlKey && e.altKey) {
+				const rect = node.getBoundingClientRect();
+				const cx = e.clientX - rect.left;
+				const cy = e.clientY - rect.top;
+				const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+				zoomBy(factor, cx, cy);
+				return;
+			}
+			if (e.ctrlKey) {
+				derTx -= (e.deltaY || e.deltaX) * PAN_STEP;
+				return;
+			}
+			derTy -= e.deltaY * PAN_STEP;
+			if (e.deltaX) derTx -= e.deltaX * PAN_STEP;
 		};
 		const onDown = (e: PointerEvent): void => {
 			if (e.button !== 0) return;
@@ -792,10 +843,19 @@
 			const id = `der-svg-${Date.now()}`;
 			const out = await mm.render(id, derSource);
 			derSvg = typeof out === "string" ? out : (out?.svg ?? "");
+			setTimeout(() => fitDerView(), 0);
 		} catch (err) {
 			derError = err instanceof Error ? err.message : String(err);
 		} finally {
 			derLoading = false;
+		}
+	}
+
+	function onDerKeydown(e: KeyboardEvent): void {
+		if (!derShow) return;
+		if (e.ctrlKey && e.code === "Space") {
+			e.preventDefault();
+			fitDerView();
 		}
 	}
 
@@ -1478,19 +1538,22 @@
 			<Text><strong>Diagrama entidad-relación (DER)</strong></Text>
 		</FlexLayout>
 	</svelte:fragment>
+	<svelte:window on:keydown={onDerKeydown} />
 	<FlexLayout direction="column" style="height: 100%;">
 		<FlexLayout justify="between" items="center">
-			<Text color="neutral"><small>Inferido del árbol de tablas, dominios y pivotes. Cardinalidades aplicadas según el modelo.</small></Text>
-			<FlexLayout items="center">
+			<Text color="neutral"><small>Inferido del árbol de tablas. Scroll = pan vertical · Ctrl+Scroll = pan horizontal · Ctrl+Alt+Scroll = zoom · Ctrl+Espacio = ajustar.</small></Text>
+			<span></span>
+		</FlexLayout>
+		<div class="der-host" use:attachDerPanZoom>
+			<div class="der-toolbar">
 				<span class="der-zoom-pct"><small>{Math.round(derScale * 100)}%</small></span>
 				<ButtonIconify icon="mdi:magnify-minus-outline" title="Alejar" on:click={() => zoomBy(1 / 1.2)} />
 				<ButtonIconify icon="mdi:magnify-plus-outline" title="Acercar" on:click={() => zoomBy(1.2)} />
-				<ButtonIconify icon="mdi:fit-to-page-outline" title="Restablecer vista" on:click={resetDerView} />
+				<ButtonIconify icon="mdi:fit-to-page-outline" title="Ajustar vista (Ctrl+Espacio)" on:click={fitDerView} />
+				<ButtonIconify icon="mdi:image-filter-center-focus" title="Restablecer" on:click={resetDerView} />
 				<ButtonIconify icon="mdi:refresh" title="Regenerar" on:click={openDERModal} />
 				<ButtonIconify icon="mdi:code-tags" title="Ver fuente Mermaid" on:click={() => openCodeModal("DER · fuente Mermaid", derSource, "ts")} />
-			</FlexLayout>
-		</FlexLayout>
-		<div class="der-host" use:attachDerPanZoom>
+			</div>
 			{#if derLoading}
 				<div class="der-msg"><Text color="neutral"><small>Generando diagrama…</small></Text></div>
 			{:else if derError}
@@ -1770,11 +1833,24 @@
 		top: 0;
 		left: 0;
 		transform-origin: 0 0;
-		will-change: transform;
 		pointer-events: none;
 	}
 	.der-msg {
 		padding: 0.5rem;
+	}
+	.der-toolbar {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		z-index: 5;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.25rem 0.5rem;
+		background: color-mix(in srgb, var(--is-bg-secondary, #13203a) 85%, transparent);
+		border: 1px solid var(--is-b-color, #555);
+		border-radius: 0.5rem;
+		backdrop-filter: blur(4px);
 	}
 	.der-zoom-pct {
 		min-width: 3.5rem;
