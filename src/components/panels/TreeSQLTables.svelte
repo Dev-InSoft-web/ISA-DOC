@@ -1027,8 +1027,9 @@
 									class="input-field"
 									rows="3"
 									required
-									value={selectedPivotInfo.description ?? ""}
-									on:change={(e) => saveInfo(selectedPivotInfoKey, { description: (e.currentTarget).value, rules: "" })}
+									placeholder="Describe el propósito y comportamiento de este pivote."
+									value={selectedPivotDomain.description ?? ""}
+									on:change={(e) => adapter.updateDomainMeta(dId, { description: (e.currentTarget).value })}
 								></textarea>
 							</label>
 						</div>
@@ -1060,8 +1061,9 @@
 									class="input-field"
 									rows="4"
 									required
-									value={selectedPivotInfo.description ?? ""}
-									on:change={(e) => saveInfo(selectedPivotInfoKey, { description: (e.currentTarget).value, rules: "" })}
+									placeholder="Describe el propósito y contenido de este dominio."
+									value={selectedPlainDomain.description ?? ""}
+									on:change={(e) => adapter.updateDomainMeta(dId, { description: (e.currentTarget).value })}
 								></textarea>
 							</label>
 						</div>

@@ -474,7 +474,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 	}
 
 	/** Actualiza la cardinalidad y/o el subtipo (`pivot` ↔ `pivot-domain`) de un agrupador. */
-	updateDomainMeta(domainId: string, patch: Partial<Pick<DomainDef, "cardinality" | "type" | "prefix">>): void {
+	updateDomainMeta(domainId: string, patch: Partial<Pick<DomainDef, "cardinality" | "type" | "prefix" | "description">>): void {
 		const cur = this._domains[domainId];
 		if (!cur) return;
 		const next: DomainsMap = { ...this._domains, [domainId]: { ...cur, ...patch } };

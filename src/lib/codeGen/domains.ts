@@ -43,6 +43,8 @@ export interface DomainDef {
 	cardinality?: "1:1" | "1:N" | "N:N";
 	/** Para `domain` que actúa como `domain/prefixer`: prefijo que aplica a sus tablas. */
 	prefix?: string;
+	/** Descripción libre del propósito y contenido del dominio o pivote. */
+	description?: string;
 	/**
 	 * Cardinalidad por tabla esclava respecto a su master, indexada por id estable de tabla.
 	 * Sólo aplica a esclavas (no a la master). Valores: `1:1`, `1:N`, `N:N`.
