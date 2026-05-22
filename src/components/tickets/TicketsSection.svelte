@@ -4,10 +4,13 @@
 	import { TICKETS, type TicketRegistro } from "../../lib/tickets";
 	import TicketViewerModal from "./TicketViewerModal.svelte";
 
+	export let proyecto: "ClientesIS" | "PatyIA" = "ClientesIS";
+
 	let selected: TicketRegistro | null = null;
 	let bshow: boolean = false;
 
-	const ticketKeys: string[] = TICKETS.map((t) => `tickets.${t.id}`);
+	$: tickets = TICKETS.filter((t) => (t.proyecto ?? "ClientesIS") === proyecto);
+	$: ticketKeys = tickets.map((t) => `tickets.${t.id}`);
 
 	function abrir(t: TicketRegistro) {
 		selected = t;
@@ -18,10 +21,10 @@
 <FlexLayout direction="column" style="min-width: 0;">
 	<FlexLayout direction="row" items="center" style="gap: 0.4rem; padding: 0.5rem 0.25rem; min-width: 0; line-height: 1;">
 		<RevisadoCheck keys={ticketKeys} />
-		<H3 style="margin: 0; flex: 1 1 auto; line-height: 1;">Tickets <span style="opacity: 0.7;">({TICKETS.length})</span></H3>
+		<H3 style="margin: 0; flex: 1 1 auto; line-height: 1;">Tickets <span style="opacity: 0.7;">({tickets.length})</span></H3>
 	</FlexLayout>
 	<FlexLayout direction="column">
-		{#each TICKETS as t (t.id)}
+		{#each tickets as t (t.id)}
 			<FlexLayout
 				direction="column"
 				style="gap: 0.35rem; padding: 0.5rem 0; min-width: 0;"

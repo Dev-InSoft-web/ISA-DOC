@@ -1,5 +1,8 @@
 import { buildTicketHtml, tiempoTotalEstimadoMin } from "./template";
+import { bodyTK1382779 } from "./TK-1382779";
+import { bodyTK1410385 } from "./TK-1410385";
 import { bodyTK1418894 } from "./TK-1418894";
+import { bodyTK1418988 } from "./TK-1418988";
 import { bodyTK1420742 } from "./TK-1420742";
 import { bodyTK1420751 } from "./TK-1420751";
 import { bodyTK1420754 } from "./TK-1420754";
@@ -66,6 +69,7 @@ export interface TicketRegistro {
 	normativa: TicketNormativa;
 	festivos?: string[];
 	noMaquillarFechas?: boolean;
+	proyecto?: "ClientesIS" | "PatyIA";
 }
 
 const NORMATIVA_DEFAULT: TicketNormativa = {
@@ -78,6 +82,45 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 };
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1418988",
+		titulo: "Problemas al cargar imagen en Paty IA",
+		solicitante: "Asesora Viviana Restrepo Quintero",
+		fechaSolicitud: "30/abr./2026 08:21:36 am",
+		noMaquillarFechas: true,
+		estimacionMinutos: 0,
+		diligenciaMinutos: 15,
+		resumen: "Se reporta desde un feedback negativo de Paty IA que una imagen referenciada en ad_inventarios_plus.md no carga correctamente. Se debe validar la codificación de la URL del recurso.",
+		body: bodyTK1418988,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
+		proyecto: "PatyIA",
+	},
+	{
+		id: "TK-1410385",
+		titulo: "Ajuste scripts de transcripción nueva estructura carpetas",
+		solicitante: "Asesora Viviana Restrepo Quintero",
+		fechaSolicitud: "10/abr./2026 10:36:00 am",
+		noMaquillarFechas: true,
+		estimacionMinutos: 0,
+		diligenciaMinutos: 15,
+		resumen: "Se requiere ajustar los scripts de transcripción para adaptarlos a la nueva estructura de carpetas del sitio de conocimiento de Paty IA y consolidar los FAQ por módulo.",
+		body: bodyTK1410385,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
+		proyecto: "PatyIA",
+	},
+	{
+		id: "TK-1382779",
+		titulo: "Estructura jerárquica para archivos AD",
+		solicitante: "Asesora Viviana Restrepo Quintero",
+		fechaSolicitud: "10/feb./2026 05:17:37 pm",
+		noMaquillarFechas: true,
+		estimacionMinutos: 0,
+		diligenciaMinutos: 15,
+		resumen: "Se requiere que los archivos ad_ que alimentan a Paty IA cuenten con una estructura jerárquica clara y estandarizada (módulo → ventana → campo), aplicada inicialmente al módulo de Inventarios.",
+		body: bodyTK1382779,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - ING Servicios Otros" },
+		proyecto: "PatyIA",
+	},
 	{
 		id: "TK-1428161",
 		titulo: "Guardar visualización de columnas en catálogo de cursos",
