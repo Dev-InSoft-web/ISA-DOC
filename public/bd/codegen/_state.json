@@ -72,7 +72,8 @@
       "members": [
         "tbl_cursos",
         "tbl_estructuras_cursos",
-        "tbl_historialcurso"
+        "tbl_historialcurso",
+        "tbl_drivers"
       ],
       "parentId": "piv_nn_cpe_cursos",
       "childrenOrder": [
@@ -87,6 +88,10 @@
         {
           "kind": "table",
           "key": "tbl_historialcurso"
+        },
+        {
+          "kind": "table",
+          "key": "tbl_drivers"
         },
         {
           "kind": "pivot",
@@ -130,8 +135,7 @@
       "cardinality": "1:N",
       "masterTable": "tbl_planes_cursos",
       "members": [
-        "tbl_planes_cursos",
-        "tbl_atributos_planes"
+        "tbl_planes_cursos"
       ],
       "parentId": "dom_cursos",
       "childrenOrder": [
@@ -140,8 +144,29 @@
           "key": "tbl_planes_cursos"
         },
         {
+          "kind": "pivot",
+          "key": "piv_atrib_planes"
+        }
+      ]
+    },
+    "piv_atrib_planes": {
+      "id": "piv_atrib_planes",
+      "name": "",
+      "type": "pivot-domain",
+      "cardinality": "1:1",
+      "masterTable": "tbl_atributos_planes",
+      "members": [
+        "tbl_atributos_planes"
+      ],
+      "parentId": "piv_planes_curso",
+      "childrenOrder": [
+        {
           "kind": "table",
           "key": "tbl_atributos_planes"
+        },
+        {
+          "kind": "pointer",
+          "key": "tbl_atributos_x_drivers"
         }
       ]
     },
@@ -150,20 +175,19 @@
       "name": "",
       "type": "pivot-domain",
       "cardinality": "1:1",
-      "masterTable": "tbl_drivers",
+      "masterTable": "tbl_atributos_x_drivers",
       "members": [
-        "tbl_drivers",
         "tbl_atributos_x_drivers"
       ],
       "parentId": "dom_cursos",
       "childrenOrder": [
         {
           "kind": "table",
-          "key": "tbl_drivers"
+          "key": "tbl_atributos_x_drivers"
         },
         {
-          "kind": "table",
-          "key": "tbl_atributos_x_drivers"
+          "kind": "pointer",
+          "key": "tbl_drivers"
         }
       ]
     }
