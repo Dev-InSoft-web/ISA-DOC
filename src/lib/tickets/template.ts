@@ -446,7 +446,13 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	const fechas = ordenados.map((c) => c.fecha ?? "").filter((s) => s !== "");
 	const tMin = fechas.length ? new Date(fechas[fechas.length - 1]).getTime() : 0;
 	const tMax = fechas.length ? new Date(fechas[0]).getTime() : 0;
-	const duracion = fechas.length ? fmtDuracion(tMax - tMin) : "";
+	const elapsedMin = fechas.length ? Math.round((tMax - tMin) / 60000) : 0;
+	const invertidoMin = estimacionMin && estimacionMin > 0 ? estimacionMin : 0;
+	// Si el tiempo invertido supera al transcurrido entre commits en más
+	// de 10 min, ocultamos la duración entre commits para evitar mostrar
+	// una incoherencia (el trabajo arrancó mucho antes del primer commit).
+	const mostrarDuracion = !(invertidoMin > 0 && invertidoMin > elapsedMin + 10);
+	const duracion = fechas.length && mostrarDuracion ? fmtDuracion(tMax - tMin) : "";
 	const tdSummary = "padding:0.3rem 0.5rem;vertical-align:top;border-top:1px solid #ddd;font-weight:600;color:#444;";
 	const insSummary = totalIns > 0
 		? `<span style="background:#e6ffed;color:#22863a;padding:0 0.3rem;border-radius:0.2rem;">+${totalIns}</span>`
