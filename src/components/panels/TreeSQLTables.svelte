@@ -819,7 +819,7 @@
 				primaryTextColor: "#ffffff",
 				secondaryColor: bgSec,
 				tertiaryColor: bgPrim,
-				lineColor: primary,
+				lineColor: "#505080",
 				textColor: "#ffffff",
 				mainBkg: bgSec,
 				nodeBorder: primary,
