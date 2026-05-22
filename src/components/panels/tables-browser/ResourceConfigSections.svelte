@@ -601,35 +601,10 @@
 		flex: 1 1 110px;
 		min-width: 80px;
 	}
-	.sub .row {
-		flex-wrap: nowrap;
-	}
-	.sub .row .input-field {
-		flex: 1 1 0;
-		min-width: 0;
-	}
-	.flex-1 {
-		flex: 1 1 auto;
-	}
 	.rel {
 		padding: 0.4rem 2rem 0.4rem 0.4rem;
 		border: 1px dashed var(--is-b-color, #555);
 		border-radius: 4px;
-	}
-	.sub {
-		padding: 0.35rem 0.45rem;
-		margin: 0.35rem 0;
-		border-left: 2px solid var(--is-b-color, #555);
-		border-radius: 2px;
-	}
-	.vs-eq {
-		font-family: ui-monospace, Menlo, monospace;
-		font-size: 0.85rem;
-		opacity: 0.7;
-		padding: 0 0.15rem;
-	}
-	.input-type {
-		flex: 0 0 6rem;
 	}
 	.code-area {
 		width: 100%;
@@ -698,15 +673,5 @@
 		font-family: ui-monospace, Menlo, monospace;
 		font-size: 0.75rem;
 		cursor: pointer;
-	}
-	.btn-fit {
-		display: inline-flex;
-		width: fit-content;
-		height: fit-content;
-		flex: 0 0 auto;
-	}
-	.btn-fit :global(button) {
-		width: fit-content;
-		height: fit-content;
 	}
 </style>
