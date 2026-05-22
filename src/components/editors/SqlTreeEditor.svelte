@@ -448,33 +448,26 @@
          </span>
 
          <FlexLayout items="center" slot="row" let:node style="flex:1; min-width:0;">
+            <span class="tree-row-index" title="Índice">{node.flatPath}</span>
             {#if node.kind === "section"}
-               <span class="tree-row-index" title="Índice">{node.flatPath}</span>
                <span class="badge badge-section">Sección</span>
                <Text style="font-weight:bold;" lines={1}>{node.rowName || "(sin nombre)"}</Text>
             {:else if node.kind === "optional"}
-               <span class="tree-row-index" title="Índice">{node.flatPath}</span>
                <span class="badge badge-optional">Opcional</span>
                <Text style="font-weight:bold;" lines={1}>{node.rowName || "(sin nombre)"}</Text>
                {#if !node.active}<span class="tag tag-hidden">oculta</span>{/if}
             {:else}
-               <FlexLayout items="stretch" justify="between" style="flex: 1 1 auto; min-width: 0;">
-                  <FlexLayout items="center">
-                     <span class="tree-row-index" title="Índice">{node.flatPath}</span>
-                     <Text lines={1}>{node.rowName || "(columna)"}</Text>
-                  </FlexLayout>
-                  <FlexLayout items="center">
-                     <Text color="neutral" lines={1}><code>{node.colType || "—"}</code></Text>
-                     {#if node.nullable === "NOT NULL"}<span class="tag tag-nn">NN</span>{/if}
-                     {#if isPk(node)}<span class="tag tag-pk">PK</span>{/if}
-                  </FlexLayout>
-               </FlexLayout>
+               <Text lines={1}>{node.rowName || "(columna)"}</Text>
             {/if}
          </FlexLayout>
 
-         <span slot="helperRow" let:node>
-            {node.kind === "column" ? "Columna" : node.kind === "optional" ? "Sección opcional" : "Sección"}
-         </span>
+         <FlexLayout items="center" slot="helperRow" let:node>
+            {#if node.kind === "column"}
+               <Text color="neutral" lines={1}><code>{node.colType || "—"}</code></Text>
+               {#if node.nullable === "NOT NULL"}<span class="tag tag-nn">NN</span>{/if}
+               {#if isPk(node)}<span class="tag tag-pk">PK</span>{/if}
+            {/if}
+         </FlexLayout>
 
          <div class="frm" slot="Frm" let:record>
             {#if record}
@@ -602,11 +595,11 @@
    .select-host :global(select:focus) { border-color: var(--is-primary); }
    .select-host :global(label) { display: none; }
    .frm { display: flex; flex-direction: column; gap: 0.6rem; padding: 1rem; }
-   .tag { padding: 0 0.35rem; border-radius: 0.2rem; font-size: 0.7rem; font-weight: bold; line-height: 1.4; }
+   .tag { padding: 0 0.35rem; border-radius: 0.2rem; font-size: 0.7rem; font-weight: bold; line-height: 1.4; white-space: nowrap; flex: 0 0 auto; }
    .tag-nn { background: color-mix(in srgb, var(--is-info) 25%, transparent); color: var(--is-info); }
    .tag-pk { background: color-mix(in srgb, var(--is-success) 25%, transparent); color: var(--is-success); }
    .tag-hidden { background: color-mix(in srgb, var(--is-neutral) 25%, transparent); color: var(--is-neutral); }
-   .badge { padding: 0.1rem 0.4rem; border-radius: 0.2rem; font-size: 0.75rem; font-weight: bold; }
+   .badge { padding: 0.1rem 0.4rem; border-radius: 0.2rem; font-size: 0.75rem; font-weight: bold; white-space: nowrap; flex: 0 0 auto; }
    .badge-section { background: color-mix(in srgb, var(--is-warning) 25%, transparent); color: var(--is-warning); }
    .badge-optional { background: color-mix(in srgb, var(--is-info) 25%, transparent); color: var(--is-info); }
    .tree-row-index {
