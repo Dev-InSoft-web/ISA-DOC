@@ -1,151 +1,80 @@
-import type { ButtonIconifyProps, ComponentColor, IconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
-import type { FlexOptionsAction, FlexOptionsInput } from "../../Options/FlexOptions.svelte";
-import { type INode, type ITreeData } from "../_treeAdapter/_defgen/00-tree-data";
+import type { TObject } from "@ingenieria_insoft/ispgen";
+import { resolveColor } from "@ingenieria_insoft/ispsveltecomponents";
+import type { StructureNode, StructureTree, ThunkNode } from "../../Form/jconfig/ObjJConfig.svelte";
+import type { EditDrawerStructureCtx } from "../TreeRowView.svelte";
+import { type ITreeData } from "../_treeAdapter/_defgen/00-tree-data";
 import { TARowBase } from "./00-treeAdapterAsRow";
 
-/**
- * Capa **UI/configuración por fila** del adapter en modo fila. Se ocupa de:
- *  - Acciones visibles en la barra superior del árbol (`getToolsBarActions`).
- *  - La configuración por fila que consume el `_rowItem.svelte` y el
- *    `TreeRowAdapter` (`getRowConfig`).
- *  - Hooks de extensión por subclase (`particularactionsrow`,
- *    `particularcascadeoptionsrow`, `getNodeIcon`).
- *
- * Toda la plomería (DOM ops, registry de row adapters, handlers `onrow*`,
- * expansión inicial) vive en `00-treeAdapterAsRow.ts` (`TARowBase`).
- */
-export abstract class TreeRowViewAdapter<Stacker, TWorking extends ITreeData<TWorking>> extends TARowBase<Stacker, TWorking> {
-	getAddRootLabel(): string {
-		const name = this.getlevelname(1);
-		return name !== "---" ? `Agregar ${name.toLowerCase()}` : "Agregar";
+const FLEX_BTN_STYLE = "flex: 1 1 0; width: 100%;";
+
+export class TreeRowViewAdapter<TListObj extends ITreeData<TListObj> & TObject> extends TARowBase<TListObj> {
+	buildEditDrawerStructure(ctx: EditDrawerStructureCtx<TListObj>): StructureTree {
+		const itd = ctx.readonly ? "view" : ctx.itdForm;
+		const viewBlocked = itd === "view" && !(ctx.bAllowed?.Visualizar ?? true);
+		const blockedMsg: StructureNode = { type: "FlexLayout", direction: "column", items: "center", justify: "center", style: "padding: 2rem; flex: 1;", children: [{ type: "Text", color: "neutral", slot: { default: "No tiene permisos para visualizar este registro." } }] };
+		const accionesGen: ThunkNode = () => !ctx.record ? null : ({
+			type: "AccionesGen", itdForm: ctx.itdForm, onItdFormChange: ctx.onItdFormChange, bRapido: true,
+			postSubmit: ctx.postSubmit, onError: ctx.onError, onCancel: ctx.onclose,
+			Controller: this, Obj: ctx.record, onNewObject: async () => ctx.record,
+			children: [{ type: "slotDefault" }],
+		});
+
+		return [{
+			type: "ActionDrawer", bshow: ctx.bshow, onclose: ctx.onclose, notClose: ctx.notClose, style: "width: 580px; max-width: 90vw;",
+			children: [{
+				type: "FlexLayout", direction: "column", class: "isp-tree-frm-body custom-scrollbar", cscroll: true,
+				style: `height: 100%; background-color: ${resolveColor("bg")}; overflow: hidden; flex: 1 1 auto; min-height: 0;`,
+				children: [{
+					type: "FormJConfig", oninput: ctx.oninput, onchange: ctx.oninput,
+					style: "display: contents; height: 100%; flex: 1 1 auto; min-height: 0;",
+					children: [viewBlocked ? blockedMsg : accionesGen],
+				}],
+			}],
+		}];
 	}
 
-	override getToolsBarActions(): FlexOptionsAction[] {
-		const addDisabled = this.isViewMode || this.isReadOnly || undefined;
-		const addLabel = this.getAddRootLabel();
-		const addTitle = addDisabled ? `${addLabel} — No disponible en modo lectura` : addLabel;
-		return [
-			...(this.isBrapido ? [] : [{
-				icon: "mdi:plus-circle-outline",
-				title: addTitle,
-				label: addLabel,
-				disabled: addDisabled,
-				onClick: () => { if (!addDisabled) this.onaddroot(); },
-			}]),
-			{ icon: "mdi:unfold-less-horizontal", title: "Colapsar todo", onClick: () => this.collapseAll?.() },
-			{ icon: "mdi:unfold-more-horizontal", title: "Expandir todo", onClick: () => this.expandAll?.() },
-		];
+	buildDeleteModalStructure(ctx: { bshow: boolean; loading: boolean; isBlocked: boolean; codeExpected: string; codeInput: string; onclose: () => void; oncancel: () => void; onconfirm: () => void; oncodeinput: (v: string) => void }): StructureTree {
+		return [{
+			type: "Modal", bshow: ctx.bshow, loading: ctx.loading, onClose: ctx.onclose,
+			slot: { title: { type: "Text", color: "danger", icon: "mdi:trash-can-outline", slot: { default: `Eliminar ${this.customs?.entrie ?? "registro"}` } } },
+			children: [{
+				type: "FlexLayout", direction: "column", style: "padding: 0.75rem; min-width: 350px;",
+				children: [
+					{ type: "Text", slot: { default: "Confirme la eliminación digitando el código de seguridad del registro." } },
+					{ type: "Input", label: "Código esperado", value: ctx.codeExpected, readonly: true },
+					{ type: "Input", label: "Confirme código de seguridad", required: true, maxLength: 60, value: ctx.codeInput, onvalue: ctx.oncodeinput },
+					{
+						type: "FlexLayout", direction: "row", items: "stretch", gap: "0.5rem", style: "width: 100%; margin-top: 1rem;",
+						children: [
+							{ type: "Button", color: "neutral", variant: "outlined", loading: ctx.loading, style: FLEX_BTN_STYLE, onClick: ctx.oncancel, slot: { default: "Cancelar" } },
+							{ type: "Button", color: "danger", disabled: ctx.loading || ctx.isBlocked, loading: ctx.loading, style: FLEX_BTN_STYLE, onClick: ctx.onconfirm, slot: { default: "Eliminar" } },
+						],
+					},
+				],
+			}],
+		}];
 	}
 
-	protected override particularactionsrow(_node: INode<TWorking>): ButtonIconifyProps[] { return []; }
-	protected override particularcascadeoptionsrow(_node: INode<TWorking>): FlexOptionsInput[] { return []; }
+	buildProtectionModalStructure(ctx: { bshow: boolean; onclose: () => void; oncancel: () => void; onconfirm: () => void; onredoall: () => void }): StructureTree {
+		const canRedo = this.historyCanRedo;
 
-	override getRowConfig(node: INode<TWorking>): {
-		icono?: Omit<IconifyProps, "icon"> & { icon: string; color?: ComponentColor };
-		disabled?: boolean;
-		draggable?: boolean;
-		isFirst?: boolean;
-		isLast?: boolean;
-		actions?: FlexOptionsInput[];
-		cascadeOptions?: FlexOptionsInput[];
-		events?: {
-			onopen?: () => void;
-			onclose?: () => void;
-			onfocus?: () => void;
-			onblur?: () => void;
-			onclick?: () => void;
-			onleadiconclick?: () => void;
-		};
-	} | null {
-		const rowController = this.rowAdapters.get(this.normalizeNodeId(node.flatPath));
-		const hasChildren = rowController?.hasChildren ?? !!(node.children && node.children.length > 0);
-		const isLastNode = !!node.isLast;
-		const isFolder = !isLastNode && (hasChildren || !node.isLeaf);
-		const isEmptyFolder = isFolder && !hasChildren;
-		const isExpanded = rowController?.isNodeOpen ?? this._expandedNodes.some((n) => n.flatPath === node.flatPath);
-		const defaultIcon = isLastNode
-			? "mdi:file-document-outline"
-			: hasChildren
-				? (isExpanded ? "mdi:folder-open-outline" : "mdi:folder-outline")
-				: isFolder
-					? "mdi:folder-plus-outline"
-					: "mdi:file-outline";
-		const iconOverride = this.getNodeIcon(node, { isLastNode, isFolder, hasChildren, isExpanded, isEmptyFolder });
-		const icon = iconOverride?.icon ?? defaultIcon;
-		const isFolderIcon = !isLastNode && icon.includes("folder");
-		const isFirstPos = rowController?.siblingPos.isFirst ?? false;
-		const isLastPos = rowController?.siblingPos.isLast ?? false;
-		const mutDisabled = this.isViewMode && !this.isReadOnly;
-		const rdTitle = (base: string) => mutDisabled ? `${base} (Modo lectura)` : base;
-
-		const actorActs = this.actorActions(node);
-		const draft = this.wardenDraft(node);
-		const isPrisonOnly = this.isPrison(node) && !this.isHermetic(node);
-
-		const actions: FlexOptionsInput[] = this.isReadOnly ? [] : [
-			actorActs,
-			draft.actions,
-			this.particularactionsrow(node),
-			[
-				...(this.isViewMode
-					? [{ icon: "mdi:form-textbox", title: "Ver formulario (Enter)", onClick: () => rowController?.onrowdblclick() }]
-					: []),
-				...(isPrisonOnly ? [] : [{
-					icon: "mdi:delete-outline",
-					title: rdTitle("Eliminar (Supr)"),
-					color: "danger" as const,
-					disabled: mutDisabled || undefined,
-					onClick: () => { if (!mutDisabled) this.onrowdelete(node); },
-				}]),
-			]
-		];
-
-		const cascadeOptions: FlexOptionsInput[] = this.isReadOnly ? [] : [
-			...(!this.isViewMode ? [{
-				icon: "mdi:pencil-outline",
-				label: "Editar",
-				title: rdTitle("Editar (Enter)"),
-				disabled: mutDisabled || undefined,
-				onClick: () => rowController?.onrowdblclick(),
-			}] : []),
-			...(this.bdrag ? [[
-				{
-					icon: "mdi:table-row-plus-before",
-					label: rdTitle("Añadir arriba"),
-					title: rdTitle("Añadir arriba (Ctrl+Shift+Up)"),
-					disabled: mutDisabled || undefined,
-					onClick: () => { if (!mutDisabled) void this.handleaddsibling(node.flatPath, "above"); },
-				},
-				{
-					icon: "mdi:table-row-plus-after",
-					label: rdTitle("Añadir abajo"),
-					title: rdTitle("Añadir abajo (Ctrl+Shift+Down)"),
-					disabled: mutDisabled || undefined,
-					onClick: () => { if (!mutDisabled) void this.handleaddsibling(node.flatPath, "below"); },
-				},
-			]] : []),
-			...draft.cascadeOptions,
-			...this.particularcascadeoptionsrow(node),
-		];
-
-		return {
-			icono: {
-				icon,
-				color: iconOverride?.color ?? (isLastNode ? "info" : (!isFolderIcon ? "color" : undefined)),
-				...(iconOverride?.style !== undefined
-					? { style: iconOverride.style }
-					: (isFolderIcon ? { style: isEmptyFolder ? "color: #9e9e9e" : "color: #C9A227" } : {})),
-			},
-			actions,
-			cascadeOptions,
-			draggable: this.bdrag && !this.isReadOnly,
-			isFirst: isFirstPos,
-			isLast: isLastPos,
-			events: {
-				onleadiconclick: isEmptyFolder && !mutDisabled && !this.isBrapido ? () => void this.handleaddchild(node.flatPath) : undefined,
-			},
-		};
+		return [{
+			type: "Modal", bshow: ctx.bshow, onClose: ctx.onclose,
+			slot: { title: { type: "Text", color: "warning", icon: "mdi:lock-outline", slot: { default: "Árbol protegido" } } },
+			children: [{
+				type: "FlexLayout", direction: "column", style: "padding: 0.75rem; min-width: 360px;",
+				children: [
+					{ type: "Text", slot: { default: "El árbol está protegido contra edición. ¿Cómo desea continuar?" } },
+					{
+						type: "FlexLayout", direction: "row", items: "stretch", gap: "0.5rem", style: "width: 100%; margin-top: 1rem;",
+						children: [
+							{ type: "Button", color: "neutral", variant: "outlined", style: FLEX_BTN_STYLE, onClick: ctx.oncancel, slot: { default: "Cancelar" } },
+							...(canRedo ? [{ type: "Button" as const, color: "warning" as const, variant: "ghost" as const, title: "Rehace todo el historial pendiente y desprotege", style: FLEX_BTN_STYLE, onClick: ctx.onredoall, slot: { default: "Rehacer al actual" } }] : []),
+							{ type: "Button", color: "warning", style: FLEX_BTN_STYLE, onClick: ctx.onconfirm, slot: { default: "Desproteger" } },
+						],
+					},
+				],
+			}],
+		}];
 	}
-
-	protected override getNodeIcon(_node: INode<TWorking>, _ctx: { isLastNode: boolean; isFolder: boolean; hasChildren: boolean; isExpanded: boolean; isEmptyFolder: boolean }): { icon?: string; color?: ComponentColor; style?: string } | null { return null; }
 }

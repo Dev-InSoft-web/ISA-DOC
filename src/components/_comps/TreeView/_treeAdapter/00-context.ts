@@ -1,87 +1,102 @@
+import { TObject } from "@ingenieria_insoft/ispgen";
 import type { TreeViewProps } from "../TreeRowView.svelte";
-import { ComplexControl } from "./_defgen/01-complex-control";
 import { type INode, type ITreeData } from "./_defgen/00-tree-data";
 
-export abstract class TTreeAdapterContext<Stacker, TWorking extends ITreeData<TWorking>> extends ComplexControl<TreeViewProps<Stacker, TWorking>> {
+export class TTreeAdapterContext<TListObj extends ITreeData<TListObj> & TObject> {
+	protected readonly context: TreeViewProps<TListObj>;
+
+	onstateupdate(ctx: TreeViewProps<TListObj>): void {
+		Object.defineProperties(this.context, Object.getOwnPropertyDescriptors(ctx));
+	}
+
+	private static _rootIdSeq = 0;
+	readonly treeRootId: string = `tree-${++TTreeAdapterContext._rootIdSeq}`;
+
 	bshowFrm = false;
+	bLostFocus = false;
 
-	private static _instanceCounter = 0;
-	/** Identificador único del adapter → scoping DOM (focus entre árboles independiente). */
-	readonly treeRootId: string = `t${++TTreeAdapterContext._instanceCounter}`;
-
-	protected _selectedId = "";
-	protected _focusedNodeId = "";
-	protected _hoveredNodeId = "";
-	protected _item: TWorking | null = null;
-	protected _originalItem: TWorking | null = null;
-	protected _pendingDeleteNodeId = "";
+	protected _selectedFlatPath = "";
+	protected _focusedFlatPath = "";
+	protected _hoveredFlatPath = "";
+	record: INode<TListObj> | null = null;
+	protected _pendingDeleteFlatPath = "";
 	protected _pendingDeleteSnapshot: { prevVisibleIds: string[]; prevDeleteIdx: number } | null = null;
-	protected _lastProcessedObj: unknown = undefined;
-	protected _expandedNodes: INode<TWorking>[] = [];
-	protected _treeNodes: INode<TWorking>[] = [];
+	protected _lastProcessedObj: TListObj | null = null;
+	protected _expandedFlatPaths: string[] = [];
+	protected _treeNodes: INode<TListObj>[] = [];
+
+	bcanMoveOutside: boolean | ((src: INode<TListObj>, target: INode<TListObj>, position: "before" | "after" | "into") => boolean) = true;
 
 	constructor(
-		props: TreeViewProps<Stacker, TWorking>,
-		restProps?: Partial<TreeViewProps<Stacker, TWorking>>,
-		syncProps?: Partial<TreeViewProps<Stacker, TWorking>>,
+		props: TreeViewProps<TListObj>,
+		restProps?: Partial<TreeViewProps<TListObj>>,
+		syncProps?: Partial<TreeViewProps<TListObj>>,
 	) {
-		super({ ...props, ...(restProps ?? {}), ...(syncProps ?? {}) } as TreeViewProps<Stacker, TWorking>);
+		this.context = { ...props, ...(restProps ?? {}), ...(syncProps ?? {}) } as TreeViewProps<TListObj>;
 	}
 
 	get disabled(): boolean { return !!this.context.disabled }
 	set disabled(value: boolean) { this.context.disabled = !!value }
 
-	get selectedId(): INode<TWorking> | null {
-		return this.findNodeById(this._selectedId)
+	get selectedNode(): INode<TListObj> | null {
+		return this.findNodeByFlatPath(this._selectedFlatPath)
 	}
-	set selectedId(value: INode<TWorking> | null) { this._selectedId = value == null ? "" : this.normalizeNodeId(value.flatPath) }
+	set selectedNode(value: INode<TListObj> | null) { this._selectedFlatPath = value == null ? "" : this.normalizeFlatPath(value.flatPath) }
 
-	get focusedNode(): INode<TWorking> | null {
-		return this.findNodeById(this._focusedNodeId)
+	get focusedNode(): INode<TListObj> | null {
+		return this.findNodeByFlatPath(this._focusedFlatPath)
 	}
-	set focusedNode(value: INode<TWorking> | null) { this._focusedNodeId = value == null ? "" : this.normalizeNodeId(value.flatPath) }
+	set focusedNode(value: INode<TListObj> | null) { this._focusedFlatPath = value == null ? "" : this.normalizeFlatPath(value.flatPath) }
 
-	get hoveredNode(): INode<TWorking> | null {
-		return this.findNodeById(this._hoveredNodeId)
+	get hoveredNode(): INode<TListObj> | null {
+		return this.findNodeByFlatPath(this._hoveredFlatPath)
 	}
-	set hoveredNode(value: INode<TWorking> | null) { this._hoveredNodeId = value == null ? "" : this.normalizeNodeId(value.flatPath) }
+	set hoveredNode(value: INode<TListObj> | null) { this._hoveredFlatPath = value == null ? "" : this.normalizeFlatPath(value.flatPath) }
 
-	get item(): TWorking | null { return this._item }
-	set item(value: TWorking | null) { this._item = value }
+	get rootNodes(): INode<TListObj>[] { return this._treeNodes }
+	get treeNodes(): INode<TListObj>[] { return this._treeNodes }
+	set treeNodes(value: INode<TListObj>[]) { this._treeNodes = value }
 
-	get objWorking(): TWorking | null {
-		const current = this._item;
-		if (!current) return null;
-		const found = this.findNodeById(current.flatPath);
-		return found ? (found as unknown as TWorking) : null;
+	get expandedNodes(): INode<TListObj>[] {
+		const seen = new Set<string>();
+		const out: INode<TListObj>[] = [];
+		for (const id of this._expandedFlatPaths) {
+			if (!id || seen.has(id)) continue;
+			const node = this.findNodeByFlatPath(id);
+			if (node) { seen.add(id); out.push(node); }
+		}
+		return out;
 	}
-	set objWorking(value: TWorking | null) { this._item = value ?? null }
+	set expandedNodes(value: INode<TListObj>[]) {
+		const seen = new Set<string>();
+		const ids: string[] = [];
+		for (const node of value || []) {
+			const id = this.normalizeFlatPath(node?.flatPath);
+			if (!id || seen.has(id)) continue;
+			seen.add(id); ids.push(id);
+		}
+		this._expandedFlatPaths = ids;
+	}
 
-	get rootNodes(): INode<TWorking>[] { return this._treeNodes }
-	get treeNodes(): INode<TWorking>[] { return this._treeNodes }
-	set treeNodes(value: INode<TWorking>[]) { this._treeNodes = value }
+	get expandedFlatPaths(): string[] { return [...this._expandedFlatPaths] }
+	set expandedFlatPaths(value: string[]) {
+		const seen = new Set<string>();
+		const ids: string[] = [];
+		for (const raw of value || []) {
+			const id = this.normalizeFlatPath(raw);
+			if (!id || seen.has(id)) continue;
+			seen.add(id); ids.push(id);
+		}
+		this._expandedFlatPaths = ids;
+	}
 
-	get expandedNodes(): INode<TWorking>[] { return this._expandedNodes }
-	set expandedNodes(value: INode<TWorking>[]) { this._expandedNodes = value || [] }
-
-	get itdForm() { return this.context.itdForm }
-	get isViewMode(): boolean { return this.context.itdForm === "view" }
 	get isReadOnly(): boolean { return !!this.context.readonly }
-	get bdrag(): boolean { return this.context.bdrag !== false }
-	get bLostFocus(): boolean { return !!this.context.bLostFocus }
-	get isBrapido(): boolean { return !!this.context.brapido }
-	get bcanMoveOutside(): boolean | ((source: INode<TWorking>, target: INode<TWorking>, position: "before" | "after") => boolean) {
-		return (this.context as any).bcanMoveOutside ?? false;
-	}
+	get canMutate(): boolean { return !this.isReadOnly }
+	get canCreate(): boolean { return this.context.bAllowed?.Crear ?? true }
+	get canModify(): boolean { return this.context.bAllowed?.Modificar ?? true }
+	get canDelete(): boolean { return this.context.bAllowed?.Eliminar ?? true }
+	get draggable(): boolean { return this.context.draggable !== false }
 
-	
-	get addReferenceId(): string { return this.context.addReferenceId || ""; }
-	set addReferenceId(value: string | null) { this.context.addReferenceId = value; }
-
-	
-	get lastLevelSelectorOpen(): boolean { return !!this.context.resourceSelectorOpen; }
-	set lastLevelSelectorOpen(value: boolean) { this.context.resourceSelectorOpen = value; }
-
-	abstract normalizeNodeId(id: unknown): string;
-	abstract findNodeById(id: string, branches?: INode<TWorking>[]): INode<TWorking> | null;
+	normalizeFlatPath(_id: unknown): string { return ""; }
+	findNodeByFlatPath(_id: string, _branches?: INode<TListObj>[]): INode<TListObj> | null { return null; }
 }

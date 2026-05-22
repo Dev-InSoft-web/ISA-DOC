@@ -1,97 +1,166 @@
-# `_rowAdapter/` — Cascada del controlador de fila
+# `_rowAdapter/` — Adaptador por fila
 
-## Idea base
+Una **instancia por fila visible** del árbol. La crea/recupera
+`TARowBase.getOrCreateRowAdapter(bridge)` desde `_rowItem.svelte` (el
+componente recursivo de fila). Se registra en
+`TARowBase.rowAdapters: Map<flatPath, TreeRowAdapter>`.
 
-`TreeRowAdapter<Stacker, TWorking>` es la clase **concreta** que controla **una sola fila** del árbol. Una instancia por nodo visible. La construye y registra `TreeAdapter.getOrCreateRowAdapter(bridge)` en el `<RowItem>`.
+A diferencia de la cascada de `../_treeAdapter/`, este adapter **no es
+abstracto**: la clase final es concreta y usable directamente.
 
-Como el `TreeAdapter`, está fragmentada en cascada — un archivo, una capa:
+## Cascada
 
-```text
-TRABase         00-base.ts     Estado base + tipos compartidos (INode, ITreeData) + helpers de DOM/foco/icono.
-        ▲
-TRADrag         01-drag.ts     Drag & drop sobre la fila (start, over, drop, cleanup).
-        ▲
-TreeRowAdapter  02-events.ts   Eventos de fila: click, dblclick, focus, keydown, toggle.
+```
+TRABase (00-base.ts)            Estado mutable + getters derivados + sync
+   ▲
+TRADrag (01-drag.ts)            Pipeline drag-and-drop por fila
+   ▲
+TreeRowAdapter (02-events.ts)   Handlers DOM (click/dblclick/keydown/focus/toggle/pointer)
 ```
 
-`TreeRowAdapter` **NO es abstracto**. Es la clase final que el `TreeAdapter` instancia directamente. No la extiendas tú; el árbol la maneja por dentro.
+## Bridge desde `_rowItem.svelte`
 
-## Qué vive en cada capa
+El componente Svelte le pasa un objeto `RowItemProps<TListObj>` con,
+entre otros: `node` (el `INode`), `treeController` (el `TreeAdapter`
+padre), `forceRefresh` (callback que dispara un re-render local de la
+fila). El adapter copia los descriptores con
+`Object.defineProperty` (preserva descriptores reactivos del
+`<svelte:self>`).
 
-### `00-base.ts` — `TRABase`
+## `TRABase` — `00-base.ts`
 
-- Tipos exportados: `INode<T>`, `ITreeData<T>`, helpers `groupedWithSeparators`, `objRootsToNodes`.
-- Estado de fila: `dragOver`, `dragForbidden`, `filteredActions`, `hasRowTools`, `showActions`, `longPressTimer`.
-- `applyBridge(bridge)`: refresca el puente reactivo (`node`, `nodes`, props del row) sin recrear el adapter.
-- `dispose()`: avisa al `TreeAdapter` que la fila se va.
-- Getters de identidad/estado: `id`, `hasChildren`, `isHighlighted`, `isSelected`, `isReallyFocused`, `isReallyHovered`, `floatVisible`, `siblingPos`, `isNodeOpen`, `nodeDisabled`.
-- `effectiveRowConfig`: combina default (`defaultRowConfig`) + lo que devuelve `treeAdapter.getRowConfig(node)`.
-- `filterRowActions`: aplica `isFirst/isLast` para esconder up/down.
-- `iconParts`: normaliza props del icono.
-- Helpers DOM: `getRootTree`, `getVisibleSummaries`, `getRowIdFromSummary`, `focusSummary`, `containsDescendantId`.
-- Forwarders al árbol: `onrowclick`, `onrowdblclick`, `onrowdelete`, `onrowtoggle`, `onrowreorder`, `onrowfocus`.
-- `addSiblingAbove/Below`, `addChild`, `canAddSibling/canAddChild`, `addChildLabel`.
+### Estado público
 
-### `01-drag.ts` — `TRADrag`
+| Campo | Rol |
+|---|---|
+| `dragOver: "before" \| "after" \| "into" \| null` | Indicador de hover de drag para CSS de placeholder. |
+| `dragForbidden: boolean` | `true` si `canDrop()` rechazó el target en hover. |
+| `dragEnterCount: number` | Contador para gestionar `dragenter`/`dragleave` anidados. |
+| `dragPlaceholderHeight: number` | Altura del placeholder durante el drag (transferida vía `application/x-trvwr-row-height`). |
+| `filteredActions: FlexOptionsInput[]` | Acciones tras pasar por `treeAdapter.filterRowActions(cfg, isFrozen)`. |
+| `cascadeOptions: FlexOptionsInput[]` | Opciones del menú "más opciones". |
+| `hasRowTools: boolean` | `true` si hay acciones o cascade options para mostrar. |
+| `showOptions: boolean` | `hasRowTools && esta fila está enfocada`. |
 
-- `ondragstart`, `ondragover`, `ondragleave`, `ondragend`, `ondrop`.
-- Cálculo de `dragOver: "before" | "after" | null`, prevención de drops inválidos (mismo nodo, descendiente, distinta rama).
-- Sincroniza con `TreeAdapter.onrowreorder` al soltar.
+### `sync()`
 
-### `02-events.ts` — `TreeRowAdapter`
+Recalcula `filteredActions`, `cascadeOptions`, `hasRowTools`,
+`showOptions` desde `effectiveRowConfig` (que delega en
+`treeAdapter.getRowConfig(node)`). Lo invoca `treeAdapter.syncAllRowAdapters()`
+o `syncRowAdaptersByFlatPaths([...])`.
 
-- `onsummaryclick`: clic en el `<summary>` (toggle, foco, blur de hermanos, click logico).
-- `onsummarydblclick`: edita o ve el nodo.
-- `ondetailstoggle`: sincroniza estado expandido cuando el `<details>` cambia.
-- `onkeydown`: navegación por teclado (flechas, Home/End, Insert, Delete, Enter, Ctrl+Enter, Ctrl+↑/↓, Ctrl+Shift+↑/↓).
-- `onfocus`/`onblur`/`onmouseenter`/`onmouseleave`: estado de foco/hover.
-- Acciones de gestos rápidos.
+### Getters derivados (lectura del adapter padre + nodo)
 
-## Relación con `TreeAdapter`
+| Getter | Cálculo |
+|---|---|
+| `mergedDisabled` | `nodeDisabled \|\| treeAdapter.disabled \|\| effectiveRowConfig?.disabled`. |
+| `isFrozen` | `treeAdapter.isFrozen(node)`. |
+| `showCaret` | `!isAtom(node) && hasChildren`. |
+| `isDraggable` | `!isViewMode && !mergedDisabled && !isFrozen`. |
+| `rowIcono` | `treeAdapter.iconParts(effectiveRowConfig?.icono)`. |
+| `isHighlighted` | Resaltada si focused; si nada focused, si selected. |
+| `isSelected` | `selectedFlatPath === this.flatPath`. |
+| `isReallyFocused` | Foco exacto sobre esta fila. |
+| `hasDescendantFocus` | Foco en algún descendiente (para ring del padre). |
+| `isReallyHovered` / `hasDescendantHover` | Análogos de hover. |
+| `floatVisible` | Política de visibilidad del float card (hover + no editing). |
+| `flatPath` | `treeAdapter.normalizeFlatPath(rowNode.flatPath)`. |
+| `hasChildren` | `rowNode.childrens.length > 0`. |
 
-```text
-TreeAdapter                                      TreeRowAdapter
-─────────                                        ──────────────
- rowAdapters: Map<id, TreeRowAdapter>            constructor(bridge, treeAdapter)
- getOrCreateRowAdapter(bridge)  ──────crea────►   register / sync / dispose
- syncAllRowAdapters()           ──────itera──►    sync()
- onrowclick / onrowdblclick / onrowfocus
- onrowtoggle / onrowreorder / onrowdelete   ◄────forward (event handlers)
- getRowConfig(node)             ──────lee────►   effectiveRowConfig
-```
+### Operaciones DOM
 
-El `<RowItem.svelte>` recibe el `node` y monta su `TreeRowAdapter` vía el `TreeAdapter`. El adapter NO posee el DOM: solo lee/escribe estado y delega.
+- **`getRootTree(treeItem)`** — sube por `parentElement` hasta `.isp-tree`
+  o `[data-tree-root]`.
+- **`getVisibleSummaries(treeItem)`** — `details.trvwr-itm > summary`
+  filtrando por `details[open]` ancestros (sólo summaries en árbol abierto).
+- **`getFlatPathFromSummary(summary)`** — lee `[data-flatpath]`.
+- **`focusSummary(summary?)`** — `treeAdapter.blurTreeSummariesExcept` +
+  `summary.focus()` con fallback a `tabindex=-1` + dispara
+  `onrowfocus`.
 
-## `00-node-mixin.ts` — `TreeNodeUX`
+### Add sibling/child desde la fila
 
-Función mixin que extiende cualquier modelo `TObject` con los campos requeridos por `ITreeData<T>` (`id`, `ireference`, `stack`, `children`, `istack`, `nistack`, `isLeaf`, `isPenultimate`, `isLast`, `nextLevelTitle`).
+- `addSiblingAbove() / addSiblingBelow()` → `treeAdapter.onaddsibling(...)`.
+- `addChild()` → `treeAdapter.onaddchild(...)`.
+- Gates: `canAddSibling` (no disabled, no viewMode), `canAddChild`
+  (además no atom).
 
-```ts
-class TPlanCursoUX extends TreeNodeUX(TPlanCurso) { /* solo lo específico */ }
-```
+### Helper
 
-El mixin agrega los getters; tu modelo de dominio queda intacto.
+- **`requestRowUiSync()`** — invoca `context.forceRefresh()` (el callback
+  Svelte que rerenderiza solo esta fila).
 
-## Cómo se consume
+## `TRADrag` — `01-drag.ts`
 
-Desde el componente `TreeView.svelte` (el único barrel real):
+Pipeline drag-and-drop, todo a nivel `<summary>`.
 
-```ts
-import {
-	TreeAdapter,        // base abstract para tu adapter
-	TreeRowAdapter,     // concreto, normalmente no lo extiendes
-	TreeNodeUX,         // mixin para tus UX
-	type INode,
-	type ITreeData,
-	objRootsToNodes,
-	groupedWithSeparators,
-} from ".../TreeView/TreeView.svelte";
-```
+| Handler | Comportamiento |
+|---|---|
+| `ondragstart(e)` | Si `!isDraggable`, previene + flash error. Si OK, setea `dataTransfer`, copia `flatPath` a `treeAdapter.currentDragFlatPath`, transfiere `application/x-trvwr-row-height` (altura del summary), añade clase `trvwr-itm--dragging` al `<details>`. |
+| `ondragend(e)` | Limpia clase, resetea `dragOver`/`dragForbidden`/`dragEnterCount`/`dragPlaceholderHeight`, limpia `currentDragFlatPath`. |
+| `onsummarydragenter()` | Incrementa `dragEnterCount`. |
+| `onsummarydragover(e)` | Calcula posición (`before`/`after`/`into`) según rectángulo: si el target es `isGrouper`, divide en 25%/50%/25% (top→`before`, middle→`into`, bottom→`after`); si no, sólo midpoint. Consulta `treeAdapter.canDrop(srcId, tgtId, pos)` para `dragForbidden`. Toma altura placeholder de `dataTransfer`. |
+| `onsummarydragleave()` | Decrementa `dragEnterCount`; al llegar a 0, resetea estado de hover. |
+| `ondrop(e)` | Si todo válido (no forbidden, no self, no disabled, hay `pos`), llama `treeAdapter.onrowreorder(srcId, this.flatPath, pos)`. Si forbidden, dispara flash error sobre source + target. |
+
+Todos los handlers terminan en `finally { requestRowUiSync(); }` para
+forzar re-render local.
+
+### Flashes
+
+- `shouldFlash` — `flatPath ∈ treeAdapter.flashFlatPaths`.
+- `shouldFlashError` — `flatPath ∈ treeAdapter.flashErrorFlatPaths`.
+
+## `TreeRowAdapter` — `02-events.ts`
+
+Handlers DOM de eventos no-drag.
+
+### Click / dblclick
+
+| Handler | Comportamiento |
+|---|---|
+| `onsummaryclick(e)` | Si `mergedDisabled`, preventDefault. Si click en `.trvwr-drag-handle`, preventDefault + stopPropagation. Si click en `.trvwr-itm-symb` (caret) y `hasChildren`, toggle expand. Foco + onrowclick. Dispara `events.onclick`. Termina con `summary.focus({preventScroll:true})`. |
+| `onsummarydblclick(e)` | Si click en caret, ignora. Si no, `treeAdapter.onrowdblclick(node)`. |
+| `ondetailstoggle(e)` | Sincroniza `el.open ↔ isNodeOpen`. Dispara `events.onopen`/`onclose`. |
+
+### Teclado
+
+`onkeydown(e)` — solo procesa si el activeElement es el `<summary>` actual:
+
+| Tecla (sin mods) | Acción |
+|---|---|
+| `ArrowDown` | Mueve foco al siguiente summary visible. |
+| `ArrowUp` | Mueve foco al anterior. |
+| `ArrowRight` | Si tiene hijos y está cerrado, expande. |
+| `ArrowLeft` | Si tiene hijos y está abierto, colapsa. |
+| `Home` | Foco al primero. |
+| `End` | Foco al último. |
+
+Si la tecla no fue manejada por defecto, busca en `customs.hotkeys[combo]`
+(formato `"Ctrl+Shift+ArrowDown"`, `"Insert"`, etc.) y lo invoca con
+`(record, runtime, e)`.
+
+### Focus / hover
+
+| Handler | Comportamiento |
+|---|---|
+| `onsummaryfocus(e)` | Blur otros summaries + `treeAdapter.onrowfocus(node)` + dispara `events.onfocus`. |
+| `onsummaryblur()` | Dispara `events.onblur`. |
+| `onsummarypointerenter()` | Si cambia el hover, actualiza `hoveredNode` y sincroniza solo los dos adapters afectados (anterior + actual) — evita el O(n). |
+| `onsummarypointerleave()` | Si era el hovered, limpia + sincroniza solo este. |
 
 ## Reglas de oro
 
-1. **No extiendas `TreeRowAdapter`.** El consumidor toca `TreeAdapter`, no el row adapter.
-2. **No mezcles capas.** Drag en `01-drag.ts`, eventos en `02-events.ts`. Estado base/getters en `00-base.ts`.
-3. **No duplicar registro.** El `TreeAdapter` mantiene un `Map<id, TreeRowAdapter>`; usa `getOrCreateRowAdapter`, no `new`.
-4. **Sin runas.** Svelte 4. La reactividad la pone el componente que monta `<RowItem>`.
-5. **Cualquier cambio que toque la API pública del row** (eventos, getters consumidos por el template) debe reflejarse en `__TreeAdapter.md` también — son contratos hermanos.
+1. **Una instancia por fila visible.** Si una fila se colapsa o se
+   destruye, su adapter se desregistra (`dispose`).
+2. **El adapter de fila NO debe leer estado de otras filas directamente.**
+   Pasa siempre por `this.treeAdapter.*`.
+3. **Cualquier mutación de estado UI debe terminar en
+   `requestRowUiSync()`** para que la fila se re-renderice. La
+   reactividad global del árbol va por `treeAdapter.notifyUI()`.
+4. **Drag-and-drop usa el `dataTransfer`** como fuente de verdad. No
+   inventes canales paralelos.
+5. **Atajos de teclado por defecto son inviolables.** Si necesitas un
+   combo, declara `customs.hotkeys`.
+6. **Svelte 4.** Esta cascada es TS puro; el `_rowItem.svelte` es quien
+   pone la reactividad y los listeners DOM.

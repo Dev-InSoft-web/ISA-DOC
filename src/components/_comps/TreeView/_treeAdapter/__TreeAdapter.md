@@ -1,218 +1,309 @@
-# `_treeAdapter/` — Cascada genérica del controlador del árbol
+# `_treeAdapter/` — Cascada del controlador del árbol
 
-## Idea base
+`TreeAdapter` (alias de `TreeRowViewAdapter` en `../_asRow/01-treeAdapterAsRowEvents.ts`)
+es la clase final concreta que el consumidor extiende. Se construye **por
+cascada**: cada archivo numerado hereda del anterior y aporta una sola
+responsabilidad. La cascada se cierra en `../_asRow/`.
 
-`TreeAdapter` no es una clase única: se construye por **cascada estricta**, donde cada índice extiende del anterior y aporta una sola responsabilidad. Esta carpeta contiene únicamente las capas **agnósticas del modo de vista** (no saben nada de filas, mosaicos, grafos). El modo "vista en fila" vive en la carpeta hermana [`../_asRow/`](../_asRow/__asRow.md).
-
-```text
-ComplexControl<TCtx>     002-complex-control.ts   Estado reactivo genérico (stores ligeros).
+```
+TTreeAdapterContext        00-context.ts
         ▲
-TTreeAdapterContext      00-context.ts           Estado interno + acceso a props (no extiende; define).
+TTreeAdapterContract       01-contract.ts
         ▲
-TTreeAdapterContract     01-contract.ts          EL CONTRATO público abstracto.
+TAModel                    02-model.ts
         ▲
-TAModel                  02-model.ts             Estado del modelo (obj, callbacks UI, controller catálogo).
+TATreeShape                03-tree-shape.ts        ← customs, createNode, materialize, find
         ▲
-TATree                   03-tree.ts              Árbol: build, flatten, rebuild, find, remap, CRUD bajo nivel.
+TATreeFlow                 04-tree-flow.ts         ← buildTree, flatten, commit, saneo
         ▲
-TAView                   04-view.ts              Vista: selección, foco, expand/collapse, flash (sin DOM).
+TAView                     05-view.ts
         ▲
-TAMutations              05-mutations.ts         Operaciones del usuario: add/move/reorder/delete/edit.
+TAMutations                06-mutations.ts
         ▲
-TARoles                  06-roles.ts             Sistema actoral + warden pipeline + freezer/monarchy.
+TAHistory                  06b-history.ts          ← undo/redo + protección
+        ▲
+TARoles                    07-roles.ts
+        ▲
+TARowBase                  ../_asRow/00-treeAdapterAsRow.ts
+        ▲
+TreeRowViewAdapter         ../_asRow/01-treeAdapterAsRowEvents.ts   (concreta, exportada como TreeAdapter)
 ```
 
-> **Última capa pública aquí:** `TARoles` (`06-roles.ts`). El cierre concreto del adapter — donde se ata al modo de vista en forma de fila — vive en `_asRow/00-treeAdapterAsRow.ts` (`TARowBase`) y `_asRow/01-treeAdapterAsRowEvents.ts` (`TreeRowViewAdapter`).
+`_defgen/` aporta los tipos puros (`INode`, `INodeShape`, `ITreeData`,
+`TopologyRole`, `ContainmentRole`, `MobilityRole`, `TreeNode` mixin,
+`objRootsToNodes`, `groupedWithSeparators`). Vive aparte para evitar imports
+circulares.
 
-`002-complex-control.ts` aporta `ComplexControl<TCtx>`, base genérica del estado reactivo. Vive aparte para evitar imports circulares con `TreeRowView.svelte`.
+## `_defgen/00-tree-data.ts` — tipos y helpers puros
 
-Los tipos `INode<T>` e `ITreeData<T>` se importan desde `../_asRow/_rowAdapter/00-base.ts` (la capa donde se definen, junto al row adapter). Esto es a propósito: el contrato del nodo es contrato del adapter de fila — donde se consume.
+| Símbolo | Rol |
+|---|---|
+| `INode<T>` | `T & INodeShape<T>` — el modelo enriquecido con los campos de fila. |
+| `INodeShape<T>` | Campos crudos (`flatPath`, `childrens`, `pathInit`, `topology`, `containment`, `mobility`, `freeze`) + getters readonly (`isAtom`, `isGroupActor`, `isPrison`, `isHermetic`, `isCell`, `isUnanchored`, `isFreezer`, `isEmpty`). Los getters se decoran al construir el árbol. |
+| `ITreeData<T>` | F-bounded poly: `INodeShape<T>` con `childrens: T[]`. |
+| `TopologyRole` `"atom" \| "group"` | Dimensión 1 — qué es. |
+| `ContainmentRole` `"prison" \| "hermetic" \| "cell"` | Dimensión 2 — cómo trata su contenido. |
+| `MobilityRole` `"unanchored" \| "freezer"` | Dimensión 3 — quién puede moverse. |
+| `objRootsToNodes(roots, pathInitFn?)` | Decora recursivamente los modelos con los getters de rol y normaliza `flatPath` (sin prefijos `_UP_`/`_M_`). Asigna `pathInit ??= flatPath`. |
+| `groupedWithSeparators(groups)` | Aplana grupos intercalando `{separator: true}`. |
+| `TreeNode(Base)` | **Mixin opcional.** Devuelve una clase abstracta con todos los campos de nodo persistidos en `this.f` (`TObject`). Incluye los getters readonly y `recomputeHasChildren(siblings, getPath)`. Útil cuando el dominio quiere implementar `ITreeData` directamente. |
 
-## Invariante de cascada
+`isEmpty` se define como: `topology === "atom" || childrens.length === 0`.
 
-> **Un índice NUNCA importa de un índice mayor dentro de la misma cascada.**
+## `00-context.ts` — `TTreeAdapterContext`
 
-Si una capa inferior necesita el "tipo" o el comportamiento de una superior, se declara `abstract` y la herencia cierra el contrato. Sin imports hacia arriba — sin ciclos — sin tipos fantasma.
+Estado interno + acceso a props inyectadas por `TreeRowView.svelte`.
 
-Cada archivo es **una sola clase**. El número en el nombre marca el orden de extensión.
+- **`treeRootId`** estable (`tree-${++seq}`) para scoping DOM (`data-tree-root`).
+- **Estado por flatPath**: `_selectedFlatPath`, `_focusedFlatPath`,
+  `_hoveredFlatPath`, `_pendingDeleteFlatPath`, `_expandedFlatPaths[]`,
+  `_treeNodes[]`. Los getters `selectedNode`/`focusedNode`/`hoveredNode`
+  resuelven al vuelo vía `findNodeByFlatPath` (las referencias DOM no se
+  cachean: el árbol puede haberse reconstruido).
+- **Flags derivados de props**: `disabled`, `isViewMode`, `isReadOnly`,
+  `puedeCrear`/`puedeModificar`/`puedeEliminar`, `draggable`.
+- **`bcanMoveOutside`**: `boolean | (src,tgt,pos) => boolean`. Permite
+  bloquear moves que cambian de padre (default `true`).
+- **`onstateupdate(ctx)`**: refresca el contexto con `defineProperties`
+  (preserva descriptores reactivos).
+- Métodos `normalizeFlatPath` y `findNodeByFlatPath` declarados pero no
+  implementados aquí (se sobrescriben en `03-tree-shape.ts`).
 
-## El contrato (`01-contract.ts`)
+## `01-contract.ts` — `TTreeAdapterContract` (abstract)
 
-Esto es lo único que importa cuando vas a implementar tu propio adapter concreto. Todos los miembros abstractos están aquí, **públicos** (no `protected`):
+Hooks intermedios + tick UI + flash. Provee implementaciones base no-op para
+que las subclases las pisen.
 
-| Miembro | Qué provee |
-| ------- | ---------- |
-| `nodeCtor` | Constructor del UX que envuelve cada fila. |
-| `nidNode` | Nombre del campo id del UX (ej. `"iplan"`). |
-| `stack` | El objeto contenedor (raíz). |
-| `istack` / `nistack` | Id y nombre de id del stack. |
-| `stackList` (get/set) | La lista plana subyacente que el árbol presenta. |
-| `createNode` | Cómo crear una instancia UX desde data cruda. |
-| `toNode` | Normaliza data a UX (con clon si toca). |
-| `onrefresh` | Reconstruye el árbol y notifica vistas. |
-| `applySelection(obj \| null)` | Aplica selección desde tu modelo. |
-| `resyncExpandedToCurrentTree` | Re-mapea expandidos tras un cambio estructural. |
-| `syncAllRowAdapters` | Empuja sync a todos los `TreeRowAdapter` registrados. |
-| `getlevelname(nivel?, record?)` | Etiqueta del nivel jerárquico. |
-| `getEditDriverAttrs` / `getEditAttrsForLevel` | Atributos editables. |
-| `canEditSelectResource` | ¿Esta fila puede asignar recurso? |
-| `getEditAtributoValor` / `setEditAtributoValor` | Lectura/escritura de atributos del draft. |
-| `setEditRecursoSelected` | Asigna recurso al draft. |
+- **UI tick**: `uiTick`, `addUiListener(fn) → unsubscribe`, `notifyUI()` (sync: incrementa `uiTick` + dispara listeners).
+- **`rowAdapters: Map<flatPath, TreeRowAdapter>`** — registro de los
+  adapters por fila visible.
+- **Flash**: `flashFlatPaths`, `flashErrorFlatPaths`, timers de auto-clear.
+- **`getReferenceFlatPath(node)`**: padre directo según notación punteada.
+- **`getVisibleFlatPaths(nodes, expandedSet)`**: DFS solo expandidos.
+- Hooks abstractos a override en capas superiores: `toNode`, `onrefresh`,
+  `applySelection`, `resyncExpandedToCurrentTree`, `syncAllRowAdapters`,
+  `syncRowAdaptersByFlatPaths`, `createNode`, `listSlave`, `getEditAttrsForLevel`.
 
-> Si no implementas alguno, TypeScript te detiene en compile-time.
+## `02-model.ts` — `TAModel` (abstract)
 
-`getVisibleNodeIds(nodes, expandedSet)` también vive aquí, pero como **concreto** (helper común).
+Estado del modelo, drawer, acciones CRUD vía hooks UI.
 
-## Capa `06-roles.ts` — sistema actoral
+- **Hooks UI** (los enchufa el `.svelte`): `onrequestopendrawer`,
+  `onrequestclosedrawer`, `onrequesteditshow`, `onrequestdelete`, `onError`.
+- **`listSlaveNodes`**: `listSlave.map(toNode)` — vista normalizada.
+- **Acciones por defecto del catálogo** (`Act*`): `ActInsertar`, `ActEliminar`,
+  `ActCrear` (no-op), `ActModificar`, `ActVisualizar` (`Object.assign(slaveNode, found)`),
+  `Actualizar`. Cubren la API esperada por el `EntitySlaveController`.
+- **`sortChildrens(a,b)`**: orden lexicográfico por último segmento numérico.
+- **`getRecordSecurityCode(node)`**: deriva un código de 5 chars (padding `X`)
+  desde `iplan`/`idrow` para confirmar eliminación.
+- **Show/hide drawer**: `showFrmModificar`, `showFrmVisualizar`, `showEliminar`
+  — todos resuelven el `INode` con `findNodeForAction` (busca por `flatPath`,
+  luego por `idrow`/`iplan`, luego por identidad `objRow ===`).
+- **`postSubmit(o, action)`**: dispatcher que llama
+  `ondeleteconfirmed`/`onAfterCatalogModificar` y cierra el drawer.
+- **`confirmarEliminar(codigo)`**: gate por código, llama `ActEliminar` +
+  `postSubmit("Eliminar")`.
 
-Modelo de roles tipo "clases CSS" en kebab-case sobre `node.obj.actor`. Múltiples roles en el mismo nodo se separan por espacios:
+## `03-tree-shape.ts` — `TATreeShape` (abstract)
 
-| Rol | Semántica |
-| --- | --------- |
-| `atom` | Nodo hoja conceptual. Nunca pinta caret aunque tenga hijos. |
-| `group` | Agrupador genérico. **Inferido** automáticamente si el nodo declara cualquiera de los roles agrupadores (`warden`, `prison`, `hermetic`, `cell`, `freezer`, `monarchy`). |
-| `warden` | Ancestro que **transforma** el `WardenDraft` que un descendiente solicita (pipeline closest→farthest). |
-| `prison` | Agrupador con **osmosis** (sus hijos pueden salir vía drag). Aporta acción "Liberar". |
-| `cell` | Agrupador con osmosis que **se extingue** con todos sus integrantes. |
-| `hermetic` | Agrupador **sellado** (los hijos no salen) con acción eliminar. |
-| `freezer` | Agrupador **tautológico**: congela a TODOS sus descendientes (no se mueven). Requiere `obj.sortChildren(children)`. |
-| `monarchy` | Agrupador **contingente**: cada descendiente decide vía `obj.freeze(): boolean`. Requiere `obj.sortChildren(children)`. |
+Forma del árbol: customs, fabricación de nodos, búsqueda y normalización.
+**No** se ocupa de orden ni de commit (eso lo hace `TATreeFlow`).
 
-Predicados expuestos: `isAtom`, `isWarden`, `isPrison`, `isHermetic`, `isCell`, `isFreezer`, `isMonarchy`, `isGroupActor`, `isGrouper` (compuesto), `isActionGrouper`, `allowsChildEscape`.
+### Customs y runtime
 
-### Pipeline de vigilancia (`wardenDraft`)
+- **`customs?: ITreeCustoms<TListObj>`** — el contrato del consumidor. Totalmente opcional.
+- **`buildCustomsRuntime(): ITreeRuntime<TListObj>`** — runtime que el consumer
+  recibe en `onexpand`/`oncollapse`/`updateNode`/`menu`/`rowActions`/`toolsBarActions`/`hotkeys`.
+  Expone: `record`, `rootNodes`, `findByFlatPath`, `findByPathInit`, `sanitizeFlatPath`,
+  mutaciones (`move`, `addChild`, `addSibling`, `openEdit`, `openView`, `remove`,
+  `release`, `addRoot`, `collapseAll`, `expandAll`), historial (`historyUndo`,
+  `historyRedo`, `historyCanUndo`, `historyCanRedo`, `historyIsViewingPast`),
+  protección (`isProtected`, `protectionToggle`, `setProtected`, `canToggleProtection`,
+  `isReadOnlyExternal`), roles (`actorActions`, `isFirstSibling`, `isLastSibling`,
+  `isPrisonOnly`) y flags (`isReadOnly`, `canMutate`, `puedeCrear`, `puedeModificar`,
+  `puedeEliminar`, `draggable`).
 
-```text
-                         hijo
-                          │
-            wardenDraft(child)
-                          │
-                          ▼
-         ┌──── ancestor #1 (closest)  ─── if isWarden ─► wardenTransform
-         │                ▼
-         │      ancestor #2            ─── if isWarden ─► wardenTransform
-         │                ▼
-         │      …                       ─── … ────────►  …
-         │                ▼
-         └──── root (farthest)          ─── if isWarden ─► wardenTransform
-                          │
-                          ▼
-                WardenDraft<TWorking>
-                  { node, actions, cascadeOptions, extra }
-```
+### Helpers de path / búsqueda
 
-El **hijo solicita**; los wardens enriquecen su descriptor; el row final lo consume vía `getRowConfig`. El warden nunca empuja acciones al hijo: el hijo es quien lee.
+- **`normalizeFlatPath(id)`** — elimina prefijos `_UP_`/`_M_`, trim.
+- **`findByPathInit(pathInit)`** — busca por `pathInit` (ID congelado de la sesión).
+- **`findNodeByFlatPath(id, branches?)`** — DFS en el árbol presentación.
+- **`findNode(data)`** — encuentra por identidad de objeto.
+- **`findReferenceBranchInTree(branches, childId)`** — devuelve el padre.
+- **`getNodeByFlatPath(id)`** — atajo `findNodeByFlatPath(id)?.objRow`.
+- **`getSiblingPosition(id)`** → `{ isFirst, isLast }`.
+- **`walkAncestors(node)`** → array de ancestros (más cercano primero).
+- **`siblingsOf(node)`** → hermanos del nodo.
 
-`WardenDraft<TWorking>`:
+### Construcción / materialización de nodos
 
-```ts
-export interface WardenDraft<TWorking> {
-   readonly node: INode<TWorking>;
-   actions: ButtonIconifyProps[];
-   cascadeOptions: FlexOptionsInput[];
-   extra: Record<string, unknown>;
-}
-```
+- **`createNode(data: TObject): TListObj`** — usa `customs.newItem` si está
+  definido; si no, usa `new customs.klass()` y copia atributos; si tampoco hay
+  `klass`, **cae a un objeto plano** con `childrens: []`. Si `data.flatPath` o
+  `customs.getFlatPath(data)` tiene valor, lo copia.
+- **`materializeNode(data)`** — `createNode` + `applyDomainDefaults` +
+  `invokeUpdateNode("old")`.
+- **`applyDomainDefaults(node)`** — calcula `depth` (puntos en path), inicializa
+  `topology ??= "group"`, computa `hasChildren`.
+- **`computeNodeHasChildren(flatPath)`** — escanea `listSlave` por parent-prefix.
+- **`toNode(data, clone=false)`** — entry para construir un `INode` decorado.
 
-### Congelamiento (`isFrozen`)
+### Drag & drop primitives
 
-Recorre ancestros closest→farthest:
-1. Si encuentra `freezer` → `assertOrderingContract` y devuelve `true`.
-2. Si encuentra `monarchy` → `assertOrderingContract`, exige `node.obj.freeze(): boolean` y respeta su valor.
+- **`canDrop(srcId, tgtId, "before"|"after"|"into")`** — combina roles de
+  contención + mobility + `isDescendant` (no permite meter ancestro en
+  descendiente) + default `canDropAtRoot`.
 
-`assertOrderingContract` es **fail-fast**: si el agrupador con rol ordenador no implementa `sortChildren(children)`, lanza error inmediatamente al evaluar el rol.
+## `04-tree-flow.ts` — `TATreeFlow` (abstract)
 
-`isFrozen` solo afecta acciones de **movimiento** (drag handle, ↑/↓, atajos `Ctrl+↑/↓`). Editar, eliminar, agregar, expandir/colapsar siguen funcionando — la capa de fila filtra `mdi:arrow-up`/`mdi:arrow-down` y desactiva el drag.
+Flujo del árbol: construir desde lista plana, aplanar, commit y saneo previo a guardado.
 
-### Osmosis (`allowsChildEscape`)
+### Construcción / aplanado / rebuild
 
-| Rol del padre | ¿Hijos pueden salir? |
-| ------------- | -------------------- |
-| `prison`, `cell` | sí (por contrato) |
-| `hermetic`, `freezer`, `monarchy` | no |
-| sin rol específico | sí (legacy) |
+- **`buildTree(planes)`** — hash por path + DFS, **completa ancestros faltantes**
+  vía `ensureAncestors` (stub virtual), ordena por `sortChildrens`.
+- **`flattenTree(roots)`** — recorrido DFS reasignando IDs incrementales y
+  remapeando expandidos vía `idMap`.
+- **`rebuildFlatTree(sort?)`** — agrupa por padre, ordena recursivamente,
+  vuelca a `listSlave`.
 
-### Hooks abstractos heredados a las capas concretas
+### Commit del árbol al guardar
 
-`TARoles` declara como `abstract` (puro contrato, agnóstico de modo de vista):
+- **`oncommittreeorder(roots)`** — DFS reasignando IDs. Para cada nodo invoca
+  `customs.setFlatPath(node, fp)` (escribe al dominio, p.ej. `iplan`).
+- **`prepareTreeForSave(flat, idMap?)`** — vuelca a `listSlave`. Si es `TArray`,
+  hace `length=0 + push` (mantiene la misma referencia para reactividad). Si
+  no, asigna directo.
+- **`commitFlatPaths()`** — `oncommittreeorder` + DFS + `commitTreeForSave`.
+  **No llamar desde la UI** — `runCustomsPreSubmit` ya lo invoca.
+- **`runCustomsPreSubmit()`** — punto de entrada blindado del guardado:
+  ```ts
+  async runCustomsPreSubmit() {
+     for (const node of this.allNodes) await this.customs?.updateNode?.(node, "old", runtime);
+     this.commitFlatPaths();
+  }
+  ```
+  El orden no se puede invertir desde fuera.
 
-| Hook | Disparador semántico |
-| ---- | -------------------- |
-| `onrowtoggle(node)` | El nodo expande/colapsa. |
-| `onCtrlEnter(node)` | `Ctrl+Enter` sobre el nodo enfocado. |
-| `onswipenoop()` | Gesto de swipe que se debe consumir sin acción. |
+### CRUD básico
 
-Hook **virtual** (default concreto):
+- **`addNode(data, onDuplicate?)`** — añade si no duplica + rebuild.
+- **`updateNode(data, mutate?)`** — encuentra + `Object.assign` + rebuild.
+- **`removeNode(data)`** — filtra el subárbol completo + rebuild.
 
-| Hook | Default |
-| ---- | ------- |
-| `canAddChild(node)` | `true` |
+### Refresh / lifecycle
 
-> El sufijo "row" en `onrowtoggle` es histórico; el contrato es genérico. La capa de fila (`_asRow`) los implementa con su semántica de fila; otra capa de mosaico/grafo podría implementarlos distinto.
+- **`onrefresh()`** — congela `pathInit` desde `customs.getFlatPath` (o
+  `flatPath`), reconstruye `_treeNodes` con `objRootsToNodes`, `notifyUI`.
+- **`onstateupdate(ctx)`** — sincroniza props, dispara
+  `onchangecurso`/`onbranchexpand`/`onprocessobj`/`onupdate`/`ontouchitem`/
+  `onensurefirstselection`. Si cambió `itdForm`/`readonly`, sincroniza todos
+  los row adapters.
+- **`onbranchexpand()`** — expande raíces solo la primera vez.
+- **`onprocessobj()`** — selecciona la primera raíz si no hay selección (microtask).
+- **`onAfterCatalogModificar()`** — limpia pendings, `onrefresh`, sync.
 
-## Capa `05-mutations.ts` — operaciones del usuario
+## `05-view.ts` — `TAView` (abstract)
 
-`add/move/reorder/delete/edit`. Encapsula:
-- `onaddroot`, `onaddchild`, `onaddsibling`, `handleaddchild`, `handleaddsibling`.
-- `move` (↑/↓), `reorder` (drag), `nestInto` (anidar).
-- `requestDelete`, `ondeleteconfirmed`.
-- `openEdit`, `openViewNode`, `oneditaccept`.
+Selección/foco DOM, expand/collapse, flash.
 
-Las mutaciones **no** filtran por rol; quien decide qué se permite por rol son las capas `06-roles` (predicados + warden) y la capa de fila (`_asRow/01-...Events.ts` → `getRowConfig`).
+- **`applySelection(edit)`** — `_selectedFlatPath` + `record`.
+- **`setSelectedFlatPath(id, ctx?)`** — selecciona y enfoca.
+- **`focusRowByFlatPath(id)`** — busca DOM scope (`data-tree-root`), busca
+  `[data-flatpath]`, hace `summary.focus()` con doble intento (microtask + RAF).
+- **`refocusFocusedRowSummary()`** — restaura foco con hasta 6 RAFs.
+- **`blurTreeSummariesExcept(active)`** — blurr todos los summaries hermanos.
+- **`commitAndFlash(id)`** — selecciona + flash + sync.
+- **`flashRowFlatPaths(ids, durationMs=650)`** — flash verde.
+- **`flashRowErrorFlatPaths(ids, durationMs=650)`** — flash rojo + fuerza
+  refresh DOM antes/después.
+- **`expandAll()`** — recolecta IDs branch + une al set actual.
+- **`collapseAll()`** — `expandedNodes = []`.
+- **`expandedNodesAfterToggle(nodes, id, open)`** — pure helper.
+- **`restoreExpandedFromSnapshot(ids)`** — restaura desde snapshot pre-eliminación.
 
-## Capa `04-view.ts` — selección/foco/expand/flash (sin DOM)
+## `06-mutations.ts` — `TAMutations` (abstract)
 
-`setSelectedId`, `applySelection`, `expandAll`, `collapseAll`, `expandedNodesAfterToggle`, `setFlashIds`, foco de fila genérico (estado lógico, no DOM).
+Operaciones del usuario. Cada mutación termina con
+`onrefresh + resyncExpandedToCurrentTree + setSelected + syncAllRowAdapters + focusRow`.
 
-> Las operaciones DOM específicas de `<summary>`/`[data-tree-row-id]`/`[data-idrow]` están en `_asRow/00-treeAdapterAsRow.ts` (`focusRowById`, `refocusFocusedRowSummary`, `blurTreeSummariesExcept`). No viven aquí porque acoplan al modo de vista en fila.
+- **`onaddroot()`** — añade nodo raíz, abre drawer en modo crear.
+- **`openSiblingDrawer(ref, "above"|"below")`** — calcula nuevo `flatPath` como
+  hermano, materializa con `kind:"sibling"`, persiste con `ActInsertar`, selecciona.
+- **`onaddsibling/handleaddsibling(id, pos)`** — wrapper.
+- **`onAddChildLastLevel(refId)`** — guarda `_pendingLastLevelParentFlatPath` y
+  delega a `customs.openLastLevelSelector` (selector externo).
+- **`onaddchild/handleaddchild(refId)`** — si `customs.shouldOpenLastLevelSelector(parent)`
+  retorna `true`, va por el last-level path; si no, materializa hijo normal con
+  `kind:"child"`.
+- **`onselectlastlevel(records)`** — recibe del selector externo, asigna paths
+  secuenciales bajo el padre pendiente, materializa con `kind:"lastLevel"`,
+  expande padre.
+- **`getNextFlatPath(refId)`** — calcula `parent.X+1` viendo hijos actuales.
+- **`move(id, "up"|"down")`** — swap con vecino, `oncommittreeorder`, re-foco.
+- **`reorder(srcId, tgtId, "before"|"after")`** — splice cross-padre con guard
+  `bcanMoveOutside`.
+- **`nestInto(srcId, tgtId)`** — anida `src` como hijo final de `tgt`.
+- **`requestDelete(node)`** — toma snapshot de visibles + índice del pending
+  para restaurar selección al vecino tras eliminar; abre modal.
+- **`ondeleteconfirmed()`** — limpia selection si era el eliminado, refresca,
+  fallback al vecino visible.
 
-## Capa `03-tree.ts` — modelo del árbol
+## `06b-history.ts` — `TAHistory` (abstract)
 
-`buildTree`, `flattenTree`, `findNodeById`, `findBranchById`, `findBranchByObject`, `getSiblingPosition`, `getNextNodeId`, `normalizeNodeId`. La función helper `objRootsToNodes` se exporta desde `_asRow/_rowAdapter/00-base.ts` (junto a los tipos del nodo).
+Undo/Redo + modo protegido. Las mutaciones de `06-mutations.ts` capturan
+snapshot antes de aplicar.
 
-## Capa `02-model.ts` — estado del modelo
+### Historial
 
-`obj` (get/set con `onrefresh`), `_item`, `_originalItem`, `CatalogoController`, `setShowFrm`, `bindParentData`, `onstateupdate`, dirty-check, `_treeNodes`/`_expandedNodes`/`_focusedNodeId` privados.
+- **`historyPast` / `historyFuture`** — arrays serializados (límite 50).
+- **`historyCanUndo`** / **`historyCanRedo`** / **`historyIsViewingPast`** — getters reactivos.
+- **`historyUndo()`** — apila el estado actual en `future`, desapila el último de `past`, restaura.
+- **`historyRedo()`** — inverso.
+- **`historyRecover()`** — sale del modo "viewing past" volviendo al presente sin perder el future.
+- **`captureHistorySnapshot()`** / **`suspendHistory()`** / **`resumeHistory()`** — usados internamente por las mutaciones para registrar puntos atómicos.
 
-## Por qué cascada y no monolito
+### Modo protegido
 
-- **Diff limpio.** Cambias el sistema actoral, tocas `06-roles.ts`. Cambias mutaciones, tocas `05-mutations.ts`. El blame queda preciso.
-- **Contrato unificado.** Si te preguntas "¿qué tengo que implementar?", abres `01-contract.ts`.
-- **Cascada estricta.** Sin imports hacia índices superiores. Si la capa inferior necesita la API de una superior, la declara `abstract` y la herencia la cierra.
-- **Sin barrels intermedios.** El único punto de entrada para consumidores es `TreeRowView.svelte`. Internamente la cascada se importa por archivo.
+- **`isProtected`** — `true` si `_protectionMode || historyIsViewingPast`.
+- **`canToggleProtection`** — `true` si no es readonly externo.
+- **`canMutate`** (override) — `!isReadOnly && !_protectionMode`. Apaga botones de mutación cuando se está revisando historial o el usuario activó "modo lectura".
+- **`protectionToggle()`** — encender/apagar. Si ya está protegido, abre un prompt de confirmación antes de liberar.
+- **`setProtected(v)`** — set directo.
+- **`requestProtectionRelease()`** / **`confirmProtectionRelease()`** / **`cancelProtectionRelease()`** — flujo del prompt.
 
-## Cómo consumir
+### Interacción con la cascada superior
 
-```ts
-import {
-   TreeRowViewAdapter,
-   TreeNodeUX,
-   type INode,
-   type ITreeData,
-} from ".../_comps/TreeView/TreeRowView.svelte";
+- `isReadOnly` se redefine como `super.isReadOnly || historyIsViewingPast`.
+  Así, mientras se navega el historial, todas las capas superiores se
+  comportan como readonly.
 
-class MiUX extends TreeNodeUX(TMiPlan) {}
+## `07-roles.ts` — `TARoles` (abstract)
 
-class MiAdapter extends TreeRowViewAdapter<TMiCurso, MiUX> {
-   get stack() { return this.obj }
-   get stackList() { return this.stack.items }
-   set stackList(v) { this.stack.items = v }
-   get istack()  { return String(this.stack.id) }
-   get nistack() { return "id" }
-   get nodeCtor(){ return MiUX }
-   get nidNode() { return "id" }
-   createNode(data) { return new MiUX(data, this.stack) }
-   toNode(data, clone = false) { /* ... */ }
-   getlevelname(nivel, rec?) { /* ... */ }
-   // ... resto del contrato
-}
-```
+Roles compuestos del nodo + acciones de rol + "extinguir".
+
+- **Lectores por dimensión** (delegados a los getters de `INodeShape`): `isAtom`, `isGroupActor`, `isPrison`, `isHermetic`, `isCell`, `isUnanchored`, `isFreezer`.
+- **`allowsChildEscape(node)`** — `false` si `hermetic`/`freezer`.
+- **`actorActions(node)`** — botones específicos por rol (p.ej. "liberar" para `prison`).
+- **`extinguirNodo(record)`** — switch por rol:
+  - `prison` (no hermetic) → `onrelease`.
+  - `cell` → `promoteChildrenAndDelete`.
+  - resto → `onrowdelete` (eliminación normal).
+- **`isFrozen(node)`** — `freezer` ancestro o flag `freeze` por nodo.
+- **`getRootActor()`** — `"" | "freezer"` para nodos raíz.
+- Hooks de override: `onrowtoggle`, `canAddChild`, `onrelease`, `promoteChildrenAndDelete`.
+
+`onrowtoggle` está implementado en `TARowBase` (capa fila): pre-filtra
+`isGroupActor && canMutate` y elige `customs.onexpand` (si `open`) u
+`customs.oncollapse` (si no) antes de invocar `handler(node, runtime)`.
 
 ## Reglas de oro
 
-1. **Si es abstract, va en `01-contract.ts` y es público.** Punto.
-2. **No mezcles capas.** Un método de selección no entra en `03-tree.ts`. Un `flattenTree` no entra en `04-view.ts`. Operaciones DOM de fila NO entran aquí — viven en `_asRow/`.
-3. **Cascada estricta: nunca importes de un índice mayor.** Si la capa inferior necesita la API de una superior, declara el método como `abstract`.
-4. **No reintroduzcas un barrel intermedio.** El único barrel es `TreeRowView.svelte`. La cascada se importa por archivo.
-5. **No conviertas getters concretos en abstract a la ligera.** Si hay un default razonable, déjalo concreto y permite override.
-6. **Svelte 4.** Sin runas, sin snippets. Esta cascada es TS puro; la reactividad la pone el `.svelte` consumidor.
+1. **Si es estructural, va en una capa baja.** No mezcles selección DOM en `03-tree-shape.ts` ni mutaciones en `05-view.ts`.
+2. **`runCustomsPreSubmit` es el único punto de entrada para guardar.** La UI no debe llamar `commitFlatPaths` directamente.
+3. **`flatPath` muta libre durante moves.** El dominio (`iplan`, etc.) se sincroniza únicamente en `oncommittreeorder` vía `customs.setFlatPath`.
+4. **`pathInit` se congela en cada `onrefresh`** desde `customs.getFlatPath`. No mutarlo manualmente.
+5. **Roles son 3D ortogonales.** Un nodo `["atom","hermetic","freezer"]` es válido (átomo herméticamente contenido, congelado).
+6. **`canMutate` ya combina** `isReadOnly + protectionMode + historyIsViewingPast`. Usar este flag en vez de combinar manualmente.
+7. **Svelte 4.** Esta cascada es TS puro; la reactividad va en el `.svelte`.

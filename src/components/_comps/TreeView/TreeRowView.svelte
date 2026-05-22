@@ -1,269 +1,255 @@
 <svelte:options accessors={true} />
 
 <script context="module" lang="ts">
-   import { AccionesGen, ActionDrawer, Button, FlexLayout, Iconify, Modal, Text, type TDForm } from "@ingenieria_insoft/ispsveltecomponents";
+   import type { TObject } from "@ingenieria_insoft/ispgen";
+   import type { TBAllowed, TDForm } from "@ingenieria_insoft/ispsveltecomponents";
+   import { FlexLayout, Text } from "@ingenieria_insoft/ispsveltecomponents";
+   import { onDestroy, tick } from "svelte";
    import type { HTMLAttributes } from "svelte/elements";
-   import type { FlexOptionsAction } from "../Options/FlexOptions.svelte";
+   import ObjJConfig from "../Form/jconfig/ObjJConfig.svelte";
+   import type { FlexOptionsInput } from "../Options/FlexOptions.svelte";
    import FlexOptions from "../Options/FlexOptions.svelte";
-   import RowItem from "./_asRow/_rowItem.svelte";
-   import { ComplexControl } from "./_treeAdapter/_defgen/01-complex-control";
-   import { TreeNode, objRootsToNodes, type INode, type ITreeData } from "./_treeAdapter/_defgen/00-tree-data";
-   import { groupedWithSeparators, TreeRowAdapter } from "./_asRow/_rowAdapter";
    import { TreeRowViewAdapter } from "./_asRow/01-treeAdapterAsRowEvents";
-   export { ComplexControl, TreeRowViewAdapter, TreeRowAdapter, TreeNode, groupedWithSeparators, objRootsToNodes };
-   export type { INode, ITreeData };
-
-   export interface TreeViewProps<Stacker, TWorking extends ITreeData<TWorking>> extends HTMLAttributes<HTMLDivElement> {
-      Obj: Stacker;
-      itdForm: TDForm;
-      brapido?: boolean;
+   import { TreeRowAdapter } from "./_asRow/_rowAdapter/02-events";
+   import RowItem from "./_asRow/_rowItem.svelte";
+   import { groupedWithSeparators, objRootsToNodes, TreeNode, type INode, type ITreeData } from "./_treeAdapter/_defgen/00-tree-data";
+   import type { ITreeAction, ITreeCustoms, ITreeCustomsRow, ITreeRowCtx, ITreeRuntime, RowOf } from "./contracts";
+   export const TreeAdapter = TreeRowViewAdapter;
+   export type TreeAdapterRow<R extends ITreeData<R> & TObject> = TreeRowViewAdapter<R>;
+   export type TreeAdapter<TBase extends TObject> = TreeRowViewAdapter<RowOf<TBase>>;
+   export { groupedWithSeparators, objRootsToNodes, TreeNode, TreeRowAdapter, TreeRowViewAdapter };
+   export type { INode, ITreeAction, ITreeCustoms, ITreeData, ITreeRowCtx, ITreeRuntime, RowOf };
+   export interface TreeViewProps<TListObj extends ITreeData<TListObj> & TObject> extends HTMLAttributes<HTMLDivElement> {
       readonly?: boolean;
-      small?: boolean;
-      CatalogoController: Record<string, any>;
-      TreeController: TreeRowViewAdapter<Stacker, TWorking>;
+      TreeController?: TreeAdapterRow<TListObj>;
+      bAllowed?: TBAllowed;
+      draggable?: boolean;
       disabled?: boolean;
-      objWorking?: TWorking | null;
-      showToolbar?: boolean;
-      bdrag?: boolean;
-      bLostFocus?: boolean;
-      addReferenceId?: string | null;
-      resourceSelectorOpen?: boolean;
-      /**
-       * Cuando es `true`, los nodos pueden salir de su agrupador (cross-parent reorder/drag).
-       * Si se pasa una función, retornar `true` autoriza el movimiento; `false` lo bloquea.
-       */
-      bcanMoveOutside?: boolean | ((source: TWorking, target: TWorking, position: "before" | "after") => boolean);
+      onError?: (msg: string) => void;
+      List2Rows?: unknown;
+      record?: INode<TListObj> | null;
+      customs?: ITreeCustomsRow<TListObj>;
    }
-
-   export interface TreeViewSlots<Stacker, TWorking extends ITreeData<TWorking>> {
-      default: { treeToolbar: TreeRowViewAdapter<Stacker, TWorking>; sizew: any; showEliminar: (Obj: TWorking) => void };
-      pre: { treeToolbar: TreeRowViewAdapter<Stacker, TWorking>; sizew: any; showEliminar: (Obj: TWorking) => void };
-      row: { node: TWorking };
-      Frm: any;
+   export interface TreeViewSlots<TListObj extends ITreeData<TListObj> & TObject> {
+      default: { sizew: any; showDelete: (Obj: TListObj) => void; treeAdapter: TreeAdapterRow<TListObj> };
+      header: { treeAdapter: TreeAdapterRow<TListObj>; sizew: any; showDelete: (Obj: TListObj) => void };
+      row: { node: INode<TListObj> };
+      helperRow: { node: INode<TListObj> };
+      grouperCaret: { open: boolean; node: INode<TListObj> };
+      dragHandle: { frozen: boolean; disabled: boolean };
+      Frm: { record: TListObj; itdForm: "view" | "edit" | "create" | undefined; ancestors: INode<TListObj>[]; isNew: boolean };
    }
+   export type EditDrawerStructureCtx<T extends ITreeData<T> & TObject> = { bshow: boolean; notClose: boolean; readonly: boolean; itdForm: TDForm; bAllowed: TBAllowed | undefined; record: INode<T> | null; onItdFormChange: (v: TDForm) => void; onclose: () => void; onError: (msg: string) => void; oninput: () => void; postSubmit: (o?: unknown, action?: unknown) => Promise<void> };
 </script>
 
-<script lang="ts" generics="Stacker, TWorking extends ITreeData<TWorking>">
-   import { toastError } from "$lib/stores";
-   import TouchGestures from "../containers/TouchGestures.svelte";
+<script lang="ts" generics="TListObj extends ITreeData<TListObj> & TObject">
+   interface $$Props extends TreeViewProps<TListObj> {}
+   interface $$Slots extends TreeViewSlots<TListObj> {}
 
-   interface $$Props extends TreeViewProps<Stacker, TWorking> {}
-   interface $$Slots extends TreeViewSlots<Stacker, TWorking> {}
-
-   export let CatalogoController: $$Props["CatalogoController"];
-   export let TreeController: $$Props["TreeController"];
-   export let showToolbar: $$Props["showToolbar"] = true;
-   export let objWorking: $$Props["objWorking"] = null;
-   export let disabled: $$Props["disabled"] = false;
+   export let TreeController: $$Props["TreeController"] = undefined;
    export let readonly: $$Props["readonly"] = false;
-   export let Obj: $$Props["Obj"];
-   export let itdForm: $$Props["itdForm"];
-   export let brapido: $$Props["brapido"] = false;
-   export let small: $$Props["small"] = false;
-   export let bdrag: $$Props["bdrag"] = true;
-   export let bLostFocus: $$Props["bLostFocus"] = false;
-   export let bcanMoveOutside: $$Props["bcanMoveOutside"] = false;
+   export let bAllowed: $$Props["bAllowed"] = undefined;
+   export let draggable: $$Props["draggable"] = true;
+   export let onError: $$Props["onError"] = undefined;
+   export let List2Rows: $$Props["List2Rows"] = undefined;
+   export let customs: $$Props["customs"] = undefined;
+
+   if (!TreeController) TreeController = new TreeRowViewAdapter<TListObj>({} as unknown as TreeViewProps<TListObj>);
+   if (onError) TreeController.onError = onError;
+   TreeController.customs = customs;
+
+   let record: INode<TListObj> | null = null;
+   let disabled = false;
+   const getEntryLabel = () => customs?.entrie ?? "registro";
+   const getEntriesLabel = () => customs?.entries ?? `Árbol de ${getEntryLabel()}s`;
+   const getTreeAriaLabel = () => getEntriesLabel();
+   const getToolbarAriaLabel = () => `Acciones de ${getEntriesLabel()}`;
+   const getHostClass = () => ["isp-tree-host", "isp-tree", $$restProps.class].filter(Boolean).join(" ");
 
    let editRowShow = false;
-   let bshowEliminar = false;
-   let loadingEliminar = false;
-   let localItdForm: $$Props["itdForm"] = "view";
+   let editRowNotClose = false;
+   let drawerForm: ObjJConfig<TObject> | null = null;
+   let _prevEditRowShow = false;
+   let showDeleteModal = false;
+   let deleteLoading = false;
+   let deleteCodeInput = "";
+   let localItdForm: "view" | "edit" | "create" | undefined = "view";
+   let uiTick = 0;
 
-   const self = {
-      get class() {
-         return ["isp-tree", $$restProps.class].filter(Boolean).join(" ");
-      },
-      get style() {
-         return typeof $$restProps.style === "string" ? $$restProps.style : undefined;
-      },
-      get resume() {
-         return { ...$$restProps, class: this.class, style: this.style };
-      },
-   };
-
-   const workingRow = (row: $$Props["objWorking"]): TWorking | null => (row as TWorking | null | undefined) ?? null;
-
-   $: rowLayoutTickStore = TreeController.rowLayoutEpoch;
-   // rootNodes se re-evalúa cada vez que el store cambia (cuando syncAllRowAdapters incrementa el epoch),
-   // garantizando que RowItem recibe el array actualizado y Svelte re-evalúa la condición del {#if}.
-   let rootNodes: INode<TWorking>[] = [];
-   $: {
-      $rowLayoutTickStore; // dependencia reactiva: fuerza re-evaluación al cambiar el epoch
-      rootNodes = TreeController.rootNodes;
-   }
-   $: itdFormResolved = readonly ? "view" : localItdForm;
-   $: currentWorking = workingRow(objWorking);
-   const swipeNoop = () => (TreeController as any).onswipenoop?.();
-   $: swipeHandlers = {
-      onswipestart: swipeNoop,
-      onswiping: swipeNoop,
-      onswipeend: swipeNoop,
-      onswipeleft: () => (TreeController as any).onswipeopendrawer?.(),
-      onswiperight: () => (TreeController as any).onswipeclosedrawer?.(),
-      onswipeup: swipeNoop,
-      onswipedown: swipeNoop,
-   };
-
-   const setShowFrm = (b: unknown) => {
-      editRowShow = !!b;
-   };
-   const findNodeByObj = (nodes: INode<TWorking>[], row: TWorking): INode<TWorking> | null => {
-      for (const node of nodes) {
-         if (node === (row as unknown) || node.obj === row) return node;
-         if (node.children?.length) {
-            const found = findNodeByObj(node.children, row);
-            if (found) return found;
-         }
+   $: deleteCodeExpected = (void uiTick, TreeController.getRecordSecurityCode(record ?? null));
+   $: isDeleteBlocked = deleteCodeInput.trim() !== deleteCodeExpected;
+   $: if (editRowShow !== _prevEditRowShow) {
+      _prevEditRowShow = editRowShow;
+      if (!editRowShow) {
+         editRowNotClose = false;
+         TreeController.closeEditForm();
       }
-      return null;
+   }
+
+   const openDrawer = async (): Promise<void> => {
+      editRowShow = true;
+      editRowNotClose = false;
+      await tick();
+      drawerForm?.snapshot();
    };
-   const closeTreePlanDrawer = () => {
+
+   const oninput = (): void => {
+      editRowNotClose = !!drawerForm?.isDirty();
+   };
+   const onItdFormChange = (v: "view" | "edit" | "create" | undefined): void => {
+      localItdForm = v ?? "view";
+   };
+
+   const offUiListener = TreeController.addUiListener(() => uiTick++);
+   onDestroy(() => offUiListener());
+
+   TreeController.onrequestopendrawer = (mode) => {
+      localItdForm = mode === "create" ? "edit" : mode;
+      openDrawer();
+   };
+   TreeController.onrequestclosedrawer = () => {
       editRowShow = false;
-      TreeController.closePlanDrawer?.();
+   };
+   TreeController.onrequesteditshow = (node, mode) => {
+      record = node;
+      localItdForm = mode;
+      openDrawer();
+   };
+   TreeController.onrequestdelete = (node) => {
+      record = node;
+      deleteCodeInput = "";
+      showDeleteModal = true;
    };
 
-   /** Busca el nodo por ID (usando `idrow` / `iplan`) con fallback a igualdad por referencia. */
-   const findNodeForAction = (objRef: TWorking): INode<TWorking> | null => {
-      const rawId = (objRef as any)?.idrow ?? (objRef as any)?.iplan;
-      const cleanId = rawId != null ? TreeController.normalizeNodeId(String(rawId)) : "";
-      if (cleanId.length > 0) return TreeController.findNodeById(cleanId);
-      return findNodeByObj(TreeController.rootNodes, objRef);
-   };
-
-   const showFrmModificar = (objRef: TWorking) => {
-      const node = findNodeForAction(objRef);
-      if (!node) return;
-      objWorking = node as unknown as TWorking;
-      localItdForm = readonly ? "view" : "edit";
-      editRowShow = true;
-   };
-
-   const showFrmVisualizar = (objRef: TWorking) => {
-      const node = findNodeForAction(objRef);
-      if (!node) return;
-      objWorking = node as unknown as TWorking;
-      localItdForm = "view";
-      editRowShow = true;
-   };
-
-   const onError = async (msg: string) => {
-      toastError(msg);
-   };
-   const postSubmit = async (_o?: unknown, action?: unknown) => {
-      if (action === "Eliminar") await TreeController.ondeleteconfirmed?.();
-      else if (action === "Modificar") await TreeController.onAfterCatalogModificar?.();
-      closeTreePlanDrawer();
-   };
-
-   const showEliminar = (objRef: TWorking) => {
-      const node = findNodeForAction(objRef);
-      objWorking = (node as unknown as TWorking | null) ?? null;
-      bshowEliminar = true;
-   };
-
-   async function confirmarEliminar() {
-      if (readonly || loadingEliminar || !objWorking) return;
-      loadingEliminar = true;
-      try {
-         const ctrl = CatalogoController as unknown as { ActEliminar?: (...args: unknown[]) => Promise<boolean> };
-         if (!ctrl.ActEliminar) throw new Error("La acción Eliminar no está disponible.");
-         const row = workingRow(objWorking);
-         if (!row) throw new Error("No hay fila activa para eliminar.");
-         await ctrl.ActEliminar(row, Obj);
-         bshowEliminar = false;
-         await postSubmit(row, "Eliminar");
-      } catch (e) {
-         const sAdd = e instanceof Error ? `\r\n${e.message}` : "";
-         await onError("No se pudo eliminar." + sAdd);
-      } finally {
-         loadingEliminar = false;
-      }
-   }
+   let toolbarActions: FlexOptionsInput[] = [];
+   let rootNodes: INode<TListObj>[] = [];
 
    $: {
+      void List2Rows;
+      void readonly;
+      void customs;
+      void bAllowed;
+      void disabled;
+      TreeController.customs = customs;
       TreeController.onstateupdate({
          ...$$restProps,
          ...$$props,
-         Obj,
-         itdForm,
-         small,
-         brapido,
-         bdrag,
-         bLostFocus,
-         bcanMoveOutside,
-         CatalogoController,
+         draggable,
          TreeController,
-         showToolbar,
-         disabled,
          readonly,
-         get objWorking() {
-            return objWorking;
+         bAllowed,
+         get record() {
+            return record;
          },
-         set objWorking(value: $$Props["objWorking"]) {
-            objWorking = value ?? null;
+         set record(value: INode<TListObj> | null) {
+            record = value ?? null;
          },
       });
+      void uiTick;
+      toolbarActions = TreeController.decorateHotkeyTitles(TreeController.customs?.topMenuActions?.(TreeController.buildCustomsRuntime()) ?? []);
    }
+   $: {
+      uiTick;
+      rootNodes = TreeController.rootNodes;
+   }
+   $: protectionPromptOpen = (void uiTick, TreeController.isProtectionPromptOpen);
+   $: protectionPromptStructure = TreeController.buildProtectionModalStructure({
+      bshow: protectionPromptOpen,
+      onclose: protectionDismiss,
+      oncancel: protectionDismiss,
+      onconfirm: protectionConfirm,
+      onredoall: protectionRedoAll,
+   });
 
-   $: TreeController.bindParentData(setShowFrm, showFrmModificar, showFrmVisualizar, showEliminar);
+   const protectionConfirm = () => {
+      TreeController.confirmProtectionRelease();
+   };
+   const protectionDismiss = () => {
+      TreeController.dismissProtectionPrompt();
+   };
+   const protectionRedoAll = () => {
+      if (typeof (TreeController as any).historyRedoAll === "function") {
+         (TreeController as any).historyRedoAll();
+      } else {
+         let guard = 1000;
+         while (TreeController.historyCanRedo && guard-- > 0) TreeController.historyRedo();
+      }
+      TreeController.confirmProtectionRelease();
+   };
+   const showDelete = (objRef: TListObj) => TreeController.showDelete(objRef);
+   const onclose = (): void => {
+      editRowShow = false;
+   };
+   const confirmDelete = async () => {
+      if (deleteLoading || isDeleteBlocked) return;
+      deleteLoading = true;
+      try {
+         const ok = await TreeController.confirmDelete(deleteCodeInput);
+         if (ok) {
+            showDeleteModal = false;
+            deleteCodeInput = "";
+         }
+      } finally {
+         deleteLoading = false;
+      }
+   };
 </script>
+
+<ObjJConfig Obj={({} as TObject)} structure={() => TreeController!.buildDeleteModalStructure({
+   bshow: showDeleteModal,
+   loading: deleteLoading,
+   isBlocked: isDeleteBlocked,
+   codeExpected: deleteCodeExpected,
+   codeInput: deleteCodeInput,
+   onclose: () => (showDeleteModal = false),
+   oncancel: () => (showDeleteModal = false),
+   onconfirm: confirmDelete,
+   oncodeinput: (v) => (deleteCodeInput = v),
+})} />
+
+<ObjJConfig Obj={({} as TObject)} structure={protectionPromptStructure} />
 
 <svelte:window on:pointerdown={(e) => TreeController.ontreeoutsidepointerdown(e)} />
 
-{#if bshowEliminar}
-   <Modal bind:bshow={bshowEliminar} bind:loading={loadingEliminar}>
-      <Text slot="title" style="display: flex; align-items: center; gap: 0.5rem;">
-         <Iconify icon="mdi:trash-can-outline" />
-         Eliminar
-      </Text>
-      <FlexLayout direction="column" style="padding: 0.75rem; min-width: 350px;">
-         <Text>Esta acción es irreversible. ¿Deseas continuar?</Text>
-         <FlexLayout direction="row" wrap justify="end" items="center">
-            <Button variant="outlined" color="neutral" onClick={() => (bshowEliminar = false)} loading={loadingEliminar}>Cancelar</Button>
-            <Button color="danger" onClick={confirmarEliminar} disabled={loadingEliminar} loading={loadingEliminar}>Aceptar</Button>
-         </FlexLayout>
-      </FlexLayout>
-   </Modal>
-{/if}
-
-<TouchGestures {...self.resume} {...swipeHandlers}>
-   <span class="isp-tree-host">
-      <FlexLayout direction="column" items="stretch" style="width: 100%; flex: 1 1 auto; min-height: 0;" let:sizew>
-         <slot treeToolbar={TreeController} {sizew} {showEliminar}>
-            {#if showToolbar}
-               <FlexOptions class="isp-tree-toolbar" inline items="center" aria-label="Acciones del plan de contenidos" actions={TreeController.getToolsBarActions() as FlexOptionsAction[]} more={TreeController.getToolsBarCascadeOptions()} />
-            {/if}
-            <slot name="pre" treeToolbar={TreeController} {sizew} {showEliminar} />
-         </slot>
-
-         <FlexLayout direction="column" class="isp-tree-body isp-tree-focus-scope" data-tree-root={TreeController.treeRootId} data-testid="tree" role="tree" aria-label="Plan de contenidos" aria-disabled={disabled}>
-            {#if rootNodes?.length}
-               <RowItem nodes={rootNodes} treeController={TreeController} rowLayoutEpoch={$rowLayoutTickStore}>
-                  <svelte:fragment slot="row" let:node>
-                     <slot name="row" node={node as unknown as TWorking} />
-                  </svelte:fragment>
-               </RowItem>
-            {/if}
-         </FlexLayout>
-      </FlexLayout>
-
-      {#if editRowShow}
-         <ActionDrawer bind:bshow={editRowShow} onclose={closeTreePlanDrawer} style="width: 580px; max-width: 90vw;">
-            <FlexLayout direction="column" style="height: 100%; background-color: var(--is-bg-primary);">
-               <FlexLayout direction="column" class="isp-tree-frm-body custom-scrollbar" cscroll style="overflow: hidden; flex: 1 1 auto; min-height: 0;">
-                  {#if currentWorking}
-                     <AccionesGen bind:itdForm={localItdForm} bRapido={true} {postSubmit} {onError} onCancel={closeTreePlanDrawer} Controller={CatalogoController as any} Obj={currentWorking as any} onNewObject={async () => currentWorking}>
-                        <slot name="Frm" slot="Frm" let:Obj={frmObj} let:small let:itdForm {frmObj} {small} {itdForm} {brapido}>
-                           <Text style="padding: 1rem;" color="neutral">Implemente el slot "Frm" para las acciones sobre el objeto {currentWorking?.flatPath ?? "---"}.</Text>
-                        </slot>
-                     </AccionesGen>
-                  {/if}
-               </FlexLayout>
-            </FlexLayout>
-         </ActionDrawer>
+<span {...$$restProps} class={getHostClass()} data-tree-root={TreeController.treeRootId}>
+   <FlexLayout direction="column" items="stretch" style="width: 100%; flex: 1 1 auto; min-height: 0;" let:sizew>
+      <slot treeAdapter={TreeController!} {sizew} {showDelete} />
+      {#if !!(customs?.menu || customs?.moreMenu) || (toolbarActions?.length ?? 0) > 0}
+         <FlexOptions class="isp-tree-toolbar" inline items="center" style="overflow: hidden;" aria-label={getToolbarAriaLabel()} actions={toolbarActions} />
       {/if}
-   </span>
-</TouchGestures>
+      <slot name="header" treeAdapter={TreeController!} {sizew} {showDelete} />
+
+      <FlexLayout direction="column" cscroll class="isp-tree-body isp-tree-focus-scope custom-scrollbar" data-testid="tree" role="tree" aria-label={getTreeAriaLabel()} aria-disabled={disabled}>
+         {#if rootNodes?.length}
+            <RowItem nodes={rootNodes} treeController={TreeController} rowLayoutEpoch={uiTick}>
+               <svelte:fragment slot="row" let:node>
+                  <FlexLayout items="center" justify="between" style="flex: 1; min-width: 0;">
+                     <Text style="flex: 1 1 auto; min-width: 0;" lines={1}>
+                        <slot name="row" {node} />
+                     </Text>
+                     {#if $$slots.helperRow}
+                        <Text style="flex: 0 0 auto; width: fit-content; margin-left: 0.5rem;" color="neutral" lines={1}>
+                           <small><slot name="helperRow" {node} /></small>
+                        </Text>
+                     {/if}
+                  </FlexLayout>
+               </svelte:fragment>
+               <svelte:fragment slot="grouperCaret" let:open let:node>
+                  <slot name="grouperCaret" {open} {node} />
+               </svelte:fragment>
+            </RowItem>
+         {/if}
+      </FlexLayout>
+   </FlexLayout>
+
+   {#if editRowShow}
+      <ObjJConfig bind:this={drawerForm} Obj={(record ?? ({} as TObject)) as TObject} let:Obj={accObj} let:itdForm={accIt} structure={() => TreeController!.buildEditDrawerStructure({ bshow: editRowShow, notClose: editRowNotClose, readonly: !!readonly, itdForm: localItdForm, bAllowed, record, onItdFormChange, onclose, oninput, onError: (msg) => TreeController.onError?.(msg), postSubmit: (o, action) => TreeController.postSubmit(o, action) })}>
+         <slot name="Frm" record={accObj as TListObj} itdForm={accIt as "view" | "edit" | "create" | undefined} ancestors={record ? TreeController.walkAncestors(record) : []} isNew={!!record && !!TreeController.isPendingInsertPath?.(record.flatPath)}>
+            <Text style="padding: 1rem;" color="neutral">Implemente el slot "Frm" para las acciones sobre el objeto {record?.flatPath ?? "---"}.</Text>
+         </slot>
+      </ObjJConfig>
+   {/if}
+</span>
 
 <style>
    span.isp-tree-host {
@@ -280,7 +266,10 @@
          .isp-tree-body {
             width: 100%;
             min-width: 0;
+            min-height: 0;
             flex: 1 1 auto;
+            overflow-y: auto;
+            overflow-x: hidden;
          }
          .isp-tree-focus-scope {
             width: 100%;
@@ -295,6 +284,8 @@
             width: max-content;
             max-width: 100%;
             min-width: min-content;
+            overflow: hidden;
+            flex: 0 0 auto;
 
             .button-option {
                flex: 0 0 auto;

@@ -1,55 +1,129 @@
-import type { ButtonIconifyProps, ComponentColor, IconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
-import type { FlexOptionsAction, FlexOptionsInput } from "../../Options/FlexOptions.svelte";
+import type { TObject } from "@ingenieria_insoft/ispgen";
+import { resolveColor, type ButtonIconifyProps, type IconifyProps } from "@ingenieria_insoft/ispsveltecomponents";
+import type { FlexOptionsInput } from "../../Options/FlexOptions.svelte";
 import { TreeRowAdapter } from "./_rowAdapter/02-events";
 import { type INode, type ITreeData } from "../_treeAdapter/_defgen/00-tree-data";
 import type { RowItemProps } from "./_rowItem.svelte";
-import { TARoles } from "../_treeAdapter/06-roles";
+import type { TreeRowConfig, RowIconConfig } from "./_rowAdapter/00-base";
+import { TARoles } from "../_treeAdapter/07-roles";
+import type { ITreeRuntimeRow } from "../contracts";
 
-/**
- * Configuración inyectable al TreeAdapter (vía `applyAdapterConfig` desde el
- * constructor de la subclase). Centraliza opciones visuales/comportamiento
- * que antes vivían dispersas en estilos de cada panel.
- */
 export interface TreeRowViewAdapterFloatCardConfig {
 	tx?: number | string;
 	ty?: number | string;
-	scale?: number;
+	e?: number;
 }
 
 export interface TreeRowViewAdapterConfig {
-	/** Transformación lineal aplicada a las cards flotantes de acciones por fila. */
 	floatCard?: TreeRowViewAdapterFloatCardConfig;
 }
 
-/**
- * Capa **infra** del adapter en modo fila. Concentra la plomería:
- *  - Configuración del adapter (`applyAdapterConfig`, `floatCard`).
- *  - Política de expansión inicial (`shouldAutoExpand`, `applyDefaultExpansion`).
- *  - Operaciones DOM de fila (`focusRowById`, `refocusFocusedRowSummary`,
- *    `blurTreeSummariesExcept`, `commitAndFlash`, `flashRowIds`).
- *  - Handlers de fila/swipe (`onrow*`, `onswipe*`).
- *  - Registro y sincronización de los `TreeRowAdapter` (`getOrCreateRowAdapter`,
- *    `registerRowAdapter`, `unregisterRowAdapter`, `disposeRowAdapterById`,
- *    `syncAllRowAdapters`).
- *
- * La capa de configuración visual por fila (`getToolsBarActions`,
- * `getRowConfig`, hooks particulares y `getNodeIcon`) vive en
- * `01-treeAdapterAsRowEvents.ts`, donde se define la clase final
- * `TreeRowViewAdapter` que extiende esta base.
- */
-export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> extends TARoles<Stacker, TWorking> {
+export class TARowBase<TListObj extends ITreeData<TListObj> & TObject> extends TARoles<TListObj> {
 	protected _adapterConfig: TreeRowViewAdapterConfig = {};
-	/**
-	 * Último id enfocado por el usuario; persiste aunque el highlight visual
-	 * se haya limpiado (p.ej. al abrir una cascada que dispara
-	 * `ontreeoutsidepointerdown`). Lo usan flujos que necesitan saber la
-	 * última intención del usuario, como inserciones relativas al foco.
-	 */
-	protected _lastFocusedNodeId: string = "";
+	protected _lastFocusedFlatPath: string = "";
+	public currentDragFlatPath: string = "";
 
-	get lastFocusedNode(): INode<TWorking> | null {
-		if (this._focusedNodeId) return this.findNodeById(this._focusedNodeId);
-		if (this._lastFocusedNodeId) return this.findNodeById(this._lastFocusedNodeId);
+	filterRowActions(cfg: TreeRowConfig | undefined, frozen: boolean): FlexOptionsInput[] {
+		const keep = (item: unknown): boolean => {
+			if (!item || typeof item !== "object") return !!item;
+			const btn = item as { icon?: string };
+			if (cfg?.isFirst && btn.icon === "mdi:arrow-up") return false;
+			if (cfg?.isLast && btn.icon === "mdi:arrow-down") return false;
+			if (frozen && (btn.icon === "mdi:arrow-up" || btn.icon === "mdi:arrow-down")) return false;
+			return true;
+		};
+		const out: FlexOptionsInput[] = [];
+		for (const entry of cfg?.actions ?? []) {
+			if (!entry) continue;
+			if (Array.isArray(entry)) {
+				const kept = entry.filter(keep);
+				if (kept.length) out.push(kept);
+				continue;
+			}
+			if (keep(entry)) out.push(entry);
+		}
+		return out;
+	}
+
+	formatHotkeyDisplay(combo: string): string {
+		if (!combo) return "";
+		const parts = combo.split("+").map((p) => p.trim()).filter(Boolean);
+		const map: Record<string, string> = {
+			ArrowUp: "Up", ArrowDown: "Down", ArrowLeft: "Left", ArrowRight: "Right",
+			Insert: "Ins", Delete: "Supr", Escape: "Esc",
+		};
+		return parts
+			.map((p) => {
+				if (map[p]) return map[p];
+				if (p.startsWith("Key") && p.length === 4) return p.slice(3);
+				if (p.startsWith("Digit") && p.length === 6) return p.slice(5);
+				return p;
+			})
+			.join("+");
+	}
+
+	decorateHotkeyTitles(actions: FlexOptionsInput[] | undefined): FlexOptionsInput[] {
+		const decorate = (raw: unknown): unknown => {
+			if (!raw || typeof raw !== "object") return raw;
+			const btn = raw as Record<string, unknown>;
+			const hotkey = typeof btn.hotkey === "string" ? btn.hotkey : "";
+			if (!hotkey) return btn;
+			const display = this.formatHotkeyDisplay(hotkey);
+			if (!display) return btn;
+			const baseTitle = typeof btn.title === "string" ? btn.title : "";
+			if (baseTitle.includes(`| ${display}`)) return btn;
+			const newTitle = baseTitle ? `${baseTitle} | ${display}` : display;
+			return { ...btn, title: newTitle };
+		};
+		const out: FlexOptionsInput[] = [];
+		for (const entry of actions ?? []) {
+			if (!entry) { out.push(entry); continue; }
+			if (Array.isArray(entry)) {
+				out.push(entry.map((b) => decorate(b)) as FlexOptionsInput);
+				continue;
+			}
+			out.push(decorate(entry) as FlexOptionsInput);
+		}
+		return out;
+	}
+
+	findHotkeyHandler(lists: Array<FlexOptionsInput[] | undefined>, combo: string): (() => void) | null {
+		if (!combo) return null;
+		const visit = (raw: unknown): (() => void) | null => {
+			if (!raw || typeof raw !== "object") return null;
+			const btn = raw as Record<string, unknown>;
+			if (btn.hotkey !== combo) return null;
+			if (btn.disabled) return null;
+			const fn = btn.onClick;
+			return typeof fn === "function" ? (fn as () => void) : null;
+		};
+		for (const list of lists) {
+			for (const entry of list ?? []) {
+				if (!entry) continue;
+				if (Array.isArray(entry)) {
+					for (const b of entry) {
+						const h = visit(b);
+						if (h) return h;
+					}
+					continue;
+				}
+				const h = visit(entry);
+				if (h) return h;
+			}
+		}
+		return null;
+	}
+
+	iconParts(o?: RowIconConfig): { icon: string; rest: Omit<IconifyProps, "icon">; mergedStyle: string } | null {
+		if (!o?.icon) return null;
+		const { icon, color, style: iconStyle, ...rest } = o;
+		const mergedStyle = [typeof iconStyle === "string" ? iconStyle : "", color ? `color: ${resolveColor(color)}` : "", "font-size: 1.1rem"].filter(Boolean).join("; ");
+		return { icon, rest, mergedStyle };
+	}
+
+	get lastFocusedNode(): INode<TListObj> | null {
+		if (this._focusedFlatPath) return this.findNodeByFlatPath(this._focusedFlatPath);
+		if (this._lastFocusedFlatPath) return this.findNodeByFlatPath(this._lastFocusedFlatPath);
 		return null;
 	}
 
@@ -58,158 +132,70 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 		this._adapterConfig = { ...this._adapterConfig, ...cfg };
 	}
 
-	get floatCard(): TreeRowViewAdapterFloatCardConfig | undefined {
-		return this._adapterConfig.floatCard;
+	get floatCard(): TreeRowViewAdapterFloatCardConfig {
+		const cfg = this._adapterConfig.floatCard ?? {};
+		return { e: 0.8, ...cfg };
 	}
 
-	// =========================================================================
-	// Expansión inicial.
-	// =========================================================================
-
-	protected shouldAutoExpand(node: INode<TWorking>): boolean {
+	protected shouldAutoExpand(node: INode<TListObj>): boolean {
 		return this.isGrouper(node);
 	}
 
-	/**
-	 * Ids de agrupadores que ya recibieron expansión por defecto.
-	 * Permite re-aplicar la política cuando llegan nodos NUEVOS (p.ej. tras
-	 * `setTables`) sin pisar el estado del usuario para los nodos ya vistos.
-	 */
 	private _autoExpandedSeen = new Set<string>();
 
 	applyDefaultExpansion(): void {
 		if (!this.rootNodes.length) return;
-		// Mapa por id de los expandidos actuales (preserva referencia fresca).
-		const currentById = new Map<string, INode<TWorking>>();
-		for (const n of this._expandedNodes) {
-			const id = this.normalizeNodeId(n?.flatPath);
-			if (id) currentById.set(id, n);
-		}
+		const currentIds = new Set(this._expandedFlatPaths);
 		let changed = false;
-		const walk = (nodes: INode<TWorking>[]): void => {
+		const walk = (nodes: INode<TListObj>[]): void => {
 			for (const n of nodes) {
-				const key = this.normalizeNodeId(n.flatPath);
+				const key = this.normalizeFlatPath(n.flatPath);
 				if (key && this.shouldAutoExpand(n) && !this._autoExpandedSeen.has(key)) {
 					this._autoExpandedSeen.add(key);
-					if (!currentById.has(key)) { currentById.set(key, n); changed = true; }
+					if (!currentIds.has(key)) { currentIds.add(key); changed = true; }
 				}
-				n.children?.length && walk(n.children);
+				n.childrens?.length && walk(n.childrens);
 			}
 		};
 		walk(this.rootNodes);
 		if (!changed) return;
-		this.expandedNodes = [...currentById.values()];
+		this.expandedFlatPaths = [...currentIds];
 		this.syncAllRowAdapters();
-		// Inhibe el `onbranchexpand` legacy de la cascada genérica para que no
-		// sobreescriba la expansión completa con sólo los rootNodes de nivel 0.
 		this.didNodesExpand = true;
 	}
 
 	override onrefresh(): void {
 		super.onrefresh();
-		// Tras reconstruir `_treeNodes`, las referencias en `expandedNodes`
-		// apuntan a INode antiguos: hay que resincronizar por id contra el árbol
-		// vivo, o el render verá "nada expandido" aunque el estado conceptual lo esté.
-		this.resyncExpandedToCurrentTree();
-		// Re-aplica la política para nodos NUEVOS (idempotente por id).
 		if (this.rootNodes.length) this.applyDefaultExpansion();
 	}
 
-	// =========================================================================
-	// Operaciones DOM específicas del modelo de vista en forma de **row**.
-	// Tocan selectores de fila (`[data-tree-row-id]`, `[data-idrow]`,
-	// `details.trvwr-itm > summary`).
-	// =========================================================================
-
-	focusRowById(nodeId: string): void {
-		if (this.bLostFocus) return;
-		if (typeof window === "undefined" || !nodeId) return;
-		const attempt = () => {
-			const scope = document.querySelector<HTMLElement>(`[data-tree-root="${CSS.escape(this.treeRootId)}"]`);
-			if (!scope) return;
-			const row = scope.querySelector<HTMLElement>(`[data-idrow="${CSS.escape(nodeId)}"]`);
-			const summary = row?.querySelector<HTMLElement>("details.trvwr-itm > summary") || null;
-			if (!summary) return;
-			this.blurTreeSummariesExcept(summary);
-			summary.focus();
-		};
-		queueMicrotask(attempt);
-		requestAnimationFrame(attempt);
-	}
-
-	refocusFocusedRowSummary(): void {
-		if (this.bLostFocus) return;
-		if (typeof window === "undefined") return;
-		const id = this._focusedNodeId;
-		if (!id) return;
-		const sel = `[data-tree-root="${CSS.escape(this.treeRootId)}"] [data-tree-row-id="${CSS.escape(id)}"] > details.trvwr-itm > summary`;
-		const tryFocus = (): boolean => {
-			const summary = document.querySelector<HTMLElement>(sel);
-			if (!summary) return false;
-			if (!summary.hasAttribute("tabindex")) summary.setAttribute("tabindex", "-1");
-			summary.focus({ preventScroll: false });
-			return document.activeElement === summary;
-		};
-		let attempts = 0;
-		const tick = () => {
-			if (tryFocus()) return;
-			if (++attempts < 6) requestAnimationFrame(tick);
-		};
-		requestAnimationFrame(tick);
-	}
-
-	blurTreeSummariesExcept(activeSummary: HTMLElement): void {
-		if (!activeSummary) return;
-		const root = activeSummary.closest(".isp-tree");
-		if (!root) return;
-		root.querySelectorAll<HTMLElement>("details.trvwr-itm > summary").forEach((s) => {
-			if (s !== activeSummary && document.activeElement === s) s.blur();
-		});
-	}
-
-	commitAndFlash(id: string | undefined): void {
-		const clean = this.normalizeNodeId(id);
-		if (clean.length === 0) return;
-		this.setSelectedId?.(clean, this);
-		this.flashRowIds?.([clean], undefined, this);
-		this.syncAllRowAdapters();
-	}
-
-	flashRowIds(ids: string[], durationMs: number | undefined = 650, _context?: unknown): void {
-		const cleanIds = (ids ?? []).map((x) => this.normalizeNodeId(x)).filter((c) => c.length > 0);
-		this.flashIds = cleanIds;
-		this.flashClearTimer && clearTimeout(this.flashClearTimer);
-		this.flashClearTimer = setTimeout(() => {
-			this.flashIds = [];
-			this.flashClearTimer = undefined;
-		}, durationMs);
-	}
-
-	// =========================================================================
-	// Handlers de fila / swipe.
-	// =========================================================================
-
-	onrowclick(node: INode<TWorking>): void {
-		this._selectedId = this.normalizeNodeId(node.flatPath);
-		this._item = node as unknown as TWorking;
-		this._originalItem = this.toNode(node as unknown as TWorking, true);
+	onrowclick(node: INode<TListObj>): void {
+		this._selectedFlatPath = this.normalizeFlatPath(node.flatPath);
+		this.record = node;
 		this.onrefresh();
 	}
 
-	onrowdblclick(node: INode<TWorking>): void {
-		if (this.isViewMode) this.openViewNode(node);
+	onrowdblclick(node: INode<TListObj>): void {
+		if (this.isReadOnly) this.openViewNode(node);
 		else this.openEdit(node);
 	}
 
-	onrowfocus(node: INode<TWorking>): void {
+	onrowfocus(node: INode<TListObj>): void {
 		this.focusedNode = node;
-		this._lastFocusedNodeId = String(node?.flatPath ?? "");
+		this._lastFocusedFlatPath = String(node?.flatPath ?? "");
 		this.syncAllRowAdapters();
+		this.consumeronrowfocus?.(node);
 	}
 
-	override onrowtoggle(_node: INode<TWorking>): void { }
+	override onrowtoggle(node: INode<TListObj>, open: boolean): void {
+		if (!node?.isGroupActor) return;
+		if (!this.canMutate) return;
+		const handler = open ? this.customs?.onexpand : this.customs?.oncollapse;
+		if (!handler) return;
+		handler(node, this.buildCustomsRuntime());
+	}
 
-	onrowdelete(node: INode<TWorking>): void {
+	onrowdelete(node: INode<TListObj>): void {
 		if (!this.requestDelete(node)) return;
 		this.ondeleteconfirmed();
 	}
@@ -217,80 +203,93 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 	onrowreorder(sourceId: string, targetId: string, position: "before" | "after" | "into"): void {
 		const newId = position === "into" ? this.nestInto(sourceId, targetId) : this.reorder(sourceId, targetId, position);
 		this.commitAndFlash(newId);
+		this.consumeronrowreorder?.(sourceId, targetId, position);
 	}
 
-	override onCtrlEnter(_node: INode<TWorking>): void { }
+	consumeronrowfocus?: (node: INode<TListObj>) => void;
+	
+	consumeronrowreorder?: (sourceId: string, targetId: string, position: "before" | "after" | "into") => void;
 
-	onswipeopendrawer(): void {
-		const nodeId = this._selectedId || this.rootNodes[0]?.flatPath || "";
-		const node = nodeId ? this.findNodeById(nodeId) : null;
-		if (!node) return;
-		this.openEdit(node);
-	}
-
-	onswipeclosedrawer(): void { this.setShowFrm(false) }
-
-	override onswipenoop(): void { }
-
-	// =========================================================================
-	// Registro y ciclo de vida de los `TreeRowAdapter` por fila.
-	// =========================================================================
-
-	registerRowAdapter(rowAdapter: TreeRowAdapter<Stacker, TWorking>): void {
-		const key = this.normalizeNodeId(rowAdapter.flatPath);
+	registerRowAdapter(rowAdapter: TreeRowAdapter<TListObj>): void {
+		const key = this.normalizeFlatPath(rowAdapter.flatPath);
 		if (key.length === 0) return;
 		const existing = Array.from(this.rowAdapters.values()).find((item) => item.flatPath === rowAdapter.flatPath);
 		!existing && this.rowAdapters.set(key, rowAdapter);
 	}
 
-	unregisterRowAdapter(rowAdapter: TreeRowAdapter<Stacker, TWorking>): void {
-		const key = this.normalizeNodeId(rowAdapter.flatPath);
+	unregisterRowAdapter(rowAdapter: TreeRowAdapter<TListObj>): void {
+		const key = this.normalizeFlatPath(rowAdapter.flatPath);
 		if (key.length === 0) return;
 		this.rowAdapters.delete(key);
 	}
 
-	getOrCreateRowAdapter(bridge: RowItemProps<TWorking>): TreeRowAdapter<Stacker, TWorking> {
-		const node = (bridge as RowItemProps<TWorking> & { node?: INode<TWorking> }).node;
+	private _bridgeCallStats = new Map<string, { count: number; since: number; loggedAt?: number; cutAt?: number }>();
+	getOrCreateRowAdapter(bridge: RowItemProps<TListObj>): TreeRowAdapter<TListObj> {
+		const node = (bridge as RowItemProps<TListObj> & { node?: INode<TListObj> }).node;
 		if (node == null) {
 			throw new Error("TreeAdapter.getOrCreateRowAdapter: `bridge.node` es obligatorio");
 		}
-		const idKey = this.normalizeNodeId(node.flatPath);
+		const idKey = this.normalizeFlatPath(node.flatPath);
 		if (idKey.length === 0) {
 			throw new Error("TreeAdapter.getOrCreateRowAdapter: `bridge.node.flatPath` no puede quedar vacío tras normalizar");
 		}
+		
+		const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+		let stat = this._bridgeCallStats.get(idKey);
+		if (!stat || now - stat.since > 1000) {
+			stat = { count: 1, since: now };
+			this._bridgeCallStats.set(idKey, stat);
+		} else {
+			stat.count++;
+		}
+		const overflow = stat.count > 50;
+		if (overflow && !stat.loggedAt) {
+			stat.loggedAt = now;
+		}
 		const existing = this.rowAdapters.get(idKey);
 		if (existing) {
+			if (stat.count > 200) {
+				if (!stat.cutAt) {
+					stat.cutAt = now;
+				}
+				return existing;
+			}
 			existing.applyBridge(bridge);
 			existing.sync();
 			return existing;
 		}
-		const created = new TreeRowAdapter<Stacker, TWorking>(bridge, this);
+		const created = new TreeRowAdapter<TListObj>(bridge, this);
 		this.registerRowAdapter(created);
 		this.rowAdapters.set(idKey, created);
 		created.sync();
 		return created;
 	}
 
-	disposeRowAdapterById(nodeId: string): void {
-		const existing = this.rowAdapters.get(this.normalizeNodeId(nodeId));
+	disposeRowAdapterByFlatPath(nodeId: string): void {
+		const existing = this.rowAdapters.get(this.normalizeFlatPath(nodeId));
 		if (!existing) return;
 		existing.dispose();
 	}
 
 	syncAllRowAdapters(): void {
 		for (const adapter of this.rowAdapters.values()) adapter.sync();
-		this.rowLayoutEpoch.update((n) => n + 1);
+		this.notifyUI();
 	}
 
-	/**
-	 * Listener global de `pointerdown`: si el clic ocurre **fuera** del
-	 * `[data-tree-root]` del árbol, limpia los estados visuales que producen
-	 * el efecto "hover/highlight" persistente (`focusedNode`, `hoveredNode`).
-	 *
-	 * Cubre el caso del menú `more` en cascada: al cerrarse haciendo clic
-	 * fuera, la fila origen perdería el foco DOM pero conservaba el
-	 * `_focusedNodeId` interno → el background de hover quedaba pegado.
-	 */
+	syncRowAdaptersByFlatPaths(ids: ReadonlyArray<string | null | undefined>): void {
+		let touched = false;
+		for (const raw of ids) {
+			if (!raw) continue;
+			const key = this.normalizeFlatPath(raw);
+			if (!key) continue;
+			const adapter = this.rowAdapters.get(key);
+			if (!adapter) continue;
+			adapter.sync();
+			touched = true;
+		}
+		if (touched) this.notifyUI();
+	}
+
 	ontreeoutsidepointerdown(e: PointerEvent): void {
 		if (typeof document === "undefined") return;
 		const id = this.treeRootId;
@@ -300,43 +299,114 @@ export abstract class TARowBase<Stacker, TWorking extends ITreeData<TWorking>> e
 		const tgt = e.target as Node | null;
 		if (tgt && body.contains(tgt)) return;
 		let changed = false;
-		if (this._hoveredNodeId) { this.hoveredNode = null; changed = true; }
-		if (this._focusedNodeId) { this.focusedNode = null; changed = true; }
+		if (this._hoveredFlatPath) { this.hoveredNode = null; changed = true; }
+		if (this._focusedFlatPath) { this.focusedNode = null; changed = true; }
 		if (changed) this.syncAllRowAdapters();
 	}
 
-	// =========================================================================
-	// Contrato consumido por el `TreeRowAdapter`. La implementación concreta
-	// vive en la subclase final (`TreeRowViewAdapter`, en `01-...Events.ts`).
-	// =========================================================================
+	getRowConfig(node: INode<TListObj>): TreeRowConfig | null {
+		const defaultCfg = this.buildDefaultRowConfig(node);
+		if (this.customs?.getRowConfig) return this.customs.getRowConfig(node, defaultCfg);
+		return defaultCfg;
+	}
 
-	abstract getRowConfig(node: INode<TWorking>): {
-		icono?: Omit<IconifyProps, "icon"> & { icon: string; color?: ComponentColor };
-		disabled?: boolean;
-		draggable?: boolean;
-		isFirst?: boolean;
-		isLast?: boolean;
-		actions?: FlexOptionsInput[];
-		cascadeOptions?: FlexOptionsInput[];
-		events?: {
-			onopen?: () => void;
-			onclose?: () => void;
-			onfocus?: () => void;
-			onblur?: () => void;
-			onclick?: () => void;
-			onleadiconclick?: () => void;
+	protected buildDefaultRowConfig(node: INode<TListObj>): TreeRowConfig | null {
+		const rowController = this.rowAdapters.get(this.normalizeFlatPath(node.flatPath));
+		const hasChildren = rowController?.hasChildren ?? !!(node.childrens && node.childrens.length > 0);
+		const isLastNode = !!node.isAtom;
+		const isFolder = !isLastNode;
+		const isEmptyFolder = isFolder && !hasChildren;
+		const isExpanded = rowController?.isNodeOpen ?? this._expandedFlatPaths.includes(this.normalizeFlatPath(node.flatPath));
+		const iconCfg = this.customs?.getNodeIcon?.(node, { isLastNode, isFolder, hasChildren, isExpanded, isEmptyFolder }) ?? null;
+		const sibPos = this.getSiblingPosition?.(node.flatPath) ?? { isFirst: false, isLast: false };
+		const rt = this.buildCustomsRuntime();
+		const actions: FlexOptionsInput[] = this.decorateHotkeyTitles(this.customs?.rowActions?.(node, rt) ?? []);
+		const cascadeOptions: FlexOptionsInput[] = this.decorateHotkeyTitles(this.customs?.rowCascadeOptions?.(node, rt) ?? []);
+		
+		const nodeFloatCard = (node as unknown as { floatCard?: TreeRowViewAdapterFloatCardConfig }).floatCard;
+		return {
+			icono: iconCfg?.icon ? {
+				icon: iconCfg.icon,
+				...(iconCfg.color !== undefined ? { color: iconCfg.color } : {}),
+				...(iconCfg.style !== undefined ? { style: iconCfg.style } : {}),
+				...(iconCfg.title !== undefined ? { title: iconCfg.title } : {}),
+			} : undefined,
+			actions,
+			cascadeOptions,
+			...(nodeFloatCard ? { floatCard: nodeFloatCard } : {}),
+			draggable: this.draggable && this.canMutate,
+			isFirst: sibPos.isFirst,
+			isLast: sibPos.isLast,
+			events: {
+				onleadiconclick: isEmptyFolder && this.canMutate ? () => void this.handleaddchild(node.flatPath) : undefined,
+			},
 		};
-	} | null;
+	}
 
-	abstract getToolsBarActions(): FlexOptionsAction[];
-	/**
-	 * Opciones en cascada para la barra de herramientas (se muestran como
-	 * botón "more"). Por defecto vacío. Override para activar.
-	 */
-	getToolsBarCascadeOptions(): FlexOptionsInput[] { return []; }
-	protected abstract getNodeIcon(node: INode<TWorking>, ctx: { isLastNode: boolean; isFolder: boolean; hasChildren: boolean; isExpanded: boolean; isEmptyFolder: boolean }): { icon?: string; color?: ComponentColor; style?: string } | null;
-	protected abstract particularactionsrow(node: INode<TWorking>): ButtonIconifyProps[];
-	protected abstract particularcascadeoptionsrow(node: INode<TWorking>): FlexOptionsInput[];
+	buildCustomsRuntime(): ITreeRuntimeRow<TListObj> {
+		const tree = this;
+		const idOf = (rec: TListObj | INode<TListObj>): string => String(rec?.flatPath ?? "");
+		const computeCanCollapseAll = (): boolean => {
+			const expandable = tree.collectBranchIds(tree.rootNodes);
+			const expanded = new Set(tree._expandedFlatPaths);
+			const norm = expandable.map((id) => tree.normalizeFlatPath(id)).filter((s) => s.length > 0);
+			return expanded.size > 0 && norm.length > 0;
+		};
+		const computeCanExpandAll = (): boolean => {
+			const expandable = tree.collectBranchIds(tree.rootNodes);
+			const expanded = new Set(tree._expandedFlatPaths);
+			const norm = new Set(expandable.map((id) => tree.normalizeFlatPath(id)).filter((s) => s.length > 0));
+			if (norm.size === 0) return false;
+			return ![...norm].every((id) => expanded.has(id));
+		};
+		return {
+			get record() { return tree.record; },
+			get rootNodes() { return tree.rootNodes; },
+			findByFlatPath: (path) => tree.findNodeByFlatPath(path) ?? undefined,
+			findByPathInit: (pathInit) => tree.findNodeByPathInit(pathInit) ?? undefined,
+			sanitizeFlatPath: (id) => tree.normalizeFlatPath(id),
+			move: async (rec, dir) => {
+				const newId = await tree.move(idOf(rec), dir);
+				tree.commitAndFlash(newId);
+				return newId;
+			},
+			addChild: (rec) => tree.handleaddchild(idOf(rec)),
+			addSibling: (rec, pos) => tree.handleaddsibling(idOf(rec), pos),
+			openEdit: (rec) => tree.showFrmModificar(rec),
+			openView: (rec) => tree.showFrmVisualizar(rec),
+			openViewNode: (rec) => tree.openViewNode(rec),
+			extinguish: (rec) => tree.extinguishNode(rec),
+			remove: (rec) => tree.onrowdelete(rec),
+			release: (rec) => tree.onrelease(rec),
+			addRoot: () => tree.onaddroot(),
+			collapseAll: () => tree.collapseAll(),
+			expandAll: () => tree.expandAll(),
+			get canCollapseAll() { return computeCanCollapseAll(); },
+			get canExpandAll() { return computeCanExpandAll(); },
+			historyUndo: () => tree.historyUndo(),
+			historyRedo: () => tree.historyRedo(),
+			historyRecover: () => tree.historyRecover(),
+			get historyCanUndo() { return tree.historyCanUndo; },
+			get historyCanRedo() { return tree.historyCanRedo; },
+			get historyIsViewingPast() { return tree.historyIsViewingPast; },
+			get isProtected() { return tree.isProtected; },
+			get canToggleProtection() { return tree.canToggleProtection; },
+			get isReadOnlyExternal() { return tree.isReadOnlyExternal; },
+			protectionToggle: () => tree.protectionToggle(),
+			setProtected: (v: boolean) => tree.setProtected(v),
+			actorActions: (node) => tree.actorActions(node),
+			addChildLabel: (node) => {
+				const childDepth = (node.depth ?? 0) + 1;
+				const childLevelName = String(tree.customs?.levelName?.({ depth: childDepth }) ?? "").trim();
+				return childLevelName ? `Agregar ${childLevelName}` : "Agregar elemento";
+			},
+			isFirstSibling: (node) => tree.getSiblingPosition(node.flatPath).isFirst,
+			isLastSibling: (node) => tree.getSiblingPosition(node.flatPath).isLast,
+			isPrisonOnly: (node) => !!node.isPrison && !node.isHermetic,
+			get isReadOnly() { return tree.isReadOnly; },
+			get canMutate() { return tree.canMutate; },
+		};
+	}
 
 	protected isDirty(current: unknown, original: unknown): boolean { return original ? JSON.stringify(current) !== JSON.stringify(original) : false }
 }
