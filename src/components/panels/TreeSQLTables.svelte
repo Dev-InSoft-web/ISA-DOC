@@ -832,6 +832,54 @@
 		return mermaid;
 	}
 
+	const DER_DOMAIN = "clientesis";
+
+	async function sha1Hex(s: string): Promise<string> {
+		const buf = new TextEncoder().encode(s);
+		const hash = await crypto.subtle.digest("SHA-1", buf);
+		return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, "0")).join("");
+	}
+
+	async function renderMermaidSvg(source: string): Promise<string> {
+		const mm = await ensureMermaid();
+		const id = `der-svg-${Date.now()}`;
+		const out = await mm.render(id, source);
+		return typeof out === "string" ? out : (out?.svg ?? "");
+	}
+
+	async function fetchCachedDer(domain: string, expectedHash: string): Promise<string | null> {
+		try {
+			const metaRes = await fetch(`/bd/codegen/der/${domain}.json`, { cache: "no-store" });
+			if (!metaRes.ok) return null;
+			const meta = (await metaRes.json()) as { hash?: string };
+			if (meta?.hash !== expectedHash) return null;
+			const svgRes = await fetch(`/bd/codegen/der/${domain}.svg`, { cache: "no-store" });
+			if (!svgRes.ok) return null;
+			return await svgRes.text();
+		} catch {
+			return null;
+		}
+	}
+
+	function uploadDerCache(domain: string, hash: string, source: string, svg: string): void {
+		void fetch("/api/codegen/der", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify({ domain, hash, source, svg }),
+		}).catch(() => {});
+	}
+
+	async function applyDerSvg(svg: string): Promise<void> {
+		derSvg = svg;
+		// Reset el cache de tamaño natural porque cambió el contenido.
+		await tick();
+		const oldSvg = derViewport?.querySelector(".der-content > svg") as SVGSVGElement | null;
+		if (oldSvg) delete oldSvg.dataset.derNatural;
+		applyDerSvgScale(derScale, derSvg);
+		await tick();
+		fitDerView("both");
+	}
+
 	async function openDERModal(): Promise<void> {
 		derError = "";
 		derSvg = "";
@@ -839,20 +887,25 @@
 		derShow = true;
 		derLoading = true;
 		resetDerView();
+
+		const localHash = await sha1Hex(derSource);
+		const cached = await fetchCachedDer(DER_DOMAIN, localHash);
+
+		if (cached) {
+			derLoading = false;
+			await applyDerSvg(cached);
+			return;
+		}
+
 		try {
-			const mm = await ensureMermaid();
-			const id = `der-svg-${Date.now()}`;
-			const out = await mm.render(id, derSource);
-			derSvg = typeof out === "string" ? out : (out?.svg ?? "");
+			const fresh = await renderMermaidSvg(derSource);
+			derLoading = false;
+			await applyDerSvg(fresh);
+			if (fresh) uploadDerCache(DER_DOMAIN, localHash, derSource, fresh);
 		} catch (err) {
 			derError = err instanceof Error ? err.message : String(err);
-		} finally {
 			derLoading = false;
 		}
-		await tick();
-		applyDerSvgScale(derScale, derSvg);
-		await tick();
-		fitDerView("both");
 	}
 
 	function onDerKeydown(e: KeyboardEvent): void {
