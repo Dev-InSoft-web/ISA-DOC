@@ -198,7 +198,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Plan padre del recurso como catálogo filtrado",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 04:12:25 pm",
-		estimacionMinutos: 200,
+		estimacionMinutos: 210,
 		diligenciaMinutos: 30,
 		resumen: "Se solicitó que el campo iplanpadre solo apareciera disponible cuando el recurso tuviera como dificultad Medio o Avanzado, y que no se ingresara un número sino que se abriera un catálogo con los recursos con dificultad Básico del mismo capítulo.",
 		commits: [
