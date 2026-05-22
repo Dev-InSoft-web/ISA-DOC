@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button, Iconify, FlexLayout, Text, Toaster, SelectObject } from "@ingenieria_insoft/ispsveltecomponents";
+	import type { TObject } from "@ingenieria_insoft/ispgen";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import RebuildOldTableMigration from "./RebuildOldTableMigration.svelte";
@@ -99,8 +100,8 @@
 			{#if stamps.length > 0}
 				<SelectObject
 					label="Fotografía"
-					Options={stampOptions}
-					fnCaption={(o) => o.label}
+					Options={stampOptions as unknown as { [k: string]: TObject }}
+					fnCaption={(o) => (o as unknown as { label: string }).label}
 					bind:value={selectedStamp}
 					required={false}
 				/>

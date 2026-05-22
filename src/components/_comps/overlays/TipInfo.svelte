@@ -35,6 +35,7 @@
 
    let modalOpen = false;
    let tooltipOpen = false;
+   let anchorEl: HTMLElement | undefined = undefined;
 
    $: hasContentSlot = !!$$slots.content;
    $: hasDescriptionText = !!(descripcion && descripcion.length > 0);
@@ -85,19 +86,19 @@
       {/if}
       <FlexLayout inline items="center" justify="center">
          {#if !useModal}
-            <InvokedFloater bind:open={tooltipOpen} side="right" align="center" trigger={trigger} on:close on:cancel>
-               <span
-                  slot="anchor"
-                  class="tipinfo-icon-wrap"
-                  on:click={() => self.oniconclick(hasContent)}
-                  on:keydown={(e) => {
-                     if (e.key === "Enter" || e.key === " ") self.oniconclick(hasContent);
-                  }}
-                  role="button"
-                  tabindex={-1}
-               >
-                  <Iconify id="tipinfo-icon" icon={self.icon} style={self.iconstyle(hasContent)} title={self.icontitle(hasContent)} />
-               </span>
+            <span
+               bind:this={anchorEl}
+               class="tipinfo-icon-wrap"
+               on:click={() => self.oniconclick(hasContent)}
+               on:keydown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") self.oniconclick(hasContent);
+               }}
+               role="button"
+               tabindex={-1}
+            >
+               <Iconify id="tipinfo-icon" icon={self.icon} style={self.iconstyle(hasContent)} title={self.icontitle(hasContent)} />
+            </span>
+            <InvokedFloater bind:open={tooltipOpen} target={anchorEl ?? null} placement="right" trigger={trigger} on:close on:cancel>
                <Card class={["blockCloseClick", "tipinfo-tooltip-card", hasContentSlot ? "" : "tipinfo-tooltip-card-text"].filter(Boolean).join(" ")}>
                   <FlexLayout direction="column" class="tipinfo-tooltip-layout">
                      <FlexLayout items="center" wrap={false} class="tipinfo-tooltip-header">
