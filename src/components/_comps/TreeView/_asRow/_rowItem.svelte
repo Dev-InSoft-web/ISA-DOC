@@ -3,7 +3,7 @@
    import { Card, FlexLayout, Iconify, mkAlpha, resolveColor } from "@ingenieria_insoft/ispsveltecomponents";
    import type { HTMLAttributes } from "svelte/elements";
    import { slide } from "svelte/transition";
-   import FloatingComponent from "../../overlays/FloatingComponent.svelte";
+   import FloatingComponent from "../../containers/FloatingComponent.svelte";
    import FlexOptions from "../../Options/FlexOptions.svelte";
    import type { INode, ITreeData, TreeRowViewAdapter } from "../TreeRowView.svelte";
 

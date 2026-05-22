@@ -1,5 +1,6 @@
 <svelte:options accessors={true} />
 
+<!-- TreeView v2 -->
 <script context="module" lang="ts">
    import type { TObject } from "@ingenieria_insoft/ispgen";
    import type { TBAllowed, TDForm } from "@ingenieria_insoft/ispsveltecomponents";
@@ -103,19 +104,19 @@
    const offUiListener = TreeController.addUiListener(() => uiTick++);
    onDestroy(() => offUiListener());
 
-   TreeController.onrequestopendrawer = (mode) => {
+   TreeController.onrequestopendrawer = (mode: TDForm) => {
       localItdForm = mode === "create" ? "edit" : mode;
       openDrawer();
    };
    TreeController.onrequestclosedrawer = () => {
       editRowShow = false;
    };
-   TreeController.onrequesteditshow = (node, mode) => {
+   TreeController.onrequesteditshow = (node: INode<TListObj>, mode: TDForm) => {
       record = node;
       localItdForm = mode;
       openDrawer();
    };
-   TreeController.onrequestdelete = (node) => {
+   TreeController.onrequestdelete = (node: INode<TListObj>) => {
       record = node;
       deleteCodeInput = "";
       showDeleteModal = true;
@@ -204,7 +205,7 @@
    onclose: () => (showDeleteModal = false),
    oncancel: () => (showDeleteModal = false),
    onconfirm: confirmDelete,
-   oncodeinput: (v) => (deleteCodeInput = v),
+   oncodeinput: (v: string) => (deleteCodeInput = v),
 })} />
 
 <ObjJConfig Obj={({} as TObject)} structure={protectionPromptStructure} />
@@ -243,7 +244,7 @@
    </FlexLayout>
 
    {#if editRowShow}
-      <ObjJConfig bind:this={drawerForm} Obj={(record ?? ({} as TObject)) as TObject} let:Obj={accObj} let:itdForm={accIt} structure={() => TreeController!.buildEditDrawerStructure({ bshow: editRowShow, notClose: editRowNotClose, readonly: !!readonly, itdForm: localItdForm, bAllowed, record, onItdFormChange, onclose, oninput, onError: (msg) => TreeController.onError?.(msg), postSubmit: (o, action) => TreeController.postSubmit(o, action) })}>
+      <ObjJConfig bind:this={drawerForm} Obj={(record ?? ({} as TObject)) as TObject} let:Obj={accObj} let:itdForm={accIt} structure={() => TreeController!.buildEditDrawerStructure({ bshow: editRowShow, notClose: editRowNotClose, readonly: !!readonly, itdForm: localItdForm, bAllowed, record, onItdFormChange, onclose, oninput, onError: (msg: string) => TreeController.onError?.(msg), postSubmit: (o: unknown, action: unknown) => TreeController.postSubmit(o, action) })}>
          <slot name="Frm" record={accObj as TListObj} itdForm={accIt as "view" | "edit" | "create" | undefined} ancestors={record ? TreeController.walkAncestors(record) : []} isNew={!!record && !!TreeController.isPendingInsertPath?.(record.flatPath)}>
             <Text style="padding: 1rem;" color="neutral">Implemente el slot "Frm" para las acciones sobre el objeto {record?.flatPath ?? "---"}.</Text>
          </slot>
