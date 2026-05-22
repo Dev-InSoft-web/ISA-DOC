@@ -11,7 +11,7 @@ import type { ITreeRuntimeRow } from "../contracts";
 export interface TreeRowViewAdapterFloatCardConfig {
 	tx?: number | string;
 	ty?: number | string;
-	e?: number;
+	scale?: number;
 }
 
 export interface TreeRowViewAdapterConfig {
@@ -134,7 +134,7 @@ export class TARowBase<TListObj extends ITreeData<TListObj> & TObject> extends T
 
 	get floatCard(): TreeRowViewAdapterFloatCardConfig {
 		const cfg = this._adapterConfig.floatCard ?? {};
-		return { e: 0.8, ...cfg };
+		return { scale: 0.8, ...cfg };
 	}
 
 	protected shouldAutoExpand(node: INode<TListObj>): boolean {

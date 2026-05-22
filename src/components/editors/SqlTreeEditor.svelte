@@ -362,6 +362,7 @@
    const syncAdapter = (a: TreeAdapter<TSqlNode>): "" => {
       if (a === treeAdapter) return "";
       treeAdapter = a;
+      a.applyAdapterConfig({ floatCard: { scale: 0.7 } });
       offUi?.();
       offUi = a.addUiListener(() => emitChange());
       return "";
@@ -448,7 +449,6 @@
          </span>
 
          <FlexLayout items="center" slot="row" let:node style="flex:1; min-width:0;">
-            <span class="tree-row-index" title="Índice">{node.flatPath}</span>
             {#if node.kind === "section"}
                <span class="badge badge-section">Sección</span>
                <Text style="font-weight:bold;" lines={1}>{node.rowName || "(sin nombre)"}</Text>
