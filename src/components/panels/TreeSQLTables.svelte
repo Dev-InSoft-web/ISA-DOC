@@ -815,14 +815,14 @@
 			securityLevel: "loose",
 			themeVariables: {
 				primaryColor: bgSec,
-				primaryBorderColor: primary,
+				primaryBorderColor: "#505080",
 				primaryTextColor: "#ffffff",
 				secondaryColor: bgSec,
 				tertiaryColor: bgPrim,
 				lineColor: "#505080",
 				textColor: "#ffffff",
 				mainBkg: bgSec,
-				nodeBorder: primary,
+				nodeBorder: "#505080",
 				attributeBackgroundColorOdd: bgPrim,
 				attributeBackgroundColorEven: bgSec,
 			},
@@ -1545,10 +1545,6 @@
 		</FlexLayout>
 	</svelte:fragment>
 	<FlexLayout direction="column" style="height: 100%;">
-		<FlexLayout justify="between" items="center">
-			<Text color="neutral"><small>Inferido del árbol de tablas. Scroll = pan vertical · Ctrl+Scroll = pan horizontal · Ctrl+Shift+Scroll = zoom · Ctrl+Espacio = ajustar.</small></Text>
-			<span></span>
-		</FlexLayout>
 		<div class="der-host" use:attachDerPanZoom>
 			<div class="der-toolbar">
 				<span class="der-zoom-pct"><small>{Math.round(derScale * 100)}%</small></span>
