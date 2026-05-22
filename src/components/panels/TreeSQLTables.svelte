@@ -910,7 +910,7 @@
 
 	function onDerKeydown(e: KeyboardEvent): void {
 		if (!derShow) return;
-		if (e.ctrlKey && e.code === "Space") {
+		if (e.ctrlKey && (e.code === "Digit0" || e.code === "Numpad0" || e.key === "0")) {
 			e.preventDefault();
 			fitDerView();
 		}
@@ -1537,8 +1537,6 @@
 	</div>
 </section>
 
-<CodeModal bind:bshow={modalShow} title={modalTitle} value={modalValue} language={modalLanguage} />
-
 <Modal bind:bshow={bshowTreeModal} onClose={closeTreeModal} style="width: 96dvw; height: 96dvh;">
 	<svelte:fragment slot="title">
 		<FlexLayout items="center">
@@ -1603,11 +1601,8 @@
 				<span class="der-zoom-pct"><small>{Math.round(derScale * 100)}%</small></span>
 				<ButtonIconify icon="mdi:magnify-minus-outline" title="Alejar (Ctrl+Shift+Scroll abajo)" on:click={() => zoomBy(1 / 1.2)} />
 				<ButtonIconify icon="mdi:magnify-plus-outline" title="Acercar (Ctrl+Shift+Scroll arriba)" on:click={() => zoomBy(1.2)} />
-				<ButtonIconify icon="mdi:arrow-expand-horizontal" title="Ajustar al ancho" on:click={() => fitDerView("width")} />
-				<ButtonIconify icon="mdi:arrow-expand-vertical" title="Ajustar al alto" on:click={() => fitDerView("height")} />
-				<ButtonIconify icon="mdi:fit-to-screen-outline" title="Ajustar al diagrama completo (Ctrl+Espacio)" on:click={() => fitDerView("both")} />
+				<ButtonIconify icon="mdi:fit-to-screen-outline" title="Ajustar al diagrama completo (Ctrl+0)" on:click={() => fitDerView("both")} />
 				<ButtonIconify icon="mdi:image-filter-center-focus" title="Restablecer (100%)" on:click={resetDerView} />
-				<ButtonIconify icon="mdi:refresh" title="Regenerar diagrama" on:click={openDERModal} />
 				<ButtonIconify icon="mdi:code-tags" title="Ver fuente Mermaid" on:click={() => openCodeModal("DER · fuente Mermaid", derSource, "ts")} />
 			</div>
 			{#if derLoading}
@@ -1625,6 +1620,8 @@
 		</div>
 	</FlexLayout>
 </Modal>
+
+<CodeModal bind:bshow={modalShow} title={modalTitle} value={modalValue} language={modalLanguage} />
 
 <style>
 	.browser {
