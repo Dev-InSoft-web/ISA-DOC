@@ -69,7 +69,6 @@ function isSubActive(t: SubTab): boolean {
                if (p === "tables") return { ok: true, version: 1, tables: [] };
                if (p === "revisado") return {};
                if (p === "sql/fragments") return { fragments: [], full: "" };
-               if (p === "ts/fragments") return { ok: true, map: {} };
                if (p === "codegen/state") return { ok: true, state: {} };
                if (p === "source") return "";
                return { ok: true, static: true };

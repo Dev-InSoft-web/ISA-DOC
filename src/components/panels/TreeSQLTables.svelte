@@ -35,14 +35,11 @@
 	let selectedPointerCtx: { isPointer: boolean; domainId?: string } = { isPointer: false };
 	let selectedDomainNode: { kind: "domain" | "pivot"; domainId: string } | null = null;
 	const CardinalityEnum = { "1:1": "1:1", "1:N": "1:N", "N:N": "N:N" } as const;
-	let prodTsMap: Record<string, any[]> = {};
 
 	let modalShow = false;
 	let modalTitle = "";
 	let modalValue = "";
 	let modalLanguage: "sql" | "ts" = "sql";
-	let modalCompare: string | null = null;
-	let modalCompareLabel = "Prod";
 
 	let runUnlocked: Record<string, boolean> = {};
 	let runBusy: Record<string, boolean> = {};
@@ -57,7 +54,6 @@
 	let overrides: Record<string, never> = {};
 	void overrides;
 	let activeCodeTab: "sql" | "model" | "server" | "client" | "azure" = "sql";
-	let targetFilePaths: string[] = [];
 	let domains: DomainsMap = {};
 
 	type NodeInfo = { description?: string; rules?: string };
@@ -205,29 +201,6 @@
 	const TABLES_BROADCAST_CHANNEL = "isa-doc:tables";
 	let tablesChannel: BroadcastChannel | null = null;
 	let tabId: string = "";
-
-	const DEFAULT_TARGET_PATHS: string[] = [
-		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/01.Modelo.ts",
-		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/02.Cursos/02.Datos.ts",
-		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/01.PlanDeEstudio.ts",
-		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/130_UlTema.ts",
-		"ISP-ClientesIS/src/sources/010 Objetos/6.ContaPymeU/2.Capacitacion/150_UlPermiso.ts",
-		"ISP-ClientesIS/src/sources/020 Controllers/6.ContaPymeU/2.Capacitacion/UlCapacitacionClient.ts",
-		"ISP-CLientesISServer/src/sources/6.ContaPymeU/2.Capacitacion/01_PlanDeEstudio.ts",
-		"ISP-CLientesISServer/src/sources/6.ContaPymeU/2.Capacitacion/02_Cursos.ts",
-		"ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/Cursos.ts",
-		"ISW-ClientesIS/src/lib/ContaPymeU/2.Capacitacion/PlanDeEstudio.ts",
-	];
-
-	function loadTargetFilePaths(): void {
-		const v = getCached("targetFilePaths");
-		if (Array.isArray(v) && v.every((s) => typeof s === "string")) {
-			targetFilePaths = v as string[];
-			return;
-		}
-		targetFilePaths = [...DEFAULT_TARGET_PATHS];
-		setCached("targetFilePaths", targetFilePaths);
-	}
 
 	function openTreeModal(): void { bshowTreeModal = true; }
 	function closeTreeModal(): void { bshowTreeModal = false; }
@@ -576,22 +549,11 @@
 		}
 	}
 
-	function openCodeModal(title: string, value: string, language: "sql" | "ts" = "ts", compareValue: string | null = null, compareLabel: string = "Prod"): void {
+	function openCodeModal(title: string, value: string, language: "sql" | "ts" = "ts"): void {
 		modalTitle = title;
 		modalValue = value;
 		modalLanguage = language;
-		modalCompare = compareValue;
-		modalCompareLabel = compareLabel;
 		modalShow = true;
-	}
-
-	async function loadProdTs(): Promise<void> {
-		try {
-			const res = await fetch("/api/ts/fragments");
-			if (!res.ok) return;
-			const data = await res.json();
-			if (data && data.ok && data.map) prodTsMap = data.map as Record<string, any[]>;
-		} catch { /* ignore */ }
 	}
 
 	async function loadOverrides(): Promise<void> {
@@ -604,11 +566,9 @@
 	onMount(() => {
 		void (async () => {
 			await loadStateFromServer();
-			loadTargetFilePaths();
 			loadNodeInfo();
 			domains = adapter.reloadFromCache();
 			void load();
-			void loadProdTs();
 			void loadOverrides();
 		})();
 		// Sincronización entre pestañas: cuando otra pestaña guarda `/api/tables`,
@@ -632,7 +592,7 @@
 			};
 		}
 		// Sincronización del estado de codegen (`_state.json`): cuando otra
-		// pestaña reordena dominios/prefijos o cambia targetFilePaths, recibimos
+		// pestaña reordena dominios/prefijos, recibimos
 		// la notificación y rehidratamos los dominios sin tocar las tablas.
 		const offStateChanged = onStateChanged(() => {
 			if (!isRealtimeEnabled()) return;
@@ -1047,7 +1007,6 @@
 								resource={mergedCfg}
 								resources={mergedResources}
 								inferred={cfg}
-								{targetFilePaths}
 								section={((activeCodeTab as string) === "sql" ? "model" : activeCodeTab) as "model" | "server" | "client" | "azure"}
 								slaves={selectedSlaveNames}
 								domainName={selectedDomain?.name ?? ""}
@@ -1077,10 +1036,6 @@
 			{:else if selected}
 				{@const t = selected.table}
 				{@const cfg = mergedByTable.get(t.name.toUpperCase())}
-				{@const prodFrags = prodTsMap[t.name.toUpperCase()] ?? []}
-				{@const prodPojo = prodFrags.filter((p: any) => p.role === "pojo")}
-				{@const prodServer = prodFrags.filter((p: any) => p.role === "server")}
-				{@const prodClient = prodFrags.filter((p: any) => p.role === "client")}
 
 				{#key tableKey(t)}
 					{@const sqlEnabled = isSqlSnippetEnabled(t)}
@@ -1136,7 +1091,7 @@
 											<ButtonIconify icon={runUnlocked[`${cfg.className}::model`] ? "mdi:lock-open-variant-outline" : "mdi:lock-outline"} title={runUnlocked[`${cfg.className}::model`] ? "Bloquear ejecución" : "Desbloquear ejecución"} on:click={() => toggleRunLock(`${cfg.className}::model`)} />
 											<ButtonIconify color="success" icon="mdi:play" title="Ejecutar" disabled={!runUnlocked[`${cfg.className}::model`] || runBusy[`${cfg.className}::model`]} on:click={() => runCode(`${cfg.className}::model`, modelCode, "ts")} />
 										</div>
-										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Modelo`, modelCode, "ts", prodPojo[0]?.body ?? "", prodPojo[0] ? `Prod · ${prodPojo[0].sourceFile}` : "Prod — sin fragmento")} />
+										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Modelo`, modelCode, "ts")} />
 									</FlexLayout>
 								</FlexLayout>
 								<CodeViewer value={modelCode} lang="ts" height="100%" />
@@ -1150,7 +1105,7 @@
 											<ButtonIconify icon={runUnlocked[`${cfg.className}::server`] ? "mdi:lock-open-variant-outline" : "mdi:lock-outline"} title={runUnlocked[`${cfg.className}::server`] ? "Bloquear ejecución" : "Desbloquear ejecución"} on:click={() => toggleRunLock(`${cfg.className}::server`)} />
 											<ButtonIconify color="success" icon="mdi:play" title="Ejecutar" disabled={!runUnlocked[`${cfg.className}::server`] || runBusy[`${cfg.className}::server`]} on:click={() => runCode(`${cfg.className}::server`, serverCode, "ts")} />
 										</div>
-										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Server`, serverCode, "ts", prodServer[0]?.body ?? "", prodServer[0] ? `Prod · ${prodServer[0].sourceFile}` : "Prod — sin fragmento")} />
+										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Server`, serverCode, "ts")} />
 									</FlexLayout>
 								</FlexLayout>
 								<CodeViewer value={serverCode} lang="ts" height="100%" />
@@ -1164,7 +1119,7 @@
 											<ButtonIconify icon={runUnlocked[`${cfg.className}::client`] ? "mdi:lock-open-variant-outline" : "mdi:lock-outline"} title={runUnlocked[`${cfg.className}::client`] ? "Bloquear ejecución" : "Desbloquear ejecución"} on:click={() => toggleRunLock(`${cfg.className}::client`)} />
 											<ButtonIconify color="success" icon="mdi:play" title="Ejecutar" disabled={!runUnlocked[`${cfg.className}::client`] || runBusy[`${cfg.className}::client`]} on:click={() => runCode(`${cfg.className}::client`, clientCode, "ts")} />
 										</div>
-										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Client`, clientCode, "ts", prodClient[0]?.body ?? "", prodClient[0] ? `Prod · ${prodClient[0].sourceFile}` : "Prod — sin fragmento")} />
+										<ButtonIconify icon="mdi:eye-outline" title="Abrir" on:click={() => openCodeModal(`${cfg.className} · Client`, clientCode, "ts")} />
 									</FlexLayout>
 								</FlexLayout>
 								<CodeViewer value={clientCode} lang="ts" height="100%" />
@@ -1192,7 +1147,7 @@
 	</div>
 </section>
 
-<CodeModal bind:bshow={modalShow} title={modalTitle} value={modalValue} language={modalLanguage} compareValue={modalCompare} compareLabel={modalCompareLabel} valueLabel="Local" />
+<CodeModal bind:bshow={modalShow} title={modalTitle} value={modalValue} language={modalLanguage} />
 
 <Modal bind:bshow={bshowTreeModal} onClose={closeTreeModal} style="width: 96dvw; height: 96dvh;">
 	<svelte:fragment slot="title">

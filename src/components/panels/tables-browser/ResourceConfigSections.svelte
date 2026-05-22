@@ -25,7 +25,6 @@
 	export let resource: ResourceConfig;
 	export let resources: ResourceConfig[];
 	export let inferred: ResourceConfig;
-	export let targetFilePaths: string[] = [];
 	export let section: "model" | "server" | "client" | "azure" = "model";
 	export let slaves: string[] = [];
 	export let domainName: string = "";
@@ -73,9 +72,6 @@
 		resource = resource;
 		dispatch("change");
 	}
-
-	// `targetFilePaths` se conserva por compatibilidad de la API del componente; no se usa en la UI.
-	void targetFilePaths;
 
 	function addHelper(): void {
 		const helpers = resource.helpers ?? [];
@@ -464,13 +460,16 @@
 						<Input label="arg" bind:value={h.argName} onChange={change} />
 						<Text color="neutral"><small><code>: {resource.className}): Promise&lt;{resource.className}&gt;</code></small></Text>
 					</div>
+					<Button_
+						variant="solid"
+						color="neutral"
+						onClick={() => (editingHookIdx = i)}
+						style="width: 100%; margin-top: 0.5rem;"
+					>
+						<Iconify icon="mdi:code-braces" /> Editar cuerpo
+					</Button_>
 				</div>
 				<div slot="float" style="padding: 0;">
-					<ButtonIconify
-						icon="mdi:code-braces"
-						onClick={() => (editingHookIdx = i)}
-						title="Editar cuerpo"
-					/>
 					<ButtonIconify
 						color="danger"
 						icon="mdi:close"
