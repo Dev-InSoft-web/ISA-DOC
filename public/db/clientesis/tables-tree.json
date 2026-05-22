@@ -126,6 +126,11 @@
       "flatpath": "25",
       "ireference": "TABLE",
       "kind": "table"
+    },
+    {
+      "flatpath": "26",
+      "ireference": "TABLE",
+      "kind": "table"
     }
   ],
   "entities": {
@@ -242,103 +247,103 @@
       {
         "itable": "7",
         "flatpath": "7",
-        "tableref": "HISTORIALCURSO",
-        "rowname": "HISTORIALCURSO",
-        "tableid": "tbl_historialcurso"
-      },
-      {
-        "itable": "8",
-        "flatpath": "8",
         "tableref": "SEGURIDADES_CURSOS",
         "rowname": "SEGURIDADES_CURSOS",
         "tableid": "tbl_seguridades_cursos"
       },
       {
-        "itable": "9",
-        "flatpath": "9",
+        "itable": "8",
+        "flatpath": "8",
         "tableref": "PERMISOS",
         "rowname": "PERMISOS",
         "tableid": "tbl_permisos"
       },
       {
-        "itable": "10",
-        "flatpath": "10",
+        "itable": "9",
+        "flatpath": "9",
         "tableref": "PLANES_CURSOS",
         "rowname": "PLANES_CURSOS",
         "tableid": "tbl_planes_cursos"
       },
       {
-        "itable": "11",
-        "flatpath": "11",
+        "itable": "10",
+        "flatpath": "10",
         "tableref": "ATRIBUTOS_PLANES",
         "rowname": "ATRIBUTOS_PLANES",
         "tableid": "tbl_atributos_planes"
       },
       {
-        "itable": "12",
-        "flatpath": "12",
+        "itable": "11",
+        "flatpath": "11",
         "tableref": "DRIVERS",
         "rowname": "DRIVERS",
         "tableid": "tbl_drivers"
       },
       {
-        "itable": "13",
-        "flatpath": "13",
+        "itable": "12",
+        "flatpath": "12",
         "tableref": "ATRIBUTOS_X_DRIVERS",
         "rowname": "ATRIBUTOS_X_DRIVERS",
         "tableid": "tbl_atributos_x_drivers"
       },
       {
-        "itable": "14",
-        "flatpath": "14",
-        "tableref": "SOP_TEMAS",
-        "rowname": "SOP_TEMAS",
-        "tableid": "tbl_sop_temas",
+        "itable": "13",
+        "flatpath": "13",
+        "tableref": "CAPAC_TEMAS",
+        "rowname": "CAPAC_TEMAS",
+        "tableid": "tbl_capac_temas",
         "snippets": {
           "sql": false
         }
       },
       {
-        "itable": "15",
-        "flatpath": "15",
+        "itable": "14",
+        "flatpath": "14",
         "tableref": "PERMISOS",
         "rowname": "PERMISOS",
         "tableid": "tbl_permisos"
+      },
+      {
+        "itable": "15",
+        "flatpath": "15",
+        "tableref": "CURSOS",
+        "rowname": "CURSOS",
+        "tableid": "tbl_cursos"
       },
       {
         "itable": "16",
         "flatpath": "16",
-        "tableref": "CURSOS",
-        "rowname": "CURSOS",
-        "tableid": "tbl_cursos"
+        "tableref": "PERMISOS",
+        "rowname": "PERMISOS",
+        "tableid": "tbl_permisos"
       },
       {
         "itable": "17",
         "flatpath": "17",
-        "tableref": "PERMISOS",
-        "rowname": "PERMISOS",
-        "tableid": "tbl_permisos"
+        "tableref": "CURSOS",
+        "rowname": "CURSOS",
+        "tableid": "tbl_cursos"
       },
       {
         "itable": "18",
         "flatpath": "18",
-        "tableref": "CURSOS",
-        "rowname": "CURSOS",
-        "tableid": "tbl_cursos"
-      },
-      {
-        "itable": "19",
-        "flatpath": "19",
         "tableref": "PERMISOS",
         "rowname": "PERMISOS",
         "tableid": "tbl_permisos"
       },
       {
-        "itable": "20",
-        "flatpath": "20",
+        "itable": "19",
+        "flatpath": "19",
         "tableref": "CURSOS",
         "rowname": "CURSOS",
         "tableid": "tbl_cursos"
+      },
+      {
+        "itable": "20",
+        "flatpath": "20",
+        "tableref": "PERMISOS",
+        "rowname": "PERMISOS",
+        "tableid": "tbl_permisos"
       },
       {
         "itable": "21",
@@ -371,9 +376,16 @@
       {
         "itable": "25",
         "flatpath": "25",
-        "tableref": "PERMISOS",
-        "rowname": "PERMISOS",
-        "tableid": "tbl_permisos"
+        "tableref": "PERMISOSCONTACTO",
+        "rowname": "PERMISOSCONTACTO",
+        "tableid": "tbl_permisoscontacto"
+      },
+      {
+        "itable": "26",
+        "flatpath": "26",
+        "tableref": "RECURSOS",
+        "rowname": "RECURSOS",
+        "tableid": "tbl_recursos"
       }
     ]
   }

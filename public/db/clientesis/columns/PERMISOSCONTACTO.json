@@ -1,9 +1,9 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "PERMISOS",
+  "tableref": "PERMISOSCONTACTO",
   "tablemeta": {
-    "originalname": "PERMISOS",
+    "originalname": "PERMISOSCONTACTO",
     "hasifnotexists": true
   },
   "nodes": [
@@ -36,9 +36,9 @@
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "NPERMISO",
-        "type": "VARCHAR(255)",
-        "primarykey": false,
+        "name": "ICONTACTO",
+        "type": "BIGINT",
+        "primarykey": true,
         "kind": "col"
       }
     ]

@@ -39,6 +39,11 @@
     },
     {
       "flatpath": "7",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "8",
       "kind": "optional",
       "name": "AUDITORIA"
     }
@@ -49,7 +54,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IDRIVER",
-        "type": "BIGINT",
+        "type": "SMALLINT",
         "primarykey": false,
         "kind": "col"
       },
@@ -57,7 +62,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "IATRIBUTO",
-        "type": "BIGINT",
+        "type": "SMALLINT",
         "primarykey": false,
         "kind": "col"
       },
@@ -73,13 +78,21 @@
         "icolumn": "4",
         "flatpath": "4",
         "name": "NATRIBUTO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(50)",
         "primarykey": false,
         "kind": "col"
       },
       {
         "icolumn": "5",
         "flatpath": "5",
+        "name": "TDATRIBUTO",
+        "type": "VARCHAR(50)",
+        "primarykey": false,
+        "kind": "col"
+      },
+      {
+        "icolumn": "6",
+        "flatpath": "6",
         "name": "BREQUERIDO",
         "type": "BIT",
         "defaultvalue": "0",
@@ -87,8 +100,8 @@
         "kind": "col"
       },
       {
-        "icolumn": "6",
-        "flatpath": "6",
+        "icolumn": "7",
+        "flatpath": "7",
         "name": "JCONFIG",
         "type": "VARCHAR(MAX)",
         "primarykey": false,

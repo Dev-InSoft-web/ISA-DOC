@@ -1,9 +1,9 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "SOP_TEMAS",
+  "tableref": "CAPAC_TEMAS",
   "tablemeta": {
-    "originalname": "SOP_TEMAS",
+    "originalname": "CAPAC_TEMAS",
     "hasifnotexists": true
   },
   "nodes": [
@@ -29,7 +29,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "ITEMA",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(25)",
         "primarykey": true,
         "kind": "col"
       },

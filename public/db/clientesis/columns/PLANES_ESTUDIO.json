@@ -39,8 +39,8 @@
     },
     {
       "flatpath": "7",
-      "ireference": "COLUMN",
-      "kind": "col"
+      "kind": "optional",
+      "name": "AUDITORIA"
     }
   ],
   "entities": {
@@ -49,7 +49,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IPLANESTUDIO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(20)",
         "primarykey": true,
         "kind": "col"
       },
@@ -73,7 +73,7 @@
         "icolumn": "4",
         "flatpath": "4",
         "name": "TTDVISUALIZACION",
-        "type": "VARCHAR(50)",
+        "type": "VARCHAR(1)",
         "primarykey": false,
         "kind": "col"
       },
@@ -92,15 +92,6 @@
         "name": "BGENERACERTIFICADOS",
         "type": "BIT",
         "defaultvalue": "0",
-        "primarykey": false,
-        "kind": "col"
-      },
-      {
-        "icolumn": "7",
-        "flatpath": "7",
-        "name": "IRECURSO",
-        "type": "VARCHAR(255)",
-        "nullable": "NULL",
         "primarykey": false,
         "kind": "col"
       }

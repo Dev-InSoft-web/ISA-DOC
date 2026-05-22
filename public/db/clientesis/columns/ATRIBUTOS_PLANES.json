@@ -29,11 +29,6 @@
     },
     {
       "flatpath": "5",
-      "ireference": "COLUMN",
-      "kind": "col"
-    },
-    {
-      "flatpath": "6",
       "kind": "optional",
       "name": "AUDITORIA"
     }
@@ -44,7 +39,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IPLAN",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(100)",
         "primarykey": false,
         "kind": "col"
       },
@@ -52,7 +47,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "ICURSO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(10)",
         "primarykey": false,
         "kind": "col"
       },
@@ -60,22 +55,13 @@
         "icolumn": "3",
         "flatpath": "3",
         "name": "IATRIBUTO",
-        "type": "BIGINT",
+        "type": "SMALLINT",
         "primarykey": false,
         "kind": "col"
       },
       {
         "icolumn": "4",
         "flatpath": "4",
-        "name": "BACTIVO",
-        "type": "BIT",
-        "defaultvalue": "1",
-        "primarykey": false,
-        "kind": "col"
-      },
-      {
-        "icolumn": "5",
-        "flatpath": "5",
         "name": "VALOR",
         "type": "VARCHAR(MAX)",
         "primarykey": false,

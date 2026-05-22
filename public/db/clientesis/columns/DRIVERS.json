@@ -39,7 +39,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IDRIVER",
-        "type": "BIGINT",
+        "type": "SMALLINT",
         "primarykey": true,
         "kind": "col"
       },
@@ -47,7 +47,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "NDRIVER",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(50)",
         "primarykey": false,
         "kind": "col"
       },
@@ -55,7 +55,7 @@
         "icolumn": "3",
         "flatpath": "3",
         "name": "DESCRIPCION",
-        "type": "TEXT",
+        "type": "VARCHAR(MAX)",
         "primarykey": false,
         "kind": "col"
       },

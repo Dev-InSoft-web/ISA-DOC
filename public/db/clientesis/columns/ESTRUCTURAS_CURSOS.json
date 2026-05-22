@@ -24,11 +24,6 @@
     },
     {
       "flatpath": "4",
-      "ireference": "COLUMN",
-      "kind": "col"
-    },
-    {
-      "flatpath": "5",
       "kind": "optional",
       "name": "AUDITORIA"
     }
@@ -39,7 +34,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "ICURSO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(10)",
         "primarykey": false,
         "kind": "col"
       },
@@ -56,15 +51,6 @@
         "flatpath": "3",
         "name": "NNIVEL",
         "type": "VARCHAR(255)",
-        "primarykey": false,
-        "kind": "col"
-      },
-      {
-        "icolumn": "4",
-        "flatpath": "4",
-        "name": "BACTIVO",
-        "type": "BIT",
-        "defaultvalue": "1",
         "primarykey": false,
         "kind": "col"
       }
