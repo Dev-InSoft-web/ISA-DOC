@@ -97,6 +97,26 @@
 		derTx = x - (x - derTx) * applied;
 		derTy = y - (y - derTy) * applied;
 		derScale = next;
+		clampDerPan();
+	}
+
+	const DER_PAN_VISIBLE_MARGIN = 10;
+
+	function clampDerPan(): void {
+		if (!derViewport) return;
+		const svg = derViewport.querySelector(".der-content > svg") as SVGSVGElement | null;
+		if (!svg) return;
+		const [w, h] = (svg.dataset.derNatural || "0x0").split("x").map(Number);
+		if (!w || !h) return;
+		const host = derViewport.getBoundingClientRect();
+		const imgW = w * derScale;
+		const imgH = h * derScale;
+		const minTx = DER_PAN_VISIBLE_MARGIN - imgW;
+		const maxTx = host.width - DER_PAN_VISIBLE_MARGIN;
+		const minTy = DER_PAN_VISIBLE_MARGIN - imgH;
+		const maxTy = host.height - DER_PAN_VISIBLE_MARGIN;
+		derTx = Math.min(maxTx, Math.max(minTx, derTx));
+		derTy = Math.min(maxTy, Math.max(minTy, derTy));
 	}
 
 	function resetDerView(): void {
@@ -128,7 +148,12 @@
 		let lastX = 0;
 		let lastY = 0;
 		const PAN_STEP = 1;
+		const isToolbarTarget = (e: Event): boolean => {
+			const t = e.target as Element | null;
+			return !!t && !!t.closest?.(".der-toolbar");
+		};
 		const onWheel = (e: WheelEvent): void => {
+			if (isToolbarTarget(e)) return;
 			e.preventDefault();
 			if (e.ctrlKey && e.shiftKey) {
 				const rect = node.getBoundingClientRect();
@@ -140,13 +165,16 @@
 			}
 			if (e.ctrlKey) {
 				derTx -= (e.deltaY || e.deltaX) * PAN_STEP;
+				clampDerPan();
 				return;
 			}
 			derTy -= e.deltaY * PAN_STEP;
 			if (e.deltaX) derTx -= e.deltaX * PAN_STEP;
+			clampDerPan();
 		};
 		const onDown = (e: PointerEvent): void => {
 			if (e.button !== 0) return;
+			if (isToolbarTarget(e)) return;
 			dragging = true;
 			lastX = e.clientX;
 			lastY = e.clientY;
@@ -159,6 +187,7 @@
 			derTy += e.clientY - lastY;
 			lastX = e.clientX;
 			lastY = e.clientY;
+			clampDerPan();
 		};
 		const onUp = (e: PointerEvent): void => {
 			if (!dragging) return;
