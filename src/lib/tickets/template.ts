@@ -295,7 +295,8 @@ export function cotaMaximaMinutos(commits: TicketCommit[]): number {
 	const complejidad = 1.4;
 	const raw = (baseMin + overhead) * complejidad;
 	const elapsed = elapsedMinutosCommits(commits);
-	const piso = Math.max(15, elapsed + 15);
+	const pisoLineas = commits.reduce((a, c) => a + pisoMinutosPorLineas(c), 0);
+	const piso = Math.max(15, elapsed + 15, pisoLineas);
 	return Math.min(600, Math.max(piso, Math.round(raw / 5) * 5));
 }
 
@@ -307,6 +308,18 @@ export function cotaMaximaMinutos(commits: TicketCommit[]): number {
 // proporcionalmente el tiempo de los commits posteriores.
 // Los commits entran en orden descendente (el más reciente primero)
 // y se devuelven en el mismo orden.
+// Ritmo aproximado de "líneas equivalentes" trabajadas por minuto
+// (ins + del*0.5). Sirve para fijar un piso de tiempo por commit
+// acorde a su volumen, evitando que un commit grande herede un gap
+// pequeño cuando el desarrollador venía trabajando desde antes.
+const LINEAS_POR_MIN = 3;
+
+function pisoMinutosPorLineas(c: TicketCommit): number {
+	const peso = (c.ins ?? 0) + (c.del ?? 0) * 0.5;
+	if (peso <= 0) return 0;
+	return Math.max(1, Math.ceil(peso / LINEAS_POR_MIN));
+}
+
 function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
 	const n = commits.length;
 	if (!n || total <= 0) return commits.map(() => 0);
@@ -317,15 +330,17 @@ function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
 		const diff = ts[i] - ts[i - 1];
 		gaps[i] = diff > 0 ? Math.max(1, Math.round(diff / 60000)) : 0;
 	}
+	const pisos = cronos.map(pisoMinutosPorLineas);
 	const firstTs = ts[0];
 	const firstIdxs: number[] = [0];
 	for (let i = 1; i < n; i++) {
 		if (firstTs && (ts[i] - firstTs) / 60000 <= 5) firstIdxs.push(i);
 		else break;
 	}
-	const tiempos = gaps.slice();
-	const sumGaps = gaps.reduce((a, b) => a + b, 0);
-	let excedente = total - sumGaps;
+	const tiempos = new Array<number>(n).fill(0);
+	for (let i = 0; i < n; i++) tiempos[i] = Math.max(gaps[i], pisos[i]);
+	const sumBase = tiempos.reduce((a, b) => a + b, 0);
+	let excedente = total - sumBase;
 
 	if (excedente >= 0) {
 		const base = Math.floor(excedente / firstIdxs.length);
@@ -339,14 +354,20 @@ function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
 	} else {
 		const ajustables: number[] = [];
 		for (let i = 0; i < n; i++) if (!firstIdxs.includes(i)) ajustables.push(i);
-		const sumAj = ajustables.reduce((a, i) => a + tiempos[i], 0);
-		if (sumAj > 0) {
-			const factor = Math.max(0, (sumAj + excedente) / sumAj);
-			for (const i of ajustables) tiempos[i] = Math.max(0, Math.round(tiempos[i] * factor));
+		const margen = ajustables.reduce((a, i) => a + (tiempos[i] - pisos[i]), 0);
+		if (margen > 0) {
+			const recorte = Math.min(margen, -excedente);
+			const factor = (margen - recorte) / margen;
+			for (const i of ajustables) {
+				const extra = tiempos[i] - pisos[i];
+				tiempos[i] = pisos[i] + Math.max(0, Math.round(extra * factor));
+			}
 		}
 		let actual = tiempos.reduce((a, b) => a + b, 0);
 		const diff = total - actual;
-		if (diff !== 0) tiempos[firstIdxs[0]] = Math.max(0, tiempos[firstIdxs[0]] + diff);
+		if (diff !== 0) {
+			tiempos[firstIdxs[0]] = Math.max(pisos[firstIdxs[0]], tiempos[firstIdxs[0]] + diff);
+		}
 	}
 
 	let actual = tiempos.reduce((a, b) => a + b, 0);
@@ -356,8 +377,13 @@ function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
 		const step = delta > 0 ? 1 : -1;
 		let idx = firstIdxs[0];
 		if (step < 0) {
-			for (let i = 0; i < n; i++) if (tiempos[i] > tiempos[idx]) idx = i;
-			if (tiempos[idx] <= 0) break;
+			let mejor = -1;
+			for (let i = 0; i < n; i++) {
+				if (tiempos[i] <= pisos[i]) continue;
+				if (mejor < 0 || tiempos[i] > tiempos[mejor]) mejor = i;
+			}
+			if (mejor < 0) break;
+			idx = mejor;
 		}
 		tiempos[idx] += step;
 		actual += step;
