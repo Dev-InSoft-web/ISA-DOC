@@ -576,7 +576,7 @@
 	}
 
 	function buildMermaidDER(): string {
-		const lines: string[] = ["erDiagram"];
+		const lines: string[] = ["erDiagram", "  direction LR"];
 		const nameOf = (id: string): string => {
 			const t = tables.find((x) => x.id === id);
 			return t ? sanitizeMermaidId(effectiveTableName(t)) : "";
@@ -668,27 +668,38 @@
 			return `#${r}${g}${b}`;
 		};
 		const v = (n: string, f: string): string => toHex(css.getPropertyValue(n).trim() || f);
+		const primary = v("--is-primary", "#3a8bff");
+		const bgPrim = v("--is-bg-primary", "#0c1222");
+		const bgSec = v("--is-bg-secondary", "#13203a");
+		const fgLight = v("--is-color", "#dfe9f7");
 		w.mermaid.initialize({
 			startOnLoad: false,
-			theme: "dark",
+			theme: "base",
 			securityLevel: "loose",
 			themeVariables: {
-				background: v("--is-bg-primary", "#0c1222"),
-				primaryColor: v("--is-bg-secondary", "#041c34"),
-				primaryBorderColor: v("--is-primary", "#3a8bff"),
-				primaryTextColor: v("--is-color", "#dfe9f7"),
-				lineColor: v("--is-primary", "#3a8bff"),
-				textColor: v("--is-color", "#dfe9f7"),
+				darkMode: true,
+				background: bgPrim,
+				primaryColor: primary,
+				primaryBorderColor: primary,
+				primaryTextColor: bgPrim,
+				secondaryColor: bgSec,
+				tertiaryColor: bgPrim,
+				lineColor: primary,
+				textColor: fgLight,
+				mainBkg: primary,
+				nodeBorder: primary,
+				attributeBackgroundColorOdd: bgPrim,
+				attributeBackgroundColorEven: bgSec,
 			},
 		});
 		return w.mermaid;
 	}
 
-	/** Convierte las aristas de relación del SVG ER en líneas de ángulo recto (Manhattan L-shape). */
+	/** Convierte las aristas de relación del SVG ER en líneas de ángulo recto orientadas LR. */
 	function rectifyDerEdges(svg: string): string {
 		try {
 			const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
-			const paths = doc.querySelectorAll("path.relationshipLine, g.relationshipLabels ~ path, path[class*='relationshipLine']");
+			const paths = doc.querySelectorAll("path.relationshipLine, path[class*='relationshipLine']");
 			const allPaths: SVGPathElement[] = paths.length
 				? Array.from(paths) as SVGPathElement[]
 				: Array.from(doc.querySelectorAll("path")).filter((p) => /relationship/i.test(p.getAttribute("class") ?? "")) as SVGPathElement[];
@@ -700,8 +711,12 @@
 				const y1 = Number(nums[1]);
 				const x2 = Number(nums[nums.length - 2]);
 				const y2 = Number(nums[nums.length - 1]);
-				const mx = (x1 + x2) / 2;
-				p.setAttribute("d", `M ${x1},${y1} L ${mx},${y1} L ${mx},${y2} L ${x2},${y2}`);
+				if (Math.abs(y1 - y2) < 1 || Math.abs(x1 - x2) < 1) {
+					p.setAttribute("d", `M ${x1},${y1} L ${x2},${y2}`);
+					continue;
+				}
+				const my = (y1 + y2) / 2;
+				p.setAttribute("d", `M ${x1},${y1} L ${x1},${my} L ${x2},${my} L ${x2},${y2}`);
 			}
 			return new XMLSerializer().serializeToString(doc.documentElement);
 		} catch {
@@ -883,19 +898,16 @@
 						<svelte:fragment slot="row" let:node>
 							{#if node.kind === "prefix"}
 								<span class="tree-row" title={`Prefijo: ${node.rowName ?? ""}`}>
-									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="badge badge-prefix">Prefixer</span>
 									<span class="tree-row-name">{node.rowName}</span>
 								</span>
 							{:else if node.kind === "domain"}
 								<span class="tree-row" title={`Dominio: ${node.rowName ?? node.domainId ?? ""}${node.prefix ? ` (prefijo ${node.prefix})` : ""}`}>
-									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="badge badge-domain">Domain</span>
 									{#if node.prefix}<span class="tree-row-name" title="Prefijo aplicado a las tablas del dominio">{node.prefix}</span>{/if}
 								</span>
 							{:else if node.kind === "pivot"}
 								<span class="tree-row" title={`Pivote: ${node.rowName ?? node.domainId ?? ""}${node.cardinality ? ` (${node.cardinality})` : ""}`}>
-									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="badge badge-pivot">Pivote</span>
 									{#if node.cardinality}<span class="tree-row-meta tree-row-card" title="Cardinalidad del pivote">{node.cardinality}</span>{/if}
 								</span>
@@ -903,7 +915,6 @@
 								{@const _tableParent = node.isMaster ? (adapter.findNodeById(String(node.ireference || "").trim()) as unknown as { kind?: string; domainType?: string } | null) : null}
 								{@const _isMasterOfDomain = !!_tableParent && _tableParent.kind === "domain"}
 								<span class="tree-row {node.isPointer ? 'tree-row-pointer' : ''}" title={node.isPointer ? `Pointer → ${node.rowName ?? ""}` : `Tabla: ${node.rowName ?? ""}`}>
-									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									{#if node.isPointer}
 										<span class="badge badge-pointer">Pointer</span>
 									{/if}
