@@ -173,15 +173,15 @@
 		const onWheel = (e: WheelEvent): void => {
 			if (isToolbarTarget(e)) return;
 			e.preventDefault();
-			if (e.ctrlKey && e.shiftKey) {
+			if (e.ctrlKey) {
 				const rect = node.getBoundingClientRect();
 				const cx = e.clientX - rect.left;
 				const cy = e.clientY - rect.top;
-				const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+				const factor = Math.exp(-e.deltaY * 0.01);
 				zoomBy(factor, cx, cy);
 				return;
 			}
-			if (e.ctrlKey) {
+			if (e.shiftKey) {
 				derTx -= (e.deltaY || e.deltaX) * PAN_STEP;
 				clampDerPan();
 				return;
@@ -1683,8 +1683,8 @@
 		<div class="der-host" use:attachDerPanZoom>
 			<div class="der-toolbar">
 				<span class="der-zoom-pct"><small>{Math.round(derScale * 100)}%</small></span>
-				<ButtonIconify icon="mdi:magnify-minus-outline" title="Alejar (Ctrl+Shift+Scroll abajo)" on:click={() => zoomBy(1 / 1.2)} />
-				<ButtonIconify icon="mdi:magnify-plus-outline" title="Acercar (Ctrl+Shift+Scroll arriba)" on:click={() => zoomBy(1.2)} />
+				<ButtonIconify icon="mdi:magnify-minus-outline" title="Alejar (Ctrl+Scroll abajo / pinch)" on:click={() => zoomBy(1 / 1.2)} />
+				<ButtonIconify icon="mdi:magnify-plus-outline" title="Acercar (Ctrl+Scroll arriba / pinch)" on:click={() => zoomBy(1.2)} />
 				<ButtonIconify icon="mdi:fit-to-screen-outline" title="Ajustar al diagrama completo (Ctrl+0)" on:click={() => fitDerView("both")} />
 				<ButtonIconify icon="mdi:image-filter-center-focus" title="Restablecer (100%)" on:click={resetDerView} />
 				<ButtonIconify icon="mdi:code-tags" title="Ver fuente Mermaid" on:click={() => openCodeModal("DER · fuente Mermaid", derSource, "ts")} />
