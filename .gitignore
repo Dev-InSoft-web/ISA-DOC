@@ -5,3 +5,7 @@ dist-gh-pages/
 .astro/
 .env
 public/static-api/
+
+# Tokens npm para scripts de publicacion (NUNCA commitear)
+scripts/PS1/pub-isp/.npmrc-publicar.npmrc
+scripts/PS1/pub-isp/.npmrc-descargar.npmrc
