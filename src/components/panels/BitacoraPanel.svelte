@@ -1,17 +1,15 @@
 <script lang="ts">
-	import { FlexLayout, H3 } from "@ingenieria_insoft/ispsveltecomponents";
 	import IplanpadreToAtributoMigration from "../migration/IplanpadreToAtributoMigration.svelte";
 	import ImagenDocumentoDriverMigration from "../migration/ImagenDocumentoDriverMigration.svelte";
 	import CleanupTestDataMigration from "../migration/CleanupTestDataMigration.svelte";
 	import OldRebuildSection from "../migration/OldRebuildSection.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import DailySummaryAccordion from "../bitacora/DailySummaryAccordion.svelte";
-	import TicketsSection from "../tickets/TicketsSection.svelte";
+	import BitacoraShell from "./BitacoraShell.svelte";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
 	import Accordion from "../_comps/containers/Accordion.svelte";
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
 	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
-	import DbStatusBanner from "../_comps/status/DbStatusBanner.svelte";
 	import mdAuditAddIntro from "../../lib/bitacora/topics/audit/intro.md?raw";
 	import mdAuditDropIntro from "../../lib/bitacora/topics/audit/drop-intro.md?raw";
 	import sqlAddAuditColumns from "../../lib/migration/sql/add-audit-columns.sql?raw";
@@ -112,22 +110,11 @@
 	}
 </script>
 
-<FlexLayout direction="column" style="padding: 0; flex: 1 1 auto; min-height: 0; height: 100%; overflow: hidden;">
-	<H3>Bitácora</H3>
-	<DbStatusBanner />
-
-	<FlexLayout direction="row" items="stretch" style="gap: 1rem; width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden;">
-		<!-- Panel izquierdo (20%): Tickets -->
-		<div class="custom-scrollbar" style="flex: 0 0 20%; min-width: 0; min-height: 0; overflow: auto;">
-			<TicketsSection />
-		</div>
-
-		<!-- Panel derecho (80%): el resto -->
-		<FlexLayout direction="column" class="custom-scrollbar" style="flex: 1 1 80%; min-width: 0; min-height: 0; overflow: auto;">
-			<!-- 1) ISW siempre primero -->
-			<BitacoraNote
-				title="Cursos (ISW) — Reglas, restricciones y avances"
-				mdSource={md_cursos_isw_reglas}
+<BitacoraShell title="Bitácora" proyecto="ClientesIS">
+	<!-- 1) ISW siempre primero -->
+	<BitacoraNote
+		title="Cursos (ISW) — Reglas, restricciones y avances"
+		mdSource={md_cursos_isw_reglas}
 			/>
 
 			<!-- 2) Construcción CAPAC_* (acceso rápido) -->
@@ -497,9 +484,7 @@
 					inner
 				/>
 			</Accordion>
-		</FlexLayout>
-	</FlexLayout>
-</FlexLayout>
+</BitacoraShell>
 
 <style>
 	.jconfig-matrix-wrap {
