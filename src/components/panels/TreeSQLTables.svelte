@@ -725,8 +725,8 @@
 	}
 
 	function sanitizeMermaidType(s: string): string {
-		const out = (s || "").replace(/\s+/g, "_").replace(/[^A-Za-z0-9_]/g, "_");
-		return out || "VAR";
+		const out = (s || "").replace(/\s+/g, "").replace(/[^A-Za-z0-9_()]/g, "_");
+		return /^[A-Za-z_]/.test(out) ? out : `T_${out}` || "VAR";
 	}
 
 	function buildMermaidDER(): string {
@@ -762,7 +762,7 @@
 				const tags: string[] = [];
 				if (c.primaryKey) tags.push("PK");
 				if (c.foreignKey) tags.push("FK");
-				lines.push(`    ${typ} ${cname}${tags.length ? " " + tags.join(",") : ""}`);
+				lines.push(`    ${cname} ${typ}${tags.length ? " " + tags.join(",") : ""}`);
 			}
 			lines.push(`  }`);
 		}
