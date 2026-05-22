@@ -47,7 +47,7 @@ Catálogo de cursos.
 | --- | --- | --- |
 | `ICURSO` (PK) | `varchar(10)` | Identificador del curso. |
 | `NCURSO` | `varchar(10)` | Nombre corto. |
-| `ITEMA` | `varchar(25)` | FK → `CAPAC_TEMAS`. |
+| `ITEMA` | `varchar(25)` | FK → `SOP_TEMAS_V2` (dominio Soporte). |
 | `IDRIVER` | `smallint` | FK → `CAPAC_DRIVERS`. |
 | `DESCRIPCION` | `varchar(max)` | Descripción larga. |
 | `BACTIVO` | `bit` | Activo / inactivo. |
@@ -149,13 +149,46 @@ Catálogo de cursos.
 | `IPERMISO` (PK) | `varchar(25)` |
 | `NPERMISO` | `varchar(255)` |
 
-### `CAPAC_TEMAS`
+### `SOP_TEMAS_V2`
+
+> Catálogo de temas del dominio **Soporte** (no `CAPAC_*`). Se referencia
+> como FK externa desde `CAPAC_CURSOS.ITEMA` y `CAPAC_PLANES_CURSOS.ITEMA`.
 
 | Columna | Tipo |
 | --- | --- |
 | `ITEMA` (PK) | `varchar(25)` |
 | `NTEMA` | `varchar(255)` |
 | auditoría | `IUSUARIOCRE`, `APPCRE`, `IPCRE`, `FHCRE` |
+
+## Mapeo Relacional de Objetos (ORM)
+
+Además de la estructura SQL pura, el modelo cliente expresa
+**herencia entre entidades** para que ciertas tablas de Capacitación
+se comporten como otra entidad del dominio. El siguiente diagrama
+resume las herencias y los pivotes del módulo.
+
+![Diagrama ORM — Mapeo Relacional de Objetos](/imgs/Diagrama%20ORM%20%28Mapeo%20Relacional%20de%20Objetos%291.jpg)
+
+### Herencia `TPlanCurso` extends `TRecurso`
+
+`CAPAC_PLANES_CURSOS` lleva una FK `IRECURSO` hacia `RECURSOS` (dominio
+externo) y, a nivel de objeto, **`TPlanCurso` hereda de `TRecurso`**:
+el sistema trata un plan-curso como si fuera un recurso, exponiendo
+además un accesor explícito `recurso` (1-1 por `IRECURSO`) que se
+materializa con `Get_Recurso_PlanCurso`.
+
+Esta particularidad se declara en el JSON de la tabla
+(`tablemeta.extendsmodel: "Recurso"`) y el generador de snippets emite
+`export class TPlanCurso extends TRecurso { … }` en vez del `TObject`
+por defecto.
+
+### Pivotes (tablas puente)
+
+- `CAPAC_CURSOS_DE_PLANES_ESTUDIO` — pivote `PLANES_ESTUDIO` ↔ `CURSOS`.
+- `CAPAC_CURSOS_PREREQUISITOS` — pivote `CURSOS` ↔ `CURSOS` (auto-relación).
+- `CAPAC_ATRIBUTOS_X_DRIVERS` — pivote `DRIVERS` ↔ atributos.
+- `CAPAC_ATRIBUTOS_PLANES` — pivote `PLANES_CURSOS` ↔ atributos.
+- `CAPAC_SEGURIDADES_CURSOS` — pivote `CURSOS` ↔ `PERMISOS`.
 
 ## Reglas de integridad relevantes
 
