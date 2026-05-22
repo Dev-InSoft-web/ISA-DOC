@@ -89,7 +89,7 @@
          return ["fc-wrap", $$restProps.class].filter(Boolean).join(" ");
       },
       get slotresume() {
-         return { sizew, boolszw: LayoutHelpers.getSizeFlags(sizew || "md") };
+         return LayoutHelpers.getSlotResume(sizew);
       },
    };
 </script>

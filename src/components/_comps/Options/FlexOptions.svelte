@@ -12,6 +12,8 @@
    export interface FlexOptionsProps extends FlexLayoutProps {
       actions: FlexOptionsInput[];
       more?: FlexOptionsInput[];
+      moreDisabled?: boolean;
+      morePanelClass?: string;
       sizew?: FlexOptionsBreakpoint;
    }
 </script>
@@ -26,6 +28,8 @@
    export let style: $$Props["style"] = "";
    export let actions: $$Props["actions"] = [];
    export let more: $$Props["more"] = [];
+   export let moreDisabled: $$Props["moreDisabled"] = false;
+   export let morePanelClass: $$Props["morePanelClass"] = "";
    export let sizew: $$Props["sizew"] = "md";
 
    const self = {
@@ -81,7 +85,7 @@
       {#if self.hasactions}
          <span class="flex-options-vsep" role="separator" aria-orientation="vertical"></span>
       {/if}
-      <CascadeOptions actions={more} />
+      <CascadeOptions actions={more} disabled={moreDisabled} panelClass={morePanelClass} />
    {/if}
 </FlexLayout>
 

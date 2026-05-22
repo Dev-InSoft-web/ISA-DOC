@@ -10,6 +10,7 @@
    export interface CascadeOptionsProps extends DialogProps {
       actions?: CascadeOptionsInput[];
       disabled?: boolean;
+      panelClass?: string;
    }
 
    export interface CascadeOptionsSlots {
@@ -25,6 +26,7 @@
    export let actions: $$Props["actions"] = [];
    export let open: $$Props["open"] = false;
    export let disabled: $$Props["disabled"] = false;
+   export let panelClass: $$Props["panelClass"] = "";
 
    let anchorEl: HTMLElement | undefined = undefined;
 
@@ -123,7 +125,7 @@
 
    <InvokedFloater {...self.floater.resume} class={self.floater.class} bind:open target={anchorEl ?? null} placement="bottom-start" offset={2} avoidAnchor={false} on:close on:cancel>
       <div class="cascade-options-zoom-wrap" style="transform-origin: left top" transition:scale={{ start: 0.88, duration: 120, easing: cubicOut }}>
-         <Card class="cascade-options-panel blockCloseClick" role="menu" style={self.panel.style}>
+         <Card class={["cascade-options-panel", "blockCloseClick", panelClass].filter(Boolean).join(" ")} role="menu" style={self.panel.style}>
             <FlexLayout direction="column" gap="0">
                {#each normalizedItems as item}
                   {#if "separator" in item && item.separator}
