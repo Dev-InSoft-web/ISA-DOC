@@ -57,6 +57,79 @@
 	let derSvg: string = "";
 	let derLoading: boolean = false;
 	let derError: string = "";
+	let derScale: number = 1;
+	let derTx: number = 0;
+	let derTy: number = 0;
+	$: derTransform = `translate(${derTx}px, ${derTy}px) scale(${derScale})`;
+	let derViewport: HTMLDivElement | undefined;
+
+	function zoomBy(factor: number, cx?: number, cy?: number): void {
+		const rect = derViewport?.getBoundingClientRect();
+		const x = cx ?? (rect ? rect.width / 2 : 0);
+		const y = cy ?? (rect ? rect.height / 2 : 0);
+		const next = Math.max(0.1, Math.min(8, derScale * factor));
+		const applied = next / derScale;
+		derTx = x - (x - derTx) * applied;
+		derTy = y - (y - derTy) * applied;
+		derScale = next;
+	}
+
+	function resetDerView(): void {
+		derScale = 1;
+		derTx = 0;
+		derTy = 0;
+	}
+
+	function attachDerPanZoom(node: HTMLDivElement): { destroy(): void } {
+		derViewport = node;
+		let dragging = false;
+		let lastX = 0;
+		let lastY = 0;
+		const onWheel = (e: WheelEvent): void => {
+			e.preventDefault();
+			const rect = node.getBoundingClientRect();
+			const cx = e.clientX - rect.left;
+			const cy = e.clientY - rect.top;
+			const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+			zoomBy(factor, cx, cy);
+		};
+		const onDown = (e: PointerEvent): void => {
+			if (e.button !== 0) return;
+			dragging = true;
+			lastX = e.clientX;
+			lastY = e.clientY;
+			node.setPointerCapture(e.pointerId);
+			node.classList.add("grabbing");
+		};
+		const onMove = (e: PointerEvent): void => {
+			if (!dragging) return;
+			derTx += e.clientX - lastX;
+			derTy += e.clientY - lastY;
+			lastX = e.clientX;
+			lastY = e.clientY;
+		};
+		const onUp = (e: PointerEvent): void => {
+			if (!dragging) return;
+			dragging = false;
+			try { node.releasePointerCapture(e.pointerId); } catch {}
+			node.classList.remove("grabbing");
+		};
+		node.addEventListener("wheel", onWheel, { passive: false });
+		node.addEventListener("pointerdown", onDown);
+		node.addEventListener("pointermove", onMove);
+		node.addEventListener("pointerup", onUp);
+		node.addEventListener("pointercancel", onUp);
+		return {
+			destroy() {
+				node.removeEventListener("wheel", onWheel);
+				node.removeEventListener("pointerdown", onDown);
+				node.removeEventListener("pointermove", onMove);
+				node.removeEventListener("pointerup", onUp);
+				node.removeEventListener("pointercancel", onUp);
+				if (derViewport === node) derViewport = undefined;
+			},
+		};
+	}
 
 	let overrides: Record<string, never> = {};
 	void overrides;
@@ -594,9 +667,13 @@
 		for (const t of tables) {
 			const ent = sanitizeMermaidId(effectiveTableName(t));
 			lines.push(`  ${ent} {`);
+			const seenCol = new Set<string>();
 			for (const c of tableColumns(t)) {
-				const typ = sanitizeMermaidType(c.type);
 				const cname = sanitizeMermaidId(c.name);
+				const dedupeKey = cname.toUpperCase();
+				if (seenCol.has(dedupeKey)) continue;
+				seenCol.add(dedupeKey);
+				const typ = sanitizeMermaidType(c.type);
 				const tags: string[] = [];
 				if (c.primaryKey) tags.push("PK");
 				if (c.foreignKey) tags.push("FK");
@@ -662,7 +739,42 @@
 		const mermaid = (m as any).default ?? m;
 		const elkLoaders = (elk as any).default ?? elk;
 		mermaid.registerLayoutLoaders(elkLoaders);
-		mermaid.initialize({ startOnLoad: false, securityLevel: "loose" });
+		const css = getComputedStyle(document.documentElement);
+		const toHex = (value: string, fallback: string): string => {
+			const probe = document.createElement("div");
+			probe.style.color = value || fallback;
+			probe.style.display = "none";
+			document.body.appendChild(probe);
+			const resolved = getComputedStyle(probe).color;
+			document.body.removeChild(probe);
+			const nums = resolved.match(/-?\d+(\.\d+)?/g);
+			if (!nums || nums.length < 3) return fallback;
+			const clip = (n: number): number => Math.max(0, Math.min(255, Math.round(n)));
+			const r = clip(Number(nums[0])).toString(16).padStart(2, "0");
+			const g = clip(Number(nums[1])).toString(16).padStart(2, "0");
+			const b = clip(Number(nums[2])).toString(16).padStart(2, "0");
+			return `#${r}${g}${b}`;
+		};
+		const primary = toHex(css.getPropertyValue("--is-primary").trim(), "#3a8bff");
+		const bgPrim = toHex(css.getPropertyValue("--is-bg-primary").trim(), "#0c1222");
+		const bgSec = toHex(css.getPropertyValue("--is-bg-secondary").trim(), "#13203a");
+		mermaid.initialize({
+			startOnLoad: false,
+			securityLevel: "loose",
+			themeVariables: {
+				primaryColor: bgSec,
+				primaryBorderColor: primary,
+				primaryTextColor: "#ffffff",
+				secondaryColor: bgSec,
+				tertiaryColor: bgPrim,
+				lineColor: primary,
+				textColor: "#ffffff",
+				mainBkg: bgSec,
+				nodeBorder: primary,
+				attributeBackgroundColorOdd: bgPrim,
+				attributeBackgroundColorEven: bgSec,
+			},
+		});
 		w.mermaid = mermaid;
 		w.__mermaidReady = true;
 		return mermaid;
@@ -674,6 +786,7 @@
 		derSource = buildMermaidDER();
 		derShow = true;
 		derLoading = true;
+		resetDerView();
 		try {
 			const mm = await ensureMermaid();
 			const id = `der-svg-${Date.now()}`;
@@ -1369,18 +1482,26 @@
 		<FlexLayout justify="between" items="center">
 			<Text color="neutral"><small>Inferido del árbol de tablas, dominios y pivotes. Cardinalidades aplicadas según el modelo.</small></Text>
 			<FlexLayout items="center">
+				<span class="der-zoom-pct"><small>{Math.round(derScale * 100)}%</small></span>
+				<ButtonIconify icon="mdi:magnify-minus-outline" title="Alejar" on:click={() => zoomBy(1 / 1.2)} />
+				<ButtonIconify icon="mdi:magnify-plus-outline" title="Acercar" on:click={() => zoomBy(1.2)} />
+				<ButtonIconify icon="mdi:fit-to-page-outline" title="Restablecer vista" on:click={resetDerView} />
 				<ButtonIconify icon="mdi:refresh" title="Regenerar" on:click={openDERModal} />
 				<ButtonIconify icon="mdi:code-tags" title="Ver fuente Mermaid" on:click={() => openCodeModal("DER · fuente Mermaid", derSource, "ts")} />
 			</FlexLayout>
 		</FlexLayout>
-		<div class="der-host">
+		<div class="der-host" use:attachDerPanZoom>
 			{#if derLoading}
-				<Text color="neutral"><small>Generando diagrama…</small></Text>
+				<div class="der-msg"><Text color="neutral"><small>Generando diagrama…</small></Text></div>
 			{:else if derError}
-				<Text color="error"><small>Error generando DER: {derError}</small></Text>
-				<pre class="der-source">{derSource}</pre>
+				<div class="der-msg">
+					<Text color="error"><small>Error generando DER: {derError}</small></Text>
+					<pre class="der-source">{derSource}</pre>
+				</div>
 			{:else}
-				{@html derSvg}
+				<div class="der-content" style="transform: {derTransform};">
+					{@html derSvg}
+				</div>
 			{/if}
 		</div>
 	</FlexLayout>
@@ -1632,15 +1753,38 @@
 		flex: 1 1 auto;
 		min-height: 0;
 		height: 100%;
-		overflow: auto;
-		padding: 0.5rem;
+		overflow: hidden;
+		position: relative;
+		padding: 0;
 		background: var(--is-bg-readonly, #001327);
 		border: 1px solid var(--is-b-color, #555);
 		border-radius: 0.25rem;
+		cursor: grab;
+		touch-action: none;
+	}
+	:global(.der-host.grabbing) {
+		cursor: grabbing !important;
+	}
+	.der-content {
+		position: absolute;
+		top: 0;
+		left: 0;
+		transform-origin: 0 0;
+		will-change: transform;
+		pointer-events: none;
+	}
+	.der-msg {
+		padding: 0.5rem;
+	}
+	.der-zoom-pct {
+		min-width: 3.5rem;
+		text-align: right;
+		opacity: 0.8;
 	}
 	.der-host :global(svg) {
-		max-width: 100%;
+		max-width: none;
 		height: auto;
+		display: block;
 	}
 	.der-host :global(svg text),
 	.der-host :global(svg .entityLabel),
