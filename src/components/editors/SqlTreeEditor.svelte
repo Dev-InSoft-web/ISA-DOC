@@ -425,7 +425,7 @@
          <input class="input-field name-input" type="text" bind:value={baseNameDraft} disabled={readonly} on:change={(e) => commitBaseName(e.currentTarget.value)} />
       </div>
       {#if !readonly}
-         <Switch bind:checked={auditarChecked} color="primary" colorFalse="neutral">Auditar</Switch>
+         <Switch bind:checked={auditarChecked} color="primary" colorFalse="neutral" small>Auditar</Switch>
       {/if}
    </FlexLayout>
 

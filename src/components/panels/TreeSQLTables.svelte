@@ -1145,6 +1145,7 @@
 							</FlexLayout>
 							<FlexLayout items="center">
 								<SwitchComp
+									small
 									label="SQL"
 									checked={isSqlSnippetEnabled(t)}
 									on:change={(ev: CustomEvent<boolean> | Event) => {
