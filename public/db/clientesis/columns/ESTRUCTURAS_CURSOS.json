@@ -21,11 +21,6 @@
       "flatpath": "3",
       "ireference": "COLUMN",
       "kind": "col"
-    },
-    {
-      "flatpath": "4",
-      "kind": "optional",
-      "name": "AUDITORIA"
     }
   ],
   "entities": {
@@ -34,7 +29,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "ICURSO",
-        "type": "VARCHAR(10)",
+        "type": "VARCHAR(255)",
         "primarykey": false,
         "kind": "col"
       },

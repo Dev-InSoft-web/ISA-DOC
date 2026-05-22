@@ -29,7 +29,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IPERMISO",
-        "type": "VARCHAR(25)",
+        "type": "VARCHAR(255)",
         "primarykey": true,
         "kind": "col"
       },

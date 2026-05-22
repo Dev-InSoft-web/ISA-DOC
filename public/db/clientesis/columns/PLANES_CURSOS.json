@@ -4,8 +4,7 @@
   "tableref": "PLANES_CURSOS",
   "tablemeta": {
     "originalname": "PLANES_CURSOS",
-    "hasifnotexists": true,
-    "extendsmodel": "Recurso"
+    "hasifnotexists": true
   },
   "nodes": [
     {
@@ -37,11 +36,6 @@
       "flatpath": "6",
       "ireference": "COLUMN",
       "kind": "col"
-    },
-    {
-      "flatpath": "7",
-      "kind": "optional",
-      "name": "AUDITORIA"
     }
   ],
   "entities": {
@@ -50,7 +44,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IPLAN",
-        "type": "VARCHAR(100)",
+        "type": "VARCHAR(255)",
         "primarykey": false,
         "kind": "col"
       },
@@ -58,7 +52,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "ICURSO",
-        "type": "VARCHAR(10)",
+        "type": "VARCHAR(255)",
         "primarykey": false,
         "kind": "col"
       },
@@ -82,7 +76,7 @@
         "icolumn": "5",
         "flatpath": "5",
         "name": "IRECURSO",
-        "type": "BIGINT",
+        "type": "VARCHAR(255)",
         "primarykey": false,
         "kind": "col"
       },

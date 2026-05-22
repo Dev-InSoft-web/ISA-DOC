@@ -130,7 +130,7 @@
         "icolumn": "6",
         "flatpath": "6",
         "name": "VERSIONINI",
-        "type": "VARCHAR(20)",
+        "type": "BIGINT",
         "nullable": "NULL",
         "primarykey": false,
         "kind": "col"
@@ -139,7 +139,7 @@
         "icolumn": "7",
         "flatpath": "7",
         "name": "VERSIONFIN",
-        "type": "VARCHAR(20)",
+        "type": "BIGINT",
         "nullable": "NULL",
         "primarykey": false,
         "kind": "col"
@@ -148,7 +148,7 @@
         "icolumn": "8",
         "flatpath": "8",
         "name": "ITDRECURSO",
-        "type": "TINYINT",
+        "type": "VARCHAR(50)",
         "primarykey": false,
         "kind": "col"
       },

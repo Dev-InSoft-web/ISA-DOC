@@ -29,7 +29,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "ITEMA",
-        "type": "VARCHAR(25)",
+        "type": "VARCHAR(20)",
         "primarykey": true,
         "kind": "col"
       },
@@ -37,7 +37,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "NTEMA",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(100)",
         "primarykey": false,
         "kind": "col"
       }
