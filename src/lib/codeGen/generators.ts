@@ -62,7 +62,7 @@ function relationGetter(r: RelationDef, allRes: Map<string, ResourceConfig>): st
 }
 
 function valImports(cfg: ResourceConfig): string[] {
-	const used = new Set<string>(["TObject"]);
+	const used = new Set<string>([cfg.parentModelClass ?? "TObject"]);
 	for (const f of cfg.fields) used.add(VAL_FN[f.type]);
 	for (const r of cfg.relations) {
 		used.add(r.kind === "1-N" ? "val2TArray" : "val2TObject");
@@ -124,9 +124,10 @@ export function genModelo(cfg: ResourceConfig, all: ResourceConfig[]): string {
 		? `// TODO: importar ${targetEntries.map((t) => `${t.className} (${t.tableName})`).join(", ")} desde su módulo correspondiente\n`
 		: "";
 
+	const baseModel = cfg.parentModelClass ?? "TObject";
 	return `import { ${imports.join(", ")} } from "@ingenieria_insoft/ispgen";
 ${enumLine}${targetsLine}
-export class ${cfg.className} extends TObject {
+export class ${cfg.className} extends ${baseModel} {
 ${fieldsCode}
 ${relsCode}${renderHelpers(cfg.helpers)}
 }

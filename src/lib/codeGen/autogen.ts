@@ -120,6 +120,7 @@ function buildResource(id: string, t: ParsedTable, idByTable: Map<string, string
 		pluralCaption: cust.pluralCaption ?? pluralize(resourceId),
 		isysRecurso: cust.isysRecurso ?? pluralize(resourceId),
 		parentBaseClass: cust.parentBaseClass ?? "TCapacitacionServer",
+		parentModelClass: cust.parentModelClass,
 		clientBaseClass: cust.clientBaseClass ?? "TCapacitacionBaseClient",
 		uiBaseKind: cust.uiBaseKind ?? "CRUD",
 		fields,

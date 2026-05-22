@@ -95,6 +95,7 @@ export async function readColumnsTree(tableRef: string): Promise<PersistedColumn
 				tableMeta: {
 					originalName: v4.tablemeta?.originalname ?? tableRef,
 					hasIfNotExists: v4.tablemeta?.hasifnotexists ?? true,
+					extendsModel: (v4.tablemeta as { extendsmodel?: string } | undefined)?.extendsmodel,
 				},
 				doc: v4.doc,
 				root,
@@ -178,9 +179,17 @@ async function materializeTablesFromTree(tree: PersistedTablesTree): Promise<Par
 			compositePrimaryKey: [],
 			extraStatements: [],
 			trailing: "",
-			customization: table.obj.customization && typeof table.obj.customization === "object"
-				? (JSON.parse(JSON.stringify(table.obj.customization)) as ParsedTable["customization"])
-				: undefined,
+			customization: (() => {
+				const base = table.obj.customization && typeof table.obj.customization === "object"
+					? (JSON.parse(JSON.stringify(table.obj.customization)) as ParsedTable["customization"])
+					: undefined;
+				// Promueve `tablemeta.extendsmodel` (modelo cliente base) a customization
+				// para que el generador emita `extends T<Modelo>` en lugar de `TObject`.
+				const extendsModel = (cols as unknown as { tableMeta?: { extendsModel?: string } }).tableMeta?.extendsModel;
+				if (!extendsModel) return base;
+				const cls = extendsModel.startsWith("T") ? extendsModel : "T" + extendsModel;
+				return { ...(base ?? {}), parentModelClass: cls };
+			})(),
 			snippets: table.obj.snippets && typeof table.obj.snippets === "object"
 				? (JSON.parse(JSON.stringify(table.obj.snippets)) as ParsedTable["snippets"])
 				: undefined,

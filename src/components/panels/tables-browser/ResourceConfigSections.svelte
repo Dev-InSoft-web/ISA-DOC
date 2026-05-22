@@ -287,6 +287,10 @@
 				<input class="input-field" bind:value={resource.parentBaseClass} on:input={change} />
 			</label>
 			<label class="field">
+				<Text color="neutral"><small>Modelo base (extends)</small></Text>
+				<input class="input-field" bind:value={resource.parentModelClass} placeholder="TObject" on:input={change} />
+			</label>
+			<label class="field">
 				<Text color="neutral"><small>Caption singular</small></Text>
 				<input class="input-field" bind:value={resource.singularCaption} on:input={change} />
 			</label>

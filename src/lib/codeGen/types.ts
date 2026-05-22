@@ -87,6 +87,7 @@ export interface ResourceConfig {
 	singularCaption?: string;    // ej: "Curso"
 	isysRecurso?: string;        // ej: "Cursos"
 	parentBaseClass?: string;    // ej: "TCapacitacionCursosServer"
+	parentModelClass?: string;   // ej: "TRecurso" — clase base del modelo cliente. Default: "TObject".
 	clientBaseClass?: string;    // ej: "TCapacitacionBaseClient"
 	uiBaseKind?: "CRUD" | "LIST"; // tipo de mixin UI
 	fields: FieldDef[];

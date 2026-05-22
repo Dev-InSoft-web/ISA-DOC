@@ -56,6 +56,8 @@ export interface PersistedTablesTree {
 export interface PersistedColumnsTreeMeta {
 	originalName: string;
 	hasIfNotExists: boolean;
+	/** Clase base del modelo cliente (sin prefijo `T`, ej: "Recurso"). Se promueve a customization.parentModelClass en runtime. */
+	extendsModel?: string;
 }
 
 export interface PersistedColumnsTree {

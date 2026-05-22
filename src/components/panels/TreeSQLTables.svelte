@@ -577,6 +577,7 @@
 		if (merged.pluralCaption !== inferred.pluralCaption) out.pluralCaption = merged.pluralCaption;
 		if (merged.isysRecurso !== inferred.isysRecurso) out.isysRecurso = merged.isysRecurso;
 		if (merged.parentBaseClass !== inferred.parentBaseClass) out.parentBaseClass = merged.parentBaseClass;
+		if ((merged.parentModelClass ?? undefined) !== (inferred.parentModelClass ?? undefined)) out.parentModelClass = merged.parentModelClass;
 		if (merged.clientBaseClass !== inferred.clientBaseClass) out.clientBaseClass = merged.clientBaseClass;
 		if (merged.uiBaseKind !== inferred.uiBaseKind) out.uiBaseKind = merged.uiBaseKind;
 		if (!eq(merged.omitOps ?? [], inferred.omitOps ?? [])) out.omitOps = merged.omitOps ? [...merged.omitOps] : undefined;

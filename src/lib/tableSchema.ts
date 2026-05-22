@@ -114,6 +114,8 @@ export interface ResourceCustomization {
 	singularCaption?: string;
 	isysRecurso?: string;
 	parentBaseClass?: string;
+	/** Clase base del modelo cliente (ej: "TRecurso"). Default emitido: "TObject". */
+	parentModelClass?: string;
 	clientBaseClass?: string;
 	uiBaseKind?: "CRUD" | "LIST";
 	omitOps?: string[];
