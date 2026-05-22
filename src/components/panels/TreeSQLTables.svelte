@@ -745,8 +745,12 @@
 			return t ? sanitizeMermaidId(effectiveTableName(t)) : "";
 		};
 
+		const emittedEntities = new Set<string>();
+
 		for (const t of tables) {
 			const ent = sanitizeMermaidId(effectiveTableName(t));
+			if (emittedEntities.has(ent)) continue;
+			emittedEntities.add(ent);
 			lines.push(`  ${ent} {`);
 			const seenCol = new Set<string>();
 			for (const c of tableColumns(t)) {
