@@ -5,7 +5,7 @@
 	import OldRebuildSection from "../migration/OldRebuildSection.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import DailySummaryAccordion from "../bitacora/DailySummaryAccordion.svelte";
-	import BitacoraShell from "./BitacoraShell.svelte";
+	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
 	import Accordion from "../_comps/containers/Accordion.svelte";
 	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
@@ -110,7 +110,7 @@
 	}
 </script>
 
-<BitacoraShell title="Bitácora" proyecto="ClientesIS">
+<ProjectSectionLayout title="ClientesIS · Bitácora" subtitle="Diario de avance" proyecto="ClientesIS" withTickets showDbBanner>
 	<!-- 1) ISW siempre primero -->
 	<BitacoraNote
 		title="Cursos (ISW) — Reglas, restricciones y avances"
@@ -484,7 +484,7 @@
 					inner
 				/>
 			</Accordion>
-</BitacoraShell>
+</ProjectSectionLayout>
 
 <style>
 	.jconfig-matrix-wrap {
