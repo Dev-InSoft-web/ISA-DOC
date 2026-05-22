@@ -652,7 +652,22 @@
 			document.head.appendChild(s);
 		});
 		const css = getComputedStyle(document.documentElement);
-		const v = (n: string, f: string): string => (css.getPropertyValue(n).trim() || f);
+		const toHex = (color: string): string => {
+			const probe = document.createElement("div");
+			probe.style.color = color;
+			probe.style.display = "none";
+			document.body.appendChild(probe);
+			const resolved = getComputedStyle(probe).color;
+			document.body.removeChild(probe);
+			const m = resolved.match(/-?\d+(\.\d+)?/g);
+			if (!m || m.length < 3) return "#000000";
+			const clip = (n: number): number => Math.max(0, Math.min(255, Math.round(n)));
+			const r = clip(Number(m[0])).toString(16).padStart(2, "0");
+			const g = clip(Number(m[1])).toString(16).padStart(2, "0");
+			const b = clip(Number(m[2])).toString(16).padStart(2, "0");
+			return `#${r}${g}${b}`;
+		};
+		const v = (n: string, f: string): string => toHex(css.getPropertyValue(n).trim() || f);
 		w.mermaid.initialize({
 			startOnLoad: false,
 			theme: "dark",
@@ -669,6 +684,31 @@
 		return w.mermaid;
 	}
 
+	/** Convierte las aristas de relación del SVG ER en líneas de ángulo recto (Manhattan L-shape). */
+	function rectifyDerEdges(svg: string): string {
+		try {
+			const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
+			const paths = doc.querySelectorAll("path.relationshipLine, g.relationshipLabels ~ path, path[class*='relationshipLine']");
+			const allPaths: SVGPathElement[] = paths.length
+				? Array.from(paths) as SVGPathElement[]
+				: Array.from(doc.querySelectorAll("path")).filter((p) => /relationship/i.test(p.getAttribute("class") ?? "")) as SVGPathElement[];
+			for (const p of allPaths) {
+				const d = p.getAttribute("d") ?? "";
+				const nums = d.match(/-?\d+(\.\d+)?/g);
+				if (!nums || nums.length < 4) continue;
+				const x1 = Number(nums[0]);
+				const y1 = Number(nums[1]);
+				const x2 = Number(nums[nums.length - 2]);
+				const y2 = Number(nums[nums.length - 1]);
+				const mx = (x1 + x2) / 2;
+				p.setAttribute("d", `M ${x1},${y1} L ${mx},${y1} L ${mx},${y2} L ${x2},${y2}`);
+			}
+			return new XMLSerializer().serializeToString(doc.documentElement);
+		} catch {
+			return svg;
+		}
+	}
+
 	async function openDERModal(): Promise<void> {
 		derError = "";
 		derSvg = "";
@@ -679,7 +719,8 @@
 			const mm = await ensureMermaid();
 			const id = `der-svg-${Date.now()}`;
 			const out = await mm.render(id, derSource);
-			derSvg = typeof out === "string" ? out : (out?.svg ?? "");
+			const raw = typeof out === "string" ? out : (out?.svg ?? "");
+			derSvg = rectifyDerEdges(raw);
 		} catch (err) {
 			derError = err instanceof Error ? err.message : String(err);
 		} finally {
@@ -1049,6 +1090,16 @@
 							<Text color="neutral"><small>Dominio</small></Text>
 						</FlexLayout>
 						<div class="frm" style="margin-top: 0.5rem;">
+							<label class="field">
+								<Text color="neutral"><small>Prefijo</small></Text>
+								<input
+									class="input-field"
+									type="text"
+									placeholder="Ej: CAPAC_"
+									value={selectedPlainDomain.prefix ?? ""}
+									on:change={(e) => adapter.updateDomainMeta(dId, { prefix: (e.currentTarget).value })}
+								/>
+							</label>
 							<label class="field">
 								<Text color="neutral"><small>Descripción <span style="color: var(--is-error);">*</span></small></Text>
 								<textarea
