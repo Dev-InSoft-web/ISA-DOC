@@ -5,14 +5,6 @@
 
 import { h3Iconized, note } from "./tk-helpers";
 
-const intro =
-	`<div>Requerimiento abierto por <b>VRESTREPO</b> el 10/feb./2026: se necesita  
-	que los archivos <code>ad_</code>, que contienen el conocimiento suministrado al  
-	asistente IA, cuenten con una <b>estructura jerárquica clara y estandarizada</b>,  
-	con el fin de facilitar que la IA interprete correctamente la información del  
-	contenido, relacione <b>módulo → ventana → campo</b> y responda de forma más  
-	precisa y contextualizada a los usuarios.</div>`;
-
 export async function buildBodyTK1382779(): Promise<string> {
 	const [h3Contexto, h3Propuesta, h3Estado] = await Promise.all([
 		h3Iconized("mdi:information-outline", "Contexto actual"),
@@ -55,8 +47,7 @@ export async function buildBodyTK1382779(): Promise<string> {
 		módulo de Inventarios como piloto antes de extenderlo a los demás módulos.`,
 	);
 
-	return intro
-		+ h3Contexto + contexto
+	return h3Contexto + contexto
 		+ h3Propuesta + propuesta
 		+ h3Estado + estado;
 }

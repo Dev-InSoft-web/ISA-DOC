@@ -3,11 +3,6 @@
 
 import { h3Iconized, note } from "./tk-helpers";
 
-const intro =
-	`<div>Requerimiento abierto por <b>VRESTREPO</b> el 10/abr./2026: se requiere  
-	realizar un ajuste en los scripts de transcripción para adaptarlos a la nueva  
-	estructura de carpetas definida para el sitio de conocimiento.</div>`;
-
 export async function buildBodyTK1410385(): Promise<string> {
 	const [h3Contexto, h3Necesidad, h3Estado] = await Promise.all([
 		h3Iconized("mdi:information-outline", "Contexto"),
@@ -45,8 +40,7 @@ export async function buildBodyTK1410385(): Promise<string> {
 		de FAQ por módulo.`,
 	);
 
-	return intro
-		+ h3Contexto + contexto
+	return h3Contexto + contexto
 		+ h3Necesidad + necesidad
 		+ h3Estado + estado;
 }
