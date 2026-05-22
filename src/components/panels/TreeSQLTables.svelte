@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onMount, tick } from "svelte";
 	import { marked } from "marked";
 	import { Button, ButtonIconify, Card, FlexLayout, H2, H4, Iconify, Modal, SelectEnum, Text, Toaster, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
 	import SwitchComp from "../_comps/especial/_Switch.svelte";
@@ -74,7 +74,7 @@
 	function applyDerSvgScale(scale: number, _svgHtml: string): void {
 		if (typeof document === "undefined" || !derViewport) return;
 		requestAnimationFrame(() => {
-			const svg = derViewport?.querySelector("svg") as SVGSVGElement | null;
+			const svg = derViewport?.querySelector(".der-content > svg") as SVGSVGElement | null;
 			if (!svg) return;
 			if (!svg.dataset.derNatural) {
 				const nat = derSvgNaturalSize(svg);
@@ -105,9 +105,9 @@
 		derTy = 0;
 	}
 
-	function fitDerView(): void {
+	function fitDerView(mode: "both" | "width" | "height" = "both"): void {
 		if (!derViewport) return;
-		const svg = derViewport.querySelector("svg") as SVGSVGElement | null;
+		const svg = derViewport.querySelector(".der-content > svg") as SVGSVGElement | null;
 		if (!svg) { resetDerView(); return; }
 		const host = derViewport.getBoundingClientRect();
 		const nat = derSvgNaturalSize(svg);
@@ -115,7 +115,8 @@
 		const pad = 24;
 		const sx = (host.width - pad * 2) / nat.w;
 		const sy = (host.height - pad * 2) / nat.h;
-		const s = Math.max(0.1, Math.min(8, Math.min(sx, sy)));
+		const pick = mode === "width" ? sx : mode === "height" ? sy : Math.min(sx, sy);
+		const s = Math.max(0.1, Math.min(8, pick));
 		derScale = s;
 		derTx = (host.width - nat.w * s) / 2;
 		derTy = (host.height - nat.h * s) / 2;
@@ -129,7 +130,7 @@
 		const PAN_STEP = 1;
 		const onWheel = (e: WheelEvent): void => {
 			e.preventDefault();
-			if (e.ctrlKey && e.altKey) {
+			if (e.ctrlKey && e.shiftKey) {
 				const rect = node.getBoundingClientRect();
 				const cx = e.clientX - rect.left;
 				const cy = e.clientY - rect.top;
@@ -843,12 +844,15 @@
 			const id = `der-svg-${Date.now()}`;
 			const out = await mm.render(id, derSource);
 			derSvg = typeof out === "string" ? out : (out?.svg ?? "");
-			setTimeout(() => fitDerView(), 0);
 		} catch (err) {
 			derError = err instanceof Error ? err.message : String(err);
 		} finally {
 			derLoading = false;
 		}
+		await tick();
+		applyDerSvgScale(derScale, derSvg);
+		await tick();
+		fitDerView("both");
 	}
 
 	function onDerKeydown(e: KeyboardEvent): void {
@@ -963,6 +967,8 @@
 		});
 	}
 </script>
+
+<svelte:window on:keydown={onDerKeydown} />
 
 <Toaster />
 
@@ -1538,20 +1544,21 @@
 			<Text><strong>Diagrama entidad-relación (DER)</strong></Text>
 		</FlexLayout>
 	</svelte:fragment>
-	<svelte:window on:keydown={onDerKeydown} />
 	<FlexLayout direction="column" style="height: 100%;">
 		<FlexLayout justify="between" items="center">
-			<Text color="neutral"><small>Inferido del árbol de tablas. Scroll = pan vertical · Ctrl+Scroll = pan horizontal · Ctrl+Alt+Scroll = zoom · Ctrl+Espacio = ajustar.</small></Text>
+			<Text color="neutral"><small>Inferido del árbol de tablas. Scroll = pan vertical · Ctrl+Scroll = pan horizontal · Ctrl+Shift+Scroll = zoom · Ctrl+Espacio = ajustar.</small></Text>
 			<span></span>
 		</FlexLayout>
 		<div class="der-host" use:attachDerPanZoom>
 			<div class="der-toolbar">
 				<span class="der-zoom-pct"><small>{Math.round(derScale * 100)}%</small></span>
-				<ButtonIconify icon="mdi:magnify-minus-outline" title="Alejar" on:click={() => zoomBy(1 / 1.2)} />
-				<ButtonIconify icon="mdi:magnify-plus-outline" title="Acercar" on:click={() => zoomBy(1.2)} />
-				<ButtonIconify icon="mdi:fit-to-page-outline" title="Ajustar vista (Ctrl+Espacio)" on:click={fitDerView} />
-				<ButtonIconify icon="mdi:image-filter-center-focus" title="Restablecer" on:click={resetDerView} />
-				<ButtonIconify icon="mdi:refresh" title="Regenerar" on:click={openDERModal} />
+				<ButtonIconify icon="mdi:magnify-minus-outline" title="Alejar (Ctrl+Shift+Scroll abajo)" on:click={() => zoomBy(1 / 1.2)} />
+				<ButtonIconify icon="mdi:magnify-plus-outline" title="Acercar (Ctrl+Shift+Scroll arriba)" on:click={() => zoomBy(1.2)} />
+				<ButtonIconify icon="mdi:arrow-expand-horizontal" title="Ajustar al ancho" on:click={() => fitDerView("width")} />
+				<ButtonIconify icon="mdi:arrow-expand-vertical" title="Ajustar al alto" on:click={() => fitDerView("height")} />
+				<ButtonIconify icon="mdi:fit-to-screen-outline" title="Ajustar al diagrama completo (Ctrl+Espacio)" on:click={() => fitDerView("both")} />
+				<ButtonIconify icon="mdi:image-filter-center-focus" title="Restablecer (100%)" on:click={resetDerView} />
+				<ButtonIconify icon="mdi:refresh" title="Regenerar diagrama" on:click={openDERModal} />
 				<ButtonIconify icon="mdi:code-tags" title="Ver fuente Mermaid" on:click={() => openCodeModal("DER · fuente Mermaid", derSource, "ts")} />
 			</div>
 			{#if derLoading}
