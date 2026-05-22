@@ -259,11 +259,29 @@ function fmtMin(min: number): string {
 	return m > 0 ? `${h}h ${m}min` : `${h}h`;
 }
 
+// Minutos transcurridos entre el primer y el último commit cronológicos.
+// Se usa como piso del estimado para que el tiempo invertido total no
+// quede por debajo de lo realmente elapsed entre commits.
+function elapsedMinutosCommits(commits: TicketCommit[]): number {
+	const ts = commits
+		.map((c) => c.fecha)
+		.filter((s): s is string => !!s)
+		.map((f) => new Date(f).getTime())
+		.filter((n) => Number.isFinite(n));
+	if (ts.length < 2) return 0;
+	const min = Math.min(...ts);
+	const max = Math.max(...ts);
+	return Math.max(0, Math.round((max - min) / 60000));
+}
+
 // Cota máxima estimada (en minutos) para un conjunto de commits.
 // No pretende ser una predicción exacta sino un techo razonable basado
 // en volumen, cantidad de commits, repos involucrados y un factor de
 // complejidad (investigación, decisiones, pruebas). El tope absoluto
 // se fija en 10 horas (600min) para tareas excepcionalmente complejas.
+// Como piso se considera el tiempo transcurrido entre commits más un
+// pequeño overhead inicial, para que invertido y transcurrido sean
+// coherentes.
 export function cotaMaximaMinutos(commits: TicketCommit[]): number {
 	if (!commits.length) return 600;
 	const ins = commits.reduce((a, c) => a + (c.ins ?? 0), 0);
@@ -276,34 +294,76 @@ export function cotaMaximaMinutos(commits: TicketCommit[]): number {
 	const overhead = commits.length * 5 + Math.max(0, reposUnicos - 1) * 15;
 	const complejidad = 1.4;
 	const raw = (baseMin + overhead) * complejidad;
-	return Math.min(600, Math.max(15, Math.round(raw / 5) * 5));
+	const elapsed = elapsedMinutosCommits(commits);
+	const piso = Math.max(15, elapsed + 15);
+	return Math.min(600, Math.max(piso, Math.round(raw / 5) * 5));
 }
 
+// Distribuye `total` minutos entre los commits siguiendo el tiempo
+// real transcurrido entre cada commit y su antecesor cronológico. El
+// excedente (total - sumatoria de gaps) se carga sobre el primer
+// commit cronológico o, si hay varios en los primeros 5 minutos, se
+// reparte entre ellos. Si el excedente es negativo se reduce
+// proporcionalmente el tiempo de los commits posteriores.
+// Los commits entran en orden descendente (el más reciente primero)
+// y se devuelven en el mismo orden.
 function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
-	if (!commits.length || total <= 0) return commits.map(() => 0);
 	const n = commits.length;
-	const pesos = commits.map((c) => Math.max(1, (c.ins ?? 0) + (c.del ?? 0)));
-	const suma = pesos.reduce((a, b) => a + b, 0);
-	const piso = total >= n ? 1 : 0;
-	const crudos = pesos.map((p) => (p / suma) * total);
-	const enteros = crudos.map((v) => Math.max(piso, Math.floor(v)));
-	let asignado = enteros.reduce((a, b) => a + b, 0);
-	while (asignado > total) {
-		let idx = 0;
-		for (let i = 1; i < n; i++) if (enteros[i] > enteros[idx]) idx = i;
-		if (enteros[idx] <= piso) break;
-		enteros[idx]--;
-		asignado--;
+	if (!n || total <= 0) return commits.map(() => 0);
+	const cronos = [...commits].reverse();
+	const ts = cronos.map((c) => (c.fecha ? new Date(c.fecha).getTime() : 0));
+	const gaps = new Array<number>(n).fill(0);
+	for (let i = 1; i < n; i++) {
+		const diff = ts[i] - ts[i - 1];
+		gaps[i] = diff > 0 ? Math.max(1, Math.round(diff / 60000)) : 0;
 	}
-	const restos = crudos.map((v, i) => ({ i, r: v - Math.floor(v) }));
-	restos.sort((a, b) => b.r - a.r);
-	let k = 0;
-	while (asignado < total && k < restos.length) {
-		enteros[restos[k].i]++;
-		asignado++;
-		k++;
+	const firstTs = ts[0];
+	const firstIdxs: number[] = [0];
+	for (let i = 1; i < n; i++) {
+		if (firstTs && (ts[i] - firstTs) / 60000 <= 5) firstIdxs.push(i);
+		else break;
 	}
-	return enteros;
+	const tiempos = gaps.slice();
+	const sumGaps = gaps.reduce((a, b) => a + b, 0);
+	let excedente = total - sumGaps;
+
+	if (excedente >= 0) {
+		const base = Math.floor(excedente / firstIdxs.length);
+		let rem = excedente - base * firstIdxs.length;
+		for (const idx of firstIdxs) tiempos[idx] += base;
+		for (const idx of firstIdxs) {
+			if (rem <= 0) break;
+			tiempos[idx] += 1;
+			rem--;
+		}
+	} else {
+		const ajustables: number[] = [];
+		for (let i = 0; i < n; i++) if (!firstIdxs.includes(i)) ajustables.push(i);
+		const sumAj = ajustables.reduce((a, i) => a + tiempos[i], 0);
+		if (sumAj > 0) {
+			const factor = Math.max(0, (sumAj + excedente) / sumAj);
+			for (const i of ajustables) tiempos[i] = Math.max(0, Math.round(tiempos[i] * factor));
+		}
+		let actual = tiempos.reduce((a, b) => a + b, 0);
+		const diff = total - actual;
+		if (diff !== 0) tiempos[firstIdxs[0]] = Math.max(0, tiempos[firstIdxs[0]] + diff);
+	}
+
+	let actual = tiempos.reduce((a, b) => a + b, 0);
+	let guard = 0;
+	while (actual !== total && guard++ < 1000) {
+		const delta = total - actual;
+		const step = delta > 0 ? 1 : -1;
+		let idx = firstIdxs[0];
+		if (step < 0) {
+			for (let i = 0; i < n; i++) if (tiempos[i] > tiempos[idx]) idx = i;
+			if (tiempos[idx] <= 0) break;
+		}
+		tiempos[idx] += step;
+		actual += step;
+	}
+
+	return tiempos.reverse();
 }
 
 function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fechaSolicitud?: string, ticketId?: string, festivos?: string[]): string {
