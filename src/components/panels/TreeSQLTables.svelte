@@ -148,9 +148,27 @@
 		let lastX = 0;
 		let lastY = 0;
 		const PAN_STEP = 1;
+		const pointers = new Map<number, { x: number; y: number }>();
+		let pinchDist = 0;
+		let pinchMid = { x: 0, y: 0 };
 		const isToolbarTarget = (e: Event): boolean => {
 			const t = e.target as Element | null;
 			return !!t && !!t.closest?.(".der-toolbar");
+		};
+		const pointerPairDist = (): number => {
+			const pts = Array.from(pointers.values());
+			if (pts.length < 2) return 0;
+			const dx = pts[0].x - pts[1].x;
+			const dy = pts[0].y - pts[1].y;
+			return Math.hypot(dx, dy);
+		};
+		const pointerPairMid = (): { x: number; y: number } => {
+			const pts = Array.from(pointers.values());
+			const rect = node.getBoundingClientRect();
+			return {
+				x: (pts[0].x + pts[1].x) / 2 - rect.left,
+				y: (pts[0].y + pts[1].y) / 2 - rect.top,
+			};
 		};
 		const onWheel = (e: WheelEvent): void => {
 			if (isToolbarTarget(e)) return;
@@ -173,15 +191,37 @@
 			clampDerPan();
 		};
 		const onDown = (e: PointerEvent): void => {
-			if (e.button !== 0) return;
 			if (isToolbarTarget(e)) return;
-			dragging = true;
-			lastX = e.clientX;
-			lastY = e.clientY;
+			if (e.pointerType === "mouse" && e.button !== 0) return;
+			pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 			node.setPointerCapture(e.pointerId);
-			node.classList.add("grabbing");
+			if (pointers.size === 2) {
+				dragging = false;
+				pinchDist = pointerPairDist();
+				pinchMid = pointerPairMid();
+				node.classList.remove("grabbing");
+				return;
+			}
+			if (pointers.size === 1) {
+				dragging = true;
+				lastX = e.clientX;
+				lastY = e.clientY;
+				node.classList.add("grabbing");
+			}
 		};
 		const onMove = (e: PointerEvent): void => {
+			if (!pointers.has(e.pointerId)) return;
+			pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+			if (pointers.size >= 2) {
+				const dist = pointerPairDist();
+				if (pinchDist > 0 && dist > 0) {
+					const factor = dist / pinchDist;
+					zoomBy(factor, pinchMid.x, pinchMid.y);
+				}
+				pinchDist = dist;
+				pinchMid = pointerPairMid();
+				return;
+			}
 			if (!dragging) return;
 			derTx += e.clientX - lastX;
 			derTy += e.clientY - lastY;
@@ -190,10 +230,21 @@
 			clampDerPan();
 		};
 		const onUp = (e: PointerEvent): void => {
-			if (!dragging) return;
-			dragging = false;
+			pointers.delete(e.pointerId);
 			try { node.releasePointerCapture(e.pointerId); } catch {}
-			node.classList.remove("grabbing");
+			if (pointers.size < 2) pinchDist = 0;
+			if (pointers.size === 1) {
+				const rem = Array.from(pointers.values())[0];
+				lastX = rem.x;
+				lastY = rem.y;
+				dragging = true;
+				node.classList.add("grabbing");
+				return;
+			}
+			if (pointers.size === 0) {
+				dragging = false;
+				node.classList.remove("grabbing");
+			}
 		};
 		node.addEventListener("wheel", onWheel, { passive: false });
 		node.addEventListener("pointerdown", onDown);
