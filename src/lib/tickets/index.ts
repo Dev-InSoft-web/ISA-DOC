@@ -83,8 +83,8 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Guardar visualización de columnas en catálogo de cursos",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "21/may./2026 04:26:36 pm",
-		estimacionMinutos: 180,
-		diligenciaMinutos: 20,
+		estimacionMinutos: 210,
+		diligenciaMinutos: 30,
 		noMaquillarFechas: true,
 		resumen: "Solicitud de persistencia de la selección de columnas visibles en los catálogos: al refrescar la página, las columnas no predeterminadas se volvían a ocultar. Se entregó la semana del 13/may./2026 una capa de persistencia en localStorage por controlador (clave con entrie) con rehidratación síncrona en el constructor / field initializer, aplicada de forma transversal a todos los catálogos de ContaPyme U.",
 		commits: [
@@ -198,7 +198,7 @@ export const TICKETS: TicketRegistro[] = [
 		titulo: "Plan padre del recurso como catálogo filtrado",
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "13/may./2026 04:12:25 pm",
-		estimacionMinutos: 210,
+		estimacionMinutos: 200,
 		diligenciaMinutos: 30,
 		resumen: "Se solicitó que el campo iplanpadre solo apareciera disponible cuando el recurso tuviera como dificultad Medio o Avanzado, y que no se ingresara un número sino que se abriera un catálogo con los recursos con dificultad Básico del mismo capítulo.",
 		commits: [
