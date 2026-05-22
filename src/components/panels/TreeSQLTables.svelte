@@ -576,7 +576,7 @@
 	}
 
 	function buildMermaidDER(): string {
-		const lines: string[] = ["erDiagram", "  direction LR"];
+		const lines: string[] = ["erDiagram"];
 		const nameOf = (id: string): string => {
 			const t = tables.find((x) => x.id === id);
 			return t ? sanitizeMermaidId(effectiveTableName(t)) : "";
@@ -676,17 +676,18 @@
 			startOnLoad: false,
 			theme: "base",
 			securityLevel: "loose",
+			er: { layoutDirection: "LR" },
 			themeVariables: {
 				darkMode: true,
 				background: bgPrim,
-				primaryColor: primary,
+				primaryColor: bgSec,
 				primaryBorderColor: primary,
-				primaryTextColor: bgPrim,
+				primaryTextColor: "#ffffff",
 				secondaryColor: bgSec,
 				tertiaryColor: bgPrim,
 				lineColor: primary,
-				textColor: fgLight,
-				mainBkg: primary,
+				textColor: "#ffffff",
+				mainBkg: bgSec,
 				nodeBorder: primary,
 				attributeBackgroundColorOdd: bgPrim,
 				attributeBackgroundColorEven: bgSec,
@@ -1696,6 +1697,18 @@
 	.der-host :global(svg) {
 		max-width: 100%;
 		height: auto;
+	}
+	.der-host :global(svg text),
+	.der-host :global(svg .entityLabel),
+	.der-host :global(svg .er.entityLabel),
+	.der-host :global(svg .er.relationshipLabel),
+	.der-host :global(svg .relationshipLabel) {
+		fill: #ffffff !important;
+		color: #ffffff !important;
+	}
+	.der-host :global(svg .er.relationshipLabelBox),
+	.der-host :global(svg .relationshipLabelBox) {
+		fill: var(--is-bg-primary, #0c1222) !important;
 	}
 	.der-source {
 		font-size: 0.75em;
