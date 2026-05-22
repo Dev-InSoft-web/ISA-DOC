@@ -69,6 +69,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 	public onCascadeAddPrefix: () => void = () => undefined;
 	public onCascadeAddChildPrefix: (parent: TTableNodeUX) => void = () => undefined;
 	public onGenerateSql: () => void = () => undefined;
+	public onShowDER: () => void = () => undefined;
 	private _tables: ParsedTable[] = [];
 	private _domains: DomainsMap = {};
 	private _topOrder: TopLevelEntry[] = [];
@@ -124,7 +125,6 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 
 	createNode(data: any): TTableNodeUX {
 		if (data instanceof TTableNodeUX) {
-			data.stack = this.obj;
 			data.refreshUX();
 			return data;
 		}
@@ -229,6 +229,11 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 				icon: "mdi:database-export",
 				title: "Creación SQL · Resumen completo",
 				onClick: () => this.onGenerateSql(),
+			},
+			{
+				icon: "mdi:graph-outline",
+				title: "Diagrama entidad-relación (DER)",
+				onClick: () => this.onShowDER(),
 			},
 			{ icon: "mdi:unfold-less-horizontal", title: "Colapsar todo", onClick: () => this.collapseAll?.() },
 			{ icon: "mdi:unfold-more-horizontal", title: "Expandir todo", onClick: () => this.expandAll?.() },
@@ -1540,7 +1545,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 	}
 
 	protected commitFlatList(flat: TTableNodeUX[]): void {
-		this.obj.rows = flat.map((n) => { n.stack = this.obj; n.refreshUX(); return n; });
+		this.obj.rows = flat.map((n) => { n.refreshUX(); return n; });
 		this.renumberRowsCanonically();
 		this.recomputeDomainsFromTree();
 		this.emitChange();

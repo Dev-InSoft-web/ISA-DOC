@@ -9,6 +9,7 @@
 		effectiveTableName,
 		isSqlSnippetEnabled,
 		newTableId,
+		tableColumns,
 		type ParsedTable,
 	} from "../../lib/tableSchema.ts";
 	import { generateResourcesFromTables } from "../../lib/codeGen/autogen.ts";
@@ -50,6 +51,12 @@
 	let sqlPreviewValue: string = "";
 	let sqlPreviewExecuting: boolean = false;
 	let sqlPreviewUnlocked: boolean = false;
+
+	let derShow: boolean = false;
+	let derSource: string = "";
+	let derSvg: string = "";
+	let derLoading: boolean = false;
+	let derError: string = "";
 
 	let overrides: Record<string, never> = {};
 	void overrides;
@@ -263,6 +270,7 @@
 		toastSuccess(`Prefijo creado como hijo. Renómbralo desde el árbol.`);
 	};
 	adapter.onGenerateSql = () => { void generateSql(); };
+	adapter.onShowDER = () => { void openDERModal(); };
 	domains = adapter.domains;
 	const adapterAny = adapter as any;
 
@@ -549,6 +557,136 @@
 		}
 	}
 
+	function cardToMermaid(card: string | undefined): string {
+		switch (card) {
+			case "1:1": return "||--||";
+			case "N:N": return "}o--o{";
+			default: return "||--o{";
+		}
+	}
+
+	function sanitizeMermaidId(s: string): string {
+		const out = (s || "").replace(/[^A-Za-z0-9_]/g, "_");
+		return /^[A-Za-z_]/.test(out) ? out : `T_${out}`;
+	}
+
+	function sanitizeMermaidType(s: string): string {
+		const out = (s || "").replace(/\s+/g, "_").replace(/[^A-Za-z0-9_]/g, "_");
+		return out || "VAR";
+	}
+
+	function buildMermaidDER(): string {
+		const lines: string[] = ["erDiagram"];
+		const nameOf = (id: string): string => {
+			const t = tables.find((x) => x.id === id);
+			return t ? sanitizeMermaidId(effectiveTableName(t)) : "";
+		};
+
+		for (const t of tables) {
+			const ent = sanitizeMermaidId(effectiveTableName(t));
+			lines.push(`  ${ent} {`);
+			for (const c of tableColumns(t)) {
+				const typ = sanitizeMermaidType(c.type);
+				const cname = sanitizeMermaidId(c.name);
+				const tags: string[] = [];
+				if (c.primaryKey) tags.push("PK");
+				if (c.foreignKey) tags.push("FK");
+				lines.push(`    ${typ} ${cname}${tags.length ? " " + tags.join(",") : ""}`);
+			}
+			lines.push(`  }`);
+		}
+
+		const emitted = new Set<string>();
+		const emit = (from: string, to: string, card: string | undefined, label: string): void => {
+			if (!from || !to || from === to) return;
+			const key = `${from}->${to}::${cardToMermaid(card)}::${label}`;
+			if (emitted.has(key)) return;
+			emitted.add(key);
+			const safeLabel = label.replace(/"/g, "'");
+			lines.push(`  ${from} ${cardToMermaid(card)} ${to} : "${safeLabel}"`);
+		};
+
+		for (const d of Object.values(domains)) {
+			const masterName = nameOf(d.masterTable);
+			if (!masterName) continue;
+			for (const m of d.members) {
+				if (m === d.masterTable) continue;
+				const slaveName = nameOf(m);
+				const card = d.slaveCardinalities?.[m] ?? d.cardinality ?? "1:N";
+				emit(masterName, slaveName, card, "contiene");
+			}
+			for (const ch of d.childrenOrder ?? []) {
+				if (ch.kind === "pointer") {
+					emit(masterName, nameOf(ch.key), ch.cardinality ?? "1:N", "ref");
+				}
+			}
+			for (const cd of Object.values(domains)) {
+				if (cd.parentId !== d.id) continue;
+				emit(masterName, nameOf(cd.masterTable), cd.cardinality ?? "1:N", "agrupa");
+			}
+		}
+
+		for (const t of tables) {
+			const fromName = sanitizeMermaidId(effectiveTableName(t));
+			for (const c of tableColumns(t)) {
+				if (c.foreignKey) {
+					emit(sanitizeMermaidId(c.foreignKey.refTable), fromName, "1:N", `fk_${c.name}`);
+				}
+			}
+			for (const r of t.relations ?? []) {
+				emit(sanitizeMermaidId(r.refTable), fromName, "1:N", r.name || "fk");
+			}
+		}
+
+		return lines.join("\n");
+	}
+
+	async function ensureMermaid(): Promise<any> {
+		const w = window as any;
+		if (w.mermaid) return w.mermaid;
+		await new Promise<void>((resolve, reject) => {
+			const s = document.createElement("script");
+			s.src = "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js";
+			s.onload = () => resolve();
+			s.onerror = () => reject(new Error("No se pudo cargar mermaid"));
+			document.head.appendChild(s);
+		});
+		const css = getComputedStyle(document.documentElement);
+		const v = (n: string, f: string): string => (css.getPropertyValue(n).trim() || f);
+		w.mermaid.initialize({
+			startOnLoad: false,
+			theme: "dark",
+			securityLevel: "loose",
+			themeVariables: {
+				background: v("--is-bg-primary", "#0c1222"),
+				primaryColor: v("--is-bg-secondary", "#041c34"),
+				primaryBorderColor: v("--is-primary", "#3a8bff"),
+				primaryTextColor: v("--is-color", "#dfe9f7"),
+				lineColor: v("--is-primary", "#3a8bff"),
+				textColor: v("--is-color", "#dfe9f7"),
+			},
+		});
+		return w.mermaid;
+	}
+
+	async function openDERModal(): Promise<void> {
+		derError = "";
+		derSvg = "";
+		derSource = buildMermaidDER();
+		derShow = true;
+		derLoading = true;
+		try {
+			const mm = await ensureMermaid();
+			const id = `der-svg-${Date.now()}`;
+			const out = await mm.render(id, derSource);
+			derSvg = typeof out === "string" ? out : (out?.svg ?? "");
+		} catch (err) {
+			derError = err instanceof Error ? err.message : String(err);
+		} finally {
+			derLoading = false;
+		}
+	}
+
 	function openCodeModal(title: string, value: string, language: "sql" | "ts" = "ts"): void {
 		modalTitle = title;
 		modalValue = value;
@@ -703,19 +841,19 @@
 					>
 						<svelte:fragment slot="row" let:node>
 							{#if node.kind === "prefix"}
-								<span class="tree-row">
+								<span class="tree-row" title={`Prefijo: ${node.rowName ?? ""}`}>
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="badge badge-prefix">Prefixer</span>
 									<span class="tree-row-name">{node.rowName}</span>
 								</span>
 							{:else if node.kind === "domain"}
-								<span class="tree-row">
+								<span class="tree-row" title={`Dominio: ${node.rowName ?? node.domainId ?? ""}${node.prefix ? ` (prefijo ${node.prefix})` : ""}`}>
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
-									<span class="badge badge-domain">{node.prefix ? "Domain/Prefixer" : "Domain"}</span>
-									{#if node.prefix}<span class="tree-row-name">{node.prefix}</span>{/if}
+									<span class="badge badge-domain">Domain</span>
+									{#if node.prefix}<span class="tree-row-name" title="Prefijo aplicado a las tablas del dominio">{node.prefix}</span>{/if}
 								</span>
 							{:else if node.kind === "pivot"}
-								<span class="tree-row">
+								<span class="tree-row" title={`Pivote: ${node.rowName ?? node.domainId ?? ""}${node.cardinality ? ` (${node.cardinality})` : ""}`}>
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									<span class="badge badge-pivot">Pivote</span>
 									{#if node.cardinality}<span class="tree-row-meta tree-row-card" title="Cardinalidad del pivote">{node.cardinality}</span>{/if}
@@ -723,7 +861,7 @@
 							{:else}
 								{@const _tableParent = node.isMaster ? (adapter.findNodeById(String(node.ireference || "").trim()) as unknown as { kind?: string; domainType?: string } | null) : null}
 								{@const _isMasterOfDomain = !!_tableParent && _tableParent.kind === "domain"}
-								<span class="tree-row {node.isPointer ? 'tree-row-pointer' : ''}" title={node.isPointer ? "Pointer to a table defined outside the domain" : ""}>
+								<span class="tree-row {node.isPointer ? 'tree-row-pointer' : ''}" title={node.isPointer ? `Pointer → ${node.rowName ?? ""}` : `Tabla: ${node.rowName ?? ""}`}>
 									<span class="tree-row-index" title="Índice">{node.flatPath}</span>
 									{#if node.isPointer}
 										<span class="badge badge-pointer">Pointer</span>
@@ -768,10 +906,22 @@
 									<div class="frm">
 										<Text color="neutral"><small>Un dominio agrupa tablas que se exponen como raíz en la API. La tabla master puede leer y modificar a sus esclavas.</small></Text>
 										<label class="field">
-											<Text color="neutral"><small>Prefijo (opcional, convierte el dominio en domain/prefixer)</small></Text>
+											<Text color="neutral"><small>Descripción</small></Text>
+											<textarea
+												class="input-field"
+												rows="3"
+												required
+												placeholder="Describe el propósito y contenido de este dominio."
+												value={_info.description ?? ""}
+												on:change={(e) => saveInfo(_infoKey, { description: (e.currentTarget).value, rules: _info.rules ?? "" })}
+											></textarea>
+										</label>
+										<label class="field">
+											<Text color="neutral"><small>Prefijo (opcional, se aplica a las tablas del dominio)</small></Text>
 											<input
 												class="input-field"
 												type="text"
+												placeholder="p. ej. CAPAC_"
 												value={frmObj.prefix ?? ""}
 												on:input={(e) => {
 													const v = (e.currentTarget).value.toUpperCase().replace(/[^A-Z0-9_]/g, "_");
@@ -1200,6 +1350,34 @@
 	</FlexLayout>
 </Modal>
 
+<Modal bind:bshow={derShow} onClose={() => (derShow = false)} style="width: 96dvw; height: 96dvh;">
+	<svelte:fragment slot="title">
+		<FlexLayout items="center">
+			<Iconify icon="mdi:graph-outline" />
+			<Text><strong>Diagrama entidad-relación (DER)</strong></Text>
+		</FlexLayout>
+	</svelte:fragment>
+	<FlexLayout direction="column" style="height: 100%;">
+		<FlexLayout justify="between" items="center">
+			<Text color="neutral"><small>Inferido del árbol de tablas, dominios y pivotes. Cardinalidades aplicadas según el modelo.</small></Text>
+			<FlexLayout items="center">
+				<ButtonIconify icon="mdi:refresh" title="Regenerar" on:click={openDERModal} />
+				<ButtonIconify icon="mdi:code-tags" title="Ver fuente Mermaid" on:click={() => openCodeModal("DER · fuente Mermaid", derSource, "ts")} />
+			</FlexLayout>
+		</FlexLayout>
+		<div class="der-host">
+			{#if derLoading}
+				<Text color="neutral"><small>Generando diagrama…</small></Text>
+			{:else if derError}
+				<Text color="error"><small>Error generando DER: {derError}</small></Text>
+				<pre class="der-source">{derSource}</pre>
+			{:else}
+				{@html derSvg}
+			{/if}
+		</div>
+	</FlexLayout>
+</Modal>
+
 <style>
 	.browser {
 		display: flex;
@@ -1246,7 +1424,7 @@
 	.tables-tree-host {
 		display: block;
 		width: 100%;
-		font-size: 0.8em;
+		font-size: 0.7em;
 	}
 	/* El TouchGestures interno usa position:absolute para overlays, lo que saca al cuerpo del flujo y deja la altura de `.isp-tree` en 0. Forzamos in-flow para que `pane-scroll` reciba la altura real y pueda hacer scroll cuando rebose. */
 	.tables-tree-host :global(.touch-gestures-body) { position: static !important; display: flex; flex-direction: column; }
@@ -1254,7 +1432,7 @@
 	.tree-row {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.35rem;
+		gap: 0.3rem;
 		flex: 1;
 		min-width: 0;
 		white-space: nowrap;
@@ -1269,27 +1447,28 @@
 	}
 	.tree-row-meta {
 		color: var(--is-text-neutral, #888);
-		font-size: 0.75rem;
+		font-size: 0.7rem;
 		margin-left: auto;
-		padding-left: 0.5rem;
+		padding-left: 0.4rem;
 	}
 	.badge {
-		padding: 0.1rem 0.4rem;
+		padding: 0.05rem 0.3rem;
 		border-radius: 0.2rem;
-		font-size: 0.75rem;
+		font-size: 0.65rem;
 		font-weight: bold;
+		flex: 0 0 auto;
 	}
 	.tree-row-index {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-width: 1.5rem;
-		height: 1.1rem;
-		padding: 0 0.35rem;
-		border-radius: 0.6rem;
+		min-width: 1.3rem;
+		height: 1rem;
+		padding: 0 0.3rem;
+		border-radius: 0.5rem;
 		background: color-mix(in srgb, var(--is-text-neutral, #888) 18%, transparent);
 		color: var(--is-text-neutral, #666);
-		font-size: 0.7rem;
+		font-size: 0.6rem;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
 		flex: 0 0 auto;
@@ -1440,6 +1619,25 @@
 		min-height: 0;
 		height: 100%;
 		overflow: hidden;
+	}
+	.der-host {
+		flex: 1 1 auto;
+		min-height: 0;
+		height: 100%;
+		overflow: auto;
+		padding: 0.5rem;
+		background: var(--is-bg-readonly, #001327);
+		border: 1px solid var(--is-b-color, #555);
+		border-radius: 0.25rem;
+	}
+	.der-host :global(svg) {
+		max-width: 100%;
+		height: auto;
+	}
+	.der-source {
+		font-size: 0.75em;
+		white-space: pre-wrap;
+		opacity: 0.8;
 	}
 	.run-pill {
 		display: inline-flex;
