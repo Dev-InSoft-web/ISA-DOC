@@ -576,7 +576,16 @@
 	}
 
 	function buildMermaidDER(): string {
-		const lines: string[] = ["erDiagram"];
+		const lines: string[] = [
+			"---",
+			"config:",
+			"  layout: elk",
+			"  theme: dark",
+			"  look: classic",
+			"---",
+			"erDiagram",
+			"  direction LR",
+		];
 		const nameOf = (id: string): string => {
 			const t = tables.find((x) => x.id === id);
 			return t ? sanitizeMermaidId(effectiveTableName(t)) : "";
@@ -643,86 +652,20 @@
 
 	async function ensureMermaid(): Promise<any> {
 		const w = window as any;
-		if (w.mermaid) return w.mermaid;
-		await new Promise<void>((resolve, reject) => {
-			const s = document.createElement("script");
-			s.src = "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js";
-			s.onload = () => resolve();
-			s.onerror = () => reject(new Error("No se pudo cargar mermaid"));
-			document.head.appendChild(s);
-		});
-		const css = getComputedStyle(document.documentElement);
-		const toHex = (color: string): string => {
-			const probe = document.createElement("div");
-			probe.style.color = color;
-			probe.style.display = "none";
-			document.body.appendChild(probe);
-			const resolved = getComputedStyle(probe).color;
-			document.body.removeChild(probe);
-			const m = resolved.match(/-?\d+(\.\d+)?/g);
-			if (!m || m.length < 3) return "#000000";
-			const clip = (n: number): number => Math.max(0, Math.min(255, Math.round(n)));
-			const r = clip(Number(m[0])).toString(16).padStart(2, "0");
-			const g = clip(Number(m[1])).toString(16).padStart(2, "0");
-			const b = clip(Number(m[2])).toString(16).padStart(2, "0");
-			return `#${r}${g}${b}`;
-		};
-		const v = (n: string, f: string): string => toHex(css.getPropertyValue(n).trim() || f);
-		const primary = v("--is-primary", "#3a8bff");
-		const bgPrim = v("--is-bg-primary", "#0c1222");
-		const bgSec = v("--is-bg-secondary", "#13203a");
-		const fgLight = v("--is-color", "#dfe9f7");
-		w.mermaid.initialize({
-			startOnLoad: false,
-			theme: "base",
-			securityLevel: "loose",
-			er: { layoutDirection: "LR" },
-			themeVariables: {
-				darkMode: true,
-				background: bgPrim,
-				primaryColor: bgSec,
-				primaryBorderColor: primary,
-				primaryTextColor: "#ffffff",
-				secondaryColor: bgSec,
-				tertiaryColor: bgPrim,
-				lineColor: primary,
-				textColor: "#ffffff",
-				mainBkg: bgSec,
-				nodeBorder: primary,
-				attributeBackgroundColorOdd: bgPrim,
-				attributeBackgroundColorEven: bgSec,
-			},
-		});
-		return w.mermaid;
-	}
-
-	/** Convierte las aristas de relación del SVG ER en líneas de ángulo recto orientadas LR. */
-	function rectifyDerEdges(svg: string): string {
-		try {
-			const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
-			const paths = doc.querySelectorAll("path.relationshipLine, path[class*='relationshipLine']");
-			const allPaths: SVGPathElement[] = paths.length
-				? Array.from(paths) as SVGPathElement[]
-				: Array.from(doc.querySelectorAll("path")).filter((p) => /relationship/i.test(p.getAttribute("class") ?? "")) as SVGPathElement[];
-			for (const p of allPaths) {
-				const d = p.getAttribute("d") ?? "";
-				const nums = d.match(/-?\d+(\.\d+)?/g);
-				if (!nums || nums.length < 4) continue;
-				const x1 = Number(nums[0]);
-				const y1 = Number(nums[1]);
-				const x2 = Number(nums[nums.length - 2]);
-				const y2 = Number(nums[nums.length - 1]);
-				if (Math.abs(y1 - y2) < 1 || Math.abs(x1 - x2) < 1) {
-					p.setAttribute("d", `M ${x1},${y1} L ${x2},${y2}`);
-					continue;
-				}
-				const my = (y1 + y2) / 2;
-				p.setAttribute("d", `M ${x1},${y1} L ${x1},${my} L ${x2},${my} L ${x2},${y2}`);
-			}
-			return new XMLSerializer().serializeToString(doc.documentElement);
-		} catch {
-			return svg;
-		}
+		if (w.__mermaidReady) return w.mermaid;
+		const m = await import(
+			/* @vite-ignore */ "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
+		);
+		const elk = await import(
+			/* @vite-ignore */ "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/dist/mermaid-layout-elk.esm.min.mjs"
+		);
+		const mermaid = (m as any).default ?? m;
+		const elkLoaders = (elk as any).default ?? elk;
+		mermaid.registerLayoutLoaders(elkLoaders);
+		mermaid.initialize({ startOnLoad: false, securityLevel: "loose" });
+		w.mermaid = mermaid;
+		w.__mermaidReady = true;
+		return mermaid;
 	}
 
 	async function openDERModal(): Promise<void> {
@@ -735,8 +678,7 @@
 			const mm = await ensureMermaid();
 			const id = `der-svg-${Date.now()}`;
 			const out = await mm.render(id, derSource);
-			const raw = typeof out === "string" ? out : (out?.svg ?? "");
-			derSvg = rectifyDerEdges(raw);
+			derSvg = typeof out === "string" ? out : (out?.svg ?? "");
 		} catch (err) {
 			derError = err instanceof Error ? err.message : String(err);
 		} finally {
