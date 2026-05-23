@@ -230,11 +230,6 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 				title: "Creación SQL · Resumen completo",
 				onClick: () => this.onGenerateSql(),
 			},
-			{
-				icon: "mdi:graph-outline",
-				title: "Diagrama entidad-relación (DER)",
-				onClick: () => this.onShowDER(),
-			},
 			{ icon: "mdi:unfold-less-horizontal", title: "Colapsar todo", onClick: () => this.collapseAll?.() },
 			{ icon: "mdi:unfold-more-horizontal", title: "Expandir todo", onClick: () => this.expandAll?.() },
 		];
@@ -481,13 +476,19 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 		this.setDomains(next);
 	}
 
-	/** Establece la cardinalidad de una tabla esclava dentro de su dominio. */
+	/** Establece la cardinalidad de una tabla esclava dentro de su dominio.
+	 *  Se escribe en el child ref correspondiente (`childrenOrder[i].cardinality`)
+	 *  para que cada fila tenga su propia cardinalidad independientemente.
+	 */
 	setSlaveCardinality(domainId: string, tableId: string, value: "1:1" | "1:N" | "N:N"): void {
 		const cur = this._domains[domainId];
 		if (!cur) return;
-		const map = { ...(cur.slaveCardinalities ?? {}) };
-		map[tableId] = value;
-		const next: DomainsMap = { ...this._domains, [domainId]: { ...cur, slaveCardinalities: map } };
+		const base = cur.childrenOrder ?? [];
+		const hasEntry = base.some((e) => e.kind === "table" && e.key === tableId);
+		const order = hasEntry
+			? base.map((e) => (e.kind === "table" && e.key === tableId ? { ...e, cardinality: value } : e))
+			: [...base, { kind: "table" as const, key: tableId, cardinality: value }];
+		const next: DomainsMap = { ...this._domains, [domainId]: { ...cur, childrenOrder: order } };
 		this.setDomains(next);
 	}
 
@@ -637,7 +638,9 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 				if (c.kind === "domain" || c.kind === "pivot") {
 					const sub = this._domains[c.key];
 					if (sub) { sub.parentId = parent.id; sub.parentPrefix = undefined; }
-				} else if (!parent.members.includes(c.key) && c.key !== masterId) {
+				} else if (c.kind === "table" && !parent.members.includes(c.key) && c.key !== masterId) {
+					// Los `pointer` quedan en `childrenOrder` pero NO se agregan a `members`:
+					// la tabla real vive en otra parte del árbol y promoverla aquí la duplicaría.
 					parent.members.push(c.key);
 				}
 			}
@@ -647,8 +650,12 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 			const list = (this._prefixOrders[prefix] ?? []).slice();
 			const idx = list.findIndex((c) => (c.kind === "domain" || c.kind === "pivot") && c.key === domainId);
 			const filtered = list.filter((c) => !((c.kind === "domain" || c.kind === "pivot") && c.key === domainId));
-			const translated = children.map((c) =>
-				(c.kind === "domain" || c.kind === "pivot") ? { kind: c.kind, key: c.key } : { kind: "table" as const, key: c.key },
+			// Preserva `pointer` como `pointer` (no colapsa a `table`): mantener la semántica
+			// del apuntador evita duplicar la entidad referenciada cuando reaparezca aquí.
+			const translated: DomainChildRef[] = children.map((c) =>
+				(c.kind === "domain" || c.kind === "pivot") ? { kind: c.kind, key: c.key } :
+				c.kind === "pointer" ? { kind: "pointer", key: c.key, ...(c.cardinality ? { cardinality: c.cardinality } : {}) } :
+				{ kind: "table", key: c.key },
 			);
 			const insertAt = idx < 0 ? filtered.length : idx;
 			filtered.splice(insertAt, 0, ...translated);
@@ -663,9 +670,11 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 		} else {
 			const idx = this._topOrder.findIndex((e) => (e.kind === "domain" || e.kind === "pivot") && e.key === domainId);
 			const filtered = this._topOrder.filter((e) => !((e.kind === "domain" || e.kind === "pivot") && e.key === domainId));
-			const translated: TopLevelEntry[] = children.map((c) =>
-				(c.kind === "domain" || c.kind === "pivot") ? { kind: c.kind, key: c.key } : { kind: "table", key: c.key },
-			);
+			// `TopLevelEntry` no soporta `pointer`; al promover a raíz se descartan los
+			// apuntadores para no duplicar la entidad apuntada como tabla suelta.
+			const translated: TopLevelEntry[] = children
+				.filter((c) => c.kind !== "pointer")
+				.map((c) => (c.kind === "domain" || c.kind === "pivot") ? { kind: c.kind, key: c.key } : { kind: "table", key: c.key });
 			const insertAt = idx < 0 ? filtered.length : idx;
 			filtered.splice(insertAt, 0, ...translated);
 			this._topOrder = filtered;
@@ -1348,20 +1357,26 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 					counters[depth + 1] += 1;
 					const isPointer = child.kind === "pointer";
 					const isM = !isPointer && child.key === d.masterTable;
-					// La cardinalidad del esclavo se lee del mapa explícito `slaveCardinalities` del dominio
-					// padre. Para `pivot`/`pivot-domain` se completa con la cardinalidad del pivote.
-					// Los pointer guardan su propia cardinalidad en el child ref (no en slaveCardinalities).
-					// Para `domain` clásico se asume `1:N` por defecto (la cardinalidad más usual entre
-					// master y slave) si no hay valor explícito.
+					const isPivotKind = dType === "pivot" || dType === "pivot-domain";
+					// La cardinalidad se almacena por fila en `childrenOrder[i].cardinality`.
+					// - Para slaves/pointers: cardinalidad respecto al master.
+					// - Para el master de un pivote: cardinalidad del pivote respecto al dominio padre.
+					// - Para el master de un dominio: no aplica (se omite).
 					let slaveCard: "1:1" | "1:N" | "N:N" | "" = "";
-					if (isPointer) {
+					if (isM) {
+						if (isPivotKind) {
+							if (child.cardinality) slaveCard = child.cardinality;
+							else if (d.cardinality) slaveCard = d.cardinality;
+							else slaveCard = "1:N";
+						} else {
+							if (child.cardinality) slaveCard = child.cardinality;
+							else if (d.cardinality) slaveCard = d.cardinality;
+							else slaveCard = "1:N";
+						}
+					} else {
 						if (child.cardinality) slaveCard = child.cardinality;
-						else if (dType === "pivot" || dType === "pivot-domain") slaveCard = (d.cardinality ?? "") as typeof slaveCard;
-						else slaveCard = "1:N";
-					} else if (!isM) {
-						const explicit = d.slaveCardinalities?.[child.key];
-						if (explicit) slaveCard = explicit;
-						else if (dType === "pivot" || dType === "pivot-domain") slaveCard = (d.cardinality ?? "") as typeof slaveCard;
+						else if (!isPointer && d.slaveCardinalities?.[child.key]) slaveCard = d.slaveCardinalities[child.key] as typeof slaveCard;
+						else if (isPivotKind) slaveCard = (d.cardinality ?? "1:N") as typeof slaveCard;
 						else slaveCard = "1:N";
 					}
 					rows.push(new TTableNodeUX({

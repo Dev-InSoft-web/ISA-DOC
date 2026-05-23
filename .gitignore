@@ -6,6 +6,9 @@ dist-gh-pages/
 .env
 public/static-api/
 
-# Tokens npm para scripts de publicacion (NUNCA commitear)
-scripts/PS1/pub-isp/.npmrc-publicar.npmrc
-scripts/PS1/pub-isp/.npmrc-descargar.npmrc
+# npm auth tokens (NUNCA versionar)
+*.npmrc
+scripts/PS1/pub-isp/.npmrc-*.npmrc
+
+.agent/token.json
+.agent/

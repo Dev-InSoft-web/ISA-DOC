@@ -260,10 +260,7 @@
 
       getNodeIcon = (node: INode<RowOf<TSqlNode>>): { icon?: string; color?: "info" | "success" | "warning" | "danger" | "neutral"; style?: string; title?: string } | null => {
          if (node.kind === "section") return { icon: "mdi:format-list-group", style: "color: #C49B00", title: "Sección" };
-         if (node.kind === "optional") {
-            if (!node.active) return { icon: "mdi:eye-off-outline", color: "neutral", title: "Opcional inactiva" };
-            return { icon: "mdi:format-list-group", style: "color: #C49B00", title: "Opcional" };
-         }
+         if (node.kind === "optional") return { icon: "mdi:format-list-group", style: "color: #C49B00", title: "Opcional" };
          return { icon: "mdi:table-column", color: "info", title: "Columna" };
       };
 
@@ -313,7 +310,7 @@
 
 <script lang="ts">
    import { onDestroy } from "svelte";
-   import { FlexLayout, Iconify, Switch, Text, SelectEnum } from "@ingenieria_insoft/ispsveltecomponents";
+   import { FlexLayout, GridLayout, Iconify, Switch, Text, SelectEnum } from "@ingenieria_insoft/ispsveltecomponents";
    import TreeView, { type TreeAdapter } from "../_comps/TreeView/TreeRowView.svelte";
    import { COMMON_COLUMN_TYPES } from "../../lib/tableSchema";
 
@@ -344,6 +341,7 @@
 
    $: auditNode = rows.find((r) => r.kind === "optional" && r.rowName === "AUDITORIA");
    $: auditarChecked = !!auditNode?.active;
+   $: visibleRows = rows.filter((r) => !(r.kind === "optional" && !r.active));
 
    const commitBaseName = (v: string): void => {
       const p = prefix && table.name.startsWith(prefix) ? prefix : "";
@@ -420,14 +418,17 @@
          <Text color="neutral"><small>Tabla derivada por auto-stack — solo lectura</small></Text>
       </div>
    {/if}
-   <FlexLayout items="center" justify="between">
-      <div class="name-row">
-         <input class="input-field name-input" type="text" bind:value={baseNameDraft} disabled={readonly} on:change={(e) => commitBaseName(e.currentTarget.value)} />
+   <div class="name-row">
+      <input class="input-field name-input" type="text" bind:value={baseNameDraft} disabled={readonly} on:change={(e) => commitBaseName(e.currentTarget.value)} />
+   </div>
+   <GridLayout cells="3" cellsFit items="center" justify="between">
+      <slot name="extraControls" />
+      <div class="header-trail">
+         {#if !readonly}
+            <Switch bind:checked={auditarChecked} color="primary" colorFalse="neutral" small>Auditar</Switch>
+         {/if}
       </div>
-      {#if !readonly}
-         <Switch bind:checked={auditarChecked} color="primary" colorFalse="neutral" small>Auditar</Switch>
-      {/if}
-   </FlexLayout>
+   </GridLayout>
 
    <div class="tree-host">
       <TreeView
@@ -435,13 +436,11 @@
          bAllowed={{ Crear: true, Modificar: true, Eliminar: true, Visualizar: true }}
          let:treeAdapter={ta}
          {customs}
-         List2Rows={rows}
+         List2Rows={visibleRows}
       >
          {syncAdapter(ta)}
          <span slot="grouperCaret" let:open let:node>
-            {#if node.kind === "optional" && !node.active}
-               <Iconify icon="mdi:eye-off-outline" style="color: #888" title="Opcional inactiva" />
-            {:else if node.isEmpty}
+            {#if node.isEmpty}
                <Iconify icon="mdi:folder-plus-outline" style="color: #9E9E9E" title="Vacío — agregar columnas" />
             {:else}
                <Iconify icon={open ? "mdi:folder-open" : "mdi:folder"} style="color: #FFA000" />
@@ -455,7 +454,6 @@
             {:else if node.kind === "optional"}
                <span class="badge badge-optional">Opcional</span>
                <Text style="font-weight:bold;" lines={1}>{node.rowName || "(sin nombre)"}</Text>
-               {#if !node.active}<span class="tag tag-hidden">oculta</span>{/if}
             {:else}
                <Text lines={1}>{node.rowName || "(columna)"}</Text>
             {/if}
@@ -568,7 +566,9 @@
       font-size: 0.85rem;
       overflow: auto;
    }
-   .name-row { display: inline-flex; align-items: center; gap: 0.25rem; }
+   .name-row { display: flex; align-items: center; gap: 0.25rem; min-width: 0; margin-bottom: 0.35rem; }
+   .name-row .name-input { width: 100%; min-width: 0; }
+   .header-trail { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
    .input-field {
       padding: 0.2rem 0.4rem;
       border: 1px solid var(--is-b-color);

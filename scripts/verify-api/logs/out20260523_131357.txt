@@ -1,0 +1,139 @@
+--- STARTING COMPREHENSIVE API VERIFICATION ---
+--- Report File: C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api\logs\out20260523_131357.txt ---
+--- Base URL: http://localhost:20040 ---
+[AUTH] Token cargado desde VERIFY_API_TOKEN. ✅
+
+===============================================================
+EVALUATING DOMAIN: Driver
+===============================================================
+   [request] reintento 1/5 (350ms) — DELETE /api/driver/203
+   [request] reintento 2/5 (700ms) — DELETE /api/driver/203
+   [request] reintento 3/5 (1050ms) — DELETE /api/driver/203
+   [request] reintento 4/5 (1400ms) — DELETE /api/driver/203
+   [request] reintento 5/5 (1750ms) — DELETE /api/driver/203
+⛔ [DELETE] /api/driver/203 - Network/Fetch Error: fetch failed
+
+1. PROCESS: CREATE
+   Input: POST /api/driver Body (exacto): {"idriver":200,"ndriver":"Driver Prueba","qniveles":2,"descripcion":"Driver POST con atributos anidados","atributos":[{"idriver":200,"iatributo":901,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":902,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":903,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":904,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}}]}
+   [request] reintento 1/5 (350ms) — POST /api/driver
+   [request] reintento 2/5 (700ms) — POST /api/driver
+   [request] reintento 3/5 (1050ms) — POST /api/driver
+   Result: HTTP 201 (Success) ✅
+   Response: {"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2}}]}
+
+2. PROCESS: READ (Verification)
+   Result: HTTP 200 (Found) ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba","descripcion":"Driver POST con atributos anidados","qniveles":2}}]}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/driver/200 Body (exacto): {"idriver":200,"ndriver":"Driver Prueba Upd"}
+   Result: HTTP 202 (Accepted) ✅
+   Response: {"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}}]}
+
+4. PROCESS: READ (Verify Update)
+   Result: HTTP 200 ✅
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}}]}
+
+5. PROCESS: MASS CREATION (x3)
+   Input: POST /api/driver extra Body (exacto): {"ndriver":"Driver Prueba 201","qniveles":2,"descripcion":"Driver POST con atributos anidados","idriver":201}
+   Input: POST /api/driver extra Body (exacto): {"ndriver":"Driver Prueba 202","qniveles":2,"descripcion":"Driver POST con atributos anidados","idriver":202}
+   Input: POST /api/driver extra Body (exacto): {"ndriver":"Driver Prueba 203","qniveles":2,"descripcion":"Driver POST con atributos anidados","idriver":203}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (Check Presence)
+   List: 7 elemento(s) recibido(s) ✅
+   -> Coherence: true ✅
+
+===============================================================
+EVALUATING DOMAIN: Curso
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/curso Body (exacto): {"icurso":"CURSOTEST","ncurso":"Curso Prueba","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"idriver":200}
+   Result: HTTP 201 (Success) ✅
+   Response: {"icurso":"CURSOTEST","itema":"","idriver":200,"bgeneracertificado":false,"ncurso":"Curso Prueba","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"tema":null,"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}}]},"seguridades":null,"estructuras":null,"planescurso":[{"iplan":"10.1","icurso":"CURSOTEST","itema":"TEMATEST","titulo":"Plan anidado en POST curso","recurso":{"irecurso":12521,"nrecurso":"Prueba previsualizador","descripcion":"<p>Este recurso es de ejemplo. Solo para validar que todo <strong>funcione</strong> bien.</p>","iapp":"CP","versionini":0,"versionfin":0,"itdrecurso":"10","icontactoresponsable":"725947","busarbusqueda":true,"busarinterminar":true,"busaria":true,"qsegmarcarvisto":96,"itdestado":1,"qcalificacion":3.5,"qtotalcalificaciones":2,"tdrecurso":{"itdrecurso":"10","ntdrecurso":"Video YouTube","brequierearchivo":false,"atributos":[],"extensiones":[]},"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"cursos":[],"iterceroult":"810000630","igrupoult":"INGCP","irolult":"INGSENIOR","icontactoult":35,"itercerocre":"810000630","igrupocre":"INGCP","irolcre":"INGSENIOR","icontactocre":35,"ipult":"127.0.0.1","fhult":"2026-05-20T16:10:08.247Z","ipcre":"181.143.252.154","fhcre":"2026-04-08T16:28:17.793Z"},"qnivel":2,"irecurso":12521,"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"cursos":[]}],"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-23T18:15:09.750Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-23T18:15:09.750Z"}
+
+2. PROCESS: READ (Verification)
+   Result: HTTP 200 (Found) ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"icurso":"CURSOTEST","itema":"","idriver":200,"bgeneracertificado":false,"ncurso":"Curso Prueba","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"tema":null,"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}}]},"seguridades":null,"estructuras":null,"planescurso":[{"iplan":"10.1","icurso":"CURSOTEST","itema":"TEMATEST","titulo":"Plan anidado en POST curso","recurso":{"irecurso":12521,"nrecurso":"Prueba previsualizador","descripcion":"<p>Este recurso es de ejemplo. Solo para validar que todo <strong>funcione</strong> bien.</p>","iapp":"CP","versionini":0,"versionfin":0,"itdrecurso":"10","icontactoresponsable":"725947","busarbusqueda":true,"busarinterminar":true,"busaria":true,"qsegmarcarvisto":96,"itdestado":1,"qcalificacion":3.5,"qtotalcalificaciones":2,"tdrecurso":{"itdrecurso":"10","ntdrecurso":"Video YouTube","brequierearchivo":false,"atributos":[],"extensiones":[]},"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"cursos":[],"iterceroult":"810000630","igrupoult":"INGCP","irolult":"INGSENIOR","icontactoult":35,"itercerocre":"810000630","igrupocre":"INGCP","irolcre":"INGSENIOR","icontactocre":35,"ipult":"127.0.0.1","fhult":"2026-05-20T16:10:08.247Z","ipcre":"181.143.252.154","fhcre":"2026-04-08T16:28:17.793Z"},"qnivel":2,"irecurso":12521,"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"cursos":[]}],"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-23T18:15:09.750Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-23T18:15:09.750Z"}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/curso/CURSOTEST Body (exacto): {"icurso":"CURSOTEST","ncurso":"Curso Updated"}
+   Result: HTTP 202 (Accepted) ✅
+   Response: {"icurso":"CURSOTEST","itema":"","idriver":200,"bgeneracertificado":false,"ncurso":"Curso Updated","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"tema":null,"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}}]},"seguridades":null,"estructuras":null,"planescurso":[{"iplan":"10.1","icurso":"CURSOTEST","itema":"TEMATEST","titulo":"Plan anidado en POST curso","recurso":{"irecurso":12521,"nrecurso":"Prueba previsualizador","descripcion":"<p>Este recurso es de ejemplo. Solo para validar que todo <strong>funcione</strong> bien.</p>","iapp":"CP","versionini":0,"versionfin":0,"itdrecurso":"10","icontactoresponsable":"725947","busarbusqueda":true,"busarinterminar":true,"busaria":true,"qsegmarcarvisto":96,"itdestado":1,"qcalificacion":3.5,"qtotalcalificaciones":2,"tdrecurso":{"itdrecurso":"10","ntdrecurso":"Video YouTube","brequierearchivo":false,"atributos":[],"extensiones":[]},"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"cursos":[],"iterceroult":"810000630","igrupoult":"INGCP","irolult":"INGSENIOR","icontactoult":35,"itercerocre":"810000630","igrupocre":"INGCP","irolcre":"INGSENIOR","icontactocre":35,"ipult":"127.0.0.1","fhult":"2026-05-20T16:10:08.247Z","ipcre":"181.143.252.154","fhcre":"2026-04-08T16:28:17.793Z"},"qnivel":2,"irecurso":12521,"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"cursos":[]}],"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-23T18:15:17.835Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-23T18:15:09.750Z"}
+
+4. PROCESS: READ (Verify Update)
+   Result: HTTP 200 ✅
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"icurso":"CURSOTEST","itema":"","idriver":200,"bgeneracertificado":false,"ncurso":"Curso Updated","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"tema":null,"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2,"atributos":[{"iatributo":901,"idriver":200,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":902,"idriver":200,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":903,"idriver":200,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}},{"iatributo":904,"idriver":200,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0},"driver":{"idriver":200,"ndriver":"Driver Prueba Upd","descripcion":"Driver POST con atributos anidados","qniveles":2}}]},"seguridades":null,"estructuras":null,"planescurso":[{"iplan":"10.1","icurso":"CURSOTEST","itema":"TEMATEST","titulo":"Plan anidado en POST curso","recurso":{"irecurso":12521,"nrecurso":"Prueba previsualizador","descripcion":"<p>Este recurso es de ejemplo. Solo para validar que todo <strong>funcione</strong> bien.</p>","iapp":"CP","versionini":0,"versionfin":0,"itdrecurso":"10","icontactoresponsable":"725947","busarbusqueda":true,"busarinterminar":true,"busaria":true,"qsegmarcarvisto":96,"itdestado":1,"qcalificacion":3.5,"qtotalcalificaciones":2,"tdrecurso":{"itdrecurso":"10","ntdrecurso":"Video YouTube","brequierearchivo":false,"atributos":[],"extensiones":[]},"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"cursos":[],"iterceroult":"810000630","igrupoult":"INGCP","irolult":"INGSENIOR","icontactoult":35,"itercerocre":"810000630","igrupocre":"INGCP","irolcre":"INGSENIOR","icontactocre":35,"ipult":"127.0.0.1","fhult":"2026-05-20T16:10:08.247Z","ipcre":"181.143.252.154","fhcre":"2026-04-08T16:28:17.793Z"},"qnivel":2,"irecurso":12521,"atributosrecurso":[],"links":[],"participantes":[],"calificaciones":[],"cursos":[]}],"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-23T18:15:17.835Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-23T18:15:09.750Z"}
+
+5. PROCESS: MASS CREATION (x3)
+   Input: POST /api/curso extra Body (exacto): {"ncurso":"Curso Prueba CURSOTEST_1","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"idriver":200,"icurso":"CURSOTEST_1"}
+   Input: POST /api/curso extra Body (exacto): {"ncurso":"Curso Prueba CURSOTEST_2","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"idriver":200,"icurso":"CURSOTEST_2"}
+   Input: POST /api/curso extra Body (exacto): {"ncurso":"Curso Prueba CURSOTEST_3","descripcion":"Desc — POST mínimo (catálogos anidados eliminados del API)","bactivo":true,"idriver":200,"icurso":"CURSOTEST_3"}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (Check Presence)
+   List: 234 elemento(s) recibido(s) ✅
+   -> Coherence: true ✅
+
+===============================================================
+EVALUATING DOMAIN: PlanEstudio
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/plan/estudio Body (exacto): {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Complex","bactivo":true,"descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false}
+   Result: HTTP 201 (Success) ✅
+   Response: {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Complex","descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"bactivo":true,"cursosdeplanestudio":null,"prerrequisitos":null,"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-23T18:15:56.329Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-23T18:15:56.329Z"}
+
+2. PROCESS: READ (Verification)
+   Result: HTTP 200 (Found) ✅
+   -> [Verify Created Data] Coherent: true ✅
+      Actual Data: {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Complex","descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"bactivo":true,"cursosdeplanestudio":null,"prerrequisitos":null,"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-23T18:15:56.329Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-23T18:15:56.329Z"}
+
+3. PROCESS: UPDATE
+   Input: PUT /api/plan/estudio/PE_APIVERIFY Body (exacto): {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Updated","bactivo":true}
+   Result: HTTP 202 (Accepted) ✅
+   Response: {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Updated","descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"bactivo":true,"cursosdeplanestudio":null,"prerrequisitos":null,"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-23T18:16:03.271Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-23T18:15:56.329Z"}
+
+4. PROCESS: READ (Verify Update)
+   Result: HTTP 200 ✅
+   -> [Verify Updated Fields] Coherent: true ✅
+      Actual Data: {"iplanestudio":"PE_APIVERIFY","nombre":"Plan Updated","descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"bactivo":true,"cursosdeplanestudio":null,"prerrequisitos":null,"iusuarioult":"35","ipult":"127.0.0.1","fhult":"2026-05-23T18:16:03.271Z","iusuariocre":"35","ipcre":"127.0.0.1","fhcre":"2026-05-23T18:15:56.329Z"}
+
+5. PROCESS: MASS CREATION (x3)
+   Input: POST /api/plan/estudio extra Body (exacto): {"nombre":"Plan Complex PE_APIVERIFY_1","bactivo":true,"descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"iplanestudio":"PE_APIVERIFY_1"}
+   Input: POST /api/plan/estudio extra Body (exacto): {"nombre":"Plan Complex PE_APIVERIFY_2","bactivo":true,"descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"iplanestudio":"PE_APIVERIFY_2"}
+   Input: POST /api/plan/estudio extra Body (exacto): {"nombre":"Plan Complex PE_APIVERIFY_3","bactivo":true,"descripcionplan":"Desc","ttdvisualizacion":"T","bgeneracertificados":false,"iplanestudio":"PE_APIVERIFY_3"}
+   Result: 3 extra items created. ✅
+
+6. PROCESS: LIST (Check Presence)
+   List: 7 elemento(s) recibido(s) ✅
+   -> Coherence: true ✅
+
+###############################################################
+FINAL CLEANUP: DELETE ALL TEST ENTITIES
+###############################################################
+
+--- ✅ Deleting: PlanEstudio ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 3 elemento(s) recibido(s) ✅
+   Result: None of the PlanEstudio test items found. ✅
+
+--- ✅ Deleting: Curso ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 230 elemento(s) recibido(s) ✅
+   Result: None of the Curso test items found. ✅
+
+--- ✅ Deleting: Driver ---
+   Action completed. ✅
+   Verifying deletion from list...
+   List: 3 elemento(s) recibido(s) ✅
+   Result: None of the Driver test items found. ✅
+
+--- Testing Finished ---

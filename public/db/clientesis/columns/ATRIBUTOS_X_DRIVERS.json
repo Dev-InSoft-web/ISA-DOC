@@ -54,7 +54,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IDRIVER",
-        "type": "BIGINT",
+        "type": "SMALLINT",
         "primarykey": false,
         "kind": "col"
       },
@@ -62,7 +62,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "IATRIBUTO",
-        "type": "BIGINT",
+        "type": "SMALLINT",
         "primarykey": false,
         "kind": "col"
       },
@@ -78,7 +78,7 @@
         "icolumn": "4",
         "flatpath": "4",
         "name": "NATRIBUTO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(50)",
         "primarykey": false,
         "kind": "col"
       },
@@ -86,7 +86,7 @@
         "icolumn": "5",
         "flatpath": "5",
         "name": "TDATRIBUTO",
-        "type": "TINYINT",
+        "type": "VARCHAR(50)",
         "primarykey": false,
         "kind": "col"
       },

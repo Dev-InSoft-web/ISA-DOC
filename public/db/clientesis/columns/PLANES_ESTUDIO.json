@@ -44,7 +44,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IPLANESTUDIO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(20)",
         "primarykey": true,
         "kind": "col"
       },
@@ -60,7 +60,7 @@
         "icolumn": "3",
         "flatpath": "3",
         "name": "DESCRIPCIONPLAN",
-        "type": "VARCHAR(MAX)",
+        "type": "TEXT",
         "primarykey": false,
         "kind": "col"
       },
@@ -68,7 +68,7 @@
         "icolumn": "4",
         "flatpath": "4",
         "name": "TTDVISUALIZACION",
-        "type": "VARCHAR(50)",
+        "type": "VARCHAR(1)",
         "primarykey": false,
         "kind": "col"
       },

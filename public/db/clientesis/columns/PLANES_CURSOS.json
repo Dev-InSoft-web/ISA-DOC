@@ -44,7 +44,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IPLAN",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(100)",
         "primarykey": false,
         "kind": "col"
       },
@@ -52,7 +52,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "ICURSO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(10)",
         "primarykey": false,
         "kind": "col"
       },
@@ -76,7 +76,7 @@
         "icolumn": "5",
         "flatpath": "5",
         "name": "IRECURSO",
-        "type": "VARCHAR(255)",
+        "type": "BIGINT",
         "primarykey": false,
         "kind": "col"
       },

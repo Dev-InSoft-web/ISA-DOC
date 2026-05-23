@@ -59,8 +59,8 @@
 
 {#if bshow}
 	<Modal bind:bshow onClose={close} style="width: 80dvw; max-width: 900px;">
+		<h2 slot="title" class="doc-title">{title}</h2>
 		<div class="doc-modal-body">
-			<h2 class="doc-title">{title}</h2>
 			{#if loading}
 				<Text color="neutral">Cargando documentación…</Text>
 			{:else if errorMsg}

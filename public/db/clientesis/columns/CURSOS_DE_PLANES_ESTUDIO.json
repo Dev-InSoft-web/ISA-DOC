@@ -34,7 +34,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IPLANESTUDIO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(20)",
         "primarykey": false,
         "kind": "col"
       },
@@ -42,7 +42,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "ICURSO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(10)",
         "primarykey": false,
         "kind": "col"
       },

@@ -4,6 +4,60 @@
   "nodes": [
     {
       "flatpath": "1",
+      "kind": "prefix",
+      "rowname": "CAPAC_",
+      "prefix": "CAPAC_",
+      "wardenaction": {
+        "idaction": "prefix"
+      }
+    },
+    {
+      "flatpath": "1.1",
+      "ireference": "TABLE",
+      "kind": "table"
+    },
+    {
+      "flatpath": "1.2",
+      "ireference": "TABLE",
+      "kind": "table"
+    },
+    {
+      "flatpath": "1.3",
+      "ireference": "TABLE",
+      "kind": "table"
+    },
+    {
+      "flatpath": "1.4",
+      "ireference": "TABLE",
+      "kind": "table"
+    },
+    {
+      "flatpath": "1.5",
+      "ireference": "TABLE",
+      "kind": "table"
+    },
+    {
+      "flatpath": "1.6",
+      "ireference": "TABLE",
+      "kind": "table"
+    },
+    {
+      "flatpath": "1.7",
+      "ireference": "TABLE",
+      "kind": "table"
+    },
+    {
+      "flatpath": "1.8",
+      "ireference": "TABLE",
+      "kind": "table"
+    },
+    {
+      "flatpath": "1.9",
+      "ireference": "TABLE",
+      "kind": "table"
+    },
+    {
+      "flatpath": "1.10",
       "ireference": "TABLE",
       "kind": "table"
     },
@@ -21,269 +75,83 @@
       "flatpath": "4",
       "ireference": "TABLE",
       "kind": "table"
-    },
-    {
-      "flatpath": "5",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "6",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "7",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "8",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "9",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "10",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "11",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "12",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "13",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "14",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "15",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "16",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "17",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "18",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "19",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "20",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "21",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "22",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "23",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "24",
-      "ireference": "TABLE",
-      "kind": "table"
-    },
-    {
-      "flatpath": "25",
-      "ireference": "TABLE",
-      "kind": "table"
     }
   ],
   "entities": {
     "TABLE": [
       {
-        "itable": "1",
-        "flatpath": "1",
+        "itable": "1.1",
+        "flatpath": "1.1",
         "tableref": "PLANES_ESTUDIO",
         "rowname": "PLANES_ESTUDIO",
-        "tableid": "tbl_planes_estudio",
-        "customization": {
-          "detailSpec": {
-            "prerrequisitos": {
-              "todo": true
-            },
-            "cursosdeplanesestudio": {
-              "todo": true
-            },
-            "cursosdeplanestudio": {
-              "todo": true
-            }
-          },
-          "relationAliases": {
-            "CursosPrerequisito": "prerrequisitos",
-            "CursosDePlanesEstudio": "cursosdeplanestudio"
-          },
-          "relationOverrides": {
-            "CursosPrerequisito": {
-              "equals": [
-                {
-                  "col": "",
-                  "value": "",
-                  "type": "number"
-                }
-              ]
-            }
-          },
-          "customHooks": [
-            {
-              "name": "obtenerDetallePlanEstudio",
-              "body": "\t\tawait this.VerifyAuthorization();\n\n\t\tconst JData: iInfoPlanEstudio = {\n\t\t\tcursosdeplanestudio: { curso: { planescurso: { recurso: { atributosrecurso: {} }, atributosplan: {} } } },\n\t\t\tprerrequisitos: {},\n\t\t}\n\n\t\tlet ctrAuditoria: TAuditoriaController = new TAuditoriaController(this.CtxUser);\n\t\tlet [idauditoria]: Array<any> = await ctrAuditoria.LookUp(['idauditoria'], {\n\t\t\titercero: this.itercero,\n\t\t\tirol: this.irol,\n\t\t\tigrupo: this.igrupo,\n\t\t\ticontacto: this.icontacto\n\t\t}, true);\n\n\t\tconst M = tablas.ntblRecursoMovimientoContacto;\n\t\tconst P = tablas.ntblCapacPlanesCursos;\n\t\tconst CP = tablas.ntblCapacCursosDePlanesEstudio;\n\n\t\tconst Query = await ExecuteQuery({\n\t\t\tsql: `SELECT TOP 1 P.*\n\t\t\t\tFROM ${this.sqlDetalle(JData)} AS P WHERE P.IPLANESTUDIO = @iplanestudio;\n\t\t\t\tSELECT P2.ICURSO, P2.IRECURSO, COALESCE(SUM(M2.QSEGVISUALIZACION), 0) AS QSEGVISTO, MAX(M2.FHVISTO) AS FHVISTO\n\t\t\t\tFROM ${P} P2\n\t\t\t\tINNER JOIN ${CP} CP2 ON CP2.ICURSO = P2.ICURSO\n\t\t\t\tLEFT JOIN ${M} M2 ON M2.IRECURSO = P2.IRECURSO AND M2.IDAUDCRE = @idauditoria\n\t\t\t\tWHERE CP2.IPLANESTUDIO = @iplanestudio AND P2.IRECURSO IS NOT NULL\n\t\t\t\tGROUP BY P2.ICURSO, P2.IRECURSO`,\n\t\t\tparams: [\n\t\t\t\t{ name: \"iplanestudio\", type: mssql.VarChar, value: planEstudio.iplanestudio },\n\t\t\t\t{ name: \"idauditoria\", type: mssql.Int, value: idauditoria ?? 0 },\n\t\t\t],\n\t\t});\n\n\t\tObject.assign(planEstudio, val2TObject(Query.recordset?.[0], TPlanDeEstudio));\n\n\t\tconst progressMap = new Map<string, Map<string, { qsegvisto: number, fhvisto: Date | null }>>();\n\t\tconst recordsets = Array.isArray(Query.recordsets) ? Query.recordsets : [];\n\t\tfor (const row of recordsets?.[1] ?? []) {\n\t\t\tconst icurso = String(row.ICURSO);\n\t\t\tif (!progressMap.has(icurso)) progressMap.set(icurso, new Map());\n\t\t\tprogressMap.get(icurso)!.set(String(row.IRECURSO), { qsegvisto: row.QSEGVISTO ?? 0, fhvisto: row.FHVISTO ?? null });\n\t\t}\n\n\t\tplanEstudio.qtotalcursos = planEstudio.cursosdeplanestudio?.length || 0;\n\n\t\tlet totalRecursos = 0;\n\t\tlet totalVistos = 0;\n\t\tlet totalDuracion = 0;\n\t\tlet fhContinuar: Date | null = null;\n\n\t\tfor (let cursoDePlan of planEstudio.cursosdeplanestudio) {\n\t\t\tconst curso = cursoDePlan.curso;\n\t\t\tif (!curso?.planescurso) continue;\n\t\t\tcurso.planescurso.sort((a: any, b: any) => (a.qorden ?? 0) - (b.qorden ?? 0));\n\n\t\t\tconst cursoProgressMap = progressMap.get(String(cursoDePlan.icurso)) ?? new Map();\n\t\t\tlet vistos = 0;\n\t\t\tlet totalConRecurso = 0;\n\t\t\tlet sumaCalificaciones = 0;\n\t\t\tlet totalConCalificacion = 0;\n\n\t\t\tfor (const plan of curso.planescurso) {\n\t\t\t\tif (!plan.irecurso) continue;\n\t\t\t\ttotalConRecurso++;\n\t\t\t\tconst recursoJson = plan.recurso?.toJSON() || {};\n\t\t\t\tObject.assign(plan, recursoJson);\n\n\t\t\t\tconst progreso = cursoProgressMap.get(String(plan.irecurso));\n\t\t\t\tconst qsegvisto = progreso?.qsegvisto ?? 0;\n\t\t\t\tplan.qtiempovisualizado = qsegvisto;\n\t\t\t\tconst qsegmarcarvisto = plan.recurso?.qsegmarcarvisto ?? 0;\n\t\t\t\tconst visto = qsegmarcarvisto > 0 && qsegvisto >= (qsegmarcarvisto - 10);\n\t\t\t\ttotalDuracion += qsegmarcarvisto;\n\n\t\t\t\tif (!visto && progreso?.fhvisto && (!fhContinuar || progreso.fhvisto > fhContinuar)) {\n\t\t\t\t\tfhContinuar = progreso.fhvisto;\n\t\t\t\t\tplanEstudio.irecursocontinuar = String(plan.irecurso);\n\t\t\t\t}\n\n\t\t\t\tif (plan.recurso?.qcalificacion != null) {\n\t\t\t\t\tsumaCalificaciones += plan.recurso.qcalificacion;\n\t\t\t\t\ttotalConCalificacion++;\n\t\t\t\t}\n\n\t\t\t\tplan.atributosrecurso = [...(plan.atributosplan ?? []), ...(plan.recurso?.atributosrecurso ?? [])];\n\t\t\t\tplan.recurso = null;\n\t\t\t\tplan.atributosplan = null;\n\t\t\t\tplan.estructuranivel = null;\n\n\t\t\t\tif (visto) vistos++;\n\t\t\t}\n\n\t\t\tcurso.qrecursosfinalizados = vistos;\n\t\t\tcurso.qprogreso = totalConRecurso > 0 ? Math.round((vistos / totalConRecurso) * 100) : 0;\n\t\t\tcurso.qtotalrecursos = totalConRecurso;\n\t\t\tcurso.qcalificacion = totalConCalificacion > 0 ? Math.round(sumaCalificaciones / totalConCalificacion) : 0;\n\t\t\tcurso.qtotalCalificaciones = totalConCalificacion;\n\t\t\ttotalRecursos += totalConRecurso;\n\t\t\ttotalVistos += vistos;\n\t\t}\n\n\t\tplanEstudio.qduracion = totalDuracion;\n\t\tplanEstudio.qprogreso = totalRecursos > 0 ? Math.round((totalVistos / totalRecursos) * 100) : 0;\n\t\tplanEstudio.qtotalrecursos = totalRecursos;\n\n\t\treturn planEstudio",
-              "notes": "Obtiene el detalle del plan de estudio con el progreso de cursos y recursos.",
-              "argName": "planEstudio"
-            }
-          ],
-          "helpers": [
-            {
-              "name": "qprogreso",
-              "kind": "field",
-              "type": "number",
-              "returnType": "json"
-            },
-            {
-              "name": "qtotalcursos",
-              "kind": "field",
-              "type": "number"
-            },
-            {
-              "name": "qtotalrecursos",
-              "kind": "field",
-              "type": "number"
-            },
-            {
-              "name": "qduracion",
-              "kind": "field",
-              "type": "number"
-            },
-            {
-              "name": "irecursocontinuar",
-              "kind": "field",
-              "type": "string"
-            }
-          ]
-        }
+        "tableid": "tbl_planes_estudio"
       },
       {
-        "itable": "2",
-        "flatpath": "2",
-        "tableref": "CURSOS_PREREQUISITOS",
-        "rowname": "CURSOS_PREREQUISITOS",
-        "tableid": "tbl_cursos_prerequisitos",
-        "customization": {
-          "className": "TCursosPrerequisito2"
-        }
-      },
-      {
-        "itable": "3",
-        "flatpath": "3",
-        "tableref": "CURSOS",
-        "rowname": "CURSOS",
-        "tableid": "tbl_cursos"
-      },
-      {
-        "itable": "4",
-        "flatpath": "4",
+        "itable": "1.2",
+        "flatpath": "1.2",
         "tableref": "CURSOS_DE_PLANES_ESTUDIO",
         "rowname": "CURSOS_DE_PLANES_ESTUDIO",
         "tableid": "tbl_cursos_de_planes_estudio"
       },
       {
-        "itable": "5",
-        "flatpath": "5",
-        "tableref": "CURSOS",
-        "rowname": "CURSOS",
-        "tableid": "tbl_cursos"
-      },
-      {
-        "itable": "6",
-        "flatpath": "6",
-        "tableref": "ESTRUCTURAS_CURSOS",
-        "rowname": "ESTRUCTURAS_CURSOS",
-        "tableid": "tbl_estructuras_cursos"
-      },
-      {
-        "itable": "7",
-        "flatpath": "7",
-        "tableref": "SEGURIDADES_CURSOS",
-        "rowname": "SEGURIDADES_CURSOS",
-        "tableid": "tbl_seguridades_cursos"
-      },
-      {
-        "itable": "8",
-        "flatpath": "8",
-        "tableref": "PERMISOS",
-        "rowname": "PERMISOS",
-        "tableid": "tbl_permisos"
-      },
-      {
-        "itable": "9",
-        "flatpath": "9",
-        "tableref": "PLANES_CURSOS",
-        "rowname": "PLANES_CURSOS",
-        "tableid": "tbl_planes_cursos"
-      },
-      {
-        "itable": "10",
-        "flatpath": "10",
+        "itable": "1.3",
+        "flatpath": "1.3",
         "tableref": "ATRIBUTOS_PLANES",
         "rowname": "ATRIBUTOS_PLANES",
         "tableid": "tbl_atributos_planes"
       },
       {
-        "itable": "11",
-        "flatpath": "11",
+        "itable": "1.4",
+        "flatpath": "1.4",
+        "tableref": "PLANES_CURSOS",
+        "rowname": "PLANES_CURSOS",
+        "tableid": "tbl_planes_cursos"
+      },
+      {
+        "itable": "1.5",
+        "flatpath": "1.5",
         "tableref": "DRIVERS",
         "rowname": "DRIVERS",
         "tableid": "tbl_drivers"
       },
       {
-        "itable": "12",
-        "flatpath": "12",
+        "itable": "1.6",
+        "flatpath": "1.6",
         "tableref": "ATRIBUTOS_X_DRIVERS",
         "rowname": "ATRIBUTOS_X_DRIVERS",
         "tableid": "tbl_atributos_x_drivers"
       },
       {
-        "itable": "13",
-        "flatpath": "13",
+        "itable": "1.7",
+        "flatpath": "1.7",
+        "tableref": "CURSOS",
+        "rowname": "CURSOS",
+        "tableid": "tbl_cursos"
+      },
+      {
+        "itable": "1.8",
+        "flatpath": "1.8",
+        "tableref": "CURSOS_PREREQUISITOS",
+        "rowname": "CURSOS_PREREQUISITOS",
+        "tableid": "tbl_cursos_prerequisitos"
+      },
+      {
+        "itable": "1.9",
+        "flatpath": "1.9",
+        "tableref": "ESTRUCTURAS_CURSOS",
+        "rowname": "ESTRUCTURAS_CURSOS",
+        "tableid": "tbl_estructuras_cursos"
+      },
+      {
+        "itable": "1.10",
+        "flatpath": "1.10",
+        "tableref": "SEGURIDADES_CURSOS",
+        "rowname": "SEGURIDADES_CURSOS",
+        "tableid": "tbl_seguridades_cursos"
+      },
+      {
+        "itable": "2",
+        "flatpath": "2",
         "tableref": "SOP_TEMAS_V2",
         "rowname": "SOP_TEMAS_V2",
         "tableid": "tbl_sop_temas_v2",
@@ -292,88 +160,21 @@
         }
       },
       {
-        "itable": "14",
-        "flatpath": "14",
+        "itable": "3",
+        "flatpath": "3",
         "tableref": "PERMISOS",
         "rowname": "PERMISOS",
         "tableid": "tbl_permisos"
       },
       {
-        "itable": "15",
-        "flatpath": "15",
-        "tableref": "CURSOS",
-        "rowname": "CURSOS",
-        "tableid": "tbl_cursos"
-      },
-      {
-        "itable": "16",
-        "flatpath": "16",
-        "tableref": "PERMISOS",
-        "rowname": "PERMISOS",
-        "tableid": "tbl_permisos"
-      },
-      {
-        "itable": "17",
-        "flatpath": "17",
-        "tableref": "CURSOS",
-        "rowname": "CURSOS",
-        "tableid": "tbl_cursos"
-      },
-      {
-        "itable": "18",
-        "flatpath": "18",
-        "tableref": "PERMISOS",
-        "rowname": "PERMISOS",
-        "tableid": "tbl_permisos"
-      },
-      {
-        "itable": "19",
-        "flatpath": "19",
-        "tableref": "CURSOS",
-        "rowname": "CURSOS",
-        "tableid": "tbl_cursos"
-      },
-      {
-        "itable": "20",
-        "flatpath": "20",
-        "tableref": "PERMISOS",
-        "rowname": "PERMISOS",
-        "tableid": "tbl_permisos"
-      },
-      {
-        "itable": "21",
-        "flatpath": "21",
-        "tableref": "PERMISOS",
-        "rowname": "PERMISOS",
-        "tableid": "tbl_permisos"
-      },
-      {
-        "itable": "22",
-        "flatpath": "22",
-        "tableref": "PERMISOS",
-        "rowname": "PERMISOS",
-        "tableid": "tbl_permisos"
-      },
-      {
-        "itable": "23",
-        "flatpath": "23",
-        "tableref": "PERMISOS",
-        "rowname": "PERMISOS",
-        "tableid": "tbl_permisos"
-      },
-      {
-        "itable": "24",
-        "flatpath": "24",
-        "tableref": "PERMISOS",
-        "rowname": "PERMISOS",
-        "tableid": "tbl_permisos"
-      },
-      {
-        "itable": "25",
-        "flatpath": "25",
+        "itable": "4",
+        "flatpath": "4",
         "tableref": "RECURSOS",
         "rowname": "RECURSOS",
-        "tableid": "tbl_recursos"
+        "tableid": "tbl_recursos",
+        "snippets": {
+          "sql": false
+        }
       }
     ]
   }

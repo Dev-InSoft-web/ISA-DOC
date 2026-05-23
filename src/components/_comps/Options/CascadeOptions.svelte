@@ -133,7 +133,7 @@
                   {:else}
                      {@const action = item as ButtonOptionProps}
                      {@const { onClick: itemOnClick, ...rest } = action}
-                     <ButtonIconify role="menuitem" {...rest} shape="rect" disabled={disabled ? true : action.disabled} class={action.class || ""} style={["justify-content: start", action.style].filter(Boolean).join("; ")} on:click={self.getmenuitemonclick(itemOnClick)}>
+                     <ButtonIconify role="menuitem" {...rest} shape="rect" disabled={disabled ? true : action.disabled} class={action.class || ""} style={["justify-content: start", "width: 100%", action.style].filter(Boolean).join("; ")} on:click={self.getmenuitemonclick(itemOnClick)}>
                         {#if action.label}
                            {#if action.icon}
                               <Iconify icon={action.icon} />
