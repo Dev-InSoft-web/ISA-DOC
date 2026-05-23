@@ -6,9 +6,9 @@ dist-gh-pages/
 .env
 public/static-api/
 
-# npm auth tokens (NUNCA versionar)
-*.npmrc
-scripts/PS1/pub-isp/.npmrc-*.npmrc
-
-.agent/token.json
+# secretos (NUNCA versionar)
 .agent/
+*.npmrc
+
+# carpeta de backups (local.settings, npmrc, etc.)
+backups/

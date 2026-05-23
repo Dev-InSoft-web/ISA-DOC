@@ -24,16 +24,16 @@ if ($password -ne "1234") {
 	return
 }
 $npmrcPath = Join-Path $Root ".npmrc"
-$npmrcSrc = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
-$npmrcPublicar = Join-Path $npmrcSrc ".npmrc-publicar.npmrc"
-$npmrcDescargar = Join-Path $npmrcSrc ".npmrc-descargar.npmrc"
+$npmrcSrc = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..\..\backups\npmrc")).Path
+$npmrcPublicar = Join-Path $npmrcSrc ".npmrc-publicar.backup"
+$npmrcDescargar = Join-Path $npmrcSrc ".npmrc-descargar.backup"
 
 $deployPublish = "npm run build && npm publish"
 $deployRestore = "npm update && npm run build && npm run git && npm publish && npm version patch"
 
 if (-not (Test-Path $packagePath)) { throw "No se encontro package.json en $Root" }
-if (-not (Test-Path $npmrcPublicar)) { throw "No se encontro .npmrc-publicar.npmrc" }
-if (-not (Test-Path $npmrcDescargar)) { throw "No se encontro .npmrc-descargar.npmrc" }
+if (-not (Test-Path $npmrcPublicar)) { throw "No se encontro .npmrc-publicar.backup" }
+if (-not (Test-Path $npmrcDescargar)) { throw "No se encontro .npmrc-descargar.backup" }
 
 $pkgText = [System.IO.File]::ReadAllText($packagePath)
 if ($pkgText -notmatch '"deploy"\s*:\s*"[^"]*"') {
