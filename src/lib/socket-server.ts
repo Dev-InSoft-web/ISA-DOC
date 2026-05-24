@@ -125,7 +125,7 @@ function handleConnection(socket: Socket): void {
 		try {
 			const meta = loadCollectionMeta();
 			if (!meta) {
-				cb({ error: "No se pudo cargar metadata: revisa que doc/ISA-DOC/postman-collection.json exista." });
+				cb({ error: "No se pudo cargar metadata: revisa que data/postman/clientesis/collection.json exista." });
 				return;
 			}
 			cb(meta);

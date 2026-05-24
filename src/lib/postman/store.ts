@@ -2,12 +2,12 @@
  * Postman store · factory por proyecto.
  *
  * Dos modos:
- * - **Monolítico** (ClientesIS): una única fuente `postman-collection.json`.
+ * - **Monolítico** (ClientesIS): una única fuente `data/postman/clientesis/collection.json`.
  *   Las "entidades" se derivan de `col.item[i]` (folders) por slug.
  * - **Fragmentado** (PatyIA): la fuente de verdad son los archivos individuales
- *   bajo `patyia-postman/entities/<Entidad>.json`. El `loadFullCollection()`
+ *   bajo `data/postman/patyia/entities/<Entidad>.json`. El `loadFullCollection()`
  *   hace el join al vuelo y persiste el resultado en
- *   `patyia-postman-collection.json` (descarga consolidada).
+ *   `data/postman/patyia/collection.json` (descarga consolidada).
  *
  * Exportaciones legacy preservadas para compatibilidad: delegan en
  * `clientesisStore`. Para PatyIA se expone `patyiaStore` con la misma API.
@@ -418,17 +418,17 @@ const PATYIA_DEFAULT_ENVS: EnvironmentsFile = {
 export const clientesisStore = createPostmanStore({
 	projectKey: "clientesis",
 	displayName: "ClientesIS · ContaPymeU",
-	collectionFile: join(ISA_ROOT, "postman-collection.json"),
-	envsFile: join(ISA_ROOT, "postman-environments.json"),
+	collectionFile: join(ISA_ROOT, "data", "postman", "clientesis", "collection.json"),
+	envsFile: join(ISA_ROOT, "data", "postman", "clientesis", "environments.json"),
 	defaultEnvs: CLIENTESIS_DEFAULT_ENVS,
 });
 
 export const patyiaStore = createPostmanStore({
 	projectKey: "patyia",
 	displayName: "PatyIA · AyudasCP-IA",
-	collectionFile: join(ISA_ROOT, "patyia-postman-collection.json"),
-	envsFile: join(ISA_ROOT, "patyia-postman-environments.json"),
-	entitiesDir: join(ISA_ROOT, "patyia-postman", "entities"),
+	collectionFile: join(ISA_ROOT, "data", "postman", "patyia", "collection.json"),
+	envsFile: join(ISA_ROOT, "data", "postman", "patyia", "environments.json"),
+	entitiesDir: join(ISA_ROOT, "data", "postman", "patyia", "entities"),
 	defaultEnvs: PATYIA_DEFAULT_ENVS,
 });
 

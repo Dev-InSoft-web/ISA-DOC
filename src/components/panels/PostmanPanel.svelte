@@ -62,7 +62,7 @@
 	$: verifyPrefix = proyecto === "patyia" ? "patyiaVerifyApi" : "verifyApi";
 	$: staticBase = proyecto === "patyia" ? "patyia-postman" : "postman";
 	$: downloadName = proyecto === "patyia" ? "patyia-postman-collection.json" : "postman-collection.json";
-	$: sourceLabel = proyecto === "patyia" ? "doc/ISA-DOC/patyia-postman-collection.json (join de patyia-postman/entities/*.json)" : "doc/ISA-DOC/postman-collection.json";
+	$: sourceLabel = proyecto === "patyia" ? "data/postman/patyia/collection.json (join de data/postman/patyia/entities/*.json)" : "data/postman/clientesis/collection.json";
 	let loading = true;
 	let meta: CollectionMeta | null = null;
 	let selectedSlug: string | null = null;

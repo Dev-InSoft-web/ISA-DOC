@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const FILE = join(__dirname, "..", "postman-collection.json");
+const FILE = join(__dirname, "..", "data", "postman", "clientesis", "collection.json");
 
 interface SampleData {
 	listItem: Record<string, unknown>;

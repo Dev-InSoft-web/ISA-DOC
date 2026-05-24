@@ -17,7 +17,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const ISA_ROOT = resolve(__dirname, "..");
-const COLLECTION_FILE = resolve(ISA_ROOT, "postman-collection.json");
+const COLLECTION_FILE = resolve(ISA_ROOT, "data", "postman", "clientesis", "collection.json");
 const TOKEN_FILE = resolve(ISA_ROOT, "..", "test", "token.json");
 
 const HOST = (process.env.ISA_API_HOST ?? "http://localhost:20042").replace(/\/$/, "");
