@@ -1,0 +1,38 @@
+{
+	"active": "local",
+	"environments": [
+		{
+			"id": "local",
+			"name": "local",
+			"values": [
+				{ "key": "HOST", "value": "http://localhost:7071", "enabled": true },
+				{ "key": "CONTROLKEY", "value": "5130489773", "type": "secret", "enabled": true },
+				{ "key": "token", "value": "", "type": "secret", "enabled": true },
+				{ "key": "iconversacion", "value": "", "enabled": true },
+				{ "key": "THREAD_ID", "value": "", "enabled": true }
+			]
+		},
+		{
+			"id": "staging",
+			"name": "staging",
+			"values": [
+				{ "key": "HOST", "value": "https://ayudascp-ia-staging.azurewebsites.net", "enabled": true },
+				{ "key": "CONTROLKEY", "value": "", "type": "secret", "enabled": true },
+				{ "key": "token", "value": "", "type": "secret", "enabled": true },
+				{ "key": "iconversacion", "value": "", "enabled": true },
+				{ "key": "THREAD_ID", "value": "", "enabled": true }
+			]
+		},
+		{
+			"id": "produccion",
+			"name": "produccion",
+			"values": [
+				{ "key": "HOST", "value": "https://ayudascp-ia.azurewebsites.net", "enabled": true },
+				{ "key": "CONTROLKEY", "value": "", "type": "secret", "enabled": true },
+				{ "key": "token", "value": "", "type": "secret", "enabled": true },
+				{ "key": "iconversacion", "value": "", "enabled": true },
+				{ "key": "THREAD_ID", "value": "", "enabled": true }
+			]
+		}
+	]
+}
