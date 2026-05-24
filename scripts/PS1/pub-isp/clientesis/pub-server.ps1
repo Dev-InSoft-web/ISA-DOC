@@ -57,12 +57,25 @@ Write-Utf8NoBom -Path $packagePath -Content $pkgTextPublish
 Copy-Item -LiteralPath $npmrcPublicar -Destination $npmrcPath -Force
 
 $deployOk = $false
+$deployErrMsg = $null
 try {
-	& isnode deploy
-	if ($null -ne $LASTEXITCODE -and $LASTEXITCODE -ne 0) {
-		throw "isnode deploy termino con codigo $LASTEXITCODE"
+	& isnode deploy 2>&1 | Tee-Object -Variable deployOutput | Out-Host
+	$deployExit = $LASTEXITCODE
+	$joined = ($deployOutput | Out-String)
+	$errPattern = 'npm error|npm ERR!|E401|E403|E404|Unauthorized|Forbidden|404 Not Found|cannot publish over'
+	$hasErr = $joined -match $errPattern
+	if ($null -ne $deployExit -and $deployExit -ne 0) {
+		$deployErrMsg = "isnode deploy termino con codigo $deployExit"
 	}
-	$deployOk = $true
+	elseif ($hasErr) {
+		$deployErrMsg = "Se detectaron errores de npm en la salida (exit 0 enganoso)"
+	}
+	else {
+		$deployOk = $true
+	}
+}
+catch {
+	$deployErrMsg = $_.Exception.Message
 }
 finally {
 	Copy-Item -LiteralPath $npmrcDescargar -Destination $npmrcPath -Force
@@ -93,4 +106,15 @@ if ($deployOk) {
 	if ($null -ne $LASTEXITCODE -and $LASTEXITCODE -ne 0) {
 		throw "git push termino con codigo $LASTEXITCODE"
 	}
+}
+else {
+	Write-Host ""
+	Write-Host "==================== ERROR DE PUBLICACION ====================" -ForegroundColor Red
+	Write-Host "npm publish FALLO. NO se hara git commit ni git push." -ForegroundColor Red
+	if ($deployErrMsg) {
+		Write-Host "Detalle: $deployErrMsg" -ForegroundColor Red
+	}
+	Write-Host "Revise la salida de 'isnode deploy' arriba para mas contexto." -ForegroundColor Red
+	Write-Host "==============================================================" -ForegroundColor Red
+	exit 1
 }
