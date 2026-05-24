@@ -73,6 +73,76 @@
 
 	type CmFactory = (host: HTMLElement, opts: Record<string, unknown>) => unknown;
 
+	async function ensureMermaid(): Promise<{ render: (id: string, src: string) => Promise<{ svg: string }> } | null> {
+		const w = window as unknown as { __mermaidReady?: boolean; mermaid?: { render: (id: string, src: string) => Promise<{ svg: string }> } };
+		if (w.__mermaidReady && w.mermaid) return w.mermaid;
+		try {
+			const m = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
+			const mermaid = (m as { default?: unknown }).default ?? m;
+			const css = getComputedStyle(document.documentElement);
+			const toHex = (value: string, fallback: string): string => {
+				const probe = document.createElement('div');
+				probe.style.color = value || fallback;
+				probe.style.display = 'none';
+				document.body.appendChild(probe);
+				const resolved = getComputedStyle(probe).color;
+				document.body.removeChild(probe);
+				const nums = resolved.match(/-?\d+(\.\d+)?/g);
+				if (!nums || nums.length < 3) return fallback;
+				const clip = (n: number): number => Math.max(0, Math.min(255, Math.round(n)));
+				const r = clip(Number(nums[0])).toString(16).padStart(2, '0');
+				const g = clip(Number(nums[1])).toString(16).padStart(2, '0');
+				const b = clip(Number(nums[2])).toString(16).padStart(2, '0');
+				return `#${r}${g}${b}`;
+			};
+			const bgPrim = toHex(css.getPropertyValue('--is-bg-primary').trim(), '#0c1222');
+			const bgSec = toHex(css.getPropertyValue('--is-bg-secondary').trim(), '#13203a');
+			(mermaid as { initialize: (opts: Record<string, unknown>) => void }).initialize({
+				startOnLoad: false,
+				securityLevel: 'loose',
+				themeVariables: {
+					primaryColor: bgSec,
+					primaryBorderColor: '#505080',
+					primaryTextColor: '#ffffff',
+					secondaryColor: bgSec,
+					tertiaryColor: bgPrim,
+					lineColor: '#505080',
+					textColor: '#ffffff',
+					mainBkg: bgSec,
+					nodeBorder: '#505080',
+				},
+			});
+			w.mermaid = mermaid as typeof w.mermaid;
+			w.__mermaidReady = true;
+
+			return w.mermaid ?? null;
+		} catch {
+			return null;
+		}
+	}
+
+	async function renderMermaidBlocks(container: HTMLElement): Promise<void> {
+		const blocks = Array.from(container.querySelectorAll('pre > code.language-mermaid')) as HTMLElement[];
+		if (!blocks.length) return;
+		const mm = await ensureMermaid();
+		if (!mm) return;
+		let i = 0;
+		for (const codeEl of blocks) {
+			const pre = codeEl.parentElement;
+			if (!pre) continue;
+			const source = codeEl.textContent ?? '';
+			const host = document.createElement('div');
+			host.className = 'is-mermaid';
+			try {
+				const { svg } = await mm.render(`mmd-${Date.now()}-${i++}`, source);
+				host.innerHTML = svg;
+			} catch (err) {
+				host.textContent = `Error mermaid: ${(err as Error).message}`;
+			}
+			pre.replaceWith(host);
+		}
+	}
+
 	async function renderCodeBlocks(container: HTMLElement): Promise<void> {
 		const CM = (window as unknown as { CodeMirror?: CmFactory }).CodeMirror;
 		if (!CM) return;
@@ -90,6 +160,7 @@
 			const cls = codeEl.className || '';
 			const m = cls.match(/language-([\w-]+)/);
 			const lang = (m?.[1] ?? '').toLowerCase();
+			if (lang === 'mermaid') continue;
 			const cfg = LANG_TO_CM[lang];
 			if (cfg) uniqueModes.add(cfg.mode);
 			items.push({ codeEl, lang, cfg });
@@ -139,7 +210,10 @@
 			html = marked.parse(md, { mangle: false, headerIds: true });
 			await tick();
 			const container = document.querySelector('.docs-content');
-			if (container) await renderCodeBlocks(container as HTMLElement);
+			if (container) {
+				await renderMermaidBlocks(container as HTMLElement);
+				await renderCodeBlocks(container as HTMLElement);
+			}
 		} catch (e: unknown) {
 			error = e instanceof Error ? e.message : String(e);
 		} finally {
@@ -188,6 +262,21 @@
 		color: #888;
 		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 		margin-bottom: 1rem;
+	}
+
+	:global(.docs-content .is-mermaid) {
+		display: flex;
+		justify-content: center;
+		margin: 1rem 0;
+		padding: 0.75rem;
+		background: var(--is-bg-readonly, #001327);
+		border: 1px solid #8885;
+		border-radius: 6px;
+		overflow-x: auto;
+	}
+	:global(.docs-content .is-mermaid svg) {
+		max-width: 100%;
+		height: auto;
 	}
 
 	:global(.docs-content h1) {
