@@ -55,7 +55,7 @@ function buildThemeVariables(): Record<string, string> {
 		primaryTextColor: "#ffffff",
 		secondaryColor: bgSec,
 		tertiaryColor: bgPrim,
-		lineColor: "#505080",
+		lineColor: "dodgerblue",
 		textColor: "#ffffff",
 		mainBkg: bgSec,
 		nodeBorder: "#505080",
@@ -69,7 +69,7 @@ function buildThemeVariables(): Record<string, string> {
 		actorTextColor: "#ffffff",
 		labelBoxBkgColor: bgSec,
 		labelBoxBorderColor: "#505080",
-		signalColor: "#ffffff",
+		signalColor: "dodgerblue",
 		signalTextColor: "#ffffff",
 	};
 }
