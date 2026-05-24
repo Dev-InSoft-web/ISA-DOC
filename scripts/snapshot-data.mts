@@ -90,18 +90,24 @@ async function snapshotCodegenState(): Promise<void> {
 async function snapshotPostman(): Promise<void> {
 	try {
 		const mod = await import("../src/lib/postman/store.ts");
-		const meta = mod.loadCollectionMeta();
-		if (meta) writeJson("postman/list.json", meta);
-		const envs = mod.loadEnvironments();
-		writeJson("postman/envs.json", envs);
-		const full = mod.loadFullCollection();
-		if (full) writeJson("postman/full.json", full);
-		if (meta) {
-			for (const ent of meta.entities) {
-				const e = mod.loadEntity(ent.slug);
-				if (e) writeJson(`postman/entity-${ent.slug}.json`, e);
+
+		const snap = (prefix: string, store: import("../src/lib/postman/store.ts").PostmanStore): void => {
+			const meta = store.loadCollectionMeta();
+			if (meta) writeJson(`${prefix}/list.json`, meta);
+			const envs = store.loadEnvironments();
+			writeJson(`${prefix}/envs.json`, envs);
+			const full = store.loadFullCollection();
+			if (full) writeJson(`${prefix}/full.json`, full);
+			if (meta) {
+				for (const ent of meta.entities) {
+					const e = store.loadEntity(ent.slug);
+					if (e) writeJson(`${prefix}/entity-${ent.slug}.json`, e);
+				}
 			}
-		}
+		};
+
+		snap("postman", mod.clientesisStore);
+		snap("patyia-postman", mod.patyiaStore);
 	} catch (e) {
 		console.warn(`[snap] postman fallo: ${(e as Error).message}`);
 	}

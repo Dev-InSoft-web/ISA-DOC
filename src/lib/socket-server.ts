@@ -5,6 +5,8 @@ import {
 	loadCollectionMeta, loadEntity, saveEntity, saveCollectionVariables,
 	mergeCollection, splitCollection, loadEnvironments, saveEnvironments,
 	loadFullCollection,
+	getStore,
+	type PostmanStore,
 	type EntityFile, type EnvironmentsFile,
 } from "./postman/store.js";
 
@@ -160,6 +162,12 @@ function handleConnection(socket: Socket): void {
 	socket.on("postman:envSave", (data: EnvironmentsFile, cb: (r: unknown) => void) => {
 		cb(saveEnvironments(data));
 	});
+
+	// === PatyIA Postman (modo fragmentado) ===
+	registerPostmanNamespace(socket, "patyiaPostman", getStore("patyia"));
+
+	// === PatyIA Verify API ===
+	registerVerifyApiNamespace(socket, "patyiaVerifyApi", "verify-api-patyia", "scripts/verify-api-patyia/run.ts");
 
 	// === Verify API (pruebas en secuencia) ===
 	socket.on("verifyApi:run", (payload: { host?: string }, cb?: (r: unknown) => void) => {
@@ -345,3 +353,84 @@ function killProcess(actionId: string): void {
 	console.log(`[kill] actionId=${actionId} pid=${child.pid}`);
 	killProcessTree(child);
 }
+
+function registerPostmanNamespace(socket: Socket, prefix: string, store: PostmanStore): void {
+	socket.on(`${prefix}:list`, (cb: (data: unknown) => void) => {
+		try {
+			const meta = store.loadCollectionMeta();
+			if (!meta) { cb({ error: "Sin metadata" }); return; }
+			cb(meta);
+		} catch (err) {
+			cb({ error: err instanceof Error ? err.message : String(err) });
+		}
+	});
+	socket.on(`${prefix}:get`, (slug: string, cb: (data: unknown) => void) => {
+		const e = store.loadEntity(slug);
+		cb(e ?? { error: `Entidad no encontrada: ${slug}` });
+	});
+	socket.on(`${prefix}:save`, (payload: { slug: string; data: EntityFile }, cb: (r: unknown) => void) => {
+		cb(store.saveEntity(payload.slug, payload.data));
+	});
+	socket.on(`${prefix}:vars`, (variable: unknown[], cb: (r: unknown) => void) => {
+		cb(store.saveCollectionVariables(variable));
+	});
+	socket.on(`${prefix}:merge`, (cb: (r: unknown) => void) => {
+		cb(store.mergeCollection());
+	});
+	socket.on(`${prefix}:split`, (cb: (r: unknown) => void) => {
+		cb(store.splitCollection());
+	});
+	socket.on(`${prefix}:full`, (cb: (data: unknown) => void) => {
+		const col = store.loadFullCollection();
+		cb(col ?? { error: "Sin colección" });
+	});
+	socket.on(`${prefix}:envs`, (cb: (data: unknown) => void) => {
+		cb(store.loadEnvironments());
+	});
+	socket.on(`${prefix}:envSave`, (data: EnvironmentsFile, cb: (r: unknown) => void) => {
+		cb(store.saveEnvironments(data));
+	});
+}
+
+function registerVerifyApiNamespace(socket: Socket, prefix: string, actionId: string, scriptPath: string): void {
+	socket.on(`${prefix}:run`, (payload: { host?: string; env?: string }, cb?: (r: unknown) => void) => {
+		if (runningProcesses.has(actionId)) {
+			cb?.({ ok: false, error: "Ya está en ejecución" });
+			return;
+		}
+		const env: Record<string, string> = {
+			...process.env as Record<string, string>,
+			VERIFY_API_BASE_URL: payload?.host || "http://localhost:7071",
+			VERIFY_API_ENV: payload?.env || "local",
+			FORCE_COLOR: "0",
+		};
+		const isaRoot = process.cwd();
+		const child = spawn(process.execPath, ["--import", "tsx", scriptPath], {
+			cwd: isaRoot,
+			env,
+			stdio: ["pipe", "pipe", "pipe"],
+			shell: false,
+		});
+		runningProcesses.set(actionId, child);
+		broadcast(`${prefix}:started`, { host: env.VERIFY_API_BASE_URL });
+		child.stdout?.on("data", (b: Buffer) => broadcast(`${prefix}:stdout`, { data: b.toString() }));
+		child.stderr?.on("data", (b: Buffer) => broadcast(`${prefix}:stderr`, { data: b.toString() }));
+		child.on("close", (code: number | null) => {
+			runningProcesses.delete(actionId);
+			broadcast(`${prefix}:exited`, { code });
+		});
+		child.on("error", (err: Error) => {
+			runningProcesses.delete(actionId);
+			broadcast(`${prefix}:exited`, { code: -1, error: err.message });
+		});
+		cb?.({ ok: true });
+	});
+	socket.on(`${prefix}:kill`, (cb?: (r: unknown) => void) => {
+		const child = runningProcesses.get(actionId);
+		if (!child) { cb?.({ ok: false, error: "No hay proceso" }); return; }
+		killProcessTree(child);
+		cb?.({ ok: true });
+	});
+}
+
+

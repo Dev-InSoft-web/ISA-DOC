@@ -57,6 +57,12 @@
 	};
 
 	let socket: Socket | null = null;
+	export let proyecto: "clientesis" | "patyia" = "clientesis";
+	$: socketPrefix = proyecto === "patyia" ? "patyiaPostman" : "postman";
+	$: verifyPrefix = proyecto === "patyia" ? "patyiaVerifyApi" : "verifyApi";
+	$: staticBase = proyecto === "patyia" ? "patyia-postman" : "postman";
+	$: downloadName = proyecto === "patyia" ? "patyia-postman-collection.json" : "postman-collection.json";
+	$: sourceLabel = proyecto === "patyia" ? "doc/ISA-DOC/patyia-postman-collection.json (join de patyia-postman/entities/*.json)" : "doc/ISA-DOC/postman-collection.json";
 	let loading = true;
 	let meta: CollectionMeta | null = null;
 	let selectedSlug: string | null = null;
@@ -84,7 +90,7 @@
 	let mdPreviewHtml = "";
 
 	// === Pruebas en secuencia (verify-api) ===
-	let verifyHost = "http://localhost:20040";
+	let verifyHost = proyecto === "patyia" ? "http://localhost:7071" : "http://localhost:20040";
 	let verifyRunning = false;
 	let verifyOutput = "";
 	let showVerifyConsole = false;
@@ -111,7 +117,7 @@
 		if (verifyRunning) return;
 		verifyOutput = "";
 		showVerifyConsole = true;
-		socket?.emit("verifyApi:run", { host: verifyHost.trim() }, (r: { ok: boolean; error?: string }) => {
+		socket?.emit(`${verifyPrefix}:run`, { host: verifyHost.trim() }, (r: { ok: boolean; error?: string }) => {
 			if (!r?.ok) {
 				toastError(r?.error ?? "No se pudo iniciar la verificación");
 				verifyRunning = false;
@@ -119,7 +125,7 @@
 		});
 	}
 	function stopVerify(): void {
-		socket?.emit("verifyApi:kill", () => {});
+		socket?.emit(`${verifyPrefix}:kill`, () => {});
 	}
 
 	function openMdPreview(title: string, md: string | undefined): void {
@@ -130,7 +136,7 @@
 	}
 
 	function loadEnvs(): void {
-		socket?.emit("postman:envs", (data: EnvironmentsFile) => {
+		socket?.emit(`${socketPrefix}:envs`, (data: EnvironmentsFile) => {
 			envs = data;
 			activeEnvId = data.active;
 		});
@@ -139,7 +145,7 @@
 	function persistEnvs(): void {
 		if (!envs) return;
 		envs.active = activeEnvId;
-		socket?.emit("postman:envSave", envs, (r: { ok: boolean; error?: string }) => {
+		socket?.emit(`${socketPrefix}:envSave`, envs, (r: { ok: boolean; error?: string }) => {
 			if (r.ok) {
 				envDirty = false;
 				toastSuccess("Environments guardados · colección regenerada");
@@ -160,9 +166,9 @@
 		const timer = window.setTimeout(() => {
 			if (answered) return;
 			loading = false;
-			toastError("El servidor no respondió a postman:list (¿reiniciar dev?)");
+			toastError(`El servidor no respondió a ${socketPrefix}:list (¿reiniciar dev?)`);
 		}, 5000);
-		socket.emit("postman:list", (data: CollectionMeta | { error: string }) => {
+		socket.emit(`${socketPrefix}:list`, (data: CollectionMeta | { error: string }) => {
 			answered = true;
 			window.clearTimeout(timer);
 			if ("error" in data) { toastError(data.error); loading = false; return; }
@@ -180,7 +186,7 @@
 		entityDirty = false;
 		expandedItem = -1;
 		expandedResponse = {};
-		socket?.emit("postman:get", slug, (data: EntityFile | { error: string }) => {
+		socket?.emit(`${socketPrefix}:get`, slug, (data: EntityFile | { error: string }) => {
 			if ("error" in data) { toastError(data.error); return; }
 			entity = data;
 		});
@@ -191,7 +197,7 @@
 	function saveEntity(): void {
 		if (!selectedSlug || !entity) return;
 		savingEntity = true;
-		socket?.emit("postman:save", { slug: selectedSlug, data: entity }, (r: { ok: boolean; error?: string }) => {
+		socket?.emit(`${socketPrefix}:save`, { slug: selectedSlug, data: entity }, (r: { ok: boolean; error?: string }) => {
 			savingEntity = false;
 			if (r.ok) {
 				entityDirty = false;
@@ -210,7 +216,7 @@
 	}
 
 	function loadFull(): void {
-		socket?.emit("postman:full", (data: unknown) => { fullCollection = data; });
+		socket?.emit(`${socketPrefix}:full`, (data: unknown) => { fullCollection = data; });
 	}
 
 	function copyFullCollection(): void {
@@ -225,7 +231,7 @@
 		const blob = new Blob([JSON.stringify(fullCollection, null, 2)], { type: "application/json" });
 		const a = document.createElement("a");
 		a.href = URL.createObjectURL(blob);
-		a.download = "postman-collection.json";
+		a.download = downloadName;
 		a.click();
 		URL.revokeObjectURL(a.href);
 	}
@@ -314,15 +320,15 @@
 			} catch { return null; }
 		}
 		const [listData, envsData, fullData] = await Promise.all([
-			fetchJson("postman/list.json") as Promise<CollectionMeta | null>,
-			fetchJson("postman/envs.json") as Promise<EnvironmentsFile | null>,
-			fetchJson("postman/full.json"),
+			fetchJson(`${staticBase}/list.json`) as Promise<CollectionMeta | null>,
+			fetchJson(`${staticBase}/envs.json`) as Promise<EnvironmentsFile | null>,
+			fetchJson(`${staticBase}/full.json`),
 		]);
 		if (listData) {
 			meta = listData;
 			if (!selectedSlug && meta.entities.length) {
 				const firstSlug = meta.entities[0].slug;
-				const ent = (await fetchJson(`postman/entity-${firstSlug}.json`)) as EntityFile | null;
+				const ent = (await fetchJson(`${staticBase}/entity-${firstSlug}.json`)) as EntityFile | null;
 				if (ent) { selectedSlug = firstSlug; entity = ent; }
 			}
 		}
@@ -336,7 +342,7 @@
 		const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "/";
 		const baseNoSlash = base.endsWith("/") ? base.slice(0, -1) : base;
 		try {
-			const r = await fetch(`${baseNoSlash}/static-api/postman/entity-${slug}.json`);
+			const r = await fetch(`${baseNoSlash}/static-api/${staticBase}/entity-${slug}.json`);
 			if (!r.ok) { toastError(`No se pudo cargar '${slug}'`); return; }
 			const data = (await r.json()) as EntityFile;
 			selectedSlug = slug;
@@ -352,10 +358,10 @@
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });
 		socket.on("connect", () => { loadList(); loadEnvs(); loadFull(); });
-		socket.on("verifyApi:started", () => { verifyRunning = true; });
-		socket.on("verifyApi:stdout", (m: { data: string }) => appendVerifyChunk(m.data));
-		socket.on("verifyApi:stderr", (m: { data: string }) => appendVerifyChunk(m.data));
-		socket.on("verifyApi:exited", (m: { code: number; error?: string }) => {
+		socket.on(`${verifyPrefix}:started`, () => { verifyRunning = true; });
+		socket.on(`${verifyPrefix}:stdout`, (m: { data: string }) => appendVerifyChunk(m.data));
+		socket.on(`${verifyPrefix}:stderr`, (m: { data: string }) => appendVerifyChunk(m.data));
+		socket.on(`${verifyPrefix}:exited`, (m: { code: number; error?: string }) => {
 			verifyRunning = false;
 			appendVerifyChunk(`\n--- proceso finalizado (code=${m.code}${m.error ? `, error=${m.error}` : ""}) ---\n`);
 		});
@@ -618,7 +624,7 @@
 	<section class="resumen">
 		<Card>
 			<H2>Resumen · resultado final</H2>
-			<Text color="neutral"><small>Fuente: <code>doc/ISA-DOC/postman-collection.json</code> · usa los botones del encabezado para Recargar / Copiar / Descargar.</small></Text>
+			<Text color="neutral"><small>Fuente: <code>{sourceLabel}</code> · usa los botones del encabezado para Recargar / Copiar / Descargar.</small></Text>
 		</Card>
 
 		{#if !fullCollection}
