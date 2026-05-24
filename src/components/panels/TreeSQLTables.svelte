@@ -7,6 +7,7 @@
    import { genAzureFn, genClient, genModelo, genServer } from "../../lib/codeGen/generators.ts";
    import { getCached, loadStateFromServer, onStateChanged, reloadStateFromServer, setCached } from "../../lib/codeGen/stateClient.ts";
    import type { FieldDef, RelationDef, ResourceConfig } from "../../lib/codeGen/types.ts";
+   import { renderMermaidSvg } from "../../lib/mermaid/render.ts";
    import { isRealtimeEnabled } from "../../lib/realtimeFlag.ts";
    import { effectiveTableName, emitDropTable, emitTable, isSqlSnippetEnabled, newTableId, tableColumns, type ParsedTable } from "../../lib/tableSchema.ts";
    import SwitchComp from "../_comps/especial/_Switch.svelte";
@@ -905,55 +906,6 @@
       return lines.join("\n");
    }
 
-   async function ensureMermaid(): Promise<any> {
-      const w = window as any;
-      if (w.__mermaidReady) return w.mermaid;
-      const m = await import(/* @vite-ignore */ "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs");
-      const elk = await import(/* @vite-ignore */ "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0/dist/mermaid-layout-elk.esm.min.mjs");
-      const mermaid = (m as any).default ?? m;
-      const elkLoaders = (elk as any).default ?? elk;
-      mermaid.registerLayoutLoaders(elkLoaders);
-      const css = getComputedStyle(document.documentElement);
-      const toHex = (value: string, fallback: string): string => {
-         const probe = document.createElement("div");
-         probe.style.color = value || fallback;
-         probe.style.display = "none";
-         document.body.appendChild(probe);
-         const resolved = getComputedStyle(probe).color;
-         document.body.removeChild(probe);
-         const nums = resolved.match(/-?\d+(\.\d+)?/g);
-         if (!nums || nums.length < 3) return fallback;
-         const clip = (n: number): number => Math.max(0, Math.min(255, Math.round(n)));
-         const r = clip(Number(nums[0])).toString(16).padStart(2, "0");
-         const g = clip(Number(nums[1])).toString(16).padStart(2, "0");
-         const b = clip(Number(nums[2])).toString(16).padStart(2, "0");
-         return `#${r}${g}${b}`;
-      };
-      const primary = toHex(css.getPropertyValue("--is-primary").trim(), "#3a8bff");
-      const bgPrim = toHex(css.getPropertyValue("--is-bg-primary").trim(), "#0c1222");
-      const bgSec = toHex(css.getPropertyValue("--is-bg-secondary").trim(), "#13203a");
-      mermaid.initialize({
-         startOnLoad: false,
-         securityLevel: "loose",
-         themeVariables: {
-            primaryColor: bgSec,
-            primaryBorderColor: "#505080",
-            primaryTextColor: "#ffffff",
-            secondaryColor: bgSec,
-            tertiaryColor: bgPrim,
-            lineColor: "#505080",
-            textColor: "#ffffff",
-            mainBkg: bgSec,
-            nodeBorder: "#505080",
-            attributeBackgroundColorOdd: bgPrim,
-            attributeBackgroundColorEven: bgSec,
-         },
-      });
-      w.mermaid = mermaid;
-      w.__mermaidReady = true;
-      return mermaid;
-   }
-
    const DER_DOMAIN = "clientesis";
 
    async function sha1Hex(s: string): Promise<string> {
@@ -962,13 +914,6 @@
       return Array.from(new Uint8Array(hash))
          .map((b) => b.toString(16).padStart(2, "0"))
          .join("");
-   }
-
-   async function renderMermaidSvg(source: string): Promise<string> {
-      const mm = await ensureMermaid();
-      const id = `der-svg-${Date.now()}`;
-      const out = await mm.render(id, source);
-      return typeof out === "string" ? out : (out?.svg ?? "");
    }
 
    async function fetchCachedDer(domain: string, expectedHash: string): Promise<string | null> {

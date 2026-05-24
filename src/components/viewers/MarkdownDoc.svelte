@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
+	import { renderMermaidBlocks } from '../../lib/mermaid/render';
 
 	export let src: string;
 	export let title: string = '';
@@ -72,76 +73,6 @@
 	}
 
 	type CmFactory = (host: HTMLElement, opts: Record<string, unknown>) => unknown;
-
-	async function ensureMermaid(): Promise<{ render: (id: string, src: string) => Promise<{ svg: string }> } | null> {
-		const w = window as unknown as { __mermaidReady?: boolean; mermaid?: { render: (id: string, src: string) => Promise<{ svg: string }> } };
-		if (w.__mermaidReady && w.mermaid) return w.mermaid;
-		try {
-			const m = await import(/* @vite-ignore */ 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs');
-			const mermaid = (m as { default?: unknown }).default ?? m;
-			const css = getComputedStyle(document.documentElement);
-			const toHex = (value: string, fallback: string): string => {
-				const probe = document.createElement('div');
-				probe.style.color = value || fallback;
-				probe.style.display = 'none';
-				document.body.appendChild(probe);
-				const resolved = getComputedStyle(probe).color;
-				document.body.removeChild(probe);
-				const nums = resolved.match(/-?\d+(\.\d+)?/g);
-				if (!nums || nums.length < 3) return fallback;
-				const clip = (n: number): number => Math.max(0, Math.min(255, Math.round(n)));
-				const r = clip(Number(nums[0])).toString(16).padStart(2, '0');
-				const g = clip(Number(nums[1])).toString(16).padStart(2, '0');
-				const b = clip(Number(nums[2])).toString(16).padStart(2, '0');
-				return `#${r}${g}${b}`;
-			};
-			const bgPrim = toHex(css.getPropertyValue('--is-bg-primary').trim(), '#0c1222');
-			const bgSec = toHex(css.getPropertyValue('--is-bg-secondary').trim(), '#13203a');
-			(mermaid as { initialize: (opts: Record<string, unknown>) => void }).initialize({
-				startOnLoad: false,
-				securityLevel: 'loose',
-				themeVariables: {
-					primaryColor: bgSec,
-					primaryBorderColor: '#505080',
-					primaryTextColor: '#ffffff',
-					secondaryColor: bgSec,
-					tertiaryColor: bgPrim,
-					lineColor: '#505080',
-					textColor: '#ffffff',
-					mainBkg: bgSec,
-					nodeBorder: '#505080',
-				},
-			});
-			w.mermaid = mermaid as typeof w.mermaid;
-			w.__mermaidReady = true;
-
-			return w.mermaid ?? null;
-		} catch {
-			return null;
-		}
-	}
-
-	async function renderMermaidBlocks(container: HTMLElement): Promise<void> {
-		const blocks = Array.from(container.querySelectorAll('pre > code.language-mermaid')) as HTMLElement[];
-		if (!blocks.length) return;
-		const mm = await ensureMermaid();
-		if (!mm) return;
-		let i = 0;
-		for (const codeEl of blocks) {
-			const pre = codeEl.parentElement;
-			if (!pre) continue;
-			const source = codeEl.textContent ?? '';
-			const host = document.createElement('div');
-			host.className = 'is-mermaid';
-			try {
-				const { svg } = await mm.render(`mmd-${Date.now()}-${i++}`, source);
-				host.innerHTML = svg;
-			} catch (err) {
-				host.textContent = `Error mermaid: ${(err as Error).message}`;
-			}
-			pre.replaceWith(host);
-		}
-	}
 
 	async function renderCodeBlocks(container: HTMLElement): Promise<void> {
 		const CM = (window as unknown as { CodeMirror?: CmFactory }).CodeMirror;

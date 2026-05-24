@@ -2,6 +2,7 @@
    import { onMount, tick } from "svelte";
    import { ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
    import { STATIC_MODE, withBase } from "../../lib/runtime/staticMode";
+   import { renderMermaidBlocks } from "../../lib/mermaid/render";
 
    export let project: string = "contapymeu";
 
@@ -22,8 +23,6 @@
    let error = "";
    let contentEl: HTMLElement;
    let markedReady = false;
-   let mermaidReady = false;
-   let mermaidCounter = 0;
    let codeMirrorReady = false;
    const cmModesLoaded = new Set<string>();
 
@@ -52,56 +51,6 @@
       }
       await loadScript("https://cdn.jsdelivr.net/npm/marked/marked.min.js");
       markedReady = true;
-   }
-
-   async function loadMermaid(): Promise<void> {
-      if ((window as any).mermaid) {
-         mermaidReady = true;
-         return;
-      }
-      try {
-         await loadScript("https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js");
-         // Resuelve la paleta desde las variables globales --is-* del documento.
-         const css = getComputedStyle(document.documentElement);
-         const v = (name: string, fallback: string): string => (css.getPropertyValue(name).trim() || fallback);
-         const bgPrimary = v("--is-bg-primary", "#0c1222");
-         const bgSecondary = v("--is-bg-secondary", "#041c34");
-         const bgReadonly = v("--is-bg-readonly", "#001327");
-         const accent = v("--is-primary", "#3a8bff");
-         const fg = v("--is-color", "#dfe9f7");
-         const border = v("--is-b-color", "#8885");
-         (window as any).mermaid.initialize({
-            startOnLoad: false,
-            theme: "dark",
-            themeVariables: {
-               background: bgPrimary,
-               primaryColor: bgSecondary,
-               primaryBorderColor: accent,
-               primaryTextColor: fg,
-               lineColor: accent,
-               secondaryColor: bgReadonly,
-               tertiaryColor: bgPrimary,
-               nodeBorder: accent,
-               clusterBkg: bgSecondary,
-               clusterBorder: border,
-               edgeLabelBackground: bgSecondary,
-               textColor: fg,
-               // Sequence / class / state extras
-               actorBkg: bgSecondary,
-               actorBorder: accent,
-               actorTextColor: fg,
-               labelBoxBkgColor: bgSecondary,
-               labelBoxBorderColor: accent,
-               signalColor: accent,
-               signalTextColor: fg,
-            },
-            flowchart: { curve: "step", htmlLabels: true, useMaxWidth: true },
-         });
-         mermaidReady = true;
-      } catch (e) {
-         // Si Mermaid falla, mantén el bloque tal cual.
-         mermaidReady = false;
-      }
    }
 
    const CM_BASE = "https://cdn.jsdelivr.net/npm/codemirror@5.65.16";
@@ -204,33 +153,6 @@
             tabSize: 2,
             indentUnit: 2,
          });
-      }
-   }
-
-   /**
-    * marked entrega ```mermaid``` como <pre><code class="language-mermaid">...</code></pre>.
-    * Tras inyectar el HTML, transformamos cada bloque en un <div class="mermaid"> y llamamos a mermaid.run().
-    */
-   async function renderMermaidBlocks(container: HTMLElement) {
-      if (!mermaidReady || !(window as any).mermaid) return;
-      const blocks = container.querySelectorAll("pre > code.language-mermaid");
-      if (!blocks.length) return;
-
-      const nodes: HTMLElement[] = [];
-      blocks.forEach((codeEl) => {
-         const pre = codeEl.parentElement!;
-         const div = document.createElement("div");
-         div.className = "mermaid";
-         div.id = `mmd-${++mermaidCounter}`;
-         div.textContent = codeEl.textContent ?? "";
-         pre.replaceWith(div);
-         nodes.push(div);
-      });
-
-      try {
-         await (window as any).mermaid.run({ nodes });
-      } catch (e) {
-         // ignorar errores individuales de sintaxis
       }
    }
 
@@ -555,7 +477,7 @@
          const res = await fetch(`/docs/${project}/_index.json`, { cache: "no-cache" });
          if (!res.ok) throw new Error(`No se encontró _index.json (HTTP ${res.status})`);
          manifest = await res.json();
-         await Promise.all([loadMarked(), loadMermaid(), loadCodeMirror()]);
+         await Promise.all([loadMarked(), loadCodeMirror()]);
          // Render el shell ANTES de cargar la primera sección para que `.docs-content`
          // exista en el DOM y los post-procesadores (mermaid / CodeMirror / image-crop)
          // puedan correr en la carga inicial. Sin esto, la primera pestaña entra al
@@ -1037,7 +959,7 @@
       color: var(--is-error);
       opacity: 1;
    }
-   :global(.docs-content .mermaid) {
+   :global(.docs-content .is-mermaid) {
       background: var(--is-bg-readonly);
       border: 1px solid var(--is-b-color);
       border-radius: 6px;
@@ -1046,7 +968,7 @@
       text-align: center;
       overflow-x: auto;
    }
-   :global(.docs-content .mermaid svg) {
+   :global(.docs-content .is-mermaid svg) {
       max-width: 100%;
       height: auto;
    }
