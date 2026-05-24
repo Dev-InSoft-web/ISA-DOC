@@ -18,6 +18,8 @@
  *   - PATYIA_CONTROLKEY: clave para el JWT (default `5130489773`).
  *   - PATYIA_IAPP: id de aplicación para el JWT (default `20104`).
  *   - PATYIA_IDMAQUINA: id de máquina para el JWT (default `WebPortalTest`).
+ *   - PATYIA_TOKEN: si se define, se usa este JWT en vez de solicitarlo a /api/JWT
+ *     (útil cuando `dsclientes.insoft.co` no es accesible o el controlkey no es válido).
  *   - PATYIA_BUTIL: butil del mensaje de prueba (default `0`).
  *   - PATYIA_CODIGOTK: código del tiquete de prueba (default `TKAPIVERIFY`).
  */
@@ -27,6 +29,7 @@ const ENV_NAME = process.env.VERIFY_API_ENV || "local";
 const CONTROLKEY = process.env.PATYIA_CONTROLKEY || "5130489773";
 const IAPP = Number.parseInt(process.env.PATYIA_IAPP || "20104", 10);
 const IDMAQUINA = process.env.PATYIA_IDMAQUINA || "WebPortalTest";
+const TOKEN_OVERRIDE = process.env.PATYIA_TOKEN || "";
 const BUTIL = Number.parseInt(process.env.PATYIA_BUTIL || "0", 10);
 const CODIGOTK = process.env.PATYIA_CODIGOTK || "TKAPIVERIFY";
 
@@ -93,16 +96,23 @@ export async function runTests(logFile: string): Promise<void> {
 	console.log(`Host: ${BASE_URL}`);
 
 	header("1) POST /api/JWT");
-	const jwt = await http("POST", "/api/JWT", { controlkey: CONTROLKEY, iapp: IAPP, idmaquina: IDMAQUINA });
-	reportStep("JWT", jwt);
-	const respJwt = extractRespuesta<{ token?: string }>(jwt.data);
-	if (respJwt?.token) {
-		state.token = respJwt.token;
-		console.log(`   token capturado (${state.token.length} chars)`);
+	if (TOKEN_OVERRIDE) {
+		state.token = TOKEN_OVERRIDE;
+		state.ok++;
+		console.log(`✅ [JWT] usando PATYIA_TOKEN del entorno (${state.token.length} chars); se omite POST /api/JWT.`);
 	} else {
-		console.error("⛔ Sin token en respuesta; aborto cadena.");
-		summary();
-		return;
+		const jwt = await http("POST", "/api/JWT", { controlkey: CONTROLKEY, iapp: IAPP, idmaquina: IDMAQUINA });
+		reportStep("JWT", jwt);
+		const respJwt = extractRespuesta<{ token?: string }>(jwt.data);
+		if (respJwt?.token) {
+			state.token = respJwt.token;
+			console.log(`   token capturado (${state.token.length} chars)`);
+		} else {
+			console.error("⛔ Sin token en respuesta; aborto cadena.");
+			console.error("   Tip: define PATYIA_TOKEN=<jwt> para usar un token pre-emitido y continuar la cadena.");
+			summary();
+			return;
+		}
 	}
 
 	header("2) POST /api/conversacion");
