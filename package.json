@@ -14,6 +14,7 @@
 		"preview": "astro preview",
 		"typecheck": "tsc --noEmit",
 		"verify:api": "tsx scripts/verify-api/verify_api.ts",
+		"verify:api:patyia": "tsx scripts/verify-api-patyia/verify_api.ts",
 		"verify:plan-order": "tsx scripts/verify-api/runs/run_plan_order.ts",
 		"postman:gen": "tsx scripts/verify-api/postman/generate_postman_items.ts",
 		"assets:upload": "node scripts/upload-assets-imgbb.mjs",

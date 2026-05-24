@@ -167,7 +167,7 @@ function handleConnection(socket: Socket): void {
 	registerPostmanNamespace(socket, "patyiaPostman", getStore("patyia"));
 
 	// === PatyIA Verify API ===
-	registerVerifyApiNamespace(socket, "patyiaVerifyApi", "verify-api-patyia", "scripts/verify-api-patyia/run.ts");
+	registerVerifyApiNamespace(socket, "patyiaVerifyApi", "verify-api-patyia", "scripts/verify-api-patyia/verify_api.ts");
 
 	// === Verify API (pruebas en secuencia) ===
 	socket.on("verifyApi:run", (payload: { host?: string }, cb?: (r: unknown) => void) => {
