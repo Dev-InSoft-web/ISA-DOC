@@ -23,6 +23,7 @@ import { bodyTK1426728 } from "./TK-1426728";
 import { bodyTK1426893 } from "./TK-1426893";
 import { bodyTK1426900 } from "./TK-1426900";
 import { bodyTK1428161 } from "./TK-1428161";
+import { bodyTK1429262 } from "./TK-1429262";
 
 export interface TicketNormativa {
 	medioAtencion: string;
@@ -82,6 +83,19 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 };
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1429262",
+		titulo: "Evaluación de uso de modelos OpenAI por etapa y tipo de consulta en Paty IA",
+		solicitante: "Asesora Viviana Restrepo Quintero",
+		fechaSolicitud: "25/may./2026 02:51:03 pm",
+		noMaquillarFechas: true,
+		estimacionMinutos: 0,
+		diligenciaMinutos: 15,
+		resumen: "Se solicita investigación técnica de viabilidad para evaluar si Paty IA puede seleccionar dinámicamente el modelo OpenAI según la etapa del flujo o el tipo de consulta clasificado, contemplando viabilidad en la API Responses, impacto en el código actual, arquitectura, costos, rendimiento y trazabilidad.",
+		body: bodyTK1429262,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - ING Servicios Otros" },
+		proyecto: "PatyIA",
+	},
 	{
 		id: "TK-1418988",
 		titulo: "Problemas al cargar imagen en Paty IA",
