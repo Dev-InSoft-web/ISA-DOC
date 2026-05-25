@@ -1,6 +1,14 @@
 # Carga inicial de prompts específicos por tipo de consulta (`AYUDASCP_IA`)
 
-Viviana compartió la configuración de los 13 prompts específicos que arman la instrucción del asistente según el tipo de consulta clasificado. Cada uno vive como `.md` en la carpeta de proyecto (`P:\ING-05…\PROMPT_<TIPO>.md`), pero esa ruta es **solo documental**: el runtime de PatyIA no lee del filesystem.
+Viviana compartió la configuración de los 13 prompts específicos que arman la instrucción del asistente según el tipo de consulta clasificado. Cada uno vive como `.md` en la carpeta de proyecto (`P:\ING-05…\PROMPT_<TIPO>.md`), pero esa ruta es **solo documental**: el Azure Function `AYUDASCP-IA` no tiene acceso a ese recurso compartido y por eso **no puede leerlos del filesystem** en runtime.
+
+## Origen del contenido en este seed
+
+Los 13 `.md` que se insertan **son exactamente los mismos** que ya están versionados en este repo bajo [`src/lib/patyia/prompts/`](../../../prompts/) y que se renderizan en la sección **Docs · 05 Prompts de Paty** ([/patyia/contapymeu](/patyia/contapymeu) → *05 Prompts de Paty*), cada uno dentro de su acordeón.
+
+> Es la misma fuente, sin divergencias: lo que el usuario lee en la documentación es lo que queda cargado en la BD.
+
+Vite los empaqueta vía `?raw` al hacer build de ISA-DOC, por lo que el contenido literal va inline en el SQL generado y deja de depender de `P:\` o de cualquier filesystem en runtime.
 
 ## Dónde queda en la BD
 
@@ -21,9 +29,7 @@ El controller `TInstruccionController.GetInstruccionTexto` lee `INSTRUCCION.inst
 - `TDCONSULTAXINSTRUCCION.orden = 1` (única instrucción específica por tipo en esta versión; si más adelante se acumulan, se incrementa el orden).
 - El `itdconsulta` se resuelve por subquery sobre `TDCONSULTA.nconsulta = '<TIPO>'`.
 
-## Contenido cargado
-
-Se toma el contenido literal de los `.md` ya consolidados en el repo (`src/lib/patyia/prompts/`), que son la misma copia presentada en la sección **Prompts de Paty** de la documentación PatyIA:
+## Tipos cargados
 
 `SALUDO_OTRO`, `FUERA_DE_ALCANCE_TECNICO`, `SOLICITUD_NO_PERMITIDA`, `REQUIERE_CONTEXTO`, `PASO_A_PASO`, `INTERPRETACION_RESULTADO`, `CONSULTA_NORMATIVA_NEGOCIO`, `ASESORIA_PERSONALIZADA`, `ERROR_TECNICO`, `ERROR_CONFIGURACION`, `ERROR_ACCESO`, `ERROR_DIAN`, `COMERCIAL`.
 
@@ -35,10 +41,11 @@ El script usa `MERGE` en ambas tablas:
 - Si la relación ya existe: refresca `orden`.
 - Si no existe: inserta.
 
-Volver a ejecutarlo no duplica filas y sirve como mecanismo de **actualización** del prompt cuando se reescriba un `.md`.
+Volver a ejecutarlo no duplica filas y sirve como mecanismo de **actualización** del prompt cuando se reescriba un `.md` en `src/lib/patyia/prompts/` y se regenere el seed con `node scripts/build-paty-prompts-sql.mjs`.
 
 ## Verificación
 
 El script cierra con un `SELECT` que devuelve `iinstruccion`, `ninstruccion`, longitud del prompt, `itdconsulta` y `nconsulta` para confirmar las 13 filas y su enlace.
 
 > Importante: el endpoint genérico `/api/db/exec` de la bitácora apunta a la BD de ClientesIS. Para **AYUDASCP_IA** este script debe ejecutarse por ahora directamente contra esa BD (SSMS / pipeline). Cuando exista el endpoint dedicado para PatyIA se conecta el botón.
+
