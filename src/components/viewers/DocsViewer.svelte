@@ -536,13 +536,15 @@
             {/each}
          </nav>
       </aside>
-      <article class="docs-content" bind:this={contentEl}>
-         {#if manifest.sections.find((s) => s.slug === activeSlug)?.kind === "prompts"}
+      {#if manifest.sections.find((s) => s.slug === activeSlug)?.kind === "prompts"}
+         <article class="docs-panel" bind:this={contentEl}>
             <PatyIAPrompts />
-         {:else}
+         </article>
+      {:else}
+         <article class="docs-content" bind:this={contentEl}>
             {@html html}
-         {/if}
-      </article>
+         </article>
+      {/if}
    </div>
 {/if}
 
@@ -769,6 +771,18 @@
       color: var(--is-color);
       font-size: 0.92rem;
       line-height: 1.65;
+      height: 100%;
+      min-height: 0;
+      min-width: 0;
+      overflow: auto;
+   }
+
+   .docs-panel {
+      background: var(--is-bg-secondary);
+      border: 1px solid var(--is-b-color);
+      border-radius: 8px;
+      padding: 1rem;
+      color: var(--is-color);
       height: 100%;
       min-height: 0;
       min-width: 0;
