@@ -24,6 +24,9 @@ import { bodyTK1426893 } from "./TK-1426893";
 import { bodyTK1426900 } from "./TK-1426900";
 import { bodyTK1428161 } from "./TK-1428161";
 import { bodyTK1429262 } from "./TK-1429262";
+import { bodyTK1429342 } from "./TK-1429342";
+import { bodyTK1429346 } from "./TK-1429346";
+import { bodyTK1429349 } from "./TK-1429349";
 
 export interface TicketNormativa {
 	medioAtencion: string;
@@ -83,6 +86,42 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 };
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1429349",
+		titulo: "Modificación de controladores de server",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "25/may./2026 04:04:11 pm",
+		noMaquillarFechas: true,
+		estimacionMinutos: 0,
+		diligenciaMinutos: 15,
+		resumen: "Solicitud del ingeniero Pedro para desacoplar helpers dinámicos (sqlNesting, nestedConfig, nestedDetailsCfg, syncDetails, buildJData) de los controladores de server y replicar el patrón de diseño explícito con SQL quemado y predecible que ya usan los demás controladores.",
+		body: bodyTK1429349,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
+	},
+	{
+		id: "TK-1429346",
+		titulo: "Ajuste en tipo de visualización",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "25/may./2026 04:02:44 pm",
+		noMaquillarFechas: true,
+		estimacionMinutos: 0,
+		diligenciaMinutos: 15,
+		resumen: "Se solicita ajustar los nombres de las opciones del campo Tipo de visualización en el plan de estudio: renombrar Pestañas por Lista, Organigrama por Pénsum y eliminar la opción Árbol.",
+		body: bodyTK1429346,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
+	},
+	{
+		id: "TK-1429342",
+		titulo: "Visualización de recurso desde \"contenido\" de un curso",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "25/may./2026 03:59:13 pm",
+		noMaquillarFechas: true,
+		estimacionMinutos: 0,
+		diligenciaMinutos: 15,
+		resumen: "Dentro de la pestaña Contenido de un curso, se solicita que el ícono del ojo pase a visualizar la configuración del recurso (formulario de lectura) y que la previsualización del recurso use el ícono de previsualizar del catálogo de recursos, homologando convenciones.",
+		body: bodyTK1429342,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
+	},
 	{
 		id: "TK-1429262",
 		titulo: "Evaluación de uso de modelos OpenAI por etapa y tipo de consulta en Paty IA",
