@@ -372,7 +372,7 @@
     {
       "key": "HOST",
       "value": "http://localhost:7071",
-      "type": "string"
+      "type": ""
     },
     {
       "key": "CONTROLKEY",
@@ -387,12 +387,12 @@
     {
       "key": "iconversacion",
       "value": "",
-      "type": "string"
+      "type": ""
     },
     {
       "key": "THREAD_ID",
       "value": "",
-      "type": "string"
+      "type": ""
     }
   ]
 }

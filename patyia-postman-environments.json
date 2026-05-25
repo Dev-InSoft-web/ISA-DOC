@@ -8,8 +8,7 @@
         {
           "key": "HOST",
           "value": "http://localhost:7071",
-          "enabled": true,
-          "type": ""
+          "enabled": true
         },
         {
           "key": "CONTROLKEY",
@@ -26,14 +25,12 @@
         {
           "key": "iconversacion",
           "value": "",
-          "enabled": true,
-          "type": ""
+          "enabled": true
         },
         {
           "key": "THREAD_ID",
           "value": "",
-          "enabled": true,
-          "type": ""
+          "enabled": true
         }
       ]
     },
@@ -44,8 +41,7 @@
         {
           "key": "HOST",
           "value": "https://ayudascp-ia-staging.azurewebsites.net",
-          "enabled": true,
-          "type": ""
+          "enabled": true
         },
         {
           "key": "CONTROLKEY",
@@ -62,14 +58,12 @@
         {
           "key": "iconversacion",
           "value": "",
-          "enabled": true,
-          "type": ""
+          "enabled": true
         },
         {
           "key": "THREAD_ID",
           "value": "",
-          "enabled": true,
-          "type": ""
+          "enabled": true
         }
       ]
     },
@@ -80,8 +74,7 @@
         {
           "key": "HOST",
           "value": "https://ayudascp-ia.azurewebsites.net",
-          "enabled": true,
-          "type": ""
+          "enabled": true
         },
         {
           "key": "CONTROLKEY",
@@ -98,14 +91,12 @@
         {
           "key": "iconversacion",
           "value": "",
-          "enabled": true,
-          "type": ""
+          "enabled": true
         },
         {
           "key": "THREAD_ID",
           "value": "",
-          "enabled": true,
-          "type": ""
+          "enabled": true
         }
       ]
     }

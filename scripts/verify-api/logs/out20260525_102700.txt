@@ -1,0 +1,5 @@
+--- STARTING COMPREHENSIVE API VERIFICATION ---
+--- Report File: C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api\logs\out20260525_102700.txt ---
+--- Base URL: http://localhost:20040 ---
+⛔ No hay token: defina VERIFY_API_TOKEN o cree .agent/token.json con { "token": "..." }
+⛔ Sin token. Abort.
