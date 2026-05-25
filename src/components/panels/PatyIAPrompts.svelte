@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { FlexLayout } from "@ingenieria_insoft/ispsveltecomponents";
 	import Accordion from "../_comps/containers/Accordion.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import md01 from "../../lib/patyia/prompts/01-saludo-otro.md?raw";
@@ -33,32 +34,18 @@
 </script>
 
 <div class="patyia-prompts">
-	<h1>Prompts de Paty</h1>
-	<p class="patyia-prompts-intro">
-		Catálogo de prompts de la asistente <strong>Paty</strong> que orquestan las
-		respuestas del microservicio AYUDASCP-IA. Cada acordeón contiene propósito,
-		estructura y ejemplos de invocación.
-	</p>
-
-	{#each prompts as p}
-		<Accordion title={p.title} titleIcon={p.icon}>
-			<BitacoraNote flat mdSource={p.md} />
-		</Accordion>
-	{/each}
+	<FlexLayout direction="column">
+		{#each prompts as p}
+			<Accordion title={p.title} titleIcon={p.icon}>
+				<BitacoraNote flat mdSource={p.md} />
+			</Accordion>
+		{/each}
+	</FlexLayout>
 </div>
 
 <style>
 	.patyia-prompts {
 		display: flex;
 		flex-direction: column;
-		gap: 0.75rem;
-	}
-	.patyia-prompts h1 {
-		margin: 0 0 0.25rem;
-		font-size: 1.6rem;
-	}
-	.patyia-prompts-intro {
-		margin: 0 0 0.5rem;
-		opacity: 0.85;
 	}
 </style>
