@@ -672,7 +672,7 @@
 			</label>
 			<Text color="neutral"><small>
 				Por defecto <code>http://localhost:20040</code>. Token leído desde <code>doc/test/token.json</code> (o <code>VERIFY_API_TOKEN</code>).
-				Script: <code>scripts/run-verify-api.ts</code>.
+				Script: <code>scripts/verify-api/verify_api.ts</code>.
 			</small></Text>
 		</Card>
 	</section>

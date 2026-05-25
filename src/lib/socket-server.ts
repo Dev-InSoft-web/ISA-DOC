@@ -182,7 +182,7 @@ function handleConnection(socket: Socket): void {
 			FORCE_COLOR: "0",
 		};
 		const isaRoot = process.cwd();
-		const scriptPath = "scripts/run-verify-api.ts";
+		const scriptPath = "scripts/verify-api/verify_api.ts";
 		const child = spawn(process.execPath, ["--import", "tsx", scriptPath], {
 			cwd: isaRoot,
 			env,
