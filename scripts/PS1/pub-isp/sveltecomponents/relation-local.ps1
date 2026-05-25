@@ -15,9 +15,17 @@ function Invoke-Build {
     Write-Host "`nCompilando paquete..." -ForegroundColor Yellow
     Push-Location $WorkingDir
     try {
-        npm run build
-        if ($LASTEXITCODE -ne 0) {
-            throw "npm run build fallo con codigo $LASTEXITCODE"
+        $prev = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        try {
+            cmd /c "npm run build 2>&1"
+            $code = $LASTEXITCODE
+        }
+        finally {
+            $ErrorActionPreference = $prev
+        }
+        if ($code -ne 0) {
+            throw "npm run build fallo con codigo $code"
         }
     }
     finally {
