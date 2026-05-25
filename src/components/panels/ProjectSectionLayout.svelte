@@ -9,11 +9,13 @@
 	export let proyecto: "ClientesIS" | "PatyIA" = "ClientesIS";
 	export let withTickets: boolean = false;
 	export let showDbBanner: boolean = false;
+	export let dbPingUrl: string = "/api/db/ping";
+	export let dbLabelOk: string = "BD conectada";
 </script>
 
 <ProjectPanelLayout {title} {subtitle} bleed>
 	{#if showDbBanner}
-		<DbStatusBanner />
+		<DbStatusBanner pingUrl={dbPingUrl} labelOk={dbLabelOk} />
 	{/if}
 
 	{#if withTickets}

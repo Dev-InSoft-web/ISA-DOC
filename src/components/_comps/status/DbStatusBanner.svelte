@@ -10,13 +10,15 @@
 	};
 
 	export let pollMs: number = 15000;
+	export let pingUrl: string = "/api/db/ping";
+	export let labelOk: string = "BD conectada";
 
 	let status: Status = { server: false, db: false, reason: "Verificando…" };
 	let timer: ReturnType<typeof setInterval> | null = null;
 
 	async function ping(): Promise<void> {
 		try {
-			const r = await fetch("/api/db/ping", { cache: "no-store" });
+			const r = await fetch(pingUrl, { cache: "no-store" });
 			if (!r.ok) throw new Error(`HTTP ${r.status}`);
 			const data = (await r.json()) as Status;
 			status = data;
@@ -46,7 +48,7 @@
 			: "var(--is-error)";
 
 	$: label = status.db
-		? "BD conectada"
+		? labelOk
 		: status.server
 			? "Servidor OK · BD no conectada"
 			: "Servidor caído";

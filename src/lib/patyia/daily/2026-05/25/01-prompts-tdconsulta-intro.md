@@ -47,5 +47,5 @@ Volver a ejecutarlo no duplica filas y sirve como mecanismo de **actualización*
 
 El script cierra con un `SELECT` que devuelve `iinstruccion`, `ninstruccion`, longitud del prompt, `itdconsulta` y `nconsulta` para confirmar las 13 filas y su enlace.
 
-> Importante: el endpoint genérico `/api/db/exec` de la bitácora apunta a la BD de ClientesIS. Para **AYUDASCP_IA** este script debe ejecutarse por ahora directamente contra esa BD (SSMS / pipeline). Cuando exista el endpoint dedicado para PatyIA se conecta el botón.
+> Ejecución: la bitácora de PatyIA usa el endpoint dedicado `/api/patyia/db/exec` (pool propio `getPatyPool()` con variables `paty_hostdb/...` tomadas del `local.settings.json` de PatyIA). El banner superior consulta `/api/patyia/db/ping` para confirmar la conexión contra **AYUDASCP_IA** antes de habilitar el botón. El endpoint genérico `/api/db/exec` sigue apuntando a ClientesIS y no se mezcla con este flujo.
 
