@@ -3,10 +3,11 @@
    import { ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
    import { STATIC_MODE, withBase } from "../../lib/runtime/staticMode";
    import { renderMermaidBlocks } from "../../lib/mermaid/render";
+   import PatyIAPrompts from "../panels/PatyIAPrompts.svelte";
 
    export let project: string = "contapymeu";
 
-   type Section = { slug: string; title: string; icon?: string; kind?: "md" | "embeds" };
+   type Section = { slug: string; title: string; icon?: string; kind?: "md" | "embeds" | "prompts" };
    type Embed = { type: "image" | "pdf"; src: string; title?: string };
    type Manifest = {
       project: string;
@@ -269,6 +270,10 @@
       activeSlug = slug;
       html = "";
       const section = manifest?.sections.find((s) => s.slug === slug);
+      if (section?.kind === "prompts") {
+         // Renderizado por componente Svelte (ver bloque del template). No hay HTML que generar.
+         return;
+      }
       if (section?.kind === "embeds") {
          html = renderEmbeds(manifest?.embeds ?? []);
          await tick();
@@ -532,7 +537,11 @@
          </nav>
       </aside>
       <article class="docs-content" bind:this={contentEl}>
-         {@html html}
+         {#if manifest.sections.find((s) => s.slug === activeSlug)?.kind === "prompts"}
+            <PatyIAPrompts />
+         {:else}
+            {@html html}
+         {/if}
       </article>
    </div>
 {/if}
