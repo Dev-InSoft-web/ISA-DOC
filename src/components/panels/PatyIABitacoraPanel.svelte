@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 	import Accordion from "../_comps/containers/Accordion.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
@@ -66,3 +67,5 @@
 		</Accordion>
 	</Accordion>
 </ProjectSectionLayout>
+
+<Toaster />
