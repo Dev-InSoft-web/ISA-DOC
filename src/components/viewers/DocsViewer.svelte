@@ -525,7 +525,7 @@
                   class:active={activeSlug === s.slug}
                   on:click={() => loadSection(s.slug)}
                >
-                  <span class="docs-nav-num">{s.slug.split("-")[0]}</span>
+                  <span class="docs-nav-num">{(s.slug.split("/").pop() ?? s.slug).split("-")[0]}</span>
                   <span class="docs-nav-text">{s.title}</span>
                </button>
             {/each}
