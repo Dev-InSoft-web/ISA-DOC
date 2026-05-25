@@ -38,12 +38,23 @@
 		title="2026-05-25 — Carga inicial de prompts específicos por tipo de consulta"
 		titleIcon="mdi:calendar"
 		open={true}
+		checkKeys={["2026-05-25.patyia.prompts-intro", "2026-05-25.patyia.seed-prompts"]}
 	>
-		<Accordion title="Modelado: INSTRUCCION + TDCONSULTAXINSTRUCCION" titleIcon="mdi:database-arrow-down-outline" inner>
+		<Accordion
+			title="Modelado: INSTRUCCION + TDCONSULTAXINSTRUCCION"
+			titleIcon="mdi:database-arrow-down-outline"
+			inner
+			checkKey="2026-05-25.patyia.prompts-intro"
+		>
 			<BitacoraNote flat mdSource={md_2026_05_25_prompts_intro} />
 		</Accordion>
 
-		<Accordion title="SQL · Seed de 13 PROMPT_&lt;TIPO&gt; en AYUDASCP_IA" titleIcon="mdi:database-edit-outline" inner>
+		<Accordion
+			title="SQL · Seed de 13 PROMPT_&lt;TIPO&gt; en AYUDASCP_IA"
+			titleIcon="mdi:database-edit-outline"
+			inner
+			checkKey="2026-05-25.patyia.seed-prompts"
+		>
 			<SqlExecCard
 				title="AYUDASCP_IA · MERGE de prompts específicos (INSTRUCCION + TDCONSULTAXINSTRUCCION)"
 				sql={sqlSeedPromptsTdConsulta}
