@@ -19,7 +19,7 @@ BEGIN TRAN;
 -- ----- SALUDO_OTRO (01-saludo-otro.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_SALUDO_OTRO',
+	N'SALUDO_OTRO',
 	N'PROMPT_SALUDO_OTRO',
 	N'# PROMPT · SALUDO_OTRO
 
@@ -146,9 +146,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_SALUDO_OTRO' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'SALUDO_OTRO' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'SALUDO_OTRO'
+	WHERE c.itdconsulta = N'SALUDO_OTRO'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -158,7 +158,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- FUERA_DE_ALCANCE_TECNICO (02-fuera-de-alcance-tecnico.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_FUERA_DE_ALCANCE_TECNICO',
+	N'FUERA_DE_ALCANCE_TECNICO',
 	N'PROMPT_FUERA_DE_ALCANCE_TECNICO',
 	N'# PROMPT · FUERA_DE_ALCANCE_TECNICO
 
@@ -291,9 +291,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_FUERA_DE_ALCANCE_TECNICO' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'FUERA_DE_ALCANCE_TECNICO' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'FUERA_DE_ALCANCE_TECNICO'
+	WHERE c.itdconsulta = N'FUERA_DE_ALCANCE_TECNICO'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -303,7 +303,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- SOLICITUD_NO_PERMITIDA (03-solicitud-no-permitida.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_SOLICITUD_NO_PERMITIDA',
+	N'SOLICITUD_NO_PERMITIDA',
 	N'PROMPT_SOLICITUD_NO_PERMITIDA',
 	N'# PROMPT · SOLICITUD_NO_PERMITIDA
 
@@ -434,9 +434,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_SOLICITUD_NO_PERMITIDA' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'SOLICITUD_NO_PERMITIDA' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'SOLICITUD_NO_PERMITIDA'
+	WHERE c.itdconsulta = N'SOLICITUD_NO_PERMITIDA'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -446,7 +446,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- REQUIERE_CONTEXTO (04-requiere-contexto.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_REQUIERE_CONTEXTO',
+	N'REQUIERE_CONTEXTO',
 	N'PROMPT_REQUIERE_CONTEXTO',
 	N'# PROMPT · REQUIERE_CONTEXTO
 
@@ -623,9 +623,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_REQUIERE_CONTEXTO' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'REQUIERE_CONTEXTO' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'REQUIERE_CONTEXTO'
+	WHERE c.itdconsulta = N'REQUIERE_CONTEXTO'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -635,7 +635,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- PASO_A_PASO (05-paso-a-paso.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_PASO_A_PASO',
+	N'PASO_A_PASO',
 	N'PROMPT_PASO_A_PASO',
 	N'# PROMPT · PASO_A_PASO
 
@@ -873,9 +873,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_PASO_A_PASO' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'PASO_A_PASO' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'PASO_A_PASO'
+	WHERE c.itdconsulta = N'PASO_A_PASO'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -885,7 +885,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- INTERPRETACION_RESULTADO (06-interpretacion-resultado.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_INTERPRETACION_RESULTADO',
+	N'INTERPRETACION_RESULTADO',
 	N'PROMPT_INTERPRETACION_RESULTADO',
 	N'# PROMPT · INTERPRETACION_RESULTADO
 
@@ -1083,9 +1083,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_INTERPRETACION_RESULTADO' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'INTERPRETACION_RESULTADO' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'INTERPRETACION_RESULTADO'
+	WHERE c.itdconsulta = N'INTERPRETACION_RESULTADO'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -1095,7 +1095,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- CONSULTA_NORMATIVA_NEGOCIO (07-consulta-normativa-negocio.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_CONSULTA_NORMATIVA_NEGOCIO',
+	N'CONSULTA_NORMATIVA_NEGOCIO',
 	N'PROMPT_CONSULTA_NORMATIVA_NEGOCIO',
 	N'# PROMPT · CONSULTA_NORMATIVA_NEGOCIO
 
@@ -1245,9 +1245,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_CONSULTA_NORMATIVA_NEGOCIO' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'CONSULTA_NORMATIVA_NEGOCIO' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'CONSULTA_NORMATIVA_NEGOCIO'
+	WHERE c.itdconsulta = N'CONSULTA_NORMATIVA_NEGOCIO'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -1257,7 +1257,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- ASESORIA_PERSONALIZADA (08-asesoria-personalizada.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_ASESORIA_PERSONALIZADA',
+	N'ASESORIA_PERSONALIZADA',
 	N'PROMPT_ASESORIA_PERSONALIZADA',
 	N'# PROMPT · ASESORIA_PERSONALIZADA
 
@@ -1463,9 +1463,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_ASESORIA_PERSONALIZADA' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'ASESORIA_PERSONALIZADA' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'ASESORIA_PERSONALIZADA'
+	WHERE c.itdconsulta = N'ASESORIA_PERSONALIZADA'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -1475,7 +1475,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- ERROR_TECNICO (09-error-tecnico.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_ERROR_TECNICO',
+	N'ERROR_TECNICO',
 	N'PROMPT_ERROR_TECNICO',
 	N'# PROMPT · ERROR_TECNICO
 
@@ -1589,9 +1589,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_ERROR_TECNICO' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'ERROR_TECNICO' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'ERROR_TECNICO'
+	WHERE c.itdconsulta = N'ERROR_TECNICO'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -1601,7 +1601,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- ERROR_CONFIGURACION (10-error-configuracion.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_ERROR_CONFIGURACION',
+	N'ERROR_CONFIGURACION',
 	N'PROMPT_ERROR_CONFIGURACION',
 	N'# PROMPT · ERROR_CONFIGURACION
 
@@ -1831,9 +1831,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_ERROR_CONFIGURACION' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'ERROR_CONFIGURACION' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'ERROR_CONFIGURACION'
+	WHERE c.itdconsulta = N'ERROR_CONFIGURACION'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -1843,7 +1843,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- ERROR_ACCESO (11-error-acceso.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_ERROR_ACCESO',
+	N'ERROR_ACCESO',
 	N'PROMPT_ERROR_ACCESO',
 	N'# PROMPT · ERROR_ACCESO
 
@@ -2048,9 +2048,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_ERROR_ACCESO' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'ERROR_ACCESO' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'ERROR_ACCESO'
+	WHERE c.itdconsulta = N'ERROR_ACCESO'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -2060,7 +2060,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- ERROR_DIAN (12-error-dian.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_ERROR_DIAN',
+	N'ERROR_DIAN',
 	N'PROMPT_ERROR_DIAN',
 	N'# PROMPT · ERROR_DIAN
 
@@ -2255,9 +2255,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_ERROR_DIAN' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'ERROR_DIAN' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'ERROR_DIAN'
+	WHERE c.itdconsulta = N'ERROR_DIAN'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -2267,7 +2267,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 -- ----- COMERCIAL (13-comercial.md) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'PROMPT_COMERCIAL',
+	N'COMERCIAL',
 	N'PROMPT_COMERCIAL',
 	N'# PROMPT · COMERCIAL
 
@@ -2463,9 +2463,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'PROMPT_COMERCIAL' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'COMERCIAL' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'COMERCIAL'
+	WHERE c.itdconsulta = N'COMERCIAL'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -2479,5 +2479,5 @@ SELECT i.iinstruccion, i.ninstruccion, LEN(i.instruccion) AS chars, x.itdconsult
 FROM INSTRUCCION i
 LEFT JOIN TDCONSULTAXINSTRUCCION x ON x.iinstruccion = i.iinstruccion
 LEFT JOIN TDCONSULTA c             ON c.itdconsulta  = x.itdconsulta
-WHERE i.iinstruccion LIKE 'PROMPT\_%' ESCAPE '\'
+WHERE i.ninstruccion LIKE 'PROMPT[_]%'
 ORDER BY i.iinstruccion;

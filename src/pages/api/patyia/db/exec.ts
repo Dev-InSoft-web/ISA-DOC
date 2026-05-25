@@ -24,7 +24,7 @@ export const POST: APIRoute = async ({ request }) => {
 	} catch {
 		return json({ ok: false, error: "JSON inválido" }, 400);
 	}
-	const sql = (payload.sql ?? "").trim();
+	const sql = (typeof payload.sql === "string" ? payload.sql : "").trim();
 	if (!sql) return json({ ok: false, error: "SQL vacío" }, 400);
 
 	const remote = (process.env.ISA_PATY_DB_REMOTE_URL ?? "").trim();
@@ -35,13 +35,16 @@ export const POST: APIRoute = async ({ request }) => {
 		const result = await pool.request().query(sql);
 		const rowsAffectedArr = Array.isArray(result.rowsAffected) ? result.rowsAffected : [];
 		const affected = rowsAffectedArr.reduce((a, b) => a + b, 0);
-		const sets = Array.isArray(result.recordsets) ? result.recordsets.length : 0;
+		const allSets = Array.isArray(result.recordsets) ? (result.recordsets as unknown[][]) : [];
+		const sets = allSets.length;
+		const firstRows = allSets[0] ?? [];
 		return json({
 			ok: true,
 			rowsAffected: affected,
 			rowsAffectedPerStmt: rowsAffectedArr,
 			recordsets: sets,
-			output: `Filas afectadas: ${affected}. Recordsets: ${sets}.`,
+			rows: firstRows,
+			output: `Filas afectadas: ${affected}. Recordsets: ${sets}. Filas devueltas: ${firstRows.length}.`,
 		});
 	} catch (err) {
 		const msg = err instanceof Error ? err.message : String(err);

@@ -21,10 +21,12 @@ const files = readdirSync(promptsDir).filter((f) => f.endsWith(".md")).sort();
 
 const rows = files.map((f) => {
 	const tipo = fileToTipo(f);
+	// iinstruccion = TIPO (varchar(32) en INSTRUCCION). ninstruccion = display.
+	const iinst = tipo;
 	const ninst = `PROMPT_${tipo}`;
 	const raw = readFileSync(resolve(promptsDir, f), "utf8");
 	const sqlLit = `N'${raw.replaceAll("'", "''")}'`;
-	return { tipo, ninst, archivo: f, sqlLit };
+	return { tipo, iinst, ninst, archivo: f, sqlLit };
 });
 
 const head = `-- =====================================================================
@@ -50,7 +52,7 @@ const stmts = rows.map((r) => `
 -- ----- ${r.tipo} (${r.archivo}) -----
 MERGE INSTRUCCION AS t
 USING (VALUES (
-	N'${r.ninst}',
+	N'${r.iinst}',
 	N'${r.ninst}',
 	${r.sqlLit},
 	N'Prompt especifico para tipo de consulta ${r.tipo}',
@@ -69,9 +71,9 @@ WHEN NOT MATCHED THEN INSERT (iinstruccion, ninstruccion, instruccion, descripci
 
 MERGE TDCONSULTAXINSTRUCCION AS t
 USING (
-	SELECT c.itdconsulta, N'${r.ninst}' AS iinstruccion, 1 AS orden
+	SELECT c.itdconsulta, N'${r.iinst}' AS iinstruccion, 1 AS orden
 	FROM TDCONSULTA c
-	WHERE c.nconsulta = N'${r.tipo}'
+	WHERE c.itdconsulta = N'${r.tipo}'
 ) AS s
 ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
@@ -87,7 +89,7 @@ SELECT i.iinstruccion, i.ninstruccion, LEN(i.instruccion) AS chars, x.itdconsult
 FROM INSTRUCCION i
 LEFT JOIN TDCONSULTAXINSTRUCCION x ON x.iinstruccion = i.iinstruccion
 LEFT JOIN TDCONSULTA c             ON c.itdconsulta  = x.itdconsulta
-WHERE i.iinstruccion LIKE 'PROMPT\\_%' ESCAPE '\\'
+WHERE i.ninstruccion LIKE 'PROMPT[_]%'
 ORDER BY i.iinstruccion;
 `;
 

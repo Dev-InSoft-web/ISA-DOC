@@ -38,13 +38,12 @@
 		title="2026-05-25 — Carga inicial de prompts específicos por tipo de consulta"
 		titleIcon="mdi:calendar"
 		open={true}
-		checkKeys={["2026-05-25.patyia.prompts-intro", "2026-05-25.patyia.seed-prompts"]}
+		checkKeys={["2026-05-25.patyia.seed-prompts"]}
 	>
 		<Accordion
 			title="Modelado: INSTRUCCION + TDCONSULTAXINSTRUCCION"
 			titleIcon="mdi:database-arrow-down-outline"
 			inner
-			checkKey="2026-05-25.patyia.prompts-intro"
 		>
 			<BitacoraNote flat mdSource={md_2026_05_25_prompts_intro} />
 		</Accordion>
@@ -58,7 +57,7 @@
 			<SqlExecCard
 				title="AYUDASCP_IA · MERGE de prompts específicos (INSTRUCCION + TDCONSULTAXINSTRUCCION)"
 				sql={sqlSeedPromptsTdConsulta}
-				desc="MERGE idempotente sobre INSTRUCCION (clave iinstruccion='PROMPT_<TIPO>') con el contenido literal de cada .md como NVARCHAR(MAX), y MERGE sobre TDCONSULTAXINSTRUCCION resolviendo itdconsulta por nconsulta='<TIPO>' con orden=1. Cierra con SELECT de verificación. Ejecuta contra AYUDASCP_IA vía /api/patyia/db/exec."
+				desc="MERGE idempotente sobre INSTRUCCION (iinstruccion=&lt;TIPO&gt;, ninstruccion='PROMPT_&lt;TIPO&gt;') con el contenido literal de cada .md como NVARCHAR(MAX), y MERGE sobre TDCONSULTAXINSTRUCCION resolviendo itdconsulta=&lt;TIPO&gt; con orden=1. Cierra con SELECT de verificación. Ejecuta contra AYUDASCP_IA vía /api/patyia/db/exec."
 				{executeSql}
 				checkKey="2026-05-25.patyia.seed-prompts"
 				confirmKind="warning"
