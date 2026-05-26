@@ -22,11 +22,10 @@ const PROMPTS: Array<{ tipo: string; codigo: string; descripcion: string }> = [
 ];
 
 const intro =
-	`<div>La asesora <b>Viviana Restrepo Quintero</b> solicita insertar en la  
-	<b>base de datos AYUDASCP_IA</b> (microservicio de Paty V3) las  
+	`<div>Se solicita insertar en la <b>base de datos AYUDASCP_IA</b> las  
 	instrucciones específicas por tipo de consulta, alineando la BD con los  
 	<b>prompts</b> definidos en la ruta de análisis y diseño y en el archivo  
-	de control de SharePoint.</div>`;
+	de control de instrucciones.</div>`;
 
 export async function buildBodyTK1429373(): Promise<string> {
 	const [h3Solicitud, h3Solucion] = await Promise.all([
@@ -42,7 +41,7 @@ export async function buildBodyTK1429373(): Promise<string> {
 		),
 		await note(
 			"mdi:file-document-outline",
-			`<b>Archivo de control:</b> SharePoint — <i>Configuración de instrucciones</i>.`,
+			`<b>Archivo de control:</b> <i>Configuración de instrucciones</i>.`,
 		),
 		await note(
 			"mdi:table",

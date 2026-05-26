@@ -90,12 +90,12 @@ export const TICKETS: TicketRegistro[] = [
 	{
 		id: "TK-1429373",
 		titulo: "Se requiere insertar en la base de datos de Paty V3 las instrucciones correspondientes",
-		solicitante: "Asesora Viviana Restrepo Quintero",
+		solicitante: "Área funcional",
 		fechaSolicitud: "25/may./2026 04:29:16 pm",
 		noMaquillarFechas: true,
 		estimacionMinutos: 45,
 		diligenciaMinutos: 15,
-		resumen: "La asesora Viviana solicita insertar en la base de datos de Paty V3 (AYUDASCP_IA) las instrucciones específicas por tipo de consulta. Se aplica un script idempotente con MERGE que carga los 13 prompts (PROMPT_<TIPO>) en INSTRUCCION y los enlaza con TDCONSULTA mediante TDCONSULTAXINSTRUCCION.",
+		resumen: "Se solicita insertar en la base de datos AYUDASCP_IA las instrucciones específicas por tipo de consulta. Se aplica un script idempotente con MERGE que carga los 13 prompts (PROMPT_<TIPO>) en INSTRUCCION y los enlaza con TDCONSULTA mediante TDCONSULTAXINSTRUCCION.",
 		body: bodyTK1429373,
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - ING Servicios Otros" },
 		proyecto: "PatyIA",
@@ -145,7 +145,7 @@ export const TICKETS: TicketRegistro[] = [
 			{
 				tabla: "INSTRUCCION (AYUDASCP_IA)",
 				registro: "13 prompts PROMPT_<TIPO> — columna descripcion",
-				intencion: "Se actualiza la columna descripcion de los 13 registros de INSTRUCCION para reemplazar la descripción genérica ('Prompt especifico para tipo de consulta <TIPO>') por la descripción funcional de cada tipo de consulta entregada por la asesora Viviana en el cuerpo del ticket. Se aplica con UPDATE...FROM contra una tabla de valores in-line y dentro de una transacción explícita, de modo que el lote completo se revierta si alguna fila falla.",
+				intencion: "Se actualiza la columna descripcion de los 13 registros de INSTRUCCION para reemplazar la descripción genérica ('Prompt especifico para tipo de consulta <TIPO>') por la descripción funcional de cada tipo de consulta definida en el cuerpo del ticket. Se aplica con UPDATE...FROM contra una tabla de valores in-line y dentro de una transacción explícita, de modo que el lote completo se revierta si alguna fila falla.",
 				sql: [
 					"SET NOCOUNT ON;",
 					"SET XACT_ABORT ON;",
