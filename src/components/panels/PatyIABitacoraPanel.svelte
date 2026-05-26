@@ -7,6 +7,7 @@
 	import md_2026_05_25_prompts_intro from "../../lib/patyia/daily/2026-05/25/01-prompts-tdconsulta-intro.md?raw";
 	import sqlSeedPromptsTdConsulta from "../../lib/patyia/sql/seed-prompts-tdconsulta.sql?raw";
 	import sqlUpdateDescripcionesInstruccion from "../../lib/patyia/sql/update-descripciones-instruccion.sql?raw";
+	import sqlUpdateNombresInstruccion from "../../lib/patyia/sql/update-nombres-instruccion.sql?raw";
 
 	// PatyIA tiene su propia BD (AYUDASCP_IA) — los endpoints de ejecución y
 	// ping están bifurcados respecto a los de ClientesIS para que el banner
@@ -36,6 +37,31 @@
 	dbPingUrl="/api/patyia/db/ping"
 	dbLabelOk="BD conectada · AYUDASCP_IA"
 >
+	<Accordion
+		title="2026-05-26 — PatyIA: poblar NINSTRUCCION con nombres semánticos en español"
+		titleIcon="mdi:calendar"
+		open={true}
+		checkKeys={["2026-05-26.patyia.ninstruccion.update"]}
+	>
+		<Accordion
+			title="INSTRUCCION · Actualizar NINSTRUCCION con labels semánticos"
+			titleIcon="mdi:translate"
+			inner
+			checkKey="2026-05-26.patyia.ninstruccion.update"
+		>
+			<SqlExecCard
+				title="AYUDASCP_IA · UPDATE NINSTRUCCION con nombres semánticos en español (13 instrucciones)"
+				sql={sqlUpdateNombresInstruccion}
+				desc="UPDATE...FROM INNER JOIN (VALUES) que sobreescribe NINSTRUCCION con el nombre semántico en español para cada uno de los 13 tipos de instrucción. Ej: ASESORIA_PERSONALIZADA → 'Asesoría Personalizada'. Idempotente. Se esperan 13 filas afectadas."
+				{executeSql}
+				checkKey="2026-05-26.patyia.ninstruccion.update"
+				confirmKind="warning"
+				confirmMessage={`Se actualizará NINSTRUCCION en los 13 registros de INSTRUCCION con nombres semánticos en español.\n\n¿Continuar?`}
+				height="340px"
+			/>
+		</Accordion>
+	</Accordion>
+
 	<Accordion
 		title="2026-05-25 — Carga inicial de prompts específicos por tipo de consulta"
 		titleIcon="mdi:calendar"
