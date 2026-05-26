@@ -19,6 +19,7 @@
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectGroupList from "../projects/ProjectGroupList.svelte";
 	import ProjectActionCard from "../projects/ProjectActionCard.svelte";
+	import { createUrlTabs, onUrlStateChange } from "../../lib/urlState";
 
 	interface ProjectAction {
 		id: string;
@@ -65,6 +66,16 @@
 		{ key: "clientesis", label: "ClientesIS" },
 		{ key: "shared", label: "Compartidos" },
 	];
+
+	// Estado de la pestaña externa sincronizado con la URL (?tab=clientesis|shared).
+	const outerKeys = OUTER_TABS.map((t) => t.key);
+	const outerTabs = createUrlTabs("tab", outerKeys);
+	let outerSelected: string = outerTabs.selected();
+	let outerOpen: Record<string, boolean> = {};
+	$: outerOpen = Object.fromEntries(outerKeys.map((k) => [k, outerSelected === k]));
+	$: for (const k of outerKeys) {
+		if (outerOpen[k] && outerSelected !== k) outerSelected = outerTabs.onOpened(k);
+	}
 
 	let projects: ProjectEntry[] = [];
 	let projectsByGroup: Record<string, ProjectEntry[]> = { clientesis: [], contapymeu: [], shared: [] };
@@ -210,7 +221,9 @@
 		if (e.key === "Enter") submitPassword();
 	}
 
+	let unsubUrl: () => void = () => {};
 	onMount(() => {
+		unsubUrl = onUrlStateChange(() => { outerSelected = outerTabs.selected(); });
 		if (STATIC_MODE) { loading = false; return; }
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });
@@ -260,6 +273,7 @@
 
 	onDestroy(() => {
 		socket?.disconnect();
+		unsubUrl();
 	});
 </script>
 
@@ -269,8 +283,8 @@
 	<Loading bShow={true} />
 {:else}
 	<Tabs>
-		{#each OUTER_TABS as outer, oi (outer.key)}
-			<TabItem title={outer.label} open={oi === 0}>
+		{#each OUTER_TABS as outer (outer.key)}
+			<TabItem title={outer.label} bind:open={outerOpen[outer.key]}>
 				<div class="tab-content">
 					{#if outer.key === "shared"}
 						<ProjectGroupList

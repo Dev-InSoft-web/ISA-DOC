@@ -5,6 +5,7 @@
 	import { marked } from "marked";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
+	import { createUrlTabs, onUrlStateChange } from "../../lib/urlState";
 	import {
 		Card, Button, H2, H4, Text, Loading, Modal,
 		Toaster, toastError, toastSuccess,
@@ -88,6 +89,20 @@
 	let showMdPreview = false;
 	let mdPreviewTitle = "";
 	let mdPreviewHtml = "";
+
+	// === Pestañas top-level sincronizadas con la URL (?tab=editor|resumen|pruebas). ===
+	const POSTMAN_TABS = ["editor", "resumen", "pruebas"] as const;
+	const postmanTabs = createUrlTabs("tab", POSTMAN_TABS);
+	let topTab: string = postmanTabs.selected();
+	let openEditor: boolean = topTab === "editor";
+	let openResumen: boolean = topTab === "resumen";
+	let openPruebas: boolean = topTab === "pruebas";
+	$: openEditor = topTab === "editor";
+	$: openResumen = topTab === "resumen";
+	$: openPruebas = topTab === "pruebas";
+	$: if (openEditor && topTab !== "editor") topTab = postmanTabs.onOpened("editor");
+	$: if (openResumen && topTab !== "resumen") topTab = postmanTabs.onOpened("resumen");
+	$: if (openPruebas && topTab !== "pruebas") topTab = postmanTabs.onOpened("pruebas");
 
 	// === Pruebas en secuencia (verify-api) ===
 	let verifyHost = proyecto === "patyia" ? "http://localhost:7071" : "http://localhost:20040";
@@ -353,7 +368,9 @@
 		} catch (e) { toastError((e as Error).message); }
 	}
 
+	let unsubUrl: () => void = () => {};
 	onMount(() => {
+		unsubUrl = onUrlStateChange(() => { topTab = postmanTabs.selected(); });
 		if (STATIC_MODE) { loadStaticPostman(); return; }
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });
@@ -366,7 +383,7 @@
 			appendVerifyChunk(`\n--- proceso finalizado (code=${m.code}${m.error ? `, error=${m.error}` : ""}) ---\n`);
 		});
 	});
-	onDestroy(() => { socket?.disconnect(); });
+	onDestroy(() => { socket?.disconnect(); unsubUrl(); });
 </script>
 
 <Toaster />
@@ -415,7 +432,7 @@
 	</Card>
 
 	<Tabs>
-		<TabItem title="Editor" open>
+		<TabItem title="Editor" bind:open={openEditor}>
 	<section class="layout">
 		<aside class="sidebar">
 			<H4>Entidades</H4>
@@ -620,7 +637,7 @@
 	</section>
 		</TabItem>
 
-		<TabItem title="Resumen">
+		<TabItem title="Resumen" bind:open={openResumen}>
 	<section class="resumen">
 		<Card>
 			<H2>Resumen · resultado final</H2>
@@ -637,7 +654,7 @@
 	</section>
 		</TabItem>
 
-		<TabItem title="Pruebas">
+		<TabItem title="Pruebas" bind:open={openPruebas}>
 	<section class="pruebas">
 		<Card>
 			<FlexLayout items="center" justify="between">
