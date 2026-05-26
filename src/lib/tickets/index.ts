@@ -93,7 +93,7 @@ export const TICKETS: TicketRegistro[] = [
 		fechaSolicitud: "25/may./2026 04:04:11 pm",
 		noMaquillarFechas: true,
 		estimacionMinutos: 32,
-		diligenciaMinutos: 15,
+		diligenciaMinutos: 25,
 		resumen: "Solicitud del ingeniero Pedro para desacoplar helpers dinámicos (sqlNesting, nestedConfig, nestedDetailsCfg, syncDetails, buildJData) de los controladores de server y replicar el patrón de diseño explícito con SQL quemado y predecible que ya usan los demás controladores.",
 		body: bodyTK1429349,
 		commits: [
