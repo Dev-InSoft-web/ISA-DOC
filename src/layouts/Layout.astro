@@ -20,32 +20,40 @@ function stripBase(pathname: string): string {
 }
 const currentPath = stripBase(Astro.url.pathname);
 
-type ProjectKey = "clientesis" | "patyia";
-const project: ProjectKey = currentPath === "/patyia" || currentPath.startsWith("/patyia/") ? "patyia" : "clientesis";
+type ProjectKey = "clientesis" | "patyia" | "home";
+const project: ProjectKey =
+   currentPath === "/patyia" || currentPath.startsWith("/patyia/")
+      ? "patyia"
+      : currentPath === "/clientesis" || currentPath.startsWith("/clientesis/")
+         ? "clientesis"
+         : "home";
 
 const projects: Array<{ key: ProjectKey; label: string; home: string }> = [
-   { key: "clientesis", label: "ClientesIS", home: "/" },
+   { key: "clientesis", label: "ClientesIS", home: "/clientesis" },
    { key: "patyia", label: "PatyIA", home: "/patyia" },
 ];
 
 type SubTab = { label: string; cliPath: string; patPath: string };
 const subTabs: SubTab[] = [
-   { label: "SQL", cliPath: "/sql", patPath: "/patyia/sql" },
-   { label: "Bitácora", cliPath: "/bitacora", patPath: "/patyia/bitacora" },
-   { label: "Postman", cliPath: "/postman", patPath: "/patyia/postman" },
-   { label: "Docs", cliPath: "/contapymeu", patPath: "/patyia/contapymeu" },
-   { label: "Actions", cliPath: "/actions", patPath: "/patyia/actions" },
+   { label: "SQL", cliPath: "/clientesis/sql", patPath: "/patyia/sql" },
+   { label: "Bitácora", cliPath: "/clientesis/bitacora", patPath: "/patyia/bitacora" },
+   { label: "Postman", cliPath: "/clientesis/postman", patPath: "/patyia/postman" },
+   { label: "Docs", cliPath: "/clientesis/contapymeu", patPath: "/patyia/contapymeu" },
+   { label: "Actions", cliPath: "/clientesis/actions", patPath: "/patyia/actions" },
 ];
 
-const isCliSqlActive = currentPath === "/" || currentPath === "/sql";
+const isCliSqlActive = currentPath === "/clientesis" || currentPath === "/clientesis/sql";
 const isPatSqlActive = currentPath === "/patyia" || currentPath === "/patyia/sql";
 function isSubActive(t: SubTab): boolean {
    if (project === "clientesis") {
       if (t.label === "SQL") return isCliSqlActive;
       return currentPath === t.cliPath;
    }
-   if (t.label === "SQL") return isPatSqlActive;
-   return currentPath === t.patPath;
+   if (project === "patyia") {
+      if (t.label === "SQL") return isPatSqlActive;
+      return currentPath === t.patPath;
+   }
+   return false;
 }
 ---
 
@@ -183,6 +191,7 @@ function isSubActive(t: SubTab): boolean {
             <span class="isa-logo">ISA</span>
             <span class="isa-sep">|</span>
             <nav class="isa-nav isa-nav-projects">
+               <a href={link("/")} class:list={["isa-nav-link isa-nav-project", { active: project === "home" }]}>Inicio</a>
                {
                   projects.map((p) => (
                      <a href={link(p.home)} class:list={["isa-nav-link isa-nav-project", { active: project === p.key }]}>
@@ -192,15 +201,17 @@ function isSubActive(t: SubTab): boolean {
                }
             </nav>
          </div>
-         <nav class="isa-nav isa-nav-subtabs">
-            {
-               subTabs.map((t) => (
-                  <a href={link(project === "clientesis" ? t.cliPath : t.patPath)} class:list={["isa-nav-link isa-nav-subtab", { active: isSubActive(t) }]}>
-                     {t.label}
-                  </a>
-               ))
-            }
-         </nav>
+         {project !== "home" && (
+            <nav class="isa-nav isa-nav-subtabs">
+               {
+                  subTabs.map((t) => (
+                     <a href={link(project === "clientesis" ? t.cliPath : t.patPath)} class:list={["isa-nav-link isa-nav-subtab", { active: isSubActive(t) }]}>
+                        {t.label}
+                     </a>
+                  ))
+               }
+            </nav>
+         )}
       </header>
       <main class="isa-main">
          <slot />
