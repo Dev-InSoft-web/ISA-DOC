@@ -299,7 +299,7 @@ export const TICKETS: TicketRegistro[] = [
 		fechaSolicitud: "25/may./2026 02:51:03 pm",
 		noMaquillarFechas: true,
 		estimacionMinutos: 0,
-		diligenciaMinutos: 15,
+		diligenciaMinutos: 60,
 		resumen: "Se solicita investigación técnica de viabilidad para evaluar si Paty IA puede seleccionar dinámicamente el modelo OpenAI según la etapa del flujo o el tipo de consulta clasificado, contemplando viabilidad en la API Responses, impacto en el código actual, arquitectura, costos, rendimiento y trazabilidad.",
 		body: bodyTK1429262,
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - ING Servicios Otros" },

@@ -1,266 +1,229 @@
 // TK-1429262 — Evaluación de uso de modelos OpenAI por etapa y tipo de
-// consulta en Paty IA. Solicitud de investigación técnica para evaluar la
-// viabilidad de seleccionar dinámicamente el modelo OpenAI según la etapa
-// del flujo o el tipo de consulta atendida.
+// consulta en Paty IA. Esta diligencia consolida el análisis técnico de
+// viabilidad basado en el código actual del proyecto PatyIA.
 
+import { codeBlock } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
-	`<div>Se solicita una <b>investigación técnica de viabilidad</b> para  
-	determinar si Paty IA puede implementar una estrategia de  
-	<b>selección dinámica de modelo OpenAI</b> en función de la etapa del  
-	flujo o el tipo de consulta clasificado. El propósito no es iniciar  
-	desarrollo, sino contar primero con una explicación técnica clara para  
-	presentar al equipo y tomar una decisión antes de aprobar cualquier  
-	cambio.</div>`;
+	`<div>Se diligencia análisis técnico de viabilidad para evaluar la <b>selección dinámica de modelo OpenAI</b> en Paty IA, tomando como base el código actual del proyecto <code>C:\\Users\\JAGUDELOE\\Documents\\Contapyme\\PatyIA</code>. Este documento es <b>propuesta técnica</b>; no implica implementación ni cambios productivos en esta etapa.</div>`;
+
+const SNIPPET_FLUJO_ENTRADA = `export async function http_insertar_conversacion(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+  let controller = new TConversacionesController(request, context);
+  let conversacion: TConversacion = TConversacion.JSONToObject(controller.CtxUser.jsonBody);
+
+  const readableStream: ReadableStream = controller.respuestaIA(conversacion, async (finalObj: TConversacion) => {
+    controller.tryUpdate(finalObj);
+  });
+
+  return {
+    body: readableStream,
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    }
+  };
+}`;
+
+const SNIPPET_MODELO_UNICO_RESPONSES = `protected async clasificarConsulta(promptUsuario: string): Promise<string> {
+  const response = await (this.openai.responses as any).create({
+    model: varEnv("OPENAI_MODEL") || "gpt-4o",
+    prompt: { id: varEnv("PR_TIPO_CONSULTAS") },
+    input: [{ role: "user", content: promptUsuario }],
+    store: false
+  });
+  return resultado.trim();
+}`;
+
+const SNIPPET_MODELO_UNICO_RESPUESTA = `const body = {
+  model: varEnv("OPENAI_MODEL") || "gpt-4o",
+  input: Obj.prompt,
+  stream: true,
+  store: true,
+  conversation: Obj.hilo,
+  prompt: { id: varEnv("PR_GENERAL") },
+  ...(instructionsText && { instructions: instructionsText }),
+  ...(vectorStoreIds?.length && {
+    tools: [{ type: "file_search", vector_store_ids: vectorStoreIds, max_num_results: 3 }]
+  }),
+};`;
+
+const SNIPPET_CONFIG_ACTUAL = `{
+  "PR_TIPO_CONSULTAS": "pmpt_...",
+  "PR_GENERAL": "pmpt_...",
+  "PR_EXTRACTOR_CONSULTAS": "pmpt_...",
+  "PR_CLASIFICADOR_MODULO": "pmpt_...",
+  "OPENAI_MODEL": "gpt-5.4"
+}`;
 
 export async function buildBodyTK1429262(): Promise<string> {
-	const [h3Antecedente, h3Revision, h3Objetivo, h3PuntosVal, h3Propuesta, h3Resultado, h3Estado] = await Promise.all([
-		h3Iconized("mdi:history", "Antecedente"),
-		h3Iconized("mdi:magnify-scan", "Revisión inicial desde especialista"),
-		h3Iconized("mdi:target", "Objetivo de la solicitud"),
-		h3Iconized("mdi:clipboard-check-outline", "Puntos que debe validar ingeniería"),
-		h3Iconized("mdi:lightbulb-on-outline", "Propuesta inicial a validar"),
-		h3Iconized("mdi:flag-checkered", "Resultado esperado de la investigación técnica"),
-		h3Iconized("mdi:clock-outline", "Estado"),
+	const [
+		h3Estado,
+		h3Evidencia,
+		h3Viabilidad,
+		h3Comparativa,
+		h3Ruta,
+		h3Riesgos,
+		h3Conclusion,
+	] = await Promise.all([
+		h3Iconized("mdi:radar", "1) Estado actual del proyecto (cómo funciona hoy)"),
+		h3Iconized("mdi:file-code-outline", "2) Evidencia técnica en código (PatyIA)"),
+		h3Iconized("mdi:check-decagram-outline", "3) Conclusión de viabilidad"),
+		h3Iconized("mdi:compare", "4) Comparativa antes vs propuesta"),
+		h3Iconized("mdi:map-marker-path", "5) Mejor camino propuesto (sin implementar)"),
+		h3Iconized("mdi:alert-outline", "6) Riesgos y mitigación"),
+		h3Iconized("mdi:clipboard-text-outline", "7) Propuesta para aprobación"),
 	]);
 
-	const antecedente = noteList(
-		await note(
-			"mdi:cog-sync-outline",
-			`Como parte de la evolución del proyecto <b>Paty IA</b>, se ha venido  
-			ajustando el flujo de atención para trabajar con una arquitectura más  
-			controlada, basada en la clasificación inicial de la consulta, la  
-			identificación del módulo relacionado, la resolución de instrucciones  
-			según el tipo de consulta, la selección de fuentes documentales o  
-			vector stores y la generación de la respuesta final al usuario.`,
-		),
-		await note(
-			"mdi:format-list-bulleted-type",
-			`Actualmente, el diseño funcional contempla que Paty pueda diferenciar  
-			tipos de consulta como <code>PASO_A_PASO</code>,  
-			<code>ERROR_CONFIGURACION</code>, <code>ERROR_DIAN</code>,  
-			<code>SALUDO_OTRO</code>, <code>SOLICITUD_NO_PERMITIDA</code>, entre  
-			otros.`,
-		),
-		await note(
-			"mdi:speedometer",
-			`A partir de la revisión funcional inicial realizada, se identifica una  
-			posible oportunidad de optimización: <b>evaluar si el backend puede  
-			seleccionar diferentes modelos de OpenAI según la etapa del flujo o  
-			según el tipo de consulta atendida</b>.`,
-		),
-	);
+	const [codeFlujoEntrada, codeModeloUnicoResponses, codeModeloUnicoRespuesta, codeConfigActual] = await Promise.all([
+		codeBlock(SNIPPET_FLUJO_ENTRADA, "typescript"),
+		codeBlock(SNIPPET_MODELO_UNICO_RESPONSES, "typescript"),
+		codeBlock(SNIPPET_MODELO_UNICO_RESPUESTA, "typescript"),
+		codeBlock(SNIPPET_CONFIG_ACTUAL, "json"),
+	]);
 
-	const revision = noteList(
-		await note(
-			"mdi:api",
-			`En la revisión inicial se encontró que, aparentemente, la API de  
-			OpenAI mediante <b>Responses</b> permite definir el modelo en cada  
-			solicitud. Esto abriría la posibilidad de que Paty no utilice un  
-			único modelo para todos los procesos, sino que pueda aplicar modelos  
-			diferentes según la complejidad de la tarea.`,
-		),
-		await note(
-			"mdi:alert-circle-outline",
-			`Esta revisión <b>no representa una decisión final de implementación</b>.  
-			Se solicita validación técnica por parte de ingeniería para confirmar  
-			si esta estrategia es viable con la estructura actual del código y con  
-			la forma en que hoy se están construyendo las solicitudes hacia  
-			OpenAI.`,
-		),
-		await note(
-			"mdi:table",
-			`Estrategia funcional propuesta por etapa o tipo de consulta:` +
-			`<table style="border-collapse:collapse;width:100%;margin-top:0.5rem;font-size:0.85rem;">` +
-			`<thead><tr style="background:#80808015;">` +
-			`<th style="border:1px solid #80808040;padding:0.35rem;text-align:left;">Etapa o tipo de consulta</th>` +
-			`<th style="border:1px solid #80808040;padding:0.35rem;text-align:left;">Posible estrategia</th>` +
-			`</tr></thead><tbody>` +
-			[
-				["Clasificación de tipo de consulta", "Usar un modelo más liviano y económico."],
-				["Clasificación de módulo", "Usar un modelo más liviano y económico."],
-				["Extracción de consultas útiles", "Usar un modelo liviano o intermedio."],
-				["SALUDO_OTRO", "Usar modelo económico o incluso respuesta controlada por backend."],
-				["SOLICITUD_NO_PERMITIDA", "Usar plantilla controlada o modelo económico."],
-				["FUERA_DE_ALCANCE_TECNICO", "Usar plantilla controlada o modelo económico."],
-				["REQUIERE_CONTEXTO", "Usar modelo económico o intermedio."],
-				["PASO_A_PASO", "Usar un modelo con mayor capacidad."],
-				["ERROR_CONFIGURACION", "Usar un modelo con mayor capacidad."],
-				["ERROR_DIAN", "Usar un modelo con mayor capacidad por el riesgo de interpretación."],
-				["INTERPRETACION_RESULTADO", "Usar un modelo con mayor capacidad."],
-				["ASESORIA_PERSONALIZADA", "Usar modelo intermedio o respuesta controlada, según el flujo."],
-			]
-				.map(([etapa, estrat]) =>
-					`<tr>` +
-					`<td style="border:1px solid #80808040;padding:0.35rem;"><code>${etapa}</code></td>` +
-					`<td style="border:1px solid #80808040;padding:0.35rem;">${estrat}</td>` +
-					`</tr>`,
-				)
-				.join("") +
-			`</tbody></table>`,
-		),
-	);
-
-	const objetivo = noteList(
-		await note(
-			"mdi:bullseye-arrow",
-			`Solicitar al ingeniero de desarrollo realizar una <b>investigación  
-			técnica de viabilidad</b> para determinar si Paty IA puede implementar  
-			una estrategia de selección dinámica de modelo por:` +
-			`<ol style="margin:0.35rem 0 0 1.25rem;padding:0;">` +
-			`<li>Etapa del flujo.</li>` +
-			`<li>Tipo de consulta.</li>` +
-			`<li>Nivel de complejidad de la respuesta.</li>` +
-			`<li>Necesidad o no de recuperación documental.</li>` +
-			`<li>Costo, latencia y calidad esperada.</li>` +
-			`</ol>`,
-		),
-	);
-
-	const puntos = noteList(
-		await note(
-			"mdi:api",
-			`<b>4.1 Viabilidad técnica en OpenAI Responses.</b>  
-			Validar si, con la implementación actual de Responses, es posible  
-			enviar un modelo diferente por cada request, por ejemplo:` +
-			`<ul style="margin:0.35rem 0 0 1.25rem;padding:0;">` +
-			`<li>Un modelo para clasificar <code>tipo_consulta</code>.</li>` +
-			`<li>Otro modelo para clasificar módulo.</li>` +
-			`<li>Otro modelo para generar respuestas finales.</li>` +
-			`<li>Otro modelo para extracción de consultas al cierre de conversación.</li>` +
-			`</ul>`,
-		),
-		await note(
-			"mdi:code-tags-check",
-			`<b>4.2 Viabilidad dentro del código actual de Paty.</b>  
-			Revisar cómo está construido actualmente el llamado a OpenAI en el  
-			backend y validar si el modelo está quemado en código, si viene desde  
-			configuración, si se puede parametrizar sin afectar el flujo, si hay  
-			una única función centralizada para invocar OpenAI, si cada etapa del  
-			flujo permite definir su propio modelo y si la selección dinámica  
-			afecta streaming, conversación, historial o uso de vector stores.`,
-		),
-		await note(
-			"mdi:sitemap-outline",
-			`<b>4.3 Impacto en la arquitectura actual.</b>  
-			Validar si el cambio requiere modificar tablas de configuración,  
-			agregar campos nuevos para modelo por tipo de consulta, agregar  
-			configuración por etapa, ajustar el orquestador, ajustar logs o  
-			trazabilidad, actualizar documentación técnica y crear fallback si  
-			el modelo configurado falla o no está disponible.`,
-		),
-		await note(
-			"mdi:cash-multiple",
-			`<b>4.4 Impacto en costos y rendimiento.</b>  
-			Analizar si la estrategia puede ayudar a optimizar costos usando  
-			modelos económicos en tareas simples y modelos más fuertes solo en  
-			respuestas complejas. Se requiere que ingeniería indique posibles  
-			beneficios en consumo, posibles riesgos en latencia, impacto estimado  
-			en tiempos de respuesta e impacto sobre calidad de respuesta.`,
-		),
-		await note(
-			"mdi:file-document-outline",
-			`<b>4.5 Trazabilidad y auditoría.</b>  
-			Validar si conviene registrar en logs o base de datos: modelo usado,  
-			etapa del flujo, tipo de consulta clasificado, tokens consumidos,  
-			tiempo de respuesta, vector store utilizado, instrucciones aplicadas  
-			y resultado de la ejecución. Esto permitiría evaluar posteriormente  
-			calidad, costo y comportamiento por tipo de consulta.`,
-		),
-	);
-
-	const propuesta = await note(
-		"mdi:table-cog",
-		`Se propone analizar una estrategia inicial de modelo por flujo  
-		(<i>solo como propuesta funcional, debe ser validada técnicamente  
-		antes de aprobarse</i>):` +
-		`<table style="border-collapse:collapse;width:100%;margin-top:0.5rem;font-size:0.85rem;">` +
-		`<thead><tr style="background:#80808015;">` +
-		`<th style="border:1px solid #80808040;padding:0.35rem;text-align:left;">Flujo</th>` +
-		`<th style="border:1px solid #80808040;padding:0.35rem;text-align:left;">Modelo sugerido inicialmente</th>` +
-		`<th style="border:1px solid #80808040;padding:0.35rem;text-align:left;">Motivo</th>` +
-		`</tr></thead><tbody>` +
-		[
-			["Clasificador de tipo de consulta", "Modelo liviano", "Salida cerrada en JSON, baja complejidad."],
-			["Clasificador de módulo", "Modelo liviano", "Clasificación controlada."],
-			["Extractor de consultas útiles", "Modelo liviano o intermedio", "Consolidación de preguntas, salida estructurada."],
-			["Saludos, agradecimientos y cierres", "Modelo liviano", "No requiere razonamiento ni recuperación documental."],
-			["Solicitudes no permitidas", "Modelo liviano", "Respuesta controlada y segura."],
-			["Fuera de alcance técnico", "Modelo liviano", "Redirección controlada."],
-			["Requiere contexto", "Modelo liviano", "Solo debe pedir aclaración mínima."],
-			["Paso a paso", "Modelo más fuerte", "Requiere fidelidad documental, estructura y precisión."],
-			["Error de configuración", "Modelo más fuerte", "Requiere diagnóstico funcional documentado."],
-			["Error DIAN", "Modelo más fuerte", "Riesgo alto por interpretación incorrecta."],
-			["Interpretación de resultado", "Modelo más fuerte", "Requiere análisis causa - efecto."],
-			["Comercial", "Modelo liviano o intermedio", "Respuesta controlada con fuente comercial."],
-		]
-			.map(([flujo, modelo, motivo]) =>
-				`<tr>` +
-				`<td style="border:1px solid #80808040;padding:0.35rem;">${flujo}</td>` +
-				`<td style="border:1px solid #80808040;padding:0.35rem;">${modelo}</td>` +
-				`<td style="border:1px solid #80808040;padding:0.35rem;">${motivo}</td>` +
-				`</tr>`,
-			)
-			.join("") +
-		`</tbody></table>`,
-	);
-
-	const resultado = noteList(
-		await note(
-			"mdi:check-decagram-outline",
-			`<b>Conclusión de viabilidad:</b> indicar si se puede o no  
-			implementar selección dinámica de modelo.`,
-		),
+	const estadoActual = noteList(
 		await note(
 			"mdi:source-branch",
-			`<b>Explicación del estado actual:</b> describir brevemente cómo se  
-			define hoy el modelo en el código.`,
+			`El flujo HTTP de conversación entra por <code>PatyIA/src/functions/POST-Conversacion.ts</code>, delega a <code>TConversacionesController.respuestaIA</code> y responde por <b>SSE</b>.`,
 		),
 		await note(
-			"mdi:lightbulb-on-outline",
-			`<b>Propuesta técnica de implementación:</b> explicar cómo podría  
-			parametrizarse (por código, por tabla, por archivo de configuración o  
-			por variable de entorno).`,
+			"mdi:brain",
+			`La orquestación IA está concentrada en <code>PatyIA/src/020 Controller/005 - OpenIAServer.ts</code>, donde se ejecutan: clasificación de tipo de consulta, clasificación de módulo, extracción de consultas y respuesta final al usuario.`,
 		),
 		await note(
-			"mdi:wrench-outline",
-			`<b>Cambios requeridos:</b> listar ajustes necesarios en backend,  
-			base de datos, configuración, logs o documentación.`,
+			"mdi:cog-outline",
+			`Actualmente se usa <b>un solo modelo global</b> para todas las etapas a través de <code>OPENAI_MODEL</code> (configurado en <code>PatyIA/local.settings.json</code>).`,
 		),
 		await note(
-			"mdi:alert-octagon-outline",
-			`<b>Riesgos identificados:</b> mencionar riesgos técnicos, de costo,  
-			calidad, latencia, trazabilidad o mantenimiento.`,
-		),
-		await note(
-			"mdi:thumb-up-outline",
-			`<b>Recomendación técnica:</b> indicar si conviene implementarlo, si  
-			debe hacerse por fases o si no se recomienda.`,
-		),
-		await note(
-			"mdi:account-group-outline",
-			`<b>Propuesta para aprobación:</b> presentar una alternativa clara  
-			para revisar con el equipo técnico antes de iniciar desarrollo.`,
+			"mdi:database-search-outline",
+			`La consulta ya incorpora contexto dinámico desde BD (instrucciones y vector stores por tipo de consulta), por lo que existe una base técnica sólida para extender esa lógica a <b>selección dinámica de modelo</b>.`,
 		),
 	);
 
-	const estado = await note(
-		"mdi:magnify",
-		`<b>En análisis.</b> Investigación técnica de viabilidad en curso.  
-		Se entregará la respuesta consolidada con los siete puntos del  
-		resultado esperado, sin iniciar implementación hasta su revisión y  
-		aprobación con el equipo técnico.`,
+	const evidencia = noteList(
+		await note(
+			"mdi:code-braces",
+			`<b>Archivo:</b> <code>PatyIA/src/functions/POST-Conversacion.ts</code><br><b>Fragmento (entrada del flujo):</b><br>${codeFlujoEntrada}`,
+		),
+		await note(
+			"mdi:code-braces-box",
+			`<b>Archivo:</b> <code>PatyIA/src/020 Controller/005 - OpenIAServer.ts</code><br><b>Fragmento (modelo global en clasificación):</b><br>${codeModeloUnicoResponses}`,
+		),
+		await note(
+			"mdi:code-braces-box",
+			`<b>Archivo:</b> <code>PatyIA/src/020 Controller/005 - OpenIAServer.ts</code><br><b>Fragmento (modelo global en respuesta final):</b><br>${codeModeloUnicoRespuesta}`,
+		),
+		await note(
+			"mdi:file-cog-outline",
+			`<b>Archivo:</b> <code>PatyIA/local.settings.json</code><br><b>Configuración actual:</b><br>${codeConfigActual}`,
+		),
+	);
+
+	const viabilidad = noteList(
+		await note(
+			"mdi:check-bold",
+			`<b>Sí es viable técnicamente</b> implementar selección dinámica de modelo por etapa/tipo de consulta usando la API Responses, porque el modelo ya se envía por request y la construcción del body está centralizada.`,
+		),
+		await note(
+			"mdi:information-outline",
+			`El principal trabajo no está en OpenAI Responses, sino en definir una estrategia de configuración, fallback y trazabilidad para evitar complejidad operativa.`,
+		),
+	);
+
+	const comparativa = await note(
+		"mdi:table",
+		`<table style="border-collapse:collapse;width:100%;margin-top:0.5rem;font-size:0.9rem;">
+		<thead>
+		<tr style="background:#80808015;">
+		<th style="border:1px solid #80808040;padding:0.4rem;text-align:left;">Aspecto</th>
+		<th style="border:1px solid #80808040;padding:0.4rem;text-align:left;">Antes (estado actual)</th>
+		<th style="border:1px solid #80808040;padding:0.4rem;text-align:left;">Después (propuesta)</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Modelo IA</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Un único <code>OPENAI_MODEL</code> para clasificación, extracción y respuesta final.</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Mapa de modelo por <code>etapa</code> y/o <code>tipo_consulta</code> con fallback global.</td>
+		</tr>
+		<tr>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Configuración</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Variables individuales en <code>local.settings.json</code>.</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Configuración declarativa versionable (JSON env) y, fase posterior, catálogo en BD.</td>
+		</tr>
+		<tr>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Observabilidad</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Se guarda <code>modelo_ia</code> final en conversación.</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Log por etapa: modelo elegido, tokens, latencia y tipo_consulta.</td>
+		</tr>
+		<tr>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Riesgo operativo</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Bajo (simple) pero sin optimización fina de costo/rendimiento.</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Controlado por fallback + feature flag + despliegue por fases.</td>
+		</tr>
+		</tbody>
+		</table>`,
+	);
+
+	const mejorCamino = noteList(
+		await note(
+			"mdi:numeric-1-circle-outline",
+			`<b>Fase 1 (recomendada para arrancar):</b> parametrización por configuración (sin tocar BD) con mapa <code>etapa -&gt; modelo</code> y fallback a <code>OPENAI_MODEL</code>.`,
+		),
+		await note(
+			"mdi:numeric-2-circle-outline",
+			`<b>Fase 2:</b> extender a <code>tipo_consulta -&gt; modelo</code> en el mismo mapa, aprovechando que ya existe clasificación de tipo en el flujo actual.`,
+		),
+		await note(
+			"mdi:numeric-3-circle-outline",
+			`<b>Fase 3:</b> trazabilidad por etapa (modelo, tokens, latencia, resultado) para medir impacto real en costo/calidad antes de ampliar cobertura.`,
+		),
+		await note(
+			"mdi:numeric-4-circle-outline",
+			`<b>Fase 4 (opcional):</b> mover la configuración a BD para administración funcional sin redeploy, únicamente cuando la estrategia ya esté estabilizada.`,
+		),
+	);
+
+	const riesgos = noteList(
+		await note(
+			"mdi:alert-decagram-outline",
+			`<b>Riesgo de inconsistencia entre etapas:</b> respuestas heterogéneas entre modelos.<br><b>Mitigación:</b> guardrails de formato y fallback a modelo fuerte cuando falle validación.`,
+		),
+		await note(
+			"mdi:cash-fast",
+			`<b>Riesgo de ahorro no materializado:</b> usar más modelos no garantiza ahorro si crece el retrabajo.<br><b>Mitigación:</b> tablero de costo/latencia por etapa antes de escalar.`,
+		),
+		await note(
+			"mdi:timer-alert-outline",
+			`<b>Riesgo de latencia acumulada:</b> múltiples etapas con modelos distintos pueden aumentar tiempo total.<br><b>Mitigación:</b> límites de timeout por etapa y policy de degradación controlada.`,
+		),
+	);
+
+	const conclusion = noteList(
+		await note(
+			"mdi:thumb-up-outline",
+			`<b>Recomendación técnica:</b> avanzar por fases, iniciando con parametrización por etapa en configuración y fallback global; no iniciar con cambios en BD de configuración hasta validar métricas reales.`,
+		),
+		await note(
+			"mdi:file-sign",
+			`<b>Propuesta para aprobación:</b> aprobar una fase de diseño técnico detallado (sin desarrollo productivo) para definir contrato de configuración, reglas de fallback y esquema mínimo de trazabilidad.`,
+		),
+		await note(
+			"mdi:shield-check-outline",
+			`<b>Estado de esta diligencia:</b> análisis concluido como propuesta técnica. No se realizó implementación en código de PatyIA dentro de este ticket.`,
+		),
 	);
 
 	return intro
-		+ h3Antecedente + antecedente
-		+ h3Revision + revision
-		+ h3Objetivo + objetivo
-		+ h3PuntosVal + puntos
-		+ h3Propuesta + propuesta
-		+ h3Resultado + resultado
-		+ h3Estado + estado;
+		+ h3Estado + estadoActual
+		+ h3Evidencia + evidencia
+		+ h3Viabilidad + viabilidad
+		+ h3Comparativa + comparativa
+		+ h3Ruta + mejorCamino
+		+ h3Riesgos + riesgos
+		+ h3Conclusion + conclusion;
 }
 
 export const bodyTK1429262: Promise<string> = buildBodyTK1429262();
