@@ -69,5 +69,22 @@
 		flex-direction: column;
 	}
 	.cm-host :global(.cm-editor) { border-radius: 6px; flex: 1 1 auto; min-height: 0; max-height: 100%; }
-	.cm-host :global(.cm-scroller) { overflow: auto; }
+	.cm-host :global(.cm-scroller) {
+		overflow: auto;
+		scrollbar-width: thin;
+		scrollbar-color: color-mix(in srgb, var(--is-primary) 55%, transparent) transparent;
+	}
+	.cm-host :global(.cm-scroller::-webkit-scrollbar) { width: 8px; height: 8px; }
+	.cm-host :global(.cm-scroller::-webkit-scrollbar-thumb) {
+		background: color-mix(in srgb, var(--is-primary) 55%, transparent);
+		border-radius: 6px;
+		border: 2px solid transparent;
+		background-clip: padding-box;
+	}
+	.cm-host :global(.cm-scroller::-webkit-scrollbar-thumb:hover) {
+		background: var(--is-primary);
+		background-clip: padding-box;
+		border: 2px solid transparent;
+	}
+	.cm-host :global(.cm-scroller::-webkit-scrollbar-track) { background: transparent; }
 </style>

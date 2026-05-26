@@ -3,6 +3,7 @@
 	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, Modal, RichEditor, SelectEnum, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 	import TsViewer from "../viewers/TsViewer.svelte";
+	import ImageViewer from "../viewers/ImageViewer.svelte";
 	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, type UsageTexto } from "../../lib/patyia/openaiPricing";
 
 	interface ImageItem {
@@ -177,6 +178,34 @@ const data = await r.json();
 	let gallery: ImageItem[] = [];
 	let galleryLoading: boolean = false;
 	let galleryError: string = "";
+
+	// --- Viewer de imágenes ---
+	let viewerOpen: boolean = false;
+	let viewerSrc: string = "";
+	let viewerAlt: string = "";
+	let viewerMeta: Record<string, string | number | null | undefined> = {};
+
+	function abrirImagenGenerada(img: ImageItem) {
+		viewerSrc = img.src;
+		viewerAlt = img.alt;
+		const costoUnitario = calcularCostoImagen(imgModel, 1);
+		viewerMeta = {
+			archivo: img.alt,
+			modelo: imgModel,
+			tamaño: imgSize,
+			lote: `${imgN} imágen(es)`,
+			costoUsd: costoUnitario,
+			usage: imgLastUsage ? JSON.stringify(imgLastUsage) : null,
+		};
+		viewerOpen = true;
+	}
+
+	function abrirImagenGaleria(img: ImageItem) {
+		viewerSrc = img.src;
+		viewerAlt = img.alt;
+		viewerMeta = { archivo: img.alt, origen: "galer\u00eda" };
+		viewerOpen = true;
+	}
 
 	async function cargarGaleria() {
 		galleryError = "";
@@ -457,9 +486,9 @@ const data = await r.json();
 							</div>
 							<div class="grid">
 								{#each imgLastGenerated as img}
-									<a href={img.src} target="_blank" rel="noopener noreferrer">
+									<button type="button" class="img-btn" on:click={() => abrirImagenGenerada(img)} title="Ver detalle">
 										<img src={img.src} alt={img.alt} />
-									</a>
+									</button>
 								{/each}
 							</div>
 						</div>
@@ -477,9 +506,9 @@ const data = await r.json();
 						{:else}
 							<div class="grid">
 								{#each gallery as img}
-									<a href={img.src} target="_blank" rel="noopener noreferrer" title={img.alt}>
+									<button type="button" class="img-btn" on:click={() => abrirImagenGaleria(img)} title={img.alt}>
 										<img src={img.src} alt={img.alt} loading="lazy" />
-									</a>
+									</button>
 								{/each}
 							</div>
 						{/if}
@@ -495,8 +524,10 @@ const data = await r.json();
 						<ButtonIconify icon="mdi:information-outline" onClick={() => (infoOpen = true)} title="¿Qué hace cada input?" />
 					</header>
 
-					<RichEditor bind:value={txtSystemHtml} label="Mensaje de sistema (opcional)" />
-					<RichEditor bind:value={txtPromptHtml} label="Prompt" />
+					<GridLayout cells={2} items="start">
+						<RichEditor bind:value={txtSystemHtml} label="Mensaje de sistema (opcional)" />
+						<RichEditor bind:value={txtPromptHtml} label="Prompt" />
+					</GridLayout>
 
 					<GridLayout cells={2} items="end">
 						<SelectEnum bind:value={txtModel} enumValue={TModeloTexto} label="Modelo" />
@@ -688,6 +719,8 @@ const data = await r.json();
 	</Modal>
 {/if}
 
+<ImageViewer bind:bshow={viewerOpen} src={viewerSrc} alt={viewerAlt} metadata={viewerMeta} />
+
 <Toaster />
 
 <style>
@@ -831,6 +864,17 @@ const data = await r.json();
 		border-radius: 6px;
 		background: #000;
 	}
+	.img-btn {
+		padding: 0;
+		border: 1px solid transparent;
+		background: transparent;
+		border-radius: 6px;
+		cursor: pointer;
+		overflow: hidden;
+		transition: border-color 0.15s ease, transform 0.15s ease;
+	}
+	.img-btn:hover { border-color: color-mix(in srgb, var(--is-primary), transparent 50%); transform: translateY(-1px); }
+	.img-btn:focus-visible { outline: 2px solid var(--is-primary); outline-offset: 2px; }
 	.galeria {
 		margin-top: 0.5rem;
 		padding-top: 0.75rem;
