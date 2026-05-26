@@ -1,0 +1,144 @@
+<script lang="ts">
+	let prompt: string = "";
+	let size: string = "1024x1024";
+	let n: number = 1;
+	let loading: boolean = false;
+	let error: string = "";
+	let images: Array<{ src: string; alt: string }> = [];
+
+	const SIZES = ["1024x1024", "1024x1536", "1536x1024", "auto"];
+
+	async function generar() {
+		error = "";
+		images = [];
+		const p = prompt.trim();
+		if (!p) {
+			error = "Escribe un prompt.";
+			return;
+		}
+		loading = true;
+		try {
+			const r = await fetch("/api/patyia/openai/images/generate", {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ prompt: p, size, n }),
+			});
+			const data = await r.json();
+			if (!r.ok || data.ok === false) {
+				error = data.error || data.message || `Error HTTP ${r.status}`;
+				return;
+			}
+			const arr = Array.isArray(data?.result?.data) ? data.result.data : [];
+			images = arr.map((it: { b64_json?: string; url?: string }, i: number) => {
+				const src = it.b64_json ? `data:image/png;base64,${it.b64_json}` : (it.url || "");
+				return { src, alt: `Imagen ${i + 1}` };
+			}).filter((it: { src: string }) => it.src);
+			if (!images.length) error = "OpenAI no devolvió imágenes.";
+		} catch (e) {
+			error = e instanceof Error ? e.message : String(e);
+		} finally {
+			loading = false;
+		}
+	}
+</script>
+
+<section class="panel">
+	<header>
+		<h2>PatyIA · Generación de imágenes (OpenAI)</h2>
+		<p class="sub">Llama la API de OpenAI desde el servidor de ISA-DOC. La llave nunca sale al navegador.</p>
+	</header>
+
+	<div class="form">
+		<label>
+			<span>Prompt</span>
+			<textarea bind:value={prompt} rows="4" placeholder="Describe la imagen que quieres generar..."></textarea>
+		</label>
+		<div class="row">
+			<label>
+				<span>Tamaño</span>
+				<select bind:value={size}>
+					{#each SIZES as s}
+						<option value={s}>{s}</option>
+					{/each}
+				</select>
+			</label>
+			<label>
+				<span>Cantidad</span>
+				<input type="number" min="1" max="4" bind:value={n} />
+			</label>
+			<button type="button" on:click={generar} disabled={loading}>
+				{loading ? "Generando..." : "Generar"}
+			</button>
+		</div>
+		{#if error}
+			<div class="error">{error}</div>
+		{/if}
+	</div>
+
+	{#if images.length}
+		<div class="grid">
+			{#each images as img}
+				<a href={img.src} target="_blank" rel="noopener noreferrer">
+					<img src={img.src} alt={img.alt} />
+				</a>
+			{/each}
+		</div>
+	{/if}
+</section>
+
+<style>
+	.panel {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		padding: 1rem;
+		color: var(--is-color, #e5e7eb);
+	}
+	header h2 { margin: 0; font-size: 1.1rem; }
+	.sub { margin: 0.25rem 0 0; opacity: 0.75; font-size: 0.85rem; }
+	.form { display: flex; flex-direction: column; gap: 0.5rem; }
+	.form label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; }
+	.form textarea,
+	.form input,
+	.form select {
+		background: rgba(255,255,255,0.05);
+		color: inherit;
+		border: 1px solid rgba(255,255,255,0.15);
+		border-radius: 4px;
+		padding: 0.4rem 0.6rem;
+		font: inherit;
+	}
+	.row { display: flex; gap: 0.75rem; align-items: end; flex-wrap: wrap; }
+	.row label { flex: 0 0 auto; }
+	button {
+		padding: 0.5rem 1rem;
+		background: var(--is-primary, #38bdf8);
+		color: #001018;
+		border: 0;
+		border-radius: 4px;
+		font-weight: 600;
+		cursor: pointer;
+	}
+	button[disabled] { opacity: 0.6; cursor: progress; }
+	.error {
+		padding: 0.5rem 0.75rem;
+		background: rgba(220,53,69,0.15);
+		border: 1px solid rgba(220,53,69,0.4);
+		border-radius: 4px;
+		color: #ffb3b8;
+		font-size: 0.85rem;
+		white-space: pre-wrap;
+	}
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+		gap: 0.75rem;
+	}
+	.grid img {
+		width: 100%;
+		height: auto;
+		display: block;
+		border-radius: 6px;
+		background: #000;
+	}
+</style>
