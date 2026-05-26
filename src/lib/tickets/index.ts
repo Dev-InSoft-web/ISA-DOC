@@ -1,5 +1,4 @@
 import { buildTicketHtml, tiempoTotalEstimadoMin } from "./template";
-import { bodyTK1382779 } from "./TK-1382779";
 import { bodyTK1410385 } from "./TK-1410385";
 import { bodyTK1418894 } from "./TK-1418894";
 import { bodyTK1418988 } from "./TK-1418988";
@@ -293,19 +292,6 @@ export const TICKETS: TicketRegistro[] = [
 		resumen: "Se requiere ajustar los scripts de transcripción para adaptarlos a la nueva estructura de carpetas del sitio de conocimiento de Paty IA y consolidar los FAQ por módulo.",
 		body: bodyTK1410385,
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
-		proyecto: "PatyIA",
-	},
-	{
-		id: "TK-1382779",
-		titulo: "Estructura jerárquica para archivos AD",
-		solicitante: "Asesora Viviana Restrepo Quintero",
-		fechaSolicitud: "10/feb./2026 05:17:37 pm",
-		noMaquillarFechas: true,
-		estimacionMinutos: 0,
-		diligenciaMinutos: 15,
-		resumen: "Se requiere que los archivos ad_ que alimentan a Paty IA cuenten con una estructura jerárquica clara y estandarizada (módulo → ventana → campo), aplicada inicialmente al módulo de Inventarios.",
-		body: bodyTK1382779,
-		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - ING Servicios Otros" },
 		proyecto: "PatyIA",
 	},
 	{

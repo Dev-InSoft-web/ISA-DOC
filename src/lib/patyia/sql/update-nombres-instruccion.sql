@@ -1,3 +1,16 @@
+-- =============================================================
+-- UPDATE INSTRUCCION.NINSTRUCCION
+-- Actualiza los nombres semánticos en español de las instrucciones
+-- Base de datos: AYUDASCP_IA
+-- Tabla: INSTRUCCION
+-- =============================================================
+
+USE AYUDASCP_IA;
+GO
+
+PRINT N'Iniciando actualización de NINSTRUCCION en tabla INSTRUCCION...';
+PRINT N'';
+
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
 BEGIN TRAN;
@@ -22,4 +35,11 @@ INNER JOIN (VALUES
 ) AS v (iinstruccion, nombre)
 	ON v.iinstruccion = i.iinstruccion;
 
+DECLARE @rowsAffected INT = @@ROWCOUNT;
+
 COMMIT;
+
+PRINT N'Actualización completada.';
+PRINT N'Registros actualizados: ' + CAST(@rowsAffected AS VARCHAR(10));
+PRINT N'';
+PRINT N'✓ NINSTRUCCION actualizado con nombres semánticos en español';
