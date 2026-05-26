@@ -1,8 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import PatyIASqlPanel from "../../components/panels/PatyIASqlPanel.svelte";
+import SqlPanel from "../../components/panels/SqlPanel.svelte";
 ---
 
 <Layout title="PatyIA — SQL">
-   <PatyIASqlPanel client:only="svelte" />
+   <SqlPanel scope="patyia" client:only="svelte" />
 </Layout>

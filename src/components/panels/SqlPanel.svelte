@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import TablesBrowserPanel from "./TreeSQLTables.svelte";
+
+	export let scope: "clientesis" | "patyia" = "clientesis";
 </script>
 
 <Toaster />
 
 <section class="editor">
-	<TablesBrowserPanel />
+	<TablesBrowserPanel {scope} />
 </section>
 
 <style>

@@ -10,6 +10,7 @@
    import { renderMermaidSvg } from "../../lib/mermaid/render.ts";
    import { isRealtimeEnabled } from "../../lib/realtimeFlag.ts";
    import { effectiveTableName, emitDropTable, emitTable, isSqlSnippetEnabled, newTableId, tableColumns, type ParsedTable } from "../../lib/tableSchema.ts";
+   import { loadPatyiaSchemaAsTables } from "../../lib/patyia/loadPatyiaSchema.ts";
    import SwitchComp from "$comps/especial/_Switch.svelte";
    import TreeView from "$comps/TreeViewLegacy/TreeRowView.svelte";
    import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
@@ -19,6 +20,9 @@
    import InfoEditModal from "../viewers/InfoEditModal.svelte";
    import ResourceConfigSections from "./tables-browser/ResourceConfigSections.svelte";
    import { TreeSQLTablesAdapter, type TablesBrowserState } from "./tables-browser/TreeSQLTablesAdapter";
+
+   export let scope: "clientesis" | "patyia" = "clientesis";
+   $: isReadOnly = scope === "patyia";
 
    let tables: ParsedTable[] = [];
    let loading = true;
@@ -700,21 +704,27 @@
       try {
          loading = true;
          dirty = false;
-         const r = await fetch("/api/tables");
-         const data = (await r.json()) as { ok?: boolean; tables?: ParsedTable[]; error?: string };
-         if (!r.ok || !data.ok || !data.tables) throw new Error(data.error ?? `HTTP ${r.status}`);
+         let list: ParsedTable[];
+         if (scope === "patyia") {
+            list = await loadPatyiaSchemaAsTables();
+         } else {
+            const r = await fetch("/api/tables");
+            const data = (await r.json()) as { ok?: boolean; tables?: ParsedTable[]; error?: string };
+            if (!r.ok || !data.ok || !data.tables) throw new Error(data.error ?? `HTTP ${r.status}`);
+            list = data.tables;
+         }
          // Backfill de id estable: tablas legacy persistidas antes de la migración
          // llegan sin `id`. Asignamos uno aquí y marcamos `dirty` para round-tripear
          // los ids al server en el siguiente save.
          let backfilled = false;
-         for (const t of data.tables) {
+         for (const t of list) {
             if (!t.id) {
                t.id = newTableId();
                backfilled = true;
             }
          }
-         setTables(data.tables);
-         if (backfilled) {
+         setTables(list);
+         if (backfilled && scope === "clientesis") {
             dirty = true;
             void save(true);
          }
@@ -726,6 +736,7 @@
    }
 
    async function save(silent = false): Promise<void> {
+      if (scope === "patyia") { dirty = false; return; }
       if (saving) return;
       saving = true;
       try {
@@ -840,11 +851,16 @@
       };
 
       const emittedEntities = new Set<string>();
+      const hideColumns = scope === "patyia";
 
       for (const t of tables) {
          const ent = sanitizeMermaidId(effectiveTableName(t));
          if (emittedEntities.has(ent)) continue;
          emittedEntities.add(ent);
+         if (hideColumns) {
+            lines.push(`  ${ent} {}`);
+            continue;
+         }
          lines.push(`  ${ent} {`);
          const seenCol = new Set<string>();
          for (const c of tableColumns(t)) {
@@ -906,7 +922,7 @@
       return lines.join("\n");
    }
 
-   const DER_DOMAIN = "clientesis";
+   $: DER_DOMAIN = scope === "patyia" ? "patyia" : "clientesis";
 
    async function sha1Hex(s: string): Promise<string> {
       const buf = new TextEncoder().encode(s);
@@ -1001,9 +1017,11 @@
 
    onMount(() => {
       void (async () => {
-         await loadStateFromServer();
-         loadNodeInfo();
-         domains = adapter.reloadFromCache();
+         if (scope !== "patyia") {
+            await loadStateFromServer();
+            loadNodeInfo();
+            domains = adapter.reloadFromCache();
+         }
          void load();
          void loadOverrides();
       })();

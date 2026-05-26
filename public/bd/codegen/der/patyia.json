@@ -1,0 +1,5 @@
+{
+  "hash": "4260cfaff018a453ed317a55c6bce9c31150af58",
+  "source": "---\nconfig:\n  layout: elk\n  theme: dark\n  look: classic\n---\nerDiagram\n  direction LR\n  CONSULTAS {}\n  CONVERSACIONES {}\n  INSTRUCCION {}\n  MENSAJESCALIFICADOS {}\n  PROPIETARIOXTERCERO {}\n  TDCONSULTA {}\n  TDCONSULTAXINSTRUCCION {}\n  TDCONSULTAXVECTOR_STORE {}\n  TIQUETESCONVERSACION {}\n  VECTOR_STORE {}",
+  "updatedAt": "2026-05-26T22:01:44.055Z"
+}
