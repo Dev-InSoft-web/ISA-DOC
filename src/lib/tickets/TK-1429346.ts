@@ -7,8 +7,8 @@ import { img } from "./snippets";
 
 const intro =
 	`<div>Se solicita ajustar los <b>nombres de las opciones</b> del campo  
-	<b>Tipo de visualización</b> en el plan de estudio para alinearlos con la  
-	terminología funcional usada por los asesores.</div>`;
+	<b>Tipo de visualización</b> en el plan de estudio, según lo <b>hablado y  
+	acordado en reuniones</b> del equipo.</div>`;
 
 export async function buildBodyTK1429346(): Promise<string> {
 	const [h3Cambios, h3Solucion] = await Promise.all([
