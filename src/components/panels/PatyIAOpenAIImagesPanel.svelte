@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, RichEditor, SelectEnum, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, Modal, RichEditor, SelectEnum, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 
 	interface ImageItem {
@@ -19,6 +19,44 @@
 		{ id: "chat", label: "Conversaciones" },
 	];
 	let accionActiva: AccionId = "imagenes";
+
+	interface InfoCampo {
+		campo: string;
+		tipo: string;
+		significado: string;
+	}
+	const INFO_DOCS: Record<AccionId, { titulo: string; campos: InfoCampo[] }> = {
+		imagenes: {
+			titulo: "Imágenes · significado de cada input",
+			campos: [
+				{ campo: "Prompt", tipo: "texto", significado: "Descripción en lenguaje natural de la imagen que quieres generar. Entre más específico (sujeto, estilo, composición, paleta, iluminación) mejor el resultado." },
+				{ campo: "Modelo", tipo: "enum", significado: "Familia de modelo de OpenAI. 'gpt-image-1-mini' es rápido y económico, '1.5' y '2' mejoran calidad/coherencia a mayor costo. 'gpt-image-1' requiere verificación de organización." },
+				{ campo: "Tamaño", tipo: "enum", significado: "Resolución de la imagen. '1024x1024' es cuadrado, '1024x1536' vertical, '1536x1024' horizontal, 'auto' lo decide el modelo según el prompt." },
+				{ campo: "Cantidad", tipo: "número", significado: "Cuántas variantes generar en una sola llamada. Más imágenes = más costo y más tiempo. Típicamente 1–4." },
+			],
+		},
+		texto: {
+			titulo: "Texto · significado de cada input",
+			campos: [
+				{ campo: "Mensaje de sistema", tipo: "texto (opcional)", significado: "Instrucciones de alto nivel para el modelo: rol, tono, formato de salida, restricciones. No es la pregunta, es el 'cómo debe comportarse'." },
+				{ campo: "Prompt", tipo: "texto", significado: "El mensaje del usuario: la pregunta, tarea o entrada concreta que el modelo debe procesar." },
+				{ campo: "Modelo", tipo: "enum", significado: "Modelo de chat de OpenAI. 'gpt-4o-mini' es rápido y barato, 'gpt-4o' y 'gpt-4.1' ofrecen mayor calidad de razonamiento." },
+				{ campo: "Temperatura", tipo: "número (0–2)", significado: "Aleatoriedad de la respuesta. 0 = determinista y conservador; 1 = creativo balanceado; 2 = muy creativo / errático. Típico 0.2–0.8." },
+			],
+		},
+		chat: {
+			titulo: "Conversaciones · significado de cada input",
+			campos: [
+				{ campo: "Mensaje de sistema", tipo: "texto (opcional)", significado: "Se aplica antes de cada llamada como rol del asistente. Define personalidad/restricciones para todo el hilo." },
+				{ campo: "Modelo", tipo: "enum", significado: "Modelo que responde en cada turno. Puedes cambiarlo entre mensajes; el historial se sigue enviando." },
+				{ campo: "Temperatura", tipo: "número (0–2)", significado: "Aleatoriedad del modelo. Igual que en Texto: bajo = preciso, alto = creativo." },
+				{ campo: "Tu mensaje", tipo: "texto", significado: "El nuevo turno del usuario. Se añade al historial y se envía completo al modelo para mantener el contexto de la conversación." },
+				{ campo: "Reiniciar", tipo: "acción", significado: "Borra el historial local. El siguiente mensaje arranca una conversación nueva." },
+			],
+		},
+	};
+	let infoOpen: boolean = false;
+	$: infoActual = INFO_DOCS[accionActiva];
 
 	const TModeloImagen = {
 		"gpt-image-1-mini": "gpt-image-1-mini",
@@ -252,9 +290,12 @@
 		<div class="custom-scrollbar panel-ejecucion">
 			{#if accionActiva === "imagenes"}
 				<div class="seccion">
-					<header>
-						<h2>Generación de imágenes (OpenAI)</h2>
-						<p class="sub">Llama la API de OpenAI desde el servidor de ISA-DOC. La llave nunca sale al navegador.</p>
+					<header class="seccion-head">
+						<div>
+							<h2>Generación de imágenes (OpenAI)</h2>
+							<p class="sub">Llama la API de OpenAI desde el servidor de ISA-DOC. La llave nunca sale al navegador.</p>
+						</div>
+						<ButtonIconify icon="mdi:information-outline" onClick={() => (infoOpen = true)} title="¿Qué hace cada input?" />
 					</header>
 
 					<RichEditor bind:value={imgPromptHtml} label="Prompt" />
@@ -308,9 +349,12 @@
 				</div>
 			{:else if accionActiva === "texto"}
 				<div class="seccion">
-					<header>
-						<h2>Pruebas de texto (Chat Completions)</h2>
-						<p class="sub">Una sola interacción con OpenAI. Útil para probar prompts aislados.</p>
+					<header class="seccion-head">
+						<div>
+							<h2>Pruebas de texto (Chat Completions)</h2>
+							<p class="sub">Una sola interacción con OpenAI. Útil para probar prompts aislados.</p>
+						</div>
+						<ButtonIconify icon="mdi:information-outline" onClick={() => (infoOpen = true)} title="¿Qué hace cada input?" />
 					</header>
 
 					<RichEditor bind:value={txtSystemHtml} label="Mensaje de sistema (opcional)" />
@@ -337,9 +381,12 @@
 				</div>
 			{:else if accionActiva === "chat"}
 				<div class="seccion">
-					<header>
-						<h2>Pruebas de conversaciones</h2>
-						<p class="sub">Multi-turno con historial. Se mantiene el contexto entre mensajes.</p>
+					<header class="seccion-head">
+						<div>
+							<h2>Pruebas de conversaciones</h2>
+							<p class="sub">Multi-turno con historial. Se mantiene el contexto entre mensajes.</p>
+						</div>
+						<ButtonIconify icon="mdi:information-outline" onClick={() => (infoOpen = true)} title="¿Qué hace cada input?" />
 					</header>
 
 					<RichEditor bind:value={chatSystemHtml} label="Mensaje de sistema (opcional)" />
@@ -381,6 +428,32 @@
 	</FlexLayout>
 </ProjectSectionLayout>
 
+{#if infoOpen}
+	<Modal bind:bshow={infoOpen} onClose={() => (infoOpen = false)}>
+		<h3 slot="title">{infoActual.titulo}</h3>
+		<div class="info-modal-body custom-scrollbar">
+			<table class="info-table">
+				<thead>
+					<tr>
+						<th>Campo</th>
+						<th>Tipo</th>
+						<th>Significado</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each infoActual.campos as c}
+						<tr>
+							<td><strong>{c.campo}</strong></td>
+							<td><code>{c.tipo}</code></td>
+							<td>{c.significado}</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</Modal>
+{/if}
+
 <Toaster />
 
 <style>
@@ -392,6 +465,43 @@
 		color: var(--is-color, #e5e7eb);
 	}
 	header h2 { margin: 0; font-size: 1.1rem; }
+	.seccion-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 0.5rem;
+	}
+	.info-modal-body {
+		max-width: 720px;
+		max-height: 70vh;
+		overflow: auto;
+		padding: 1rem 1.25rem 1.25rem;
+	}
+	.info-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.88rem;
+	}
+	.info-table th,
+	.info-table td {
+		text-align: left;
+		vertical-align: top;
+		padding: 0.5rem 0.6rem;
+		border-bottom: 1px solid rgba(255,255,255,0.08);
+	}
+	.info-table thead th {
+		font-size: 0.78rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		opacity: 0.7;
+		border-bottom: 1px solid rgba(255,255,255,0.18);
+	}
+	.info-table code {
+		font-size: 0.78rem;
+		padding: 0.1rem 0.35rem;
+		background: rgba(255,255,255,0.06);
+		border-radius: 3px;
+	}
 	h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
 	.sub { margin: 0.25rem 0 0; opacity: 0.75; font-size: 0.85rem; }
 	.error {
