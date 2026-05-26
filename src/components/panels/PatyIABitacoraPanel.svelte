@@ -77,10 +77,10 @@
 		</Accordion>
 
 		<Accordion
-			title="SQL · Seed de 13 PROMPT_&lt;TIPO&gt; en AYUDASCP_IA"
+			title="SQL · Seed y actualización de prompts en AYUDASCP_IA"
 			titleIcon="mdi:database-edit-outline"
 			inner
-			checkKey="2026-05-25.patyia.seed-prompts"
+			checkKeys={["2026-05-25.patyia.seed-prompts", "2026-05-25.patyia.update-descripciones"]}
 		>
 			<SqlExecCard
 				title="AYUDASCP_IA · MERGE de prompts específicos (INSTRUCCION + TDCONSULTAXINSTRUCCION)"
@@ -91,14 +91,6 @@
 				confirmKind="warning"
 				height="360px"
 			/>
-		</Accordion>
-
-		<Accordion
-			title="SQL · UPDATE de descripciones funcionales en INSTRUCCION"
-			titleIcon="mdi:database-sync-outline"
-			inner
-			checkKey="2026-05-25.patyia.update-descripciones"
-		>
 			<SqlExecCard
 				title="AYUDASCP_IA · UPDATE de descripcion en INSTRUCCION (13 prompts)"
 				sql={sqlUpdateDescripcionesInstruccion}
