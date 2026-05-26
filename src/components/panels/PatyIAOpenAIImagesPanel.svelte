@@ -1,11 +1,23 @@
 <script lang="ts">
+	import { onMount } from "svelte";
+	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
+	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
+
+	interface ImageItem {
+		src: string;
+		alt: string;
+	}
+
 	let prompt: string = "";
 	let size: string = "1024x1024";
 	let n: number = 1;
 	let model: string = "gpt-image-1-mini";
 	let loading: boolean = false;
 	let error: string = "";
-	let images: Array<{ src: string; alt: string }> = [];
+	let lastGenerated: ImageItem[] = [];
+	let gallery: ImageItem[] = [];
+	let galleryLoading: boolean = false;
+	let galleryError: string = "";
 
 	const SIZES = ["1024x1024", "1024x1536", "1536x1024", "auto"];
 	const MODELS = ["gpt-image-1-mini", "gpt-image-1.5", "gpt-image-2", "gpt-image-1"];
@@ -22,9 +34,28 @@
 		return String(e);
 	}
 
+	async function cargarGaleria() {
+		galleryError = "";
+		galleryLoading = true;
+		try {
+			const r = await fetch("/api/patyia/openai/images/list");
+			const data = (await r.json()) as { ok?: boolean; images?: Array<{ url: string; file: string }>; error?: string };
+			if (!r.ok || data.ok === false) {
+				galleryError = errorToString(data.error) || `Error HTTP ${r.status}`;
+				return;
+			}
+			const arr = Array.isArray(data.images) ? data.images : [];
+			gallery = arr.map((it) => ({ src: it.url, alt: it.file }));
+		} catch (e) {
+			galleryError = errorToString(e);
+		} finally {
+			galleryLoading = false;
+		}
+	}
+
 	async function generar() {
 		error = "";
-		images = [];
+		lastGenerated = [];
 		const p = prompt.trim();
 		if (!p) {
 			error = "Escribe un prompt.";
@@ -44,72 +75,111 @@
 				return;
 			}
 			const arr = Array.isArray(data.images) ? (data.images as Array<{ url?: string; file?: string }>) : [];
-			images = arr
+			lastGenerated = arr
 				.map((it, i) => ({ src: it.url || "", alt: it.file || `Imagen ${i + 1}` }))
 				.filter((it) => it.src);
-			if (!images.length) error = "OpenAI no devolvió imágenes.";
+			if (!lastGenerated.length) error = "OpenAI no devolvió imágenes.";
+			await cargarGaleria();
 		} catch (e) {
 			error = errorToString(e);
 		} finally {
 			loading = false;
 		}
 	}
+
+	onMount(() => {
+		cargarGaleria();
+	});
 </script>
 
-<section class="panel">
-	<header>
-		<h2>PatyIA · Generación de imágenes (OpenAI)</h2>
-		<p class="sub">Llama la API de OpenAI desde el servidor de ISA-DOC. La llave nunca sale al navegador.</p>
-	</header>
+<ProjectSectionLayout
+	title="PatyIA · Actions"
+	subtitle="Ejecuciones y herramientas"
+	proyecto="PatyIA"
+	withTickets
+>
+	<div class="acciones">
+		<header>
+			<h2>Generación de imágenes (OpenAI)</h2>
+			<p class="sub">Llama la API de OpenAI desde el servidor de ISA-DOC. La llave nunca sale al navegador.</p>
+		</header>
 
-	<div class="form">
-		<label>
-			<span>Prompt</span>
-			<textarea bind:value={prompt} rows="4" placeholder="Describe la imagen que quieres generar..."></textarea>
-		</label>
-		<div class="row">
+		<div class="form">
 			<label>
-				<span>Modelo</span>
-				<select bind:value={model}>
-					{#each MODELS as m}
-						<option value={m}>{m}</option>
-					{/each}
-				</select>
+				<span>Prompt</span>
+				<textarea bind:value={prompt} rows="4" placeholder="Describe la imagen que quieres generar..."></textarea>
 			</label>
-			<label>
-				<span>Tamaño</span>
-				<select bind:value={size}>
-					{#each SIZES as s}
-						<option value={s}>{s}</option>
-					{/each}
-				</select>
-			</label>
-			<label>
-				<span>Cantidad</span>
-				<input type="number" min="1" max="4" bind:value={n} />
-			</label>
-			<button type="button" on:click={generar} disabled={loading}>
-				{loading ? "Generando..." : "Generar"}
-			</button>
+			<div class="row">
+				<label>
+					<span>Modelo</span>
+					<select bind:value={model}>
+						{#each MODELS as m}
+							<option value={m}>{m}</option>
+						{/each}
+					</select>
+				</label>
+				<label>
+					<span>Tamaño</span>
+					<select bind:value={size}>
+						{#each SIZES as s}
+							<option value={s}>{s}</option>
+						{/each}
+					</select>
+				</label>
+				<label>
+					<span>Cantidad</span>
+					<input type="number" min="1" max="4" bind:value={n} />
+				</label>
+				<button type="button" on:click={generar} disabled={loading}>
+					{loading ? "Generando..." : "Generar"}
+				</button>
+			</div>
+			{#if error}
+				<div class="error">{error}</div>
+			{/if}
 		</div>
-		{#if error}
-			<div class="error">{error}</div>
+
+		{#if lastGenerated.length}
+			<div class="ultimos">
+				<h3>Últimas generadas</h3>
+				<div class="grid">
+					{#each lastGenerated as img}
+						<a href={img.src} target="_blank" rel="noopener noreferrer">
+							<img src={img.src} alt={img.alt} />
+						</a>
+					{/each}
+				</div>
+			</div>
 		{/if}
-	</div>
 
-	{#if images.length}
-		<div class="grid">
-			{#each images as img}
-				<a href={img.src} target="_blank" rel="noopener noreferrer">
-					<img src={img.src} alt={img.alt} />
-				</a>
-			{/each}
-		</div>
-	{/if}
-</section>
+		<section class="galeria">
+			<div class="galeria-head">
+				<h3>Galería</h3>
+				<button type="button" class="ghost" on:click={cargarGaleria} disabled={galleryLoading}>
+					{galleryLoading ? "Cargando..." : "Refrescar"}
+				</button>
+			</div>
+			{#if galleryError}
+				<div class="error">{galleryError}</div>
+			{:else if !gallery.length && !galleryLoading}
+				<p class="sub">Aún no hay imágenes generadas.</p>
+			{:else}
+				<div class="grid">
+					{#each gallery as img}
+						<a href={img.src} target="_blank" rel="noopener noreferrer" title={img.alt}>
+							<img src={img.src} alt={img.alt} loading="lazy" />
+						</a>
+					{/each}
+				</div>
+			{/if}
+		</section>
+	</div>
+</ProjectSectionLayout>
+
+<Toaster />
 
 <style>
-	.panel {
+	.acciones {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -117,6 +187,7 @@
 		color: var(--is-color, #e5e7eb);
 	}
 	header h2 { margin: 0; font-size: 1.1rem; }
+	h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
 	.sub { margin: 0.25rem 0 0; opacity: 0.75; font-size: 0.85rem; }
 	.form { display: flex; flex-direction: column; gap: 0.5rem; }
 	.form label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; }
@@ -141,6 +212,11 @@
 		font-weight: 600;
 		cursor: pointer;
 	}
+	button.ghost {
+		background: transparent;
+		color: inherit;
+		border: 1px solid rgba(255,255,255,0.2);
+	}
 	button[disabled] { opacity: 0.6; cursor: progress; }
 	.error {
 		padding: 0.5rem 0.75rem;
@@ -153,7 +229,7 @@
 	}
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 		gap: 0.75rem;
 	}
 	.grid img {
@@ -163,4 +239,17 @@
 		border-radius: 6px;
 		background: #000;
 	}
+	.galeria {
+		margin-top: 0.5rem;
+		padding-top: 0.75rem;
+		border-top: 1px solid rgba(255,255,255,0.1);
+	}
+	.galeria-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 0.5rem;
+	}
+	.galeria-head h3 { margin: 0; }
 </style>
