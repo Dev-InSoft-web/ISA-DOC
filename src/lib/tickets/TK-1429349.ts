@@ -100,8 +100,8 @@ export async function buildBodyTK1429349(): Promise<string> {
 
 	const badge = (n: number, kind: "magenta" | "warn"): string => {
 		const palette = kind === "magenta"
-			? "background:#fde7f3;color:#a3146e;"
-			: "background:#fff4d6;color:#915b00;";
+			? "background:rgba(214,51,132,0.18);color:#d63384;"
+			: "background:rgba(217,119,6,0.18);color:#d97706;";
 		return `<span style="${palette}padding:1px 8px;border-radius:10px;font-weight:600;font-family:Consolas,Menlo,monospace;font-size:9.5pt;">${n}</span>`;
 	};
 
