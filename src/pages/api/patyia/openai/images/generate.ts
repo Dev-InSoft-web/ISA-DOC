@@ -30,12 +30,9 @@ interface OpenAIImagesResponse {
 let cachedKey: string | null = null;
 
 async function resolveApiKey(): Promise<string> {
-	if (cachedKey) return cachedKey;
 	const fromEnv = (process.env.paty_openai_api_key ?? process.env.OPENAI_API_KEY ?? "").trim();
-	if (fromEnv) {
-		cachedKey = fromEnv;
-		return fromEnv;
-	}
+	if (fromEnv) return fromEnv;
+	if (cachedKey) return cachedKey;
 	const rel = (process.env.paty_local_settings_path ?? "../PatyIA/local.settings.json").trim();
 	const path = resolve(process.cwd(), rel);
 	try {
@@ -59,7 +56,7 @@ const ALLOWED_SIZES = new Set([
 ]);
 
 const DEFAULT_URL = "https://api.openai.com/v1/images/generations";
-const DEFAULT_MODEL = "gpt-image-1";
+const DEFAULT_MODEL = "gpt-image-1-mini";
 const PUBLIC_DIR = "public/patyia/openai/images";
 const PUBLIC_URL = "/patyia/openai/images";
 

@@ -2,11 +2,13 @@
 	let prompt: string = "";
 	let size: string = "1024x1024";
 	let n: number = 1;
+	let model: string = "gpt-image-1-mini";
 	let loading: boolean = false;
 	let error: string = "";
 	let images: Array<{ src: string; alt: string }> = [];
 
 	const SIZES = ["1024x1024", "1024x1536", "1536x1024", "auto"];
+	const MODELS = ["gpt-image-1-mini", "gpt-image-1.5", "gpt-image-2", "gpt-image-1"];
 
 	function errorToString(e: unknown): string {
 		if (!e) return "";
@@ -33,7 +35,7 @@
 			const r = await fetch("/api/patyia/openai/images/generate", {
 				method: "POST",
 				headers: { "content-type": "application/json" },
-				body: JSON.stringify({ prompt: p, size, n }),
+				body: JSON.stringify({ prompt: p, size, n, model }),
 			});
 			let data: Record<string, unknown> = {};
 			try { data = await r.json(); } catch { /* ignore */ }
@@ -66,6 +68,14 @@
 			<textarea bind:value={prompt} rows="4" placeholder="Describe la imagen que quieres generar..."></textarea>
 		</label>
 		<div class="row">
+			<label>
+				<span>Modelo</span>
+				<select bind:value={model}>
+					{#each MODELS as m}
+						<option value={m}>{m}</option>
+					{/each}
+				</select>
+			</label>
 			<label>
 				<span>Tamaño</span>
 				<select bind:value={size}>
