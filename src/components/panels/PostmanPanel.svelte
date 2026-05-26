@@ -93,16 +93,12 @@
 	// === Pestañas top-level sincronizadas con la URL (?tab=editor|resumen|pruebas). ===
 	const POSTMAN_TABS = ["editor", "resumen", "pruebas"] as const;
 	const postmanTabs = createUrlTabs("tab", POSTMAN_TABS);
-	let topTab: string = postmanTabs.selected();
-	let openEditor: boolean = topTab === "editor";
-	let openResumen: boolean = topTab === "resumen";
-	let openPruebas: boolean = topTab === "pruebas";
-	$: openEditor = topTab === "editor";
-	$: openResumen = topTab === "resumen";
-	$: openPruebas = topTab === "pruebas";
-	$: if (openEditor && topTab !== "editor") topTab = postmanTabs.onOpened("editor");
-	$: if (openResumen && topTab !== "resumen") topTab = postmanTabs.onOpened("resumen");
-	$: if (openPruebas && topTab !== "pruebas") topTab = postmanTabs.onOpened("pruebas");
+	let openEditor: boolean = postmanTabs.selected() === "editor";
+	let openResumen: boolean = postmanTabs.selected() === "resumen";
+	let openPruebas: boolean = postmanTabs.selected() === "pruebas";
+	$: if (openEditor) postmanTabs.onOpened("editor");
+	$: if (openResumen) postmanTabs.onOpened("resumen");
+	$: if (openPruebas) postmanTabs.onOpened("pruebas");
 
 	// === Pruebas en secuencia (verify-api) ===
 	let verifyHost = proyecto === "patyia" ? "http://localhost:7071" : "http://localhost:20040";
@@ -370,7 +366,12 @@
 
 	let unsubUrl: () => void = () => {};
 	onMount(() => {
-		unsubUrl = onUrlStateChange(() => { topTab = postmanTabs.selected(); });
+		unsubUrl = onUrlStateChange(() => {
+			const sel = postmanTabs.selected();
+			openEditor = sel === "editor";
+			openResumen = sel === "resumen";
+			openPruebas = sel === "pruebas";
+		});
 		if (STATIC_MODE) { loadStaticPostman(); return; }
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });
