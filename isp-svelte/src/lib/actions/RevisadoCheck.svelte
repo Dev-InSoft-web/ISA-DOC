@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { CheckboxIcon, Iconify } from "@ingenieria_insoft/ispsveltecomponents";
-	import { revisadoStore, setRevisado, setRevisadoMany } from "../../../lib/bitacora/revisadoStore";
+	import { revisadoStore, setRevisado, setRevisadoMany } from "../../../../src/lib/bitacora/revisadoStore";
 	import ConfirmDialog from "../overlays/ConfirmDialog.svelte";
 
 	export let key: string = "";
