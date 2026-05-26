@@ -27,6 +27,7 @@ import { bodyTK1429262 } from "./TK-1429262";
 import { bodyTK1429342 } from "./TK-1429342";
 import { bodyTK1429346 } from "./TK-1429346";
 import { bodyTK1429349 } from "./TK-1429349";
+import { bodyTK1429373 } from "./TK-1429373";
 
 export interface TicketNormativa {
 	medioAtencion: string;
@@ -86,6 +87,19 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 };
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1429373",
+		titulo: "Se requiere insertar en la base de datos de Paty V3 las instrucciones correspondientes",
+		solicitante: "Asesora Viviana Restrepo Quintero",
+		fechaSolicitud: "25/may./2026 04:29:16 pm",
+		noMaquillarFechas: true,
+		estimacionMinutos: 0,
+		diligenciaMinutos: 0,
+		resumen: "La asesora Viviana solicita insertar en la base de datos de Paty V3 las instrucciones especficas por tipo de consulta, alineando la BD con los prompts definidos en la ruta de análisis y diseño y en el archivo de control de SharePoint.",
+		body: bodyTK1429373,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - ING Servicios Otros" },
+		proyecto: "PatyIA",
+	},
 	{
 		id: "TK-1429349",
 		titulo: "Modificación de controladores de server",
