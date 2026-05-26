@@ -87,13 +87,6 @@ export async function buildBodyTK1429349(): Promise<string> {
 			`Se ajusta <code>PromiseInsertQry</code> en los controladores  
 			afectados para manejar listas vacías y tipos explícitos.`,
 		),
-		await note(
-			"mdi:archive-outline",
-			`El código previo se conserva intacto como referencia en  
-			<code>OLD/2.Capacitacion-OLD/</code>  
-			(<code>00_Base copy.ts</code>, <code>01_PlanDeEstudio copy.ts</code>,  
-			<code>02_Cursos copy.ts</code>).`,
-		),
 	);
 
 	const badge = (n: number, kind: "magenta" | "warn"): string => {
