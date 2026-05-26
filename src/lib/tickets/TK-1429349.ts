@@ -43,15 +43,11 @@ export async function buildBodyTK1429349(): Promise<string> {
 	const [
 		h3Solicitud,
 		h3Cambios,
-		h3Antes,
-		h3Despues,
-		h3Volumen,
+		h3Comparativa,
 		h3Postura,
 	] = await Promise.all([
 		h3Iconized("mdi:tools", "Solicitud"),
 		h3Iconized("mdi:check-circle-outline", "Cambios realizados"),
-		h3Iconized("mdi:file-document-outline", "Antes — estructura consolidada"),
-		h3Iconized("mdi:file-tree-outline", "Después — controladores separados"),
 		h3Iconized("mdi:chart-bar", "Comparativa de volumen de código"),
 		h3Iconized("mdi:comment-quote-outline", "Postura del desarrollador"),
 	]);
@@ -102,28 +98,34 @@ export async function buildBodyTK1429349(): Promise<string> {
 		),
 	);
 
-	const tablaAntes = simpleTable(
-		["Archivo", "Líneas"],
-		ANTES.map(([f, n]) => [`<code>${f}</code>`, String(n)])
-			.concat([[`<b>Total</b>`, `<b>${TOTAL_ANTES}</b>`]]),
-		{ aligns: ["left", "right"], widths: ["70%", "30%"] },
-	);
+	const SECTION_ANTES = `<b style="color:#a33;">Antes</b> · estructura consolidada`;
+	const SECTION_DESPUES = `<b style="color:#2a7;">Después</b> · controladores separados`;
+	const SECTION_TOTAL = `<b>Totales</b>`;
+	const SECTION_VARIACION = `<b>Variación</b>`;
 
-	const tablaDespues = simpleTable(
-		["Archivo", "Líneas"],
-		DESPUES.map(([f, n]) => [`<code>${f}</code>`, String(n)])
-			.concat([[`<b>Total</b>`, `<b>${TOTAL_DESPUES}</b>`]]),
-		{ aligns: ["left", "right"], widths: ["70%", "30%"] },
-	);
+	const filasAntes: string[][] = ANTES.map(([f, n], i) => [
+		i === 0 ? SECTION_ANTES : "",
+		`<code>${f}</code>`,
+		String(n),
+	]);
+	filasAntes.push(["", `<i>Total antes</i>`, `<b>${TOTAL_ANTES}</b>`]);
 
-	const tablaVolumen = simpleTable(
-		["Métrica", "Antes", "Después", "Δ"],
-		[
-			["Archivos", "3", "12", "+9"],
-			["Líneas de código", String(TOTAL_ANTES), String(TOTAL_DESPUES), `${DELTA >= 0 ? "+" : ""}${DELTA}`],
-			["Variación", "—", "—", `<b>${DELTA >= 0 ? "+" : ""}${PCT}%</b>`],
-		],
-		{ aligns: ["left", "right", "right", "right"], widths: ["40%", "20%", "20%", "20%"] },
+	const filasDespues: string[][] = DESPUES.map(([f, n], i) => [
+		i === 0 ? SECTION_DESPUES : "",
+		`<code>${f}</code>`,
+		String(n),
+	]);
+	filasDespues.push(["", `<i>Total después</i>`, `<b>${TOTAL_DESPUES}</b>`]);
+
+	const filasResumen: string[][] = [
+		[SECTION_TOTAL, "Archivos", `3 → 12 (+9)`],
+		[SECTION_VARIACION, "Líneas de código", `${TOTAL_ANTES} → ${TOTAL_DESPUES} (<b>${DELTA >= 0 ? "+" : ""}${DELTA}</b>, <b>${DELTA >= 0 ? "+" : ""}${PCT}%</b>)`],
+	];
+
+	const tablaComparativa = simpleTable(
+		["Sección", "Archivo / Métrica", "Líneas"],
+		[...filasAntes, ...filasDespues, ...filasResumen],
+		{ aligns: ["left", "left", "right"], widths: ["35%", "45%", "20%"] },
 	);
 
 	const notaVolumen = await note(
@@ -172,9 +174,7 @@ export async function buildBodyTK1429349(): Promise<string> {
 		intro +
 		h3Solicitud + solicitud +
 		h3Cambios + cambios +
-		h3Antes + tablaAntes +
-		h3Despues + tablaDespues +
-		h3Volumen + tablaVolumen + notaVolumen +
+		h3Comparativa + tablaComparativa + notaVolumen +
 		h3Postura + postura
 	);
 }
