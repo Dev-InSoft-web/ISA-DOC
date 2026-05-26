@@ -4,7 +4,8 @@
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 	import TsViewer from "../viewers/TsViewer.svelte";
 	import ImageViewer from "../viewers/ImageViewer.svelte";
-	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, type UsageTexto } from "../../lib/patyia/openaiPricing";
+	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/patyia/openaiPricing";
+	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/patyia/patyiaPersist";
 
 	interface ImageItem {
 		src: string;
@@ -30,6 +31,16 @@
 		model: string;
 		temperature: number;
 		mensajes: ChatMessage[];
+		usage: UsageTexto | null;
+		costoUsd: number | null;
+	}
+	interface ImagenRun {
+		ts: string;
+		model: string;
+		size: string;
+		n: number;
+		prompt: string;
+		images: ImageItem[];
 		usage: UsageTexto | null;
 		costoUsd: number | null;
 	}
@@ -178,6 +189,12 @@ const data = await r.json();
 	let gallery: ImageItem[] = [];
 	let galleryLoading: boolean = false;
 	let galleryError: string = "";
+	let imgHistorial: ImagenRun[] = [];
+
+	// --- Persistencia local (hidratación diferida) ---
+	let persistReady: boolean = false;
+	const filasTexto: FilaPricingTexto[] = filasPricingTexto();
+	const filasImagen: FilaPricingImagen[] = filasPricingImagen();
 
 	// --- Viewer de imágenes ---
 	let viewerOpen: boolean = false;
@@ -255,8 +272,21 @@ const data = await r.json();
 				.filter((it) => it.src);
 			imgLastUsage = (data.usage as UsageTexto | null) ?? null;
 			imgLastCostoUsd = calcularCostoImagen(imgModel, imgLastGenerated.length || imgN);
-			if (!imgLastGenerated.length) imgError = "OpenAI no devolvió imágenes.";
-			await cargarGaleria();
+			if (!imgLastGenerated.length) imgError = "OpenAI no devolvió imágenes.";			if (imgLastGenerated.length) {
+				imgHistorial = [
+					{
+						ts: new Date().toISOString(),
+						model: imgModel,
+						size: imgSize,
+						n: imgN,
+						prompt: p,
+						images: imgLastGenerated.slice(),
+						usage: imgLastUsage,
+						costoUsd: imgLastCostoUsd,
+					},
+					...imgHistorial,
+				];
+			}			await cargarGaleria();
 		} catch (e) {
 			imgError = errorToString(e);
 		} finally {
@@ -418,8 +448,16 @@ const data = await r.json();
 	}
 
 	onMount(() => {
+		txtHistorial = loadJson<TextoRun[]>(STORAGE_KEYS.txtHistorial, []);
+		chatHistorial = loadJson<ChatRun[]>(STORAGE_KEYS.chatHistorial, []);
+		imgHistorial = loadJson<ImagenRun[]>(STORAGE_KEYS.imgHistorial, []);
+		persistReady = true;
 		cargarGaleria();
 	});
+
+	$: if (persistReady) saveJson(STORAGE_KEYS.txtHistorial, txtHistorial);
+	$: if (persistReady) saveJson(STORAGE_KEYS.chatHistorial, chatHistorial);
+	$: if (persistReady) saveJson(STORAGE_KEYS.imgHistorial, imgHistorial);
 </script>
 
 <ProjectSectionLayout
