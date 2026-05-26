@@ -5,6 +5,7 @@ dist-gh-pages/
 .astro/
 .env
 public/static-api/
+public/patyia/openai/images/
 
 # secretos (NUNCA versionar)
 .agent/

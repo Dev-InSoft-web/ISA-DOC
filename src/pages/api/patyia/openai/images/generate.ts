@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { resolve, join } from "node:path";
 
 export const prerender = false;
 
@@ -15,14 +15,20 @@ interface PatyLocalSettings {
 	Values?: Record<string, string>;
 }
 
+interface OpenAIImage {
+	b64_json?: string;
+	url?: string;
+	revised_prompt?: string;
+}
+
+interface OpenAIImagesResponse {
+	created?: number;
+	data?: OpenAIImage[];
+	error?: { message?: string; type?: string; code?: string };
+}
+
 let cachedKey: string | null = null;
 
-// Resuelve la API key probando, en orden:
-//   1) `paty_openai_api_key` en el entorno
-//   2) `OPENAI_API_KEY` en el entorno
-//   3) `local.settings.json` de PatyIA (path configurable con
-//      `paty_local_settings_path`, default `../PatyIA/local.settings.json`
-//      relativo al CWD del proceso de Astro).
 async function resolveApiKey(): Promise<string> {
 	if (cachedKey) return cachedKey;
 	const fromEnv = (process.env.paty_openai_api_key ?? process.env.OPENAI_API_KEY ?? "").trim();
@@ -54,9 +60,9 @@ const ALLOWED_SIZES = new Set([
 
 const DEFAULT_URL = "https://api.openai.com/v1/images/generations";
 const DEFAULT_MODEL = "gpt-image-1";
+const PUBLIC_DIR = "public/patyia/openai/images";
+const PUBLIC_URL = "/patyia/openai/images";
 
-// Genera imágenes vía OpenAI Images API usando la llave guardada en el
-// servidor (`paty_openai_api_key`). Nunca expone la llave al cliente.
 export const POST: APIRoute = async ({ request }) => {
 	const apiKey = await resolveApiKey();
 	if (!apiKey) return json({ ok: false, error: "OPENAI_API_KEY no encontrada (env paty_openai_api_key / OPENAI_API_KEY ni en PatyIA/local.settings.json)" }, 500);
@@ -85,8 +91,9 @@ export const POST: APIRoute = async ({ request }) => {
 
 	const url = (process.env.paty_openai_images_url ?? DEFAULT_URL).trim() || DEFAULT_URL;
 
+	let r: Response;
 	try {
-		const r = await fetch(url, {
+		r = await fetch(url, {
 			method: "POST",
 			headers: {
 				"content-type": "application/json",
@@ -94,27 +101,65 @@ export const POST: APIRoute = async ({ request }) => {
 			},
 			body: JSON.stringify({ model, prompt, size, n }),
 		});
-		const text = await r.text();
-		if (!r.ok) {
-			return new Response(text, {
-				status: r.status,
-				headers: {
-					"content-type": r.headers.get("content-type") ?? "application/json",
-					"cache-control": "no-store",
-				},
-			});
-		}
-		let parsed: unknown;
-		try {
-			parsed = JSON.parse(text);
-		} catch {
-			return json({ ok: false, error: "Respuesta no JSON de OpenAI", raw: text.slice(0, 500) }, 502);
-		}
-		return json({ ok: true, model, size, n, result: parsed });
 	} catch (err) {
 		const msg = err instanceof Error ? err.message : String(err);
 		return json({ ok: false, error: `Fallo al invocar OpenAI: ${msg}` }, 502);
 	}
+
+	const text = await r.text();
+	let parsed: OpenAIImagesResponse | null = null;
+	try {
+		parsed = JSON.parse(text) as OpenAIImagesResponse;
+	} catch {
+		return json({ ok: false, error: `OpenAI respondió HTTP ${r.status} no JSON`, raw: text.slice(0, 500) }, r.ok ? 502 : r.status);
+	}
+
+	if (!r.ok) {
+		const msg = parsed?.error?.message ?? `OpenAI HTTP ${r.status}`;
+		return json({ ok: false, error: msg, openai: parsed?.error ?? null }, r.status);
+	}
+
+	const data = Array.isArray(parsed?.data) ? parsed!.data! : [];
+	const dirAbs = resolve(process.cwd(), PUBLIC_DIR);
+	try {
+		await mkdir(dirAbs, { recursive: true });
+	} catch {
+		// best-effort
+	}
+	const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+	const saved: Array<{ url: string; file?: string; revised_prompt?: string }> = [];
+	for (let i = 0; i < data.length; i++) {
+		const it = data[i];
+		const baseName = `${stamp}-${i + 1}.png`;
+		if (it.b64_json) {
+			try {
+				const buf = Buffer.from(it.b64_json, "base64");
+				await writeFile(join(dirAbs, baseName), buf);
+				saved.push({ url: `${PUBLIC_URL}/${baseName}`, file: baseName, revised_prompt: it.revised_prompt });
+				continue;
+			} catch {
+				saved.push({ url: `data:image/png;base64,${it.b64_json}`, revised_prompt: it.revised_prompt });
+				continue;
+			}
+		}
+		if (it.url) {
+			try {
+				const ir = await fetch(it.url);
+				if (ir.ok) {
+					const ab = await ir.arrayBuffer();
+					await writeFile(join(dirAbs, baseName), Buffer.from(ab));
+					saved.push({ url: `${PUBLIC_URL}/${baseName}`, file: baseName, revised_prompt: it.revised_prompt });
+					continue;
+				}
+			} catch {
+				// cae al fallback
+			}
+			saved.push({ url: it.url, revised_prompt: it.revised_prompt });
+		}
+	}
+
+	if (!saved.length) return json({ ok: false, error: "OpenAI no devolvió imágenes" }, 502);
+	return json({ ok: true, model, size, n, images: saved });
 };
 
 function json(body: unknown, status = 200): Response {

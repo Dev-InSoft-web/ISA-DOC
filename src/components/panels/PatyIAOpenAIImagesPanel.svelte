@@ -8,6 +8,18 @@
 
 	const SIZES = ["1024x1024", "1024x1536", "1536x1024", "auto"];
 
+	function errorToString(e: unknown): string {
+		if (!e) return "";
+		if (typeof e === "string") return e;
+		if (e instanceof Error) return e.message;
+		if (typeof e === "object") {
+			const o = e as Record<string, unknown>;
+			if (typeof o.message === "string") return o.message;
+			try { return JSON.stringify(e); } catch { return String(e); }
+		}
+		return String(e);
+	}
+
 	async function generar() {
 		error = "";
 		images = [];
@@ -23,19 +35,19 @@
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ prompt: p, size, n }),
 			});
-			const data = await r.json();
+			let data: Record<string, unknown> = {};
+			try { data = await r.json(); } catch { /* ignore */ }
 			if (!r.ok || data.ok === false) {
-				error = data.error || data.message || `Error HTTP ${r.status}`;
+				error = errorToString(data.error ?? data.message) || `Error HTTP ${r.status}`;
 				return;
 			}
-			const arr = Array.isArray(data?.result?.data) ? data.result.data : [];
-			images = arr.map((it: { b64_json?: string; url?: string }, i: number) => {
-				const src = it.b64_json ? `data:image/png;base64,${it.b64_json}` : (it.url || "");
-				return { src, alt: `Imagen ${i + 1}` };
-			}).filter((it: { src: string }) => it.src);
+			const arr = Array.isArray(data.images) ? (data.images as Array<{ url?: string; file?: string }>) : [];
+			images = arr
+				.map((it, i) => ({ src: it.url || "", alt: it.file || `Imagen ${i + 1}` }))
+				.filter((it) => it.src);
 			if (!images.length) error = "OpenAI no devolvió imágenes.";
 		} catch (e) {
-			error = e instanceof Error ? e.message : String(e);
+			error = errorToString(e);
 		} finally {
 			loading = false;
 		}
