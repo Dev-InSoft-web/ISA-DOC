@@ -9,9 +9,7 @@ const intro =
 	`<div>De acuerdo a la solicitud realizada por el ingeniero <b>Pedro</b>,  
 	se intervienen los <b>controladores de server</b> de capacitación para  
 	desacoplar helpers dinámicos y replicar el patrón de diseño explícito  
-	que ya tienen los demás controladores. El código previo al ajuste quedó  
-	conservado como referencia en  
-	<code>ISP-CLientesISServer/OLD/2.Capacitacion-OLD/</code>.</div>`;
+	que ya tienen los demás controladores.</div>`;
 
 const ANTES: Array<[string, number]> = [
 	["00_Base.ts", 128],
