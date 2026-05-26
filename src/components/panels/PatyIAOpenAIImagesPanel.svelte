@@ -2,6 +2,8 @@
 	import { onMount } from "svelte";
 	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, Modal, RichEditor, SelectEnum, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
+	import TsViewer from "../viewers/TsViewer.svelte";
+	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, type UsageTexto } from "../../lib/patyia/openaiPricing";
 
 	interface ImageItem {
 		src: string;
@@ -10,6 +12,25 @@
 	interface ChatMessage {
 		role: "system" | "user" | "assistant";
 		content: string;
+	}
+	interface TextoRun {
+		ts: string;
+		model: string;
+		temperature: number;
+		system: string;
+		prompt: string;
+		text: string;
+		finish: string;
+		usage: UsageTexto | null;
+		costoUsd: number | null;
+	}
+	interface ChatRun {
+		ts: string;
+		model: string;
+		temperature: number;
+		mensajes: ChatMessage[];
+		usage: UsageTexto | null;
+		costoUsd: number | null;
 	}
 
 	type AccionId = "imagenes" | "texto" | "chat";
@@ -58,6 +79,53 @@
 	let infoOpen: boolean = false;
 	$: infoActual = INFO_DOCS[accionActiva];
 
+	const SNIPPETS: Record<AccionId, string> = {
+		imagenes: `// POST /api/patyia/openai/images/generate
+const r = await fetch("/api/patyia/openai/images/generate", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({
+    prompt: "un gato astronauta, estilo acuarela",
+    model: "gpt-image-1-mini",   // o gpt-image-1.5 / gpt-image-2
+    size:  "1024x1024",          // 1024x1024 | 1024x1536 | 1536x1024 | auto
+    n: 1                          // 1..4
+  }),
+});
+const data = await r.json();
+// data => { ok, model, size, n, images: [{ url, file? }], usage, created }`,
+		texto: `// POST /api/patyia/openai/text/generate
+const r = await fetch("/api/patyia/openai/text/generate", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({
+    system: "Eres un asistente conciso.", // opcional
+    prompt: "Resume en 3 vi\u00f1etas qu\u00e9 es Astro.",
+    model:  "gpt-4o-mini",                 // gpt-4o-mini | gpt-4o | gpt-4.1 | gpt-4.1-mini
+    temperature: 0.7                       // 0..2
+  }),
+});
+const data = await r.json();
+// data => { ok, model, text, finish_reason, usage: { prompt_tokens, completion_tokens, total_tokens } }`,
+		chat: `// POST /api/patyia/openai/chat/send
+const historial = [
+  { role: "system",    content: "Eres un asistente t\u00e9cnico." },
+  { role: "user",      content: "Hola, \u00bfqu\u00e9 sabes de Svelte?" },
+  { role: "assistant", content: "Svelte es un compilador de componentes..." },
+  { role: "user",      content: "\u00bfQu\u00e9 versi\u00f3n debo usar?" },
+];
+const r = await fetch("/api/patyia/openai/chat/send", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({
+    messages: historial,
+    model: "gpt-4o-mini",
+    temperature: 0.7
+  }),
+});
+const data = await r.json();
+// data => { ok, model, message: { role, content }, usage }`,
+	};
+
 	const TModeloImagen = {
 		"gpt-image-1-mini": "gpt-image-1-mini",
 		"gpt-image-1.5": "gpt-image-1.5",
@@ -104,6 +172,8 @@
 	let imgLoading: boolean = false;
 	let imgError: string = "";
 	let imgLastGenerated: ImageItem[] = [];
+	let imgLastUsage: UsageTexto | null = null;
+	let imgLastCostoUsd: number | null = null;
 	let gallery: ImageItem[] = [];
 	let galleryLoading: boolean = false;
 	let galleryError: string = "";
@@ -130,6 +200,8 @@
 	async function generarImagen() {
 		imgError = "";
 		imgLastGenerated = [];
+		imgLastUsage = null;
+		imgLastCostoUsd = null;
 		const p = htmlAPlano(imgPromptHtml);
 		if (!p) {
 			imgError = "Escribe un prompt.";
@@ -152,6 +224,8 @@
 			imgLastGenerated = arr
 				.map((it, i) => ({ src: it.url || "", alt: it.file || `Imagen ${i + 1}` }))
 				.filter((it) => it.src);
+			imgLastUsage = (data.usage as UsageTexto | null) ?? null;
+			imgLastCostoUsd = calcularCostoImagen(imgModel, imgLastGenerated.length || imgN);
 			if (!imgLastGenerated.length) imgError = "OpenAI no devolvió imágenes.";
 			await cargarGaleria();
 		} catch (e) {
@@ -170,11 +244,20 @@
 	let txtError: string = "";
 	let txtResult: string = "";
 	let txtFinish: string = "";
+	let txtLastUsage: UsageTexto | null = null;
+	let txtLastCostoUsd: number | null = null;
+	let txtHistorial: TextoRun[] = [];
+
+	function limpiarHistorialTexto() {
+		txtHistorial = [];
+	}
 
 	async function generarTexto() {
 		txtError = "";
 		txtResult = "";
 		txtFinish = "";
+		txtLastUsage = null;
+		txtLastCostoUsd = null;
 		const p = htmlAPlano(txtPromptHtml);
 		if (!p) {
 			txtError = "Escribe un prompt.";
@@ -196,7 +279,28 @@
 			}
 			txtResult = typeof data.text === "string" ? data.text : "";
 			txtFinish = typeof data.finish_reason === "string" ? data.finish_reason : "";
-			if (!txtResult) txtError = "OpenAI no devolvió texto.";
+			txtLastUsage = (data.usage as UsageTexto | null) ?? null;
+			const modelUsado = typeof data.model === "string" ? data.model : txtModel;
+			const costo = calcularCostoTexto(modelUsado, txtLastUsage);
+			txtLastCostoUsd = costo ? costo.totalUsd : null;
+			if (!txtResult) {
+				txtError = "OpenAI no devolvió texto.";
+			} else {
+				txtHistorial = [
+					{
+						ts: new Date().toISOString(),
+						model: modelUsado,
+						temperature: txtTemperature,
+						system: s,
+						prompt: p,
+						text: txtResult,
+						finish: txtFinish,
+						usage: txtLastUsage,
+						costoUsd: txtLastCostoUsd,
+					},
+					...txtHistorial,
+				];
+			}
 		} catch (e) {
 			txtError = errorToString(e);
 		} finally {
@@ -212,10 +316,32 @@
 	let chatLoading: boolean = false;
 	let chatError: string = "";
 	let chatMessages: ChatMessage[] = [];
+	let chatLastUsage: UsageTexto | null = null;
+	let chatLastCostoUsd: number | null = null;
+	let chatHistorial: ChatRun[] = [];
 
 	function reiniciarChat() {
+		if (chatMessages.length) {
+			chatHistorial = [
+				{
+					ts: new Date().toISOString(),
+					model: chatModel,
+					temperature: chatTemperature,
+					mensajes: chatMessages.slice(),
+					usage: chatLastUsage,
+					costoUsd: chatLastCostoUsd,
+				},
+				...chatHistorial,
+			];
+		}
 		chatMessages = [];
+		chatLastUsage = null;
+		chatLastCostoUsd = null;
 		chatError = "";
+	}
+
+	function limpiarHistorialChat() {
+		chatHistorial = [];
 	}
 
 	async function enviarChat() {
@@ -250,6 +376,10 @@
 				{ role: "user", content: userText },
 				{ role: "assistant", content: reply?.content ?? "" },
 			];
+			chatLastUsage = (data.usage as UsageTexto | null) ?? null;
+			const modelUsado = typeof data.model === "string" ? data.model : chatModel;
+			const costo = calcularCostoTexto(modelUsado, chatLastUsage);
+			chatLastCostoUsd = costo ? costo.totalUsd : null;
 			chatInputHtml = "";
 		} catch (e) {
 			chatError = errorToString(e);
@@ -317,6 +447,14 @@
 					{#if imgLastGenerated.length}
 						<div>
 							<h3>Últimas generadas</h3>
+							<div class="metrics">
+								<span><strong>Cantidad:</strong> {imgLastGenerated.length}</span>
+								<span><strong>Modelo:</strong> <code>{imgModel}</code></span>
+								<span><strong>Costo estimado:</strong> {formatearUsd(imgLastCostoUsd)}</span>
+								{#if imgLastUsage}
+									<span><strong>Tokens OpenAI:</strong> {JSON.stringify(imgLastUsage)}</span>
+								{/if}
+							</div>
 							<div class="grid">
 								{#each imgLastGenerated as img}
 									<a href={img.src} target="_blank" rel="noopener noreferrer">
@@ -375,9 +513,57 @@
 					{#if txtResult}
 						<div class="resultado">
 							<h3>Respuesta {txtFinish ? `· ${txtFinish}` : ""}</h3>
+							<div class="metrics">
+								<span><strong>Modelo:</strong> <code>{txtModel}</code></span>
+								<span><strong>Tokens entrada:</strong> {txtLastUsage?.prompt_tokens ?? "—"}</span>
+								<span><strong>Tokens salida:</strong> {txtLastUsage?.completion_tokens ?? "—"}</span>
+								<span><strong>Total:</strong> {txtLastUsage?.total_tokens ?? "—"}</span>
+								<span><strong>Costo:</strong> {formatearUsd(txtLastCostoUsd)}</span>
+							</div>
 							<pre>{txtResult}</pre>
 						</div>
 					{/if}
+
+					<section class="galeria">
+						<div class="galeria-head">
+							<h3>Historial de textos</h3>
+							<ButtonIconify icon="mdi:delete-outline" onClick={limpiarHistorialTexto} disabled={!txtHistorial.length} title="Limpiar historial" />
+						</div>
+						{#if !txtHistorial.length}
+							<p class="sub">Aún no hay generaciones en esta sesión.</p>
+						{:else}
+							<table class="hist-table">
+								<thead>
+									<tr>
+										<th>Cuando</th>
+										<th>Modelo</th>
+										<th>Tº</th>
+										<th>Prompt</th>
+										<th>Respuesta</th>
+										<th>In</th>
+										<th>Out</th>
+										<th>Tot</th>
+										<th>USD</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each txtHistorial as h}
+										<tr>
+											<td><code>{h.ts.replace("T", " ").slice(0, 19)}</code></td>
+											<td><code>{h.model}</code></td>
+											<td>{h.temperature}</td>
+											<td class="truncate" title={h.prompt}>{h.prompt}</td>
+											<td class="truncate" title={h.text}>{h.text}</td>
+											<td>{h.usage?.prompt_tokens ?? "—"}</td>
+											<td>{h.usage?.completion_tokens ?? "—"}</td>
+											<td>{h.usage?.total_tokens ?? "—"}</td>
+											<td>{formatearUsd(h.costoUsd)}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						{/if}
+					</section>
 				</div>
 			{:else if accionActiva === "chat"}
 				<div class="seccion">
@@ -422,6 +608,49 @@
 					{#if chatError}
 						<div class="error">{chatError}</div>
 					{/if}
+
+					{#if chatLastUsage}
+						<div class="metrics">
+							<span><strong>Último turno · Modelo:</strong> <code>{chatModel}</code></span>
+							<span><strong>Tokens entrada:</strong> {chatLastUsage.prompt_tokens ?? "—"}</span>
+							<span><strong>Tokens salida:</strong> {chatLastUsage.completion_tokens ?? "—"}</span>
+							<span><strong>Total:</strong> {chatLastUsage.total_tokens ?? "—"}</span>
+							<span><strong>Costo turno:</strong> {formatearUsd(chatLastCostoUsd)}</span>
+						</div>
+					{/if}
+
+					<section class="galeria">
+						<div class="galeria-head">
+							<h3>Historial de conversaciones</h3>
+							<ButtonIconify icon="mdi:delete-outline" onClick={limpiarHistorialChat} disabled={!chatHistorial.length} title="Limpiar historial" />
+						</div>
+						{#if !chatHistorial.length}
+							<p class="sub">Las conversaciones reiniciadas aparecerán aquí.</p>
+						{:else}
+							<div class="hist-chats">
+								{#each chatHistorial as h, idx}
+									<details>
+										<summary>
+											<code>{h.ts.replace("T", " ").slice(0, 19)}</code>
+											· <code>{h.model}</code>
+											· {h.mensajes.length} msgs
+											· ult. tokens {h.usage?.total_tokens ?? "—"}
+											· {formatearUsd(h.costoUsd)}
+											<span class="sub">(conversación #{txtHistorial.length + chatHistorial.length - idx})</span>
+										</summary>
+										<div class="chat-historial">
+											{#each h.mensajes as m}
+												<div class="msg msg-{m.role}">
+													<strong>{m.role}</strong>
+													<pre>{m.content}</pre>
+												</div>
+											{/each}
+										</div>
+									</details>
+								{/each}
+							</div>
+						{/if}
+					</section>
 				</div>
 			{/if}
 		</div>
@@ -450,6 +679,11 @@
 					{/each}
 				</tbody>
 			</table>
+
+			<h4 class="snippet-title">Ejemplo de petición</h4>
+			<div class="snippet-host">
+				<TsViewer value={SNIPPETS[accionActiva]} height="320px" />
+			</div>
 		</div>
 	</Modal>
 {/if}
@@ -501,6 +735,78 @@
 		padding: 0.1rem 0.35rem;
 		background: rgba(255,255,255,0.06);
 		border-radius: 3px;
+	}
+	.snippet-title {
+		margin: 1rem 0 0.4rem;
+		font-size: 0.85rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		opacity: 0.75;
+	}
+	.snippet-host {
+		border: 1px solid rgba(255,255,255,0.1);
+		border-radius: 6px;
+		overflow: hidden;
+	}
+	.metrics {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem 1rem;
+		padding: 0.5rem 0.75rem;
+		background: rgba(255,255,255,0.04);
+		border: 1px solid rgba(255,255,255,0.1);
+		border-radius: 4px;
+		font-size: 0.82rem;
+	}
+	.metrics code {
+		font-size: 0.78rem;
+		padding: 0.05rem 0.3rem;
+		background: rgba(255,255,255,0.06);
+		border-radius: 3px;
+	}
+	.hist-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.78rem;
+	}
+	.hist-table th,
+	.hist-table td {
+		text-align: left;
+		vertical-align: top;
+		padding: 0.35rem 0.5rem;
+		border-bottom: 1px solid rgba(255,255,255,0.08);
+	}
+	.hist-table thead th {
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		opacity: 0.7;
+	}
+	.hist-table .truncate {
+		max-width: 200px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.hist-table code {
+		font-size: 0.72rem;
+		padding: 0.05rem 0.3rem;
+		background: rgba(255,255,255,0.06);
+		border-radius: 3px;
+	}
+	.hist-chats {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+	.hist-chats details {
+		border: 1px solid rgba(255,255,255,0.1);
+		border-radius: 4px;
+		padding: 0.4rem 0.6rem;
+	}
+	.hist-chats summary {
+		cursor: pointer;
+		font-size: 0.82rem;
 	}
 	h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
 	.sub { margin: 0.25rem 0 0; opacity: 0.75; font-size: 0.85rem; }

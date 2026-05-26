@@ -24,6 +24,7 @@ interface OpenAIImage {
 interface OpenAIImagesResponse {
 	created?: number;
 	data?: OpenAIImage[];
+	usage?: Record<string, number | Record<string, number>>;
 	error?: { message?: string; type?: string; code?: string };
 }
 
@@ -156,7 +157,7 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 
 	if (!saved.length) return json({ ok: false, error: "OpenAI no devolvió imágenes" }, 502);
-	return json({ ok: true, model, size, n, images: saved });
+	return json({ ok: true, model, size, n, images: saved, usage: parsed?.usage ?? null, created: parsed?.created ?? null });
 };
 
 function json(body: unknown, status = 200): Response {
