@@ -492,22 +492,25 @@ export function tiempoTotalEstimadoMin(body: string, commits: TicketCommit[] = [
 	const commitsExternos = filtrarCommitsExternos(commits);
 	const cota = cotaMaximaMinutos(commitsExternos);
 	const minCommits = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : 0;
+	const minCommitsVisibles = commitsExternos.length > 0 ? minCommits : 0;
 	const minDiligencia = diligenciaMin && diligenciaMin > 0 ? diligenciaMin : tiempoDiligenciaMin(body ?? "");
 	const minExtra = extraMin && extraMin > 0 ? extraMin : 0;
 
-	return minCommits + tiempoCambiosBdMin(cambiosBd) + minDiligencia + minExtra;
+	return minCommitsVisibles + tiempoCambiosBdMin(cambiosBd) + minDiligencia + minExtra;
 }
 
 function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligencia: number, nCommits: number, nCambiosBd: number, minExtra: number = 0, extraDesc?: string): string {
-	const total = minCommits + minBd + minDiligencia + minExtra;
+	const minCommitsVisibles = nCommits > 0 ? minCommits : 0;
+	const minBdVisible = nCambiosBd > 0 ? minBd : 0;
+	const total = minCommitsVisibles + minBdVisible + minDiligencia + minExtra;
 	if (total <= 0) return "";
 	const tdLabel = "padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#555;border-bottom:1px solid #f0f0f0;";
 	const tdValor = "padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#444;text-align:right;white-space:nowrap;border-bottom:1px solid #f0f0f0;";
 	const tdLabelTot = "padding:0.4rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#333;font-weight:600;border-top:1px solid #999;";
 	const tdValorTot = "padding:0.4rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#222;text-align:right;white-space:nowrap;font-weight:600;border-top:1px solid #999;";
 	const filas: string[] = [];
-	if (nCommits > 0) filas.push(`<tr><td style="${tdLabel}">Trabajo en commits <span style="color:#999;">(${nCommits} commits)</span></td><td style="${tdValor}">${fmtMin(minCommits)}</td></tr>`);
-	if (nCambiosBd > 0) filas.push(`<tr><td style="${tdLabel}">Cambios extra <span style="color:#999;">(${nCambiosBd} cambios BD)</span></td><td style="${tdValor}">${fmtMin(minBd)}</td></tr>`);
+	if (nCommits > 0) filas.push(`<tr><td style="${tdLabel}">Trabajo en commits <span style="color:#999;">(${nCommits} commits)</span></td><td style="${tdValor}">${fmtMin(minCommitsVisibles)}</td></tr>`);
+	if (nCambiosBd > 0) filas.push(`<tr><td style="${tdLabel}">Cambios extra <span style="color:#999;">(${nCambiosBd} cambios BD)</span></td><td style="${tdValor}">${fmtMin(minBdVisible)}</td></tr>`);
 	if (minExtra > 0) {
 		const desc = extraDesc ? ` <span style="color:#999;">(${escapeHtml(extraDesc)})</span>` : "";
 		filas.push(`<tr><td style="${tdLabel}">Trabajo extra${desc}</td><td style="${tdValor}">${fmtMin(minExtra)}</td></tr>`);
