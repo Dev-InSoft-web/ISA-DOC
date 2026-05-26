@@ -1,12 +1,23 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
+	import { FlexLayout, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 
 	interface ImageItem {
 		src: string;
 		alt: string;
 	}
+
+	type AccionId = "imagenes";
+	interface Accion {
+		id: AccionId;
+		label: string;
+		icon: string;
+	}
+	const ACCIONES: Accion[] = [
+		{ id: "imagenes", label: "Imágenes", icon: "mdi:image-multiple-outline" },
+	];
+	let accionActiva: AccionId = "imagenes";
 
 	let prompt: string = "";
 	let size: string = "1024x1024";
@@ -96,9 +107,31 @@
 	title="PatyIA · Actions"
 	subtitle="Ejecuciones y herramientas"
 	proyecto="PatyIA"
-	withTickets
 >
-	<div class="acciones">
+	<FlexLayout direction="row" items="stretch" style="width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden;">
+		<!-- Panel izquierdo (20%): Navegación de acciones -->
+		<nav class="custom-scrollbar nav-acciones" aria-label="Acciones">
+			<h3>Acciones</h3>
+			<ul>
+				{#each ACCIONES as a}
+					<li>
+						<button
+							type="button"
+							class="nav-btn"
+							class:active={accionActiva === a.id}
+							on:click={() => (accionActiva = a.id)}
+						>
+							{a.label}
+						</button>
+					</li>
+				{/each}
+			</ul>
+		</nav>
+
+		<!-- Panel derecho (80%): Ejecución de la acción seleccionada -->
+		<div class="custom-scrollbar panel-ejecucion">
+			{#if accionActiva === "imagenes"}
+				<div class="acciones">
 		<header>
 			<h2>Generación de imágenes (OpenAI)</h2>
 			<p class="sub">Llama la API de OpenAI desde el servidor de ISA-DOC. La llave nunca sale al navegador.</p>
@@ -173,7 +206,10 @@
 				</div>
 			{/if}
 		</section>
-	</div>
+		</div>
+			{/if}
+		</div>
+	</FlexLayout>
 </ProjectSectionLayout>
 
 <Toaster />
@@ -252,4 +288,45 @@
 		margin-bottom: 0.5rem;
 	}
 	.galeria-head h3 { margin: 0; }
+	.nav-acciones {
+		flex: 0 0 20%;
+		min-width: 0;
+		min-height: 0;
+		overflow: auto;
+		padding: 0.75rem 0.5rem;
+		border-right: 1px solid rgba(255,255,255,0.08);
+	}
+	.nav-acciones h3 {
+		margin: 0 0 0.5rem;
+		font-size: 0.85rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		opacity: 0.7;
+		color: color-mix(in srgb, var(--is-primary), var(--is-color) 45%);
+	}
+	.nav-acciones ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+	.nav-btn {
+		width: 100%;
+		text-align: left;
+		background: transparent;
+		color: inherit;
+		border: 1px solid transparent;
+		border-radius: 4px;
+		padding: 0.45rem 0.6rem;
+		font: inherit;
+		font-weight: 500;
+		cursor: pointer;
+	}
+	.nav-btn:hover { background: rgba(255,255,255,0.05); }
+	.nav-btn.active {
+		background: color-mix(in srgb, var(--is-primary), transparent 80%);
+		border-color: color-mix(in srgb, var(--is-primary), transparent 50%);
+		color: color-mix(in srgb, var(--is-primary), white 20%);
+	}
+	.panel-ejecucion {
+		flex: 1 1 80%;
+		min-width: 0;
+		min-height: 0;
+		overflow: auto;
+	}
 </style>
