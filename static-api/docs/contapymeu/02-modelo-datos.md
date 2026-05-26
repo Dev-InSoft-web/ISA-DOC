@@ -47,7 +47,7 @@ Catálogo de cursos.
 | --- | --- | --- |
 | `ICURSO` (PK) | `varchar(10)` | Identificador del curso. |
 | `NCURSO` | `varchar(10)` | Nombre corto. |
-| `ITEMA` | `varchar(25)` | FK → `CAPAC_TEMAS`. |
+| `ITEMA` | `varchar(25)` | FK → `SOP_TEMAS_V2` (dominio Soporte). |
 | `IDRIVER` | `smallint` | FK → `CAPAC_DRIVERS`. |
 | `DESCRIPCION` | `varchar(max)` | Descripción larga. |
 | `BACTIVO` | `bit` | Activo / inactivo. |
@@ -149,7 +149,10 @@ Catálogo de cursos.
 | `IPERMISO` (PK) | `varchar(25)` |
 | `NPERMISO` | `varchar(255)` |
 
-### `CAPAC_TEMAS`
+### `SOP_TEMAS_V2`
+
+> Catálogo de temas del dominio **Soporte** (no `CAPAC_*`). Se referencia
+> como FK externa desde `CAPAC_CURSOS.ITEMA` y `CAPAC_PLANES_CURSOS.ITEMA`.
 
 | Columna | Tipo |
 | --- | --- |
@@ -157,8 +160,57 @@ Catálogo de cursos.
 | `NTEMA` | `varchar(255)` |
 | auditoría | `IUSUARIOCRE`, `APPCRE`, `IPCRE`, `FHCRE` |
 
+## Mapeo Relacional de Objetos (ORM)
+
+Además de la estructura SQL pura, el modelo cliente expresa
+**herencia entre entidades** para que ciertas tablas de Capacitación
+se comporten como otra entidad del dominio. El siguiente diagrama
+resume las herencias y los pivotes del módulo.
+
+![Diagrama ORM — Mapeo Relacional de Objetos](/imgs/Diagrama%20ORM%20%28Mapeo%20Relacional%20de%20Objetos%291.jpg)
+
+```mermaid
+erDiagram
+  CAPAC_CURSOS ||--|| SOP_TEMAS_V2 : "ITEMA (1:1)"
+  CAPAC_PLANES_CURSOS ||--|| SOP_TEMAS_V2 : "ITEMA (1:1)"
+  CAPAC_PLANES_CURSOS ||--|| RECURSOS : "IRECURSO (1:1)"
+  CAPAC_PLANES_CURSOS }o--|| CAPAC_CURSOS : "ICURSO (N:1)"
+  CAPAC_PLANES_CURSOS }o--o| CAPAC_PLANES_CURSOS : "IPLANPADRE (auto)"
+  CAPAC_CURSOS_DE_PLANES_ESTUDIO }o--|| CAPAC_PLANES_ESTUDIO : "IPLANESTUDIO"
+  CAPAC_CURSOS_DE_PLANES_ESTUDIO }o--|| CAPAC_CURSOS : "ICURSO"
+  CAPAC_CURSOS_PREREQUISITOS }o--|| CAPAC_CURSOS : "ICURSO (auto)"
+  CAPAC_ATRIBUTOS_X_DRIVERS }o--|| CAPAC_DRIVERS : "IDRIVER"
+  CAPAC_ATRIBUTOS_PLANES }o--|| CAPAC_PLANES_CURSOS : "IPLAN/ICURSO"
+  CAPAC_SEGURIDADES_CURSOS }o--|| CAPAC_CURSOS : "ICURSO"
+  CAPAC_SEGURIDADES_CURSOS }o--|| PERMISOS : "IPERMISO"
+```
+
+### Herencia `TPlanCurso` extends `TRecurso`
+
+`CAPAC_PLANES_CURSOS` lleva una FK `IRECURSO` hacia `RECURSOS` (dominio
+externo) y, a nivel de objeto, **`TPlanCurso` hereda de `TRecurso`**:
+el sistema trata un plan-curso como si fuera un recurso, exponiendo
+además un accesor explícito `recurso` (1-1 por `IRECURSO`) que se
+materializa con `Get_Recurso_PlanCurso`.
+
+Esta particularidad se declara en el JSON de la tabla
+(`tablemeta.extendsmodel: "Recurso"`) y el generador de snippets emite
+`export class TPlanCurso extends TRecurso { … }` en vez del `TObject`
+por defecto.
+
+### Pivotes (tablas puente)
+
+- `CAPAC_CURSOS_DE_PLANES_ESTUDIO` — pivote `PLANES_ESTUDIO` ↔ `CURSOS`.
+- `CAPAC_CURSOS_PREREQUISITOS` — pivote `CURSOS` ↔ `CURSOS` (auto-relación).
+- `CAPAC_ATRIBUTOS_X_DRIVERS` — pivote `DRIVERS` ↔ atributos.
+- `CAPAC_ATRIBUTOS_PLANES` — pivote `PLANES_CURSOS` ↔ atributos.
+- `CAPAC_SEGURIDADES_CURSOS` — pivote `CURSOS` ↔ `PERMISOS`.
+
 ## Reglas de integridad relevantes
 
+- `CAPAC_CURSOS.ITEMA` → `SOP_TEMAS_V2` (1:1).
+- `CAPAC_PLANES_CURSOS.ITEMA` → `SOP_TEMAS_V2` (1:1).
+- `CAPAC_PLANES_CURSOS.IRECURSO` → `RECURSOS` (1:1, base de la herencia `TPlanCurso extends TRecurso`).
 - `CAPAC_CURSOS_DE_PLANES_ESTUDIO.IPLANESTUDIO` → `CAPAC_PLANES_ESTUDIO`.
 - `CAPAC_CURSOS_DE_PLANES_ESTUDIO.ICURSO` → `CAPAC_CURSOS`.
 - `CAPAC_PLANES_CURSOS.ICURSO` → `CAPAC_CURSOS`.
@@ -175,41 +227,41 @@ inmediatamente al recargar.
 ### `CAPAC_DRIVERS`
 
 ```sql
-> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\init_capacitacion.sql'
+> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\doc\init_capacitacion.sql'
 ```
 
 ### `CAPAC_CURSOS`
 
 ```sql
-> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\init_capacitacion.sql'
+> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\doc\init_capacitacion.sql'
 ```
 
 ### `CAPAC_PLANES_ESTUDIO`
 
 ```sql
-> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\init_capacitacion.sql'
+> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\doc\init_capacitacion.sql'
 ```
 
 ### Tablas pivote (PKs compuestas)
 
 ```sql
-> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\init_capacitacion.sql'
+> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\doc\init_capacitacion.sql'
 ```
 
 ```sql
-> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\init_capacitacion.sql'
+> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\doc\init_capacitacion.sql'
 ```
 
 ```sql
-> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\init_capacitacion.sql'
+> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\doc\init_capacitacion.sql'
 ```
 
 ```sql
-> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\init_capacitacion.sql'
+> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\doc\init_capacitacion.sql'
 ```
 
 ### Secuencias
 
 ```sql
-> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\Contapyme\ClientesIS\doc\init_capacitacion.sql'
+> ⚠ `doc/init_capacitacion.sql`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\doc\init_capacitacion.sql'
 ```

@@ -10,7 +10,7 @@ Esta sección describe los dos flujos transversales más comunes del módulo
 | Tabla | Acción | Por qué |
 | --- | --- | --- |
 | `CAPAC_CURSOS` | `SELECT` | Encabezado del curso. |
-| `CAPAC_TEMAS` | `SELECT` | Resolver `ITEMA`. |
+| `SOP_TEMAS_V2` | `SELECT` | Resolver `ITEMA` (dominio Soporte). |
 | `CAPAC_DRIVERS` | `SELECT` | Resolver `IDRIVER`. |
 | `CAPAC_ESTRUCTURAS_CURSOS` | `SELECT` | Niveles. |
 | `CAPAC_SEGURIDADES_CURSOS` | `SELECT` | Permisos. |
@@ -33,7 +33,7 @@ Esta sección describe los dos flujos transversales más comunes del módulo
    - `CAPAC_SEGURIDADES_CURSOS` — sincroniza permisos.
    - `CAPAC_ATRIBUTOS_PLANES` — sincroniza atributos.
 4. **No toca**:
-   - `CAPAC_TEMAS`, `CAPAC_DRIVERS` (catálogos maestros, se editan por su
+   - `SOP_TEMAS_V2` (dominio Soporte), `CAPAC_DRIVERS` (catálogos maestros, se editan por su
      propio endpoint).
    - Tablas de dominios externos (recursos, mensajería).
 5. Commit / rollback.

@@ -36,17 +36,6 @@
       "flatpath": "6",
       "ireference": "COLUMN",
       "kind": "col"
-    },
-    {
-      "flatpath": "7",
-      "ireference": "COLUMN",
-      "kind": "col"
-    },
-    {
-      "flatpath": "8",
-      "kind": "optional",
-      "name": "AUDITORIA",
-      "active": true
     }
   ],
   "entities": {
@@ -55,7 +44,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "IPLAN",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(100)",
         "primarykey": false,
         "kind": "col"
       },
@@ -63,7 +52,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "ICURSO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(10)",
         "primarykey": false,
         "kind": "col"
       },
@@ -87,7 +76,7 @@
         "icolumn": "5",
         "flatpath": "5",
         "name": "IRECURSO",
-        "type": "VARCHAR(255)",
+        "type": "BIGINT",
         "primarykey": false,
         "kind": "col"
       },
@@ -95,16 +84,7 @@
         "icolumn": "6",
         "flatpath": "6",
         "name": "IPLANPADRE",
-        "type": "VARCHAR(255)",
-        "primarykey": false,
-        "kind": "col"
-      },
-      {
-        "icolumn": "7",
-        "flatpath": "7",
-        "name": "BACTIVO",
-        "type": "BIT",
-        "defaultvalue": "1",
+        "type": "VARCHAR(100)",
         "primarykey": false,
         "kind": "col"
       }

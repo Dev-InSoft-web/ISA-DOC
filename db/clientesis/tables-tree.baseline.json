@@ -15,7 +15,8 @@
     { "flatpath": "1.10", "ireference": "TABLE", "kind": "table" },
     { "flatpath": "1.11", "ireference": "TABLE", "kind": "table" },
     { "flatpath": "2", "ireference": "TABLE", "kind": "table" },
-    { "flatpath": "3", "ireference": "TABLE", "kind": "table" }
+    { "flatpath": "3", "ireference": "TABLE", "kind": "table" },
+    { "flatpath": "4", "ireference": "TABLE", "kind": "table" }
   ],
   "entities": {
     "TABLE": [
@@ -30,8 +31,9 @@
       { "itable": "1.9",  "flatpath": "1.9",  "tableref": "ESTRUCTURAS_CURSOS",        "rowname": "ESTRUCTURAS_CURSOS",        "tableid": "tbl_estructuras_cursos" },
       { "itable": "1.10", "flatpath": "1.10", "tableref": "SEGURIDADES_CURSOS",        "rowname": "SEGURIDADES_CURSOS",        "tableid": "tbl_seguridades_cursos" },
       { "itable": "1.11", "flatpath": "1.11", "tableref": "HISTORIALCURSO",            "rowname": "HISTORIALCURSO",            "tableid": "tbl_historialcurso" },
-      { "itable": "2",    "flatpath": "2",    "tableref": "SOP_TEMAS",                 "rowname": "SOP_TEMAS",                 "tableid": "tbl_sop_temas", "snippets": { "sql": false } },
-      { "itable": "3",    "flatpath": "3",    "tableref": "PERMISOS",                  "rowname": "PERMISOS",                  "tableid": "tbl_permisos" }
+      { "itable": "2",    "flatpath": "2",    "tableref": "SOP_TEMAS_V2",              "rowname": "SOP_TEMAS_V2",              "tableid": "tbl_sop_temas_v2", "snippets": { "sql": false } },
+      { "itable": "3",    "flatpath": "3",    "tableref": "PERMISOS",                  "rowname": "PERMISOS",                  "tableid": "tbl_permisos" },
+      { "itable": "4",    "flatpath": "4",    "tableref": "RECURSOS",                  "rowname": "RECURSOS",                  "tableid": "tbl_recursos", "snippets": { "sql": false } }
     ]
   }
 }

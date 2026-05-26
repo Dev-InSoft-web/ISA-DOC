@@ -18,7 +18,7 @@ Script consolidado para inicializar el módulo de capacitación en SQL Server.
 3. Creación de **tablas principales**:
    - `CAPAC_DRIVERS`
    - `CAPAC_PLANES_ESTUDIO`
-   - `CAPAC_TEMAS`
+   - `SOP_TEMAS_V2` (externa, dominio Soporte)
    - `CAPAC_CURSOS`
    - `CAPAC_PERMISOS`
 4. Creación de **tablas pivote / detalle**:

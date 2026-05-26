@@ -16,16 +16,6 @@
       "flatpath": "2",
       "ireference": "COLUMN",
       "kind": "col"
-    },
-    {
-      "flatpath": "3",
-      "ireference": "COLUMN",
-      "kind": "col"
-    },
-    {
-      "flatpath": "4",
-      "kind": "optional",
-      "name": "AUDITORIA"
     }
   ],
   "entities": {
@@ -34,7 +24,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "ICURSO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(10)",
         "primarykey": false,
         "kind": "col"
       },
@@ -42,16 +32,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "IPERMISO",
-        "type": "VARCHAR(255)",
-        "primarykey": false,
-        "kind": "col"
-      },
-      {
-        "icolumn": "3",
-        "flatpath": "3",
-        "name": "BACTIVO",
-        "type": "BIT",
-        "defaultvalue": "1",
+        "type": "VARCHAR(25)",
         "primarykey": false,
         "kind": "col"
       }

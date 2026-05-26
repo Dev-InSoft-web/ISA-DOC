@@ -45,8 +45,7 @@
     {
       "flatpath": "8",
       "kind": "optional",
-      "name": "AUDITORIA",
-      "active": true
+      "name": "AUDITORIA"
     }
   ],
   "entities": {
@@ -55,7 +54,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "ICURSO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(10)",
         "primarykey": true,
         "kind": "col"
       },
@@ -71,7 +70,7 @@
         "icolumn": "3",
         "flatpath": "3",
         "name": "ITEMA",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(25)",
         "primarykey": false,
         "kind": "col"
       },
@@ -87,7 +86,7 @@
         "icolumn": "5",
         "flatpath": "5",
         "name": "IDRIVER",
-        "type": "BIGINT",
+        "type": "SMALLINT",
         "primarykey": false,
         "kind": "col"
       },
@@ -103,7 +102,7 @@
       {
         "icolumn": "7",
         "flatpath": "7",
-        "name": "BGENERACERTIFICADO",
+        "name": "BGENERACERTIFICADOS",
         "type": "BIT",
         "defaultvalue": "0",
         "primarykey": false,

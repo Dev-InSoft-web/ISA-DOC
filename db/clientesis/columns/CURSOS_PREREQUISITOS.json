@@ -21,11 +21,6 @@
       "flatpath": "3",
       "ireference": "COLUMN",
       "kind": "col"
-    },
-    {
-      "flatpath": "4",
-      "kind": "optional",
-      "name": "AUDITORIA"
     }
   ],
   "entities": {
@@ -34,7 +29,7 @@
         "icolumn": "1",
         "flatpath": "1",
         "name": "ICURSO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(10)",
         "primarykey": false,
         "kind": "col"
       },
@@ -42,7 +37,7 @@
         "icolumn": "2",
         "flatpath": "2",
         "name": "ICURSOREQUERIDO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(10)",
         "primarykey": false,
         "kind": "col"
       },
@@ -50,7 +45,7 @@
         "icolumn": "3",
         "flatpath": "3",
         "name": "IPLANESTUDIO",
-        "type": "VARCHAR(255)",
+        "type": "VARCHAR(20)",
         "primarykey": false,
         "kind": "col"
       }

@@ -1,0 +1,132 @@
+<!DOCTYPE html><html lang="es" class="dark" data-astro-cid-sckkx6r4> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ISA — Postman Docs</title><script>(function(){const rawBase = "/ISA-DOC";
+
+         // @ts-nocheck
+         // Shim de fetch para gh-pages estatico, instalado SINCRONICAMENTE antes de cualquier
+         // hidratacion de componentes Svelte. Reescribe assets absolutos al base path,
+         // intercepta /api/* devolviendo snapshots o defaults razonables, y absorbe escrituras
+         // para que la UI mantenga el estado local sin enviar nada al servidor.
+         (function () {
+            if (!rawBase || rawBase === "/") return;
+            var BASE_NO_SLASH = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
+            var origFetch = window.fetch.bind(window);
+            var ASSET_PREFIXES = ["/icons/", "/imgs/", "/docs/", "/bd/", "/db/", "/static-api/"];
+            function defaultForPath(p) {
+               if (p === "tables") return { ok: true, version: 1, tables: [] };
+               if (p === "revisado") return {};
+               if (p === "sql/fragments") return { fragments: [], full: "" };
+               if (p === "codegen/state") return { ok: true, state: {} };
+               if (p === "source") return "";
+               return { ok: true, static: true };
+            }
+            window.fetch = function (input, init) {
+               var url = typeof input === "string" ? input : input instanceof URL ? input.href : (input && input.url) || "";
+               for (var i = 0; i < ASSET_PREFIXES.length; i++) {
+                  if (url.indexOf(ASSET_PREFIXES[i]) === 0) {
+                     return origFetch(BASE_NO_SLASH + url, init);
+                  }
+               }
+               var isApi = url.indexOf("/api/") === 0 || url.indexOf(BASE_NO_SLASH + "/api/") === 0;
+               if (!isApi) return origFetch(input, init);
+
+               var method = ((init && init.method) || (input && input.method) || "GET").toUpperCase();
+               var apiIdx = url.indexOf("/api/");
+               var apiPath = url
+                  .slice(apiIdx + 5)
+                  .replace(/\?.*$/, "")
+                  .replace(/\/$/, "");
+
+               if (method !== "GET") {
+                  return Promise.resolve(new Response(JSON.stringify({ ok: true, static: true }), { status: 200, headers: { "content-type": "application/json" } }));
+               }
+
+               return origFetch(BASE_NO_SLASH + "/static-api/" + apiPath + ".json", { cache: "no-cache" })
+                  .then(function (r) {
+                     if (r.ok) return r;
+                     var def = defaultForPath(apiPath);
+                     var body = typeof def === "string" ? def : JSON.stringify(def);
+                     var ct = typeof def === "string" ? "text/plain; charset=utf-8" : "application/json";
+                     return new Response(body, { status: 200, headers: { "content-type": ct } });
+                  })
+                  .catch(function () {
+                     var def = defaultForPath(apiPath);
+                     var body = typeof def === "string" ? def : JSON.stringify(def);
+                     var ct = typeof def === "string" ? "text/plain; charset=utf-8" : "application/json";
+                     return new Response(body, { status: 200, headers: { "content-type": ct } });
+                  });
+            };
+
+            // Reescritura de atributos src/href/srcset absolutos para que
+            // <img>, <a>, <link>, <script>, <source> apunten al base path estatico.
+            // Necesario porque el shim de fetch no intercepta requests originados
+            // por atributos HTML (navegador los hace directamente).
+            var ATTR_PREFIXES = ["/icons/", "/imgs/", "/docs/", "/bd/", "/db/", "/static-api/"];
+            function matchesPrefix(v) {
+               if (!v || typeof v !== "string") return false;
+               for (var i = 0; i < ATTR_PREFIXES.length; i++) {
+                  if (v.indexOf(ATTR_PREFIXES[i]) === 0) return true;
+               }
+               return false;
+            }
+            function rewriteAttr(el, attr) {
+               var v = el.getAttribute(attr);
+               if (matchesPrefix(v)) el.setAttribute(attr, BASE_NO_SLASH + v);
+            }
+            function rewriteSrcset(el) {
+               var v = el.getAttribute("srcset");
+               if (!v) return;
+               var parts = v.split(",").map(function (p) {
+                  var s = p.trim();
+                  var sp = s.split(/\s+/);
+                  if (matchesPrefix(sp[0])) sp[0] = BASE_NO_SLASH + sp[0];
+                  return sp.join(" ");
+               });
+               el.setAttribute("srcset", parts.join(", "));
+            }
+            function rewriteEl(el) {
+               if (!el || el.nodeType !== 1) return;
+               if (el.hasAttribute("src")) rewriteAttr(el, "src");
+               if (el.hasAttribute("href")) rewriteAttr(el, "href");
+               if (el.hasAttribute("srcset")) rewriteSrcset(el);
+               if (el.hasAttribute("poster")) rewriteAttr(el, "poster");
+            }
+            function rewriteSubtree(root) {
+               if (!root || root.nodeType !== 1) return;
+               rewriteEl(root);
+               var nodes = root.querySelectorAll("[src],[href],[srcset],[poster]");
+               for (var i = 0; i < nodes.length; i++) rewriteEl(nodes[i]);
+            }
+            function startObserver() {
+               rewriteSubtree(document.body);
+               var mo = new MutationObserver(function (muts) {
+                  for (var i = 0; i < muts.length; i++) {
+                     var m = muts[i];
+                     if (m.type === "childList") {
+                        for (var j = 0; j < m.addedNodes.length; j++) rewriteSubtree(m.addedNodes[j]);
+                     } else if (m.type === "attributes" && m.target) {
+                        rewriteEl(m.target);
+                     }
+                  }
+               });
+               mo.observe(document.documentElement, {
+                  childList: true,
+                  subtree: true,
+                  attributes: true,
+                  attributeFilter: ["src", "href", "srcset", "poster"],
+               });
+            }
+            if (document.readyState === "loading") {
+               document.addEventListener("DOMContentLoaded", startObserver);
+            } else {
+               startObserver();
+            }
+         })();
+      })();</script><style>*,*:before,*:after{box-sizing:border-box;margin:0}body{font-family:system-ui,-apple-system,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}:root{--is-primary: oklch(74.6% .16 232.661);--is-color: #222;--is-bg-primary: white;--is-bg-secondary: WhiteSmoke;--is-bg-readonly: #f9f9f9;--is-b-color: #8885;--is-b-required: #8888;--is-b-optional: #80C080;--is-b-readonly: #8884;--is-info: skyblue;--is-success: #4CAF50;--is-warning: #FFC107;--is-error: red;--is-danger: crimson}.dark{--is-primary: oklch(74.6% .16 232.661);--is-color: oklch(98.5% .002 247.839);--is-bg-primary: #0c1222;--is-bg-secondary: #041c34;--is-bg-readonly: #001327;--is-b-color: #8885;--is-b-required: #888;--is-b-optional: #80C080;--is-b-readonly: #8884;--is-info: skyblue;--is-success: #4CAF50;--is-warning: #FFC107;--is-error: red;--is-danger: crimson}.dark input::-webkit-inner-spin-button,.dark input::-webkit-outer-spin-button{filter:invert(1)}.custom-scrollbar{overflow-y:auto;overflow-x:hidden}.custom-scrollbar::-webkit-scrollbar{width:4px;height:4px}.custom-scrollbar::-webkit-scrollbar-track{background:#e0f2fe}.custom-scrollbar::-webkit-scrollbar-thumb{background:#0369a1}.custom-scrollbar::-webkit-scrollbar-thumb:hover{background:#075985}*::-webkit-scrollbar{width:8px;height:8px}*::-webkit-scrollbar-track{background:transparent}*::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--is-primary) 55%,transparent);border-radius:6px;border:2px solid transparent;background-clip:padding-box}*::-webkit-scrollbar-thumb:hover{background:var(--is-primary);background-clip:padding-box;border:2px solid transparent}*::-webkit-scrollbar-corner{background:transparent}*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--is-primary) 55%,transparent) transparent}h1{font-size:1.5em;font-weight:700}h2{font-size:1.2em;font-weight:700}h3{font-size:1.17em;font-weight:700}h4{font-size:1em;font-weight:500}button[data-variant]{min-width:0;white-space:nowrap}button[data-variant]>span:not([data-element]){overflow:hidden;text-overflow:ellipsis;min-width:0}body{background:var(--is-bg-primary);color:var(--is-color);height:100vh;margin:0;display:flex;flex-direction:column;overflow:hidden}.isa-header[data-astro-cid-sckkx6r4]{display:flex;flex-direction:column;gap:.5rem;padding:.5rem 1.5rem .4rem;background:var(--is-bg-secondary);border-bottom:1px solid var(--is-b-color)}.isa-header-top[data-astro-cid-sckkx6r4]{display:flex;align-items:center;gap:1rem}.isa-logo[data-astro-cid-sckkx6r4]{font-size:1.25rem;font-weight:700;color:var(--is-primary)}.isa-sep[data-astro-cid-sckkx6r4]{opacity:.3}.isa-nav[data-astro-cid-sckkx6r4]{display:flex;gap:.5rem;font-size:.875rem}.isa-nav-link[data-astro-cid-sckkx6r4]{padding:.25rem .75rem;border-radius:4px;text-decoration:none;color:inherit;transition:background .15s}.isa-nav-link[data-astro-cid-sckkx6r4]:hover{background:var(--is-bg-readonly)}.isa-nav-link[data-astro-cid-sckkx6r4].active{background:var(--is-primary);color:#fff}.isa-nav-projects[data-astro-cid-sckkx6r4]{font-size:.95rem;font-weight:600}.isa-nav-project[data-astro-cid-sckkx6r4]{padding:.3rem .9rem}.isa-nav-subtabs[data-astro-cid-sckkx6r4]{padding-left:calc(2.25rem + 1ch);border-top:1px dashed var(--is-b-color);padding-top:.4rem}.isa-main[data-astro-cid-sckkx6r4]{flex:1 1 auto;min-height:0;overflow:hidden;padding:.5rem 1rem 1rem;display:flex;flex-direction:column}.is-button-iconify{width:fit-content!important;height:fit-content!important}
+</style>
+<link rel="stylesheet" href="/ISA-DOC/_astro/DocsViewer.Cd85tWwt.css">
+<link rel="stylesheet" href="/ISA-DOC/_astro/PostmanPanel.DM5onygU.css">
+<style>.cm-host.svelte-dfjuo0{height:100%;min-height:0;border-radius:6px;overflow:hidden;display:flex;flex-direction:column}.cm-host.svelte-dfjuo0 .cm-editor{border-radius:6px;flex:1 1 auto;min-height:0;max-height:100%}.cm-host.svelte-dfjuo0 .cm-scroller{overflow:auto}
+</style>
+<link rel="stylesheet" href="/ISA-DOC/_astro/SqlPanel.DZK96Kzb.css">
+<style>.cm-wrap{border-radius:6px;overflow:hidden;min-height:0;width:100%;min-width:0}.cm-host.svelte-9o580p{min-height:0;min-width:0;width:100%;height:100%;display:block}.cm-host.svelte-9o580p .cm-editor{border-radius:6px;height:100%;max-width:100%}.cm-host.svelte-9o580p .cm-scroller{overflow:auto;max-width:100%}.cm-host.svelte-9o580p .cm-content{white-space:pre}.cm-host.svelte-9o580p .cm-line{word-break:break-word}.cm-wrap.svelte-1r47ghm{flex:1 1 auto;min-height:0;height:100%;display:flex;flex-direction:column;overflow:hidden}.cm-footer.svelte-1r47ghm{flex:0 0 auto;margin-top:.5rem}
+</style>
+<link rel="stylesheet" href="/ISA-DOC/_astro/H6.BWx82b-b.css"></head> <body data-astro-cid-sckkx6r4> <header class="isa-header" data-astro-cid-sckkx6r4> <div class="isa-header-top" data-astro-cid-sckkx6r4> <span class="isa-logo" data-astro-cid-sckkx6r4>ISA</span> <span class="isa-sep" data-astro-cid-sckkx6r4>|</span> <nav class="isa-nav isa-nav-projects" data-astro-cid-sckkx6r4> <a href="/ISA-DOC/" class="isa-nav-link isa-nav-project" data-astro-cid-sckkx6r4>Inicio</a> <a href="/ISA-DOC/clientesis" class="isa-nav-link isa-nav-project active" data-astro-cid-sckkx6r4> ClientesIS </a><a href="/ISA-DOC/patyia" class="isa-nav-link isa-nav-project" data-astro-cid-sckkx6r4> PatyIA </a> </nav> </div> <nav class="isa-nav isa-nav-subtabs" data-astro-cid-sckkx6r4> <a href="/ISA-DOC/clientesis/sql" class="isa-nav-link isa-nav-subtab" data-astro-cid-sckkx6r4> SQL </a><a href="/ISA-DOC/clientesis/bitacora" class="isa-nav-link isa-nav-subtab" data-astro-cid-sckkx6r4> Bitácora </a><a href="/ISA-DOC/clientesis/postman" class="isa-nav-link isa-nav-subtab active" data-astro-cid-sckkx6r4> Postman </a><a href="/ISA-DOC/clientesis/contapymeu" class="isa-nav-link isa-nav-subtab" data-astro-cid-sckkx6r4> Docs </a><a href="/ISA-DOC/clientesis/actions" class="isa-nav-link isa-nav-subtab" data-astro-cid-sckkx6r4> Actions </a> </nav> </header> <main class="isa-main" data-astro-cid-sckkx6r4>  <style>astro-island,astro-slot,astro-static-slot{display:contents}</style><script>(()=>{var e=async t=>{await(await t())()};(self.Astro||(self.Astro={})).only=e;window.dispatchEvent(new Event("astro:only"));})();</script><script>(()=>{var A=Object.defineProperty;var g=(i,o,a)=>o in i?A(i,o,{enumerable:!0,configurable:!0,writable:!0,value:a}):i[o]=a;var d=(i,o,a)=>g(i,typeof o!="symbol"?o+"":o,a);{let i={0:t=>m(t),1:t=>a(t),2:t=>new RegExp(t),3:t=>new Date(t),4:t=>new Map(a(t)),5:t=>new Set(a(t)),6:t=>BigInt(t),7:t=>new URL(t),8:t=>new Uint8Array(t),9:t=>new Uint16Array(t),10:t=>new Uint32Array(t),11:t=>1/0*t},o=t=>{let[l,e]=t;return l in i?i[l](e):void 0},a=t=>t.map(o),m=t=>typeof t!="object"||t===null?t:Object.fromEntries(Object.entries(t).map(([l,e])=>[l,o(e)]));class y extends HTMLElement{constructor(){super(...arguments);d(this,"Component");d(this,"hydrator");d(this,"hydrate",async()=>{var b;if(!this.hydrator||!this.isConnected)return;let e=(b=this.parentElement)==null?void 0:b.closest("astro-island[ssr]");if(e){e.addEventListener("astro:hydrate",this.hydrate,{once:!0});return}let c=this.querySelectorAll("astro-slot"),n={},h=this.querySelectorAll("template[data-astro-template]");for(let r of h){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("data-astro-template")||"default"]=r.innerHTML,r.remove())}for(let r of c){let s=r.closest(this.tagName);s!=null&&s.isSameNode(this)&&(n[r.getAttribute("name")||"default"]=r.innerHTML)}let p;try{p=this.hasAttribute("props")?m(JSON.parse(this.getAttribute("props"))):{}}catch(r){let s=this.getAttribute("component-url")||"<unknown>",v=this.getAttribute("component-export");throw v&&(s+=` (export ${v})`),console.error(`[hydrate] Error parsing props for component ${s}`,this.getAttribute("props"),r),r}let u;await this.hydrator(this)(this.Component,p,n,{client:this.getAttribute("client")}),this.removeAttribute("ssr"),this.dispatchEvent(new CustomEvent("astro:hydrate"))});d(this,"unmount",()=>{this.isConnected||this.dispatchEvent(new CustomEvent("astro:unmount"))})}disconnectedCallback(){document.removeEventListener("astro:after-swap",this.unmount),document.addEventListener("astro:after-swap",this.unmount,{once:!0})}connectedCallback(){if(!this.hasAttribute("await-children")||document.readyState==="interactive"||document.readyState==="complete")this.childrenConnectedCallback();else{let e=()=>{document.removeEventListener("DOMContentLoaded",e),c.disconnect(),this.childrenConnectedCallback()},c=new MutationObserver(()=>{var n;((n=this.lastChild)==null?void 0:n.nodeType)===Node.COMMENT_NODE&&this.lastChild.nodeValue==="astro:end"&&(this.lastChild.remove(),e())});c.observe(this,{childList:!0}),document.addEventListener("DOMContentLoaded",e)}}async childrenConnectedCallback(){let e=this.getAttribute("before-hydration-url");e&&await import(e),this.start()}async start(){let e=JSON.parse(this.getAttribute("opts")),c=this.getAttribute("client");if(Astro[c]===void 0){window.addEventListener(`astro:${c}`,()=>this.start(),{once:!0});return}try{await Astro[c](async()=>{let n=this.getAttribute("renderer-url"),[h,{default:p}]=await Promise.all([import(this.getAttribute("component-url")),n?import(n):()=>()=>{}]),u=this.getAttribute("component-export")||"default";if(!u.includes("."))this.Component=h[u];else{this.Component=h;for(let f of u.split("."))this.Component=this.Component[f]}return this.hydrator=p,this.hydrate},e,this)}catch(n){console.error(`[astro-island] Error hydrating ${this.getAttribute("component-url")}`,n)}}attributeChangedCallback(){this.hydrate()}}d(y,"observedAttributes",["props"]),customElements.get("astro-island")||customElements.define("astro-island",y)}})();</script><astro-island uid="1TpPcO" component-url="/ISA-DOC/_astro/PostmanPanel.NmKWK6yB.js" component-export="default" renderer-url="/ISA-DOC/_astro/client.svelte.j0qhEofR.js" props="{}" ssr client="only" opts="{&quot;name&quot;:&quot;PostmanPanel&quot;,&quot;value&quot;:&quot;svelte&quot;}"></astro-island>  </main>  </body></html>

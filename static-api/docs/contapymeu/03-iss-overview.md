@@ -104,68 +104,13 @@ fragmento se lee **en vivo** desde el repo `ISS-ClientesIS-ContaPymeU`,
 así que cualquier alta o cambio aparece aquí sin tocar la documentación.
 
 ```typescript
-registerCatalogoGenAzureFunction(TCursoServer, TCurso, { pk: ["icurso"], nrecurso: "curso", nrecursos: "cursos" });
-registerCatalogoGenAzureFunction(TPlanEstudioServer, TPlanDeEstudio, { pk: ["iplanestudio"], nrecurso: "plan/estudio", nrecursos: "planes/estudio" });
-registerCatalogoGenAzureFunction(TDriverServer, TDriver, { pk: ["idriver"], nrecurso: "driver", nrecursos: "drivers", omitir: ["Verificar", "Duplicar", "Recodificar", "Consolidar"] });
-
-// Catálogos RelNoSysrecurso (lectura sin seguridad, mutaciones no-op).
-// Se exponen para alimentar componentes BtnRef desde el front.
-// Solo se exponen Obtener (Visualizar) y Listar; el resto se omite.
-registerCatalogoGenAzureFunction(TPermisoServer, TPermiso, { pk: ["ipermiso"], nrecurso: "permiso", nrecursos: "permisos", omitir: ["Crear", "Modificar", "Eliminar", "Verificar", "Duplicar", "Recodificar", "Consolidar"] });
-
-app.get("API_GET_CursoRecursoPlan", {
-	route: "curso/recursoplan/{icurso}",
-	handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
-		const Ctx = new TCursoServer(request, context);
-		const { CtxUser } = Ctx;
-		let ResponseData: TResponseData = await CtxUser.PrepareRequest();
-		try {
-			const curso = Object.assign(new TCurso(), CtxUser.params);
-			await Ctx.Get_Recurso_PlanCurso(curso);
-			ResponseData = RstExitosa({ body: { datos: curso } });
-		} catch (error) { ResponseData = RstError(error) }
-		return Ctx.SendResponse(ResponseData, false);
-	},
-});
-
-app.get("API_GET_PlanDeEstudioDetalle", {
-	route: "plan/estudio/detalle/{iplanestudio}",
-	handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
-		const Ctx = new TPlanEstudioServer(request, context);
-		const { CtxUser } = Ctx;
-		let ResponseData: TResponseData = await CtxUser.PrepareRequest();
-		try {
-			const planEstudio =  TPlanDeEstudio.JSONToObject({
-				iplanestudio: CtxUser.params.iplanestudio
-			}) as TPlanDeEstudio;
-
-			await Ctx.obtenerDetallePlanEstudio(planEstudio);
-			ResponseData = RstExitosa({ body: { datos: planEstudio } });
-		} catch (error) { ResponseData = RstError(error) }
-		return Ctx.SendResponse(ResponseData, false);
-	},
-});
-
-
+> ⚠ `ISS-ClientesIS-ContaPymeU/src/functions/FN-Capacitacion.ts`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\ISS-ClientesIS-ContaPymeU\src\functions\FN-Capacitacion.ts'
 ```
 
 ### Endpoint custom (recurso del plan)
 
 ```typescript
-app.get("API_GET_CursoRecursoPlan", {
-	route: "curso/recursoplan/{icurso}",
-	handler: async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
-		const Ctx = new TCursoServer(request, context);
-		const { CtxUser } = Ctx;
-		let ResponseData: TResponseData = await CtxUser.PrepareRequest();
-		try {
-			const curso = Object.assign(new TCurso(), CtxUser.params);
-			await Ctx.Get_Recurso_PlanCurso(curso);
-			ResponseData = RstExitosa({ body: { datos: curso } });
-		} catch (error) { ResponseData = RstError(error) }
-		return Ctx.SendResponse(ResponseData, false);
-	},
-});
+> ⚠ `ISS-ClientesIS-ContaPymeU/src/functions/FN-Capacitacion.ts`: ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\ISS-ClientesIS-ContaPymeU\src\functions\FN-Capacitacion.ts'
 ```
 
 ## Pipeline de documentación
