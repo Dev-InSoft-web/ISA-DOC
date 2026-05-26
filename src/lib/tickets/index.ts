@@ -99,6 +99,7 @@ export const TICKETS: TicketRegistro[] = [
 		body: bodyTK1429373,
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - ING Servicios Otros" },
 		proyecto: "PatyIA",
+		extraMinutos: 10,
 		cambiosBd: [
 			{
 				tabla: "INSTRUCCION + TDCONSULTAXINSTRUCCION (AYUDASCP_IA)",
