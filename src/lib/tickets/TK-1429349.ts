@@ -98,6 +98,13 @@ export async function buildBodyTK1429349(): Promise<string> {
 		),
 	);
 
+	const badge = (n: number, kind: "magenta" | "warn"): string => {
+		const palette = kind === "magenta"
+			? "background:#fde7f3;color:#a3146e;"
+			: "background:#fff4d6;color:#915b00;";
+		return `<span style="${palette}padding:1px 8px;border-radius:10px;font-weight:600;font-family:Consolas,Menlo,monospace;font-size:9.5pt;">${n}</span>`;
+	};
+
 	const maxRows = Math.max(ANTES.length, DESPUES.length);
 	const filas: string[][] = [];
 	for (let i = 0; i < maxRows; i++) {
@@ -105,16 +112,16 @@ export async function buildBodyTK1429349(): Promise<string> {
 		const d = DESPUES[i];
 		filas.push([
 			a ? `<code>${a[0]}</code>` : "",
-			a ? String(a[1]) : "",
+			a ? badge(a[1], "magenta") : "",
 			d ? `<code>${d[0]}</code>` : "",
-			d ? String(d[1]) : "",
+			d ? badge(d[1], "warn") : "",
 		]);
 	}
 	filas.push([
 		`<b>${ANTES.length} archivos</b>`,
-		`<b>${TOTAL_ANTES}</b>`,
+		badge(TOTAL_ANTES, "magenta"),
 		`<b>${DESPUES.length} archivos</b>`,
-		`<b>${TOTAL_DESPUES}</b> <span style="color:${DELTA >= 0 ? "#a33" : "#2a7"};">(${DELTA >= 0 ? "+" : ""}${PCT}%)</span>`,
+		`${badge(TOTAL_DESPUES, "warn")} <span style="color:${DELTA >= 0 ? "#a33" : "#2a7"};font-weight:600;">(${DELTA >= 0 ? "+" : ""}${PCT}%)</span>`,
 	]);
 
 	const tablaComparativa = simpleTable(
