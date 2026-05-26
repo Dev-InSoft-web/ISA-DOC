@@ -363,16 +363,16 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 		const minCommit = minutosPorCommit[idx];
 		const tiempoCell = minCommit > 0 ? fmtMin(minCommit) : "";
 		const insCell = ins > 0
-			? `<span style="background:#e6ffed;color:#22863a;padding:0 0.3rem;border-radius:0.2rem;">+${ins}</span>`
+			? `<span style="background:rgba(34,134,58,0.18);color:#22863a;padding:0 0.3rem;border-radius:0.2rem;">+${ins}</span>`
 			: "";
 		const delCell = del > 0
-			? `<span style="background:#ffeef0;color:#b31d28;padding:0 0.3rem;border-radius:0.2rem;">-${del}</span>`
+			? `<span style="background:rgba(179,29,40,0.18);color:#b31d28;padding:0 0.3rem;border-radius:0.2rem;">-${del}</span>`
 			: "";
 		return [
 			`<tr>`,
 			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;white-space:nowrap;">${fechaTxt}</td>`,
 			`<td style="${tdBase}font-family:Tahoma;font-size:9pt;color:#aaa;white-space:nowrap;text-align:right;">${tiempoCell}</td>`,
-			`<td style="${tdBase}white-space:nowrap;"><a href="${url}" target="_blank" rel="noopener" style="font-family:Consolas,Menlo,monospace;font-size:10.5pt;background:#f0f0f0;color:#0366d6;padding:0 0.3rem;border-radius:0.2rem;text-decoration:none;">${hash}</a></td>`,
+			`<td style="${tdBase}white-space:nowrap;"><a href="${url}" target="_blank" rel="noopener" style="font-family:Consolas,Menlo,monospace;font-size:10.5pt;background:rgba(3,102,214,0.18);color:#0366d6;padding:0 0.3rem;border-radius:0.2rem;text-decoration:none;">${hash}</a></td>`,
 			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${insCell}</td>`,
 			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${delCell}</td>`,
 			`<td style="${tdBase}font-size:10pt;color:#555;">${desc}</td>`,
@@ -397,10 +397,10 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	const duracion = fechas.length && mostrarDuracion ? fmtDuracion(tMax - tMin) : "";
 	const tdSummary = "padding:0.3rem 0.5rem;vertical-align:top;border-top:1px solid #ddd;font-weight:600;color:#444;";
 	const insSummary = totalIns > 0
-		? `<span style="background:#e6ffed;color:#22863a;padding:0 0.3rem;border-radius:0.2rem;">+${totalIns}</span>`
+		? `<span style="background:rgba(34,134,58,0.18);color:#22863a;padding:0 0.3rem;border-radius:0.2rem;">+${totalIns}</span>`
 		: "";
 	const delSummary = totalDel > 0
-		? `<span style="background:#ffeef0;color:#b31d28;padding:0 0.3rem;border-radius:0.2rem;">-${totalDel}</span>`
+		? `<span style="background:rgba(179,29,40,0.18);color:#b31d28;padding:0 0.3rem;border-radius:0.2rem;">-${totalDel}</span>`
 		: "";
 	const filaSeparador = `<tr><td colspan="7" style="padding:0.5rem 0;border:none;"><hr style="border:none;border-top:1px solid #999;opacity:0.5;margin:0;"></td></tr>`;
 	const totalEstimado = estimacionMin && estimacionMin > 0 ? fmtMin(estimacionMin) : "";
