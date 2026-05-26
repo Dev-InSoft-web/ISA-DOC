@@ -111,6 +111,8 @@ export const TICKETS: TicketRegistro[] = [
 		commits: [
 			{ hash: "2f9ba1f", descripcion: "fix(TK-1429346): se renombran opciones de visualizacion del plan a Lista y Pensum y se elimina Arbol", repo: "ISW-ClientesIS", ins: 16, del: 13, fecha: "2026-05-26T08:24:20-05:00" },
 			{ hash: "004c172", descripcion: "refactor(TK-1429346): se renombran miembros del enum de visualizacion y se eliminan helpers no usados", repo: "ISP-ClientesIS", ins: 2, del: 25, fecha: "2026-05-26T08:47:46-05:00" },
+			{ hash: "890e98f", descripcion: "refactor(TK-1429346): se ajustan componentes del plan de estudio al renombrado del enum de visualizacion", repo: "ISW-ClientesIS", ins: 12, del: 12, fecha: "2026-05-26T08:57:49-05:00" },
+			{ hash: "fd57182", descripcion: "refactor(TK-1429346): se ajustan captions y documentacion al renombrado del enum de visualizacion", repo: "ISW-ClientesIS", ins: 4, del: 5, fecha: "2026-05-26T08:57:49-05:00" },
 		],
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
 	},
