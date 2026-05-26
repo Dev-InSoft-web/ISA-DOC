@@ -103,7 +103,7 @@ export const TICKETS: TicketRegistro[] = [
 			{
 				tabla: "INSTRUCCION + TDCONSULTAXINSTRUCCION (AYUDASCP_IA)",
 				registro: "13 prompts PROMPT_<TIPO>",
-				intencion: "Se cargan en AYUDASCP_IA los 13 prompts específicos por tipo de consulta de Paty V3 leídos desde los archivos .md del repositorio de análisis y diseño. El script es idempotente: MERGE sobre INSTRUCCION (clave iinstruccion = <TIPO>) inserta o actualiza nombre, contenido, descripción, versión y estado activo; MERGE sobre TDCONSULTAXINSTRUCCION enlaza itdconsulta con iinstruccion con orden = 1. Se muestra el patrón aplicado a un TIPO; los 13 bloques (SALUDO_OTRO, FUERA_DE_ALCANCE_TECNICO, ASESORIA_PERSONALIZADA, etc.) siguen exactamente la misma estructura. Todo se envuelve en BEGIN TRAN / COMMIT con SET XACT_ABORT ON.",
+				intencion: "Se cargan en AYUDASCP_IA los 13 prompts específicos por tipo de consulta de Paty V3 con un script idempotente: MERGE sobre INSTRUCCION (clave iinstruccion = <TIPO>) inserta o actualiza el registro y MERGE sobre TDCONSULTAXINSTRUCCION enlaza itdconsulta con iinstruccion con orden = 1. Se muestra el patrón aplicado a un TIPO; los 13 bloques siguen la misma estructura, envueltos en BEGIN TRAN / COMMIT con SET XACT_ABORT ON.",
 				sql: [
 					"SET NOCOUNT ON;",
 					"SET XACT_ABORT ON;",

@@ -6,6 +6,7 @@
 	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
 	import md_2026_05_25_prompts_intro from "../../lib/patyia/daily/2026-05/25/01-prompts-tdconsulta-intro.md?raw";
 	import sqlSeedPromptsTdConsulta from "../../lib/patyia/sql/seed-prompts-tdconsulta.sql?raw";
+	import sqlUpdateDescripcionesInstruccion from "../../lib/patyia/sql/update-descripciones-instruccion.sql?raw";
 
 	// PatyIA tiene su propia BD (AYUDASCP_IA) — los endpoints de ejecución y
 	// ping están bifurcados respecto a los de ClientesIS para que el banner
@@ -39,7 +40,7 @@
 		title="2026-05-25 — Carga inicial de prompts específicos por tipo de consulta"
 		titleIcon="mdi:calendar"
 		open={true}
-		checkKeys={["2026-05-25.patyia.seed-prompts"]}
+		checkKeys={["2026-05-25.patyia.seed-prompts", "2026-05-25.patyia.update-descripciones"]}
 	>
 		<Accordion
 			title="Modelado: INSTRUCCION + TDCONSULTAXINSTRUCCION"
@@ -61,6 +62,23 @@
 				desc="MERGE idempotente sobre INSTRUCCION (iinstruccion=&lt;TIPO&gt;, ninstruccion='PROMPT_&lt;TIPO&gt;') con el contenido literal de cada .md como NVARCHAR(MAX), y MERGE sobre TDCONSULTAXINSTRUCCION resolviendo itdconsulta=&lt;TIPO&gt; con orden=1. Cierra con SELECT de verificación. Ejecuta contra AYUDASCP_IA vía /api/patyia/db/exec."
 				{executeSql}
 				checkKey="2026-05-25.patyia.seed-prompts"
+				confirmKind="warning"
+				height="360px"
+			/>
+		</Accordion>
+
+		<Accordion
+			title="SQL · UPDATE de descripciones funcionales en INSTRUCCION"
+			titleIcon="mdi:database-sync-outline"
+			inner
+			checkKey="2026-05-25.patyia.update-descripciones"
+		>
+			<SqlExecCard
+				title="AYUDASCP_IA · UPDATE de descripcion en INSTRUCCION (13 prompts)"
+				sql={sqlUpdateDescripcionesInstruccion}
+				desc="UPDATE...FROM INNER JOIN (VALUES) que reemplaza la descripción genérica de los 13 PROMPT_&lt;TIPO&gt; por la descripción funcional entregada en la tabla del TK-1429373. Envuelto en BEGIN TRAN / COMMIT con SET XACT_ABORT ON."
+				{executeSql}
+				checkKey="2026-05-25.patyia.update-descripciones"
 				confirmKind="warning"
 				height="360px"
 			/>
