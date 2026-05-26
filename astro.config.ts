@@ -65,7 +65,7 @@ export default defineConfig({
 			alias: {
 				"$lib": path.resolve(__dirname, "./src/lib"),
 				"$components": path.resolve(__dirname, "./src/components"),
-				"$comps": path.resolve(__dirname, "./isp-svelte/src/lib/_comps"),
+				"$comps": path.resolve(__dirname, "./isp-svelte/src/lib"),
 			},
 		},
 	},
