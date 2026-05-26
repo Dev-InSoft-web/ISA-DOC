@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { Button, FlexLayout, InputNumber, RichEditor, SelectEnum, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, RichEditor, SelectEnum, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 
 	interface ImageItem {
@@ -259,11 +259,14 @@
 
 					<RichEditor bind:value={imgPromptHtml} label="Prompt" />
 
-					<FlexLayout direction="row" items="end" style="flex-wrap: wrap;">
+					<GridLayout cells={3} items="end">
 						<SelectEnum bind:value={imgModel} enumValue={TModeloImagen} label="Modelo" />
 						<SelectEnum bind:value={imgSize} enumValue={TTamanoImagen} label="Tamaño" />
 						<InputNumber bind:value={imgN} label="Cantidad" required={false} />
-						<Button onClick={generarImagen} disabled={imgLoading} loading={imgLoading}>Generar</Button>
+					</GridLayout>
+
+					<FlexLayout direction="row" justify="end">
+						<Button onClick={generarImagen} disabled={imgLoading} loading={imgLoading} style="width: fit-content;">Generar</Button>
 					</FlexLayout>
 
 					{#if imgError}
@@ -286,7 +289,7 @@
 					<section class="galeria">
 						<div class="galeria-head">
 							<h3>Galería</h3>
-							<Button variant="outlined" onClick={cargarGaleria} disabled={galleryLoading} loading={galleryLoading}>Refrescar</Button>
+							<ButtonIconify icon="mdi:refresh" onClick={cargarGaleria} disabled={galleryLoading} loading={galleryLoading} title="Refrescar" />
 						</div>
 						{#if galleryError}
 							<div class="error">{galleryError}</div>
@@ -313,10 +316,13 @@
 					<RichEditor bind:value={txtSystemHtml} label="Mensaje de sistema (opcional)" />
 					<RichEditor bind:value={txtPromptHtml} label="Prompt" />
 
-					<FlexLayout direction="row" items="end" style="flex-wrap: wrap;">
+					<GridLayout cells={2} items="end">
 						<SelectEnum bind:value={txtModel} enumValue={TModeloTexto} label="Modelo" />
 						<InputNumber bind:value={txtTemperature} label="Temperatura" required={false} />
-						<Button onClick={generarTexto} disabled={txtLoading} loading={txtLoading}>Generar</Button>
+					</GridLayout>
+
+					<FlexLayout direction="row" justify="end">
+						<Button onClick={generarTexto} disabled={txtLoading} loading={txtLoading} style="width: fit-content;">Generar</Button>
 					</FlexLayout>
 
 					{#if txtError}
@@ -338,10 +344,13 @@
 
 					<RichEditor bind:value={chatSystemHtml} label="Mensaje de sistema (opcional)" />
 
-					<FlexLayout direction="row" items="end" style="flex-wrap: wrap;">
+					<GridLayout cells={2} items="end">
 						<SelectEnum bind:value={chatModel} enumValue={TModeloTexto} label="Modelo" />
 						<InputNumber bind:value={chatTemperature} label="Temperatura" required={false} />
-						<Button variant="outlined" color="neutral" onClick={reiniciarChat} disabled={chatLoading}>Reiniciar</Button>
+					</GridLayout>
+
+					<FlexLayout direction="row" justify="end">
+						<ButtonIconify icon="mdi:restart" onClick={reiniciarChat} disabled={chatLoading} title="Reiniciar conversación" />
 					</FlexLayout>
 
 					<div class="chat-historial">
@@ -359,8 +368,8 @@
 
 					<RichEditor bind:value={chatInputHtml} label="Tu mensaje" />
 
-					<FlexLayout direction="row" items="end" style="justify-content: flex-end;">
-						<Button onClick={enviarChat} disabled={chatLoading} loading={chatLoading}>Enviar</Button>
+					<FlexLayout direction="row" justify="end">
+						<Button onClick={enviarChat} disabled={chatLoading} loading={chatLoading} style="width: fit-content;">Enviar</Button>
 					</FlexLayout>
 
 					{#if chatError}
