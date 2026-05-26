@@ -313,6 +313,11 @@ export function cotaMaximaMinutos(commits: TicketCommit[]): number {
 // acorde a su volumen, evitando que un commit grande herede un gap
 // pequeño cuando el desarrollador venía trabajando desde antes.
 const LINEAS_POR_MIN = 3;
+// Gap máximo aceptado entre commits consecutivos. Pausas largas
+// (almuerzos, día siguiente) no deben heredarse como tiempo de
+// trabajo al commit que reanuda la sesión: el reparto queda
+// dominado por las líneas modificadas (piso por volumen).
+const GAP_MAX_MIN = 15;
 
 function pisoMinutosPorLineas(c: TicketCommit): number {
 	const peso = (c.ins ?? 0) + (c.del ?? 0) * 0.5;
@@ -328,7 +333,8 @@ function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
 	const gaps = new Array<number>(n).fill(0);
 	for (let i = 1; i < n; i++) {
 		const diff = ts[i] - ts[i - 1];
-		gaps[i] = diff > 0 ? Math.max(1, Math.round(diff / 60000)) : 0;
+		const minutos = diff > 0 ? Math.max(1, Math.round(diff / 60000)) : 0;
+		gaps[i] = Math.min(minutos, GAP_MAX_MIN);
 	}
 	const pisos = cronos.map(pisoMinutosPorLineas);
 	const firstTs = ts[0];
