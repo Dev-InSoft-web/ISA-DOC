@@ -20,6 +20,8 @@
 	import sqlDeleteAtributosPlanesVacios from "../../lib/migration/sql/delete-atributos-planes-vacios.sql?raw";
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
 	import sqlSeedAccionesCursosPlanDeEstudio from "../../lib/migration/sql/seed-acciones-cursos-plandeestudio.sql?raw";
+	import sqlUpdateNombresInstruccion from "../../lib/patyia/sql/update-nombres-instruccion.sql?raw";
+	import md_2026_05_26_patyia_ninstruccion from "../../lib/bitacora/daily/2026-05/26/01-patyia-ninstruccion.md?raw";
 	import md_2026_05_14_driver_jconfig_v2 from "../../lib/bitacora/daily/2026-05/14/driver-atributos-jconfig-v2-intro.md?raw";
 	import md_2026_05_21_cierre_tk from "../../lib/bitacora/daily/2026-05/21/01-cierre-tk1426681.md?raw";
 	import md_2026_05_21_img_imgbb from "../../lib/bitacora/daily/2026-05/21/02-img-imgbb.md?raw";
@@ -124,6 +126,34 @@
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-05-26 -->
+			<Accordion
+				title="2026-05-26 — PatyIA: actualización de NINSTRUCCION con nombres semánticos en español"
+				titleIcon="mdi:calendar"
+				open={true}
+				checkKeys={["2026-05-26.patyia.ninstruccion.update"]}
+			>
+				<Accordion
+					title="AYUDASCP_IA · Actualizar NINSTRUCCION con labels semánticos"
+					titleIcon="mdi:translate"
+					inner
+					checkKey="2026-05-26.patyia.ninstruccion.update"
+				>
+					<BitacoraNote flat mdSource={md_2026_05_26_patyia_ninstruccion} />
+
+					<SqlExecCard
+						title="INSTRUCCION · Poblar NINSTRUCCION con nombres semánticos en español"
+						checkKey="2026-05-26.patyia.ninstruccion.update"
+						sql={sqlUpdateNombresInstruccion}
+						desc="Hace UPDATE en la tabla INSTRUCCION (AYUDASCP_IA) seteando NINSTRUCCION con el nombre semántico en español para cada uno de los 13 tipos de instrucción. Idempotente (sobreescribe el valor cada vez). Se espera que actualice exactamente 13 filas."
+						confirmKind="warning"
+						confirmMessage={`Se actualizará NINSTRUCCION en los 13 registros de la tabla INSTRUCCION con nombres semánticos en español.\n\n¿Continuar?`}
+						{executeSql}
+						height="340px"
+					/>
+				</Accordion>
+			</Accordion>
+
 			<!-- 2026-05-21 -->
 			<Accordion
 				title="2026-05-21 — Cierre TK-1426681/1426900/1428161 + estandarización de helpers de tickets y Accordion"
