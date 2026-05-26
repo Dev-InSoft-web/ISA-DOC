@@ -14,24 +14,24 @@ const intro =
 	<code>ISP-CLientesISServer/OLD/2.Capacitacion-OLD/</code>.</div>`;
 
 const ANTES: Array<[string, number]> = [
-	["00_Base.ts", 108],
-	["01_PlanDeEstudio.ts", 138],
-	["02_Cursos.ts", 169],
+	["00_Base.ts", 128],
+	["01_PlanDeEstudio.ts", 161],
+	["02_Cursos.ts", 192],
 ];
 
 const DESPUES: Array<[string, number]> = [
-	["00_Base.ts", 34],
-	["010_UlDriverServer.ts", 27],
-	["011_UlAtributosXDriverServer.ts", 32],
-	["020_UlPermisoServer.ts", 8],
-	["030_UlEstructuraCursoServer.ts", 20],
-	["040_UlSeguridadCursoServer.ts", 33],
-	["050_UlAtributosPlanServer.ts", 34],
-	["060_UlPlanCursoServer.ts", 51],
-	["070_UlCursoServer.ts", 114],
-	["080_UlCursoPrerequisitoServer.ts", 32],
-	["081_UlCursoDePlanDeEstudioServer.ts", 33],
-	["090_UlPlanEstudioServer.ts", 148],
+	["00_Base.ts", 42],
+	["010_UlDriverServer.ts", 30],
+	["011_UlAtributosXDriverServer.ts", 36],
+	["020_UlPermisoServer.ts", 9],
+	["030_UlEstructuraCursoServer.ts", 23],
+	["040_UlSeguridadCursoServer.ts", 37],
+	["050_UlAtributosPlanServer.ts", 38],
+	["060_UlPlanCursoServer.ts", 57],
+	["070_UlCursoServer.ts", 129],
+	["080_UlCursoPrerequisitoServer.ts", 36],
+	["081_UlCursoDePlanDeEstudioServer.ts", 37],
+	["090_UlPlanEstudioServer.ts", 173],
 ];
 
 const TOTAL_ANTES = ANTES.reduce((a, [, n]) => a + n, 0);
