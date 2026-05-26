@@ -97,7 +97,7 @@ export const TICKETS: TicketRegistro[] = [
 		body: bodyTK1429373,
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - ING Servicios Otros" },
 		proyecto: "PatyIA",
-		extraMinutos: 40,
+		extraMinutos: 10,
 		commits: [
 			{ hash: "a2d9474", repo: "ISA-DOC", descripcion: "Se actualizan nombres semánticos en español para NINSTRUCCION" },
 			{ hash: "8f1fa35", repo: "ISA-DOC", descripcion: "Se agrega accordeón 2026-05-26 con SQL exec para NINSTRUCCION en bitácora" },
