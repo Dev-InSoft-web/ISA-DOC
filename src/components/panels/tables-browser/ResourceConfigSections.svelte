@@ -16,9 +16,9 @@
 	   RelationDef,
 	   ResourceConfig,
 	} from "../../../lib/codeGen/types.ts";
-	import FloatingCard from "../../_comps/containers/FloatingCard.svelte";
-	import Button_ from "../../_comps/especial/Button_.svelte";
-	import Switch_ from "../../_comps/especial/_Switch.svelte";
+	import FloatingCard from "$comps/containers/FloatingCard.svelte";
+	import Button_ from "$comps/especial/Button_.svelte";
+	import Switch_ from "$comps/especial/_Switch.svelte";
 	import DetailSpecNode from "./DetailSpecNode.svelte";
 	import HookBodyModal from "../../viewers/HookBodyModal.svelte";
 

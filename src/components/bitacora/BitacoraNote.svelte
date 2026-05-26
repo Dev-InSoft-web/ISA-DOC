@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { marked } from "marked";
-	import Accordion from "../_comps/containers/Accordion.svelte";
+	import Accordion from "$comps/containers/Accordion.svelte";
 
 	export let title: string = "";
 	export let mdSource: string;

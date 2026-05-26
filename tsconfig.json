@@ -16,7 +16,8 @@
 		],
 		"paths": {
 			"$components/*": ["./src/components/*"],
-			"$lib/*": ["./src/lib/*"]
+			"$lib/*": ["./src/lib/*"],
+			"$comps/*": ["./isp-svelte/src/lib/_comps/*"]
 		},
 		"types": ["svelte", "astro/client"]
 	},

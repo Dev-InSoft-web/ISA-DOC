@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
-	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
+	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
 

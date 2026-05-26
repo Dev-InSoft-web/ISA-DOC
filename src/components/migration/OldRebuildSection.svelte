@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Button, Iconify, FlexLayout, Text, Toaster, SelectObject } from "@ingenieria_insoft/ispsveltecomponents";
 	import type { TObject } from "@ingenieria_insoft/ispgen";
-	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
+	import AccordionActions from "$comps/containers/AccordionActions.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import RebuildOldTableMigration from "./RebuildOldTableMigration.svelte";
 	import DriverstructToIdriverMigration from "./DriverstructToIdriverMigration.svelte";
 	import MigrateFromOldMigration from "./MigrateFromOldMigration.svelte";
-	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
+	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import { REBUILD_TABLES } from "../../lib/migration/oldRebuildTables.ts";
 	import sectionMd from "../../lib/bitacora/daily/2026-05/04/rebuild-section.md?raw";
 

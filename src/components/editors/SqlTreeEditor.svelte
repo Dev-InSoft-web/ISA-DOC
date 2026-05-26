@@ -10,14 +10,14 @@
 -->
 <script context="module" lang="ts">
    import { TObject } from "@ingenieria_insoft/ispgen";
-   import type { FlexOptionsInput } from "../_comps/Options/FlexOptions.svelte";
-   import { TreeCustomsBase, type ITreeRuntime, type RowOf } from "../_comps/TreeView/contracts";
+   import type { FlexOptionsInput } from "$comps/Options/FlexOptions.svelte";
+   import { TreeCustomsBase, type ITreeRuntime, type RowOf } from "$comps/TreeView/contracts";
    import type {
       ContainmentRole,
       INode,
       MobilityRole,
       TopologyRole,
-   } from "../_comps/TreeView/_treeAdapter/_defgen/00-tree-data";
+   } from "$comps/TreeView/_treeAdapter/_defgen/00-tree-data";
    import type {
       ParsedTable,
       TableColumn,
@@ -311,7 +311,7 @@
 <script lang="ts">
    import { onDestroy } from "svelte";
    import { FlexLayout, GridLayout, Iconify, Switch, Text, SelectEnum } from "@ingenieria_insoft/ispsveltecomponents";
-   import TreeView, { type TreeAdapter } from "../_comps/TreeView/TreeRowView.svelte";
+   import TreeView, { type TreeAdapter } from "$comps/TreeView/TreeRowView.svelte";
    import { COMMON_COLUMN_TYPES } from "../../lib/tableSchema";
 
    export let table: ParsedTable;

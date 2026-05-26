@@ -2,7 +2,7 @@
 	import { FlexLayout } from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectPanelLayout from "../templates/ProjectPanelLayout.svelte";
 	import TicketsSection from "../tickets/TicketsSection.svelte";
-	import DbStatusBanner from "../_comps/status/DbStatusBanner.svelte";
+	import DbStatusBanner from "$comps/status/DbStatusBanner.svelte";
 
 	export let title: string;
 	export let subtitle: string = "";

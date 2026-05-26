@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
-	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
-	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
-	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
+	import AccordionActions from "$comps/containers/AccordionActions.svelte";
+	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
+	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import mdIntro from "../../lib/bitacora/topics/audit/intro.md?raw";
 	import sqlAddAuditColumns from "../../lib/migration/sql/add-audit-columns.sql?raw";

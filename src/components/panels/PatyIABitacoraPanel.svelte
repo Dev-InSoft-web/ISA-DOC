@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
-	import Accordion from "../_comps/containers/Accordion.svelte";
+	import Accordion from "$comps/containers/Accordion.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
+	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import md_2026_05_25_prompts_intro from "../../lib/patyia/daily/2026-05/25/01-prompts-tdconsulta-intro.md?raw";
 	import sqlSeedPromptsTdConsulta from "../../lib/patyia/sql/seed-prompts-tdconsulta.sql?raw";
 	import sqlUpdateDescripcionesInstruccion from "../../lib/patyia/sql/update-descripciones-instruccion.sql?raw";

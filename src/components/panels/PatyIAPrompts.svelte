@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { FlexLayout } from "@ingenieria_insoft/ispsveltecomponents";
-	import Accordion from "../_comps/containers/Accordion.svelte";
+	import Accordion from "$comps/containers/Accordion.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import md01 from "../../lib/patyia/prompts/01-saludo-otro.md?raw";
 	import md02 from "../../lib/patyia/prompts/02-fuera-de-alcance-tecnico.md?raw";

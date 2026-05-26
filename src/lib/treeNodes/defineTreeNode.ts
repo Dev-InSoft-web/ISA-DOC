@@ -4,7 +4,7 @@ import {
 	buildRoleVector,
 	type NodeRole,
 	type NodeRoleVector,
-} from "../../components/_comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data.ts";
+} from "$comps/TreeViewLegacy/_treeAdapter/_defgen/00-tree-data.ts";
 
 export type { NodeRole, NodeRoleVector };
 

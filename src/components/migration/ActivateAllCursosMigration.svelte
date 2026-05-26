@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
-	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
-	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
-	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
+	import AccordionActions from "$comps/containers/AccordionActions.svelte";
+	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
+	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import sql from "../../lib/migration/sql/activate-all-cursos.sql?raw";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;

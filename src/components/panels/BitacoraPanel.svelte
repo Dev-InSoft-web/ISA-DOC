@@ -6,10 +6,10 @@
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import DailySummaryAccordion from "../bitacora/DailySummaryAccordion.svelte";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
-	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
-	import Accordion from "../_comps/containers/Accordion.svelte";
-	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
-	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
+	import AccordionActions from "$comps/containers/AccordionActions.svelte";
+	import Accordion from "$comps/containers/Accordion.svelte";
+	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
+	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import mdAuditAddIntro from "../../lib/bitacora/topics/audit/intro.md?raw";
 	import mdAuditDropIntro from "../../lib/bitacora/topics/audit/drop-intro.md?raw";
 	import sqlAddAuditColumns from "../../lib/migration/sql/add-audit-columns.sql?raw";

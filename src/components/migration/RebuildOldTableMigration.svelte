@@ -2,11 +2,11 @@
 	import {
 		Card, H4, Text, Toaster, FlexLayout, Button, Modal, Iconify,
 	} from "@ingenieria_insoft/ispsveltecomponents";
-	import AccordionActions from "../_comps/containers/AccordionActions.svelte";
-	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
-	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
+	import AccordionActions from "$comps/containers/AccordionActions.svelte";
+	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
+	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import SwitchComp from "../_comps/especial/_Switch.svelte";
+	import SwitchComp from "$comps/especial/_Switch.svelte";
 	import type { RebuildTableConfig, RebuildColumn } from "../../lib/migration/oldRebuildTables.ts";
 	import noteMd from "../../lib/bitacora/daily/2026-05/04/rebuild-old-table.md?raw";
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, FlexLayout, Iconify, H3 } from "@ingenieria_insoft/ispsveltecomponents";
-	import RevisadoCheck from "../_comps/actions/RevisadoCheck.svelte";
+	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import { TICKETS, type TicketRegistro } from "../../lib/tickets";
 	import TicketViewerModal from "./TicketViewerModal.svelte";
 

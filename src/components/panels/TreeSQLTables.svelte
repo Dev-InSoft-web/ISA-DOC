@@ -10,8 +10,8 @@
    import { renderMermaidSvg } from "../../lib/mermaid/render.ts";
    import { isRealtimeEnabled } from "../../lib/realtimeFlag.ts";
    import { effectiveTableName, emitDropTable, emitTable, isSqlSnippetEnabled, newTableId, tableColumns, type ParsedTable } from "../../lib/tableSchema.ts";
-   import SwitchComp from "../_comps/especial/_Switch.svelte";
-   import TreeView from "../_comps/TreeViewLegacy/TreeRowView.svelte";
+   import SwitchComp from "$comps/especial/_Switch.svelte";
+   import TreeView from "$comps/TreeViewLegacy/TreeRowView.svelte";
    import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
    import CodeModal from "../viewers/CodeModal.svelte";
    import CodeViewer from "../viewers/CodeViewer.svelte";

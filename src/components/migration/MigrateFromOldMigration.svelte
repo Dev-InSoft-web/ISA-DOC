@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SqlExecCard from "../_comps/actions/SqlExecCard.svelte";
+	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import noteMd from "../../lib/bitacora/daily/2026-05/04/migrate-from-old.md?raw";
 	import type { RebuildTableConfig } from "../../lib/migration/oldRebuildTables.ts";

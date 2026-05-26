@@ -29,7 +29,7 @@
 	o usando los `<svelte:fragment slot="title-extra" />` para el header.
 -->
 <script lang="ts">
-	import Accordion from "../_comps/containers/Accordion.svelte";
+	import Accordion from "$comps/containers/Accordion.svelte";
 	import BitacoraNote from "./BitacoraNote.svelte";
 
 	export let title: string;

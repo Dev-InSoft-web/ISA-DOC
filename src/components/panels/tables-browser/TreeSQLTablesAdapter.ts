@@ -22,9 +22,9 @@
 import { toastError } from "@ingenieria_insoft/ispsveltecomponents";
 import type { ParsedTable } from "../../../lib/tableSchema";
 import { effectiveTableName } from "../../../lib/tableSchema";
-import { TreeAdapterCatalogoStub } from "../../_comps/TreeViewLegacy/_treeAdapter/CatalogoStub";
-import type { TreeViewProps } from "../../_comps/TreeViewLegacy/TreeRowView.svelte";
-import { TreeRowViewAdapterLegacy } from "../../_comps/TreeViewLegacy/TreeRowView.svelte";
+import { TreeAdapterCatalogoStub } from "$comps/TreeViewLegacy/_treeAdapter/CatalogoStub";
+import type { TreeViewProps } from "$comps/TreeViewLegacy/TreeRowView.svelte";
+import { TreeRowViewAdapterLegacy } from "$comps/TreeViewLegacy/TreeRowView.svelte";
 import { TTableNodeUX } from "./TTableNodeUX";
 
 export type TablesBrowserChangeFn = (next: TablesBrowserState) => void;
