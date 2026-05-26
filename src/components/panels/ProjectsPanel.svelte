@@ -70,11 +70,11 @@
 	// Estado de la pestaña externa sincronizado con la URL (?tab=clientesis|shared).
 	const outerKeys = OUTER_TABS.map((t) => t.key);
 	const outerTabs = createUrlTabs("tab", outerKeys);
-	let outerSelected: string = outerTabs.selected();
-	let outerOpen: Record<string, boolean> = {};
-	$: outerOpen = Object.fromEntries(outerKeys.map((k) => [k, outerSelected === k]));
+	let outerOpen: Record<string, boolean> = Object.fromEntries(
+		outerKeys.map((k) => [k, outerTabs.selected() === k]),
+	);
 	$: for (const k of outerKeys) {
-		if (outerOpen[k] && outerSelected !== k) outerSelected = outerTabs.onOpened(k);
+		if (outerOpen[k]) outerTabs.onOpened(k);
 	}
 
 	let projects: ProjectEntry[] = [];
@@ -223,7 +223,10 @@
 
 	let unsubUrl: () => void = () => {};
 	onMount(() => {
-		unsubUrl = onUrlStateChange(() => { outerSelected = outerTabs.selected(); });
+		unsubUrl = onUrlStateChange(() => {
+			const sel = outerTabs.selected();
+			outerOpen = Object.fromEntries(outerKeys.map((k) => [k, sel === k]));
+		});
 		if (STATIC_MODE) { loading = false; return; }
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });
