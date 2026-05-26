@@ -117,7 +117,7 @@ export const TICKETS: TicketRegistro[] = [
 		fechaSolicitud: "25/may./2026 03:59:13 pm",
 		noMaquillarFechas: true,
 		estimacionMinutos: 120,
-		diligenciaMinutos: 30,
+		diligenciaMinutos: 20,
 		resumen: "Dentro de la pestaña Contenido de un curso, se separa la acción del ojo (ahora abre la configuración del recurso en un drawer lateral con el formulario del catálogo en modo rápido) de la previsualización (ahora con ícono dedicado y modal de lectura del catálogo de recursos), homologando convenciones. Se atendieron además un ciclo de inicialización del wrapper del drawer y una violación de llave primaria al guardar provocada por datos residuales en almacenamiento local.",
 		commits: [
 			{ hash: "d53fad8", descripcion: "fix(TK-1429342): se abre el formulario del recurso en drawer lateral desde el arbol de contenido del curso", repo: "ISW-ClientesIS", ins: 35, del: 4, fecha: "2026-05-25T17:00:47-05:00" },
