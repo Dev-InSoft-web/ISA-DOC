@@ -104,10 +104,13 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "25/may./2026 04:02:44 pm",
 		noMaquillarFechas: true,
-		estimacionMinutos: 0,
+		estimacionMinutos: 10,
 		diligenciaMinutos: 15,
 		resumen: "Se solicita ajustar los nombres de las opciones del campo Tipo de visualización en el plan de estudio: renombrar Pestañas por Lista, Organigrama por Pénsum y eliminar la opción Árbol.",
 		body: bodyTK1429346,
+		commits: [
+			{ hash: "2f9ba1f", descripcion: "fix(TK-1429346): se renombran opciones de visualizacion del plan a Lista y Pensum y se elimina Arbol", repo: "ISW-ClientesIS", ins: 16, del: 13, fecha: "2026-05-26T08:24:20-05:00" },
+		],
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
 	},
 	{
