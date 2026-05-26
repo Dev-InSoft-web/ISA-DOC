@@ -121,7 +121,7 @@ export async function buildBodyTK1429349(): Promise<string> {
 		`<b>${ANTES.length} archivos</b>`,
 		badge(TOTAL_ANTES, "magenta"),
 		`<b>${DESPUES.length} archivos</b>`,
-		`${badge(TOTAL_DESPUES, "warn")} <span style="color:${DELTA >= 0 ? "#a33" : "#2a7"};font-weight:600;">(${DELTA >= 0 ? "+" : ""}${PCT}%)</span>`,
+		`<span style="white-space:nowrap;display:inline-flex;align-items:center;gap:0.4rem;">${badge(TOTAL_DESPUES, "warn")}<span style="color:${DELTA >= 0 ? "#a33" : "#2a7"};font-weight:600;">(${DELTA >= 0 ? "+" : ""}${PCT}%)</span></span>`,
 	]);
 
 	const tablaComparativa = simpleTable(
