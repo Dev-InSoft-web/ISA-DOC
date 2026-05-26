@@ -119,7 +119,7 @@ export async function buildBodyTK1429349(): Promise<string> {
 		{ aligns: ["left", "right", "left", "right"] },
 	);
 
-	const notaVolumen = await note(
+	const notaVolumen = noteList(await note(
 		"mdi:information-outline",
 		`El refactor incrementa el volumen total de código en  
 		<b>${DELTA >= 0 ? "+" : ""}${PCT}%</b> (${TOTAL_ANTES} → ${TOTAL_DESPUES}  
@@ -139,7 +139,7 @@ export async function buildBodyTK1429349(): Promise<string> {
 		duplicación. Se acepta el cambio para alinear el patrón con el resto del  
 		sistema, dejando registrada la postura: el enfoque previo optimizaba la  
 		<b>lectura semántica</b>, no la <b>uniformidad mecánica</b>.`,
-	);
+	));
 
 	return (
 		intro +
