@@ -125,7 +125,7 @@ export async function buildBodyTK1429349(): Promise<string> {
 	const tablaComparativa = simpleTable(
 		["Antes", "Líneas", "Después", "Líneas"],
 		filas,
-		{ aligns: ["left", "right", "left", "right"], widths: ["28%", "12%", "48%", "12%"] },
+		{ aligns: ["left", "right", "left", "right"] },
 	);
 
 	const notaVolumen = await note(
