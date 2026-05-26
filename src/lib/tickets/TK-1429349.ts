@@ -44,12 +44,10 @@ export async function buildBodyTK1429349(): Promise<string> {
 		h3Solicitud,
 		h3Cambios,
 		h3Comparativa,
-		h3Postura,
 	] = await Promise.all([
 		h3Iconized("mdi:tools", "Solicitud"),
 		h3Iconized("mdi:check-circle-outline", "Cambios realizados"),
 		h3Iconized("mdi:chart-bar", "Comparativa de volumen de código"),
-		h3Iconized("mdi:comment-quote-outline", "Postura del desarrollador"),
 	]);
 
 	const solicitud = noteList(
@@ -136,48 +134,28 @@ export async function buildBodyTK1429349(): Promise<string> {
 		<b>${DELTA >= 0 ? "+" : ""}${PCT}%</b> (${TOTAL_ANTES} → ${TOTAL_DESPUES}  
 		líneas). El aumento es esperado: el SQL que antes se generaba de forma  
 		dinámica por helpers ahora queda <b>declarado explícitamente</b> en cada  
-		controlador.`,
-	);
-
-	const postura = noteList(
-		await note(
-			"mdi:lightbulb-on-outline",
-			`<b>Considero que trabajar con helpers es mejor que con cadenas  
-			expandidas.</b> Los helpers reducen la verbosidad y permiten que un  
-			humano lea la intención del controlador en pocas líneas, sin tener  
-			que recorrer SQL repetido en cada archivo.`,
-		),
-		await note(
-			"mdi:human-greeting-variant",
-			`La solución previa estaba <b>enfocada en la lectura semántica  
-			humana</b>: el helper nombra <i>qué</i> se hace  
-			(<code>sqlNesting</code>, <code>nestedConfig</code>,  
-			<code>syncDetails</code>) y oculta el <i>cómo</i>, que es ruido para  
-			el lector. Esa abstracción es la que da legibilidad real al código.`,
-		),
-		await note(
-			"mdi:robot-outline",
-			`La solución expandida (SQL quemado y predecible) está más  
-			<b>enfocada en el trabajo automático con IA</b> y en la trazabilidad  
-			mecánica que en la comprensión humana: cada controlador se vuelve  
-			autocontenido y fácil de procesar por herramientas, pero el lector  
-			humano paga el costo en verbosidad y duplicación.`,
-		),
-		await note(
-			"mdi:scale-balance",
-			`Se acepta el cambio para alinear el patrón con el resto del  
-			sistema, pero queda registrada la postura: el enfoque previo  
-			optimizaba la <b>lectura semántica</b>, no la <b>uniformidad  
-			mecánica</b>.`,
-		),
+		controlador.<br><br>  
+		<b>Considero que trabajar con helpers es mejor que con cadenas  
+		expandidas:</b> los helpers reducen la verbosidad y permiten que un  
+		humano lea la intención del controlador en pocas líneas, sin recorrer  
+		SQL repetido en cada archivo. La solución previa estaba enfocada en la  
+		<b>lectura semántica humana</b> — el helper nombra el <i>qué</i>  
+		(<code>sqlNesting</code>, <code>nestedConfig</code>,  
+		<code>syncDetails</code>) y oculta el <i>cómo</i>, que es ruido para el  
+		lector. La solución expandida con SQL quemado está más enfocada en el  
+		<b>trabajo automático con IA</b> y en la trazabilidad mecánica que en la  
+		comprensión humana: cada controlador se vuelve autocontenido y fácil de  
+		procesar por herramientas, pero el lector paga el costo en verbosidad y  
+		duplicación. Se acepta el cambio para alinear el patrón con el resto del  
+		sistema, dejando registrada la postura: el enfoque previo optimizaba la  
+		<b>lectura semántica</b>, no la <b>uniformidad mecánica</b>.`,
 	);
 
 	return (
 		intro +
 		h3Solicitud + solicitud +
 		h3Cambios + cambios +
-		h3Comparativa + tablaComparativa + notaVolumen +
-		h3Postura + postura
+		h3Comparativa + tablaComparativa + notaVolumen
 	);
 }
 
