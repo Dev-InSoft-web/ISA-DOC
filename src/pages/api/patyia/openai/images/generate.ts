@@ -1,4 +1,6 @@
 import type { APIRoute } from "astro";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 
 export const prerender = false;
 
@@ -7,6 +9,38 @@ interface Body {
 	size?: string;
 	n?: number;
 	model?: string;
+}
+
+interface PatyLocalSettings {
+	Values?: Record<string, string>;
+}
+
+let cachedKey: string | null = null;
+
+// Resuelve la API key probando, en orden:
+//   1) `paty_openai_api_key` en el entorno
+//   2) `OPENAI_API_KEY` en el entorno
+//   3) `local.settings.json` de PatyIA (path configurable con
+//      `paty_local_settings_path`, default `../PatyIA/local.settings.json`
+//      relativo al CWD del proceso de Astro).
+async function resolveApiKey(): Promise<string> {
+	if (cachedKey) return cachedKey;
+	const fromEnv = (process.env.paty_openai_api_key ?? process.env.OPENAI_API_KEY ?? "").trim();
+	if (fromEnv) {
+		cachedKey = fromEnv;
+		return fromEnv;
+	}
+	const rel = (process.env.paty_local_settings_path ?? "../PatyIA/local.settings.json").trim();
+	const path = resolve(process.cwd(), rel);
+	try {
+		const text = await readFile(path, "utf8");
+		const json = JSON.parse(text) as PatyLocalSettings;
+		const key = (json?.Values?.OPENAI_API_KEY ?? "").trim();
+		if (key) cachedKey = key;
+		return key;
+	} catch {
+		return "";
+	}
 }
 
 const ALLOWED_SIZES = new Set([
@@ -24,8 +58,8 @@ const DEFAULT_MODEL = "gpt-image-1";
 // Genera imágenes vía OpenAI Images API usando la llave guardada en el
 // servidor (`paty_openai_api_key`). Nunca expone la llave al cliente.
 export const POST: APIRoute = async ({ request }) => {
-	const apiKey = (process.env.paty_openai_api_key ?? "").trim();
-	if (!apiKey) return json({ ok: false, error: "paty_openai_api_key no configurada en el servidor" }, 500);
+	const apiKey = await resolveApiKey();
+	if (!apiKey) return json({ ok: false, error: "OPENAI_API_KEY no encontrada (env paty_openai_api_key / OPENAI_API_KEY ni en PatyIA/local.settings.json)" }, 500);
 
 	let payload: Body;
 	try {
