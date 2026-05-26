@@ -104,7 +104,7 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "25/may./2026 04:02:44 pm",
 		noMaquillarFechas: true,
-		estimacionMinutos: 15,
+		estimacionMinutos: 25,
 		diligenciaMinutos: 15,
 		resumen: "Se solicita ajustar los nombres de las opciones del campo Tipo de visualización en el plan de estudio: renombrar Pestañas por Lista, Organigrama por Pénsum y eliminar la opción Árbol.",
 		body: bodyTK1429346,
