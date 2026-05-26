@@ -142,10 +142,9 @@ export async function buildBodyTK1429349(): Promise<string> {
 		<b>lectura semántica humana</b> — el helper nombra el <i>qué</i>  
 		(<code>sqlNesting</code>, <code>nestedConfig</code>,  
 		<code>syncDetails</code>) y oculta el <i>cómo</i>, que es ruido para el  
-		lector. La solución expandida con SQL quemado está más enfocada en el  
-		<b>trabajo automático con IA</b> y en la trazabilidad mecánica que en la  
-		comprensión humana: cada controlador se vuelve autocontenido y fácil de  
-		procesar por herramientas, pero el lector paga el costo en verbosidad y  
+		lector. La solución expandida con SQL quemado es <b>más mecánica</b>:  
+		cada controlador se vuelve autocontenido y uniforme, pero el enfoque es  
+		<b>menos semántico y más verboso</b>, y el lector paga el costo en  
 		duplicación. Se acepta el cambio para alinear el patrón con el resto del  
 		sistema, dejando registrada la postura: el enfoque previo optimizaba la  
 		<b>lectura semántica</b>, no la <b>uniformidad mecánica</b>.`,
