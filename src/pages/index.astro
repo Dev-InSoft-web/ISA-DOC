@@ -1,0 +1,148 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const rawBase = import.meta.env.BASE_URL || "/";
+const base = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
+const link = (p: string): string => base + p || "/";
+
+interface Tool {
+   label: string;
+   path: string;
+   desc: string;
+   icon: string;
+}
+interface ProjectGroup {
+   key: string;
+   title: string;
+   subtitle: string;
+   tools: Tool[];
+}
+
+const groups: ProjectGroup[] = [
+   {
+      key: "clientesis",
+      title: "ClientesIS",
+      subtitle: "Documentación, SQL, bitácora y herramientas del workspace ClientesIS",
+      tools: [
+         { label: "SQL", path: "/clientesis/sql", icon: "🗄️", desc: "Explorador de fragmentos SQL, esquema de tablas y consultas." },
+         { label: "Bitácora", path: "/clientesis/bitacora", icon: "📓", desc: "Diario de avance: resúmenes diarios, tickets y commits." },
+         { label: "Postman", path: "/clientesis/postman", icon: "📮", desc: "Colecciones Postman renderizadas como documentación navegable." },
+         { label: "Docs ContaPymeU", path: "/clientesis/contapymeu", icon: "📚", desc: "Documentación técnica de ContaPymeU." },
+         { label: "Actions", path: "/clientesis/actions", icon: "⚡", desc: "Acciones de proyecto: iconify, builds y utilidades por subproyecto." },
+         { label: "BDD Capacitación", path: "/clientesis/db", icon: "🧩", desc: "Esquema BDD del módulo de capacitación." },
+         { label: "Tests Capacitación", path: "/clientesis/test", icon: "✅", desc: "Verificación de API del módulo de capacitación." },
+      ],
+   },
+   {
+      key: "patyia",
+      title: "PatyIA",
+      subtitle: "Herramientas del workspace PatyIA con integraciones de OpenAI",
+      tools: [
+         { label: "SQL", path: "/patyia/sql", icon: "🗄️", desc: "Esquema SQL y consultas para PatyIA." },
+         { label: "Bitácora", path: "/patyia/bitacora", icon: "📓", desc: "Diario de avance específico de PatyIA." },
+         { label: "Postman", path: "/patyia/postman", icon: "📮", desc: "Colecciones Postman de PatyIA." },
+         { label: "Docs ContaPymeU", path: "/patyia/contapymeu", icon: "📚", desc: "Documentación enlazada desde PatyIA." },
+         { label: "Actions · OpenAI", path: "/patyia/actions", icon: "🤖", desc: "Generación de imágenes, texto y conversaciones con OpenAI; historial persistente y pricing." },
+         { label: "Test", path: "/patyia/test", icon: "🧪", desc: "Página de pruebas de PatyIA." },
+      ],
+   },
+];
+---
+
+<Layout title="ISA — Herramientas">
+   <section class="home-wrap">
+      <header class="home-head">
+         <h1>ISA · Herramientas</h1>
+         <p class="sub">Resumen de las herramientas disponibles en ISA-DOC. Selecciona un proyecto y una vista.</p>
+      </header>
+
+      {groups.map((g) => (
+         <section class="grupo">
+            <div class="grupo-head">
+               <h2>{g.title}</h2>
+               <p class="grupo-sub">{g.subtitle}</p>
+            </div>
+            <div class="cards">
+               {g.tools.map((t) => (
+                  <a class="card" href={link(t.path)}>
+                     <span class="card-icon" aria-hidden="true">{t.icon}</span>
+                     <span class="card-body">
+                        <span class="card-title">{t.label}</span>
+                        <span class="card-desc">{t.desc}</span>
+                     </span>
+                  </a>
+               ))}
+            </div>
+         </section>
+      ))}
+   </section>
+</Layout>
+
+<style>
+   .home-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+   }
+   .home-head h1 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1.75rem;
+   }
+   .home-head .sub {
+      margin: 0;
+      opacity: 0.75;
+   }
+   .grupo-head h2 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1.25rem;
+      border-bottom: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+      padding-bottom: 0.35rem;
+   }
+   .grupo-sub {
+      margin: 0.25rem 0 0.75rem 0;
+      opacity: 0.7;
+      font-size: 0.92rem;
+   }
+   .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 0.85rem;
+   }
+   .card {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.9rem 1rem;
+      border-radius: 10px;
+      border: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+      background: color-mix(in srgb, currentColor 4%, transparent);
+      color: inherit;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s;
+   }
+   .card:hover {
+      background: color-mix(in srgb, var(--is-primary) 12%, transparent);
+      border-color: color-mix(in srgb, var(--is-primary) 55%, transparent);
+      transform: translateY(-1px);
+   }
+   .card-icon {
+      font-size: 1.5rem;
+      line-height: 1;
+   }
+   .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      min-width: 0;
+   }
+   .card-title {
+      font-weight: 600;
+   }
+   .card-desc {
+      opacity: 0.75;
+      font-size: 0.88rem;
+   }
+</style>
