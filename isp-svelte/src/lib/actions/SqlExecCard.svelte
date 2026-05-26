@@ -4,8 +4,8 @@
 		toastError, toastSuccess,
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import { onDestroy } from "svelte";
-	import SqlViewer from "../../viewers/SqlViewer.svelte";
-	import CodeModal from "../../viewers/CodeModal.svelte";
+	import SqlViewer from "../../../../src/components/viewers/SqlViewer.svelte";
+	import CodeModal from "../../../../src/components/viewers/CodeModal.svelte";
 	import RunButton from "./RunButton.svelte";
 	import RevisadoCheck from "./RevisadoCheck.svelte";
 	import ConfirmDialog from "../overlays/ConfirmDialog.svelte";
