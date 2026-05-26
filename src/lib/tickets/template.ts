@@ -313,11 +313,6 @@ export function cotaMaximaMinutos(commits: TicketCommit[]): number {
 // acorde a su volumen, evitando que un commit grande herede un gap
 // pequeño cuando el desarrollador venía trabajando desde antes.
 const LINEAS_POR_MIN = 3;
-// Gap máximo aceptado entre commits consecutivos. Pausas largas
-// (almuerzos, día siguiente) no deben heredarse como tiempo de
-// trabajo al commit que reanuda la sesión: el reparto queda
-// dominado por las líneas modificadas (piso por volumen).
-const GAP_MAX_MIN = 15;
 
 function pisoMinutosPorLineas(c: TicketCommit): number {
 	const peso = (c.ins ?? 0) + (c.del ?? 0) * 0.5;
@@ -329,72 +324,13 @@ function distribuirMinutos(commits: TicketCommit[], total: number): number[] {
 	const n = commits.length;
 	if (!n || total <= 0) return commits.map(() => 0);
 	const cronos = [...commits].reverse();
-	const ts = cronos.map((c) => (c.fecha ? new Date(c.fecha).getTime() : 0));
-	const gaps = new Array<number>(n).fill(0);
-	for (let i = 1; i < n; i++) {
-		const diff = ts[i] - ts[i - 1];
-		const minutos = diff > 0 ? Math.max(1, Math.round(diff / 60000)) : 0;
-		gaps[i] = Math.min(minutos, GAP_MAX_MIN);
-	}
-	const pisos = cronos.map(pisoMinutosPorLineas);
-	const firstTs = ts[0];
-	const firstIdxs: number[] = [0];
-	for (let i = 1; i < n; i++) {
-		if (firstTs && (ts[i] - firstTs) / 60000 <= 5) firstIdxs.push(i);
-		else break;
-	}
-	const tiempos = new Array<number>(n).fill(0);
-	for (let i = 0; i < n; i++) tiempos[i] = Math.max(gaps[i], pisos[i]);
-	const sumBase = tiempos.reduce((a, b) => a + b, 0);
-	let excedente = total - sumBase;
-
-	if (excedente >= 0) {
-		const base = Math.floor(excedente / firstIdxs.length);
-		let rem = excedente - base * firstIdxs.length;
-		for (const idx of firstIdxs) tiempos[idx] += base;
-		for (const idx of firstIdxs) {
-			if (rem <= 0) break;
-			tiempos[idx] += 1;
-			rem--;
-		}
-	} else {
-		const ajustables: number[] = [];
-		for (let i = 0; i < n; i++) if (!firstIdxs.includes(i)) ajustables.push(i);
-		const margen = ajustables.reduce((a, i) => a + (tiempos[i] - pisos[i]), 0);
-		if (margen > 0) {
-			const recorte = Math.min(margen, -excedente);
-			const factor = (margen - recorte) / margen;
-			for (const i of ajustables) {
-				const extra = tiempos[i] - pisos[i];
-				tiempos[i] = pisos[i] + Math.max(0, Math.round(extra * factor));
-			}
-		}
-		let actual = tiempos.reduce((a, b) => a + b, 0);
-		const diff = total - actual;
-		if (diff !== 0) {
-			tiempos[firstIdxs[0]] = Math.max(pisos[firstIdxs[0]], tiempos[firstIdxs[0]] + diff);
-		}
-	}
-
-	let actual = tiempos.reduce((a, b) => a + b, 0);
-	let guard = 0;
-	while (actual !== total && guard++ < 1000) {
-		const delta = total - actual;
-		const step = delta > 0 ? 1 : -1;
-		let idx = firstIdxs[0];
-		if (step < 0) {
-			let mejor = -1;
-			for (let i = 0; i < n; i++) {
-				if (tiempos[i] <= pisos[i]) continue;
-				if (mejor < 0 || tiempos[i] > tiempos[mejor]) mejor = i;
-			}
-			if (mejor < 0) break;
-			idx = mejor;
-		}
-		tiempos[idx] += step;
-		actual += step;
-	}
-
+	// Reparto proporcional al peso de líneas (ins + del*0.5). Un commit
+	// con pocas líneas debe llevarse poco tiempo, sin importar cuándo
+	// se hizo. El total puede quedar levemente por debajo de la
+	// estimación (preferimos coherencia volumen/tiempo a calzar el total).
+	const pesos = cronos.map((c) => Math.max(0.5, (c.ins ?? 0) + (c.del ?? 0) * 0.5));
+	const sumPesos = pesos.reduce((a, b) => a + b, 0);
+	const tiempos = pesos.map((p) => Math.max(1, Math.round((total * p) / sumPesos)));
 	return tiempos.reverse();
 }
 
