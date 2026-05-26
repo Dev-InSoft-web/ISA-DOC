@@ -98,34 +98,29 @@ export async function buildBodyTK1429349(): Promise<string> {
 		),
 	);
 
-	const SECTION_ANTES = `<b style="color:#a33;">Antes</b> · estructura consolidada`;
-	const SECTION_DESPUES = `<b style="color:#2a7;">Después</b> · controladores separados`;
-	const SECTION_TOTAL = `<b>Totales</b>`;
-	const SECTION_VARIACION = `<b>Variación</b>`;
-
-	const filasAntes: string[][] = ANTES.map(([f, n], i) => [
-		i === 0 ? SECTION_ANTES : "",
-		`<code>${f}</code>`,
-		String(n),
+	const maxRows = Math.max(ANTES.length, DESPUES.length);
+	const filas: string[][] = [];
+	for (let i = 0; i < maxRows; i++) {
+		const a = ANTES[i];
+		const d = DESPUES[i];
+		filas.push([
+			a ? `<code>${a[0]}</code>` : "",
+			a ? String(a[1]) : "",
+			d ? `<code>${d[0]}</code>` : "",
+			d ? String(d[1]) : "",
+		]);
+	}
+	filas.push([
+		`<b>${ANTES.length} archivos</b>`,
+		`<b>${TOTAL_ANTES}</b>`,
+		`<b>${DESPUES.length} archivos</b>`,
+		`<b>${TOTAL_DESPUES}</b> <span style="color:${DELTA >= 0 ? "#a33" : "#2a7"};">(${DELTA >= 0 ? "+" : ""}${PCT}%)</span>`,
 	]);
-	filasAntes.push(["", `<i>Total antes</i>`, `<b>${TOTAL_ANTES}</b>`]);
-
-	const filasDespues: string[][] = DESPUES.map(([f, n], i) => [
-		i === 0 ? SECTION_DESPUES : "",
-		`<code>${f}</code>`,
-		String(n),
-	]);
-	filasDespues.push(["", `<i>Total después</i>`, `<b>${TOTAL_DESPUES}</b>`]);
-
-	const filasResumen: string[][] = [
-		[SECTION_TOTAL, "Archivos", `3 → 12 (+9)`],
-		[SECTION_VARIACION, "Líneas de código", `${TOTAL_ANTES} → ${TOTAL_DESPUES} (<b>${DELTA >= 0 ? "+" : ""}${DELTA}</b>, <b>${DELTA >= 0 ? "+" : ""}${PCT}%</b>)`],
-	];
 
 	const tablaComparativa = simpleTable(
-		["Sección", "Archivo / Métrica", "Líneas"],
-		[...filasAntes, ...filasDespues, ...filasResumen],
-		{ aligns: ["left", "left", "right"], widths: ["35%", "45%", "20%"] },
+		["Antes", "Líneas", "Después", "Líneas"],
+		filas,
+		{ aligns: ["left", "right", "left", "right"], widths: ["28%", "12%", "48%", "12%"] },
 	);
 
 	const notaVolumen = await note(
