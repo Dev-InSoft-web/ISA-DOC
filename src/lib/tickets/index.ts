@@ -132,6 +132,7 @@ export const TICKETS: TicketRegistro[] = [
 			{ hash: "77d0048", descripcion: "refactor(TK-1429342): se usa import estatico del wrapper de acciones del recurso", repo: "ISW-ClientesIS", ins: 2, del: 5, fecha: "2026-05-26T07:20:55-05:00" },
 			{ hash: "416b8f7", descripcion: "refactor(controllers): se vuelve a import nombrado de pluralize en lugar de namespace import", repo: "ISW-ClientesIS", ins: 3, del: 3, fecha: "2026-05-26T07:21:52-05:00" },
 			{ hash: "34ec68c", descripcion: "fix(TK-1429342): elimina datos de localStorage al inicializar el componente", repo: "ISW-ClientesIS", ins: 3, del: 0, fecha: "2026-05-26T07:29:19-05:00" },
+			{ hash: "2bee7bc", descripcion: "fix(TK-1429342): se limita drawer de recurso para activar modo brapido", repo: "ISW-ClientesIS", ins: 1, del: 1, fecha: "2026-05-26T08:00:33-05:00" },
 		],
 		body: bodyTK1429342,
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
