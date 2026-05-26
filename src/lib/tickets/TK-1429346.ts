@@ -43,11 +43,15 @@ export async function buildBodyTK1429346(): Promise<string> {
 		),
 		await note(
 			"mdi:database-cog-outline",
-			`Los valores subyacentes del enum no se alteran (se mantienen  
-			<code>T</code> y <code>O</code> en base de datos); el cambio es  
-			estrictamente de presentación. Los registros existentes con valor  
-			<code>A</code> (antiguo Árbol) se renderizan como Pénsum para  
-			conservar compatibilidad.`,
+			`Se renombran los miembros del enum a <code>LISTA = "L"</code> y  
+			<code>PENSUM = "P"</code> y se elimina el miembro <code>ARBOL</code>.  
+			No se requiere migración de datos: las opciones se manejan únicamente  
+			con los valores <code>L</code> y <code>P</code>.`,
+		),
+		await note(
+			"mdi:broom",
+			`Se eliminan helpers no usados (<code>mapManyToMany</code> y  
+			<code>updateManyToMany</code>) detectados durante el refactor.`,
 		),
 	);
 
