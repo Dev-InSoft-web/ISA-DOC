@@ -21,12 +21,7 @@ function stripBase(pathname: string): string {
 const currentPath = stripBase(Astro.url.pathname);
 
 type ProjectKey = "clientesis" | "patyia" | "home";
-const project: ProjectKey =
-   currentPath === "/patyia" || currentPath.startsWith("/patyia/")
-      ? "patyia"
-      : currentPath === "/clientesis" || currentPath.startsWith("/clientesis/")
-         ? "clientesis"
-         : "home";
+const project: ProjectKey = currentPath === "/patyia" || currentPath.startsWith("/patyia/") ? "patyia" : currentPath === "/clientesis" || currentPath.startsWith("/clientesis/") ? "clientesis" : "home";
 
 const projects: Array<{ key: ProjectKey; label: string; home: string }> = [
    { key: "clientesis", label: "ClientesIS", home: "/clientesis" },
@@ -201,17 +196,17 @@ function isSubActive(t: SubTab): boolean {
                }
             </nav>
          </div>
-         {project !== "home" && (
-            <nav class="isa-nav isa-nav-subtabs">
-               {
-                  subTabs.map((t) => (
+         {
+            project !== "home" && (
+               <nav class="isa-nav isa-nav-subtabs">
+                  {subTabs.map((t) => (
                      <a href={link(project === "clientesis" ? t.cliPath : t.patPath)} class:list={["isa-nav-link isa-nav-subtab", { active: isSubActive(t) }]}>
                         {t.label}
                      </a>
-                  ))
-               }
-            </nav>
-         )}
+                  ))}
+               </nav>
+            )
+         }
       </header>
       <main class="isa-main">
          <slot />
