@@ -538,5 +538,35 @@
 		"width": 1210,
 		"height": 943,
 		"size": 77314
+	},
+	"tk1429342-acciones-recurso.png": {
+		"sha1": "a56fa4063952f99390dedce21c8a51fbd50c7956",
+		"url": "https://i.ibb.co/SDdHdg13/tk1429342-acciones-recurso.png",
+		"display_url": "https://i.ibb.co/KcLBLgQr/tk1429342-acciones-recurso.png",
+		"thumb": "https://i.ibb.co/1YdBdNpm/tk1429342-acciones-recurso.png",
+		"delete_url": "https://ibb.co/1YdBdNpm/820b2826b93a73f6b139a9883d460cb4",
+		"width": 1512,
+		"height": 943,
+		"size": 100284
+	},
+	"tk1429342-drawer-recurso.png": {
+		"sha1": "38b81e5f64a2fd1c4033ea021c841bf728c1c2b8",
+		"url": "https://i.ibb.co/9mzhKbzL/tk1429342-drawer-recurso.png",
+		"display_url": "https://i.ibb.co/p6GQVfG8/tk1429342-drawer-recurso.png",
+		"thumb": "https://i.ibb.co/1YhMyrh5/tk1429342-drawer-recurso.png",
+		"delete_url": "https://ibb.co/1YhMyrh5/91a7cad1a5ad36700810807fa3178ac8",
+		"width": 1512,
+		"height": 943,
+		"size": 212621
+	},
+	"tk1429342-modal-preview.png": {
+		"sha1": "3e38951ba6dfaf6ad972cf03c8b43873668eb3c8",
+		"url": "https://i.ibb.co/BKK43kg2/tk1429342-modal-preview.png",
+		"display_url": "https://i.ibb.co/VppH96vY/tk1429342-modal-preview.png",
+		"thumb": "https://i.ibb.co/844zskjg/tk1429342-modal-preview.png",
+		"delete_url": "https://ibb.co/844zskjg/9fd052b3852b3e56ba66b2d11d37de6b",
+		"width": 1512,
+		"height": 943,
+		"size": 131258
 	}
 }

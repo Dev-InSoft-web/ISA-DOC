@@ -4,6 +4,7 @@
 // del catálogo de recursos.
 
 import { h3Iconized, note, noteList } from "./tk-helpers";
+import { img } from "./snippets";
 
 const intro =
 	`<div>Se solicita que, dentro de la pestaña <b>Contenido</b> de un curso,  
@@ -13,9 +14,10 @@ const intro =
 	de recursos.</div>`;
 
 export async function buildBodyTK1429342(): Promise<string> {
-	const [h3Contexto, h3Solicitud, h3Estado] = await Promise.all([
+	const [h3Contexto, h3Solicitud, h3Solucion, h3Estado] = await Promise.all([
 		h3Iconized("mdi:information-outline", "Contexto"),
 		h3Iconized("mdi:tools", "Solicitud"),
+		h3Iconized("mdi:check-decagram-outline", "Solución aplicada"),
 		h3Iconized("mdi:clock-outline", "Estado"),
 	]);
 
@@ -51,11 +53,47 @@ export async function buildBodyTK1429342(): Promise<string> {
 	);
 
 	const estado = await note(
-		"mdi:clock-outline",
-		`<b>Abierto.</b> Pendiente de análisis y estimación.`,
+		"mdi:check-circle-outline",
+		`<b>Entregado.</b> Pendiente de confirmación funcional del solicitante.`,
 	);
 
-	return intro + h3Contexto + contexto + h3Solicitud + solicitud + h3Estado + estado;
+	const solucion = noteList(
+		await note(
+			"mdi:eye-outline",
+			`Se cambian las <b>acciones de cada recurso del árbol</b> para que  
+			el ícono del ojo abra la <b>configuración del recurso</b> en un  
+			drawer lateral (formulario homologado al del catálogo de recursos)  
+			y se añade un ícono dedicado de <b>previsualización</b> que abre el  
+			recurso en un modal de lectura, replicando las convenciones del  
+			catálogo.` +
+			img("tk1429342-acciones-recurso.png"),
+		),
+		await note(
+			"mdi:dock-right",
+			`El <b>drawer de configuración</b> hospeda el formulario completo  
+			del recurso en modo rápido. Cancelar cierra el drawer sin navegar  
+			fuera del curso, y aceptar guarda y cierra manteniendo al usuario  
+			en la pestaña Contenido.` +
+			img("tk1429342-drawer-recurso.png"),
+		),
+		await note(
+			"mdi:image-search-outline",
+			`La <b>previsualización</b> usa el modal de lectura del catálogo  
+			de recursos, reaprovechando comentarios, relacionados y  
+			descripción tal como aparecen en el catálogo.` +
+			img("tk1429342-modal-preview.png"),
+		),
+		await note(
+			"mdi:bug-check-outline",
+			`Durante la integración se corrigieron además dos incidencias  
+			detectadas: un ciclo de inicialización entre módulos al cargar el  
+			wrapper del drawer y una <b>violación de llave primaria</b> al  
+			guardar el recurso (provocada por datos residuales en  
+			almacenamiento local del navegador). Ambas quedaron resueltas.`,
+		),
+	);
+
+	return intro + h3Contexto + contexto + h3Solicitud + solicitud + h3Solucion + solucion + h3Estado + estado;
 }
 
 export const bodyTK1429342: Promise<string> = buildBodyTK1429342();
