@@ -1,0 +1,126 @@
+:root {
+	--is-primary: oklch(74.6% 0.16 232.661);
+	/*Color de fuente*/
+	--is-color: #222;
+	/*Background*/
+	--is-bg-primary: WhiteSmoke;
+	/*Backgroud para formularios*/
+	--is-bg-secondary: white;
+	--is-bg-readonly: #f9f9f9;
+	
+
+	/*Color de borde idea que sea neutro por defecto #808080*/
+	--is-b-color: #8885;
+
+	/*Bordes elementos de formulario*/
+	--is-b-required: #8888;
+	--is-b-optional: #80C080;
+	--is-b-readonly: #8884;
+
+	/*Botones, toast*/
+	--is-info: skyblue;
+	--is-success: #4CAF50;
+	--is-warning: #FFC107;
+	--is-error: red;
+	--is-danger: crimson;
+
+	--is-screen-xs: 640px;
+	--is-screen-sm: 768px;
+	--is-screen-md: 1024px;
+	--is-screen-lg: 1280px;
+	--is-screen-xl: 1536px;
+}
+
+.dark {
+	--is-primary: oklch(74.6% 0.16 232.661);
+	--is-color: oklch(98.5% 0.002 247.839);
+
+	--is-bg-primary: #0c1222;
+	--is-bg-secondary: #041c34;
+	--is-bg-readonly: #001327;
+
+	--is-b-color: #8885;
+
+	--is-b-required: #888;
+	--is-b-optional: #80C080;
+	--is-b-readonly: #8884;
+
+	--is-info: skyblue;
+	--is-success: #4CAF50;
+	--is-warning: #FFC107;
+	--is-error: red;
+	--is-danger: crimson;
+}
+
+
+.dark input::-webkit-inner-spin-button,
+.dark input::-webkit-outer-spin-button {
+	filter: invert(1);
+}
+
+.custom-scrollbar {
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+	width: 4px;
+	height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+	background: rgb(224 242 254);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+	background: rgb(3 105 161);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+	background: rgb(7 89 133);
+}
+
+body {
+	background-color: var(--is-bg-primary);
+	color: var(--is-color, #222);
+}
+
+/* Playground: textareas en vistas de ejemplo */
+#app textarea {
+	max-height: 250px;
+	overflow-y: auto;
+	box-sizing: border-box;
+}
+
+body>div>article {
+	/* estilos aquí */
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: 1rem;
+	background-color: var(--is-bg-secondary);
+	color: var(--is-color, #222);
+}
+
+.code-snippet {
+	background: #1e293b;
+	color: white;
+	overflow-x: auto;
+}
+
+.code-snippet code {
+	display: block;
+	white-space: pre;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+body>div>article>button {
+	/* estilos aquí */
+	cursor: pointer;
+	text-align: left;
+	font-size: 1.5rem;
+	font-weight: 700;
+	color: var(--is-color-title);
+	background-color: var(--is-bg-primary);
+	border-color: var(--is-b-color);
+}

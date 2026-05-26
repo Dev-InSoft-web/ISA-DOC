@@ -1,0 +1,69 @@
+{
+	"name": "@jeff-aporta/isp-svelte",
+	"version": "0.0.1",
+	"description": "Componentes Svelte de soporte para proyectos ISA / PatyIA / Remington. Consume @ingenieria_insoft/ispsveltecomponents y expone wrappers, viewers y demos.",
+	"type": "module",
+	"private": false,
+	"main": "./dist/lib/index.js",
+	"types": "./dist/lib/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/lib/index.d.ts",
+			"svelte": "./dist/lib/index.js",
+			"default": "./dist/lib/index.js"
+		}
+	},
+	"files": [
+		"dist/lib"
+	],
+	"svelte": "./dist/lib/index.js",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"build:gh-pages": "vite build --config vite.gh-pages.config.ts",
+		"preview": "vite preview",
+		"preview:gh-pages": "vite preview --config vite.gh-pages.config.ts",
+		"build:lib": "svelte-package -i src/lib -o dist/lib",
+		"check": "svelte-check --tsconfig ./tsconfig.json",
+		"publish:dry": "npm run build:lib && npm publish --dry-run --access public",
+		"publish:gh-pages": "npm run build:gh-pages && gh-pages -d dist-gh-pages -b gh-pages -t -r https://github.com/Dev-InSoft-web/ISP-SvelteComponents.git"
+	},
+	"peerDependencies": {
+		"svelte": "^4.0.0 || ^5.0.0"
+	},
+	"dependencies": {
+		"@ingenieria_insoft/ispsveltecomponents": "*"
+	},
+	"devDependencies": {
+		"@sveltejs/package": "^2.3.7",
+		"@sveltejs/vite-plugin-svelte": "^4.0.0",
+		"@uiw/codemirror-theme-vscode": "^4.23.5",
+		"@codemirror/lang-html": "^6.4.11",
+		"@codemirror/lang-javascript": "^6.2.5",
+		"@codemirror/lang-json": "^6.0.2",
+		"@codemirror/language": "^6.12.3",
+		"@codemirror/state": "^6.6.0",
+		"@codemirror/view": "^6.41.1",
+		"codemirror": "^6.0.2",
+		"gh-pages": "^6.3.0",
+		"svelte": "^5.0.0",
+		"svelte-check": "^3.8.6",
+		"typescript": "^5.6.3",
+		"vite": "^5.4.10"
+	},
+	"keywords": [
+		"svelte",
+		"componentes",
+		"isa",
+		"patyia",
+		"remington"
+	],
+	"author": "Jeff-Aporta",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Dev-InSoft-web/ISA-DOC.git",
+		"directory": "isp-svelte"
+	},
+	"homepage": "https://dev-insoft-web.github.io/ISP-SvelteComponents/"
+}
