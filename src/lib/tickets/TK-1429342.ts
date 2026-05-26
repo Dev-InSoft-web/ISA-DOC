@@ -14,11 +14,10 @@ const intro =
 	de recursos.</div>`;
 
 export async function buildBodyTK1429342(): Promise<string> {
-	const [h3Contexto, h3Solicitud, h3Solucion, h3Estado] = await Promise.all([
+	const [h3Contexto, h3Solicitud, h3Solucion] = await Promise.all([
 		h3Iconized("mdi:information-outline", "Contexto"),
 		h3Iconized("mdi:tools", "Solicitud"),
 		h3Iconized("mdi:check-decagram-outline", "Solución aplicada"),
-		h3Iconized("mdi:clock-outline", "Estado"),
 	]);
 
 	const contexto = noteList(
@@ -50,11 +49,6 @@ export async function buildBodyTK1429342(): Promise<string> {
 			para la acción de previsualización del recurso dentro del árbol  
 			de contenido del curso.`,
 		),
-	);
-
-	const estado = await note(
-		"mdi:check-circle-outline",
-		`<b>Entregado.</b> Pendiente de confirmación funcional del solicitante.`,
 	);
 
 	const solucion = noteList(
@@ -93,7 +87,7 @@ export async function buildBodyTK1429342(): Promise<string> {
 		),
 	);
 
-	return intro + h3Contexto + contexto + h3Solicitud + solicitud + h3Solucion + solucion + h3Estado + estado;
+	return intro + h3Contexto + contexto + h3Solicitud + solicitud + h3Solucion + solucion;
 }
 
 export const bodyTK1429342: Promise<string> = buildBodyTK1429342();
