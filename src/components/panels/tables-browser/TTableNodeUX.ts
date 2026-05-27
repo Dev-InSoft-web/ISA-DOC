@@ -28,8 +28,9 @@ export abstract class TTableNodeBase extends TreeNode<TTableNodeUX> {
 	 * - `domain`: dominio raíz (default cuando kind=domain).
 	 * - `pivot`: pivote N:N (exactamente master + 1 slave).
 	 * - `pivot-domain`: pivote dentro de dominio que envuelve a otro dominio (1:1 ó 1:N).
+	 * - `bd`: contenedor hermético de base de datos (sin master ni cardinalidades).
 	 */
-	domainType: "domain" | "pivot" | "pivot-domain" = "domain";
+	domainType: "domain" | "pivot" | "pivot-domain" | "bd" = "domain";
 	/** Cardinalidad del pivote respecto a su dominio padre. Sólo aplica a pivot/pivot-domain. */
 	cardinality: "1:1" | "1:N" | "N:N" | "" = "";
 	/** Cardinalidad de la tabla esclava respecto a su master (deriva del pivote contenedor o del dominio). */

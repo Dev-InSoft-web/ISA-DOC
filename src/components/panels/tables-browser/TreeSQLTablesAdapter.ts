@@ -1326,7 +1326,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 		const pushDomainTree = (d: DomainDef, parentRowId: string, depth: number, isMasterOfParent: boolean = false): void => {
 			counters[depth] = (counters[depth] ?? 0) + 1;
 			const myRowId = parentRowId ? `${parentRowId}.${counters[depth]}` : String(counters[depth]);
-			const dType: "domain" | "pivot" | "pivot-domain" = d.type === "pivot" ? "pivot" : d.type === "pivot-domain" ? "pivot-domain" : "domain";
+			const dType: "domain" | "pivot" | "pivot-domain" | "bd" = d.type === "pivot" ? "pivot" : d.type === "pivot-domain" ? "pivot-domain" : d.type === "bd" ? "bd" : "domain";
 			const nodeKind: "domain" | "pivot" = (dType === "pivot" || dType === "pivot-domain") ? "pivot" : "domain";
 			// N:N (`pivot`) requiere exactamente master + 1 slave; menos que eso → marcado de error.
 			let pivotMissingSlave = false;
