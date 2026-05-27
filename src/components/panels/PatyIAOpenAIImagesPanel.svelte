@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, Modal, RichEditor, SelectEnum, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, ButtonIconify, Card, FlexLayout, GridLayout, InputNumber, Modal, RichEditor, SelectEnum, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 	import TsViewer from "../viewers/TsViewer.svelte";
 	import ImageViewer from "../viewers/ImageViewer.svelte";
@@ -453,6 +453,27 @@ const data = await r.json();
 	let convId: number = 2864;
 	let convDb: "prod" | "staging" = "prod";
 	let convLoading: boolean = false;
+
+	interface MsgVista {
+		idMsg: string;
+		rol: string;
+		contenido: string;
+		fecha: string;
+		esUsuario: boolean;
+		raw: SqlRow;
+	}
+	let msgModal: MsgVista | null = null;
+	let msgModalOpen: boolean = false;
+
+	function abrirMsg(v: MsgVista) {
+		msgModal = v;
+		msgModalOpen = true;
+	}
+
+	function cerrarMsg() {
+		msgModalOpen = false;
+		msgModal = null;
+	}
 	let convError: string = "";
 	let convWarnings: string[] = [];
 	let convRow: SqlRow | null = null;
@@ -915,20 +936,29 @@ const data = await r.json();
 					{#if convMensajes.length}
 						<section>
 							<h3>Mensajes ({convMensajes.length}) <span class="sub">· fuente: {convFuenteMensajes === "openai" ? "OpenAI threads" : "MENSAJESCALIFICADOS (fallback)"}</span></h3>
-							<div class="chat-historial">
+							<div class="chat-historial custom-scrollbar">
 								{#each convMensajes as m, i}
 									{@const rol = pickStr(m, ROLE_KEYS) || "?"}
 									{@const contenido = pickStr(m, CONTENT_KEYS)}
 									{@const idMsg = pickStr(m, ID_KEYS) || String(i + 1)}
 									{@const fecha = formatearFechaMsg(pickStr(m, FECHA_KEYS))}
-									<div class="msg msg-{rol.toLowerCase()}">
-										<strong>#{idMsg} · {rol}{fecha ? ` · ${fecha}` : ""}</strong>
-										{#if contenido}
-											<pre>{contenido}</pre>
-										{:else}
-											<pre>{JSON.stringify(m, null, 2)}</pre>
-										{/if}
-									</div>
+									{@const esUsuario = rol.toLowerCase().startsWith("usu") || rol.toLowerCase() === "user"}
+									{@const vista = { idMsg, rol, contenido: contenido || JSON.stringify(m, null, 2), fecha, esUsuario, raw: m }}
+									<FlexLayout justify={esUsuario ? "end" : "start"} items="start" style="width: 100%;">
+										<div
+											class="msg-wrap"
+											role="button"
+											tabindex="0"
+											on:click={() => abrirMsg(vista)}
+											on:keydown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirMsg(vista); } }}
+										>
+											<Card variant="solid" style={esUsuario ? "background-color: var(--is-primary); color: #fff;" : ""}>
+												<div class="msg-head">#{idMsg} · {rol}{fecha ? ` · ${fecha}` : ""}</div>
+												<div class="msg-body">{vista.contenido}</div>
+												<div class="msg-foot">Click para abrir</div>
+											</Card>
+										</div>
+									</FlexLayout>
 								{/each}
 							</div>
 						</section>
@@ -938,6 +968,19 @@ const data = await r.json();
 		</div>
 	</FlexLayout>
 </ProjectSectionLayout>
+
+{#if msgModalOpen && msgModal}
+	<Modal
+		bind:bshow={msgModalOpen}
+		onClose={cerrarMsg}
+		style="width: 95vw; max-width: 95vw; height: 95vh; max-height: 95vh;"
+	>
+		<h3 slot="title">#{msgModal.idMsg} · {msgModal.rol}{msgModal.fecha ? ` · ${msgModal.fecha}` : ""}</h3>
+		<div class="msg-modal-body custom-scrollbar">
+			<pre>{msgModal.contenido}</pre>
+		</div>
+	</Modal>
+{/if}
 
 {#if infoOpen}
 	<Modal bind:bshow={infoOpen} onClose={() => (infoOpen = false)}>
@@ -1139,8 +1182,7 @@ const data = await r.json();
 		margin-bottom: 0.5rem;
 	}
 	.galeria-head h3 { margin: 0; }
-	.resultado pre,
-	.msg pre {
+	.resultado pre {
 		background: rgba(255,255,255,0.04);
 		border: 1px solid rgba(255,255,255,0.1);
 		border-radius: 4px;
@@ -1155,11 +1197,54 @@ const data = await r.json();
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
-		max-height: 360px;
+		max-height: 480px;
 		overflow: auto;
-		padding: 0.5rem;
+		padding: 0.75rem;
 		border: 1px solid rgba(255,255,255,0.1);
 		border-radius: 6px;
+	}
+	.msg-wrap {
+		max-width: 75%;
+		cursor: pointer;
+		transition: transform 0.12s ease;
+	}
+	.msg-wrap:hover { transform: translateY(-1px); }
+	.msg-wrap:focus-visible { outline: 2px solid var(--is-primary); outline-offset: 2px; border-radius: 6px; }
+	.msg-head {
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		opacity: 0.75;
+		margin-bottom: 0.35rem;
+	}
+	.msg-body {
+		white-space: pre-wrap;
+		word-break: break-word;
+		font-size: 0.9rem;
+		line-height: 1.45;
+		display: -webkit-box;
+		-webkit-line-clamp: 6;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	.msg-foot {
+		font-size: 0.7rem;
+		opacity: 0.55;
+		margin-top: 0.35rem;
+		text-align: right;
+	}
+	.msg-modal-body {
+		padding: 1rem;
+		overflow: auto;
+		height: 100%;
+	}
+	.msg-modal-body pre {
+		white-space: pre-wrap;
+		word-break: break-word;
+		font-family: inherit;
+		font-size: 1rem;
+		line-height: 1.55;
+		margin: 0;
 	}
 	.warnings {
 		display: flex;
@@ -1191,16 +1276,6 @@ const data = await r.json();
 		font-size: 0.75rem;
 		opacity: 0.6;
 		font-weight: normal;
-	}
-	.msg strong {
-		font-size: 0.75rem;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		opacity: 0.7;
-	}
-	.msg-user pre {
-		background: color-mix(in srgb, var(--is-primary), transparent 88%);
-		border-color: color-mix(in srgb, var(--is-primary), transparent 70%);
 	}
 	.nav-acciones {
 		flex: 0 0 20%;
