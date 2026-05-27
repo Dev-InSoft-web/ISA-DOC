@@ -199,6 +199,10 @@ const data = await r.json();
 		"gpt-4.1-mini": "gpt-4.1-mini",
 		"gpt-4.1": "gpt-4.1",
 	};
+	const TBaseDatos = {
+		"AYUDASCP_IA (prod)": "prod",
+		"AYUDASCP_IA_STAGING": "staging",
+	};
 
 	function errorToString(e: unknown): string {
 		if (!e) return "";
@@ -967,12 +971,7 @@ const data = await r.json();
 
 					<GridLayout cells={4} items="end">
 						<InputNumber bind:value={convId} label="iconversacion" required={true} />
-						<label class="db-label">Base de datos
-							<select bind:value={convDb} disabled={convLoading} class="db-select">
-								<option value="prod">AYUDASCP_IA (prod)</option>
-								<option value="staging">AYUDASCP_IA_STAGING</option>
-							</select>
-						</label>
+						<SelectEnum bind:value={convDb} enumValue={TBaseDatos} label="Base de datos" />
 						<Button onClick={cargarConversacionBD} disabled={convLoading} loading={convLoading} style="width: fit-content;">Cargar</Button>
 						<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarConvBD} disabled={convLoading} title="Limpiar" />
 					</GridLayout>
@@ -1468,21 +1467,6 @@ const data = await r.json();
 		border: 1px solid rgba(251, 191, 36, 0.25);
 		border-radius: 4px;
 		padding: 0.4rem 0.6rem;
-	}
-	.db-label {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-		font-size: 0.82rem;
-		opacity: 0.9;
-	}
-	.db-select {
-		font-size: 0.85rem;
-		padding: 0.35rem 0.5rem;
-		background: rgba(255,255,255,0.04);
-		color: var(--is-color, #e5e7eb);
-		border: 1px solid rgba(255,255,255,0.15);
-		border-radius: 4px;
 	}
 	.sub {
 		font-size: 0.75rem;
