@@ -533,6 +533,24 @@ export function img(filename: string, targetW: number = IMG_DEFAULT_W): string {
 	);
 }
 
+// imgFull — variante de `img` para diagramas (mermaid, esquemas) donde queremos
+// que la imagen ocupe el 100% del ancho disponible del documento y conserve la
+// proporción nativa. Email-safe: no usa `vw`; usa `width:100%` + `max-width` en
+// px equivalente al ancho nativo para no escalarla más allá de su resolución.
+export function imgFull(filename: string): string {
+	const info = imgInfo(filename);
+	const natW = info.width || 1200;
+	const natH = info.height || 600;
+	return (
+		`<a href="${info.url}" target="_blank" rel="noopener noreferrer" ` +
+		`style="display:block;margin:0.75rem 0;text-decoration:none;">` +
+		`<img src="${info.url}" alt="" width="${natW}" height="${natH}" ` +
+		`style="display:block;width:100%;max-width:100%;height:auto;` +
+		`border:1px solid #ddd;border-radius:4px;background:#fff;cursor:zoom-in;">` +
+		`</a>`
+	);
+}
+
 // simpleTable — tabla email-safe homogénea con el mismo estilo que la tabla
 // de "Commits relacionados" de la bitácora (header fondo negro, font Tahoma,
 // celdas con borde inferior gris). Acepta celdas como HTML ya escapado.

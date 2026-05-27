@@ -2,7 +2,7 @@
 // consulta en Paty IA. Esta diligencia consolida el análisis técnico de
 // viabilidad basado en el código actual del proyecto PatyIA.
 
-import { codeBlock, img } from "./snippets";
+import { codeBlock, img, imgFull } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
@@ -168,7 +168,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		</table>`,
 	);
 
-	const diagramaFases = img("tk1429262-mermaid-hoja-de-ruta.png", 720);
+	const diagramaFases = imgFull("tk1429262-mermaid-hoja-de-ruta.png");
 
 	const tablaFases = `
 <table style="${TABLE_STYLE}">
@@ -315,7 +315,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		),
 	);
 
-	const diagramaRelaciones = img("tk1429262-mermaid-er-recursos.png", 720);
+	const diagramaRelaciones = imgFull("tk1429262-mermaid-er-recursos.png");
 
 	const tablaStorage = `
 <table style="${TABLE_STYLE}">
