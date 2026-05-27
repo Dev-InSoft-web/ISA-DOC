@@ -142,6 +142,10 @@ export async function buildBodyTK1429262(): Promise<string> {
 		),
 	);
 
+	const TABLE_STYLE = `border-collapse:collapse;width:100%;margin-top:0.5rem;font-size:0.85rem;`;
+	const TH_STYLE = `border:1px solid #80808040;padding:0.4rem;text-align:left;background:#80808015;`;
+	const TD_STYLE = `border:1px solid #80808040;padding:0.4rem;vertical-align:top;`;
+
 	const comparativa = await note(
 		"mdi:table",
 		`<table style="${TABLE_STYLE}">
@@ -182,10 +186,6 @@ export async function buildBodyTK1429262(): Promise<string> {
 			`<b>Fase 4:</b> mover el catálogo de <i>prompts</i> y modelo (<code>PR_*</code> y <code>OPENAI_MODEL</code>) a <b>SQL</b> como valores dinámicos administrables. Quita la dependencia de variables de entorno y permite ajustar prompts/modelo sin redeploy.`,
 		),
 	);
-
-	const TABLE_STYLE = `border-collapse:collapse;width:100%;margin-top:0.5rem;font-size:0.85rem;`;
-	const TH_STYLE = `border:1px solid #80808040;padding:0.4rem;text-align:left;background:#80808015;`;
-	const TD_STYLE = `border:1px solid #80808040;padding:0.4rem;vertical-align:top;`;
 
 	const MERMAID_URL = "https://mermaid.ink/img/ZXJEaWFncmFtCiAgICBDT05WRVJTQUNJT04gfHwtLW97IE1FTlNBSkUgOiBjb250aWVuZQogICAgTUVOU0FKRSB8fC0tfHwgTUVOU0FKRV9NRVRSSUNBUyA6IG1pZGUKICAgIENPTlZFUlNBQ0lPTiB7CiAgICAgICAgSU5UIElDT05WRVJTQUNJT04gUEsKICAgICAgICBJTlQgUVRPS0VOUyAiVE9UQUwgY29udmVyc2FjaW9uIgogICAgfQogICAgTUVOU0FKRSB7CiAgICAgICAgSU5UIElNRU5TQUpFIFBLCiAgICAgICAgSU5UIElDT05WRVJTQUNJT04gRksKICAgICAgICBWQVJDSEFSIFJPTAogICAgICAgIFZBUkNIQVIgQ09OVEVOSURPICJvdXRwdXQiCiAgICAgICAgVkFSQ0hBUiBJTlBVVCAiTlVFVk8iCiAgICB9CiAgICBNRU5TQUpFX01FVFJJQ0FTIHsKICAgICAgICBJTlQgSU1FTlNBSkUgRksKICAgICAgICBJTlQgVE9LRU5TX0lOCiAgICAgICAgSU5UIFRPS0VOU19PVVQKICAgICAgICBWQVJDSEFSIE1PREVMTwogICAgICAgIFZBUkNIQVIgRVRBUEEKICAgICAgICBERUNJTUFMIENPU1RPX0FQUk9YCiAgICAgICAgVElOWUlOVCBVVElMICItMS8wLzEiCiAgICB9CiAgICBSRUNVUlNPX09QRU5BSSB7CiAgICAgICAgSU5UIElSRUNVUlNPIFBLCiAgICAgICAgVkFSQ0hBUiBOT01CUkUgImFsaWFzIGh1bWFubyIKICAgICAgICBWQVJDSEFSIFRJUE8gInZlY3Rvcl9zdG9yZS1wcm9tcHQtbW9kZWwtY2hhdCIKICAgICAgICBWQVJDSEFSIENPTlRFWFRPICJQUl9HRU5FUkFMLCBPUEVOQUlfTU9ERUwuLi4iCiAgICAgICAgVkFSQ0hBUiBWQUxPUiAiaWQgZXh0ZXJubyBPcGVuQUkiCiAgICAgICAgQklUIEFDVElWTwogICAgfQ==";
 
