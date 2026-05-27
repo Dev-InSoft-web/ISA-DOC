@@ -8,6 +8,7 @@ export const SKILLS_ROOT = join(STORAGE_ROOT, "skills");
 export const FILES_CACHE = join(STORAGE_ROOT, "files-cache.json");
 export const VS_CACHE = join(STORAGE_ROOT, "vector-stores-cache.json");
 export const SKILLS_CACHE = join(STORAGE_ROOT, "skills-cache.json");
+export const BACKUP_PROGRESS = join(STORAGE_ROOT, "backup-progress.json");
 
 export interface LocalFileMeta {
 	categorias: string[];
@@ -25,8 +26,16 @@ export const EMPTY_LOCAL_META: LocalFileMeta = {
 	actualizado: "",
 };
 
+export function letraCarpeta(fileId: string): string {
+	for (let i = fileId.length - 1; i >= 0; i--) {
+		const c = fileId[i]!.toLowerCase();
+		if (c >= "a" && c <= "z") return c;
+	}
+	return "_";
+}
+
 export function fileDir(fileId: string): string {
-	return join(FILES_ROOT, fileId);
+	return join(FILES_ROOT, letraCarpeta(fileId), fileId);
 }
 
 export async function ensureDir(dir: string): Promise<void> {

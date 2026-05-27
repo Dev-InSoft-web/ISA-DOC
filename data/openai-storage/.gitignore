@@ -1,3 +1,6 @@
 # Backup binario local — no se versiona
 **/content.*
 *-cache.json
+backup-progress.json
+duplicates.json
+files/
