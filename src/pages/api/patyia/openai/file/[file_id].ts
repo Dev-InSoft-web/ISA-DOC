@@ -44,6 +44,47 @@ export const GET: APIRoute = async ({ params, url }) => {
 		return json({ ok: false, error: errMsg(err) }, 500);
 	}
 
+	const filename = meta.filename ?? fileId;
+	const vsParam = url.searchParams.get("vs") ?? "";
+	const vsIds = vsParam.split(",").map((s) => s.trim()).filter((s) => /^vs_[A-Za-z0-9]+$/.test(s));
+
+	// Files con purpose=assistants no permiten /files/{id}/content. Hay que
+	// pasar por la API de vector stores: /vector_stores/{vs}/files/{id}/content
+	// que devuelve los chunks indexados como texto.
+	const esAssistants = meta.purpose === "assistants";
+	if (esAssistants) {
+		if (!vsIds.length) {
+			return json(
+				{
+					ok: false,
+					error: "Archivo con purpose=assistants. Requiere ?vs=<vector_store_id> para obtener el contenido indexado.",
+					meta,
+				},
+				400,
+			);
+		}
+		const errores: string[] = [];
+		for (const vs of vsIds) {
+			try {
+				const texto = await descargarVectorStoreContent(vs, fileId, apiKey);
+				return new Response(texto, {
+					status: 200,
+					headers: {
+						"content-type": `${detectarMime(filename)}; charset=utf-8`,
+						"content-disposition": `inline; filename="${encodeURIComponent(filename)}"`,
+						"cache-control": "private, max-age=300",
+						"x-openai-filename": filename,
+						"x-openai-purpose": meta.purpose ?? "",
+						"x-openai-source": `vector_store:${vs}`,
+					},
+				});
+			} catch (err) {
+				errores.push(`${vs}: ${errMsg(err)}`);
+			}
+		}
+		return json({ ok: false, error: `No se pudo obtener el contenido del archivo en los vector stores. ${errores.join(" | ")}` }, 404);
+	}
+
 	const r = await fetch(`https://api.openai.com/v1/files/${encodeURIComponent(fileId)}/content`, {
 		method: "GET",
 		headers: { Authorization: `Bearer ${apiKey}` },
@@ -54,7 +95,6 @@ export const GET: APIRoute = async ({ params, url }) => {
 		return json({ ok: false, error: `HTTP ${r.status}: ${text.slice(0, 300)}` }, r.status);
 	}
 
-	const filename = meta.filename ?? fileId;
 	const isText = TEXT_EXT_RE.test(filename);
 	const buf = await r.arrayBuffer();
 	const contentType = isText
@@ -69,9 +109,49 @@ export const GET: APIRoute = async ({ params, url }) => {
 			"cache-control": "private, max-age=300",
 			"x-openai-filename": filename,
 			"x-openai-purpose": meta.purpose ?? "",
+			"x-openai-source": "files",
 		},
 	});
 };
+
+interface VectorStoreContentPage {
+	data?: Array<{ type?: string; text?: string }>;
+	has_more?: boolean;
+	next_page?: string | null;
+	error?: { message?: string };
+}
+
+async function descargarVectorStoreContent(vsId: string, fileId: string, apiKey: string): Promise<string> {
+	const partes: string[] = [];
+	let after: string | null = null;
+	for (let i = 0; i < 50; i++) {
+		const u = new URL(
+			`https://api.openai.com/v1/vector_stores/${encodeURIComponent(vsId)}/files/${encodeURIComponent(fileId)}/content`,
+		);
+		if (after) u.searchParams.set("after", after);
+		const r = await fetch(u.toString(), {
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${apiKey}`,
+				"OpenAI-Beta": "assistants=v2",
+			},
+		});
+		const text = await r.text();
+		let parsed: VectorStoreContentPage;
+		try {
+			parsed = JSON.parse(text) as VectorStoreContentPage;
+		} catch {
+			throw new Error(`HTTP ${r.status} no JSON: ${text.slice(0, 200)}`);
+		}
+		if (!r.ok) throw new Error(parsed.error?.message ?? `HTTP ${r.status}`);
+		for (const it of parsed.data ?? []) {
+			if (typeof it.text === "string") partes.push(it.text);
+		}
+		if (!parsed.has_more || !parsed.next_page) break;
+		after = parsed.next_page;
+	}
+	return partes.join("\n\n");
+}
 
 async function fetchMeta(fileId: string, apiKey: string): Promise<OpenAIFileMeta> {
 	const r = await fetch(`https://api.openai.com/v1/files/${encodeURIComponent(fileId)}`, {

@@ -65,6 +65,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		h3Comparativa,
 		h3Ruta,
 		h3BD,
+		h3Referencia,
 		h3Presupuesto,
 		h3Riesgos,
 		h3Conclusion,
@@ -75,9 +76,10 @@ export async function buildBodyTK1429262(): Promise<string> {
 		h3Iconized("mdi:compare", "4) Comparativa antes vs propuesta"),
 		h3Iconized("mdi:map-marker-path", "5) Mejor camino propuesto (sin implementar)"),
 		h3Iconized("mdi:database-cog-outline", "6) Análisis de base de datos (STORAGE, métricas y utilidad)"),
-		h3Iconized("mdi:clock-time-four-outline", "7) Presupuesto de tiempos (3 horas)"),
-		h3Iconized("mdi:alert-outline", "8) Riesgos y mitigación"),
-		h3Iconized("mdi:clipboard-text-outline", "9) Propuesta para aprobación"),
+		h3Iconized("mdi:youtube", "7) Referencia recomendada (Harness Engineering)"),
+		h3Iconized("mdi:clock-time-four-outline", "8) Presupuesto de tiempos (3 horas)"),
+		h3Iconized("mdi:alert-outline", "9) Riesgos y mitigación"),
+		h3Iconized("mdi:clipboard-text-outline", "10) Propuesta para aprobación"),
 	]);
 
 	const [codeFlujoEntrada, codeModeloUnicoResponses, codeModeloUnicoRespuesta, codeConfigActual] = await Promise.all([
@@ -154,7 +156,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		<tr>
 		<td style="border:1px solid #80808040;padding:0.4rem;">Modelo IA</td>
 		<td style="border:1px solid #80808040;padding:0.4rem;">Un único <code>OPENAI_MODEL</code> para clasificación, extracción y respuesta final.</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;">Mapa de modelo por <code>etapa</code> y/o <code>tipo_consulta</code> con fallback global.</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Mapa de modelo por <code>ETAPA</code> y/o <code>TIPO_CONSULTA</code> con fallback global.</td>
 		</tr>
 		<tr>
 		<td style="border:1px solid #80808040;padding:0.4rem;">Configuración</td>
@@ -194,6 +196,170 @@ export async function buildBodyTK1429262(): Promise<string> {
 		),
 	);
 
+	const TABLE_STYLE = `border-collapse:collapse;width:100%;margin-top:0.5rem;font-size:0.85rem;`;
+	const TH_STYLE = `border:1px solid #80808040;padding:0.4rem;text-align:left;background:#80808015;`;
+	const TD_STYLE = `border:1px solid #80808040;padding:0.4rem;vertical-align:top;`;
+
+	const MERMAID_URL = "https://mermaid.ink/img/ZXJEaWFncmFtCiAgICBDT05WRVJTQUNJT04gfHwtLW97IE1FTlNBSkUgOiBjb250aWVuZQogICAgTUVOU0FKRSB8fC0tfHwgTUVOU0FKRV9NRVRSSUNBUyA6IG1pZGUKICAgIENPTlZFUlNBQ0lPTiB7CiAgICAgICAgSU5UX1BLIElDT05WRVJTQUNJT04KICAgICAgICBJTlQgUVRPS0VOUyAiVE9UQUwgY29udmVyc2FjaW9uIgogICAgfQogICAgTUVOU0FKRSB7CiAgICAgICAgSU5UX1BLIElNRU5TQUpFCiAgICAgICAgSU5UX0ZLIElDT05WRVJTQUNJT04KICAgICAgICBWQVJDSEFSKDIwKSBST0wKICAgICAgICBWQVJDSEFSKE1BWCkgQ09OVEVOSURPICJvdXRwdXQiCiAgICAgICAgVkFSQ0hBUihNQVgpIElOUFVUICJOVUVWTyIKICAgIH0KICAgIE1FTlNBSkVfTUVUUklDQVMgewogICAgICAgIElOVF9GSyBJTUVOU0FKRQogICAgICAgIElOVCBUT0tFTlNfSU4KICAgICAgICBJTlQgVE9LRU5TX09VVAogICAgICAgIFZBUkNIQVIoNjApIE1PREVMTwogICAgICAgIFZBUkNIQVIoNDApIEVUQVBBCiAgICAgICAgREVDSU1BTCgxMCw2KSBDT1NUT19BUFJPWAogICAgICAgIFRJTllJTlQgVVRJTCAiLTEvMC8xIgogICAgfQogICAgU1RPUkFHRSB7CiAgICAgICAgSU5UX1BLIElTVE9SQUdFCiAgICAgICAgVkFSQ0hBUig0MCkgVElQTyAidmVjdG9yX3N0b3JlLXByb21wdC1tb2RlbCIKICAgICAgICBWQVJDSEFSKDgwKSBDT05URVhUTyAiUFJfR0VORVJBTCwgT1BFTkFJX01PREVMLi4uIgogICAgICAgIFZBUkNIQVIoMjAwKSBWQUxPUiAiaWQgZXh0ZXJubyBPcGVuQUkiCiAgICAgICAgQklUIEFDVElWTwogICAgfQ==";
+
+	const diagramaRelaciones = `
+<div style="text-align:center;margin-top:0.5rem;">
+	<a href="${MERMAID_URL}" target="_blank" rel="noopener">
+		<img src="${MERMAID_URL}" alt="Diagrama ER propuesto: CONVERSACION, MENSAJE, MENSAJE_METRICAS y STORAGE" style="max-width:100%;height:auto;border:1px solid #80808040;border-radius:4px;background:#fff;padding:0.5rem;" />
+	</a>
+</div>`;
+
+	const tablaStorage = `
+<table style="${TABLE_STYLE}">
+<thead><tr>
+<th style="${TH_STYLE}">Columna</th>
+<th style="${TH_STYLE}">Tipo sugerido</th>
+<th style="${TH_STYLE}">Descripción</th>
+</tr></thead>
+<tbody>
+<tr><td style="${TD_STYLE}"><code>ISTORAGE</code></td><td style="${TD_STYLE}">INT PK</td><td style="${TD_STYLE}">Identificador interno.</td></tr>
+<tr><td style="${TD_STYLE}"><code>TIPO</code></td><td style="${TD_STYLE}">VARCHAR(40)</td><td style="${TD_STYLE}"><code>vector_store</code>, <code>prompt</code>, <code>model</code>, …</td></tr>
+<tr><td style="${TD_STYLE}"><code>CONTEXTO</code></td><td style="${TD_STYLE}">VARCHAR(80)</td><td style="${TD_STYLE}">Etapa o uso: <code>PR_GENERAL</code>, <code>PR_TIPO_CONSULTAS</code>, <code>PR_EXTRACTOR_CONSULTAS</code>, <code>PR_CLASIFICADOR_MODULO</code>, <code>OPENAI_MODEL</code>.</td></tr>
+<tr><td style="${TD_STYLE}"><code>VALOR</code></td><td style="${TD_STYLE}">VARCHAR(200)</td><td style="${TD_STYLE}">Identificador o referencia externa de OpenAI.</td></tr>
+<tr><td style="${TD_STYLE}"><code>ACTIVO</code></td><td style="${TD_STYLE}">BIT</td><td style="${TD_STYLE}">Permite versionar y activar/desactivar sin borrar.</td></tr>
+</tbody>
+</table>`;
+
+	const tablaMetricas = `
+<table style="${TABLE_STYLE}">
+<thead><tr>
+<th style="${TH_STYLE}">Columna</th>
+<th style="${TH_STYLE}">Tipo sugerido</th>
+<th style="${TH_STYLE}">Descripción</th>
+</tr></thead>
+<tbody>
+<tr><td style="${TD_STYLE}"><code>IMENSAJE</code></td><td style="${TD_STYLE}">INT FK</td><td style="${TD_STYLE}">Enlaza con <code>MENSAJE</code> (1:1).</td></tr>
+<tr><td style="${TD_STYLE}"><code>TOKENS_IN</code></td><td style="${TD_STYLE}">INT</td><td style="${TD_STYLE}">Tokens del prompt/input enviados a OpenAI.</td></tr>
+<tr><td style="${TD_STYLE}"><code>TOKENS_OUT</code></td><td style="${TD_STYLE}">INT</td><td style="${TD_STYLE}">Tokens generados en la respuesta.</td></tr>
+<tr><td style="${TD_STYLE}"><code>MODELO</code></td><td style="${TD_STYLE}">VARCHAR(60)</td><td style="${TD_STYLE}">Modelo efectivo usado (<code>gpt-4o-mini</code>, <code>gpt-5</code>, …).</td></tr>
+<tr><td style="${TD_STYLE}"><code>ETAPA</code></td><td style="${TD_STYLE}">VARCHAR(40)</td><td style="${TD_STYLE}"><code>clasificacion</code>, <code>extraccion</code>, <code>respuesta</code>, …</td></tr>
+<tr><td style="${TD_STYLE}"><code>COSTO_APROX</code></td><td style="${TD_STYLE}">DECIMAL(10,6)</td><td style="${TD_STYLE}">Aproximación por regla de tres sobre tarifa vigente del modelo.</td></tr>
+<tr><td style="${TD_STYLE}"><code>UTIL</code></td><td style="${TD_STYLE}">TINYINT</td><td style="${TD_STYLE}">Tri-estado de utilidad (ver tabla siguiente).</td></tr>
+</tbody>
+</table>`;
+
+	const tablaUtil = `
+<table style="${TABLE_STYLE}">
+<thead><tr>
+<th style="${TH_STYLE}">Valor</th>
+<th style="${TH_STYLE}">Significado</th>
+<th style="${TH_STYLE}">Interpretación</th>
+</tr></thead>
+<tbody>
+<tr><td style="${TD_STYLE}"><code>-1</code></td><td style="${TD_STYLE}">No útil</td><td style="${TD_STYLE}">El asesor marcó explícitamente que la respuesta no sirvió.</td></tr>
+<tr><td style="${TD_STYLE}"><code>0</code></td><td style="${TD_STYLE}">Sin peso (default)</td><td style="${TD_STYLE}">No se evaluó; no debe contar como negativo.</td></tr>
+<tr><td style="${TD_STYLE}"><code>1</code></td><td style="${TD_STYLE}">Útil</td><td style="${TD_STYLE}">El asesor marcó explícitamente que la respuesta fue de utilidad.</td></tr>
+</tbody>
+</table>`;
+
+	const tablaAntesDespues = `
+<table style="${TABLE_STYLE}">
+<thead><tr>
+<th style="${TH_STYLE}">Aspecto</th>
+<th style="${TH_STYLE}">Estado actual</th>
+<th style="${TH_STYLE}">Propuesta</th>
+</tr></thead>
+<tbody>
+<tr><td style="${TD_STYLE}">Catálogo de recursos OpenAI</td><td style="${TD_STYLE}"><code>VECTOR_STORE</code> sólo para vector stores; prompts y modelo en <code>.env</code>.</td><td style="${TD_STYLE}"><code>STORAGE</code> genérico que aloja vector stores, prompts y modelo.</td></tr>
+<tr><td style="${TD_STYLE}">Tokens por mensaje</td><td style="${TD_STYLE}">No se registran; sólo <code>CONVERSACIONES.QTOKENS</code> agrega el total.</td><td style="${TD_STYLE}"><code>MENSAJE_METRICAS.TOKENS_IN</code> / <code>TOKENS_OUT</code> por turno y por etapa.</td></tr>
+<tr><td style="${TD_STYLE}">Costo</td><td style="${TD_STYLE}">No se calcula ni estima.</td><td style="${TD_STYLE}"><code>COSTO_APROX</code> por mensaje vía regla de tres sobre la tarifa vigente.</td></tr>
+<tr><td style="${TD_STYLE}">Utilidad del mensaje</td><td style="${TD_STYLE}">Bandera binaria, sin distinguir "no evaluado" vs "no útil".</td><td style="${TD_STYLE}"><code>UTIL TINYINT</code> tri-estado (<code>-1 / 0 / 1</code>).</td></tr>
+</tbody>
+</table>`;
+
+	const analisisBD = noteList(
+		await note(
+			"mdi:compare-horizontal",
+			`<b>Comparativa estado actual vs. propuesta</b>${tablaAntesDespues}`,
+		),
+		await note(
+			"mdi:sitemap-outline",
+			`<b>Diagrama de relaciones propuesto</b><br>Visión general de las entidades involucradas y cómo se conectan tras los cambios propuestos:${diagramaRelaciones}`,
+		),
+		await note(
+			"mdi:database-arrow-right-outline",
+			`<b>Tabla <code>VECTOR_STORE</code> → <code>STORAGE</code> general:</b> hoy existe una tabla <code>VECTOR_STORE</code> dedicada a <i>vector stores</i> de OpenAI, pero la idea propuesta es generalizarla como tabla <b><code>STORAGE</code></b>, capaz de alojar también los identificadores de prompts (<code>PR_TIPO_CONSULTAS</code>, <code>PR_GENERAL</code>, <code>PR_EXTRACTOR_CONSULTAS</code>, <code>PR_CLASIFICADOR_MODULO</code>) y, en general, cualquier recurso administrable de OpenAI. Cada registro se ubica en el contexto que corresponda (etapa, tipo de consulta, módulo, etc.), centralizando configuración dinámica en un único catálogo.${tablaStorage}`,
+		),
+		await note(
+			"mdi:counter",
+			`<b>Tabla de métricas por mensaje:</b> se requiere una tabla nueva (p. ej. <code>MENSAJE_METRICAS</code>) enlazada al mensaje, con columnas <code>TOKENS_IN</code>, <code>TOKENS_OUT</code>, <code>MODELO</code>, <code>ETAPA</code> y un campo <code>COSTO_APROX</code>. El costo se calcula como aproximación (no exacto), aplicando una <b>regla de tres</b> sobre la tarifa vigente del modelo: aunque <i>pricing</i> de OpenAI no se obtiene desde una tabla normalizada, sí es posible mantener una referencia interna por modelo y aproximar el costo de la transacción.${tablaMetricas}`,
+		),
+		await note(
+			"mdi:thumbs-up-down-outline",
+			`<b>Campo <code>UTIL</code> como tri-estado:</b> la métrica actual de utilidad debe moverse a la tabla de métricas del mensaje y pasar a ser un valor numérico (<code>TINYINT</code>) con semántica tri-estado. Esto permite distinguir explícitamente "no se evaluó" de "se evaluó como neutro/negativo".${tablaUtil}`,
+		),
+		await note(
+			"mdi:database-alert-outline",
+			`<b>Falta persistir el input:</b> actualmente la BD almacena únicamente el <i>output</i> generado por el modelo, pero <b>no el input</b> enviado a OpenAI por etapa. Esto limita auditoría, depuración y re-evaluación con otros modelos. Debe incorporarse el almacenamiento del <code>INPUT</code> (prompt efectivo y/o payload mínimo) en la misma estructura de métricas/mensaje, respetando privacidad y tamaño máximo razonable.`,
+		),
+		await note(
+			"mdi:numeric",
+			`<b>Columna <code>QTOKENS</code> en <code>CONVERSACIONES</code>:</b> existe una columna <code>QTOKENS</code> que acumula el <b>total de tokens de la conversación</b>, pero <b>por mensaje no hay seguimiento</b> de los tokens usados. Esto impide medir el costo/consumo real por turno o por etapa (clasificación, extracción, respuesta final) y refuerza la necesidad de la tabla de métricas por mensaje propuesta arriba (<code>TOKENS_IN</code>, <code>TOKENS_OUT</code>, <code>COSTO_APROX</code>).`,
+		),
+	);
+
+	const referencia = await note(
+		"mdi:video-outline",
+		`Como parte de la investigación sobre cambios de modelos de IA para optimizar las conversaciones, se recomienda a los asesores ver el siguiente video. Plantea un enfoque por <b>orquestación de múltiples llamadas especializadas</b> (Harness Engineering) que <b>parece ser un mejor enfoque que el actual</b>, en el que una sola conversación se encarga de todo el flujo.<br><br>
+		<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">
+			<div style="font-weight:bold;margin-bottom:6px;">¿Qué es esto del Harness Engineering? — BettaTech</div>
+			<a href="https://www.youtube.com/watch?v=q9Vaoz0hd0U" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block;">
+				<img src="https://i.ytimg.com/vi/q9Vaoz0hd0U/hqdefault.jpg" alt="Miniatura del video: ¿Qué es esto del Harness Engineering?" width="480" height="360" style="display:block;border:0;max-width:100%;height:auto;" />
+			</a>
+			<div style="margin-top:6px;"><a href="https://www.youtube.com/watch?v=q9Vaoz0hd0U" target="_blank" rel="noopener">https://www.youtube.com/watch?v=q9Vaoz0hd0U</a></div>
+		</div>`,
+	);
+
+	const presupuesto = await note(
+		"mdi:clock-outline",
+		`<b>Estimación total: 3 horas (180 min)</b> para diseño + actualización documental, sin desarrollo productivo en código de PatyIA.<br>
+		<table style="border-collapse:collapse;width:100%;margin-top:0.5rem;font-size:0.9rem;">
+		<thead>
+		<tr style="background:#80808015;">
+		<th style="border:1px solid #80808040;padding:0.4rem;text-align:left;">#</th>
+		<th style="border:1px solid #80808040;padding:0.4rem;text-align:left;">Actividad</th>
+		<th style="border:1px solid #80808040;padding:0.4rem;text-align:right;">Tiempo</th>
+		</tr>
+		</thead>
+		<tbody>
+		<tr>
+		<td style="border:1px solid #80808040;padding:0.4rem;">1</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Lectura y análisis del código de PatyIA (flujo SSE, <code>OpenIAServer</code>, configuración actual).</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">30 min</td>
+		</tr>
+		<tr>
+		<td style="border:1px solid #80808040;padding:0.4rem;">2</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Diseño de la propuesta de selección dinámica de modelo (mapa por etapa/tipo, fallback, feature flag).</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">40 min</td>
+		</tr>
+		<tr>
+		<td style="border:1px solid #80808040;padding:0.4rem;">3</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Análisis de BD: <code>VECTOR_STORE</code> → <code>STORAGE</code>, tabla de métricas (<code>TOKENS_IN</code>/<code>TOKENS_OUT</code>, <code>COSTO_APROX</code>), <code>UTIL</code> tri-estado, persistencia de <code>INPUT</code>.</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">50 min</td>
+		</tr>
+		<tr>
+		<td style="border:1px solid #80808040;padding:0.4rem;">4</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Redacción de viabilidad, comparativa, hoja de ruta por fases y riesgos.</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">30 min</td>
+		</tr>
+		<tr>
+		<td style="border:1px solid #80808040;padding:0.4rem;">5</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;">Consolidación, revisión y actualización final de la diligencia del ticket.</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">30 min</td>
+		</tr>
+		<tr style="background:#80808010;font-weight:600;">
+		<td style="border:1px solid #80808040;padding:0.4rem;" colspan="2">Total</td>
+		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">180 min (3 h)</td>
+		</tr>
+		</tbody>
+		</table>`,
+	);
+
 	const riesgos = noteList(
 		await note(
 			"mdi:alert-decagram-outline",
@@ -230,6 +396,9 @@ export async function buildBodyTK1429262(): Promise<string> {
 		+ h3Viabilidad + viabilidad
 		+ h3Comparativa + comparativa
 		+ h3Ruta + mejorCamino
+		+ h3BD + analisisBD
+		+ h3Referencia + referencia
+		+ h3Presupuesto + presupuesto
 		+ h3Riesgos + riesgos
 		+ h3Conclusion + conclusion;
 }

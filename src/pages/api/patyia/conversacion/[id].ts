@@ -110,7 +110,7 @@ export const GET: APIRoute = async ({ params, url }) => {
 
 	const hilo = pickStr(conversacion, ["HILO", "hilo"]);
 
-	const [msgsRes, tickRes, openaiRes] = await Promise.allSettled([
+	const [msgsRes, tickRes, openaiRes, vsRes] = await Promise.allSettled([
 		queryRows(
 			`SELECT * FROM ${qualify(dbName, "MENSAJESCALIFICADOS")} WHERE iconversacion = @id ORDER BY imensaje`,
 			iconversacion,
@@ -120,6 +120,7 @@ export const GET: APIRoute = async ({ params, url }) => {
 			iconversacion,
 		),
 		hilo ? obtenerMensajesDeThread(hilo) : Promise.resolve<MensajeOpenAI[]>([]),
+		hilo ? obtenerVectorStoreIdsDeThread(hilo) : Promise.resolve<string[]>([]),
 	]);
 
 	if (msgsRes.status === "fulfilled") mensajesCalificados = msgsRes.value;
@@ -131,6 +132,10 @@ export const GET: APIRoute = async ({ params, url }) => {
 	if (openaiRes.status === "fulfilled") mensajesOpenAI = openaiRes.value;
 	else warnings.push(`OpenAI threads: ${openaiRes.reason}`);
 
+	let vectorStoreIds: string[] = [];
+	if (vsRes.status === "fulfilled") vectorStoreIds = vsRes.value;
+	else warnings.push(`OpenAI vector stores: ${vsRes.reason}`);
+
 	return json({
 		ok: true,
 		iconversacion,
@@ -139,6 +144,7 @@ export const GET: APIRoute = async ({ params, url }) => {
 		mensajesOpenAI,
 		mensajesCalificados,
 		tiquete,
+		vectorStoreIds,
 		warnings,
 	});
 };
@@ -155,6 +161,70 @@ async function obtenerMensajesDeThread(conversationId: string): Promise<MensajeO
 	return conversationId.startsWith("thread_")
 		? await listarMensajesThread(conversationId, apiKey)
 		: await listarMensajesConversation(conversationId, apiKey);
+}
+
+interface ThreadInfo {
+	tool_resources?: { file_search?: { vector_store_ids?: string[] } };
+}
+
+interface RunsList {
+	data?: Array<{ assistant_id?: string }>;
+}
+
+interface AssistantInfo {
+	tool_resources?: { file_search?: { vector_store_ids?: string[] } };
+}
+
+async function obtenerVectorStoreIdsDeThread(conversationId: string): Promise<string[]> {
+	if (!conversationId.startsWith("thread_")) return [];
+	const apiKey = await resolveOpenAIKey();
+	if (!apiKey) return [];
+
+	const ids = new Set<string>();
+	const extraHeaders = { "OpenAI-Beta": "assistants=v2" };
+
+	try {
+		const info = await fetchOpenAI<ThreadInfo>(
+			`https://api.openai.com/v1/threads/${encodeURIComponent(conversationId)}`,
+			apiKey,
+			extraHeaders,
+		);
+		for (const v of info.tool_resources?.file_search?.vector_store_ids ?? []) ids.add(v);
+	} catch {
+		/* ignore */
+	}
+
+	// Si el thread no expone vector stores, mirar los runs para sacar el
+	// assistant_id y consultar el asistente.
+	if (!ids.size) {
+		try {
+			const runs = await fetchOpenAI<RunsList>(
+				`https://api.openai.com/v1/threads/${encodeURIComponent(conversationId)}/runs?limit=10`,
+				apiKey,
+				extraHeaders,
+			);
+			const asistentes = new Set<string>();
+			for (const run of runs.data ?? []) {
+				if (run.assistant_id) asistentes.add(run.assistant_id);
+			}
+			for (const aid of asistentes) {
+				try {
+					const a = await fetchOpenAI<AssistantInfo>(
+						`https://api.openai.com/v1/assistants/${encodeURIComponent(aid)}`,
+						apiKey,
+						extraHeaders,
+					);
+					for (const v of a.tool_resources?.file_search?.vector_store_ids ?? []) ids.add(v);
+				} catch {
+					/* ignore */
+				}
+			}
+		} catch {
+			/* ignore */
+		}
+	}
+
+	return [...ids];
 }
 
 async function listarMensajesConversation(id: string, apiKey: string): Promise<MensajeOpenAI[]> {

@@ -473,7 +473,9 @@ const data = await r.json();
 		fileModalOpen = true;
 		fileLoading = true;
 		try {
-			const r = await fetch(`/api/patyia/openai/file/${encodeURIComponent(detail.fileId)}?content=1`);
+			const qs = new URLSearchParams({ content: "1" });
+			if (convVectorStoreIds.length) qs.set("vs", convVectorStoreIds.join(","));
+			const r = await fetch(`/api/patyia/openai/file/${encodeURIComponent(detail.fileId)}?${qs.toString()}`);
 			if (!r.ok) {
 				const txt = await r.text();
 				throw new Error(`HTTP ${r.status}: ${txt.slice(0, 200)}`);
@@ -520,6 +522,7 @@ const data = await r.json();
 	let convRow: SqlRow | null = null;
 	let convMensajes: SqlRow[] = [];
 	let convFuenteMensajes: "openai" | "calificados" | "vacio" = "vacio";
+	let convVectorStoreIds: string[] = [];
 
 	const CONTENT_KEYS = ["contenido", "content", "mensaje", "texto", "respuesta", "prompt"] as const;
 	const ROLE_KEYS = ["autor", "rol", "role", "tdmensaje", "itdmensaje", "tipo", "origen", "remitente"] as const;
@@ -553,6 +556,7 @@ const data = await r.json();
 		mensajesOpenAI?: SqlRow[];
 		mensajesCalificados?: SqlRow[];
 		tiquete?: SqlRow[];
+		vectorStoreIds?: string[];
 		warnings?: string[];
 	}
 
@@ -562,6 +566,7 @@ const data = await r.json();
 		convRow = null;
 		convMensajes = [];
 		convFuenteMensajes = "vacio";
+		convVectorStoreIds = [];
 		if (!Number.isFinite(convId) || convId <= 0) {
 			convError = "Ingresa un iconversacion válido.";
 			return;
@@ -575,6 +580,7 @@ const data = await r.json();
 				return;
 			}
 			convRow = data.conversacion ?? null;
+			convVectorStoreIds = Array.isArray(data.vectorStoreIds) ? data.vectorStoreIds : [];
 			const openai = Array.isArray(data.mensajesOpenAI) ? data.mensajesOpenAI : [];
 			const calif = Array.isArray(data.mensajesCalificados) ? data.mensajesCalificados : [];
 			if (openai.length) {
@@ -598,6 +604,7 @@ const data = await r.json();
 		convWarnings = [];
 		convFuenteMensajes = "vacio";
 		convError = "";
+		convVectorStoreIds = [];
 	}
 
 	function formatearFechaMsg(raw: string): string {
