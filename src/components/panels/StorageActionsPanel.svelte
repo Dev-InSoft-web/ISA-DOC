@@ -11,6 +11,7 @@
 		toastError,
 		toastSuccess,
 	} from "@ingenieria_insoft/ispsveltecomponents";
+	import ConfirmDialog from "$comps/overlays/ConfirmDialog.svelte";
 	import { leerState, escribirState, migrarLegacy } from "../../lib/patyia/urlState";
 
 	interface OpenAIFile {
@@ -111,6 +112,28 @@
 	const TAB2_VALIDAS: ReadonlySet<Tab2> = new Set(["files", "vs", "skills"]);
 	let tab2: Tab2 = "files";
 
+	let confirmOpen: boolean = false;
+	let confirmTitle: string = "Confirmar";
+	let confirmMessage: string = "";
+	let confirmText: string = "Confirmar";
+	let confirmKind: "info" | "warning" | "danger" = "warning";
+	let confirmCb: () => void | Promise<void> = () => {};
+
+	function pedirConfirmacion(opts: {
+		title?: string;
+		message: string;
+		confirmText?: string;
+		kind?: "info" | "warning" | "danger";
+		onConfirm: () => void | Promise<void>;
+	}): void {
+		confirmTitle = opts.title ?? "Confirmar";
+		confirmMessage = opts.message;
+		confirmText = opts.confirmText ?? "Confirmar";
+		confirmKind = opts.kind ?? "warning";
+		confirmCb = opts.onConfirm;
+		confirmOpen = true;
+	}
+
 	function leerTab2(): Tab2 {
 		const st = leerState();
 		const legacy = migrarLegacy({ tab2: "subStorage" });
@@ -206,7 +229,16 @@
 			toastError("No hay archivos en el cache. Refresca primero.");
 			return;
 		}
-		if (!confirm(`Descargar backup local de los ${filesTotal} archivos? Puede tardar.`)) return;
+		pedirConfirmacion({
+			title: "Descargar backup masivo",
+			message: `Se descargará el backup local de los ${filesTotal} archivos. El proceso puede tardar.\n\n¿Continuar?`,
+			confirmText: "Descargar",
+			kind: "info",
+			onConfirm: ejecutarDescargaMasiva,
+		});
+	}
+
+	async function ejecutarDescargaMasiva(): Promise<void> {
 		try {
 			const r = await fetch("/api/patyia/openai/files/backup-all", { method: "POST" });
 			const j = await r.json();
@@ -300,7 +332,16 @@
 	}
 
 	async function eliminarDuplicado(id: string): Promise<void> {
-		if (!confirm(`Eliminar ${id} de OpenAI? (Irreversible)`)) return;
+		pedirConfirmacion({
+			title: "Eliminar archivo",
+			message: `Se eliminará ${id} de OpenAI. Esta acción es irreversible.\n\n¿Continuar?`,
+			confirmText: "Eliminar",
+			kind: "danger",
+			onConfirm: () => ejecutarEliminarDuplicado(id),
+		});
+	}
+
+	async function ejecutarEliminarDuplicado(id: string): Promise<void> {
 		dupEliminando = new Set([...dupEliminando, id]);
 		try {
 			const r = await fetch(`/api/patyia/openai/files/${encodeURIComponent(id)}`, { method: "DELETE" });
@@ -861,6 +902,15 @@
 		</div>
 	</Modal>
 {/if}
+
+<ConfirmDialog
+	bind:open={confirmOpen}
+	title={confirmTitle}
+	message={confirmMessage}
+	confirmText={confirmText}
+	kind={confirmKind}
+	onConfirm={() => { void confirmCb(); }}
+/>
 
 <style>
 	.storage-panel {
