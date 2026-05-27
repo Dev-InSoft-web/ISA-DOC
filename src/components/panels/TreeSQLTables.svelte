@@ -1158,13 +1158,15 @@
                               <span class="tree-row-name">{node.rowName}</span>
                            </span>
                         {:else if node.kind === "domain"}
-                           <span class="tree-row" title={`Dominio: ${node.rowName ?? node.domainId ?? ""}${node.prefix ? ` (prefijo ${node.prefix})` : ""}`}>
-                              <span class="badge badge-domain">Domain</span>
-                              {#if node.prefix}<span class="tree-row-name" title="Prefijo aplicado a las tablas del dominio">{node.prefix}</span>{/if}
+                           <span class="tree-row" title={`${node.domainType === "bd" ? "Base de datos" : "Dominio"}: ${node.rowName ?? node.domainId ?? ""}${node.prefix ? ` (prefijo ${node.prefix})` : ""}`}>
+                              <span class={`badge ${node.domainType === "bd" ? "badge-bd" : "badge-domain"}`}>{node.domainType === "bd" ? "BD" : "Domain"}</span>
+                              {#if node.prefix}<span class="tree-row-name" title="Prefijo aplicado a las tablas del dominio">{node.prefix}</span>
+                              {:else if node.rowName}<span class="tree-row-name">{node.rowName}</span>{/if}
                            </span>
                         {:else if node.kind === "pivot"}
                            <span class="tree-row" title={`Pivote: ${node.rowName ?? node.domainId ?? ""}`}>
                               <span class="badge badge-pivot">Pivote</span>
+                              {#if node.rowName}<span class="tree-row-name">{node.rowName}</span>{/if}
                            </span>
                         {:else}
                            {@const _tableParent = adapter.findNodeById(String(node.ireference || "").trim()) as unknown as { kind?: string; domainType?: string; ireference?: string } | null}
@@ -1712,6 +1714,11 @@
    .badge-domain {
       background: color-mix(in srgb, var(--is-warning) 25%, transparent);
       color: var(--is-warning);
+   }
+   .badge-bd {
+      background: color-mix(in srgb, var(--is-info) 25%, transparent);
+      color: var(--is-info);
+      border: 1px solid color-mix(in srgb, var(--is-info) 50%, transparent);
    }
    .badge-pivot {
       background: color-mix(in srgb, orange 25%, transparent);
