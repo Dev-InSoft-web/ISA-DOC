@@ -1,6 +1,8 @@
 import type { APIRoute } from "astro";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { resolveOpenAIKey } from "../../../../../lib/patyia/openaiKey.ts";
-import { FILES_CACHE, leerJson } from "../../../../../lib/patyia/storage.ts";
+import { BACKUP_PROGRESS, ensureDir, escribirJson, fileDir, FILES_CACHE, leerJson, safeExt, STORAGE_ROOT } from "../../../../../lib/patyia/storage.ts";
 import { backupOne, type OpenAIFileMetaLite } from "../../../../../lib/patyia/openaiBackup.ts";
 
 export const prerender = false;
@@ -14,19 +16,110 @@ interface CachedFile {
 }
 interface Cache { updated: string; count: number; files: CachedFile[]; }
 
-interface VSItem { id: string; }
+interface VSItem { id: string; status?: string; expires_at?: number | null; }
 interface VSList { data?: VSItem[]; error?: { message?: string }; }
 
-// POST → recorre el cache local y descarga el contenido de TODOS los files.
-// Reutiliza el helper backupOne. Para purpose=assistants requiere listar VS.
+interface BackupProgress {
+	running: boolean;
+	total: number;
+	hecho: number;
+	exitos: number;
+	fallos: number;
+	currentId: string;
+	currentFilename: string;
+	iniciado: string;
+	finalizado: string;
+	ultimosFallos: { id: string; error: string }[];
+	cancelRequested: boolean;
+}
+
+const EMPTY_PROGRESS: BackupProgress = {
+	running: false, total: 0, hecho: 0, exitos: 0, fallos: 0,
+	currentId: "", currentFilename: "", iniciado: "", finalizado: "", ultimosFallos: [], cancelRequested: false,
+};
+
+// POST → arranca el backup en background. Devuelve inmediatamente.
+// El progreso se sigue desde GET /api/patyia/openai/files/backup-progress.
 export const POST: APIRoute = async () => {
 	const apiKey = await resolveOpenAIKey();
 	if (!apiKey) return j({ ok: false, error: "OPENAI_API_KEY no encontrada" }, 500);
 
+	const prev = await leerJson<BackupProgress>(BACKUP_PROGRESS, EMPTY_PROGRESS);
+	if (prev.running) return j({ ok: false, error: "Ya hay un backup en progreso" }, 409);
+
 	const cache = await leerJson<Cache>(FILES_CACHE, { updated: "", count: 0, files: [] });
 	if (!cache.files.length) return j({ ok: false, error: "Cache vacío. Refresca el listado primero." }, 400);
 
-	let vsIds: string[] = [];
+	await ensureDir(STORAGE_ROOT);
+	const inicio: BackupProgress = {
+		running: true, total: cache.files.length, hecho: 0, exitos: 0, fallos: 0,
+		currentId: "", currentFilename: "", iniciado: new Date().toISOString(), finalizado: "", ultimosFallos: [], cancelRequested: false,
+	};
+	await escribirJson(BACKUP_PROGRESS, inicio);
+
+	// arranque del worker SIN await (corre en background del proceso Node)
+	void ejecutarBackup(apiKey, cache.files, inicio);
+
+	return j({ ok: true, started: true, total: cache.files.length });
+};
+
+async function persistir(estado: BackupProgress): Promise<void> {
+	// Propaga cancelRequested desde disco antes de pisar el archivo.
+	const disco = await leerJson<BackupProgress>(BACKUP_PROGRESS, estado);
+	if (disco.cancelRequested) estado.cancelRequested = true;
+	await escribirJson(BACKUP_PROGRESS, estado);
+}
+
+function yaDescargado(fileId: string, filename: string): boolean {
+	const ext = safeExt(filename);
+	return existsSync(join(fileDir(fileId), `content.${ext}`));
+}
+
+async function ejecutarBackup(apiKey: string, files: CachedFile[], estado: BackupProgress): Promise<void> {
+	const vsIds = await listarVS(apiKey);
+	const CONCURRENCY = 10;
+	let cursor = 0;
+
+	async function worker(): Promise<void> {
+		while (true) {
+			const idx = cursor++;
+			if (idx >= files.length) return;
+			await persistir(estado);
+			if (estado.cancelRequested) return;
+			const f = files[idx]!;
+			estado.currentId = f.id;
+			estado.currentFilename = f.filename;
+			if (yaDescargado(f.id, f.filename)) {
+				estado.hecho += 1;
+				estado.exitos += 1;
+				await persistir(estado);
+				continue;
+			}
+			const metaPrev: OpenAIFileMetaLite = {
+				id: f.id, filename: f.filename, bytes: f.bytes, created_at: f.created_at, purpose: f.purpose,
+			};
+			const res = await backupOne(f.id, apiKey, vsIds, metaPrev);
+			estado.hecho += 1;
+			if (res.ok) estado.exitos += 1;
+			else {
+				estado.fallos += 1;
+				estado.ultimosFallos.push({ id: res.file_id, error: res.error });
+				if (estado.ultimosFallos.length > 20) estado.ultimosFallos.shift();
+			}
+			await persistir(estado);
+		}
+	}
+
+	await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
+
+	estado.running = false;
+	estado.currentId = "";
+	estado.currentFilename = "";
+	estado.finalizado = new Date().toISOString();
+	await persistir(estado);
+}
+
+async function listarVS(apiKey: string): Promise<string[]> {
 	try {
 		const r = await fetch("https://api.openai.com/v1/vector_stores?limit=100", {
 			method: "GET",
@@ -34,24 +127,17 @@ export const POST: APIRoute = async () => {
 		});
 		const text = await r.text();
 		const parsed = JSON.parse(text) as VSList;
-		if (r.ok) vsIds = (parsed.data ?? []).map((v) => v.id);
+		if (r.ok) {
+			// excluir VS expirados o sin estado válido
+			return (parsed.data ?? [])
+				.filter((v) => v.status !== "expired" && v.status !== "in_progress")
+				.map((v) => v.id);
+		}
 	} catch {
-		// continuar sin vs ids (los assistants fallarán)
+		// silencioso
 	}
-
-	const exitos: { id: string; bytes: number; source: string }[] = [];
-	const fallos: { id: string; error: string }[] = [];
-	for (const f of cache.files) {
-		const metaPrev: OpenAIFileMetaLite = {
-			id: f.id, filename: f.filename, bytes: f.bytes, created_at: f.created_at, purpose: f.purpose,
-		};
-		const res = await backupOne(f.id, apiKey, vsIds, metaPrev);
-		if (res.ok) exitos.push({ id: res.file_id, bytes: res.bytes, source: res.source });
-		else fallos.push({ id: res.file_id, error: res.error });
-	}
-
-	return j({ ok: true, total: cache.files.length, exitos: exitos.length, fallos: fallos.length, detalleFallos: fallos });
-};
+	return [];
+}
 
 function j(body: unknown, status: number = 200): Response {
 	return new Response(JSON.stringify(body), {
