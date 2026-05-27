@@ -4,17 +4,37 @@ import { resolveOpenAIKey } from "../../../../lib/patyia/openaiKey.ts";
 
 export const prerender = false;
 
+interface ArchivoCita {
+	marcador: string;
+	file_id: string;
+	filename?: string;
+}
+
 interface MensajeOpenAI {
 	fecha_hora: number | null;
 	autor: "Usuario" | "Asistente";
 	mensaje: string;
+	archivos: ArchivoCita[];
+}
+
+interface OpenAIAnnotation {
+	type?: string;
+	text?: string;
+	file_citation?: { file_id?: string; filename?: string };
+	file_path?: { file_id?: string; filename?: string };
+}
+
+interface OpenAITextContent {
+	type?: string;
+	text?: string | { value?: string; annotations?: OpenAIAnnotation[] };
+	annotations?: OpenAIAnnotation[];
 }
 
 interface OpenAIItem {
 	type?: string;
 	role?: string;
 	created_at?: number;
-	content?: Array<{ type?: string; text?: string }>;
+	content?: OpenAITextContent[];
 }
 
 interface OpenAIItemsList {
@@ -144,14 +164,17 @@ async function listarMensajesConversation(id: string, apiKey: string): Promise<M
 	return data
 		.filter((item) => item.type === "message" && (item.role === "user" || item.role === "assistant"))
 		.map((item) => {
-			const texto = (item.content ?? [])
-				.filter((c) => c.type === "input_text" || c.type === "output_text" || c.type === "text")
-				.map((c) => c.text ?? "")
-				.join("\n");
+			const piezas = (item.content ?? []).filter(
+				(c) => c.type === "input_text" || c.type === "output_text" || c.type === "text",
+			);
+			const texto = piezas.map((c) => extraerTexto(c)).join("\n");
+			const archivos = piezas.flatMap((c) => extraerArchivos(c));
+
 			return {
 				fecha_hora: item.created_at ?? null,
 				autor: item.role === "user" ? "Usuario" : "Asistente",
 				mensaje: texto,
+				archivos,
 			} satisfies MensajeOpenAI;
 		})
 		.filter((m) => m.mensaje);
@@ -160,7 +183,7 @@ async function listarMensajesConversation(id: string, apiKey: string): Promise<M
 interface ThreadMessage {
 	role?: string;
 	created_at?: number;
-	content?: Array<{ type?: string; text?: { value?: string } | string }>;
+	content?: OpenAITextContent[];
 }
 
 interface ThreadMessagesList {
@@ -176,20 +199,39 @@ async function listarMensajesThread(threadId: string, apiKey: string): Promise<M
 	return data
 		.filter((m) => m.role === "user" || m.role === "assistant")
 		.map((m) => {
-			const texto = (m.content ?? [])
-				.filter((c) => c.type === "text")
-				.map((c) => {
-					if (typeof c.text === "string") return c.text;
-					return c.text?.value ?? "";
-				})
-				.join("\n");
+			const piezas = (m.content ?? []).filter((c) => c.type === "text");
+			const texto = piezas.map((c) => extraerTexto(c)).join("\n");
+			const archivos = piezas.flatMap((c) => extraerArchivos(c));
+
 			return {
 				fecha_hora: m.created_at ?? null,
 				autor: m.role === "user" ? "Usuario" : "Asistente",
 				mensaje: texto,
+				archivos,
 			} satisfies MensajeOpenAI;
 		})
 		.filter((m) => m.mensaje);
+}
+
+function extraerTexto(c: OpenAITextContent): string {
+	if (typeof c.text === "string") return c.text;
+	return c.text?.value ?? "";
+}
+
+function extraerArchivos(c: OpenAITextContent): ArchivoCita[] {
+	const anots: OpenAIAnnotation[] = [
+		...(Array.isArray(c.annotations) ? c.annotations : []),
+		...(typeof c.text === "object" && Array.isArray(c.text?.annotations) ? c.text!.annotations! : []),
+	];
+	const out: ArchivoCita[] = [];
+	for (const a of anots) {
+		const marcador = a.text ?? "";
+		const fc = a.file_citation ?? a.file_path;
+		const file_id = fc?.file_id;
+		if (!marcador || !file_id) continue;
+		out.push({ marcador, file_id, filename: fc?.filename });
+	}
+	return out;
 }
 
 async function fetchOpenAI<T>(url: string, apiKey: string, extraHeaders: Record<string, string> = {}): Promise<T> {
