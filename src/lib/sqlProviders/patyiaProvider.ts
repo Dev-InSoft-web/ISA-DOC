@@ -166,13 +166,13 @@ function buildBdDomain(db: string, parsed: ParsedTable[]): DomainDef[] {
       const pivot: DomainDef = {
          id: pivId,
          name: pTbl.name,
-         type: "pivot",
-         cardinality: "N:N",
+         type: "pivot-domain",
+         cardinality: "1:N",
          masterTable: pId,
          members: [pId, otherEnd],
          parentId: parent.id,
          childrenOrder: [{ kind: "table", key: otherEnd }],
-         description: `Pivote N:N ${byId.get(masterEnd)!.name} ↔ ${byId.get(otherEnd)!.name}`,
+         description: `Pivote ${byId.get(masterEnd)!.name} → ${byId.get(otherEnd)!.name}`,
       };
       pivotDomains.push(pivot);
       parent.childrenOrder = [...(parent.childrenOrder ?? []), { kind: "pivot", key: pivId }];

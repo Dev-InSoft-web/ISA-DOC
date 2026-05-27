@@ -35,13 +35,14 @@ export interface DomainDef {
 	 *   Puede definir un prefijo (rol "domain/prefixer") que aplica a sus tablas hijas.
 	 * - `pivot-domain`: pivote dentro de un dominio que envuelve a otro dominio (cardinalidad
 	 *   1:1 ó 1:N). Color naranja en el árbol.
-	 * - `pivot`: pivote N:N. Tiene exactamente un master y un único slave (máx. 2 hijos).
-	 *   Sólo puede existir dentro de un dominio. Color naranja con badge distinto.
 	 * - `bd`: contenedor hermético de una base de datos. No tiene master ni cardinalidades;
 	 *   solo agrupa sub-dominios y tablas sueltas. Sirve como nodo raíz por BD.
+	 *
+	 * El tipo legacy `"pivot"` (N:N) está erradicado. `normalizePivots` lo migra
+	 * a `"pivot-domain"` con cardinalidad `"1:N"` al cargar.
 	 */
-	type?: "domain" | "pivot" | "pivot-domain" | "bd";
-	/** Cardinalidad del pivote dentro de su dominio padre. Sólo aplica a `pivot` y `pivot-domain`. */
+	type?: "domain" | "pivot-domain" | "bd";
+	/** Cardinalidad del pivote dentro de su dominio padre. Sólo aplica a `pivot-domain`. */
 	cardinality?: "1:1" | "1:N" | "N:N";
 	/** Para `domain` que actúa como `domain/prefixer`: prefijo que aplica a sus tablas. */
 	prefix?: string;
