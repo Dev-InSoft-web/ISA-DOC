@@ -226,28 +226,28 @@ export async function buildBodyTK1429262(): Promise<string> {
 	<td style="${TD_STYLE}"><b>Fase 1</b></td>
 	<td style="${TD_STYLE}">Mapa de modelo por <b>etapa</b> + fallback global.</td>
 	<td style="${TD_STYLE}"><code>clasificacion</code> y <code>extraccion</code> bajan a <code>gpt-4o-mini</code>; <code>respuesta</code> queda en <code>gpt-5</code>.</td>
-	<td style="${TD_STYLE}">Igual que hoy.</td>
+	<td style="${TD_STYLE}">Solo el <code>modelo_ia</code> final en la conversación.</td>
 	<td style="${TD_STYLE}">Editar el mapa <code>etapa → modelo</code> y redeploy.</td>
 	</tr>
 	<tr>
 	<td style="${TD_STYLE}"><b>Fase 2</b></td>
 	<td style="${TD_STYLE}">Se suma <b><code>tipo_consulta</code></b> al mapa (reutiliza la salida de la etapa de clasificación).</td>
 	<td style="${TD_STYLE}">Para este input el resultado es el mismo (tipo <code>tributaria</code> sigue exigiendo modelo fuerte). Pero un saludo o un soporte_uso bajan también la <code>respuesta</code> a un modelo más barato.</td>
-	<td style="${TD_STYLE}">Igual que Fase 1.</td>
+	<td style="${TD_STYLE}">Solo el <code>modelo_ia</code> final en la conversación.</td>
 	<td style="${TD_STYLE}">Editar el mapa <code>etapa + tipo → modelo</code> y redeploy.</td>
 	</tr>
 	<tr>
 	<td style="${TD_STYLE}"><b>Fase 3</b></td>
 	<td style="${TD_STYLE}">Se agrega <b>trazabilidad por etapa</b> (sin cambiar reglas).</td>
-	<td style="${TD_STYLE}">Iguales a Fase 2.</td>
+	<td style="${TD_STYLE}"><code>clasificacion</code> y <code>extraccion</code> en <code>gpt-4o-mini</code>; <code>respuesta</code> en <code>gpt-5</code> (los mismos que Fase 2 para este input).</td>
 	<td style="${TD_STYLE}">Una fila en <code>MENSAJE_METRICAS</code> por etapa: <code>TOKENS_IN/OUT</code>, <code>MODELO</code>, <code>ETAPA</code>, <code>COSTO_APROX</code>. Permite ver dónde se concentra el gasto.</td>
-	<td style="${TD_STYLE}">Igual que Fase 2 (la regla no cambia, sí se mide su efecto).</td>
+	<td style="${TD_STYLE}">Editar el mapa <code>etapa + tipo → modelo</code> y redeploy (la regla no cambia, pero ahora se mide su efecto por etapa).</td>
 	</tr>
 	<tr>
 	<td style="${TD_STYLE}"><b>Fase 4</b></td>
 	<td style="${TD_STYLE}">Catálogo de prompts y modelos en <b>SQL</b> (<code>RECURSO_OPENAI</code>).</td>
-	<td style="${TD_STYLE}">Iguales a Fase 3, pero el modelo y el prompt de cada etapa se leen de BD, no de <code>.env</code>.</td>
-	<td style="${TD_STYLE}">Igual que Fase 3 + queda registrado qué <code>IRECURSO</code> se usó por etapa.</td>
+	<td style="${TD_STYLE}">Mismos modelos que Fase 3 para este input (<code>gpt-4o-mini</code> en clasificación y extracción, <code>gpt-5</code> en respuesta), pero el modelo y el prompt de cada etapa se leen de BD y no de <code>.env</code>.</td>
+	<td style="${TD_STYLE}">Una fila en <code>MENSAJE_METRICAS</code> por etapa (<code>TOKENS_IN/OUT</code>, <code>MODELO</code>, <code>ETAPA</code>, <code>COSTO_APROX</code>) más el <code>IRECURSO</code> usado por etapa.</td>
 	<td style="${TD_STYLE}"><b>Sin redeploy.</b> Cambiar la fila en <code>RECURSO_OPENAI</code> y el próximo mensaje lo toma.</td>
 	</tr>
 	</tbody>
