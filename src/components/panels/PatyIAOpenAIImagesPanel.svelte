@@ -445,22 +445,23 @@ const data = await r.json();
 	}
 
 	// --- Conversación BD (reconstrucción por iconversacion) ---
+	// Usa el endpoint `/api/patyia/conversacion/:id` (réplica del flujo de
+	// PatyIA `GET /api/conversacion/:id`): lee CONVERSACIONES en BD, llama a
+	// OpenAI con el HILO y mezcla MENSAJESCALIFICADOS + TIQUETESCONVERSACION.
 	type SqlRow = Record<string, unknown>;
-	const SQL_CONV_DEFAULT = "SELECT TOP (1) * FROM CONVERSACIONES WHERE iconversacion = {id}";
-	const SQL_MSGS_DEFAULT = "SELECT * FROM MENSAJESCALIFICADOS WHERE iconversacion = {id} ORDER BY imensaje";
 
 	let convId: number = 2864;
-	let convSql: string = SQL_CONV_DEFAULT;
-	let msgsSql: string = SQL_MSGS_DEFAULT;
 	let convLoading: boolean = false;
 	let convError: string = "";
+	let convWarnings: string[] = [];
 	let convRow: SqlRow | null = null;
 	let convMensajes: SqlRow[] = [];
+	let convFuenteMensajes: "openai" | "calificados" | "vacio" = "vacio";
 
 	const CONTENT_KEYS = ["contenido", "content", "mensaje", "texto", "respuesta", "prompt"] as const;
-	const ROLE_KEYS = ["rol", "role", "tdmensaje", "itdmensaje", "tipo", "origen", "remitente"] as const;
+	const ROLE_KEYS = ["autor", "rol", "role", "tdmensaje", "itdmensaje", "tipo", "origen", "remitente"] as const;
 	const ID_KEYS = ["iMensaje", "imensaje", "id"] as const;
-	const FECHA_KEYS = ["fhcreacion", "fecha", "fhmensaje", "fhinsercion"] as const;
+	const FECHA_KEYS = ["fecha_hora", "fhcreacion", "fecha", "fhmensaje", "fhinsercion"] as const;
 
 	function lowerKey(o: SqlRow, keys: readonly string[]): string | null {
 		for (const k of keys) {
@@ -482,38 +483,45 @@ const data = await r.json();
 		return v == null ? "" : String(v);
 	}
 
-	function renderConvSql(template: string, id: number): string {
-		return template.replace(/\{id\}/g, String(id));
+	interface ConversacionResp {
+		ok: boolean;
+		error?: string;
+		conversacion?: SqlRow;
+		mensajesOpenAI?: SqlRow[];
+		mensajesCalificados?: SqlRow[];
+		tiquete?: SqlRow[];
+		warnings?: string[];
 	}
 
 	async function cargarConversacionBD() {
 		convError = "";
+		convWarnings = [];
 		convRow = null;
 		convMensajes = [];
+		convFuenteMensajes = "vacio";
 		if (!Number.isFinite(convId) || convId <= 0) {
 			convError = "Ingresa un iconversacion válido.";
 			return;
 		}
 		convLoading = true;
 		try {
-			const ejecutar = async (sql: string): Promise<SqlRow[]> => {
-				const r = await fetch("/api/patyia/db/exec", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({ sql: renderConvSql(sql, convId) }),
-				});
-				const data = (await r.json()) as { ok?: boolean; rows?: SqlRow[]; error?: string };
-				if (!r.ok || data.ok === false) {
-					throw new Error(errorToString(data.error) || `HTTP ${r.status}`);
-				}
-				return Array.isArray(data.rows) ? data.rows : [];
-			};
-			const [filaConv, filasMsgs] = await Promise.all([ejecutar(convSql), ejecutar(msgsSql)]);
-			convRow = filaConv[0] ?? null;
-			convMensajes = filasMsgs;
-			if (!convRow && !convMensajes.length) {
-				convError = `No se encontró información para iconversacion=${convId}.`;
+			const r = await fetch(`/api/patyia/conversacion/${convId}`);
+			const data = (await r.json()) as ConversacionResp;
+			if (!r.ok || data.ok === false) {
+				convError = errorToString(data.error) || `HTTP ${r.status}`;
+				return;
 			}
+			convRow = data.conversacion ?? null;
+			const openai = Array.isArray(data.mensajesOpenAI) ? data.mensajesOpenAI : [];
+			const calif = Array.isArray(data.mensajesCalificados) ? data.mensajesCalificados : [];
+			if (openai.length) {
+				convMensajes = openai;
+				convFuenteMensajes = "openai";
+			} else if (calif.length) {
+				convMensajes = calif;
+				convFuenteMensajes = "calificados";
+			}
+			convWarnings = Array.isArray(data.warnings) ? data.warnings : [];
 		} catch (e) {
 			convError = errorToString(e);
 		} finally {
@@ -524,7 +532,19 @@ const data = await r.json();
 	function reiniciarConvBD() {
 		convRow = null;
 		convMensajes = [];
+		convWarnings = [];
+		convFuenteMensajes = "vacio";
 		convError = "";
+	}
+
+	function formatearFechaMsg(raw: string): string {
+		if (!raw) return "";
+		const n = Number(raw);
+		if (Number.isFinite(n) && n > 1_000_000_000) {
+			const ms = n < 1e12 ? n * 1000 : n;
+			try { return new Date(ms).toLocaleString(); } catch { return raw; }
+		}
+		return raw;
 	}
 
 	async function enviarChat() {
@@ -864,20 +884,14 @@ const data = await r.json();
 						<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarConvBD} disabled={convLoading} title="Limpiar" />
 					</GridLayout>
 
-					<details>
-						<summary>Personalizar SQL (avanzado)</summary>
-						<FlexLayout direction="column">
-							<label class="sql-label">SQL conversación · usa <code>{"{id}"}</code> como placeholder
-								<textarea class="sql-textarea" bind:value={convSql} rows="2"></textarea>
-							</label>
-							<label class="sql-label">SQL mensajes · usa <code>{"{id}"}</code> como placeholder
-								<textarea class="sql-textarea" bind:value={msgsSql} rows="2"></textarea>
-							</label>
-						</FlexLayout>
-					</details>
-
 					{#if convError}
 						<div class="error">{convError}</div>
+					{/if}
+
+					{#if convWarnings.length}
+						<div class="warnings">
+							{#each convWarnings as w}<div>⚠ {w}</div>{/each}
+						</div>
 					{/if}
 
 					{#if convRow}
@@ -893,13 +907,13 @@ const data = await r.json();
 
 					{#if convMensajes.length}
 						<section>
-							<h3>Mensajes ({convMensajes.length})</h3>
+							<h3>Mensajes ({convMensajes.length}) <span class="sub">· fuente: {convFuenteMensajes === "openai" ? "OpenAI threads" : "MENSAJESCALIFICADOS (fallback)"}</span></h3>
 							<div class="chat-historial">
 								{#each convMensajes as m, i}
 									{@const rol = pickStr(m, ROLE_KEYS) || "?"}
 									{@const contenido = pickStr(m, CONTENT_KEYS)}
 									{@const idMsg = pickStr(m, ID_KEYS) || String(i + 1)}
-									{@const fecha = pickStr(m, FECHA_KEYS)}
+									{@const fecha = formatearFechaMsg(pickStr(m, FECHA_KEYS))}
 									<div class="msg msg-{rol.toLowerCase()}">
 										<strong>#{idMsg} · {rol}{fecha ? ` · ${fecha}` : ""}</strong>
 										{#if contenido}
@@ -1140,22 +1154,21 @@ const data = await r.json();
 		border: 1px solid rgba(255,255,255,0.1);
 		border-radius: 6px;
 	}
-	.sql-label {
+	.warnings {
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
 		font-size: 0.82rem;
-		opacity: 0.9;
-	}
-	.sql-textarea {
-		font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
-		font-size: 0.82rem;
-		padding: 0.4rem 0.5rem;
-		background: rgba(255,255,255,0.04);
-		color: var(--is-color, #e5e7eb);
-		border: 1px solid rgba(255,255,255,0.15);
+		color: #fbbf24;
+		background: rgba(251, 191, 36, 0.08);
+		border: 1px solid rgba(251, 191, 36, 0.25);
 		border-radius: 4px;
-		resize: vertical;
+		padding: 0.4rem 0.6rem;
+	}
+	.sub {
+		font-size: 0.75rem;
+		opacity: 0.6;
+		font-weight: normal;
 	}
 	.msg strong {
 		font-size: 0.75rem;

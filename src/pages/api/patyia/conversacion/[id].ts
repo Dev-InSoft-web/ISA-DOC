@@ -1,0 +1,205 @@
+import type { APIRoute } from "astro";
+import { getPatyPool } from "../../../../lib/dbPaty.ts";
+import { resolveOpenAIKey } from "../../../../lib/patyia/openaiKey.ts";
+
+export const prerender = false;
+
+interface MensajeOpenAI {
+	fecha_hora: number | null;
+	autor: "Usuario" | "Asistente";
+	mensaje: string;
+}
+
+interface OpenAIItem {
+	type?: string;
+	role?: string;
+	created_at?: number;
+	content?: Array<{ type?: string; text?: string }>;
+}
+
+interface OpenAIItemsList {
+	data?: OpenAIItem[];
+	error?: { message?: string };
+}
+
+// Réplica del flujo de PatyIA `TConversacionesController.ValidarGet`:
+//   1. Lee la fila de CONVERSACIONES por iconversacion.
+//   2. Con el HILO de OpenAI, obtiene los mensajes del thread.
+//   3. Lee los mensajes calificados (MENSAJESCALIFICADOS) y el tiquete
+//      asociado (TIQUETESCONVERSACION) de la BD AYUDASCP_IA.
+//   4. Devuelve { conversacion, mensajesOpenAI, mensajesCalificados, tiquete }.
+export const GET: APIRoute = async ({ params }) => {
+	const idRaw = params.id ?? "";
+	const iconversacion = Number(idRaw);
+	if (!Number.isInteger(iconversacion) || iconversacion <= 0) {
+		return json({ ok: false, error: "iconversacion inválido" }, 400);
+	}
+
+	const warnings: string[] = [];
+	let conversacion: Record<string, unknown> | null = null;
+	let mensajesCalificados: Record<string, unknown>[] = [];
+	let tiquete: Record<string, unknown>[] = [];
+	let mensajesOpenAI: MensajeOpenAI[] = [];
+
+	try {
+		const pool = await getPatyPool();
+		const r1 = await pool
+			.request()
+			.input("id", iconversacion)
+			.query("SELECT TOP (1) * FROM CONVERSACIONES WHERE iconversacion = @id");
+		conversacion = (r1.recordset?.[0] as Record<string, unknown>) ?? null;
+	} catch (err) {
+		return json({ ok: false, error: `BD CONVERSACIONES: ${errMsg(err)}` }, 500);
+	}
+
+	if (!conversacion) {
+		return json(
+			{ ok: false, error: `No existe la conversación ${iconversacion} en CONVERSACIONES.` },
+			404,
+		);
+	}
+
+	const hilo = pickStr(conversacion, ["HILO", "hilo"]);
+
+	const [msgsRes, tickRes, openaiRes] = await Promise.allSettled([
+		queryRows(
+			"SELECT * FROM MENSAJESCALIFICADOS WHERE iconversacion = @id ORDER BY imensaje",
+			iconversacion,
+		),
+		queryRows("SELECT * FROM TIQUETESCONVERSACION WHERE iconversacion = @id", iconversacion),
+		hilo ? obtenerMensajesDeThread(hilo) : Promise.resolve<MensajeOpenAI[]>([]),
+	]);
+
+	if (msgsRes.status === "fulfilled") mensajesCalificados = msgsRes.value;
+	else warnings.push(`MENSAJESCALIFICADOS: ${msgsRes.reason}`);
+
+	if (tickRes.status === "fulfilled") tiquete = tickRes.value;
+	else warnings.push(`TIQUETESCONVERSACION: ${tickRes.reason}`);
+
+	if (openaiRes.status === "fulfilled") mensajesOpenAI = openaiRes.value;
+	else warnings.push(`OpenAI threads: ${openaiRes.reason}`);
+
+	return json({
+		ok: true,
+		iconversacion,
+		conversacion,
+		mensajesOpenAI,
+		mensajesCalificados,
+		tiquete,
+		warnings,
+	});
+};
+
+async function queryRows(sql: string, id: number): Promise<Record<string, unknown>[]> {
+	const pool = await getPatyPool();
+	const r = await pool.request().input("id", id).query(sql);
+	return (r.recordset ?? []) as Record<string, unknown>[];
+}
+
+async function obtenerMensajesDeThread(conversationId: string): Promise<MensajeOpenAI[]> {
+	const apiKey = await resolveOpenAIKey();
+	if (!apiKey) throw new Error("OPENAI_API_KEY no encontrada");
+	return conversationId.startsWith("thread_")
+		? await listarMensajesThread(conversationId, apiKey)
+		: await listarMensajesConversation(conversationId, apiKey);
+}
+
+async function listarMensajesConversation(id: string, apiKey: string): Promise<MensajeOpenAI[]> {
+	const url = `https://api.openai.com/v1/conversations/${encodeURIComponent(id)}/items?order=asc&limit=100`;
+	const parsed = await fetchOpenAI<OpenAIItemsList>(url, apiKey);
+	const data = parsed.data ?? [];
+	return data
+		.filter((item) => item.type === "message" && (item.role === "user" || item.role === "assistant"))
+		.map((item) => {
+			const texto = (item.content ?? [])
+				.filter((c) => c.type === "input_text" || c.type === "output_text" || c.type === "text")
+				.map((c) => c.text ?? "")
+				.join("\n");
+			return {
+				fecha_hora: item.created_at ?? null,
+				autor: item.role === "user" ? "Usuario" : "Asistente",
+				mensaje: texto,
+			} satisfies MensajeOpenAI;
+		})
+		.filter((m) => m.mensaje);
+}
+
+interface ThreadMessage {
+	role?: string;
+	created_at?: number;
+	content?: Array<{ type?: string; text?: { value?: string } | string }>;
+}
+
+interface ThreadMessagesList {
+	data?: ThreadMessage[];
+}
+
+async function listarMensajesThread(threadId: string, apiKey: string): Promise<MensajeOpenAI[]> {
+	const url = `https://api.openai.com/v1/threads/${encodeURIComponent(threadId)}/messages?order=asc&limit=100`;
+	const parsed = await fetchOpenAI<ThreadMessagesList>(url, apiKey, {
+		"OpenAI-Beta": "assistants=v2",
+	});
+	const data = parsed.data ?? [];
+	return data
+		.filter((m) => m.role === "user" || m.role === "assistant")
+		.map((m) => {
+			const texto = (m.content ?? [])
+				.filter((c) => c.type === "text")
+				.map((c) => {
+					if (typeof c.text === "string") return c.text;
+					return c.text?.value ?? "";
+				})
+				.join("\n");
+			return {
+				fecha_hora: m.created_at ?? null,
+				autor: m.role === "user" ? "Usuario" : "Asistente",
+				mensaje: texto,
+			} satisfies MensajeOpenAI;
+		})
+		.filter((m) => m.mensaje);
+}
+
+async function fetchOpenAI<T>(url: string, apiKey: string, extraHeaders: Record<string, string> = {}): Promise<T> {
+	const r = await fetch(url, {
+		method: "GET",
+		headers: { Authorization: `Bearer ${apiKey}`, ...extraHeaders },
+	});
+	const text = await r.text();
+	let parsed: (T & { error?: { message?: string } }) | null = null;
+	try {
+		parsed = JSON.parse(text) as T & { error?: { message?: string } };
+	} catch {
+		throw new Error(`HTTP ${r.status} no JSON: ${text.slice(0, 200)}`);
+	}
+	if (!r.ok) {
+		throw new Error(parsed?.error?.message ?? `HTTP ${r.status}`);
+	}
+	return parsed;
+}
+
+function pickStr(o: Record<string, unknown>, keys: string[]): string {
+	for (const k of keys) {
+		if (k in o) {
+			const v = o[k];
+			if (v != null) return String(v);
+		}
+	}
+	const lower: Record<string, string> = {};
+	for (const k of Object.keys(o)) lower[k.toLowerCase()] = k;
+	for (const k of keys) {
+		const real = lower[k.toLowerCase()];
+		if (real && o[real] != null) return String(o[real]);
+	}
+	return "";
+}
+
+function errMsg(err: unknown): string {
+	return err instanceof Error ? err.message : String(err);
+}
+
+function json(body: unknown, status = 200): Response {
+	return new Response(JSON.stringify(body), {
+		status,
+		headers: { "content-type": "application/json", "cache-control": "no-store" },
+	});
+}
