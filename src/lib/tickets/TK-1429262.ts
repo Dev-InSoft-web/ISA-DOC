@@ -65,7 +65,6 @@ export async function buildBodyTK1429262(): Promise<string> {
 		h3Comparativa,
 		h3Ruta,
 		h3BD,
-		h3Referencia,
 		h3Presupuesto,
 	] = await Promise.all([
 		h3Iconized("mdi:radar", "1) Estado actual del proyecto"),
@@ -74,8 +73,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		h3Iconized("mdi:compare", "4) Comparativa antes vs propuesta"),
 		h3Iconized("mdi:map-marker-path", "5) Mejor camino propuesto"),
 		h3Iconized("mdi:database-cog-outline", "6) Análisis de base de datos"),
-		h3Iconized("mdi:youtube", "7) Recurso de referencia: Harness Engineering"),
-		h3Iconized("mdi:clock-time-four-outline", "8) Presupuesto de tiempos"),
+		h3Iconized("mdi:clock-time-four-outline", "7) Presupuesto de tiempos"),
 	]);
 
 	const [codeFlujoEntrada, codeModeloUnicoResponses, codeModeloUnicoRespuesta, codeConfigActual] = await Promise.all([
@@ -338,18 +336,6 @@ export async function buildBodyTK1429262(): Promise<string> {
 		),
 	);
 
-	const referencia = await note(
-		"mdi:video-outline",
-		`Durante el análisis se encontró este video. Plantea un enfoque por <b>orquestación de múltiples llamadas especializadas</b> (Harness Engineering) que luce más adecuado que el actual, donde una sola conversación se encarga de todo el flujo. Vale la pena revisarlo con el equipo.<br><br>
-		<div style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#222;">
-			<div style="font-weight:bold;margin-bottom:6px;">¿Qué es esto del Harness Engineering? — BettaTech</div>
-			<a href="https://www.youtube.com/watch?v=q9Vaoz0hd0U" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block;">
-				<img src="https://i.ytimg.com/vi/q9Vaoz0hd0U/hqdefault.jpg" alt="Miniatura del video: ¿Qué es esto del Harness Engineering?" width="480" height="360" style="display:block;border:0;max-width:100%;height:auto;" />
-			</a>
-			<div style="margin-top:6px;"><a href="https://www.youtube.com/watch?v=q9Vaoz0hd0U" target="_blank" rel="noopener">https://www.youtube.com/watch?v=q9Vaoz0hd0U</a></div>
-		</div>`,
-	);
-
 	const tablaPresupuesto = `
 <table style="${TABLE_STYLE}">
 <thead><tr>
@@ -374,7 +360,6 @@ export async function buildBodyTK1429262(): Promise<string> {
 		+ h3Comparativa + comparativa
 		+ h3Ruta + mejorCamino
 		+ h3BD + analisisBD
-		+ h3Referencia + referencia
 		+ h3Presupuesto + presupuesto;
 }
 
