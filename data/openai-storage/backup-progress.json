@@ -1,0 +1,94 @@
+{
+  "running": true,
+  "total": 9065,
+  "hecho": 465,
+  "exitos": 163,
+  "fallos": 302,
+  "currentId": "file-Az5ehgyARGjqq1snjeWfSX",
+  "currentFilename": "vi_basico.md",
+  "iniciado": "2026-05-27T19:12:25.207Z",
+  "finalizado": "",
+  "ultimosFallos": [
+    {
+      "id": "file-1DwbrSnmY1PpBFJUS6Rd2Y",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-1DwbrSnmY1PpBFJUS6Rd2Y'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-1DwbrSnmY1PpBFJUS6Rd2Y'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-1DwbrSnmY1PpBFJUS6Rd2Y'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-1DwbrSnmY1PpBFJUS6Rd2Y'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-1DwbrSnmY1PpBFJUS6Rd2Y'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-1DwbrSnmY1PpBFJUS6Rd2Y'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-1DwbrSnmY1PpBFJUS6Rd2Y'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-GA9Tve6knbVTKznrJiwDRs",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-GA9Tve6knbVTKznrJiwDRs'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-GA9Tve6knbVTKznrJiwDRs'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-GA9Tve6knbVTKznrJiwDRs'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-GA9Tve6knbVTKznrJiwDRs'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-GA9Tve6knbVTKznrJiwDRs'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-GA9Tve6knbVTKznrJiwDRs'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-GA9Tve6knbVTKznrJiwDRs'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-DHG6zCXBinSQPbuHZdpqGq",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-DHG6zCXBinSQPbuHZdpqGq'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-DHG6zCXBinSQPbuHZdpqGq'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-DHG6zCXBinSQPbuHZdpqGq'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-DHG6zCXBinSQPbuHZdpqGq'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-DHG6zCXBinSQPbuHZdpqGq'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-DHG6zCXBinSQPbuHZdpqGq'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-DHG6zCXBinSQPbuHZdpqGq'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-Q84ZcWYajUVtssgqwPzZgQ",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-Q84ZcWYajUVtssgqwPzZgQ'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-Q84ZcWYajUVtssgqwPzZgQ'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-Q84ZcWYajUVtssgqwPzZgQ'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-Q84ZcWYajUVtssgqwPzZgQ'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-Q84ZcWYajUVtssgqwPzZgQ'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-Q84ZcWYajUVtssgqwPzZgQ'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-Q84ZcWYajUVtssgqwPzZgQ'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-2Vo34MYF1cgnLzvrR4MRSS",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-2Vo34MYF1cgnLzvrR4MRSS'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-2Vo34MYF1cgnLzvrR4MRSS'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-2Vo34MYF1cgnLzvrR4MRSS'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-2Vo34MYF1cgnLzvrR4MRSS'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-2Vo34MYF1cgnLzvrR4MRSS'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-2Vo34MYF1cgnLzvrR4MRSS'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-2Vo34MYF1cgnLzvrR4MRSS'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-PNAyxr5t6hcvb4tWL6nbXM",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-PNAyxr5t6hcvb4tWL6nbXM'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-PNAyxr5t6hcvb4tWL6nbXM'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-PNAyxr5t6hcvb4tWL6nbXM'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-PNAyxr5t6hcvb4tWL6nbXM'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-PNAyxr5t6hcvb4tWL6nbXM'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-PNAyxr5t6hcvb4tWL6nbXM'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-PNAyxr5t6hcvb4tWL6nbXM'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-Mt437pKMoDUQL7jaYvQQ4L",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-Mt437pKMoDUQL7jaYvQQ4L'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-Mt437pKMoDUQL7jaYvQQ4L'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-Mt437pKMoDUQL7jaYvQQ4L'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-Mt437pKMoDUQL7jaYvQQ4L'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-Mt437pKMoDUQL7jaYvQQ4L'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-Mt437pKMoDUQL7jaYvQQ4L'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-Mt437pKMoDUQL7jaYvQQ4L'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-Cfu1xjH5vv7bgyjPUtRpvC",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-Cfu1xjH5vv7bgyjPUtRpvC'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-Cfu1xjH5vv7bgyjPUtRpvC'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-Cfu1xjH5vv7bgyjPUtRpvC'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-Cfu1xjH5vv7bgyjPUtRpvC'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-Cfu1xjH5vv7bgyjPUtRpvC'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-Cfu1xjH5vv7bgyjPUtRpvC'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-Cfu1xjH5vv7bgyjPUtRpvC'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-GMTXsWM4Jzqe8tGMzp2VK6",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-GMTXsWM4Jzqe8tGMzp2VK6'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-GMTXsWM4Jzqe8tGMzp2VK6'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-GMTXsWM4Jzqe8tGMzp2VK6'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-GMTXsWM4Jzqe8tGMzp2VK6'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-GMTXsWM4Jzqe8tGMzp2VK6'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-GMTXsWM4Jzqe8tGMzp2VK6'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-GMTXsWM4Jzqe8tGMzp2VK6'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-6ywzckEvidPrFmfCfwViuC",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-6ywzckEvidPrFmfCfwViuC'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-6ywzckEvidPrFmfCfwViuC'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-6ywzckEvidPrFmfCfwViuC'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-6ywzckEvidPrFmfCfwViuC'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-6ywzckEvidPrFmfCfwViuC'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-6ywzckEvidPrFmfCfwViuC'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-6ywzckEvidPrFmfCfwViuC'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-ERHBhajnjysjToDZYsmqC4",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-ERHBhajnjysjToDZYsmqC4'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-ERHBhajnjysjToDZYsmqC4'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-ERHBhajnjysjToDZYsmqC4'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-ERHBhajnjysjToDZYsmqC4'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-ERHBhajnjysjToDZYsmqC4'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-ERHBhajnjysjToDZYsmqC4'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-ERHBhajnjysjToDZYsmqC4'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-CjDD7uiQJoSk5KUXZpy48s",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-CjDD7uiQJoSk5KUXZpy48s'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-CjDD7uiQJoSk5KUXZpy48s'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-CjDD7uiQJoSk5KUXZpy48s'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-CjDD7uiQJoSk5KUXZpy48s'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-CjDD7uiQJoSk5KUXZpy48s'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-CjDD7uiQJoSk5KUXZpy48s'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-CjDD7uiQJoSk5KUXZpy48s'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-QrtVgvdzuGC4YJYhA2GbHn",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-QrtVgvdzuGC4YJYhA2GbHn'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-QrtVgvdzuGC4YJYhA2GbHn'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-QrtVgvdzuGC4YJYhA2GbHn'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-QrtVgvdzuGC4YJYhA2GbHn'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-QrtVgvdzuGC4YJYhA2GbHn'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-QrtVgvdzuGC4YJYhA2GbHn'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-QrtVgvdzuGC4YJYhA2GbHn'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-Hnnt4brhne2mjJPYSXNig3",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-Hnnt4brhne2mjJPYSXNig3'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-Hnnt4brhne2mjJPYSXNig3'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-Hnnt4brhne2mjJPYSXNig3'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-Hnnt4brhne2mjJPYSXNig3'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-Hnnt4brhne2mjJPYSXNig3'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-Hnnt4brhne2mjJPYSXNig3'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-Hnnt4brhne2mjJPYSXNig3'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-XwG35YSw67J9c6H2pFYfGm",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-XwG35YSw67J9c6H2pFYfGm'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-XwG35YSw67J9c6H2pFYfGm'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-XwG35YSw67J9c6H2pFYfGm'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-XwG35YSw67J9c6H2pFYfGm'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-XwG35YSw67J9c6H2pFYfGm'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-XwG35YSw67J9c6H2pFYfGm'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-XwG35YSw67J9c6H2pFYfGm'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-TkeQ5EYzwRMC6LqyVst73f",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-TkeQ5EYzwRMC6LqyVst73f'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-TkeQ5EYzwRMC6LqyVst73f'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-TkeQ5EYzwRMC6LqyVst73f'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-TkeQ5EYzwRMC6LqyVst73f'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-TkeQ5EYzwRMC6LqyVst73f'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-TkeQ5EYzwRMC6LqyVst73f'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-TkeQ5EYzwRMC6LqyVst73f'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-U6siit99JFDExbLr74zuZs",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-U6siit99JFDExbLr74zuZs'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-U6siit99JFDExbLr74zuZs'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-U6siit99JFDExbLr74zuZs'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-U6siit99JFDExbLr74zuZs'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-U6siit99JFDExbLr74zuZs'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-U6siit99JFDExbLr74zuZs'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-U6siit99JFDExbLr74zuZs'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-TMSbnaBZ2ZaZq3VhvnPC7z",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-TMSbnaBZ2ZaZq3VhvnPC7z'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-TMSbnaBZ2ZaZq3VhvnPC7z'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-TMSbnaBZ2ZaZq3VhvnPC7z'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-TMSbnaBZ2ZaZq3VhvnPC7z'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-TMSbnaBZ2ZaZq3VhvnPC7z'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-TMSbnaBZ2ZaZq3VhvnPC7z'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-TMSbnaBZ2ZaZq3VhvnPC7z'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-BnEZi8s9on14UEmHLMRhSf",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-BnEZi8s9on14UEmHLMRhSf'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-BnEZi8s9on14UEmHLMRhSf'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-BnEZi8s9on14UEmHLMRhSf'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-BnEZi8s9on14UEmHLMRhSf'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-BnEZi8s9on14UEmHLMRhSf'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-BnEZi8s9on14UEmHLMRhSf'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-BnEZi8s9on14UEmHLMRhSf'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    },
+    {
+      "id": "file-6ZVgQUFjtGdUessedEQ9zu",
+      "error": "No descargable. vs_69dfaa402ef481918ea42e0c195560f6: File not found with id 'file-6ZVgQUFjtGdUessedEQ9zu'. | vs_69debf1071d4819194ab9867383eb776: File not found with id 'file-6ZVgQUFjtGdUessedEQ9zu'. | vs_69debef579548191bde1f90f8a42eb0e: File not found with id 'file-6ZVgQUFjtGdUessedEQ9zu'. | vs_69debedd35248191ac50dc0ecbd29d10: File not found with id 'file-6ZVgQUFjtGdUessedEQ9zu'. | vs_69debe379ea08191ad1ce9beaffa5c93: File not found with id 'file-6ZVgQUFjtGdUessedEQ9zu'. | vs_691369f3d7dc8191a89ec0296a36e0a5: File not found with id 'file-6ZVgQUFjtGdUessedEQ9zu'. | vs_690a6ce6f6588191a6b69f9347146a33: File not found with id 'file-6ZVgQUFjtGdUessedEQ9zu'. | vs_67b610aad678819188d51601660b98d1: Not found"
+    }
+  ],
+  "cancelRequested": false
+}
