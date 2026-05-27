@@ -1,10 +1,10 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "INSTRUCCION",
+  "tableref": "ATRIBUTOS_X_DRIVERS",
   "tablemeta": {
-    "originalname": "INSTRUCCION",
-    "hasifnotexists": false
+    "originalname": "ATRIBUTOS_X_DRIVERS",
+    "hasifnotexists": true
   },
   "nodes": [
     {
@@ -44,8 +44,8 @@
     },
     {
       "flatpath": "8",
-      "ireference": "COLUMN",
-      "kind": "col"
+      "kind": "optional",
+      "name": "AUDITORIA"
     }
   ],
   "entities": {
@@ -53,66 +53,59 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "IINSTRUCCION",
-        "type": "VARCHAR(32)",
-        "nullable": "NOT NULL",
-        "primarykey": true
+        "name": "IDRIVER",
+        "type": "SMALLINT",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "NINSTRUCCION",
-        "type": "NVARCHAR(100)",
-        "nullable": "NOT NULL",
-        "primarykey": false
+        "name": "IATRIBUTO",
+        "type": "SMALLINT",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "3",
         "flatpath": "3",
-        "name": "INSTRUCCION",
-        "type": "NVARCHAR(MAX)",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "QNIVEL",
+        "type": "TINYINT",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "4",
         "flatpath": "4",
-        "name": "DESCRIPCION",
-        "type": "NVARCHAR(MAX)",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "NATRIBUTO",
+        "type": "VARCHAR(50)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "5",
         "flatpath": "5",
-        "name": "VERSION",
-        "type": "VARCHAR(20)",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "TDATRIBUTO",
+        "type": "VARCHAR(50)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "6",
         "flatpath": "6",
-        "name": "BACTIVO",
+        "name": "BREQUERIDO",
         "type": "BIT",
-        "nullable": "NOT NULL",
-        "primarykey": false
+        "defaultvalue": "0",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "7",
         "flatpath": "7",
-        "name": "FHINI",
-        "type": "DATETIME2",
-        "nullable": "NULL",
-        "primarykey": false
-      },
-      {
-        "icolumn": "8",
-        "flatpath": "8",
-        "name": "FHFIN",
-        "type": "DATETIME2",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "JCONFIG",
+        "type": "VARCHAR(MAX)",
+        "primarykey": false,
+        "kind": "col"
       }
     ]
   }

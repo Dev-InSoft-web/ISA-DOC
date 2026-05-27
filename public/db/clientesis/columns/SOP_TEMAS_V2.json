@@ -1,10 +1,10 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "MENSAJESCALIFICADOS",
+  "tableref": "SOP_TEMAS_V2",
   "tablemeta": {
-    "originalname": "MENSAJESCALIFICADOS",
-    "hasifnotexists": false
+    "originalname": "SOP_TEMAS_V2",
+    "hasifnotexists": true
   },
   "nodes": [
     {
@@ -38,42 +38,43 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "IMENSAJE",
-        "type": "BIGINT",
-        "nullable": "NOT NULL",
-        "primarykey": true
+        "name": "ITEMA",
+        "type": "VARCHAR(25)",
+        "primarykey": true,
+        "kind": "col"
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "ICONVERSACION",
-        "type": "INT",
-        "nullable": "NOT NULL",
-        "primarykey": false
+        "name": "ICATEGORIA",
+        "type": "VARCHAR(25)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "3",
         "flatpath": "3",
-        "name": "BUTIL",
-        "type": "BIT",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "NTEMA",
+        "type": "VARCHAR(255)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "4",
         "flatpath": "4",
-        "name": "CONTENIDO",
-        "type": "TEXT",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "ITABLA",
+        "type": "VARCHAR(50)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "5",
         "flatpath": "5",
-        "name": "IREFERENCIA",
-        "type": "BIGINT",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "BEXIGEPOLIZA",
+        "type": "BIT",
+        "defaultvalue": "0",
+        "primarykey": false,
+        "kind": "col"
       }
     ]
   }

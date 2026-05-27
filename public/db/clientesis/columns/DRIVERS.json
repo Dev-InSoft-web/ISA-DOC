@@ -1,10 +1,10 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "VECTOR_STORE",
+  "tableref": "DRIVERS",
   "tablemeta": {
-    "originalname": "VECTOR_STORE",
-    "hasifnotexists": false
+    "originalname": "DRIVERS",
+    "hasifnotexists": true
   },
   "nodes": [
     {
@@ -26,6 +26,11 @@
       "flatpath": "4",
       "ireference": "COLUMN",
       "kind": "col"
+    },
+    {
+      "flatpath": "5",
+      "kind": "optional",
+      "name": "AUDITORIA"
     }
   ],
   "entities": {
@@ -33,34 +38,34 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "IVECTORSTORE",
-        "type": "VARCHAR(32)",
-        "nullable": "NOT NULL",
-        "primarykey": true
+        "name": "IDRIVER",
+        "type": "SMALLINT",
+        "primarykey": true,
+        "kind": "col"
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "NVECTORSTORE",
-        "type": "NVARCHAR(100)",
-        "nullable": "NOT NULL",
-        "primarykey": false
+        "name": "NDRIVER",
+        "type": "VARCHAR(50)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "3",
         "flatpath": "3",
         "name": "DESCRIPCION",
-        "type": "NVARCHAR(500)",
-        "nullable": "NULL",
-        "primarykey": false
+        "type": "VARCHAR(MAX)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "4",
         "flatpath": "4",
-        "name": "BACTIVO",
-        "type": "BIT",
-        "nullable": "NOT NULL",
-        "primarykey": false
+        "name": "QNIVELES",
+        "type": "TINYINT",
+        "primarykey": false,
+        "kind": "col"
       }
     ]
   }

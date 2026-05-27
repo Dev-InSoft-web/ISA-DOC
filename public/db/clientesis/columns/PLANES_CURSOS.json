@@ -1,10 +1,10 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "TIQUETESCONVERSACION",
+  "tableref": "PLANES_CURSOS",
   "tablemeta": {
-    "originalname": "TIQUETESCONVERSACION",
-    "hasifnotexists": false
+    "originalname": "PLANES_CURSOS",
+    "hasifnotexists": true
   },
   "nodes": [
     {
@@ -31,6 +31,11 @@
       "flatpath": "5",
       "ireference": "COLUMN",
       "kind": "col"
+    },
+    {
+      "flatpath": "6",
+      "ireference": "COLUMN",
+      "kind": "col"
     }
   ],
   "entities": {
@@ -38,42 +43,50 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "ITIQUETE",
-        "type": "BIGINT",
-        "nullable": "NOT NULL",
-        "primarykey": true
+        "name": "IPLAN",
+        "type": "VARCHAR(100)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "CODIGOTK",
+        "name": "ICURSO",
         "type": "VARCHAR(10)",
-        "nullable": "NULL",
-        "primarykey": false
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "3",
         "flatpath": "3",
-        "name": "ICONVERSACION",
-        "type": "BIGINT",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "TITULO",
+        "type": "VARCHAR(255)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "4",
         "flatpath": "4",
-        "name": "TEMA",
-        "type": "VARCHAR(50)",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "ITEMA",
+        "type": "VARCHAR(25)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "5",
         "flatpath": "5",
-        "name": "CLASIFICADOR",
-        "type": "VARCHAR(50)",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "IRECURSO",
+        "type": "BIGINT",
+        "primarykey": false,
+        "kind": "col"
+      },
+      {
+        "icolumn": "6",
+        "flatpath": "6",
+        "name": "IPLANPADRE",
+        "type": "VARCHAR(100)",
+        "primarykey": false,
+        "kind": "col"
       }
     ]
   }

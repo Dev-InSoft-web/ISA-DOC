@@ -1,10 +1,10 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "TDCONSULTA",
+  "tableref": "ATRIBUTOS_PLANES",
   "tablemeta": {
-    "originalname": "TDCONSULTA",
-    "hasifnotexists": false
+    "originalname": "ATRIBUTOS_PLANES",
+    "hasifnotexists": true
   },
   "nodes": [
     {
@@ -26,6 +26,11 @@
       "flatpath": "4",
       "ireference": "COLUMN",
       "kind": "col"
+    },
+    {
+      "flatpath": "5",
+      "kind": "optional",
+      "name": "AUDITORIA"
     }
   ],
   "entities": {
@@ -33,34 +38,34 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "ITDCONSULTA",
-        "type": "VARCHAR(32)",
-        "nullable": "NOT NULL",
-        "primarykey": true
+        "name": "IPLAN",
+        "type": "VARCHAR(100)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "NCONSULTA",
-        "type": "NVARCHAR(100)",
-        "nullable": "NOT NULL",
-        "primarykey": false
+        "name": "ICURSO",
+        "type": "VARCHAR(10)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "3",
         "flatpath": "3",
-        "name": "DESCRIPCION",
-        "type": "NVARCHAR(500)",
-        "nullable": "NULL",
-        "primarykey": false
+        "name": "IATRIBUTO",
+        "type": "SMALLINT",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "4",
         "flatpath": "4",
-        "name": "BACTIVO",
-        "type": "BIT",
-        "nullable": "NOT NULL",
-        "primarykey": false
+        "name": "VALOR",
+        "type": "VARCHAR(MAX)",
+        "primarykey": false,
+        "kind": "col"
       }
     ]
   }

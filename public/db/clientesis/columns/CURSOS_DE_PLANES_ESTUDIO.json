@@ -1,10 +1,10 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "CONSULTAS",
+  "tableref": "CURSOS_DE_PLANES_ESTUDIO",
   "tablemeta": {
-    "originalname": "CONSULTAS",
-    "hasifnotexists": false
+    "originalname": "CURSOS_DE_PLANES_ESTUDIO",
+    "hasifnotexists": true
   },
   "nodes": [
     {
@@ -33,36 +33,33 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "ICONSULTA",
-        "type": "VARCHAR(32)",
-        "nullable": "NOT NULL",
-        "primarykey": true,
+        "name": "IPLANESTUDIO",
+        "type": "VARCHAR(20)",
+        "primarykey": false,
         "kind": "col"
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "ICONVERSACION",
-        "type": "VARCHAR(32)",
-        "nullable": "NULL",
+        "name": "ICURSO",
+        "type": "VARCHAR(10)",
         "primarykey": false,
         "kind": "col"
       },
       {
         "icolumn": "3",
         "flatpath": "3",
-        "name": "CONSULTA",
-        "type": "NVARCHAR(MAX)",
-        "nullable": "NULL",
+        "name": "QORDEN",
+        "type": "INT",
         "primarykey": false,
         "kind": "col"
       },
       {
         "icolumn": "4",
         "flatpath": "4",
-        "name": "ITDCONSULTA",
-        "type": "VARCHAR(32)",
-        "nullable": "NULL",
+        "name": "BREQUERIDO",
+        "type": "BIT",
+        "defaultvalue": "1",
         "primarykey": false,
         "kind": "col"
       }

@@ -1,10 +1,10 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "TDCONSULTAXINSTRUCCION",
+  "tableref": "CURSOS_PREREQUISITOS",
   "tablemeta": {
-    "originalname": "TDCONSULTAXINSTRUCCION",
-    "hasifnotexists": false
+    "originalname": "CURSOS_PREREQUISITOS",
+    "hasifnotexists": true
   },
   "nodes": [
     {
@@ -28,26 +28,26 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "ITDCONSULTA",
-        "type": "VARCHAR(32)",
-        "nullable": "NOT NULL",
-        "primarykey": true
+        "name": "ICURSO",
+        "type": "VARCHAR(10)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "IINSTRUCCION",
-        "type": "VARCHAR(32)",
-        "nullable": "NOT NULL",
-        "primarykey": true
+        "name": "ICURSOREQUERIDO",
+        "type": "VARCHAR(10)",
+        "primarykey": false,
+        "kind": "col"
       },
       {
         "icolumn": "3",
         "flatpath": "3",
-        "name": "ORDEN",
-        "type": "SMALLINT",
-        "nullable": "NOT NULL",
-        "primarykey": false
+        "name": "IPLANESTUDIO",
+        "type": "VARCHAR(20)",
+        "primarykey": false,
+        "kind": "col"
       }
     ]
   }
