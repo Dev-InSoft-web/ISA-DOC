@@ -188,6 +188,98 @@ export async function buildBodyTK1429262(): Promise<string> {
 </tbody>
 </table>`;
 
+	const INPUT_BOX = `background:#f5f7fa;border-left:3px solid #1976d2;padding:0.5rem 0.75rem;margin:0.5rem 0;font-family:Consolas,Menlo,monospace;font-size:0.85rem;white-space:pre-wrap;`;
+	const OUTPUT_BOX = `background:#f4faf4;border-left:3px solid #2e7d32;padding:0.5rem 0.75rem;margin:0.5rem 0;font-family:Consolas,Menlo,monospace;font-size:0.85rem;white-space:pre-wrap;`;
+
+	const ejemploTrace = `
+<div style="margin-top:0.5rem;">
+	<div><b>Entrada del asesor</b></div>
+	<div style="${INPUT_BOX}">"Necesito calcular el ajuste por inflación de la cartera del cliente Contapyme S.A.S al cierre del periodo 2025, aplicando NIIF para pymes."</div>
+	<div style="margin-top:0.5rem;"><b>Razonamiento del sistema por etapa</b></div>
+	<table style="${TABLE_STYLE}">
+	<thead><tr>
+	<th style="${TH_STYLE}">#</th>
+	<th style="${TH_STYLE}">Etapa</th>
+	<th style="${TH_STYLE}">Modelo elegido</th>
+	<th style="${TH_STYLE}">¿Por qué este modelo?</th>
+	<th style="${TH_STYLE}">Salida intermedia</th>
+	</tr></thead>
+	<tbody>
+	<tr>
+	<td style="${TD_STYLE}">1</td>
+	<td style="${TD_STYLE}"><code>clasificacion</code></td>
+	<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
+	<td style="${TD_STYLE}">Tarea cerrada: encajar el texto en una de N categorías. No requiere razonamiento profundo, solo emparejamiento semántico. Se usa el modelo barato porque el costo se paga en <b>cada</b> mensaje y la calidad del clasificador rara vez es el cuello de botella.</td>
+	<td style="${TD_STYLE}"><code>tipo_consulta = "contable_niif"</code></td>
+	</tr>
+	<tr>
+	<td style="${TD_STYLE}">2</td>
+	<td style="${TD_STYLE}"><code>extraccion</code></td>
+	<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
+	<td style="${TD_STYLE}">Extraer entidades estructuradas del texto (cliente, periodo, norma). Otra tarea de baja complejidad que se beneficia del modelo barato, y cuyo output sí debe ser determinístico para alimentar la siguiente etapa.</td>
+	<td style="${TD_STYLE}"><code>{ cliente: "Contapyme S.A.S", periodo: "2025", norma: "NIIF pymes" }</code></td>
+	</tr>
+	<tr>
+	<td style="${TD_STYLE}">3</td>
+	<td style="${TD_STYLE}"><code>respuesta</code></td>
+	<td style="${TD_STYLE}"><code>gpt-5</code></td>
+	<td style="${TD_STYLE}">El <code>tipo_consulta</code> obtenido en (1) entra al mapa <code>etapa + tipo → modelo</code>. Para <code>contable_niif</code> + <code>respuesta</code> se enruta a un modelo fuerte: el asesor necesita razonamiento sobre norma y cálculo, no solo redacción. Aquí <b>sí</b> se paga el modelo caro porque es donde se gana o se pierde la calidad percibida.</td>
+	<td style="${TD_STYLE}">Respuesta final con explicación + cálculo paso a paso.</td>
+	</tr>
+	</tbody>
+	</table>
+	<div style="margin-top:0.5rem;"><b>Salida al asesor</b></div>
+	<div style="${OUTPUT_BOX}">Para ajustar por inflación la cartera de Contapyme S.A.S al cierre 2025 bajo NIIF para pymes:
+
+1. Determinar el saldo de la cartera al 31-dic-2025 …
+2. Aplicar el índice de precios al consumidor (IPC) acumulado del periodo …
+3. Registrar el ajuste contra resultados acumulados …
+
+(respuesta completa generada por <b>gpt-5</b>)</div>
+</div>`;
+
+	const tablaEnrutamiento = `
+<table style="${TABLE_STYLE}">
+<thead><tr>
+<th style="${TH_STYLE}">Entrada del asesor</th>
+<th style="${TH_STYLE}"><code>tipo_consulta</code> (etapa 1)</th>
+<th style="${TH_STYLE}">Modelo de respuesta</th>
+<th style="${TH_STYLE}">Razonamiento del sistema</th>
+</tr></thead>
+<tbody>
+<tr>
+<td style="${TD_STYLE}">"Hola, ¿cómo estás?"</td>
+<td style="${TD_STYLE}"><code>saludo</code></td>
+<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
+<td style="${TD_STYLE}">Conversación trivial: modelo barato responde igual de bien y la latencia baja mejora la experiencia.</td>
+</tr>
+<tr>
+<td style="${TD_STYLE}">"¿En qué módulo registro una nota crédito?"</td>
+<td style="${TD_STYLE}"><code>soporte_uso</code></td>
+<td style="${TD_STYLE}"><code>gpt-4o</code></td>
+<td style="${TD_STYLE}">Pregunta funcional sobre el producto. Requiere precisión y consulta al vector store de manuales, pero no razonamiento normativo. Modelo intermedio.</td>
+</tr>
+<tr>
+<td style="${TD_STYLE}">"Ajuste por inflación NIIF para pymes 2025"</td>
+<td style="${TD_STYLE}"><code>contable_niif</code></td>
+<td style="${TD_STYLE}"><code>gpt-5</code></td>
+<td style="${TD_STYLE}">Requiere razonamiento sobre norma + cálculo. Aquí el costo extra se justifica porque define la calidad percibida.</td>
+</tr>
+<tr>
+<td style="${TD_STYLE}">"Liquidación de retención en la fuente por servicios técnicos"</td>
+<td style="${TD_STYLE}"><code>tributaria</code></td>
+<td style="${TD_STYLE}"><code>gpt-5</code></td>
+<td style="${TD_STYLE}">Norma tributaria con tarifas y excepciones; modelo fuerte para minimizar alucinación sobre porcentajes.</td>
+</tr>
+<tr>
+<td style="${TD_STYLE}">"Sin clasificar (clasificador devuelve <code>otros</code>)"</td>
+<td style="${TD_STYLE}"><code>otros</code></td>
+<td style="${TD_STYLE}"><code>OPENAI_MODEL</code> (fallback)</td>
+<td style="${TD_STYLE}">Cuando el mapa no tiene entrada específica, cae al modelo global por seguridad. Garantiza que ningún caso quede sin respuesta.</td>
+</tr>
+</tbody>
+</table>`;
+
 	const mejorCamino = noteList(
 		await note(
 			"mdi:map-marker-path",
@@ -196,6 +288,14 @@ export async function buildBodyTK1429262(): Promise<string> {
 		await note(
 			"mdi:table",
 			`<b>Comparativa de fases</b>${tablaFases}`,
+		),
+		await note(
+			"mdi:lightbulb-on-outline",
+			`<b>Ejemplo concreto end-to-end (estado post-fase 2)</b><br>Cómo se vería un mensaje real recorriendo el flujo, con el razonamiento que justifica cada elección de modelo:${ejemploTrace}`,
+		),
+		await note(
+			"mdi:vector-difference",
+			`<b>Cómo enruta el sistema según el <code>tipo_consulta</code></b><br>Varios mensajes distintos sobre el mismo mapa de configuración:${tablaEnrutamiento}`,
 		),
 		await note(
 			"mdi:numeric-1-circle-outline",
