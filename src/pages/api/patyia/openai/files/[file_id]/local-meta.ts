@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { join } from "node:path";
-import { EMPTY_LOCAL_META, ensureDir, escribirJson, fileDir, leerJson, type LocalFileMeta } from "../../../../../../lib/patyia/storage.ts";
+import { EMPTY_LOCAL_META, ensureDir, escribirJson, findFileDir, leerJson, type LocalFileMeta } from "../../../../../../lib/patyia/storage.ts";
 
 export const prerender = false;
 
@@ -9,8 +9,9 @@ const FILE_ID_RE = /^file-[A-Za-z0-9]+$/;
 export const GET: APIRoute = async ({ params }) => {
 	const fileId = (params.file_id ?? "").trim();
 	if (!FILE_ID_RE.test(fileId)) return j({ ok: false, error: "file_id inválido" }, 400);
-	const path = join(fileDir(fileId), "local.json");
-	const data = await leerJson<LocalFileMeta>(path, EMPTY_LOCAL_META);
+	const dir = await findFileDir(fileId);
+	if (!dir) return j({ ok: true, data: EMPTY_LOCAL_META });
+	const data = await leerJson<LocalFileMeta>(join(dir, "local.json"), EMPTY_LOCAL_META);
 	return j({ ok: true, data });
 };
 
@@ -30,7 +31,8 @@ export const PUT: APIRoute = async ({ params, request }) => {
 		actualizado: new Date().toISOString(),
 	};
 
-	const dir = fileDir(fileId);
+	const dir = await findFileDir(fileId);
+	if (!dir) return j({ ok: false, error: "directorio del file_id no encontrado, requiere backup previo" }, 404);
 	await ensureDir(dir);
 	await escribirJson(join(dir, "local.json"), data);
 	return j({ ok: true, data });

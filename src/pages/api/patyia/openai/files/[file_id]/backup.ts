@@ -48,7 +48,10 @@ export const POST: APIRoute = async ({ params, url }) => {
 	try { meta = await pedirMeta(fileId, apiKey); }
 	catch (err) { return j({ ok: false, error: `meta: ${msg(err)}` }, 500); }
 
-	const dir = fileDir(fileId);
+	if (typeof meta.created_at !== "number") {
+		return j({ ok: false, error: "meta sin created_at, requerido para folderizar por fecha", meta }, 500);
+	}
+	const dir = fileDir(fileId, meta.created_at);
 	await ensureDir(dir);
 	await escribirJson(join(dir, "meta.json"), meta);
 

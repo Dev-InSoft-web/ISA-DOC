@@ -70,9 +70,9 @@ async function persistir(estado: BackupProgress): Promise<void> {
 	await escribirJson(BACKUP_PROGRESS, estado);
 }
 
-function yaDescargado(fileId: string, filename: string): boolean {
+function yaDescargado(fileId: string, filename: string, createdAt: number): boolean {
 	const ext = safeExt(filename);
-	return existsSync(join(fileDir(fileId), `content.${ext}`));
+	return existsSync(join(fileDir(fileId, createdAt), `content.${ext}`));
 }
 
 async function ejecutarBackup(apiKey: string, files: CachedFile[], estado: BackupProgress): Promise<void> {
@@ -89,7 +89,7 @@ async function ejecutarBackup(apiKey: string, files: CachedFile[], estado: Backu
 			const f = files[idx]!;
 			estado.currentId = f.id;
 			estado.currentFilename = f.filename;
-			if (yaDescargado(f.id, f.filename)) {
+			if (yaDescargado(f.id, f.filename, f.created_at)) {
 				estado.hecho += 1;
 				estado.exitos += 1;
 				await persistir(estado);

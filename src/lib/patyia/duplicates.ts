@@ -34,18 +34,22 @@ function normalizarNombre(filename: string): string {
 	return sinExt.toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
 
-async function listarLetras(): Promise<string[]> {
+const FECHA_DIR_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+async function listarFechas(): Promise<string[]> {
 	try {
 		const entries = await readdir(FILES_ROOT, { withFileTypes: true });
-		return entries.filter((e) => e.isDirectory()).map((e) => e.name);
+		return entries
+			.filter((e) => e.isDirectory() && FECHA_DIR_RE.test(e.name))
+			.map((e) => e.name);
 	} catch {
 		return [];
 	}
 }
 
-async function listarFileDirs(letra: string): Promise<string[]> {
+async function listarFileDirs(fecha: string): Promise<string[]> {
 	try {
-		const entries = await readdir(join(FILES_ROOT, letra), { withFileTypes: true });
+		const entries = await readdir(join(FILES_ROOT, fecha), { withFileTypes: true });
 		return entries.filter((e) => e.isDirectory() && e.name.startsWith("file-")).map((e) => e.name);
 	} catch {
 		return [];
@@ -72,16 +76,16 @@ async function hashArchivo(path: string): Promise<{ hash: string; bytes: number 
 }
 
 export async function scanDuplicates(onProgress?: (done: number) => void): Promise<DuplicatesReport> {
-	const letras = await listarLetras();
+	const fechas = await listarFechas();
 	const todos: { entry: FileEntry; hash: string }[] = [];
 	let escaneados = 0;
 	let conHash = 0;
 
-	for (const letra of letras) {
-		const fileDirs = await listarFileDirs(letra);
+	for (const fecha of fechas) {
+		const fileDirs = await listarFileDirs(fecha);
 		for (const id of fileDirs) {
 			escaneados += 1;
-			const dir = join(FILES_ROOT, letra, id);
+			const dir = join(FILES_ROOT, fecha, id);
 			const contentPath = await localizarContenido(dir);
 			const meta = await leerJson<{ filename?: string }>(join(dir, "meta.json"), {});
 			const filename = meta.filename ?? id;

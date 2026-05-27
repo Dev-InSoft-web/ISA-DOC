@@ -91,7 +91,10 @@ export async function backupOne(
 	try { meta = metaPrev ?? await pedirFileMeta(fileId, apiKey); }
 	catch (err) { return { ok: false, file_id: fileId, error: `meta: ${msg(err)}` }; }
 
-	const dir = fileDir(fileId);
+	if (typeof meta.created_at !== "number") {
+		return { ok: false, file_id: fileId, error: "meta: sin created_at, requerido para folderizar por fecha" };
+	}
+	const dir = fileDir(fileId, meta.created_at);
 	const filename = meta.filename ?? fileId;
 	const ext = safeExt(filename);
 	const destino = join(dir, `content.${ext}`);
