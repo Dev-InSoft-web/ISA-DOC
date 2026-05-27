@@ -140,9 +140,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 	const TH_STYLE = `border:1px solid #80808040;padding:0.4rem;text-align:left;background:#80808015;`;
 	const TD_STYLE = `border:1px solid #80808040;padding:0.4rem;vertical-align:top;`;
 
-	const comparativa = await note(
-		"mdi:table",
-		`<table style="${TABLE_STYLE}">
+	const comparativa = `<table style="${TABLE_STYLE}">
 		<thead><tr>
 		<th style="${TH_STYLE}">Área</th>
 		<th style="${TH_STYLE}">Aspecto</th>
@@ -157,8 +155,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		<tr><td style="${TD_STYLE}">Tokens por mensaje</td><td style="${TD_STYLE}">No se registran; sólo <code>CONVERSACIONES.QTOKENS</code> agrega el total.</td><td style="${TD_STYLE}"><code>MENSAJE_METRICAS.TOKENS_IN</code> / <code>TOKENS_OUT</code> por turno y por etapa.</td></tr>
 		<tr><td style="${TD_STYLE}">Costo</td><td style="${TD_STYLE}">No se calcula ni estima.</td><td style="${TD_STYLE}"><code>COSTO_APROX</code> por mensaje vía regla de tres sobre la tarifa vigente.</td></tr>
 		</tbody>
-		</table>`,
-	);
+		</table>`;
 
 	const diagramaFases = imgFull("tk1429262-mermaid-hoja-de-ruta.png");
 
