@@ -10,7 +10,8 @@
    import { renderMermaidSvg } from "../../lib/mermaid/render.ts";
    import { isRealtimeEnabled } from "../../lib/realtimeFlag.ts";
    import { effectiveTableName, emitDropTable, emitTable, isSqlSnippetEnabled, newTableId, tableColumns, type ParsedTable } from "../../lib/tableSchema.ts";
-   import { loadPatyiaSchemaAsTables } from "../../lib/patyia/loadPatyiaSchema.ts";
+   import { clientesIsProvider } from "../../lib/sqlProviders/clientesIsProvider.ts";
+   import type { SqlDataProvider } from "../../lib/sqlProviders/types.ts";
    import SwitchComp from "$comps/especial/_Switch.svelte";
    import TreeView from "$comps/TreeViewLegacy/TreeRowView.svelte";
    import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
@@ -21,8 +22,9 @@
    import ResourceConfigSections from "./tables-browser/ResourceConfigSections.svelte";
    import { TreeSQLTablesAdapter, type TablesBrowserState } from "./tables-browser/TreeSQLTablesAdapter";
 
-   export let scope: "clientesis" | "patyia" = "clientesis";
-   $: isReadOnly = scope === "patyia";
+   export let provider: SqlDataProvider = clientesIsProvider;
+   $: providerConfig = provider.config;
+   $: isReadOnly = providerConfig.readOnly;
 
    let tables: ParsedTable[] = [];
    let loading = true;
@@ -704,15 +706,7 @@
       try {
          loading = true;
          dirty = false;
-         let list: ParsedTable[];
-         if (scope === "patyia") {
-            list = await loadPatyiaSchemaAsTables();
-         } else {
-            const r = await fetch("/api/tables");
-            const data = (await r.json()) as { ok?: boolean; tables?: ParsedTable[]; error?: string };
-            if (!r.ok || !data.ok || !data.tables) throw new Error(data.error ?? `HTTP ${r.status}`);
-            list = data.tables;
-         }
+         const list = await provider.loadTables();
          // Backfill de id estable: tablas legacy persistidas antes de la migración
          // llegan sin `id`. Asignamos uno aquí y marcamos `dirty` para round-tripear
          // los ids al server en el siguiente save.
@@ -724,7 +718,14 @@
             }
          }
          setTables(list);
-         if (backfilled && scope === "clientesis") {
+         if (provider.buildSyntheticDomains) {
+            const syn = provider.buildSyntheticDomains(list);
+            if (syn) {
+               adapter.setDomains(syn, false);
+               domains = adapter.domains;
+            }
+         }
+         if (backfilled && !providerConfig.skipBackfillSave) {
             dirty = true;
             void save(true);
          }
@@ -736,18 +737,11 @@
    }
 
    async function save(silent = false): Promise<void> {
-      if (scope === "patyia") { dirty = false; return; }
+      if (providerConfig.readOnly) { dirty = false; return; }
       if (saving) return;
       saving = true;
       try {
-         const r = await fetch("/api/tables", {
-            method: "PUT",
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({ tables }),
-            keepalive: true,
-         });
-         const data = (await r.json()) as { ok?: boolean; error?: string };
-         if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
+         await provider.saveTables(tables);
          if (!silent) toastSuccess(`Tablas guardadas (${tables.length})`);
          dirty = false;
          broadcastTablesUpdated();
@@ -851,7 +845,7 @@
       };
 
       const emittedEntities = new Set<string>();
-      const hideColumns = scope === "patyia";
+      const hideColumns = providerConfig.hideColumnsInDiagram;
 
       for (const t of tables) {
          const ent = sanitizeMermaidId(effectiveTableName(t));
@@ -922,7 +916,7 @@
       return lines.join("\n");
    }
 
-   $: DER_DOMAIN = scope === "patyia" ? "patyia" : "clientesis";
+   $: DER_DOMAIN = providerConfig.derDomain;
 
    async function sha1Hex(s: string): Promise<string> {
       const buf = new TextEncoder().encode(s);
@@ -1017,7 +1011,7 @@
 
    onMount(() => {
       void (async () => {
-         if (scope !== "patyia") {
+         if (!providerConfig.skipStatePersistence) {
             await loadStateFromServer();
             loadNodeInfo();
             domains = adapter.reloadFromCache();
@@ -1029,7 +1023,7 @@
       // recargamos el estado para reflejar los cambios remotos. No recargamos
       // si hay edición sucia local pendiente para evitar perder cambios no
       // confirmados — el flush por `pagehide` cubrirá el caso de cierre.
-      if (typeof window !== "undefined" && typeof BroadcastChannel !== "undefined") {
+      if (typeof window !== "undefined" && typeof BroadcastChannel !== "undefined" && !providerConfig.skipStatePersistence) {
          tabId = `tab_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
          tablesChannel = new BroadcastChannel(TABLES_BROADCAST_CHANNEL);
          tablesChannel.onmessage = (ev) => {
@@ -1048,31 +1042,28 @@
       // Sincronización del estado de codegen (`_state.json`): cuando otra
       // pestaña reordena dominios/prefijos, recibimos
       // la notificación y rehidratamos los dominios sin tocar las tablas.
-      const offStateChanged = onStateChanged(() => {
-         if (!isRealtimeEnabled()) return;
-         if (dirty || saving) return;
-         void reloadStateFromServer().then(() => {
-            domains = adapter.reloadFromCache();
+      const offStateChanged = providerConfig.skipStatePersistence
+         ? () => {}
+         : onStateChanged(() => {
+            if (!isRealtimeEnabled()) return;
+            if (dirty || saving) return;
+            void reloadStateFromServer().then(() => {
+               domains = adapter.reloadFromCache();
+            });
          });
-      });
       // Asegura persistencia del save de tablas ante refresh/cierre repentino.
       // Si hubo cambios pendientes (`dirty`), envía un `sendBeacon` con los
       // `tables` actuales como respaldo; el backend trata PUT igual que POST
       // para este endpoint via la lectura del body JSON.
       const flushTablesOnUnload = (): void => {
-         if (!dirty) return;
+         if (!dirty || providerConfig.readOnly) return;
          try {
             const blob = new Blob([JSON.stringify({ tables })], { type: "application/json" });
             if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
                navigator.sendBeacon("/api/tables", blob);
                return;
             }
-            void fetch("/api/tables", {
-               method: "PUT",
-               headers: { "content-type": "application/json" },
-               body: JSON.stringify({ tables }),
-               keepalive: true,
-            });
+            void provider.saveTables(tables);
          } catch {
             /* noop */
          }
