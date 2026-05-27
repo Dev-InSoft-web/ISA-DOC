@@ -1,0 +1,354 @@
+﻿<!--
+   Autor: SAMAYA
+   Revisor: SAMAYA
+	 Fecha creación: 10/05/2018
+   Fecha modificación: 10/05/2018
+-->
+<head>
+	<link rel="stylesheet" type="text/css" href="R:\120_Recursos_CP\Estilos CSS ContaPyme\EstiloBase.css"/>
+</head>
+<body ancho="460" alto="450">
+	<div class="masinfo">
+		<h1>Uso del mes en el periodo de liquidación</h1>
+
+		<div class="texto_descripcion">		
+			El campo "Mes" indicado para el periodo de liquidación, hace referencia al mes del periodo (<i>Semestre, trimestre, bimestre, etc.</i>) en el cual se debe facturar el concepto, este campo <u>NO</u> se debe confundir con los meses del año. 
+
+			<p>
+				Los posibles valores a asignar a este campo, dependen de la periodicidad seleccionada (<i>Consulte <a href="[510]GridFactBloqConceptosIngreso_Col009.html">aquí</a> la ayuda del campo periodicidad</i>). 
+			</p>
+
+			<p>
+				Dependiendo de la vigencia asignada al concepto mediante los campos <i>fecha inicial</i> y <i>fecha final</i>, la <i>periodicidad</i> y <i>mes</i> dados para el periodo de liquidación y la <i>fecha del documento</i>, podrá variar la cantidad de facturas u operaciones a emitir, debido a que el último periodo podrá tener menos cantidad de meses que los periodos anteriores.
+			</p>
+
+			<p>
+				Si un concepto tiene vigencia de <i>siete meses</i> (<i>Desde el "01-Ene-2018" hasta el "31-Jul-2018"</i>) y la periodicidad dada es bimestral, el último bimestre solamente estará conformado por un mes y esto podrá causar que varie la cantidad de facturas u operaciones a emitir, según la configuración realizada por el usuario. 
+			</p>
+
+		</div>
+
+
+		<div class="titulo_ejemplo">Ejemplo 1</div>
+		<div class="texto_ejemplo">
+			Si un concepto está vigente desde el "01-Ene-2018" hasta el "31-Oct-2018" y tiene una periodicidad trimestral, el último periodo solamente tendrá un mes. Esto se da porque según la vigencia dada, son un total de diez meses a facturar y el último trimestre solamente estará conformado por un mes, que será el mes de octubre. <br><br>
+			Listado de periodos: 
+			<table style="text-align: center;">
+				<thead>
+					<tr>						
+						<th rowspan="2" style="width: 130px;">Periodo Nro.</th>							
+						<th colspan="2">Periodo</th>							
+					</tr>
+					<tr>
+						<th>Desde</th>
+						<th>Hasta</th>
+					</tr>
+				</thead>
+				<tbody>	
+					<tr>
+						<td>Uno</td>
+						<td>01-Ene-2018</td>
+						<td>31-Mar-2018</td>
+					</tr>
+					<tr>
+						<td>Dos</td>
+						<td>01-Abr-2018</td>
+						<td>30-Jun-2018</td>
+					</tr>
+					<tr>
+						<td>Tres</td>
+						<td>01-Jul-2018</td>
+						<td>30-Sep-2018</td>
+					</tr>
+					<tr>
+						<td>Cuatro<br><i>Este periodo sólo se<br>conforma de un mes</i></td>
+						<td>01-Oct-2018</td>
+						<td>31-Oct-2018</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<p>
+				En la configuración de los conceptos, para el tipo de periodicidad trimestral, se podrá seleccionar entre el <b>mes uno</b> y el <b>mes tres</b> del periodo (<i>Ver <a href="[520]GridFactBloqConceptosIngreso_Col010.html">Periodo de liquidación - Mes</a></i>).		
+			</p>
+			<p>
+				Según la vigencia dada anteriormente (Desde el "01-Ene-2018" hasta el "31-Oct-2018") y suponiendo que la facturación debe ser emitida para el último día del mes, las fechas en las cuales serán emitidas las facturas para cada uno de meses disponibles (1, 2 o 3) del trimestre serán: 			
+
+				<table style="text-align: center;">
+					<thead>
+						<tr>
+							<th rowspan="2" style="width: 50px;">Factura<br>No.</th>							
+							<th colspan="2">Periodo (Trimestre)</th>							
+							<th colspan="3">Mes del<br>periodo</th>							
+							<!--th rowspan="2">Fecha del<br>documento</th-->	
+						</tr>
+						<tr>
+							<th>Desde</th>
+							<th>Hasta</th>
+							<th>Mes 1 / <br>Fecha del doc.</th>
+							<th>Mes 2 / <br>Fecha del doc.</th>
+							<th>Mes 3 / <br>Fecha del doc.</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>1.</td>
+							<td>Abr-2018</td>
+							<td>Jun-2018</td>
+							<td><b>Abril</b><br>30-Abr-2018</td>
+							<td><b>Mayo</b><br>31-May-2018</td>
+							<td><b>Junio</b><br>30-Jun-2018</td>
+						</tr>
+						<tr>
+							<td>2.</td>
+							<td>Jul-2018</td>
+							<td>Sep-2018</td>
+							<td><b>Julio</b><br>31-Jul-2018</td>
+							<td><b>Agosto</b><br>31-Ago-2018</td>
+							<td><b>Septiembre</b><br>30-Sep-2018</td>							
+						</tr>
+						<tr>
+							<td>3.</td>
+							<td>Oct-2018</td>
+							<td>Dic-2018</td>
+							<td><b>Octubre</b><br>31-Oct-2018</td>
+							<td><b>Ya no está<br>vigente</b></td>
+							<td><b>Ya no está<br>vigente</b></td>
+						</tr>						
+					</tbody>
+				</table>
+			</p>
+			<p>
+				Dependiendo del mes del periodo (Trimestre) que se seleccione, podrá varia la cantidad de facturas a generar:
+			</p> 
+			<ul style="padding: 8px 8px 8px 30px;">
+				<li>
+					Al seleccionar como periodo de liquidación el <b>mes uno</b>, se generarán <b>tres facturas</b> en las fechas: 30-Abr-2018, 31-Jul-2018 y 31-Oct-2018.<br><br>
+				</li>
+				<li>
+					Al seleccionar como periodo de liquidación el <b>mes dos</b>, se generarán <b>dos facturas</b> en las fechas: 31-May-2018 y 31-Ago-2018.<br><br>
+				</li>
+				<li>
+					Al seleccionar como periodo de liquidación el <b>mes tres</b>, se generarán <b>dos facturas</b> en las fechas: 30-Jun-2018 y 30-Sep-2018.<br><br>
+				</li>			
+			</ul>			
+		</div>
+
+		<div class="titulo_ejemplo">Ejemplo 2</div>
+		<div class="texto_ejemplo">
+			<p>				
+				Si un concepto está vigente desde el "01-Jul-2018" hasta el "31-Dic-2019", los periodos que habrá para cada una de los tipos de periodicidades serán: 
+			</p>
+			<p>
+				Note que los últimos periodos de ciertos tipos de periodicidad, <u>NO</u> tienen todos los meses que lo conformarían, debido a la vigencia dada para el concepto. 
+			</p>
+
+			<table style="text-align: center; table-layout: fixed;">
+	            <colgroup>
+	                <col style="width: 90px;">
+	                <col style="/*width: 30px;*/">
+	                <col style="/*width: 20px;*/">
+	                <col style="width: 155px;">
+	            </colgroup>
+				<thead>
+					<tr>						
+						<th rowspan="2">Periodo<br>Nro.</th>							
+						<th colspan="2">Periodo</th>							
+						<th rowspan="2">Cant. de meses<br>en el periodo</th>							
+					</tr>
+					<tr>
+						<th>Desde</th>
+						<th>Hasta</th>
+					</tr>
+				</thead>
+				<tbody>				
+					<tr id="itp-anual"><th colspan="4">Tipo de periodicidad: Anual</th></tr>
+					<tr>
+						<td>Uno</td>
+						<td>01-Jul-2018</td>
+						<td>30-Jun-2019</td>
+						<td>12 meses</td>
+					</tr>
+					<tr>
+						<td>Dos</td>
+						<td>01-Jul-2019</td>
+						<td>31-Dic-2019</td>
+						<td><i>Este periodo se compone<br>sólo de 6 meses</i></td>
+					</tr>
+
+					<tr id="itp-semestral"><th colspan="4">Tipo de periodicidad: Semestral</th></tr>
+					<tr>						
+						<td>Uno</td>
+						<td>01-Jul-2018</td>
+						<td>31-Dic-2018</td>
+						<td>6 Meses</td>
+					</tr>
+					<tr>
+						<td>Dos</td>
+						<td>01-Ene-2019</td>
+						<td>30-Jun-2018</td>
+						<td>6 Meses</td>
+					</tr>
+					<tr>
+						<td>Tres</td>
+						<td>01-Ago-2019</td>
+						<td>31-Dic-2019</td>
+						<td><i>Este periodo se compone<br>sólo de 5 meses</i></td>
+					</tr>
+
+					<tr id="itp-cuatrimestral"><th colspan="4">Tipo de periodicidad: Cuatrimestral</th></tr>
+					<tr>						
+						<td>Uno</td>
+						<td>01-Jul-2018</td>
+						<td>31-Oct-2018</td>
+						<td>4 Meses</td>
+					</tr>
+					<tr>
+						<td>Dos</td>
+						<td>01-Nov-2019</td>
+						<td>28-Feb-2019</td>
+						<td>4 Meses</td>
+					</tr>
+					<tr>
+						<td>Tres</td>
+						<td>01-Mar-2019</td>
+						<td>31-Jun-2019</td>
+						<td>4 Meses</td>
+					</tr>
+					<tr>						
+						<td>Cuatro</td>
+						<td>01-Jul-2019</td>
+						<td>31-Oct-2019</td>
+						<td>4 Meses</td>
+					</tr>
+					<tr>												
+						<td>Cinco</td>
+						<td>01-Nov-2019</td>
+						<td>31-Dic-2019</td>
+						<td><i>Este periodo se compone<br>sólo de 2 meses</i></td>
+					</tr>
+
+					<tr id="itp-trimestral"><th colspan="4">Tipo de periodicidad: Trimestral</th></tr>
+					<tr>						
+						<td>Uno</td>
+						<td>01-Jul-2018</td>
+						<td>30-Sep-2018</td>
+						<td>3 Meses</td>
+					</tr>
+					<tr>
+						<td>Dos</td>
+						<td>01-Oct-2019</td>
+						<td>31-Dic-2019</td>
+						<td>3 Meses</td>
+					</tr>
+					<tr>
+						<td>Tres</td>
+						<td>01-Ene-2019</td>
+						<td>31-Mar-2019</td>
+						<td>3 Meses</td>
+					</tr>
+					<tr>						
+						<td>Cuatro</td>
+						<td>01-Abr-2019</td>
+						<td>30-Jun-2019</td>
+						<td>3 Meses</td>
+					</tr>
+					<tr>						
+						<td>Cinco</td>
+						<td>01-Jul-2019</td>
+						<td>30-Sep-2019</td>
+						<td>3 Meses</td>
+					</tr>
+					<tr>						
+						<td>Seis</td>
+						<td>01-Oct-2019</td>
+						<td>31-Dic-2019</td>
+						<td>3 Meses</td>
+					</tr>
+				
+					<tr id="itp-bimestral"><th colspan="4">Tipo de periodicidad: Bimestral</th></tr>
+					<tr>						
+						<td>Uno</td>
+						<td>01-Jul-2018</td>
+						<td>31-Ago-2018</td>
+						<td>2 Meses</td>
+					</tr>
+					<tr>
+						<td>Dos</td>
+						<td>01-Sep-2018</td>
+						<td>31-Oct-2018</td>
+						<td>2 Meses</td>
+					</tr>
+					<tr>
+						<td>Tres</td>
+						<td>01-Nov-2018</td>
+						<td>31-Dic-2018</td>
+						<td>2 Meses</td>
+					</tr>
+					<tr>
+						<td>Cuatro</td>
+						<td>01-Ene-2019</td>
+						<td>29-Feb-2019</td>
+						<td>2 Meses</td>
+					</tr>
+					<tr>
+						<td>Cinco</td>
+						<td>01-Mar-2019</td>
+						<td>30-Abr-2019</td>
+						<td>2 Meses</td>
+					</tr>
+					<tr>
+						<td>Seis</td>
+						<td>01-May-2019</td>
+						<td>30-Jun-2019</td>
+						<td>2 Meses</td>
+					</tr>
+					<tr>
+						<td>Siete</td>
+						<td>01-Jul-2019</td>
+						<td>31-Ago-2019</td>
+						<td>2 Meses</td>
+					</tr>
+					<tr>
+						<td>Ocho</td>
+						<td>01-Sep-2019</td>
+						<td>31-Oct-2019</td>
+						<td>2 Meses</td>
+					</tr>
+					<tr>
+						<td>Nueve</td>
+						<td>01-Nov-2019</td>
+						<td>31-Dic-2019</td>
+						<td>2 Meses</td>
+					</tr>
+
+					<tr id="itp-bimestral"><th colspan="4">Tipo de periodicidad: Mensual, quincenal y semanal</th></tr>
+					<tr>
+						<td colspan="4"><i>Para estos tipos de periodicidad no aplica el campo "Mes"</i></td>
+					</tr>
+				</tbody>
+			</table>					
+		</div>
+
+		<div class="titulo_observaciones">Observaciones</div>
+		<div class="texto_observaciones">			
+			<b>1</b>. Es importante determinar en la configuración de los conceptos el mes en el cual se va a liquidar el concepto cuando las periodicidades seleccionadas son <i>anual, semestral, cuatrimestral, trimestral o bimestral</i>, ya que de esto depende la cantidad total de facturas a emitir. 
+
+			<p>
+				<b>2</b>. Mediante el botón <img iconindex="513" ruta="ruta-imagenes">, podrá consultar el total de facturas u operaciones a emitir y las fechas de cada una de ellas. Estas fechas son calculadas dependiendo de la vigencia, periodo de liquidación y fecha del documento configurados. 
+			</p>
+		</div>
+
+		<div class="texto_relacionados">
+			<label class="titulo_relacionados">Temas relacionados: </label>
+			<ul style="padding-left: 20px;">
+				<li><a href="[480]GridFactBloqConceptosIngreso_Col006.html">Vigencia - Fecha inicial</a></li>
+				<li><a href="[490]GridFactBloqConceptosIngreso_Col007.html">Vigencia - Fecha final</a></li>
+				<li><a href="[510]GridFactBloqConceptosIngreso_Col009.html">Periodo de liquidación - Periodicidad</a></li>
+				<li><a href="[520]GridFactBloqConceptosIngreso_Col010.html">Periodo de liquidación - Mes</a></li>
+				<li><a href="[530]GridFactBloqConceptosIngreso_Col011.html">Fecha del documento</a></li>
+			</ul>          
+		</div>
+
+	</div>
+</body>

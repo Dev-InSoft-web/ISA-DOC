@@ -1,0 +1,188 @@
+﻿<!-- 
+   Autor: DOCAMPO
+   Revisor: DOCAMPO
+   Fecha creación: Abril 2018
+   Fecha modificación: Mayo 2018		
+   Modificado por: SAmaya
+   -->
+<head>
+   <link rel="stylesheet" type="text/css" href="R:\120_Recursos_CP\Estilos CSS ContaPyme\EstiloBase.css"/>
+</head>
+<body alto="550" ancho="600">
+   <div class="masinfo">
+
+      <h1>Cálculo personalizado de datos de la operación</h1>
+
+      <p>
+         Algunas columnas del listado de productos de la operación pueden calcularse automáticamente usando una expresión definida 
+         por el usuario. Una expresión de cálculo en [CONTAPYME], se puede definir como una cadena de texto formada por una o varias 
+         instrucciones, que al ser evaluadas generan un único dato resultante. Ejemplo:<br>
+         <p><b>Cantidad de cajas = Cantidad de producto / 10.</b></p>
+         <p>
+            La característica principal de estas expresiones es que pueden combinarse para los cálculos, datos de la operación, de los productos y del tercero. Además, se cuenta con una gran variedad de operadores, instrucciones y funciones de lenguajes de programación como <i>Pascal</i>, <i>JavaScript</i>, <i>C++</i> y <i>Visual Basic</i>, así como las funciones de ContaExcel.
+         </p>
+      </p>
+      
+      <p class="texto_configuracion">
+         Para mayor información sobre las funciones de <i>ContaExcel</i> y cómo usarlas, ingrese a <span class="ruta_config">[Editor de expresiones para el cálculo > Menú > Ayuda > Funciones ContaExcel]</span>
+      </p>
+
+      <h2>Componentes de la herramienta para editar expresiones de cálculo</h2>
+      <img src="expresiones_calculo_config1.png">
+      <p>
+         La configuración de una expresión de cálculo se hace mediante un editor especialmente diseñado para facilitar su uso. Estos
+         son los elementos principales de la herramienta:
+      </p>
+      <div class="parrafo_margen">
+         <p>
+            <img ruta="ruta-imagenes" iconindex="2">
+            Abre el editor de expresiones ampliado para permitir la edición del algoritmo. En la ventana que se abre, se podrá acceder a una ayuda más completa sobre las expresiones, dando clic en <span class="ruta_config">[Menú > Ayuda]</span>.
+         </p>
+
+         <p>
+            <img ruta="ruta-imagenes" iconindex="691">
+            Al activar este botón, indica al sistema que el resultado de la expresión es un valor alfanumérico. Si no está presionado, 
+            el resultado se trata como un valor numérico. Además, todos los valores de las variables que se usen dentro de la expresión tendrán 
+            como valor por defecto el cero (0) cuando éstos estén vacíos o sin asignar.
+         </p>
+      </div>
+
+      <h2>Resumen de variables, funciones, operadores e instrucciones que se pueden usar en expresiones</h2>
+      <table>
+         <tbody>
+            <tr>
+               <th>Descripción de variables/funciones/operadores</th>
+               <th>Ejemplo</th>
+            </tr>
+            <tr>
+               <td>Datos de encabezado de la operación</td>
+               <td>Código de tipo de doc. soporte, número de doc., fecha, moneda, detalle, etc.</td>
+            </tr>
+            <tr>
+               <td>Información del renglón de la factura</td>
+               <td>Código del producto, unidad, bodega, precio, cantidad, descuento, etc.</td>
+            </tr>
+            <tr>
+               <td>Datos del producto del renglón de la factura</td>
+               <td>Nombre, peso, volumen, referencia fabricante, marca, datos adicionales, etc.</td>
+            </tr>
+            <tr>
+               <td>Datos del tercero principal (cliente, proveedor, responsable, etc.) de la operación</td>
+               <td>Nombre, apellido, cargo, ciudad, país, categoría, clasificación, datos adicionales, etc.</td>
+            </tr>
+            <tr>
+               <td>Operadores matemáticos</td>
+               <td>+, -, *, /</td>
+            </tr>
+            <tr>
+               <td>Funciones matemáticas</td>
+               <td>Sqrt, Ln, Exp, Sin, Cos, Tan, Pi, Round, Trunc, Int, Frac, etc.</td>
+            </tr>
+            <tr>
+               <td>Funciones de ContaExcel</td>
+               <td>NombreTercero, SaldoCuenta, MovCuenta, TasaCambio, etc.</td>
+            </tr>
+            <tr>
+               <td>Funciones generales</td>
+               <td>IntToStr, FloatToStr, DateToStr, StrToInt, Length, Copy, Trim, etc.</td>
+            </tr>
+         </tbody>
+      </table>
+
+      <p class="texto_configuracion">
+         Para acceder a una ayuda más completa acerca de las expresiones para el cálculo, dé clic en el botón editar expresión (<img ruta="ruta-imagenes" iconindex="2">) y en la ventana que se mostrará, vaya a <span class="ruta_config">[Menú > Ayuda]</span>.
+      </p>
+
+      <div class="titulo_ejemplo">Ejemplo:</div>
+      <p class="texto_ejemplo">
+         En una empresa de encomiendas y transporte de mercancía, requiere almacenar un dato que contenga
+         el valor del seguro para el paquete transportado. Este valor se calcula como el 1% del avalúo de la mercancía, 
+         el cual será especificado en una columna adicional de la operación de ventas (Valor 1) como "Vr. declarado". Este seguro 
+         solo es cobrado a los paquetes avaluados en más de $100.000. El valor del seguro se almacenará también en una columna 
+         adicional (Valor 2) como "Vr. seguro".
+      </p>
+
+      <p class="texto_ejemplo">
+         Para implementar esta solución, se puede usar una expresión que calcule automáticamente el seguro y lo registre en la
+         columna correspondiente, de la siguiente forma:
+      </p>
+
+      <p>
+         <span class="texto_ejemplo">
+            <b>1. </b> Debemos establecer una condición para que sólo se calcule el dato si el "Vr. declarado" es superior a 100.000. Para esto usamos la cláusula "if":<br>
+         </span>
+         <label class="tabNone parrafo_margen codigo_html"><b>if</b> Vr. declarado > 100000 <b>then ...</b></label> 
+      </p>
+
+      <p>
+         <span class="texto_ejemplo">
+            <b>2. </b> El cálculo del seguro se establecerá como:<br>
+         </span>
+         <label class="tabNone parrafo_margen codigo_html">Seguro = Vr. declarado x 0.01</label>
+      </p>
+
+      <p>
+         <span class="texto_ejemplo">
+            <b>3. </b>Ahora, como "Vr. declarado" va a ser especificado en el campo "Valor 1" del listado de productos, usamos la variable ING1VALOR1 y 
+            en la configuración de cálculo personalizado de la columna "Vr. declarado" (Valor 2), especificamos la siguiente expresión:<br>
+         </span>
+         <label class="tabNone parrafo_margen codigo_html"><b>if</b> ING1VALOR1 > 100000 <b>then</b> Result := ING1VALOR1 * 0.01;</label>
+      </p>
+      
+      <p class="texto_ejemplo">
+         En palabras la expresión quiere decir lo siguiente:<br>
+         Si el dato de valor 1 (Vr. declarado) es mayor a $100.000, entonces el resultado es el dato de valor 1 (Vr. declarado) multiplicado por 0.01, es decir, 10% del valor 1 (Vr. declarado).
+      </p>
+
+      <img src="expresiones_calculo_config2.png">
+      <p>
+         Luego de presionar el botón Aceptar para guardar la configuración de la operación, en todas las operaciones nuevas y
+         existentes al especificar un valor en la columna "Valor 1", el sistema ejecutará el cálculo de la expresión para la
+         columna "Valor 2" y registrará automáticamente el resultado.
+      </p>
+      <div style="text-align: center;">
+         <img src="expresiones_calculo_config3.jpg">
+      </div>
+
+      
+      <div class="titulo_observaciones">Observaciones</div>      
+      <div class="texto_observaciones">
+         <p class="list-item">
+            Si la expresión está compuesta por una sola instrucción, no es necesario terminarla con ";" al final. Tampoco es necesario
+            asignar el resultado a la variable de respuesta <span class="fuente-codigo"><b>Result</b></span>. Ejemplo:
+            <div class="parrafo_margen codigo_html">
+               <label class="tabNone comentarios">La expresión: </label> 
+               <label class="tabNone">Result:= PROD_QPESO * 10;</label><br>
+               <label class="tabNone comentarios">Puede resumirse en: </label> 
+               <label class="tabNone">PROD_QPESO * 10</label>
+            </div>
+         </p>
+         <p class="list-item">
+            Cuando la expresión esté compuesta por varias instrucciones, se deben separar con ";" al final de cada instrucción. Ejemplo:
+            <div class="parrafo_margen codigo_html">
+               <label class="tabNone">Result := PROD_QPESO * 10;</label>
+               <label class="tabNone">Result := Result * PROD_MPRECIO;</label>
+            </div>
+         </p>
+         <p class="list-item">
+            No es necesario especificar las instrucciones <span class="fuente-codigo"><b>begin ... end</b></span>. para delimitar la expresión, siempre y cuando no se declaren variables o se construyan funciones o procedimientos.
+         </p>
+         <p class="list-item">Siempre que la expresión se componga por más de una instrucción, se debe asignar el resultado a <span class="fuente-codigo"><b>Result</b></span>.</p>
+      </div>
+      
+
+      <div class="titulo_configuracion">Configuración</div>     
+      <div class="texto_configuracion">     
+         <p class="">
+            La configuración de columnas para datos adicionales en las operaciones de inventarios puede 
+            modificarla ingresando a <span class="ruta_config">[Catálogo de elementos de inventario > Configuraciones del 
+            catálogo > Configuraciones generales > Columnas adicionales en las operaciones de inventarios]</span>
+         </p>
+         <p class="">Para ingresar a la configuración de cálculo personalizado de datos en las operaciones de inventarios,
+            ingrese a <span class="ruta_config">[Manejador de operaciones > Crear o modificar una operación de inventarios > 
+            Menú Operación > Configurar operación > Campos de la operación > Cálculo personalizado de datos de ...]</span>
+         </p>
+      </div>
+
+   </div>
+</body>

@@ -1,0 +1,9113 @@
+# ad_activos.md
+> **Propósito:** Explicar el funcionamiento del módulo **Activos**, detallando ventanas, campos, opciones y comportamientos del sistema.
+> **Tipo de documento:** Conocimiento base (AD)
+> **Función:** Descripción técnica y funcional del módulo
+> **Versión:** 1.0
+> **Fecha:** 14/11/2025
+
+---
+
+# Acerca del módulo
+
+## MÓDULO ACTIVOS
+
+##  Explicación conceptual
+
+Módulo que permite el manejo y automatización contable bajo los estándares
+NIIF de los activos de la empresa; incluye asistentes especializados para
+registrar por cada activo: compras, ventas, revaluaciones, deterioros,
+depreciaciones, etc. \(Evita hacer cálculos manuales cuando se realice alguna
+de las acciones anteriormente mencionadas\).
+
+Una gran ventaja es que el cálculo de la depreciación y en especial el asiento
+contable que esta genera, el sistema \[ContaPyme\] lo realiza de manera
+automática.
+
+**Activo:** Bien de larga vida \(tangible o intangible\), que no puede
+convertirse en dinero líquido a corto plazo, el cual fue adquirido para ser
+utilizado en las operaciones de la empresa y no está destinado para la venta.
+
+**Inventario:** Bienes o mercancía que se adquiere para vender a los clientes
+y en algunos casos \(según el objetivo empresarial\) para ser consumidos
+dentro de los procesos productivos en la empresa.
+
+**Gasto:** Costo de los bienes que se consumen en los procesos que se realizan
+al interior de la empresa para generar los ingresos. Ej. Papelería,
+implementos de escritorio \(lapiceros, calculadoras, etc.\)
+
+## Grupos de activos
+
+Catálogo que permite la configuración de un conjunto de acciones, cuentas y
+comportamientos sobre activos que tienen características físicas y contables
+similares. Permite agrupar varios activos con la finalidad de poder ajustar
+sus configuraciones contables de una manera rápida y sencilla, evitando la
+configuración individual por cada activo.
+
+Cuando se crea un activo, se debe indicar a cuál grupo de activos pertenece;
+una vez asignado el grupo al activo, el sistema sabrá cuáles son las cuentas
+contables que se deben afectar al momento de hacer operaciones como: compras,
+depreciaciones, valorizaciones, deterioros, registro de utilidad o pérdida por
+baja o por venta del activo, etc.
+
+
+Ejemplos:
+
+  * Equipo de cómputo y comunicaciones.
+  * Flota y equipo de transporte.
+  * Equipo de oficina.
+  * Acciones.
+  * Propiedades de inversión.
+  * Marcas y patentes.
+  * Etc.
+
+
+
+## Catálogo de activos
+
+Catálogo donde se crea la ficha técnica por cada activo que se tiene en la
+empresa para posteriormente realizar la compra o cargue del activo en la
+contabilidad y permitir la automatización contable de las depreciaciones,
+deterioros, valorizaciones, etc. Cada activo se debe relacionar con un grupo
+de activo para que herede las configuraciones que éste tiene.
+
+Este catálogo presenta el listado de todos los activos que la empresa posee y
+permite para cada activo consultar toda su historia contable.
+
+
+Ejemplos:
+
+  * Computador Dell 1580 \(Relacionado con el grupo Equipo cómputo y comunicaciones\).
+  * Impresora Láser \(Relacionado con el grupo Equipo cómputo y comunicaciones\).
+  * Vehículo Toyota KII-730 \(Relacionado con el grupo Equipo flota y equipo transporte\).
+  * Escritorio sala juntas \(Relacionado con el grupo Equipo de oficina\).
+  * Bodega centro \(alquilada\) \(Relacionada con el grupo Propiedad de inversión\).
+
+
+
+## Relación con otros módulos
+
+  * **Contabilidad:** cuando se registran transacciones con el activo como: compra, depreciación, deterioro, venta, baja, etc., se generan movimientos contables en las cuentas configuradas dentro del grupo al que pertenece el activo y se afectan los estados financieros de la empresa.
+
+
+  * **Cartera y proveedores:** cuando realiza la compra del activo a crédito, generando una cuenta por pagar al proveedor o cuando se realiza una posible venta de un activo a crédito, generando una cuenta por cobrar al cliente.
+
+
+  * **Costos de producción:** cuando la depreciación del activo no afecta un gasto en la empresa sino un proceso productivo, esta depreciación puede ser tenida en cuenta como un costo directo o indirecto \(dependiendo de dónde se haya imputado\) en la producción.
+
+
+## Operaciones que incluye el módulo \(automatización contable\)
+
+
+
+## Cargue de saldos actualizados de activos
+
+Permite registrar por primera vez la información contable de cada activo
+\(actualizada a la fecha de la operación\). Información como: fecha de compra,
+valor de compra, depreciación acumulada, vida útil restante, etc.
+
+## Compra/Mayor valor activos e inversiones
+
+Permite registrar la compra del activo o cargarle mayores valores a un activo
+ya existente en la contabilidad.
+
+## Acciones automáticas de fin de mes > Depreciación activos y amortización
+diferidos
+
+Realiza el cálculo y contabilización automática de la depreciación o
+amortización de los activos fijos y diferidos que la empresa tiene registrados
+en la contabilidad. Permite calcular la depreciación bajo diferentes tipos:
+línea recta, unidades de uso o producción, mensual acelerada, doble línea
+recta.
+
+## Venta de activos
+
+Permite registrar la venta total o parcial de un activo, calcula y contabiliza
+la utilidad o pérdida por la venta de dicho activo.
+
+## Revaluación de activos
+
+Permite registrar revaluaciones o incrementar el valor en libros del activo
+por mejoras o cambios en el funcionamiento, también permite hacer
+devaluaciones o disminución del valor en libros.
+
+## Deterioro de activos
+
+Permite calcular y registrar deterioro, desgaste o empeoramiento de la calidad
+o funcionalidad de un activo. También permite calcular y registrar la
+reversión del deterioro en el mismo o diferente período contable al que se
+registró el deterioro inicial.
+
+## Reclasificación de activos
+
+Permite re expresar o modificar información del activo como: grupo al que
+pertenece, tipo de depreciación, valor residual y vida útil restante. Una vez
+modificada esta información \[ContaPyme\] guardará la información histórica
+del activo y continuará la automatización de los registros contables del
+activo según los cambios indicados.
+
+## Baja de activos e inversiones
+
+Permite registrar la salida \(baja\) del activo de la contabilidad de la
+empresa, se usa cuando el activo que aún tenía saldo en libros y por ejemplo
+sufrió una pérdida total, robo u ocurrió un siniestro que afectó la
+funcionalidad del mismo.
+
+## Planilla uso de maquinaria y equipos
+
+Permite registrar la cantidad de uso de un activo en un periodo; muy útil para
+calcular la depreciación de un activo el cual tiene configurado el tipo de
+depreciación por “unidades de uso o unidades de producción”.
+
+## Conversión de activos a NIIF
+
+Permite realizar la modificación de la información contable que tiene un
+activo en la contabilidad local, para ser re expresada a los requerimientos de
+la norma internacional NIIF. Solo se utiliza una vez y es cuando una empresa
+ya tiene registrada información contable de cada activo bajo la norma local
+dentro de \[ContaPyme\] y desea hacer la conversión o adopción de las NIIF en
+la empresa.
+
+## Informes, consultas y exploradores del módulo
+
+Este módulo cuenta con informes que permiten conocer para un grupo de activos
+o todo el listado de activos información como: valor de compra, depreciación
+acumulada y valor en libros \(según la fecha de consulta\).
+
+Además ofrece consultas y exploradores dinámicos que permiten analizar todo el
+movimiento contable de cada activo, el historial completo desde su creación en
+la contabilidad, muy útil para auditar los registros de cada activo al
+interior de la empresa.
+
+## Requisitos para funcionamiento del módulo
+
+Requiere del módulo de contabilidad, pues las acciones como cálculo de
+depreciación, deterioro, valorizaciones, ventas o bajas implican cambios
+contables en el activo que se verán reflejados en su ficha técnica y en los
+estados financieros.
+
+
+
+
+# Acerca de ventana
+
+##  CATÁLOGO DE ACTIVOS
+
+##  Objetivos
+
+  * Crear la ficha técnica del activo para que pueda ser registrado en la contabilidad.
+  * Permitir la configuración personalizada del tipo de contabilización del activo \(si este aún no se ha cargado en la contabilidad\).
+  * Presentar la ficha técnica contable del activo \(una vez ya se tiene cargado en la contabilidad el activo\).
+
+
+
+## Ejemplo de información a registrar
+
+Al momento de crear la ficha técnica del activo, la información más relevante
+a registrar es el grupo y la cuenta contable a la cual pertenece el activo.
+
+Ejemplo:
+
+Si se compra un activo de transporte, éste se relaciona con el grupo “Flota y
+equipo de transporte”, pero dentro de las posibles cuentas a las que puede
+pertenecer están:
+
+  * Autos, camionetas y camperos.
+  * Camiones, volquetas y furgones.
+  * Tractomulas.
+  * Buses y busetas.
+  * Montacargas.
+  * Motocicletas.
+  * Bicicletas.
+  * Etc.
+
+## Definición de conceptos
+
+## Costo
+
+Es el valor de efectivo o equivalentes al efectivo pagados por el activo, o
+bien el valor razonable de la contraprestación entregada, para adquirir un
+activo.
+
+## Vida Útil
+
+Es el periodo durante el cual se espera utilizar el activo por parte de la
+entidad o es el número de unidades de producción que se espera obtener del
+activo.
+
+## Valor residual
+
+Es el valor estimado que la entidad podría obtener por disponer del activo;
+después de deducir los costos estimados por tal disposición, si el activo ya
+hubiera alcanzado la antigüedad y las demás condiciones esperadas al término
+de su vida útil.
+
+## Importe depreciable
+
+Es el costo de un activo u otro valor que lo haya sustituido, menos su valor
+residual.
+
+## Depreciación
+
+Es la distribución sistemática del importe depreciable de un activo a lo largo
+de su vida útil.
+
+## Importe en libro
+
+Es el valor por el que se reconoce un activo, una vez deducidas la
+depreciación acumulada y las pérdidas por deterioro.
+
+## Valor razonable
+
+Es el precio que se recibiría por vender un activo restando sus costos de
+venta.
+
+## Importe recuperable
+
+Es la mayor cuantía entre el valor razonable y el valor en uso.
+
+## Pérdida por deterioro
+
+Es el valor extra que exista del importe \(valor\) en libros de un activo
+sobre su importe recuperable. Si el importe en libros es mayor que el importe
+recuperable hay Deterioro.
+
+## Valorización
+
+Aumento en el valor de un activo con el fin de reflejar su valor de mercado
+actual.
+
+## Revaluación
+
+Incremento del valor en libros de los activos fijos a valores de mercado,
+también podemos decir, que es el proceso de aumentar su valor en libros en
+caso de grandes cambios en el valor justo de mercado.
+
+
+
+## Secciones
+
+## Sección general
+
+Se indica información genérica del activo \(centro de costos, responsable,
+localización, foto, etc.\). Cuando el activo ya está registrado en la
+contabilidad, cierta información como fecha de compra y proveedor se muestran
+como de solo lectura, y otra como centro de costos y responsable puede ser
+modificada a través del tiempo \(permitiendo conocer el historial de registro
+en períodos anteriores\).
+
+## Sección contabilización
+
+Permite seleccionar el grupo al que pertenece el activo \(tanto en la normal
+local como en la NIIF\). El grupo seleccionado y la información complementaria
+personalizada como tipo de depreciación, valor residual y vida útil son la
+base para la existencia contable del activo. Una vez se realiza el registro
+contable \(compra, cargue del activo\), ésta información se presenta de solo
+lectura.
+
+## Sección descripción
+
+Se utiliza para registrar información técnica o descriptiva del activo.
+Información que puede ser útil para consultar a lo largo del tiempo.
+
+## Importe depreciable
+
+Es el costo de un activo u otro valor que lo haya sustituido, menos su valor
+residual.
+
+## Sección costos
+
+Permite consultar toda la información contable \(débitos y créditos\) que han
+afectado al activo; esta sección presenta un resumen de todo el comportamiento
+contable del activo desde su fecha de creación o registro en la contabilidad y
+conocer el valor en libros del activo.
+
+## Sección compras y mayores valores
+
+Presenta la información y el detalle de la operación de compra del activo, así
+como de los posibles mayores valores cargados a éste.
+
+## Sección depreciación/amortización
+
+Presenta de forma agrupada todo el histórico de las depreciaciones o
+amortizaciones registradas con el activo fijo o diferido. Muy útil para
+analizar período a período los valores contabilizados por la depreciación del
+activo y así conocer el detalle de la depreciación acumulada.
+
+## Sección revaluación/valorización
+
+Presenta de forma agrupada la información contable correspondiente a las
+posibles revaluaciones o valorizaciones registradas al activo a lo largo de su
+vida contable.
+
+## Sección deterioro
+
+Presenta de forma agrupada la información contable correspondiente a los
+posibles deterioros y reversiones de deterioro que se hayan registrado al
+activo a lo largo de su vida contable.
+
+## Sección ajustes por inflación
+
+Presenta de forma agrupada la información contable registrada al activo
+correspondiente a posibles ajustes por inflación. Se debe recordar que el
+objetivo de los ajustes por inflación consiste en reflejar con mayor precisión
+la situación real de los balances de las empresas en países que tienen alta
+inflación; en Colombia desde el año 2007 ya no se registran ajustes por
+inflación en la contabilidad.
+
+## Sección estado final
+
+Esta sección se visualiza cuando el activo es vendido o dado de baja en la
+contabilidad y permite conocer el motivo de la baja y la operación contable
+que registró dicha acción.
+
+
+
+# Acerca de ventana
+
+##  VENTANA EN CATÁLOGO GRUPOS DE ACTIVOS
+
+##  Objetivos
+
+Configurar de manera general el comportamiento y cuentas contables que van a
+afectar a los diferentes activos que se relacionen con este grupo.
+
+## Ejemplo de información a registrar
+
+Se indica o configura información como:
+
+  * Si al activo se le puede calcular depreciación o amortización.
+  * El tipo de depreciación que el activo va a seguir.
+  * Si el activo puede tener valorizaciones o no.
+  * Cuentas contables que se afectarán cuando se realicen transacciones con el activo como: compra, valorizaciones, depreciaciones, deterioros, ventas, etc.
+
+## Definición conceptos
+
+## Costo
+
+Es el valor de efectivo o equivalentes al efectivo pagados por el activo, o
+bien el valor razonable de la contraprestación entregada, para adquirir un
+activo.
+
+## Vida Útil
+
+Es el periodo durante el cual se espera utilizar el activo por parte de la
+entidad o es el número de unidades de producción que se espera obtener del
+activo.
+
+## Depreciación
+
+Es la distribución sistemática del importe depreciable de un activo a lo largo
+de su vida útil.
+
+## Pérdida por deterioro
+
+Es el valor extra que exista del importe \(valor\) en libros de un activo
+sobre su importe recuperable. Si el importe en libros es mayor que el importe
+recuperable hay Deterioro.
+
+## Valorización
+
+Aumento en el valor de un activo con el fin de reflejar su valor de mercado
+actual.
+
+## Revaluación
+
+Incremento del valor en libros de los activos fijos a valores de mercado,
+también podemos decir, que es el proceso de aumentar su valor en libros en
+caso de grandes cambios en el valor justo de mercado.
+
+
+
+## Secciones
+
+## Sección general
+
+Se define el tipo de contabilización que va a tener el grupo de activo, se
+puede tener contabilidad local y contabilidad NIIF. Si un país está adoptando
+la norma internacional, pero a su vez debe seguir trabajando con la
+normatividad local o fiscal se activan ambas opciones. Al activar o desactivar
+alguno de los tipos de contabilización se habilitan diferentes secciones o
+pestañas que solicitan configurar cuentas.
+También se configura la opción de permitir la depreciación y la valorización a
+los activos que pertenezcan a este grupo de activos.
+
+## Sección cuenta guía activo
+
+Se configura la cuenta guía del activo que se utilizará inicialmente cuando se
+registre en la contabilidad la compra o cargue del activo, pero también se
+usará cuando se realicen otras transacciones como ventas o bajas del activo.
+
+## Sección tipo depreciación/amortización
+
+Se indica el tipo de depreciación \(\[ContaPyme\] permite configurar
+diferentes tipos de depreciación según lo permitido por las normas fiscales y
+NIIF\), al igual que la vida útil que por defecto van a tener los activos que
+pertenezcan a este grupo. Sin embargo, al momento de hacer la adquisición del
+activo se puede modificar la información de la vida útil.
+
+## Sección cuenta valorización local
+
+Se configuran las cuentas contables que se afectarán \(tanto débito como
+crédito\) al momento de registrar una valorización de un activo. Esta
+configuración se realiza bajo el supuesto de que la empresa tenga activa la
+opción contabilización local en la sección general.
+
+## Sección cuenta revaluación NIIF
+
+Se configuran las cuentas contables que se afectarán \(tanto débito como
+crédito\) al momento de registrar una revaluación o una devaluación de un
+activo. Esta configuración se realiza bajo el supuesto de que la empresa tenga
+activa la opción contabilización NIIF en la sección general.
+
+## Sección cuenta deterioro NIIF
+
+Se configuran las cuentas contables que se afectarán \(tanto débito como
+crédito\) al momento de registrar un deterioro o la reversión del deterioro de
+un activo. Esta configuración se realiza bajo el supuesto de que la empresa
+tenga activa la opción contabilización NIIF en la sección general.
+
+## Sección cuenta utilidad venta
+
+Se define la cuenta contable \(ingreso\) que \[ContaPyme\] afectará cuando se
+realice una venta de un activo y dicho valor de venta, sea mayor al valor en
+libros del activo.
+
+## Sección cuenta pérdida venta
+
+Se define la cuenta contable \(gasto\) que \[ContaPyme\] afectará cuando se
+realice una venta de un activo y dicho valor de venta, sea menor al valor en
+libros del activo.
+
+## Sección cuenta pérdida baja
+
+Se define la cuenta contable \(gasto\) que \[ContaPyme\] afectará cuando se
+realice una baja o pérdida de un activo y dicho activo aún tenga saldo en
+libros.
+
+
+
+# Acerca de ventana
+
+##  CATÁLOGO GRUPOS DE ACTIVOS
+
+##  Objetivo
+
+Registrar por primera vez en la contabilidad, los diferentes activos que la
+empresa posee. Comúnmente es utilizada cuando la empresa va a iniciar con el
+uso del módulo de activos y requiere registrar la información actualizada
+\(fecha de compra, valor en libros y vida útil restante\) por cada activo; a
+partir de este registro \[ContaPyme\] iniciará el proceso de automatización
+contable del activo.
+
+## Ejemplo de información a registrar
+
+Se debe indicar información actualizada a la fecha de registro de la operación
+de cargue inicial.
+
+Ejemplo:
+
+Cód. Activo | Nombre activo | Fecha compra | Valor compra | Depreciación acumulada | Valor total resultante | Vida útil restante local | Vida útil restante NIIF
+---|---|---|---|---|---|---|---
+COM001 | Computador Dell | 01-01-2017 | $ 1.800.000 | $ 600.000 | $ 1.200.000 | 24 meses | 40 meses
+VEH01 | Vehículo Toyota | 01-02-2016 | $ 60.000.000 | $ 23.000.000 | $ 37.000.000 | 37 meses | 70 meses
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Sección encabezado de la operación
+
+Esta operación está basada en el tipo de documento de soporte “Cargue inicial
+de saldos”; esto quiere decir que \[ContaPyme\] permite realizar el registro
+de información de los activos de la empresa y se encargará de generar los
+movimientos contables correspondientes a la información indicada, pero se debe
+tener presente que la contrapartida \(para dejar el balance inicial cuadrado y
+que se cumpla la ecuación patrimonial Activo = Pasivo + Patrimonio\) se debe
+realizar de manera adicional mediante la operación de “Cargue inicial de
+cuentas”.
+
+**IMPORTANTE:** Recuerde que las operaciones de cargue inicial \(activos,
+inventarios y cuentas\) son las únicas que permiten ser procesadas sin que la
+sumatoria de débitos sea igual a los créditos; pero \[ContaPyme\] analiza que
+la sumatoria de todos los débitos y créditos de todas ellas \(en conjunto\),
+sí coincida y cumpla con la ecuación patrimonial.
+
+
+
+## Secciones de la operación
+
+Lista de activos: En esta área se cargan todos los activos \(los cuales fueron
+previamente creados en el catálogo de activos\), y se indica por cada uno los
+datos que quedarán relacionados en el cargue inicial de saldos actualizados.
+Es importante que la información a registrar en esta sección sea validada por
+el responsable del área contable en la empresa, para que posteriormente los
+estados financieros queden cuadrados según la información que la empresa
+posee.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Esta operación se puede imprimir en una nota de contabilidad, para poderse
+imprimir la operación debe estar procesada, pues en la nota de contabilidad se
+reflejan todos los registros contables \(débitos y créditos\) que dicha
+operación genera. Es muy útil tener el documento impreso para así poder
+realizar la operación de cargue inicial de cuentas y cuadrar la ecuación
+patrimonial.
+
+
+
+# Acerca de ventana
+
+##  OPERACIÓN COMPRA ACTIVOS
+
+##  Objetivo
+
+Registrar la entrada o compra del activo para que éste quede relacionado en la
+contabilidad de la empresa. A partir del momento de la compra, \[ContaPyme\]
+podrá tener el control de la información contable del activo e iniciará una
+serie de cálculos automáticos cuando se le indique que realice transacciones
+como depreciación, venta, baja, etc., del activo.
+
+## Ejemplo de información a registrar
+
+El 01-05-2017, mediante factura FC-01020 se realiza la compra de un vehículo
+Toyota a la empresa Vehimás Ltda, por valor de $ 50.000.000; la forma de pago
+fue mediante una transferencia bancaria.
+
+La información relevante para registrar en la compra del activo es:
+
+  * Número de la factura de compra: FC-01020.
+  * Fecha de compra: 01-05-2017.
+  * Proveedor a quien se le compró el activo: Vehimás Ltda.
+  * Activo comprado: Vehículo Toyota.
+  * Valor compra: $ 50.000.000
+  * Forma pago: Bancolombia \(transferencia\).
+
+Puede haber otra información relevante en la negociación que se pueda
+registrar en la operación de compra, como:
+
+  * Mayores valores asociados a la adquisición del activo y que incrementen el costo del mismo.
+  * Gastos \(fletes\) relacionados por la entrega del activo.
+  * Impuestos asociados a la transacción de compra.
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Sección encabezado de la operación
+
+Esta operación se basa en el documento de soporte “Factura de compra”, dicho
+documento permite que el usuario registre manualmente el número de la factura
+que el proveedor le envía por dicha transacción.
+
+
+## Secciones de la operación
+
+Lista de activos
+
+En esta área se registran los activos que se están adquiriendo al proveedor y
+el respectivo valor de compra.
+
+**IMPORTANTE:** Se debe tener en cuenta que para poder registrar la compra, el
+o los activos deben estar previamente creados en el catálogo de activos.
+
+
+
+Lista de otros gastos y pagos
+
+En esta sección se pueden registrar valores adicionales asociados a la compra
+del activo, los cuales pueden afectar como un mayor valor del costo del activo
+o como un gasto. Un ejemplo de registro de información en esta sección puede
+ser un flete por transporte de entrega del activo, dicho valor podría
+registrarse como un incremento al costo del activo o como un gasto directo
+\(esto depende de las políticas empresariales\).
+
+Lista de conceptos de liquidación
+
+En esta área se relacionan todos los impuestos asociados al proceso de
+adquisición del activo \(IVA, retenciones, etc.\)
+
+Descripción de la forma de pago
+
+En esta área se registra la forma como se va a pagar el activo adquirido, se
+puede hacer registro de pago en cada opción \(caja, banco, cuenta por pagar\)
+y dependiendo de la opción seleccionada, \[ContaPyme\] solicitará que se
+registre cierta información relacionada a la forma de pago.
+
+Ejemplo:
+
+  * **Si indica caja:** solicita la cuenta del plan único de cuentas destinada para administrar el dinero en efectivo. También flujo de caja si la empresa utiliza la funcionalidad de flujos de efectivo.
+  * **Si indica banco:** solicita la cuenta del plan único de cuentas asociada a la entidad bancaria de la cual va a sacar el dinero, también puede solicitar información del tipo de movimiento bancario, número y fecha de la transacción y el concepto de flujo de efectivo si la empresa utiliza las funcionalidades de conciliación bancaria y flujos de efectivo.
+  * **Si indica cuenta por pagar:** solicita la cuenta del plan único de cuentas que se utiliza para contabilizar los pagos a los proveedores, también requiere información de la fecha de pago o el detalle de las diferentes cuotas en las que se va a pagar el activo.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Esta operación de compra comúnmente no se imprime, puesto que es directamente
+el proveedor quien envía a la empresa la factura asociada a la transacción con
+el activo; sin embargo la empresa podría imprimir el comprobante de compra o
+factura equivalente para tener un registro físico adicional de la adquisición
+del activo.
+
+
+
+# Acerca de ventana
+
+##  CÁLCULO DETERIORO ACTIVOS
+
+##  Objetivo
+
+Calcular el valor del deterioro \(o reversión del deterioro\) de un activo, a
+partir de la diferencia entre el valor en libros y el mayor valor entre el
+valor en uso y el valor razonable.
+
+## Ejemplo de información a registrar
+
+![calcdeact.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/050%20AF/Oprs/ACT7%20-%20Deterioro%20de%20activos/%5B13290%5D%20FrmCalculoDeterioroActivo/calcdeact.jpg)
+
+
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Secciones de la operación
+
+Cálculo del valor en uso
+
+Flujo de efectivo proyectado y convertido a valor presente de los posibles
+beneficios que genera un activo. El valor en uso es un concepto que se
+requiere para el cálculo del deterioro de un activo, y se utiliza para
+calcular el importe recuperable de un activo. El importe recuperable es el
+mayor valor entre "Valor razonable" y el "Valor en uso".
+
+Cálculo del valor razonable
+
+Valor que se recibirá en el mercado por la venta o transferencia del activo
+\(en sus condiciones actuales\) y descontando los costos asociados a la venta.
+
+Cálculo del deterioro
+
+Deterioro es el desgaste, degenere o empeoramiento de la calidad o
+funcionalidad de un activo. Se debe tener en cuenta que cuando el valor en
+libros es mayor que el importe recuperable se genera **“deterioro”** y cuando
+el valor en libros es menor que el importe recuperable se genera **“reversión
+del deterioro”**.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Este asistente no permite impresión, pues actúa como guía para generar el
+cálculo del deterioro el cual se refleja en la operación “Deterioro de
+activos”.
+
+
+
+# Acerca de ventana
+
+##  OPERACIÓN DETERIORO ACTIVOS
+
+##  Objetivo
+
+Se debe indicar si se va a realizar un deterioro o una reversión del deterioro
+a un activo.
+Se tiene un vehículo que hace varios años está en uso y tiene un valor en
+libros de $ 45.000.000; se hizo un avalúo \(peritaje técnico\) y según las
+condiciones físicas el vehículo, comercialmente tiene un valor de $
+38.000.000.
+En este caso se registra un deterioro por $ 7.000.000.
+\[ContaPyme\] generará los asientos contables correspondientes a dicho
+deterioro, teniendo presente la configuración de cuentas contables indicadas
+en el grupo de activos.
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Sección encabezado de la operación
+
+El tipo de documento de soporte relacionado con esta operación es el
+comprobante de deterioro y es importante puesto que con este identificado se
+genera un consecutivo que permite en el tiempo analizar por qué se registró un
+deterioro a un activo.
+Se recomienda utilizar el botón
+![deterioroactivos1.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/050%20AF/Oprs/ACT7%20-%20Deterioro%20de%20activos/%5B13400%5D%20FrmOprACT7/deterioroactivos1.jpg)
+“Adicionar nota a los estados financieros” para que se debe evidencia escrita
+de los motivos por los cuales se registró esta operación. El describir una
+nota clara y detallada permite hacer procesos de auditoría y comprensión de
+los estados financieros de una manera más clara.
+
+Se debe indicar si el registro que se va a realizar corresponde a:
+
+  * **Registro de deterioro:** Se presenta cuando el valor en libros el activo es mayor que su importe recuperable.
+  * **Registro de reversión del deterioro \(dentro del mismo o en diferente período contable\):** Se presenta cuando el valor en libros del activo es menor que su importe recuperable.
+
+Se debe indicar el centro de costos al cual se le registrará contablemente el
+gasto generado por el deterioro del activo.
+
+
+## Secciones de la operación
+
+Lista de activos
+
+En esta área se registra la información correspondiente al deterioro de cada
+activo; se selecciona el código del activo para que se presente \(en modo de
+solo lectura\) el valor a hoy o en libros del activo y se le pueda indicar el
+valor del deterioro, para que así continúe con un nuevo valor en libros.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Esta operación se puede imprimir en una nota de contabilidad. Para poderse
+imprimir la operación debe estar procesada, pues en la nota de contabilidad se
+reflejan todos los registros contables \(débitos y créditos\) que dicha
+operación genera.
+
+
+
+============================================================
+
+## Tipo: Catálogo
+
+### Activos
+
+#### [10430] FrmActivo
+
+﻿
+
+# Pegar foto
+
+Permite pegar una imagen en el campo foto.
+
+Observaciones
+
+Se recomienda que la imagen sea de tamaño máximo: 50 Kb
+
+
+
+﻿
+
+# Empresa
+
+Indica la empresa bajo la cual queda registrado la adquisición del activo.
+
+Observaciones
+
+El activo se mostrará en el explorador gráfico de la empresa, como un nodo
+hijo de la empresa que se indica en este campo.
+El sistema \[ContaPyme\] asume para la creación del activo la empresa de
+trabajo en la que se está ubicado.
+
+
+
+﻿
+
+# Eliminar foto
+
+Permite borrar la foto actual del activo.
+
+
+
+﻿
+
+# Cargar foto
+
+Permite cargar una foto de un archivo, puede cargar imágenes JPG, JPGE, PNG y
+BMP.
+
+Observaciones
+
+Al usar esta opción si ya tiene una foto, esta será reemplazada.
+Dé clic derecho sobre la foto para más opciones, como por ejemplo: Guardar,
+Copiar, Reducir tamaño, etc.
+El tamáño máximo permitido para la foto está configurado en 800 KB.
+Se recomienda que sean inferiores a 1 Mb \(1024 Kb\).
+
+Configuración
+
+Si desea cambiar el tamáño máximo permitido para la foto, ingrese por:
+**\[Catálogo de activos > Configuración del catálogo > Configuraciones
+generales > Máximo tamaño permitido para la foto\].**
+
+
+
+
+
+﻿
+
+# Fecha de compra
+
+Fecha en la que se compró el activo.
+
+Observaciones
+
+Al momento de hacer la operación de compra del activo, el sistema
+\[ContaPyme\] registra automáticamente la misma fecha de compra directamente
+en este campo.
+Una vez procesada la operación de compra, esta fecha no se puede modificar.
+
+
+
+﻿
+
+# Proveedor
+
+Persona o empresa con la cual se realiza la transacción de compra del activo.
+
+Ejemplo
+
+Se compra un computador portátil a la empresa Equipartes S.A.S, identificada
+con el código: 810500600. Por lo tanto en este campo queda el registro del
+código del proveedor Equipartes, es decir: 810500600
+
+Observaciones
+
+Al momento de hacer la operación de compra del activo, el sistema
+\[ContaPyme\] registra automáticamente el proveedor indicado en dicha compra
+directamente en este campo.
+Una vez procesada la operación de compra, este dato del proveedor no se puede
+modificar.
+
+
+
+﻿
+
+# Ícono
+
+Imagen que representa el activo.
+
+Observaciones
+
+El ícono del activo se visualiza en el catálogo de activos y también en el
+explorador gráfico de la empresa, y es útil para que visiblemente se pueda
+ubicar un activo de manera rápida en el catálogo de activos.
+Se aclara que este ícono no corresponde a la foto del activo.
+
+
+
+﻿
+
+# Ver documento que inicia este activo
+
+Permite visualizar la operación de creación del activo, sin tener que ir al
+manejador de operaciones a buscarla dentro del listado de operaciones.
+
+Observaciones
+
+Muy útil para consultar directamente la operación de cargue inicial o compra
+del activo, y analizar datos de la adquisición.
+
+
+
+﻿
+
+# Este activo hace parte de la contabilización local
+
+Marque esta opción si el activo hace parte de la contabilización local.
+
+Ejemplo
+
+Se compra una casa, la cual debe existir en la contabilidad local clasificada
+como "Construcciones y Edificaciones", por lo tanto se debe activar esta
+opción.
+
+Observaciones
+
+Esta opción se maneja cuando en un país se tiene contabilización local o
+fiscal y se está haciendo transición a las NIIF \(Normas Internacionales de
+Información Financiera\) o ya se tienen implementadas y se debe presentar
+información bajo el análisis de la contabilidad fiscal y las NIIF de manera
+simultánea.
+Al activar esta opción el sistema \[ContaPyme\] habilita una serie de
+información o campos, los cuales se configuran con datos desde el punto de
+vista de la contabilidad local.
+
+Un ejemplo de cuándo no se activa esta opción, es cuando se clasifica una
+vivienda como "Propiedad de inversión" o "Activo disponible para la venta",
+puesto que estas clasificaciones son exclusivas de la contabilidad NIIF y no
+existen en la contabilidad local.
+
+
+
+﻿
+
+# Activo
+
+Muestra el código del activo al cual se va a registrar la información de la
+ficha técnica.
+
+Observaciones
+
+Este código fue registrado al momento de la creación del activo, y corresponde
+al identificador único de dicho activo.
+
+
+
+﻿
+
+# Grupo del activo
+
+Permite relacionar el grupo al cual pertenece el activo creado.
+
+Ejemplo
+
+  * Se crea un vehículo como activo, el grupo al cual se relaciona es: Flota y equipo de transporte.
+  * Se crea un computador como activo, el grupo al cual se relaciona es: Equipo de cómputo y comunicaciones.
+  * Se crea una oficina como activo, el grupo al cual se relaciona es: Construcciones y edificaciones.
+
+Observaciones
+
+  * Recuerde que dentro del grupo de activo se configuran las cuentas contables que el sistema \[ContaPyme\] afecta automáticamente cuando se realizan operaciones con el activo como: depreciación, revaluación, venta, baja, etc.
+  * Si el activo tiene movimiento contable procesado, este campo estará en modo de solo lectura. Para poder cambiar el activo de grupo, deberá hacerlo por medio de la operación de reclasificación de activos o deberá desprocesar las operaciones que referencian a este activo.
+
+Configuración
+
+Para conocer o modificar la configuración de un grupo de activos, ingrese por:
+**Menú Adicionales > Grupos de activos**
+
+
+
+﻿
+
+# Tipo de activo
+
+Clasificación agrupada del activo.
+
+Ejemplo
+
+  * Se registra un título valor como activo, el tipo es: Inversiones.
+  * Se registra una maquinaria como activo, el tipo es: Propiedad, planta y equipo.
+  * Se registra una patente como activo, el tipo es: Intangible.
+
+Observaciones
+
+Este campo es de solo lectura y se registra automáticamente cuando se indica
+el grupo de activo.
+
+
+
+﻿
+
+# Cuenta del activo
+
+Cuenta en la cual se registra el valor de compra del activo y los mayores
+valores.
+
+Ejemplo
+
+Si se registra un nuevo activo del grupo "Flota y equipo de transporte", las opciones de cuenta \(según el plan de cuentas para el sector comercial\) podrían ser:  154005 | Autos, camionetas y camperos.
+---|---
+154008 | Camiones, volquetas y furgones.
+154010 | Tractomulas y remolques.
+154030 | Motocicletas.
+154035 | Bicicletas.
+Las opciones de cuentas se configuran directamente como cuentas auxiliares en
+el catálogo de plan de cuentas de \[ContaPyme\].
+
+Observaciones
+
+Esta cuenta se carga automáticamente según la información que se tenga
+configurada en el grupo de activo, pero se puede personalizar para cada activo
+haciendo clic en el botón de referencia y seleccionando la opción
+"Modificar".
+Esta cuenta es afectada no solamente por la compra del activo, sino por
+operaciones que registren actividad con el activo como:
+
+  * Mayores valores al activo.
+  * Venta del activo.
+  * Baja del activo.
+
+
+
+﻿
+
+# Tipo depreciación
+
+Es la forma en la que se realizará la depreciación por el uso del activo.
+
+Ejemplo
+
+Los tipos de depreciación disponibles son:
+
+  * No se deprecia.
+  * Mensual \(línea recta\).
+  * Por unidades de uso.
+  * Por unidades de producción.
+  * Mensual acelerada.
+
+Observaciones
+
+Este dato se toma del grupo de activo configurado para el activo.
+La depreciación es la distribución sistemática del importe depreciable \(costo
+del activo menos el valor residual\) a lo largo de su vida útil.
+
+
+
+﻿
+
+# Cuenta diferido
+
+Cuenta del gasto en la cual se registra \(debita\) la amortización del activo
+diferido.
+
+Ejemplo
+
+Se compra un seguro para un vehículo, solo si la normatividad contable lo
+permite, éste se podría crear como un activo diferido "Gasto pagado por
+anticipado" y mes a mes \(durante el período de vigencia del seguro\),
+amortizar su valor como un gasto en la cuenta "Seguros - Flota y equipo de
+transporte".
+
+Observaciones
+
+Este campo se habilita solo cuando se escoge el grupo de activos "Diferidos".
+Si se tiene el módulo de automatización de documentos, la información en este
+campo se registra automáticamente con el dato indicado en la operación de
+gastos o ingresos diferidos.
+
+
+
+﻿
+
+# Cuenta diferido
+
+Cuenta del gasto en la cual se registra \(debita\) la amortización del activo
+diferido.
+
+Ejemplo
+
+Se compra un seguro para un vehículo, solo si la normatividad contable lo
+permite, éste se podría crear como un activo diferido "Gasto pagado por
+anticipado" y mes a mes \(durante el período de vigencia del seguro\),
+amortizar su valor como un gasto en la cuenta "Seguros - Flota y equipo de
+transporte".
+
+Observaciones
+
+Este campo se habilita solo cuando se escoge el grupo de activos "Diferidos".
+Si se tiene el módulo de automatización de documentos, la información en este
+campo se registra automáticamente con el dato indicado en la operación de
+gastos o ingresos diferidos.
+
+
+
+﻿
+
+# Dato depreciación
+
+Unidad que se usa para medir la depreciación cuando es diferente a mensual en
+línea recta.
+
+Ejemplo
+
+Se compra un vehículo y por políticas de la empresa no desean depreciarlo
+mensualmente, sino por horas laboradas:
+
+  * Tipo depreciación Unidades de uso, Dato depreciación: Horas.
+
+Se compra una fotocopiadora y por políticas de la empresa no desean
+depreciarla mensualmente, sino por unidades producidas:
+
+  * Tipo depreciación Unidades de producción, Dato depreciación: Fotocopias.
+
+Observaciones
+
+Este campo solo se activa cuando el tipo de depreciación es por unidades de
+uso, unidades de producción o mensual acelerada.
+
+
+
+﻿
+
+# Valor residual
+
+Valor final de un activo después de su depreciación y amortización, es decir,
+al final de su vida útil
+
+Ejemplo
+
+Se compra un computador por $ 7.000.000 \(pesos Colombianos \), y se define
+como política que el valor residual será el 10% del valor del activo; por lo
+tanto en valor residual se registra: $ 700.000.
+Esto quiere decir, que una vez depreciado todo el computador la empresa lo
+podría vender por el valor residual indicado.
+
+Observaciones
+
+\[ContaPyme\] permite definir el valor residual del activo a través del
+tiempo; para esto haga clic en el botón de referencia y seleccione la opción
+"Modificar valor a través del tiempo".
+Esta opción es útil cuando al interior de la empresa, se realiza una revisión
+del activo y detectan que el valor por el cual valoraban que se podía vender o
+transferir el activo una vez se depreciara por completo cambió.
+Recuerde: El valor residual forma parte del importe depreciable.
+
+  * Importe depreciable es el costo del activo, menos su **valor residual.**
+  * Depreciación es la distribución sistemática del importe depreciable de un activo a lo largo de su vida útil.
+
+
+
+﻿
+
+# Fecha de compra
+
+Fecha en la cual se registra la compra del activo.
+
+Ejemplo
+
+Se compra una motocicleta para el mensajero y desde el área de contabilidad
+registran la compra del activo el día 05-Enero-2018, este es el dato que el
+sistema asume como fecha de compra del activo: 05-01-2018.
+
+Observaciones
+
+En la contabilización local, esta fecha se asume como la fecha de inicio de
+depreciación/amortización del activo.
+Si la operación de compra del activo está procesada, este campo de fecha se
+muestra como de "solo lectura", esto quiere decir, que la fecha de compra no
+se puede cambiar directamente en el campo sino que depende de la fecha
+indicada en la operación de compra.
+En la depreciación local se debe tener en cuenta que si el activo se compra
+por ejemplo el día 20 de Enero y se realiza la primera depreciación el día 31
+de Enero, el sistema \[ContaPyme\] no depreciará el activo por esos días
+transcurridos.
+Para la depreciación del activo bajo la norma local, \[ContaPyme\] analiza si
+desde la fecha de compra hasta el fin de mes \(fecha en la que comúnmente se
+realiza la depreciación\) han transcurrido más de 15 días, si es así deprecia
+ese activo en el primer mes sino la depreciación inicia en el segundo mes
+completo.
+
+
+
+﻿
+
+# Código alterno
+
+Código adicional que permite identificar al activo bajo otra clasificación
+interna de la empresa.
+
+Ejemplos
+
+  * Al interior de la empresa codifican los activos bajo un criterio propio, pero también desean registrar el código del activo que el proveedor utiliza.
+  * El activo en otro sistema tiene un código diferente al que se le registró en \[ContaPyme\].
+
+Esto se realiza con la finalidad de identificar un activo bajo diferentes
+criterios.
+
+Observaciones
+
+Este campo es de tipo numérico y permite hasta 20 caracteres.
+
+
+
+﻿
+
+# Vida útil total
+
+Tiempo que un activo está en funcionamiento operativo para la empresa.
+
+Ejemplo
+
+  * Un computador se puede estimar con una vida útil: 5 años \(60 meses\).
+  * Una máquina de producción se puede estimar con una vida útil: 20.000 horas.
+  * Una fotocopiadora se puede estimar con una vida útil: 15.000 copias.
+
+Observaciones
+
+Según el tipo de depreciación se puede indicar la vida útil:
+\- Mensual \(linea recta\): meses estimados de vida útil total del activo.
+\- Unidades uso: unidades estimadas de uso de vida útil total del activo.
+\- Unidades producción: producción estimada de vida útil total del activo.
+
+
+
+﻿
+
+# Vida útil restante
+
+Tiempo o unidades que el activo aún tiene vigente para su uso.
+
+Ejemplo
+
+Se compra un vehículo el cual se estima tendrá una vida útil total de 5 años,
+es decir, 60 meses.
+Se desea conocer la vida útil restante al cabo de 2 años \(24 meses\)
+transcurridos, en los cuales se realizó depreciación mes a mes:
+
+  * **Vida útil restante = vida útil total - meses depreciados.**
+  * Vida útil restante = 60 - 24. Genera como resultado: 36 meses.
+
+Observaciones
+
+Este campo es de solo lectura y va disminuyendo a medida que se realiza la
+depreciación del activo.
+
+
+
+﻿
+
+# Este activo hace parte de la contabilización NIIF
+
+Marque esta opción si el activo hace parte de la contabilización NIIF.
+
+Ejemplo
+
+Se compra un computador, el cual debe existir en la contabilidad clasificado
+como "Equipo de cómputo y comunicaciones", por lo tanto se debe activar esta
+opción.
+
+Observaciones
+
+Esta opción se maneja cuando un país se rige bajo los estándares de la
+contabilidad NIIF \(Normas Internacionales de Información Financiera\).
+Al activar esta opción el sistema \[ContaPyme\] habilita una serie de
+información o campos, los cuales se configuran con datos desde el punto de
+vista de la norma internacional.
+
+Configuración
+
+Esta opción se muestra solo si la empresa indica que tiene contabilidad NIIF,
+para verificar si la contabilidad NIIF está configurada en la empresa, se debe
+ingresar por:
+**\[Botón aplicación > Configuración > Configuración general de contabilidad >
+Tipo de contabilización: Local / NIIF\]**
+
+Si la empresa aún no ha realizado la transición a la contabilidad NIIF, puede
+ingresar por:
+**\[Botón aplicación > Utilidades > Adecuaciones para iniciar contabilización
+NIIF\]**
+
+
+
+﻿
+
+# Grupo del activo
+
+Permite relacionar el grupo adecuado a los estándares internacionales NIIF al
+cual pertenece el activo creado.
+
+Ejemplos
+
+  * Se crea una oficina como activo, el grupo al cual se relaciona es: Construcciones y edificaciones.
+  * La oficina se alquila, el nuevo grupo al cual se relaciona es: Propiedad de inversión.
+  * La oficina como activo se pretende vender, el nuevo grupo al cual se relaciona es: Activo disponible para la venta.
+  * Se crea un vehículo como activo, el grupo al cual se relaciona es: Flota y equipo de transporte.
+  * Se crea un computador como activo, el grupo al cual se relaciona es: Equipo de cómputo y comunicaciones.
+
+Observaciones
+
+  * Recuerde que dentro del grupo de activo se configuran las cuentas contables que el sistema \[ContaPyme\] afecta automáticamente cuando se realizan operaciones con el activo como: depreciación, revaluación, venta, baja, deterioro, etc.
+  * Si el activo tiene movimiento contable procesado, este campo estará en modo de solo lectura. Para poder cambiar el activo de grupo, deberá hacerlo por medio de la operación de reclasificación de activos o deberá desprocesar las operaciones que referencian a este activo.
+
+Configuración
+
+Para conocer o modificar la configuración de un grupo de activos, ingrese por:
+**Menú Adicionales > Grupos de activos**
+
+
+
+﻿
+
+# Tipo de activo
+
+Clasificación agrupada del activo.
+
+Ejemplo
+
+  * Se registra una maquinaria como activo, el tipo es: Propiedad, planta y equipo.
+  * Se registra una oficina la cual se tiene en arriendo, el tipo es: Propiedad de inversión.
+
+Observaciones
+
+Este campo es de solo lectura y se registra automáticamente cuando se indica
+el grupo de activo.
+
+
+
+﻿
+
+# Cuenta del activo
+
+Cuenta NIIF en la cual se registra el valor de compra del activo y los mayores
+valores.
+
+Ejemplo
+
+Si se registra un nuevo activo del grupo flota y equipo de transporte, las
+opciones de cuenta podrían ser:
+
+  * Autos, camionetas y camperos.
+  * Camiones, volquetas y furgones.
+  * Tractomulas y remolques.
+  * Motocicletas.
+  * Bicicletas.
+  * Etc.
+
+Observaciones
+
+Esta cuenta se carga automáticamente según la información que se tenga
+configurada en el grupo NIIF de activo, pero se puede personalizar para cada
+activo haciendo clic en el botón de referencia y seleccionando la opción
+"Modificar".
+
+
+
+﻿
+
+# Tipo depreciación
+
+Es la forma en la que se realizará la depreciación NIIF por el uso del activo.
+
+Ejemplo
+
+Los tipos de depreciación disponibles son:
+
+  * No se deprecia.
+  * Lineal.
+  * Por unidades de uso \(Horas\).
+  * Por unidades de producción.
+  * Decreciente.
+
+Observaciones
+
+Este dato se asume directamente del grupo NIIF configurado para el activo.
+Si el grupo NIIF del activo no tiene activada la opción "Es depreciable o
+amortizable", este campo no se muestra en este editor de activos.
+La depreciación es la distribución sistemática del importe depreciable \(costo
+del activo menos el valor residual\) a lo largo de su vida útil.
+
+
+
+﻿
+
+# Centro de Costos
+
+Centro de costos al cual se le aplicarán automáticamente los gastos por
+depreciación, deterioro o pérdida del activo.
+
+Ejemplos
+
+  * Se compra un computador para que el área de contabilidad realice su trabajo diario, en este caso el centro de costos asociado al activo es el departamento de contabilidad, pues es el área responsable del uso y administración del activo.
+  * Se compra un vehículo para que se realicen las entregas de los productos vendidos, en este caso el centro de costos asociado al activo es el departamento comercial.
+
+Observaciones
+
+\[ContaPyme\] permite definir el centro de costos del activo a través del
+tiempo; para esto haga clic en el botón de referencia en la opción "Modificar
+valor a través del tiempo".
+Esta opción es útil cuando un activo en el tiempo, pasa de una ubicación a
+otra. \(Ejm: un vehículo que lo usaba la gerencia y luego se entregó al área
+comercial\).
+
+
+
+﻿
+
+# Cuenta del activo
+
+Cuenta del gasto en la cual se registra \(debita\) la amortización del activo
+diferido.
+
+Observaciones
+
+Este campo se habilita solo cuando se escoge el grupo de activos "Diferidos".
+Analice si la norma internacional permite la creación del activo como diferido
+o no, puesto que existen casos en los cuales un diferido no es aceptado y se
+debe contabilizar de forma completa como un gasto dentro del período.
+
+
+
+﻿
+
+# Cuenta del activo
+
+Cuenta del gasto en la cual se registra \(debita\) la amortización del activo
+diferido.
+
+Observaciones
+
+Este campo se habilita solo cuando se escoge el grupo de activos "Diferidos".
+Analice si la norma internacional permite la creación del activo como diferido
+o no, puesto que existen casos en los cuales un diferido no es aceptado y se
+debe contabilizar de forma completa como un gasto dentro del período.
+
+
+
+﻿
+
+# Dato depreciación
+
+Unidad que se usa para medir la depreciación cuando es diferente a la lineal.
+
+Ejemplo
+
+Se compra un vehículo y por políticas de la empresa no desean depreciarlo
+linealmente, sino por horas laboradas:
+
+  * Tipo depreciación Unidades de uso, Dato depreciación: Horas.
+
+Se compra una fotocopiadora y por políticas de la empresa no desean
+depreciarla linealmente, sino por unidades producidas:
+
+  * Tipo depreciación Unidades de producción, Dato depreciación: Fotocopias.
+
+Observaciones
+
+Este campo solo se activa cuando el tipo de depreciación es por unidades de
+uso, unidades de producción o decreciente.
+
+
+
+﻿
+
+# Valor residual
+
+Valor final de un activo después de su depreciación o amortización, es decir,
+al final de su vida útil.
+
+Ejemplo
+
+Se compra un computador por $ 7.000.000 \(pesos Colombianos \), y se define
+como política que el valor residual será el 10% del valor del activo; por lo
+tanto en valor residual se registra: $ 700.000.
+Esto quiere decir, que una vez depreciado todo el computador la empresa lo
+podría vender por el valor residual indicado.
+
+Observaciones
+
+\[ContaPyme\] permite definir el valor residual del activo a través del
+tiempo; para esto se debe registrar en el manejador de operaciones la
+operación de: "Reclasificación de activos".
+Esta opción es útil cuando al interior de la empresa, se realiza una revisión
+del activo y detectan que el valor por el cual valoraban que se podía vender o
+transferir el activo una vez se depreciara por completo cambió.
+Recuerde: El valor residual forma parte del importe depreciable.
+
+  * Importe depreciable es el costo del activo, menos su **valor residual.**
+  * Depreciación es la distribución sistemática del importe depreciable de un activo a lo largo de su vida útil.
+
+
+
+﻿
+
+# Método reconocim. inicial
+
+Modelo bajo el cual se reconoce el costo inicial de un activo en la
+contabilidad NIIF.
+
+Observaciones
+
+Existen dos métodos de reconocimiento inicial para un activo:  Método del costo | Método de revaluación por eliminación
+---|---
+Costo | Valor razonable
+\(-\) Depreciación acumulada | \(-\) Depreciación acumulada
+\(-\) Deterioro | \(-\) Deterioro
+
+Según el método de reconocimiento inicial, al activo se le podrá indicar
+información como: avalúo o deterioro al momento de generar la operación de:
+Conversión de activos locales a NIIF.
+Definiciones:
+
+  * **Costo:** Valor en efectivo o equivalente al efectivo pagado por adquirir el activo.
+  * **Valor razonable:** Valor que se recibiría al vender un activo restando los costos de venta.
+
+
+
+﻿
+
+# Fecha de compra
+
+Fecha en la cual se registra la compra del activo.
+
+Ejemplo
+
+Se compra una motocicleta para el mensajero y desde el área de contabilidad
+registran la compra del activo el día 05-Enero-2018, este es el dato que el
+sistema asume como fecha de compra del activo: 05-01-2018.
+
+Observaciones
+
+  * Bajo los estándares de las NIIF, esta fecha se puede asumir como la fecha de inicio de depreciación/amortización del activo.
+  * En la contabilización NIIF, generalmente se usa la fecha de compra como la fecha de inicio de depreciación/amortización, sin embargo, un activo puede tener una fecha de inicio de depreciación posterior a la fecha de compra \(Ej. por motivos de montaje o ubicación\), si es así se debe especificar esta condición en el campo: **"Fecha inicio de utilización."**
+  * Si la operación de compra del activo está procesada, este campo de fecha se muestra como de "solo lectura", esto quiere decir, que la fecha de compra no se puede cambiar directamente en el campo sino que depende de la fecha indicada en la operación de compra.
+
+
+
+﻿
+
+# Fecha inicio de uso del activo mayor a fecha de compra
+
+Active esta opción si la fecha en la que se va a iniciar la depreciación del
+activo en NIIF, es superior a la fecha de compra.
+
+Ejemplo
+
+El día 01-02-2018 se compra una máquina para un laboratorio, pero se debe
+realizar la adecuación y montaje para dejarla lista para su uso \(para esto
+requieren 3 meses\); por lo tanto en este caso aunque la fecha de compra fue:
+**01-02-2018** , la fecha de inicio de depreciación será: **01-05-2018.**
+
+Observaciones
+
+Esta opción solo es permitida bajo las NIIF, las cuales indican que la
+depreciación de un activo comienza cuando está disponible para su uso, o
+cuando se encuentra en la ubicación y condición deseada \(NIC 16\).
+La fecha de inicio de depreciación siempre debe ser igual o superior a la
+fecha de compra del activo.
+
+
+
+﻿
+
+# Vida útil total
+
+Tiempo o unidades \(horas o producción\) que la empresa estima utilizar el
+activo.
+
+Ejemplo
+
+  * La empresa estima usar un nuevo computador por 8 años, por lo tanto la vida útil total es: 96 meses.
+  * La empresa adquiere un vehículo nuevo, el cual pretende usar por 3 años y luego renovarlo, por lo tanto la vida útil total es: 36 meses.
+
+Observaciones
+
+Este dato se registra directamente en la operación de compra o cargue del
+activo, puesto que por cada grupo de activos una empresa puede definir una
+vida útil total distinta, dependiendo de las políticas internas. Las NIIF
+permiten este manejo y no establecen una tabla fija de vida útil por cada
+grupo de activo.
+
+Según el tipo de depreciación se puede indicar la vida útil:
+\- Lineal: meses estimados de vida útil total del activo. _Nota: \[ContaPyme\]
+convierte esos meses a días, para tener un valor exacto de la depreciación por
+día de uso._
+\- Unidades uso: unidades estimadas de uso en la vida útil total del activo.
+\- Unidades producción: producción estimada en la vida útil total del activo.
+
+
+
+﻿
+
+# Responsable
+
+Permite indicar quién es el responsable del manejo o administración del
+activo.
+
+Ejemplos
+
+  * Se compra un computador al área de contabilidad para su uso, por lo tanto el responsable es el jefe del área contable quien responde por el adecuado manejo del activo.
+  * Se entrega un vehículo para repartir los productos a los clientes, en este caso el responsable del activo es el conductor.
+
+Observaciones
+
+\[ContaPyme\] permite definir el responsable del activo a través del tiempo;
+para esto haga clic en el botón de referencia y seleccione la opción
+"Modificar valor a través del tiempo".
+Esta opción es útil cuando un activo en el tiempo, pasa de una persona a otra.
+\(Ejm: un vehículo que lo usaba la gerencia y el responsable era el gerente
+general, el cual luego se entregó al área comercial y el nuevo responsable es
+el gerente comercial\)
+El código del tercero debe estar creado previamente en el "Catálogo de
+terceros" del sistema \[ContaPyme\], para poderlo relacionar en este campo.
+
+
+
+
+
+﻿
+
+# Vida útil restante
+
+Tiempo o unidades que el activo aún tiene vigente para su uso.
+
+Ejemplo
+
+Se compra un vehículo el cual se estima tendrá una vida útil total de 10 años,
+es decir, 120 meses.
+Se desea conocer la vida útil restante al cabo de 2 años \(24 meses\)
+transcurridos, en los cuales se realizó depreciación mes a mes:
+
+  * **Vida útil restante = vida útil total - meses depreciados.**
+  * Vida útil restante = 120 - 24. Genera como resultado: 96 meses.
+
+Observaciones
+
+Este campo es de solo lectura y va disminuyendo a medida que se realiza la
+depreciación del activo.
+En contabilización NIIF, los activos se deprecian/amortizan hasta el día que
+se dan de baja o venden.
+Si cambia la vida útil, se calculará la fecha de finalización como:
+FinDeprec. = IniDeprec. + \(VidaUltil \* 30,4375\)
+_La operación de "Reclasificación de activos" permite cambiar este valor._
+
+
+
+﻿
+
+# Finalización de depreciación
+
+Fecha estimada en la que el activo se dejará de utilizar, bien sea, por que se
+dará de baja, se venderá o no se obtendrán más beneficios económicos de él.
+
+Ejemplo
+
+Se registra la compra de un computador el día 01-02-2018, y en la compra se
+estima que se va a utilizar por 8 años, por lo tanto la fecha de finalización
+sería:
+
+  * Fecha finalización depreciación = Fecha de compra \(o inicio de uso\) + Vida útil total estimada
+  * Fecha finalización = \(01-02-2018 + 8 años\) = 01-02-2026
+
+Observaciones
+
+Las NIIF permiten re-expresar la fecha de finalización de depreciación del
+activo, pues puede suceder que después de un peritaje técnico se indique que
+el activo se puede usar por más tiempo del estimado inicialmente. Por lo
+tanto, se debe hacer una operación de: "Reclasificación de activos" e indicar
+la nueva vida útil del activo, lo que implica un cambio en la fecha de
+finalización de la depreciación.
+
+
+
+﻿
+
+# Potencia
+
+Poder, fuerza o capacidad del activo para hacer un trabajo o su
+funcionamiento.
+
+Ejemplo
+
+Una ficha técnica de un vehículo, puede indicar que tiene 90HP \(caballos de
+fuerza\). Este será el dato a registrar en Potencia: 90
+
+Observaciones
+
+Este campo es informativo si no tiene costos de producción, pero es útil al
+momento de configurar el proceso de distribución de costos indirectos, cuando
+una empresa tiene maquinaria que se usa en un proceso productivo.
+Ejm. Si al interior de la empresa se tienen dos activos:
+
+  * Uno con potencia de: 90HP.
+  * El otro con potencia de: 130HP.
+
+El costo del combustible se podría distribuir de forma proporcional a la
+potencia y horas reportadas de uso de cada uno, pues entre más potencia más
+combustible requiere.
+
+
+
+﻿
+
+# Descripción
+
+Indique información relevante que desee documentar del activo.
+
+Ejemplo
+
+Ficha técnica del activo que puede estar descrita en el manual operativo.
+
+Observaciones
+
+La información que en este campo se indique, sirve para reconstruir una
+historia completa del activo con datos adicionales a los que la contabilidad
+reporta.
+
+
+
+﻿
+
+# Costos
+
+Según la fecha de trabajo, presenta los diferentes valores que se han generado
+en la contabilización del activo a lo largo de su historia de uso.
+
+Observaciones
+
+El origen de los valores presentados corresponde a diferentes operaciones que
+se realizaron con el activo en la contabilidad, por Ej.:
+
+  * Valor de compra y mayores valores.
+  * Depreciación / amortización.
+  * Revaluación / valorización.
+  * Deterioro.
+  * Ajustes por inflación compra.
+  * Ajustes por inflación depreciación.
+  * Otros movimientos.
+
+La información presentada en esta área es de solo lectura.
+
+
+
+﻿
+
+# Análisis info. contabilidad local
+
+Consulte los diferentes valores que se han generado en la contabilización
+local-fiscal del activo a lo largo de su historia de uso.
+
+Observaciones
+
+La información presentada al dar clic en este botón, corresponde a información
+originada por los registros contables bajo un análisis de la contabilidad
+local.
+Bajo esta visualización no se tiene en cuenta el registro del "Deterioro",
+puesto que es un concepto que solo es aceptado bajo la norma internacional
+NIIF.
+La información y valores presentados bajo esta vista, pueden no coincidir con
+los valores presentados bajo la opción "Análisis info. contabilidad NIIF",
+puesto que conceptos como:
+\- Deterioros.
+\- Depreciaciones \(mensual línea recta en norma local y lineal \(por día\) en
+norma NIIF.\)
+Pueden originar diferencias en los saldos presentados.
+
+
+
+﻿
+
+# Análisis info. contabilidad NIIF
+
+Consulte los diferentes valores que se han generado en la contabilización NIIF
+del activo a lo largo de su historia de uso.
+
+Observaciones
+
+La información presentada al dar clic en este botón, corresponde a información
+originada por los registros contables bajo un análisis de la contabilidad
+internacional NIIF.
+Bajo esta visualización se tiene en cuenta el registro del "Deterioro", puesto
+que es un concepto aceptado bajo la norma internacional NIIF.
+La información y valores presentados bajo esta vista, pueden no coincidir con
+los valores presentados bajo la opción "Análisis info. contabilidad local",
+puesto que conceptos como:
+\- Deterioros.
+\- Depreciaciones \(mensual línea recta en norma local y lineal \(por día\) en
+norma NIIF.\)
+Pueden originar diferencias en los saldos presentados.
+
+
+
+﻿
+
+# Ver explorador contable del activo.
+
+Consulte todos los registros contables del activo desde el momento de su
+creación.
+
+Observaciones
+
+Puede consultar tantos los registros contables generados por la norma local
+como por la norma NIIF.
+Este explorador es útil para hacer auditoría contable a cada activo dentro de
+la empresa y conocer el valor a hoy del mismo.
+
+
+
+﻿
+
+# Refrescar
+
+Recargue o actualice la información consultada.
+
+Observaciones
+
+Útil cuando al interior de la empresa diferentes usuarios trabajan de manera
+simultánea en el sistema.
+Puede suceder que alguno de ellos realice una nueva operación con el activo
+mientras usted está consultando esta ficha técnica, en este caso, sería
+necesario "Refrescar" para que \[ContaPyme\] presente los datos actualizados
+con los últimos cambios.
+
+
+
+﻿
+
+# Valor de compra y mayores valores
+
+Presenta el valor pagado por la adquisición del activo y los posibles mayores
+valores cargados al costo del activo \(Ej. impuestos\).
+
+Ejemplo
+
+Se compra un computador por valor de $ 4.000.000 más impuesto del 19% y se
+paga un flete por $ 50.000
+El valor a presentar en el campo es:
+
+  * Valor compra: $ 4.000.000
+  * Valor impuesto \(asumido como mayor valor del activo\): $ 760.000
+  * Valor flete o transporte \(asumido como mayor valor del activo\): $ 50.000
+  * **Valor de compra y mayores valores: $ 4.810.000**
+
+Observaciones
+
+Este campo es de solo lectura y depende de los registros cargados en la
+operación de compra o cargue inicial de activos.
+
+
+
+﻿
+
+# Depreciación/amortización
+
+Presenta el valor correspondiente a la depreciación acumulada generada por el
+activo a lo largo de su uso.
+
+Ejemplo
+
+Se tiene un computador cuyo importe depreciable es $ 4.000.000, el total de
+vida útil son 5 años \(60 meses\) y se ha depreciado de forma lineal por 5
+meses de la siguiente forma:
+
+  * Depreciación Enero \(31 días\): $ 67.899
+  * Depreciación Febrero \(28 días\): $ 61.328
+  * Depreciación Marzo \(31 días\): $ 67.899
+  * Depreciación Abril \(30 días\): $ 65.708
+  * Depreciación Mayo \(31 días\): $ 67.899
+  * **Valor Depreciación/amortización: $ 330.733**
+
+Observaciones
+
+Este campo es de solo lectura y se origina por los registros generados en la
+operación de "Acciones automáticas de fin de mes > Depreciaciones y
+amortizaciones".
+\[ContaPyme\] calcula la depreciación lineal por día, por lo tanto la
+depreciación en un mes puede ser distinta de otro, pues depende si el mes es
+de 28, 30 o 31 días.
+Para realizar la depreciación lineal por día, se tiene en cuenta que
+matemáticamente un mes tiene: 30,4375 días.
+Es decir, los 365 días del año más 0,25 que corresponde al día adicional que
+cada 4 años se presenta como año bisiesto; por lo tanto los días por mes son:
+365,25 / 12 = 30,4375.
+
+
+
+﻿
+
+# Revaluación/valorización
+
+Presenta el valor correspondiente a la valorización del activo.
+
+Ejemplo
+
+Se tiene un vehículo cuyo valor en libros está por $ 20.000.0000, pero después
+de unas piezas reemplazadas y mejoras en lámina y pintura, se hace un avalúo
+técnico por un perito.
+El perito dictamina que el vehículo después de dichas mejoras, tiene un valor
+comercial de $ 26.000.000; por lo tanto se debe hacer esa revaluación dentro
+del sistema \[ContaPyme\]
+Una vez realizada esta revaluación, el valor que se presenta en este campo de
+la ficha técnica del activo es: **$ 6.000.000**
+
+Observaciones
+
+Este campo es de solo lectura y se origina por los registros generados en las
+operaciones de "Revaluación de activos" o "Compra/Mayor valor de activos."
+La valorización de un activo se puede analizar como el mayor valor resultante
+entre el valor en libros y el valor comercial.
+
+
+
+﻿
+
+# Localización
+
+Ubicación del activo dentro de la empresa, ciudad o zona.
+
+Ejemplo
+
+  * La estantería metálica de 3 mts, se encuentra ubicada en la bodega principal.
+
+Observaciones
+
+La ubicación de un activo se puede utilizar cuando en la empresa no tienen
+discriminadas las áreas o departamentos como centros de costos.
+Ej. El computador portatil H-1020, está ubicado en la gerencia.
+
+
+
+﻿
+
+# Deterioro
+
+Presenta el valor correspondiente al deterioro o pérdida de calidad del
+activo.
+
+Ejemplo
+
+Se tiene un vehículo cuyo valor en libros está por $ 20.000.0000. Se hace un
+avalúo técnico por un perito.
+El perito dictamina que por condiciones ambientales se ha afectado la lámina y
+la pintura, además por circulación en carreteras en mal estado se han afectado
+los rodamientos y el vehículo ha perdido parte de su valor, por lo tanto
+indica que tiene un valor comercial de $ 15.000.000.
+Ante esto se debe hacer un registro de deterioro dentro del sistema
+\[ContaPyme\].
+Una vez realizado este deterioro, el valor que se presenta en este campo de la
+ficha técnica del activo es: **$ 5.000.000**
+
+Observaciones
+
+Este campo es de solo lectura y se origina por los registros generados en la
+operación de "Deterioro de activos."
+El deterioro solo se presenta con la vista de la contabilidad NIIF, no se
+presenta con la vista de la contabilidad local.
+
+
+
+﻿
+
+# Ajustes por inflación compra
+
+Presenta el valor correspondiente a los posibles ajustes por inflación al
+momento de registrar la compra del activo.
+
+Observaciones
+
+Algunos países \(incluyendo Colombia\) no manejan economía inflacionaria, por
+lo tanto no se generan ni contabilizan ajustes por inflación.
+En Colombia desde el año 2007 no se permite dicho manejo de ajustes por
+inflación, y con la adopción de las NIIF los posibles saldos en cuentas de
+inflación se debieron cancelar con la cuenta de "Adopción por primera vez."
+El objetivo de los ajustes por inflación consiste en reflejar con mayor
+precisión la situación real de los balances de las empresas en países que
+tienen alta inflación.
+Este campo es de solo lectura y se origina por los registros generados en la
+operación de "Acciones automáticas de fin de mes > Ajustes por inflación."
+
+
+
+﻿
+
+# Ajustes por inflación depreciación
+
+Presenta el valor correspondiente a los posibles ajustes por inflación al
+momento de registrar la depreciación del activo.
+
+Observaciones
+
+Algunos países \(incluyendo Colombia\) no manejan economía inflacionaria, por
+lo tanto no se generan ni contabilizan ajustes por inflación.
+En Colombia desde el año 2007 no se permite dicho manejo de ajustes por
+inflación, y con la adopción de las NIIF los posibles saldos en cuentas de
+inflación se debieron cancelar con la cuenta de "Adopción por primera vez."
+El objetivo de los ajustes por inflación consiste en reflejar con mayor
+precisión la situación real de los balances de las empresas en países que
+tienen alta inflación.
+Este campo es de solo lectura y se origina por los registros generados en la
+operación de "Acciones automáticas de fin de mes > Ajustes por inflación."
+
+
+
+﻿
+
+# Otros movimientos
+
+Presenta el valor correspondiente a acciones contables generadas con el
+activo.
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+\[ContaPyme\] tiene dentro del módulo de Activos, diferentes operaciones o
+asistentes que automatizan la gestión contable de cada activo, operaciones
+como:
+
+  * Compra.
+  * Depreciación.
+  * Revaluación.
+  * Venta.
+  * Baja.
+  * Deterioro.
+  * Etc.
+
+Cada una de ellas automatiza un proceso contable con el activo relacionado,
+sin embargo, una empresa puede realizar movimientos contables directamente al
+activo \(por medio de la operación de movimiento contable\), generando cambios
+en el valor en libros del activo. Estos posibles registros contables directos
+al activo, son los valores que \[ContaPyme\] presenta en este campo.
+
+
+
+﻿
+
+# Valor hoy
+
+Presenta el valor en libros del activo según la fecha de trabajo que se tenga
+indicada en el sistema.
+
+Observaciones
+
+Este campo es de solo lectura y se origina como resultado de la suma de los
+valores que aumentan el valor del activo menos los valores que restan al valor
+del activo.
+Por ejemplo:  \(+\) | Valor de compra y mayores valores.
+---|---
+\(-\) | Depreciación/amortización.
+\(+\) | Revaluación/valorización.
+\(-\) | Deterioro.
+\(+\) | Ajustes por inflación compra.
+\(-\) | Ajustes por inflación depreciación.
+\(+ o -\) | Otros movimientos. Depende del registro contable si debitó o acreditó al activo.
+
+
+
+﻿
+
+# Fecha de baja del activo
+
+Presenta la fecha en la que el activo fue dado de baja o vendido.
+
+Observaciones
+
+Este campo es de solo lectura y se origina según la fecha registrada en la
+operación de: "Venta de activos" o "Baja de activos".
+Para conocer con más detalle la información registrada en la baja o venta del
+activo, presione el botón "Ver documento que dió de baja el activo..."
+
+
+
+﻿
+
+# Motivo de la baja
+
+Muestra el motivo o razón por la cual se generó la baja o venta del activo.
+
+Observaciones
+
+Este campo es de solo lectura y presenta información solo si al momento de
+generar operación de: "Venta de activos" o "Baja de activos", se registró el
+comentario con el motivo de la baja o venta.
+Para conocer con más detalle la información registrada en la baja o venta del
+activo, presione el botón "Ver documento que dió de baja el activo..."
+
+
+
+﻿
+
+# Clasificadores
+
+Palabra clave que sirve para etiquetar o agrupar un activo con otros, los
+cuales pueden tener funcionalidades o características similares.
+
+Ejemplo
+
+  * Se tienen diferentes carros cada uno creado como activo, en este caso un clasificador puede ser: Vehículos.
+  * Se tienen diferentes activos como: escritorios, sillas y muebles en una empresa, en este caso un clasificador puede ser: Muebles y Enseres.
+
+Observaciones
+
+Un clasificador puede ser útil para hacer filtros en la búsqueda de
+información de varios activos.
+Ej. Conocer la depreciación acumulada de todos los activos cuyo clasificador
+es: Muebles y Enseres \(útil para no tener que generar la consulta de manera
+individual por cada activo\).
+El clasificador también se puede usar si la empresa cuenta con el módulo de
+costos indirectos de producción, para distribuir los costos de maquinaria y
+equipo basados en el uso de los activos que están agrupados bajo un
+clasificador en común.
+
+
+
+﻿
+
+# Ver documento que finaliza el activo.
+
+Permite visualizar la operación que finaliza el activo, sin tener que ir al
+manejador de operaciones a buscarla dentro del listado de operaciones.
+
+Observaciones
+
+Muy útil para consultar directamente la operación de venta o baja del activo,
+y analizar datos de la finalización.
+
+
+
+﻿
+
+# Fecha de baja del activo NIIF.
+
+Presenta la fecha en la que el activo fue dado de baja o vendido.
+
+Observaciones
+
+Este campo es de solo lectura y se origina según la fecha registrada en la
+operación de: "Venta de activos" o "Baja de activos".
+Para conocer con más detalle la información registrada en la baja o venta del
+activo, presione el botón "Ver documento que dió de baja el activo..."
+
+
+
+﻿
+
+# Motivo de la baja NIIF.
+
+Muestra el motivo o razón por la cual se generó la baja o venta del activo.
+
+Observaciones
+
+Este campo es de solo lectura y presenta información solo si al momento de
+generar operación de: "Venta de activos" o "Baja de activos", se registró el
+comentario con el motivo de la baja o venta.
+Para conocer con más detalle la información registrada en la baja o venta del
+activo, presione el botón "Ver documento que dió de baja el activo..."
+
+
+
+﻿
+
+# Ver documento que finaliza el activo NIIF.
+
+Permite visualizar la operación que finaliza el activo, sin tener que ir al
+manejador de operaciones a buscarla dentro del listado de operaciones.
+
+Observaciones
+
+Muy útil para consultar directamente la operación de venta o baja del activo,
+y analizar datos de la finalización.
+
+
+
+﻿
+
+# Descripción
+
+Indique información relevante que desee documentar del activo.
+
+Ejemplo
+
+Ficha técnica del activo que puede estar descrita en el manual operativo,
+marca, modelo, etc.
+
+Observaciones
+
+La información que en este campo se indique, sirve para reconstruir una
+historia completa del activo con datos adicionales a los que la contabilidad
+reporta.
+
+
+
+﻿
+
+# Guardar foto
+
+Permite guardar en el computador la foto que se tenga del activo.
+
+Observaciones
+
+  * La foto queda almacenada en alguno de los siguientes formatos: .JPG, .JPGE, .BMP o .PNG
+  * La foto se puede visualizar en el catálogo de activos, agregando como visible en pantalla dicho campo.
+  * Si no hay foto, esta opción se muestra desactivada.
+
+
+
+# Acerca de ventana
+
+##  CATÁLOGO DE ACTIVOS
+
+##  Objetivos
+
+  * Crear la ficha técnica del activo para que pueda ser registrado en la contabilidad.
+  * Permitir la configuración personalizada del tipo de contabilización del activo \(si este aún no se ha cargado en la contabilidad\).
+  * Presentar la ficha técnica contable del activo \(una vez ya se tiene cargado en la contabilidad el activo\).
+
+
+
+## Ejemplo de información a registrar
+
+Al momento de crear la ficha técnica del activo, la información más relevante
+a registrar es el grupo y la cuenta contable a la cual pertenece el activo.
+
+Ejemplo:
+
+Si se compra un activo de transporte, éste se relaciona con el grupo “Flota y
+equipo de transporte”, pero dentro de las posibles cuentas a las que puede
+pertenecer están:
+
+  * Autos, camionetas y camperos.
+  * Camiones, volquetas y furgones.
+  * Tractomulas.
+  * Buses y busetas.
+  * Montacargas.
+  * Motocicletas.
+  * Bicicletas.
+  * Etc.
+
+## Definición de conceptos
+
+## Costo
+
+Es el valor de efectivo o equivalentes al efectivo pagados por el activo, o
+bien el valor razonable de la contraprestación entregada, para adquirir un
+activo.
+
+## Vida Útil
+
+Es el periodo durante el cual se espera utilizar el activo por parte de la
+entidad o es el número de unidades de producción que se espera obtener del
+activo.
+
+## Valor residual
+
+Es el valor estimado que la entidad podría obtener por disponer del activo;
+después de deducir los costos estimados por tal disposición, si el activo ya
+hubiera alcanzado la antigüedad y las demás condiciones esperadas al término
+de su vida útil.
+
+## Importe depreciable
+
+Es el costo de un activo u otro valor que lo haya sustituido, menos su valor
+residual.
+
+## Depreciación
+
+Es la distribución sistemática del importe depreciable de un activo a lo largo
+de su vida útil.
+
+## Importe en libro
+
+Es el valor por el que se reconoce un activo, una vez deducidas la
+depreciación acumulada y las pérdidas por deterioro.
+
+## Valor razonable
+
+Es el precio que se recibiría por vender un activo restando sus costos de
+venta.
+
+## Importe recuperable
+
+Es la mayor cuantía entre el valor razonable y el valor en uso.
+
+## Pérdida por deterioro
+
+Es el valor extra que exista del importe \(valor\) en libros de un activo
+sobre su importe recuperable. Si el importe en libros es mayor que el importe
+recuperable hay Deterioro.
+
+## Valorización
+
+Aumento en el valor de un activo con el fin de reflejar su valor de mercado
+actual.
+
+## Revaluación
+
+Incremento del valor en libros de los activos fijos a valores de mercado,
+también podemos decir, que es el proceso de aumentar su valor en libros en
+caso de grandes cambios en el valor justo de mercado.
+
+
+
+## Secciones
+
+## Sección general
+
+Se indica información genérica del activo \(centro de costos, responsable,
+localización, foto, etc.\). Cuando el activo ya está registrado en la
+contabilidad, cierta información como fecha de compra y proveedor se muestran
+como de solo lectura, y otra como centro de costos y responsable puede ser
+modificada a través del tiempo \(permitiendo conocer el historial de registro
+en períodos anteriores\).
+
+## Sección contabilización
+
+Permite seleccionar el grupo al que pertenece el activo \(tanto en la normal
+local como en la NIIF\). El grupo seleccionado y la información complementaria
+personalizada como tipo de depreciación, valor residual y vida útil son la
+base para la existencia contable del activo. Una vez se realiza el registro
+contable \(compra, cargue del activo\), ésta información se presenta de solo
+lectura.
+
+## Sección descripción
+
+Se utiliza para registrar información técnica o descriptiva del activo.
+Información que puede ser útil para consultar a lo largo del tiempo.
+
+## Importe depreciable
+
+Es el costo de un activo u otro valor que lo haya sustituido, menos su valor
+residual.
+
+## Sección costos
+
+Permite consultar toda la información contable \(débitos y créditos\) que han
+afectado al activo; esta sección presenta un resumen de todo el comportamiento
+contable del activo desde su fecha de creación o registro en la contabilidad y
+conocer el valor en libros del activo.
+
+## Sección compras y mayores valores
+
+Presenta la información y el detalle de la operación de compra del activo, así
+como de los posibles mayores valores cargados a éste.
+
+## Sección depreciación/amortización
+
+Presenta de forma agrupada todo el histórico de las depreciaciones o
+amortizaciones registradas con el activo fijo o diferido. Muy útil para
+analizar período a período los valores contabilizados por la depreciación del
+activo y así conocer el detalle de la depreciación acumulada.
+
+## Sección revaluación/valorización
+
+Presenta de forma agrupada la información contable correspondiente a las
+posibles revaluaciones o valorizaciones registradas al activo a lo largo de su
+vida contable.
+
+## Sección deterioro
+
+Presenta de forma agrupada la información contable correspondiente a los
+posibles deterioros y reversiones de deterioro que se hayan registrado al
+activo a lo largo de su vida contable.
+
+## Sección ajustes por inflación
+
+Presenta de forma agrupada la información contable registrada al activo
+correspondiente a posibles ajustes por inflación. Se debe recordar que el
+objetivo de los ajustes por inflación consiste en reflejar con mayor precisión
+la situación real de los balances de las empresas en países que tienen alta
+inflación; en Colombia desde el año 2007 ya no se registran ajustes por
+inflación en la contabilidad.
+
+## Sección estado final
+
+Esta sección se visualiza cuando el activo es vendido o dado de baja en la
+contabilidad y permite conocer el motivo de la baja y la operación contable
+que registró dicha acción.
+
+
+
+---
+
+#### [10440] FrmInputNewActivo
+
+﻿
+
+# Empresa
+
+Indica la empresa bajo la cual queda registrado la adquisición del activo.
+
+Observaciones
+
+El activo se mostrará en el explorador gráfico de la empresa, como un nodo
+hijo de la empresa que se indica en este campo.
+El sistema \[ContaPyme\] asume para la creación del activo la empresa de
+trabajo en la que se está ubicado.
+
+
+
+﻿
+
+# Nuevo activo
+
+Código del nuevo activo que desea crear.
+
+Observaciones
+
+El código del nuevo activo puede ser un valor alfanumérico \(permite letras y
+números\), de hasta 30 caracteres.
+Si no se tiene un modelo de codificación estandarizado en la empresa, se
+recomienda una codificación basada en una estructura que permita relacionar el
+activo con el grupo al que pertenece, ejemplo:
+
+  * **VEH001:** Sería el código para un vehículo, el cual pertenece al grupo Flota y equipo de transporte.
+  * **COM001:** Sería el código para un computador, el cual pertenece al grupo Equipo de cómputo y comunicaciones.
+  * **OFC001:** Sería el código para un escritorio, el cual pertenece al grupo Equipo de oficina.
+
+Definición sencilla de activo:
+Es un bien de larga vida adquirido o creado en la empresa para ser utilizado
+en las operaciones del negocio y no está destinado para la venta.
+
+
+
+﻿
+
+# Activo padre
+
+Relacione el activo principal, bajo el cual quedará asignado el nuevo activo
+creado.
+
+Ejemplo
+
+La empresa tiene una camioneta de estacas, pero para poder operar requiere
+cambiar las estacas por un furgón para transporte de alimentos, por lo tanto
+compra el furgón para adaptarlo a la camioneta.
+En este caso se pueden tener dos activos diferentes:
+
+  * VEH001: Camioneta placa HHT-650
+  * VEH002: Furgón lámina inoxidable
+
+Pero se puede decir que el activo de código VEH002, tiene como activo padre al
+activo de código VEH001, pues la funcionalidad en dicha empresa es que ambos
+activos operen en conjunto.
+
+Observaciones
+
+Según el ejemplo anterior se puede decir:
+
+  * Al momento de vender o dar de baja el activo padre \(VEH001\) implica que también se da salida el activo hijo \(VEH002\).
+  * El vender o dar de baja el activo hijo \(VEH002\), no implica que el activo padre \(VEH001\) finalice.
+  * El activo hijo \(VEH002\), puede tener una vida útil muy diferente a la vida útil del activo padre \(VEH001\).
+
+Las NIIF permiten realizar separación de componentes en un activo, por lo
+tanto un activo puede tener partes cuyo ritmo de depreciación es diferente de
+los demás.
+
+Esta funcionalidad de separar activos padres e hijos, es útil también cuando
+un inmueble está destinado a diferentes usos.
+Ej. Una misma edificación de tres niveles, puede estar clasificada:
+\- Piso 1: Construcciones y edificaciones.
+\- Piso 2: Propiedad de inversión \(genera renta\).
+\- Piso 3: Activo mantenido para la venta.
+En este caso se podría indicar que bajo la norma local se trata de una sola
+edificación, pero bajo la norma NIIF se consideran tres activos diferentes,
+que están asociados al mismo activo padre Construcciones y edificaciones.
+El nodo padre de cada activo es una variable de tiempo, es decir, si un activo
+está en un período como hijo de un activo padre y a partir de una fecha cambia
+a ser hijo de otro activo padre, \[ContaPyme\] recordará las fechas y según la
+fecha de trabajo que se indique, el activo aparecerá como hijo de uno o de
+otro activo padre. Esto se puede hacer con la acción: **Recodificar.**
+
+
+
+---
+
+### Grupos de activos
+
+#### [12860] FrmGrupoActivo
+
+﻿
+
+# Cuenta pérdida por baja \(débito\)
+
+Cuenta del gasto donde \[ContaPyme\] registra o debita la pérdida por la baja
+de un activo.
+
+Ejemplo
+
+\[ContaPyme\] según el plan de cuentas para el sector comercial, presenta una
+cuenta de pérdida por baja de activos:
+
+  * **531030:** Retiro de propiedades, planta y equipo.
+
+Un computador portátil que tiene valor en libros de $ 2.000.000, fue robado.
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+**531030** | Pérdida retiro de propiedad, planta y equipo | **$ 2.000.000** |
+152805 | Activos equipo de cómputo y comunicaciones |  | $ 2.000.000
+
+Observaciones
+
+\[ContaPyme\] tiene una operación denominada: "Baja de activos" la cual
+permite registrar la salida o baja del activo.
+Al realizar la operación de baja, \[ContaPyme\] cancela automáticamente el
+valor en libros del activo y dicho valor se registra como una pérdida en la
+cuenta del gasto indicada en este campo.
+
+
+
+﻿
+
+# Grupo activo padre
+
+Identifica la clasificación general o tipo al cual pertenece el grupo de
+activo.
+
+Ejemplo
+
+Existen grupos de activo padre como:
+
+  * Inversiones.
+  * Propiedad, planta y equipo.
+  * Intangibles.
+  * Diferidos.
+
+Observaciones
+
+Sirve para analizar información \(en reportes y consultas\) de los diferentes
+activos en la empresa agrupados por este clasificador.
+Este campo es de solo lectura.
+
+
+
+﻿
+
+# Ícono
+
+Imagen que representa el grupo de activo.
+
+Observaciones
+
+El ícono del grupo se visualiza en el catálogo de grupos de activos y es útil
+para que visiblemente se pueda ubicar un grupo de manera rápida en el
+catálogo.
+
+
+
+﻿
+
+# Cuenta guía activo
+
+Cuenta del activo que se utiliza como guía al momento de hacer la asignación
+de un activo en este grupo.
+
+Ejemplo
+
+Al crear un grupo como "Flota y equipo de transporte", las opciones de cuenta
+\(según el plan de cuentas para el sector comercial\) pueden ser:
+
+  * **154005:** Autos, camionetas y camperos.
+  * **154008:** Camiones, volquetas y furgones.
+  * **154010:** Tractomulas y remolques.
+  * **154030:** Motocicletas.
+  * **154035:** Bicicletas.
+  * Etc.
+
+Compra de un activo \(vehículo por valor de $ 50.000.000\), cuyo grupo "Flota
+y equipo de transporte" tiene configurada la cuenta: 154005 - Autos,
+camionetas y camperos.
+
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+**154005** | Autos, camionetas y camperos | **$ 50.000.000** |
+111005 | Banco nacional |  | $ 50.000.000
+
+Observaciones
+
+Esta cuenta será la que el sistema debite automáticamente en la creación de un
+activo asociado a este grupo, sin embargo dicha cuenta se puede personalizar
+en cada activo haciendo clic en el botón de referencia y seleccionando la
+opción  "Modificar".
+Las opciones de cuentas dependen directamente de las cuentas auxiliares que se
+tengan creadas en el catálogo de plan de cuentas de \[ContaPyme\].
+
+
+
+﻿
+
+# Tipo depreciación
+
+Forma en la que se realizará la depreciación de los activos asociados a este
+grupo de activos.
+
+Ejemplo
+
+Una empresa define que los activos de "Equipo de cómputo y comunicaciones" se
+van a depreciar bajo el tipo de depreciación Mensual \(línea recta\), por lo
+tanto, cuando se creen activos como: computadores de escritorio, portátiles,
+impresoras, plantas telefónicas, etc., éstos asumirán la configuración de tipo
+de depreciación que el grupo de activos tenga registrada.
+
+Observaciones
+
+La depreciación es la distribución sistemática del importe depreciable \(costo
+del activo menos el valor residual\) a lo largo de su vida útil.
+Los tipos de depreciación disponibles son:
+
+  * No se deprecia: Un activo que no pierde su valor.
+Ej. Terreno.
+
+  * Mensual \(línea recta\): Un activo que se deprecia en proporciones iguales a lo largo de su vida últil.
+Ej. Depreciación mes = Importe depreciable / Vida útil \(meses\).
+**Nota:** \[ContaPyme\] maneja depreciación mensual línea recta para la
+contabilidad local-fiscal, pero para las NIIF realiza depreciación lineal, la
+cual consiste en una depreciación basada en días.
+
+  * Por unidades de uso: Un activo que se deprecia por el tiempo de uso \(horas\).
+Ej. Depreciación mes = Importe depreciable / Vida útil \(horas usadas\).
+
+  * Por unidades de producción: Un activo que se deprecia por la cantidad de producción que genera en un período.
+Ej. Depreciación mes = Importe depreciable / Vida útil \(unidades
+producidas\).
+
+  * Mensual acelerada: Un activo que se deprecia bajo un porcentaje de aceleración extra a la depreciación en línea recta.
+Ej. Tasa depreciación acelerada = Tasa de depreciación por línea recta \*
+Porcentaje de aceleración.
+Depreciación mes = Importe depreciable \* Tasa de depreciación acelerada.
+
+  * Depreciación decreciente: Un activo que se deprecia más en sus primeros años y presenta una disminución progresiva hacia los últimos años de la vida útil.
+Ej. Depreciación decreciente = \(Vida útil / Suma dígitos de la vida últil\)
+\* Importe depreciable.
+
+
+
+﻿
+
+# Código
+
+Código que identifica al grupo del activo bajo el cual se crearán nuevos
+activos.
+
+Ejemplo
+
+Se tiene identificado el grupo Flota y equipo de transporte con el código
+**1540**
+Dentro de este grupo se pueden crear diferentes activos como:
+
+  * **1540** 05: Autos, camionetas y camperos.
+  * **1540** 08: Camiones y volquetas.
+  * **1540** 15: Buses y busetas.
+  * **1540** 30: Motocicletas.
+  * **1540** 35: Bicicletas.
+  * Etc.
+
+Observaciones
+
+En el grupo de activo se realizan diferentes configuraciones \(Ej. cuentas
+contables\) que ayudan en la automatización de operaciones con el activo:
+compras, ventas, depreciaciones, deterioros, etc.
+
+
+
+﻿
+
+# Vida útil
+
+Tiempo o medida \(producción\) que un activo está en funcionamiento operativo
+para la empresa.
+
+Ejemplo
+
+  * Un equipo de cómputo y comunicaciones se puede estimar con una vida útil: 5 años \(60 meses\).
+  * Una máquina de producción se puede estimar con una vida útil: 20.000 horas.
+  * Una fotocopiadora se puede estimar con una vida útil: 15.000 copias.
+
+Observaciones
+
+Según el tipo de depreciación se puede indicar la vida útil:
+\- Mensual \(linea recta\): meses estimados de vida útil total del activo.
+Nota: \[ContaPyme\] para la norma internacional NIIF convierte esos meses a
+días, para tener un valor exacto de la depreciación por día de uso.
+\- Unidades uso: unidades estimadas de uso de vida útil total del activo.
+\- Unidades producción: producción estimada de vida útil total del activo.
+
+
+
+﻿
+
+# Cuenta depreciación \(crédito\)
+
+Cuenta del activo donde \[ContaPyme\] acumula las depreciaciones calculadas de
+forma automática cuando se realiza la operación "acciones automáticas de fin
+de mes" y se selecciona la opción de "Depreciaciones".
+
+Ejemplo
+
+Cada grupo de activo tiene una cuenta de depreciación \(crédito\) relacionada
+en el plan de cuentas.
+Algunas opciones de cuenta \(según el plan de cuentas para el sector
+comercial\) pueden ser:
+
+  * **159210:** Maquinaria y equipo.
+  * **159215:** Equipo de oficina.
+  * **159220:** Equipo de cómputo y comunicaciones.
+  * **159235:** Flota y equipo de transporte.
+  * Etc.
+
+Se realiza la depreciación de un vehículo por valor de $ 450.000. El vehículo
+está relacionado con el grupo "Flota y equipo de transporte".
+
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+**159235** | Depreciación flota y equipo de transporte |  | **$ 450.000**
+516035 | Gasto por depreciación | $ 450.000 |
+
+Observaciones
+
+Cuando se realizan operaciones como venta o baja de un activo, esta cuenta de
+depreciación se cancela, pues \[ContaPyme\] debe reversar todo el registro
+contable asociado a las depreciaciones acumuladas.
+Si el registro contable se debe realizar sobre la misma cuenta guía del
+activo, se puede escribir el texto =ICuentaActivo.
+El registro contable de la depreciación acumulada se refleja cada mes en el
+"Estado de situación financiera."
+
+
+
+﻿
+
+# Nombre
+
+Nombre o descripción del grupo de activos.
+
+Ejemplo
+
+Al interior de la empresa se tienen múltiples dispositivos de: comunicaciones
+\(teléfonos, celulares, planta telefónica\), impresoras, computadores de
+escritorio y portátiles. Por lo tanto un nombre adecuado para este grupo de
+activo puede ser: Equipo de cómputo y comunicaciones.
+
+Observaciones
+
+El nombre del grupo debe indicar información clara según los tipos de activos
+que este grupo va a contener.
+\[ContaPyme\] ya tiene creados y pre-configurados los grupos de activos que
+una empresa normalmente administra, sin embargo, también permite la creación y
+personalización de nuevos grupos.
+
+
+
+﻿
+
+# Cuenta depreciación \(débito\)
+
+Cuenta del gasto donde \[ContaPyme\] lleva las depreciaciones en forma
+automática en cada acción de cierre de fin de mes.
+
+Ejemplo
+
+Cada grupo de activo tiene una cuenta de depreciación \(débito\) relacionada
+en el plan de cuentas.
+Algunas opciones de cuenta \(según el plan de cuentas para el sector
+comercial\) pueden ser:
+
+  * **516010:** Maquinaria y equipo.
+  * **516015:** Equipo de oficina.
+  * **516020:** Equipo de cómputo y comunicaciones.
+  * **516035:** Flota y equipo de transporte.
+  * Etc.
+
+Se realiza la depreciación de un vehículo por valor de $ 450.000. El vehículo
+está relacionado con el grupo "Flota y equipo de transporte".
+
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+159235 | Depreciación flota y equipo de transporte |  | $ 450.000
+**516035** | Gasto por depreciación | **$ 450.000** |
+
+Observaciones
+
+El registro contable asignado al gasto se refleja cada mes en el "Estado de
+resultados."
+
+
+
+﻿
+
+# Cuenta valorización \(débito\)
+
+Cuenta **\(bajo norma local\)** del activo donde \[ContaPyme\] registra o
+debita las valorizaciones.
+
+Ejemplo
+
+Cada grupo de activo tiene una cuenta de valorización \(débito\) relacionada
+en el plan de cuentas.
+Algunas opciones de cuenta \(según el plan de cuentas para el sector
+comercial\) pueden ser:
+
+  * **191012:** Maquinaria y equipo.
+  * **191016:** Equipo de oficina.
+  * **191020:** Equipo de cómputo y comunicaciones.
+  * **191032:** Flota y equipo de transporte.
+  * Etc.
+
+Se realiza una mejora en la lámina y pintura de un vehículo por valor de $
+2.300.000. El vehículo está relacionado con el grupo "Flota y equipo de
+transporte".
+
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+**191032** | Valorización flota y equipo de transporte | **$ 2.3000.000** |
+381032 | Valorización flota y equipo de transporte \(Patrimonio\) |  | $ 2.300.000
+
+Observaciones
+
+El registro contable asignado en la valorización se refleja en el "Estado de
+situación financiera."
+Bajo la normal local la valorización de un activo no se tiene en cuenta al
+momento de hacer el cálculo de las depreciaciones.
+
+
+
+﻿
+
+# Cuenta valorización \(crédito\)
+
+Cuenta del patrimonio donde \[ContaPyme\] registra o acredita las
+valorizaciones.
+
+Ejemplo
+
+Cada grupo de activo tiene una cuenta de valorización \(crédito\) relacionada
+en el plan de cuentas.
+Algunas opciones de cuenta \(según el plan de cuentas para el sector
+comercial\) pueden ser:
+
+  * **381012:** Maquinaria y equipo.
+  * **381016:** Equipo de oficina.
+  * **381020:** Equipo de cómputo y comunicaciones.
+  * **381032:** Flota y equipo de transporte.
+  * Etc.
+
+Se realiza una mejora en la lámina y pintura de un vehículo por valor de $
+2.300.000. El vehículo está relacionado con el grupo "Flota y equipo de
+transporte".
+
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+191032 | Valorización flota y equipo de transporte | $ 2.3000.000 |
+**381032** | Valorización flota y equipo de transporte \(Patrimonio\) |  | **$ 2.300.000**
+
+Observaciones
+
+El registro contable asignado en la valorización se refleja en informes como:
+"Estado de situación financiera" y "Estado de cambios en el patrimonio".
+
+
+
+﻿
+
+# Cuenta revaluación \(débito\)
+
+Cuenta **\(bajo norma NIIF\)** del activo donde \[ContaPyme\] registra o
+debita las revaluaciones.
+
+Ejemplo
+
+Cada grupo de activo tiene una cuenta de revaluación \(débito\) relacionada en
+el plan de cuentas NIIF.
+Algunas opciones de cuenta \(según el plan de cuentas para el sector
+comercial\) pueden ser:
+
+  * **158920:** Maquinaria y equipo.
+  * **158925:** Equipo de oficina.
+  * **158930:** Equipo de cómputo y comunicaciones.
+  * **158945:** Flota y equipo de transporte.
+  * Etc.
+
+Se realiza una mejora en la lámina y pintura de un vehículo por valor de $
+2.300.000. El vehículo está relacionado con el grupo "Flota y equipo de
+transporte".
+
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+**158945** | Revaluación flota y equipo de transporte | **$ 2.3000.000** |
+381032 | Revaluación flota y equipo de transporte \(Patrimonio\) |  | $ 2.300.000
+
+Observaciones
+
+\[ContaPyme\] tiene una operación especial para hacer las revaluaciones de los
+activos llamada: "Revaluación de activos."
+El registro contable asignado en la revaluación se refleja en el "Estado de
+situación financiera."
+Bajo la norma internacional \(NIIF\) la revaluación de un activo se tiene en
+cuenta al momento de hacer el cálculo de las depreciaciones.
+
+Configuración
+
+Empresas clasificadas grupo 2 y 3 en las NIIF, que requieran realizar
+revaluciones en los activos, deben activar esta opción ingresando
+por:**\[Botón aplicación > Configuración > Configuraciones adicionales para
+contabilización NIIF > Permitir en activos el manejo de revaluaciones, para
+empresas de NIIF grupos 2 y 3.\]**
+
+
+
+﻿
+
+# Contabilización local
+
+Active esta opción si el grupo de activo debe configurarse para afectar la
+contabilidad local.
+
+Observaciones
+
+Esta opción se maneja cuando en un país se tiene contabilización local o
+fiscal y se está haciendo transición a las NIIF \(Normas Internacionales de
+Información Financiera\) o ya se tienen implementadas y se debe presentar
+información bajo el análisis de la contabilidad fiscal y las NIIF de manera
+simultánea.
+Al activar esta opción el sistema \[ContaPyme\] habilita una serie de
+información o campos, los cuales se configuran con datos desde el punto de
+vista de la contabilidad local.
+Las cuentas que este grupo de activo tenga configuradas, deben estar activadas
+en el Plan Único de Cuentas \(PUC\) como cuentas de contabilización local.
+Un ejemplo de cuándo no se activa esta opción, es cuando se crea un grupo como
+"Propiedad de inversión" o "Activo disponible para la venta", puesto que estos
+grupos son exclusivos de la contabilidad NIIF y no existen en la contabilidad
+local.
+
+
+
+﻿
+
+# Cuenta valorización \(crédito\)
+
+Cuenta del patrimonio donde \[ContaPyme\] registra o acredita las
+revaluaciones.
+
+Ejemplo
+
+Cada grupo de activo tiene una cuenta de valorización \(crédito\) relacionada
+en el plan de cuentas.
+Algunas opciones de cuenta \(según el plan de cuentas para el sector
+comercial\) pueden ser:
+
+  * **381012:** Maquinaria y equipo.
+  * **381016:** Equipo de oficina.
+  * **381020:** Equipo de cómputo y comunicaciones.
+  * **381032:** Flota y equipo de transporte.
+  * Etc.
+
+Se realiza una mejora en la lámina y pintura de un vehículo por valor de $
+2.300.000. El vehículo está relacionado con el grupo "Flota y equipo de
+transporte".
+
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+158945 | Revaluación flota y equipo de transporte | $ 2.3000.000 |
+**381032** | Valorización flota y equipo de transporte \(Patrimonio\) |  | **$ 2.300.000**
+
+Observaciones
+
+\[ContaPyme\] tiene una operación especial para hacer las revaluaciones de los
+activos llamada: "Revaluación de activos."
+El registro contable asignado en la valorización se refleja en informes como:
+"Estado de situación financiera" y "Estado de cambios en el patrimonio".
+
+
+
+﻿
+
+# Cuenta devaluación \(débito\)
+
+Cuenta del gasto donde \[ContaPyme\] registra o debita las devaluaciones
+\(reducción del importe recuperable del activo\).
+
+Ejemplo
+
+Una máquina del área de producción, ha disminuido la cantidad de piezas que
+fabrica \(por obsolescencia\), según un análisis técnico de un perito la
+máquina que está registrada en libros en la contabilidad por $ 17.000.000,
+debe quedar por: $ 13.000.000
+
+Caso 1. Este ejemplo se realiza suponiendo que dicha máquina no tiene
+contabilizadas revaluaciones.
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+**519998** | Gastos por devaluación | **$ 4.0000.000** |
+381032 | Flota y equipo de transporte \(Patrimonio\) |  | $ 4.000.000
+
+
+Caso 2. Este ejemplo se realiza suponiendo que dicha máquina tiene
+contabilizada anteriormente una revaluación.
+En este caso primero se debe disminuir la afectación contable de la
+revaluación anterior, para que cuando esta quede en cero pueda registrarse el
+valor en el gasto.
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+158945 | Revaluación flota y equipo de transporte |  | $ 4.000.000
+381032 | Flota y equipo de transporte \(Patrimonio\) | $ 4.000.000 |
+
+Observaciones
+
+La devaluación de un activo se realiza en \[ContaPyme\] mediante la operación:
+"Revaluación de activos", indicando en el avalúo del activo un valor inferior
+al costo actual del mismo.
+El registro contable asignado en la devaluación se refleja en informes como:
+"Estado de situación financiera" y "Estado de cambios en el patrimonio".
+
+La devaluación de un activo actúa bajo ciertos criterios:
+
+  * Si el activo no ha tenido revaluaciones previas, se registra directamente la devaluación en la cuenta configurada del gasto.
+  * Si el activo ha tenido revaluaciones previas:
+    * Si el monto de la devaluación es inferior al valor de la revaluación, el monto total de la devaluación se disminuye de la cuenta donde se registró la revaluación.
+    * Si el monto de la devaluación es superior al valor de la revaluación, el monto de la devaluación primero se disminuye totalmente la revaluación realizada y luego el valor faltante se registra en la cuenta del gasto.
+
+
+
+﻿
+
+# Contabilización NIIF
+
+Active esta opción si el grupo de activo debe configurarse para afectar la
+contabilidad NIIF.
+
+Ejemplo
+
+Si se requieren administrar los activos de una empresa bajo estándares
+internacionales, es decir, registrar revaluaciones, deterioros, reversiones de
+deterioro, se debe activar esta opción.
+
+Observaciones
+
+Esta opción se maneja cuando un país se rige bajo los estándares de la
+contabilidad NIIF \(Normas Internacionales de Información Financiera\).
+Si activa esta opción \[ContaPyme\] habilita una serie de información o
+campos, los cuales se configuran con datos contables desde el punto de vista
+de la norma internacional.
+Las cuentas que este grupo de activo tenga configuradas, deben estar activadas
+en el Plan Único de Cuentas \(PUC\) como cuentas de contabilización NIIF.
+Un ejemplo de cuándo se activa esta opción y no la de "Contabilización local",
+es cuando se crea un grupo como "Propiedad de inversión" o "Activo disponible
+para la venta", puesto que estos grupos son exclusivos de la contabilidad
+NIIF.
+
+Configuración
+
+Esta opción se muestra solo si la empresa indica que tiene contabilidad NIIF,
+para verificar si la contabilidad NIIF está configurada en la empresa, se debe
+ingresar por:
+**\[Botón aplicación > Configuración > Configuración general de contabilidad >
+Tipo de contabilización: Local / NIIF\]**
+
+Si la empresa aún no ha realizado la transición a la contabilidad NIIF, puede
+ingresar por:
+**\[Botón aplicación > Utilidades > Adecuaciones para iniciar contabilización
+NIIF\]**
+
+
+
+﻿
+
+# Cuenta deterioro \(crédito\)
+
+Cuenta del activo donde \[ContaPyme\] registra o acredita el deterioro
+\(pérdida de la funcionalidad o estado del activo\).
+
+Ejemplo
+
+Cada grupo de activo tiene una cuenta de deterioro \(crédito\) relacionada en
+el plan de cuentas.
+Algunas opciones de cuenta \(según el plan de cuentas para el sector
+comercial\) pueden ser:
+
+  * **159920:** Maquinaria y equipo.
+  * **159924:** Equipo de oficina.
+  * **159928:** Equipo de cómputo y comunicaciones.
+  * **159940:** Flota y equipo de transporte.
+  * Etc.
+
+Por condiciones climáticas se ha generado daño en la lámina y pintura de un
+vehículo. Según el dictamen del perito, el vehículo que está relacionado con
+el grupo "Flota y equipo de transporte" se ha deteriorado en $ 4.500.000.
+
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+**159940** | Deterioro flota y equipo de transporte |  | **$ 4.500.000**
+519915 | Gasto por deterioro flota y equipo de transporte | $ 4.500.000 |
+
+Observaciones
+
+\[ContaPyme\] tiene una operación especial para registrar los deterioros
+llamada: "Deterioro de activos". Esta operación solo funciona en empresas que
+tengan configuradas las NIIF.
+El deterioro de valor de los activos se define como una pérdida que se produce
+cuando el **importe en libros** de un activo es **superior** a su **importe
+recuperable.**
+
+  * **Importe en libros:** Valor que tiene un activo una vez deducida la depreciación acumulada.
+  * **Importe recuperable:** Es la mayor cuantía entre el valor razonable y el valor en uso.
+    * **Valor razonable:** Precio que se recibiría por vender el activo restando los costos de venta.
+\- Ej. Precio en el mercado del activo con sus condiciones actuales.
+
+    * **Valor en uso:** Valor presente de los flujos futuros de efectivo estimados que se espera obtener de un activo.
+-Ej. Dinero que podría ganar una empresa en los próximos años por trabajar con el activo \(estimación\).
+\[ContaPyme\] en la operación de "Deterioro de activos" tiene un asistente
+especial que sistematiza los conceptos anteriores y ayuda a calcular el
+deterioro de un activo.
+
+
+
+﻿
+
+# Tipo de activo
+
+Define la clasificación agrupada del activo.
+
+Ejemplo
+
+Se pueden tener diferentes tipos de activos como:
+
+  * Propiedad, planta y equipo.
+  * Propiedades de inversión.
+  * Activos intangibles.
+  * Activos disponibles para la venta.
+  * Inversiones.
+  * Etc.
+
+Estos tipos de activos a su vez pueden tener una sub-agrupación interna por
+categorías, ejemplo:
+**Propiedad, planta y equipo:**
+\- Terrenos.
+\- Maquinaria y equipo.
+\- Equipo de cómputo y comunicaciones.
+\- Flota y equipo de transporte.
+\- Etc.
+
+Observaciones
+
+Este campo es útil para generar y estructurar de forma ordenada los diferentes
+grupos de activos en el catálogo.
+
+
+
+﻿
+
+# Cuenta gasto deterioro \(débito\)
+
+Cuenta del gasto donde \[ContaPyme\] registra o debita el deterioro \(pérdida
+de la funcionalidad o estado del activo\).
+
+Ejemplo
+
+\[ContaPyme\] según el plan de cuentas para el sector comercial en NIIF,
+indica cuentas del gasto por deterioro así:
+
+  * **519905:** Inversiones.
+  * **519915:** Propiedad, planta y equipo.
+  * **519920:** Activos fijos mantenidos para la venta.
+  * **519930:** Propiedades de inversión.
+  * Etc.
+
+Por condiciones climáticas se ha generado daño en la lámina y pintura de un
+vehículo. Según el dictamen del perito, el vehículo se ha deteriorado en $
+4.500.000.
+
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+159940 | Deterioro flota y equipo de transporte |  | $ 4.500.000
+**519915** | Gasto por deterioro propiedad, planta y equipo | **$ 4.500.000** |
+
+Observaciones
+
+\[ContaPyme\] tiene una operación especial para registrar los deterioros
+llamada: "Deterioro de activos". Esta operación solo funciona en empresas que
+tengan configuradas las NIIF.
+El deterioro de valor de los activos se define como una pérdida que se produce
+cuando el **importe en libros** de un activo es **superior** a su **importe
+recuperable.**
+
+  * **Importe en libros:** Valor que tiene un activo una vez deducida la depreciación acumulada.
+  * **Importe recuperable:** Es la mayor cuantía entre el valor razonable y el valor en uso.
+    * **Valor razonable:** Precio que se recibiría por vender el activo restando los costos de venta.
+\- Ej. Precio en el mercado del activo con sus condiciones actuales.
+
+    * **Valor en uso:** Valor presente de los flujos futuros de efectivo estimados que se espera obtener de un activo.
+-Ej. Dinero que podría ganar una empresa en los próximos años por trabajar con el activo \(estimación\).
+\[ContaPyme\] en la operación de "Deterioro de activos" tiene un asistente
+especial que sistematiza los conceptos anteriores y ayuda a calcular el
+deterioro de un activo.
+
+
+
+﻿
+
+# Cuenta ingresos por reversión de deterioro en diferente período \(crédito\)
+
+Cuenta del ingreso donde \[ContaPyme\] registra o acredita la reversión del
+deterioro.
+Se utiliza solo cuando la reversión se realiza en un **período diferente** al
+que se registró el deterioro.
+
+Ejemplo
+
+Un vehículo que tenía daños en la lámina y pintura \(se le había registrado un
+deterioro por $ 4.500.000\); se llevó al taller y se realizó una reparación.
+Ante esto se hizo un nuevo avalúo y el perito indicó que el vehículo había
+recuperado ese valor deteriorado.
+
+Caso 1. Este ejemplo se plantea suponiendo que la reversión del deterioro se
+realiza en un período contable diferente al que se registró el deterioro.
+\(En este caso se registra un menor valor al ingreso \(crédito\), puesto que
+la cuenta de gasto ya fue cancelada en el cierre de año.\)
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+159940 | Deterioro flota y equipo de transporte | $ 4.500.000 |
+**429590** | Ingreso por reversión de deterioro período diferente |  | **$ 4.500.000**
+
+
+Caso 2. Este ejemplo se plantea suponiendo que la reversión del deterioro se
+realiza en el mismo período contable al que se registró el deterioro.
+\(En este caso se reversa el movimiento contable generado inicialmente por el
+deterioro.\)
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+159940 | Deterioro flota y equipo de transporte | $ 4.500.000 |
+**519915** | Gasto por deterioro propiedad, planta y equipo |  | **$ 4.500.000**
+
+Observaciones
+
+\[ContaPyme\] tiene dentro de la operación: "Deterioro de activos" una opción
+especial para registrar la reversión del deterioro en el mismo o diferente
+período contable.
+Esta operación solo funciona en empresas que tengan configuradas las NIIF.
+
+
+
+﻿
+
+# Es de depreciación o amortización.
+
+Active esta casilla para que los activos que se clasifiquen en este grupo se
+les calcule de forma automática la depreciación o amortización en el cierre de
+mes.
+
+Ejemplo
+
+Se compra un vehículo el cual se pretende depreciar en 10 años.
+Al momento de la creación de la ficha técnica del vehículo, éste se asocia al
+grupo: "Flota y equipo de transporte". Con esta asociación, \[ContaPyme\]
+verifica si el grupo tiene activa o no la opción **Es de depreciación o
+amortización.**
+Si la opción está activa: cada vez que que el usuario realice la acción de
+cierre de mes para el cálculo de depreciaciones, \[ContaPyme\] realiza el
+cálculo automático de la depreciación del vehículo, lo que implica disminuir
+su valor en libros y vida útil.
+Si la opción no está activa: este vehículo no se deprecia y su valor en libros
+contables siempre será el mismo.
+
+Observaciones
+
+Si se activa esta opción, \[ContaPyme\] solicitará que se configuren datos
+como:
+\- Tipo de depreciación \(bajo normal local y/o NIIF, según el tipo de
+contabilización seleccionada\).
+\- Cuenta de depreciación o amortización \(crédito\).
+\- Cuenta de depreciación o amortización \(débito\).
+Un claro ejemplo de un grupo de activos que no es depreciable, son los activos
+mantenidos para la venta, puesto que su valor en libros se pretende recuperar
+con la venta y no con su uso en la empresa.
+
+
+
+﻿
+
+# Es valorizable.
+
+Active esta casilla para que los activos que se clasifiquen en este grupo se
+puedan valorizar.
+
+Ejemplo
+
+Se tiene un vehículo al cual se le hizo mejoras en lámina, pintura y reemplazo
+de algunos repuestos.
+Al momento de la creación de la ficha técnica del vehículo, éste se asocia al
+grupo: "Flota y equipo de transporte". Con esta asociación, \[ContaPyme\]
+verifica si el grupo tiene activa o no la opción **Es valorizable.**
+Si la opción está activa: el usuario puede realizar operaciones como
+"Compra/Mayor valor de activo" o "Revaluaciones de activos" y darle un nuevo
+avalúo al activo según lo que indique un perito.
+Si la opción no está activa: a este vehículo no se le pueden realizar
+operaciones que cambien su avalúo.
+
+Observaciones
+
+Si se activa esta opción, \[ContaPyme\] solicitará que se configuren datos
+como:
+\- Cuenta de valorización \(débito\).
+\- Cuenta de valorización \(crédito\).
+\- Cuenta de revaluación \(débito\).
+\- Cuenta de superávit por valorización \(crédito\).
+\- Cuenta de gasto por devaluación \(débito\).
+
+
+
+﻿
+
+# Cuenta utilidad en venta \(crédito\)
+
+Cuenta del ingreso donde \[ContaPyme\] registra o acredita la utilidad por la
+venta.
+
+Ejemplo
+
+\[ContaPyme\] según el plan de cuentas para el sector comercial, presenta
+diferentes cuentas de utilidad por venta de activos según el grupo:
+
+  * **424520:** Maquinaria y equipo.
+  * **424524:** Flota y equipo de oficina.
+  * **424528:** Equipo de cómputo y comunicaciones.
+  * **424540:** Flota y equipo de transporte.
+  * Etc.
+
+Un vehículo que tiene valor en libros de $ 30.000.000, se vende por $
+33.500.000.
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+**424540** | Utilidad venta flota y equipo de transporte |  | **$ 3.500.000**
+111005 | Bancos | $ 3.500.000 |
+
+Observaciones
+
+\[ContaPyme\] tiene una operación denominada: "Venta de activos" la cual
+permite registrar la venta y entrega del activo a un tercero.
+Al realizar la operación de venta, \[ContaPyme\] cancela automáticamente el
+valor en libros del activo y si el activo se vende por mayor valor \(del saldo
+en libros\) se registra una utilidad en la cuenta del ingreso indicada en este
+campo.
+
+
+
+﻿
+
+# Cuenta pérdida en venta \(débito\)
+
+Cuenta del gasto donde \[ContaPyme\] registra o debita la pérdida por la
+venta.
+
+Ejemplo
+
+\[ContaPyme\] según el plan de cuentas para el sector comercial, presenta
+diferentes cuentas de pérdida por venta de activos:
+
+  * **531005:** Inversiones.
+  * **531015:** Propiedad, planta y equipo.
+  * **531020:** Venta de intangibles.
+  * Etc.
+
+Un vehículo que tiene valor en libros de $ 30.000.000, se vende por $
+26.000.000.
+Cuenta | Nombre cuenta | Débito | Crédito
+---|---|---|---
+**531015** | Pérdida venta flota y equipo de transporte | **$ 4.000.000** |
+154005 | Activos flota y equipo de transporte |  | $ 4.000.000
+
+Observaciones
+
+\[ContaPyme\] tiene una operación denominada: "Venta de activos" la cual
+permite registrar la venta y entrega del activo a un tercero.
+Al realizar la operación de venta, \[ContaPyme\] cancela automáticamente el
+valor en libros del activo y si el activo se vende por menor valor \(del saldo
+en libros\) se registra una pérdida en la cuenta del gasto indicada en este
+campo.
+
+
+
+# Acerca de ventana
+
+##  VENTANA EN CATÁLOGO GRUPOS DE ACTIVOS
+
+##  Objetivos
+
+Configurar de manera general el comportamiento y cuentas contables que van a
+afectar a los diferentes activos que se relacionen con este grupo.
+
+## Ejemplo de información a registrar
+
+Se indica o configura información como:
+
+  * Si al activo se le puede calcular depreciación o amortización.
+  * El tipo de depreciación que el activo va a seguir.
+  * Si el activo puede tener valorizaciones o no.
+  * Cuentas contables que se afectarán cuando se realicen transacciones con el activo como: compra, valorizaciones, depreciaciones, deterioros, ventas, etc.
+
+## Definición conceptos
+
+## Costo
+
+Es el valor de efectivo o equivalentes al efectivo pagados por el activo, o
+bien el valor razonable de la contraprestación entregada, para adquirir un
+activo.
+
+## Vida Útil
+
+Es el periodo durante el cual se espera utilizar el activo por parte de la
+entidad o es el número de unidades de producción que se espera obtener del
+activo.
+
+## Depreciación
+
+Es la distribución sistemática del importe depreciable de un activo a lo largo
+de su vida útil.
+
+## Pérdida por deterioro
+
+Es el valor extra que exista del importe \(valor\) en libros de un activo
+sobre su importe recuperable. Si el importe en libros es mayor que el importe
+recuperable hay Deterioro.
+
+## Valorización
+
+Aumento en el valor de un activo con el fin de reflejar su valor de mercado
+actual.
+
+## Revaluación
+
+Incremento del valor en libros de los activos fijos a valores de mercado,
+también podemos decir, que es el proceso de aumentar su valor en libros en
+caso de grandes cambios en el valor justo de mercado.
+
+
+
+## Secciones
+
+## Sección general
+
+Se define el tipo de contabilización que va a tener el grupo de activo, se
+puede tener contabilidad local y contabilidad NIIF. Si un país está adoptando
+la norma internacional, pero a su vez debe seguir trabajando con la
+normatividad local o fiscal se activan ambas opciones. Al activar o desactivar
+alguno de los tipos de contabilización se habilitan diferentes secciones o
+pestañas que solicitan configurar cuentas.
+También se configura la opción de permitir la depreciación y la valorización a
+los activos que pertenezcan a este grupo de activos.
+
+## Sección cuenta guía activo
+
+Se configura la cuenta guía del activo que se utilizará inicialmente cuando se
+registre en la contabilidad la compra o cargue del activo, pero también se
+usará cuando se realicen otras transacciones como ventas o bajas del activo.
+
+## Sección tipo depreciación/amortización
+
+Se indica el tipo de depreciación \(\[ContaPyme\] permite configurar
+diferentes tipos de depreciación según lo permitido por las normas fiscales y
+NIIF\), al igual que la vida útil que por defecto van a tener los activos que
+pertenezcan a este grupo. Sin embargo, al momento de hacer la adquisición del
+activo se puede modificar la información de la vida útil.
+
+## Sección cuenta valorización local
+
+Se configuran las cuentas contables que se afectarán \(tanto débito como
+crédito\) al momento de registrar una valorización de un activo. Esta
+configuración se realiza bajo el supuesto de que la empresa tenga activa la
+opción contabilización local en la sección general.
+
+## Sección cuenta revaluación NIIF
+
+Se configuran las cuentas contables que se afectarán \(tanto débito como
+crédito\) al momento de registrar una revaluación o una devaluación de un
+activo. Esta configuración se realiza bajo el supuesto de que la empresa tenga
+activa la opción contabilización NIIF en la sección general.
+
+## Sección cuenta deterioro NIIF
+
+Se configuran las cuentas contables que se afectarán \(tanto débito como
+crédito\) al momento de registrar un deterioro o la reversión del deterioro de
+un activo. Esta configuración se realiza bajo el supuesto de que la empresa
+tenga activa la opción contabilización NIIF en la sección general.
+
+## Sección cuenta utilidad venta
+
+Se define la cuenta contable \(ingreso\) que \[ContaPyme\] afectará cuando se
+realice una venta de un activo y dicho valor de venta, sea mayor al valor en
+libros del activo.
+
+## Sección cuenta pérdida venta
+
+Se define la cuenta contable \(gasto\) que \[ContaPyme\] afectará cuando se
+realice una venta de un activo y dicho valor de venta, sea menor al valor en
+libros del activo.
+
+## Sección cuenta pérdida baja
+
+Se define la cuenta contable \(gasto\) que \[ContaPyme\] afectará cuando se
+realice una baja o pérdida de un activo y dicho activo aún tenga saldo en
+libros.
+
+
+
+---
+
+#### [12870] FrmInputNewGrupoActivo
+
+﻿
+
+# Grupo padre
+
+Código del grupo principal que asociará los diferentes tipos de grupos de
+activo.
+
+Ejemplo
+
+  * **12:** Inversiones.
+  * **15:** Propiedad, planta y equipo.
+  * **16:** Intangibles.
+  * Etc.
+
+Observaciones
+
+\[ContaPyme\] tiene pre-configurados los principales agrupadores de activos,
+los cuales sirven para presentar de una manera más ordenada y estructurada los
+diferentes tipos de grupos de activos.
+
+
+
+﻿
+
+# Código nuevo grupo
+
+Código del grupo que asociará diferentes activos de una misma línea.
+
+Ejemplo
+
+Dentro del grupo padre **15 - Propiedad, planta y equipo** se pueden tener
+grupos como:
+
+  * **15** 01: Activos disponibles para la venta.
+  * **15** 02: Propiedades de inversión.
+  * **15** 20: Maquinaria y equipo.
+  * **15** 28: Equipo de cómputo y comunicaciones.
+  * **15** 40: Flota y equipo de transporte.
+  * Etc.
+
+Cada grupo puede contener diferentes activos, los cuales por sus
+características o funcionalidades similares son susceptibles de asociar bajo
+un mismo grupo.
+
+Observaciones
+
+El código del nuevo grupo puede ser numérico o alfanumérico y permite hasta 6
+caracteres.
+\[ContaPyme\] tiene configurados los grupos de activos que normalmente se
+utilizan en una empresa, sin embargo, si requiere crear nuevos grupos para
+personalizar el manejo de activos puede utilizar esta opción.
+
+
+
+---
+
+============================================================
+
+## Tipo: Operaciones
+
+### ACT1 - Cargue inicial activos
+
+#### [13260] FrmDlgOprACT1
+
+﻿
+
+# Deprec. ajustes por inflación
+
+Valor correspondiente a los posibles ajustes por inflación de la depreciación
+acumulada del activo.
+
+Observaciones
+
+Algunos países \(incluyendo Colombia\) no manejan economía inflacionaria, por
+lo tanto no se generan ni contabilizan ajustes por inflación.
+En Colombia desde el año 2007 no se permite dicho manejo de ajustes por
+inflación, y con la adopción de las NIIF los posibles saldos en cuentas de
+inflación se debieron cancelar con la cuenta de "Adopción por primera vez."
+El objetivo de los ajustes por inflación consiste en reflejar con mayor
+precisión la situación real de los balances de las empresas en países que
+tienen alta inflación.
+
+
+
+﻿
+
+# Valorización + / -
+
+Presenta el valor correspondiente a la valorización o devaluación del activo.
+
+Ejemplo
+
+A un vehículo se le reemplazaron repuestos y se le realizaron mejoras en
+lámina y pintura, según el avalúo técnico de un perito, dictamina que el
+vehículo después de dichas mejoras, aumentó su valor comercial en $ 3.500.000
+
+Observaciones
+
+La valorización de un activo se puede analizar como el mayor valor resultante
+entre el valor en libros y el valor comercial.
+La devaluación de un activo se puede analizar como la diferencia negativa
+entre el valor comercial respecto al valor en libros.
+
+Configuración
+
+Para configurar este campo como visible, solo lectura o requerido, puede
+ingresar por: **\[Menú operación > Configurar operación > Campos de la
+operación > Configuración de columnas en cargues de activos\]**
+
+
+
+﻿
+
+# Valor total resultante
+
+Valor final del activo que se registra en la contabilidad después de registrar
+los valores en el cargue.
+
+Observaciones
+
+Este campo es de solo lectura y se origina de la suma o resta de los valores
+indicados en los campos:
+
+  * Valor de compra.
+  * \(+\) Costos de activos
+  * \(+\) Ajustes inflación compra.
+  * \(-\) Depreciación acumulada.
+  * \(-\) Ajustes inflación depreciación.
+  * \(+/-\)Valorización.
+
+Configuración
+
+Para configurar este campo como visible, solo lectura o requerido, puede
+ingresar por: **\[Menú operación > Configurar operación > Campos de la
+operación > Configuración de columnas en cargues de activos\]**
+
+
+
+﻿
+
+# Vida útil restante local
+
+Vida útil que le resta al activo en contabilización local
+
+Ejemplo
+
+Se tiene el siguiente activo:
+
+  * Fecha de compra del activo: 01-05-2016
+  * Vida útil total del activo: 5 años \(60 meses\)
+  * Fecha cargue inicial de activos: 31-12-2017
+  * Total de meses depreciados \(según fecha de compra y fecha de cargue inicial\): 20
+  * **Vida útil restante local: 40**
+
+Observaciones
+
+El tiempo o unidad de uso restante que se indique en este campo, será el dato
+que \[ContaPyme\] asuma para realizar la depreciación automática del activo.
+Se recomienda consultar con el encargado del área contable, la vida útil
+restante de cada activo, dato que se obtiene analizando la fecha de compra,
+fecha del cargue de activos y meses efectivamente depreciados en la
+contabilidad anterior.
+La vida útil restante local puede ser diferente a la vida útil restante NIIF,
+puesto que en la norma local se tienen rangos o tablas definidas para la
+depreciación de cada grupo de activos mientras que en la norma NIIF son
+estimaciones según el uso que se le pretenda dar al activo.
+
+
+
+﻿
+
+# Vida útil restante NIIF
+
+Vida útil que le resta al activo en contabilización NIIF
+
+Ejemplo
+
+La empresa tiene una política en la cual se indica que los vehículos se
+renuevan así:
+
+  * Área administrativa y gerencial, cada 4 años \(48 meses\).
+  * Área comercial y logística, cada 7 años \(84 meses\).
+
+La vida útil restante NIIF de cada activo dependerá del análisis que la
+empresa realice sobre el **tiempo estimado** que desea seguir usando el
+activo.
+
+Observaciones
+
+El tiempo o unidad de uso restante que se indique en este campo, será el dato
+que \[ContaPyme\] asuma para realizar la depreciación automática del activo
+bajo la norma NIIF.
+Bajo la norma internacional \(NIIF\) un activo se puede depreciar en mucho más
+o menos tiempo que lo indicado en la norma local, pues en NIIF se indica la
+estimación o proyección de uso del activo para indicar su vida útil \(NIC 16 o
+Sección 17\).
+Aunque un activo ya esté depreciado bajo la norma local, si éste aún se está
+usando en la empresa y se pretende usar por varios meses más, dichos meses de
+uso futuro se deben indicar como la vida útil restante NIIF. La vida útil
+restante NIIF puede ser diferente a la vida útil restante local, puesto que en
+la norma local se tienen rangos o tablas definidas para la depreciación de
+cada grupo de activos mientras que en la norma NIIF son estimaciones según el
+uso que se le pretenda dar al activo.
+
+
+
+﻿
+
+# Descripción
+
+Observaciones adicionales sobre el activo
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+﻿
+
+# Activo Código
+
+Código del activo al cual se realiza el registro de información.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+COM002 | Computador portátil Acer 1025
+Se requiere hacer el cargue inicial de información para el computador Dell
+1580, por lo tanto en el campo "Código", se registra: **COM001**.
+
+Observaciones
+
+
+
+Para registrar información asociada a un activo, dicho activo debe estar
+creado previamente en el catálogo de activos.
+Utilice las teclas:
+
+  * F3: Seleccionar un activo que ya está registrado.
+  * F5: Crear un nuevo activo.
+
+
+
+﻿
+
+# Nombre
+
+Nombre del activo al cual se realiza el registro de información.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+COM002 | Computador portátil Acer 1025
+Se requiere hacer el cargue inicial de información para el activo con código
+COM001, por lo tanto en el campo "Nombre", se visualiza: **Computador Dell
+1580**.
+
+Observaciones
+
+Este campo es de solo lectura, quiere decir, que la información que presenta
+no se puede modificar, pues el nombre está asociado al código del activo
+seleccionado.
+
+Configuración
+
+Este campo se puede configurar como visible o no. Para esto puede ingresar
+por: **\[Menú Operación > Configurar operación > Campos de la operación >
+Columnas del cargue de activos\]**
+
+
+
+﻿
+
+# Fecha compra
+
+Fecha en la que se adquirió el activo.
+
+Ejemplo
+
+Se realiza un cargue de activos el día 31-12-2017, en dicho cargue se registra
+la adquisición de un Computador el cual fue comprado el 14-05-2017, por lo
+tanto esta es la fecha que se debe registrar en este campo: **14-05-2017**.
+
+Observaciones
+
+Se recomienda que si no se tiene la fecha exacta de la compra del activo, se
+registre una fecha aproximada de dicha adquisición.
+La fecha que se registre en este campo será la que \[ContaPyme\] asuma como
+inicio de la depreciación del activo.
+
+Configuración
+
+Este campo se puede configurar como visible o no. Para esto puede ingresar
+por: **\[Menú Operación > Configurar operación > Campos de la operación >
+Columnas del cargue de activos\]**
+
+
+
+﻿
+
+# Comprado a
+
+Código del tercero \(proveedor\) a quien se realizó la compra del activo.
+
+Ejemplo
+
+Se registra en el cargue inicial un computador portátil el cual fue comprado a
+la empresa Equipartes S.A.S, identificada con el código: 810500600. Por lo
+tanto en este campo queda el registro del código del proveedor Equipartes, es
+decir: 810500600
+
+Observaciones
+
+Al momento de seleccionar el proveedor se visualizan aquellos terceros
+configurados con el tipo de tercero "Proveedor".
+Ubicado en este campo, utilice las teclas:
+
+  * F3: Seleccionar un proveedor que ya está creado en el catálogo de terceros.
+  * F5: Crear un nuevo proveedor.
+
+
+
+﻿
+
+# Valor de compra
+
+Valor del activo \(ofrecido por el proveedor\) al momento de su adquisición.
+
+Ejemplo
+
+Activo | Valor de compra
+---|---
+Escritorio gerencia | $ 1.700.000 | Computador Dell 1580 | $ 2.800.000
+
+Observaciones
+
+Este valor forma parte fundamental del costo del activo, el cual se utiliza
+para generar el importe depreciable y así calcular la depreciación mensual.
+
+Configuración
+
+Para configurar este campo como visible, solo lectura o requerido, puede
+ingresar por: **\[Menú operación > Configurar operación > Campos de la
+operación > Configuración de columnas en cargues de activos\]**
+
+
+
+﻿
+
+# Costos activo
+
+Costos adicionales al valor de compra ofrecido por el proveedor.
+
+Ejemplo
+
+Se compra una máquina para análisis de suelos por $ 30.000.000, pero se
+incurren en costos adicionales así:
+Conceptos | Costos del activo
+---|---
+Aranceles de importación | $ 2.500.000
+Costos de emplazamiento | $ 3.000.000
+Costos de instalación y montaje | $ 5.500.000
+Total costos del activo | $ 11.000.000
+
+Observaciones
+
+Según la NIC 16 \(NIIF plenas\) o Sección 17 \(NIIF Pymes\) se recomienda
+tener en cuenta los siguientes componentes del costo al momento de registrar
+el costo de un activo:
+
+  * Precio de adquisición, que incluye honorarios legales y de intermediación, aranceles de importación.
+  * Todos los costos atribuibles a la ubicación del activo en el lugar para que pueda funcionar correctamente:
+    * Costos de preparación del emplazamiento.
+    * Costos de entrega y manipulación inicial.
+    * Costos de instalación y montaje.
+    * Costos de comprobación de funcionamiento del activo.
+
+Este valor forma parte fundamental del costo del activo, el cual se utiliza
+para generar el importe depreciable y así calcular la depreciación mensual.
+
+Configuración
+
+Para configurar este campo como visible, solo lectura o requerido, puede
+ingresar por: **\[Menú operación > Configurar operación > Campos de la
+operación > Configuración de columnas en cargues de activos\]**
+
+
+
+﻿
+
+# Ajustes inflación compra
+
+Valor correspondiente a los posibles ajustes por inflación al momento de
+registrar la compra del activo.
+
+Observaciones
+
+Algunos países \(incluyendo Colombia\) no manejan economía inflacionaria, por
+lo tanto no se generan ni contabilizan ajustes por inflación.
+En Colombia desde el año 2007 no se permite dicho manejo de ajustes por
+inflación, y con la adopción de las NIIF los posibles saldos en cuentas de
+inflación se debieron cancelar con la cuenta de "Adopción por primera vez."
+El objetivo de los ajustes por inflación consiste en reflejar con mayor
+precisión la situación real de los balances de las empresas en países que
+tienen alta inflación.
+
+
+
+﻿
+
+# Deprec. acumulada
+
+Valor correspondiente a la depreciación acumulada generada por el uso del
+activo desde la fecha de adquisición hasta la fecha del cargue inicial.
+
+Ejemplo
+
+Se tiene el siguiente activo:
+
+  * Costo del computador: $ 4.800.000
+  * Fecha de compra del activo: 01-05-2017
+  * Vida útil total del activo: 5 años \(60 meses\)
+  * Fecha cargue inicial de activos: 31-12-2017
+  * Total de meses depreciados \(según fecha de compra y fecha de cargue inicial\): 8
+  * Valor depreciado por mes: \($ 4.800.000 / 60\) = $ 80.000
+  * **Valor Depreciación acumulada: $ 640.0000**
+
+Observaciones
+
+Antes de indicar esta información se recomienda analizar por cada activo, la
+depreciación acumulada que el contador de la empresa tiene registrada en los
+estados financieros.
+
+Configuración
+
+Para configurar este campo como visible, solo lectura o requerido, puede
+ingresar por: **\[Menú operación > Configurar operación > Campos de la
+operación > Configuración de columnas en cargues de activos\]**
+
+
+
+# Acerca de ventana
+
+##  CATÁLOGO GRUPOS DE ACTIVOS
+
+##  Objetivo
+
+Registrar por primera vez en la contabilidad, los diferentes activos que la
+empresa posee. Comúnmente es utilizada cuando la empresa va a iniciar con el
+uso del módulo de activos y requiere registrar la información actualizada
+\(fecha de compra, valor en libros y vida útil restante\) por cada activo; a
+partir de este registro \[ContaPyme\] iniciará el proceso de automatización
+contable del activo.
+
+## Ejemplo de información a registrar
+
+Se debe indicar información actualizada a la fecha de registro de la operación
+de cargue inicial.
+
+Ejemplo:
+
+Cód. Activo | Nombre activo | Fecha compra | Valor compra | Depreciación acumulada | Valor total resultante | Vida útil restante local | Vida útil restante NIIF
+---|---|---|---|---|---|---|---
+COM001 | Computador Dell | 01-01-2017 | $ 1.800.000 | $ 600.000 | $ 1.200.000 | 24 meses | 40 meses
+VEH01 | Vehículo Toyota | 01-02-2016 | $ 60.000.000 | $ 23.000.000 | $ 37.000.000 | 37 meses | 70 meses
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Sección encabezado de la operación
+
+Esta operación está basada en el tipo de documento de soporte “Cargue inicial
+de saldos”; esto quiere decir que \[ContaPyme\] permite realizar el registro
+de información de los activos de la empresa y se encargará de generar los
+movimientos contables correspondientes a la información indicada, pero se debe
+tener presente que la contrapartida \(para dejar el balance inicial cuadrado y
+que se cumpla la ecuación patrimonial Activo = Pasivo + Patrimonio\) se debe
+realizar de manera adicional mediante la operación de “Cargue inicial de
+cuentas”.
+
+**IMPORTANTE:** Recuerde que las operaciones de cargue inicial \(activos,
+inventarios y cuentas\) son las únicas que permiten ser procesadas sin que la
+sumatoria de débitos sea igual a los créditos; pero \[ContaPyme\] analiza que
+la sumatoria de todos los débitos y créditos de todas ellas \(en conjunto\),
+sí coincida y cumpla con la ecuación patrimonial.
+
+
+
+## Secciones de la operación
+
+Lista de activos: En esta área se cargan todos los activos \(los cuales fueron
+previamente creados en el catálogo de activos\), y se indica por cada uno los
+datos que quedarán relacionados en el cargue inicial de saldos actualizados.
+Es importante que la información a registrar en esta sección sea validada por
+el responsable del área contable en la empresa, para que posteriormente los
+estados financieros queden cuadrados según la información que la empresa
+posee.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Esta operación se puede imprimir en una nota de contabilidad, para poderse
+imprimir la operación debe estar procesada, pues en la nota de contabilidad se
+reflejan todos los registros contables \(débitos y créditos\) que dicha
+operación genera. Es muy útil tener el documento impreso para así poder
+realizar la operación de cargue inicial de cuentas y cuadrar la ecuación
+patrimonial.
+
+
+
+---
+
+### ACT2 - Compra de activos
+
+#### [13280] FrmDlgOprACT2
+
+﻿
+
+# Fecha
+
+Fecha del documento de soporte en el que se hace el pago o gasto.
+
+Ejemplo
+
+El 15-01-2018 se compra un Computador Dell 1580 \(COM001\) y ese mismo día se
+realiza el pago de un flete como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otro documento "Factura FC-00987", se activa
+la opción **"Permitir diferentes tipos de documento y terceros por cada
+gasto"** y en el campo **Fecha** se registra la fecha en la que se realiza el
+pago del flete.
+CONCEPTO DE PAGO | VALOR | FECHA  | TIPO DE DOCUMENTO | NÚMERO DOCUMENTO | TERCERO
+---|---|---|---|---|---
+COM001 - Computador Dell 1580 | $ 170.000 | **15/01/2018** | 1 - Factura compra | FC-00987 | Transportadora ABS SAS
+
+Observaciones
+
+Se recomienda que la fecha de registro de los otros gastos sea igual a la
+fecha en la cual se registra la compra del activo.
+
+Configuración
+
+Este campo se puede configurar como visible, solo lectura o requerido, ver:
+**\[Menú Operación > Configurar operación > Campos de la operación >
+Configuración de columnas en gastos\]**
+
+
+
+﻿
+
+# Comprado a
+
+Código o identificador del tercero \(proveedor\), al cual se realiza la compra
+del activo.
+
+Ejemplo
+
+Se compra a la empresa Equipartes S.A.S, identificada con el código: 810500600
+un computador portátil. Por lo tanto en este campo queda el registro del
+código del proveedor Equipartes, es decir: **810500600**
+
+Observaciones
+
+Al momento de seleccionar el proveedor se visualizan aquellos terceros
+configurados con el tipo de tercero "Proveedor".
+Ubicado en este campo, puede utilizar las teclas:
+
+  * F3: Seleccionar un proveedor que ya está creado en el catálogo de terceros.
+  * F5: Crear un nuevo proveedor.
+
+El tercero que registre en este campo será el que \[ContaPyme\] muestre como
+"Proveedor" en la ficha técnica del activo.
+
+Configuración
+
+Este campo se puede configurar como: visible, solo lectura, requerido y valor
+por defecto. Para esto, ingrese dentro de la operación por: **\[Menú:
+Operación > Configurar operación > Campos de la operación > Datos maestros de
+la operación\]**
+
+
+
+﻿
+
+# Tercero
+
+Tercero al cual se realiza el pago del gasto.
+
+Ejemplo
+
+Se compra un Computador Dell 1580 \(COM001\) y ese mismo día se realiza el
+pago de un flete como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor \(Transportadora ABS SAS\) mediante documento
+"Factura FC-00987", se activa la opción **"Permitir diferentes tipos de
+documento y terceros por cada gasto"** y en el campo **Tercero** se registra
+el código del tercero al cual se realiza el pago del flete.
+CONCEPTO DE PAGO | VALOR | FECHA  | TIPO DE DOCUMENTO | NÚMERO DOCUMENTO | TERCERO
+---|---|---|---|---|---
+COM001 - Computador Dell 1580 | $ 170.000 | 15/01/2018 | 1 - Factura compra | FC-00987 | **Transportadora ABS SAS**
+
+Observaciones
+
+Al momento de seleccionar el proveedor se visualizan aquellos terceros
+configurados con el tipo de tercero "Proveedor".
+Ubicado en este campo, utilice las teclas:
+
+  * F3: Seleccionar un proveedor que ya está creado en el catálogo de terceros.
+  * F5: Crear un nuevo proveedor.
+
+Configuración
+
+Este campo se puede configurar como visible, solo lectura o requerido, ver:
+**\[Menú Operación > Configurar operación > Campos de la operación >
+Configuración de columnas en gastos\]**
+
+
+
+﻿
+
+# Permitir diferentes tipos de documento y terceros por cada gasto
+
+Al activar esta opción, se visualizan columnas adicionales que permiten
+asignar un tipo de documento, número de documento, fecha y tercero distinto
+para cada renglón de gastos.
+
+Ejemplo
+
+Se realiza una compra de los siguientes activos:
+
+**FECHA: 15/01/2018**
+**FACTURA: FC-001234**
+**PROVEEDOR: Proveedor Tecnológico Ltda**
+PRODUCTO |  PRECIO | Computador HP | $ 1.800.000
+Computador Dell | $ 1.600.000
+Impresora Multifuncional Epson | $ 1.100.000
+
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otra factura, se activa la opción
+**"Permitir diferentes tipos de documento y terceros por cada gasto"** para
+registrar los datos correspondientes a dicho pago.
+
+CONCEPTO DE PAGO | VALOR | FECHA:  | FACTURA No  | PROVEEDOR
+---|---|---|---|---
+513085 - Transporte de mercancía | $ 200.000 | 15/01/2018 | FC-00987 | Transportadora ABS SAS
+
+Observaciones
+
+En este caso, la fecha debe estar dentro del mismo mes que la fecha de soporte
+de la operación.
+Al momento de procesar la operación el registro de otros gastos quedará con la
+información registrada en cada una de las columnas y se podrá visualizar en
+los exploradores e informes contables.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configuración operación > Campos
+de la operación > Datos maestros de la operación > Permitir diferentes
+terceros c./renglón\].**
+
+
+
+﻿
+
+# Activo
+
+Código que identifica al activo al que se le registra un mayor valor.
+
+Observaciones
+
+Cuando se indica el código del activo, y se registra un valor, el sistema suma
+como mayor mayor el monto indicado al activo reportado.
+Si se va a registrar un mayor valor a un activo se recomienda activar la
+opción: "Permitir diferentes tipos de documentos y terceros por cada gasto",
+para mayor información: [clic aquí.](<\[20\]Chk_BShowSupportInfo.html>)
+Tenga en cuenta que la información que se registra al activo se trata como un
+mayor valor del mismo, para más información: [clic
+aquí.](<\[70\]GridCargueActivos_MCostos.hmtl>)
+
+Configuración
+
+Este campo se puede configurar como: visible, solo lectura y requerido. Para
+esto, ingrese dentro de la operación por: **\[Menú: Operación > Configurar
+operación > Campos de la operación > Configuración de columnas en gastos\]**
+
+
+
+﻿
+
+# Concepto de pago
+
+Código de una cuenta relacionada en el "Plan Único de Cuentas", la cual
+identifica el concepto del gasto a registrar.
+
+Ejemplo
+
+Si en la compra de un activo se requiere registrar un gasto \(flete o
+transporte\) por la entrega del activo, en esta columna de "Concepto de pago"
+se relaciona la cuenta del plan de cuentas correspondiente a dicho concepto.
+Para el plan de cuentas del sector comercial se tiene configurado este
+concepto en la cuenta: **"513550 - Transportes, fletes y acarreos."**
+
+Observaciones
+
+Este campo puede ser utilizado cuando se activa la opción "Permitir diferentes
+tipos de documentos y terceros por cada gasto", puesto que el concepto de pago
+registrado \(Ej. Gasto por flete o transporte\) normalmente es pagado a otro
+tercero diferente al que se le registra la compra del activo. Para mayor
+información: [clic aquí.](<\[20\]Chk_BShowSupportInfo.html>)
+Al registrar este campo se inhabilita el campo "Activo", es decir, se registra
+un valor como "Mayor valor a un activo" o como un "Concepto de gasto".
+
+
+
+﻿
+
+# CC. a cargar
+
+Código del centro de costos al que se le carga el gasto en el campo "Concepto
+de pago."
+
+Ejemplo
+
+Se registra en la cuenta **"513550"** , un flete o transporte por la entrega
+del activo. Como es un gasto, éste se registra en un centro de costos el cual
+ya está creado en el "Explorador gráfico de la empresa".
+
+Observaciones
+
+El CC. a cargar es requerido cuando se registra información en el campo
+"Concepto de pago." Para mayor información: [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)
+El CC. a cargar se inhabilita \(se presenta como de solo lectura\) cuando se
+registra información en el campo "Activo". Para mayor información: [clic
+aquí.](<\[30\]GridIngresosEgresos_IACTIVO.html>)
+La información cargada al centro de costos se puede consultar en reportes como
+"estado de resultados, mayor y balances, tablas comparativas, etc."
+
+
+
+﻿
+
+# Valor
+
+Valor adicional que se registra directamente al activo \(mayor valor\) o como
+gasto.
+
+Ejemplo
+
+Se compra un Computador Dell 1580 \(COM001\) por $ 2.500.000 y se realiza el
+pago de un flete como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otra factura, se activa la opción
+**"Permitir diferentes tipos de documento y terceros por cada gasto"** para
+registrar los datos correspondientes a dicho pago.
+
+CONCEPTO DE PAGO | VALOR | FECHA  | NÚMERO DOCUMENTO | TERCERO
+---|---|---|---|---
+COM001 - Computador Dell 1580 | **$ 170.000** | 15/01/2018 | FC-00987 | Transportadora ABS SAS
+
+Observaciones
+
+Este valor puede indicar mayores componentes del costo del activo, para más
+información: [clic aquí.](<\[70\]GridCargueActivos_MCostos.hmtl>)
+Tenga en cuenta que la cuantía que se registra al activo se trata como un
+mayor valor del mismo, para más información: [clic
+aquí.](<\[70\]GridCargueActivos_MCostos.hmtl>)
+La cuenta contable en la cual se registra el mayor valor, es la que el activo
+tiene configurada en su ficha técnica.
+
+
+
+﻿
+
+# Detalle
+
+Detalle y observación
+
+Ejemplo
+
+Se compra un Computador Dell 1580 \(COM001\) por $ 2.500.000 y se realiza el
+pago de un flete como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otra factura, se activa la opción
+**"Permitir diferentes tipos de documento y terceros por cada gasto"** para
+registrar los datos correspondientes a dicho pago.
+
+CONCEPTO DE PAGO | VALOR | FECHA  | NÚMERO DOCUMENTO | TERCERO  | DETALLE
+---|---|---|---|---|---
+COM001 - Computador Dell 1580 | $ 170.000 | 15/01/2018 | FC-00987 | Transportadora ABS SAS | **Pago de flete o transporte por la compra del computador.**
+
+Observaciones
+
+Descripción o comentario sobre el registro realizado. Útil para usar cuando se
+registra un mayor valor del activo y se requiere dejar la indicación o motivo
+de dicha transacción.
+Cuando se está haciendo transición a las NIIF, un usuario puede indicar si el
+registro indicado en el renglón afecta solo la norma local, la norma NIIF o
+ambas. Para esto se puede usar las etiquetas:
+
+  * SOLOLOCAL
+  * SOLONIIF
+  * LOCALYNIIF
+
+O puede ingresar por la opción: **\[Menú Herramientas > Afectación del renglón
+seleccionado\]**
+
+Configuración
+
+Este campo se puede configurar como visible, solo lectura o requerido, ver:
+**\[Menú Operación > Configurar operación > Campos de la operación >
+Configuración de columnas en gastos\]**
+
+
+
+﻿
+
+# Tipo de documento
+
+Tipo de documento de soporte que sustenta la transacción registrada.
+
+Ejemplo
+
+Se compra un Computador Dell 1580 \(COM001\) y se realiza el pago de un flete
+como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otro documento "Factura FC-00987", se activa
+la opción **"Permitir diferentes tipos de documento y terceros por cada
+gasto"** y en el campo **Tipo de documento** se selecciona la factura de
+compra
+CONCEPTO DE PAGO | VALOR | FECHA  | TIPO DE DOCUMENTO | NÚMERO DOCUMENTO | TERCERO
+---|---|---|---|---|---
+COM001 - Computador Dell 1580 | $ 170.000 | 15/01/2018 | **1 - Factura compra** | FC-00987 | Transportadora ABS SAS
+
+Observaciones
+
+\[ContaPyme\] tiene pre-configurados múltiples documentos de soporte, para
+seleccionar el indicado basta con dar doble clic sobre el campo o usar la
+tecla F3.
+
+
+
+﻿
+
+# Número documento
+
+Número del documento de soporte que sustenta el gasto o pago.
+
+Ejemplo
+
+Se compra un Computador Dell 1580 \(COM001\) y se realiza el pago de un flete
+como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otro documento "Factura FC-00987", se activa
+la opción **"Permitir diferentes tipos de documento y terceros por cada
+gasto"** y en el campo **Número documento** se registra el número de la
+factura que sustenta dicho pago.
+CONCEPTO DE PAGO | VALOR | FECHA  | TIPO DE DOCUMENTO | NÚMERO DOCUMENTO | TERCERO
+---|---|---|---|---|---
+COM001 - Computador Dell 1580 | $ 170.000 | 15/01/2018 | 1 - Factura compra | **FC-00987** | Transportadora ABS SAS
+
+Observaciones
+
+Regularmente el número de documento corresponde a la factura, recibo o
+comprobante que envía directamente el proveedor que presta el servicio.
+
+Configuración
+
+Este campo se puede configurar como visible, solo lectura o requerido, ver:
+**\[Menú Operación > Configurar operación > Campos de la operación >
+Configuración de columnas en gastos\]**
+
+
+
+# Acerca de ventana
+
+##  OPERACIÓN COMPRA ACTIVOS
+
+##  Objetivo
+
+Registrar la entrada o compra del activo para que éste quede relacionado en la
+contabilidad de la empresa. A partir del momento de la compra, \[ContaPyme\]
+podrá tener el control de la información contable del activo e iniciará una
+serie de cálculos automáticos cuando se le indique que realice transacciones
+como depreciación, venta, baja, etc., del activo.
+
+## Ejemplo de información a registrar
+
+El 01-05-2017, mediante factura FC-01020 se realiza la compra de un vehículo
+Toyota a la empresa Vehimás Ltda, por valor de $ 50.000.000; la forma de pago
+fue mediante una transferencia bancaria.
+
+La información relevante para registrar en la compra del activo es:
+
+  * Número de la factura de compra: FC-01020.
+  * Fecha de compra: 01-05-2017.
+  * Proveedor a quien se le compró el activo: Vehimás Ltda.
+  * Activo comprado: Vehículo Toyota.
+  * Valor compra: $ 50.000.000
+  * Forma pago: Bancolombia \(transferencia\).
+
+Puede haber otra información relevante en la negociación que se pueda
+registrar en la operación de compra, como:
+
+  * Mayores valores asociados a la adquisición del activo y que incrementen el costo del mismo.
+  * Gastos \(fletes\) relacionados por la entrega del activo.
+  * Impuestos asociados a la transacción de compra.
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Sección encabezado de la operación
+
+Esta operación se basa en el documento de soporte “Factura de compra”, dicho
+documento permite que el usuario registre manualmente el número de la factura
+que el proveedor le envía por dicha transacción.
+
+
+## Secciones de la operación
+
+Lista de activos
+
+En esta área se registran los activos que se están adquiriendo al proveedor y
+el respectivo valor de compra.
+
+**IMPORTANTE:** Se debe tener en cuenta que para poder registrar la compra, el
+o los activos deben estar previamente creados en el catálogo de activos.
+
+
+
+Lista de otros gastos y pagos
+
+En esta sección se pueden registrar valores adicionales asociados a la compra
+del activo, los cuales pueden afectar como un mayor valor del costo del activo
+o como un gasto. Un ejemplo de registro de información en esta sección puede
+ser un flete por transporte de entrega del activo, dicho valor podría
+registrarse como un incremento al costo del activo o como un gasto directo
+\(esto depende de las políticas empresariales\).
+
+Lista de conceptos de liquidación
+
+En esta área se relacionan todos los impuestos asociados al proceso de
+adquisición del activo \(IVA, retenciones, etc.\)
+
+Descripción de la forma de pago
+
+En esta área se registra la forma como se va a pagar el activo adquirido, se
+puede hacer registro de pago en cada opción \(caja, banco, cuenta por pagar\)
+y dependiendo de la opción seleccionada, \[ContaPyme\] solicitará que se
+registre cierta información relacionada a la forma de pago.
+
+Ejemplo:
+
+  * **Si indica caja:** solicita la cuenta del plan único de cuentas destinada para administrar el dinero en efectivo. También flujo de caja si la empresa utiliza la funcionalidad de flujos de efectivo.
+  * **Si indica banco:** solicita la cuenta del plan único de cuentas asociada a la entidad bancaria de la cual va a sacar el dinero, también puede solicitar información del tipo de movimiento bancario, número y fecha de la transacción y el concepto de flujo de efectivo si la empresa utiliza las funcionalidades de conciliación bancaria y flujos de efectivo.
+  * **Si indica cuenta por pagar:** solicita la cuenta del plan único de cuentas que se utiliza para contabilizar los pagos a los proveedores, también requiere información de la fecha de pago o el detalle de las diferentes cuotas en las que se va a pagar el activo.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Esta operación de compra comúnmente no se imprime, puesto que es directamente
+el proveedor quien envía a la empresa la factura asociada a la transacción con
+el activo; sin embargo la empresa podría imprimir el comprobante de compra o
+factura equivalente para tener un registro físico adicional de la adquisición
+del activo.
+
+
+
+---
+
+### ACT7 - Deterioro de activos
+
+#### [13290] FrmCalculoDeterioroActivo
+
+﻿
+
+# Cálculo del valor en uso
+
+Flujo de efectivo proyectado y convertido a valor presente de los posibles
+beneficios que genera un activo.
+
+Ejemplo
+
+Se tiene un taxi el cual se estima que por año deja un flujo neto antes de
+impuestos de $ 10.000.000. Se hace la estimación para el cálculo del valor en
+uso para 4 años con una tasa del 1%:
+Período | Valor
+---|---
+Año 1 | 10.000.000
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+Tasa de descuento | 1%
+**Valor en uso** | 39.019.655
+
+Observaciones
+
+Para calcular el valor en uso de un activo, se utiliza la fórmula de MS-Excel:
+**VA \(Valor Actual.\)** La cual tiene en cuenta datos como:
+\- Tasa de descuento.
+\- Total de períodos.
+\- Flujo de efectivo en cada período.
+
+El valor en uso es un concepto que se requiere para el cálculo del deterioro
+de un activo, y está contemplado en la NIC 36 "Deterioro del valor de los
+activos." Dicho valor en uso se utiliza para calcular el **Importe
+recuperable** de un activo.
+El importe recuperable es el mayor valor entre "Valor razonable" y el "Valor
+en uso".
+
+
+
+﻿
+
+# Cálculo del valor razonable
+
+Valor que se recibirá en el mercado por la venta o transferencia del activo
+\(en sus condiciones actuales\) y descontando los costos asociados a la venta.
+
+Ejemplo
+
+Al interior de la empresa se tiene un vehículo que hace varios años está en
+uso y tiene un valor en libros de $ 30.000.000 \(Dato solo informativo\).
+Se hizo un análisis y según el mercado, dicho vehículo comercialmente tiene un
+valor de $ 24.000.000 y por la venta un comisionista cobra $ 1.000.000.
+Por lo tanto el valor razonable es:
+
+Valor del mercado | $ 24.000.000
+---|---
+\(-\) Costos de venta | $ 1.000.000
+**Valor razonable** | **$ 23.000.000**
+
+Observaciones
+
+El valor razonable en uso es un concepto que se requiere para el cálculo del
+deterioro de un activo, y está contemplado en la NIIF 13. Dicho valor
+razonable se utiliza para calcular el **Importe recuperable** de un activo.
+El importe recuperable es el mayor valor entre "Valor razonable" y el "Valor
+en uso".
+
+
+
+﻿
+
+# Valor de mercado
+
+Valor que se recibiría en un mercado por la venta o transferencia del activo
+\(en sus condiciones actuales\).
+
+Ejemplo
+
+Al interior de la empresa se tiene un vehículo que hace varios años está en
+uso y tiene un valor en libros de $ 30.000.000 \(Dato solo informativo\).
+Se hizo un análisis en el mercado, y dicho vehículo comercialmente tiene un
+valor de $ 24.000.000; este es el valor de mercado.
+
+Observaciones
+
+El valor de mercado es el precio al que un bien puede comprarse en un mercado
+libre y corresponde a un estudio que al interior de la empresa se realiza para
+detectar comercialmente y bajo las funcionalidades actuales del activo, el
+valor que puede recibir la empresa por vender el bien.
+El valor de mercado es un concepto que se usa para el cálculo del deterioro de
+un activo y se utiliza para calcular el **Valor razonable** de un activo.
+
+
+
+﻿
+
+# Costos de venta
+
+Valor o gasto en el que se incurre para vender o transferir el activo.
+
+Ejemplo
+
+Al interior de la empresa se tiene un vehículo que hace varios años está en
+uso y tiene un valor en libros de $ 30.000.000 \(Dato solo informativo\).
+Se hizo un análisis en el mercado, y dicho vehículo comercialmente tiene un
+valor de $ 24.000.000; pero para poderlo vender se requiere pagar a un
+vendedor \(comisionista\) que se encarga del peritaje, los trámites de
+impuestos y transferencia del vehículo, para estos servicios el comisionista
+cobra $ 1.000.000; este es el valor de los costos de venta.
+
+Observaciones
+
+El costo de venta es un concepto que se usa para el cálculo del deterioro de
+un activo y se utiliza para calcular el **Valor razonable** de un activo.
+
+
+
+﻿
+
+# Tasa de descuento
+
+Tasa o porcentaje que se resta de una cantidad esperada para obtener una
+cantidad en el presente.
+
+Ejemplo
+
+Se tiene un taxi el cual se estima que por año deja un flujo neto antes de
+impuestos de $ 10.000.000. Se hace la estimación para el cálculo del valor en
+uso para 4 años con una **tasa de descuento del 1%:**
+Período | Valor
+---|---
+Año 1 | 10.000.000
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+**Tasa de descuento** | 1%
+Valor en uso | 39.019.655
+
+Observaciones
+
+Los flujos de dinero son los que disminuyen su valor presente al aplicar el
+tipo de descuento. Al sumar todos los flujos de dinero de los diferentes
+períodos \(aplicada la tasa de descuento\) se obtiene el valor en uso del
+activo.
+
+Para calcular el valor en uso de un activo, se utiliza la fórmula de MS-Excel:
+**VA \(Valor Actual.\)** La cual tiene en cuenta datos como:
+\- Tasa de descuento.
+\- Total de períodos.
+\- Flujo de efectivo en cada período.
+
+
+
+
+﻿
+
+# Valor razonable
+
+Valor que se recibirá en el mercado por la venta o transferencia del activo
+\(en sus condiciones actuales\) y descontando los costos asociados a la venta.
+
+Ejemplo
+
+Al interior de la empresa se tiene un vehículo que hace varios años está en
+uso y tiene un valor en libros de $ 30.000.000 \(Dato solo informativo\).
+Se hizo un análisis y según el mercado, dicho vehículo comercialmente tiene un
+valor de $ 24.000.000 y por la venta un comisionista cobra $ 1.000.000.
+Por lo tanto el valor razonable es:
+
+Valor del mercado | $ 24.000.000
+---|---
+\(-\) Costos de venta | $ 1.000.000
+**Valor razonable** | **$ 23.000.000**
+
+Observaciones
+
+El valor razonable en uso es un concepto que se requiere para el cálculo del
+deterioro de un activo, y está contemplado en la NIIF 13. Dicho valor
+razonable se utiliza para calcular el **Importe recuperable** de un activo.
+El importe recuperable es el mayor valor entre "Valor razonable" y el "Valor
+en uso".
+
+
+
+﻿
+
+# Valor en uso
+
+Valor presente neto de los futuros flujos de caja que se espera sean generados
+por el activo. Se calcula aplicando una tasa de descuento, sobre los futuros
+flujos de caja esperados, antes de impuestos.
+
+Ejemplo
+
+Se tiene un taxi el cual se estima que por año deja un flujo neto antes de
+impuestos de $ 10.000.000. Se hace la estimación para el cálculo del valor en
+uso para 4 años con una tasa del 1%:
+Período | Valor
+---|---
+Año 1 | 10.000.000
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+Tasa de descuento | 1%
+**Valor en uso** | 39.019.655
+
+Observaciones
+
+Para calcular el valor en uso de un activo, se utiliza la fórmula de MS-Excel:
+**VA \(Valor Actual.\)** La cual tiene en cuenta datos como:
+\- Tasa de descuento.
+\- Total de períodos.
+\- Flujo de efectivo en cada período.
+
+El valor en uso es un concepto que se requiere para el cálculo del deterioro
+de un activo, y está contemplado en la NIC 36 "Deterioro del valor de los
+activos." Dicho valor en uso se utiliza para calcular el **Importe
+recuperable** de un activo.
+El importe recuperable es el mayor valor entre "Valor razonable" y el "Valor
+en uso".
+
+
+
+﻿
+
+# Cálculo del deterioro
+
+Deterioro es el desgaste, degenere o empeoramiento de la calidad o
+funcionalidad de un activo.
+Cuando el valor en libros es **mayor** que el importe recuperable se genera
+**Deterioro.**
+Cuando el valor en libros es **menor** que el importe recuperable se genera
+**Reversión del Deterioro.**
+
+Ejemplo
+
+Se tiene un taxi que hace varios años está en uso y tiene un valor en libros
+de $ 45.000.000.
+Se hizo un análisis y según el mercado, dicho vehículo comercialmente tiene un
+valor de $ 38.000.000 y por la venta un comisionista cobra $ 1.000.000.
+**Valor razonable**
+Valor del mercado | $ 38.000.000
+---|---
+\(-\) Costos de venta | $ 1.000.000
+**Valor razonable** | **$ 37.000.000**
+
+Se estima que por año el taxi deja un flujo neto antes de impuestos de $
+10.000.000. Se hace la estimación para el cálculo del valor en uso para 4 años
+con una tasa del 1%
+**Valor en uso**
+Año 1 | 10.000.000
+---|---
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+Tasa de descuento | 1%
+**Valor en uso** | 39.019.655
+
+Con la información anterior de desea hacer el cálculo del deterioro:
+**Cálculo del deterioro** Valor en libros | 45.000.000
+---|---
+\(-\) Importe recuperable | 39.019.655 \(Mayor entre valor razonable y valor en uso\)
+**Deterioro** | **5.980.345**
+
+Observaciones
+
+Para mayor información sobre el deterioro de activos se puede consultar la NIC
+36.
+Importe recuperable de un activo es el mayor entre su valor razonable y su
+valor en uso.
+Para mayor información sobre el cálculo del valor razonable: [clic
+aquí.](<\[130\]Label25.html>)
+Para mayor información sobre el cálculo del valor en uso: [clic
+aquí.](<\[10\]Label26.html>)
+
+
+
+﻿
+
+# Valor en libros
+
+Es el importe o valor neto por el que un activo se encuentra registrado en la
+contabilidad.
+
+Observaciones
+
+Este campo es de solo lectura y es presentado por \[ContaPyme\] según la
+información que se tenga registrada del activo en la contabilidad.
+El valor en libros puede variar dependiendo de la fecha de consulta, pues
+transacciones como: valorización, depreciación acumulada, deterioro o
+cualquier corrección valorativa sobre el activo afectan su costo en libros.
+
+
+
+﻿
+
+# Importe recuperable
+
+Importe recuperable de un activo es el mayor entre su valor razonable y su
+valor en uso.
+
+Ejemplo
+
+Para conocer el importe recuperable de un activo se debe conocer cuál es el
+valor razonable y el valor en uso de dicho activo.
+Se tiene un taxi que hace varios años está en uso y tiene un valor en libros
+de $ 45.000.000 \(dato solo informativo\). Se hizo un análisis y según el
+mercado, dicho vehículo comercialmente tiene un valor de $ 38.000.000 y por la
+venta un comisionista cobra $ 1.000.000.
+
+**Valor razonable**
+Valor del mercado | $ 38.000.000
+---|---
+\(-\) Costos de venta | $ 1.000.000
+**Valor razonable** | **$ 37.000.000**
+
+Se estima que por año el taxi deja un flujo neto antes de impuestos de $
+10.000.000. Se hace la estimación para el cálculo del valor en uso para 4 años
+con una tasa del 1%
+**Valor en uso**
+Año 1 | 10.000.000
+---|---
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+Tasa de descuento | 1%
+**Valor en uso** | **39.019.655**
+
+Con la información anterior de desea conocer el importe recuperable del
+activo:
+**Importe recuperable** | 39.019.655 **\(Mayor entre valor razonable y valor en uso\)**
+---|---
+
+Observaciones
+
+Para mayor información sobre el cálculo del valor razonable: [clic
+aquí.](<\[130\]Label25.html>)
+Para mayor información sobre el cálculo del valor en uso: [clic
+aquí.](<\[10\]Label26.html>)
+
+
+
+﻿
+
+# Flujos netos antes de impuestos
+
+Movimientos de efectivo \(ingresos y gastos\) en un período determinado.
+
+Ejemplo
+
+Se tiene un vehículo para prestar servicio de transporte de pasajeros, el
+flujo neto en un mes se calcula:
+\- Ingresos: $ 3.500.000 \(Corresponde al dinero que se recauda por la
+prestación del servicio de transporte.\)
+\- Gastos: $ 2.000.000 \(Corresponde a los gastos como: pago al conductor,
+combustible, permiso de rodamiento, etc.\)
+\- Flujo neto: $ 1.500.000
+
+Observaciones
+
+La proyección de los flujos netos \(antes de impuestos\) son la base para
+calcular el **Valor en uso.** Para mayor información: [clic
+aquí.](<\[10\]Label26.html>)
+
+
+
+﻿
+
+# Deterioro
+
+Cuando el valor en libros es **mayor** que el importe recuperable se genera
+**Deterioro.**
+Cuando el valor en libros es **menor** que el importe recuperable se genera
+**Reversión del Deterioro.**
+
+Ejemplo
+
+Se tiene un taxi que hace varios años está en uso y tiene un valor en libros
+de $ 45.000.000.
+Se hizo un análisis y según el mercado, dicho vehículo comercialmente tiene un
+valor de $ 38.000.000 y por la venta un comisionista cobra $ 1.000.000.
+**Valor razonable**
+Valor del mercado | $ 38.000.000
+---|---
+\(-\) Costos de venta | $ 1.000.000
+**Valor razonable** | **$ 37.000.000**
+
+Se estima que por año el taxi deja un flujo neto antes de impuestos de $
+10.000.000. Se hace la estimación para el cálculo del valor en uso para 4 años
+con una tasa del 1%
+**Valor en uso**
+Año 1 | 10.000.000
+---|---
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+Tasa de descuento | 1%
+**Valor en uso** | 39.019.655
+
+Con la información anterior de desea hacer el cálculo del deterioro:
+**Cálculo del deterioro** Valor en libros | 45.000.000
+---|---
+\(-\) Importe recuperable | 39.019.655 \(Mayor entre valor razonable y valor en uso\)
+**Deterioro** | **5.980.345**
+
+Observaciones
+
+Para mayor información sobre el deterioro de activos se puede consultar la NIC
+36.
+
+
+
+# Acerca de ventana
+
+##  CÁLCULO DETERIORO ACTIVOS
+
+##  Objetivo
+
+Calcular el valor del deterioro \(o reversión del deterioro\) de un activo, a
+partir de la diferencia entre el valor en libros y el mayor valor entre el
+valor en uso y el valor razonable.
+
+## Ejemplo de información a registrar
+
+![calcdeact.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/050%20AF/Oprs/ACT7%20-%20Deterioro%20de%20activos/%5B13290%5D%20FrmCalculoDeterioroActivo/calcdeact.jpg)
+
+
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Secciones de la operación
+
+Cálculo del valor en uso
+
+Flujo de efectivo proyectado y convertido a valor presente de los posibles
+beneficios que genera un activo. El valor en uso es un concepto que se
+requiere para el cálculo del deterioro de un activo, y se utiliza para
+calcular el importe recuperable de un activo. El importe recuperable es el
+mayor valor entre "Valor razonable" y el "Valor en uso".
+
+Cálculo del valor razonable
+
+Valor que se recibirá en el mercado por la venta o transferencia del activo
+\(en sus condiciones actuales\) y descontando los costos asociados a la venta.
+
+Cálculo del deterioro
+
+Deterioro es el desgaste, degenere o empeoramiento de la calidad o
+funcionalidad de un activo. Se debe tener en cuenta que cuando el valor en
+libros es mayor que el importe recuperable se genera **“deterioro”** y cuando
+el valor en libros es menor que el importe recuperable se genera **“reversión
+del deterioro”**.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Este asistente no permite impresión, pues actúa como guía para generar el
+cálculo del deterioro el cual se refleja en la operación “Deterioro de
+activos”.
+
+
+
+---
+
+#### [13400] FrmOprACT7
+
+﻿
+
+# Calcular deterioro
+
+Abre una ventana o asistente especial que permite calcular para cada activo el
+deterioro o la reversión del deterioro.
+
+Observaciones
+
+Este asistente permite conocer:
+
+  * **Importe en libros:** Valor que tiene un activo una vez deducida la depreciación acumulada.
+  * **Importe recuperable:** Es la mayor cuantía entre el valor razonable y el valor en uso.
+    * **Valor razonable:** Precio que se recibiría por vender el activo restando los costos de venta.
+\- Ej. Precio de venta en el mercado del activo con sus condiciones actuales y
+restando los costos asociados a dicha venta.
+
+    * **Valor en uso:** Valor presente de los flujos futuros de efectivo estimados que se espera obtener de un activo.
+-Ej. Dinero que podría ganar una empresa en los próximos años por trabajar con el activo \(estimación\).
+
+El deterioro de valor de los activos se define como una pérdida que se produce
+cuando el **importe en libros** de un activo es **superior** a su **importe
+recuperable.**
+
+
+
+﻿
+
+# Cód. Activo
+
+Código del activo al cual se le registra el deterioro o la reversión del
+deterioro.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+COM002 | Computador portátil Acer 1025
+Se requiere registrar el deterioro para el Vehículo Ford KII-735, por lo tanto
+en el campo "Código", se registra: **VEH001**.
+
+Observaciones
+
+
+
+Para registrar información asociada a un activo, dicho activo debe estar
+creado previamente en el catálogo de activos.
+Utilice las teclas:
+
+  * F3: Seleccionar un activo que ya está registrado.
+  * F5: Crear un nuevo activo.
+
+
+
+﻿
+
+# Nuevo valor
+
+Nuevo valor del activo después de aplicado el deterioro.
+
+Ejemplo
+
+COD. ACTIVO | VALOR HOY | VALOR DETERIORO | NUEVO VALOR
+---|---|---|---
+VEH001 - Vehículo Ford KII-735 | $ 45.000.000 | $ 6.000.000 | **$ 39.000.000**
+
+Observaciones
+
+El deterioro afecta el importe en libros de un activo, pues el importe en
+libros NIIF es el valor por el que se reconoce un activo una vez deducida la
+depreciación acumulada y las pérdidas por deterioro.
+El deterioro de un activo solo afecta la contabilidad bajo la norma
+internacional NIIF, por lo tanto la contabilidad local o fiscal no se afecta
+por el registro del deterioro y el valor en libros del activo seguirá igual.
+
+
+
+﻿
+
+# Valor deterioro
+
+Valor neto del deterioro del activo
+Deterioro es el desgaste, degenere o empeoramiento de la calidad o
+funcionalidad de un activo.
+
+Ejemplo
+
+Se tiene un vehículo con valor en libros de $ 45.000.000.
+Se hizo un peritaje y se evidenció que por las condiciones actuales el valor
+comercial del activo disminuyó, concluyendo que el importe recuperable del
+activo es: $ 39.000.000.
+Ante esto, se debe generar un deterioro por: $ 6.000.000
+
+Observaciones
+
+Para mayor información sobre el cálculo del deterioro de un activo: [clic
+aquí.](<\[260\]Label27.html>)
+El valor registrado en este campo se contabiliza en la cuenta de deterioro
+configurada en el "Grupo de activo" al cual pertenece el activo que se está
+deteriorando.
+Para mayor información sobre la contabilización del deterioro de un activo:
+[clic aquí.](<..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[700\]Label15.html >)
+
+
+
+﻿
+
+# Observaciones
+
+Detalle o comentario sobre el registro del deterioro realizado.
+
+Observaciones
+
+Útil para registrar información del motivo del deterioro o comentarios que
+permitan en el futuro recordar por qué se hizo dicho deterioro.
+
+
+
+﻿
+
+# Registro de deterioros
+
+Al activar esta opción, \[ContaPyme\] asume que todos los valores registrados
+en la columna **"Valor deterioro"** serán considerados como deterioros y por
+tanto, **disminuirán el costo del activo.**
+
+Observaciones
+
+Deterioro es el desgaste, degenere o empeoramiento de la calidad o
+funcionalidad de un activo.
+\[ContaPyme\] permite registrar tanto el deterioro como la reversión del
+deterioro de un activo.
+Para mayor información sobre la contabilización del deterioro de un activo:
+[clic aquí.](<..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[700\]Label15.html >)
+
+
+
+﻿
+
+# Registro de reversión de deterioros
+
+Al activar esta opción, \[ContaPyme\] asume que todos los valores registrados
+en la columna **"Valor deterioro"** serán considerados como reversiones de
+deterioros.
+La reversión implica devolver o deshacer \(parcial o totalmente\) la
+contabilización realizada en el deterioro de un activo.
+
+Observaciones
+
+Es importante resaltar que la normatividad \(NIC 36\) no permite que un
+activo, después de una reversión de deterioro, quede con un costo mayor al que
+tenía originalmente antes del deterioro.
+\[ContaPyme\] hace esta verificación y mostrará el mensaje adecuado en caso de
+encontrar alguna inconsistencia.
+El valor registrado en este campo se contabiliza en la cuenta de deterioro
+configurada en el "Grupo de activo" al cual pertenece el activo que se está
+deteriorando.
+Para mayor información sobre la contabilización de la reversión del deterioro
+de un activo: [clic aquí.](<..\\..\\..\\..\\050 AF\\Cats\\Grupos de
+activos\\\[12860\] FrmGrupoActivo\\\[760\]Label40.html >)
+
+
+
+﻿
+
+# Reversión de deterioro en distinto periodo
+
+Al activar esta opción permite indicar a \[ContaPyme\] que la reversión al
+deterioro se va a realizar en otro periodo diferente al que se registró el
+deterioro inicial.
+La reversión implica devolver o deshacer \(parcial o totalmente\) la
+contabilización realizada en el deterioro de un activo.
+
+Ejemplo
+
+Puede suceder que el deterioro de un activo se registre en el mes de noviembre
+2017, pero en mayo de 2018 al activo se le realicen mejoras y reparaciones que
+después de un peritaje técnico originen una reversión al deterioro.
+Como el deterioro se realizó en noviembre 2017, seguramente para mayo 2018
+\(fecha de la reversión\), el año 2017 ya se puede estar cerrado
+contablemente.
+Implicaría que se debe activar la opción **Reversión de deterioro en distinto
+periodo.**
+
+Observaciones
+
+Cuando la reversión al deterioro es en el mismo periodo, no se debe activar
+esta opción y \[ContaPyme\] acredita la cuenta de gastos configurada en el
+grupo al cual pertenece el activo.
+Cuando la reversión al deterioro es en otro periodo, se activa esta opción y
+\[ContaPyme\] acredita la cuenta de ingresos configurada en el grupo al cual
+pertenece el activo.
+Para mayor información sobre la contabilización de la reversión del deterioro
+de un activo: [clic aquí.](<..\\..\\..\\..\\050 AF\\Cats\\Grupos de
+activos\\\[12860\] FrmGrupoActivo\\\[760\]Label40.html >)
+
+
+
+﻿
+
+# Centro de costos para imputación de gastos/ingresos
+
+Indique el código del centro de costos al cual serán imputados los gastos o
+ingresos, por el deterioro o reversión de deterioro de los activos
+registrados.
+
+Ejemplo
+
+Se tiene un vehículo para realizar entregas de los productos vendidos, el área
+responsable del activo es el departamento comercial.
+Por lo tanto, si el vehículo sufre un deterioro y éste se contabiliza; el
+gasto asociado a dicho deterioro se puede cargar al centro de costos
+"Departamento comercial".
+
+Observaciones
+
+Un centro de costos es un acumulador de ingresos y gastos, al cual se le
+pueden consultar diferentes informes que permiten conocer las entradas y
+salidas de dinero \(utilidad\) que ha generado para la empresa.
+
+
+
+# Acerca de ventana
+
+##  OPERACIÓN DETERIORO ACTIVOS
+
+##  Objetivo
+
+Se debe indicar si se va a realizar un deterioro o una reversión del deterioro
+a un activo.
+Se tiene un vehículo que hace varios años está en uso y tiene un valor en
+libros de $ 45.000.000; se hizo un avalúo \(peritaje técnico\) y según las
+condiciones físicas el vehículo, comercialmente tiene un valor de $
+38.000.000.
+En este caso se registra un deterioro por $ 7.000.000.
+\[ContaPyme\] generará los asientos contables correspondientes a dicho
+deterioro, teniendo presente la configuración de cuentas contables indicadas
+en el grupo de activos.
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Sección encabezado de la operación
+
+El tipo de documento de soporte relacionado con esta operación es el
+comprobante de deterioro y es importante puesto que con este identificado se
+genera un consecutivo que permite en el tiempo analizar por qué se registró un
+deterioro a un activo.
+Se recomienda utilizar el botón
+![deterioroactivos1.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/050%20AF/Oprs/ACT7%20-%20Deterioro%20de%20activos/%5B13400%5D%20FrmOprACT7/deterioroactivos1.jpg)
+“Adicionar nota a los estados financieros” para que se debe evidencia escrita
+de los motivos por los cuales se registró esta operación. El describir una
+nota clara y detallada permite hacer procesos de auditoría y comprensión de
+los estados financieros de una manera más clara.
+
+Se debe indicar si el registro que se va a realizar corresponde a:
+
+  * **Registro de deterioro:** Se presenta cuando el valor en libros el activo es mayor que su importe recuperable.
+  * **Registro de reversión del deterioro \(dentro del mismo o en diferente período contable\):** Se presenta cuando el valor en libros del activo es menor que su importe recuperable.
+
+Se debe indicar el centro de costos al cual se le registrará contablemente el
+gasto generado por el deterioro del activo.
+
+
+## Secciones de la operación
+
+Lista de activos
+
+En esta área se registra la información correspondiente al deterioro de cada
+activo; se selecciona el código del activo para que se presente \(en modo de
+solo lectura\) el valor a hoy o en libros del activo y se le pueda indicar el
+valor del deterioro, para que así continúe con un nuevo valor en libros.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Esta operación se puede imprimir en una nota de contabilidad. Para poderse
+imprimir la operación debe estar procesada, pues en la nota de contabilidad se
+reflejan todos los registros contables \(débitos y créditos\) que dicha
+operación genera.
+
+
+
+---
+
+### Baja de activos
+
+#### [13420] FrmOprACT8
+
+﻿
+
+# Cód. Activo
+
+Código que identifica al activo que se pretende dar de baja.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+COM002 | Computador portátil Acer 1025
+Se pretende dar de baja \(por robo\) el computador Dell 1580, por lo tanto en
+el campo "Código", se registra: **COM001**.
+
+
+
+﻿
+
+# Fecha compra
+
+Muestra la fecha desde la cual el activo existe en la contabilidad.
+
+Observaciones
+
+Este campo es de solo lectura y la fecha de compra se genera desde el momento
+de realizar:
+\- La operación de compra del activo.
+\- La operación de cargue inicial de activos.
+
+
+
+﻿
+
+# Costo hoy
+
+Presenta el valor en libros del activo, según la fecha en la que se está
+registrando la baja.
+
+Observaciones
+
+Este campo es de solo lectura y se origina como resultado de la suma de los
+valores que aumentan el valor del activo menos los valores que restan al valor
+del activo.
+Por ejemplo:  \(+\) | Valor de compra y mayores valores.
+---|---
+\(-\) | Depreciación/amortización.
+\(+\) | Revaluación/valorización.
+\(-\) | Deterioro.
+\(+\) | Ajustes por inflación compra.
+\(-\) | Ajustes por inflación depreciación.
+\(+ o -\) | Otros movimientos. Depende del registro contable si debitó o acreditó al activo.
+
+Nota: Se debe recordar que el costo de un activo puede variar si se analiza
+desde el punto de vista la contabilidad local \(fiscal\) o desde las NIIF;
+puesto que existen operaciones como es el caso del registro del "Deterioro"
+que solo afectan la contabilidad NIIF.
+
+
+
+﻿
+
+# Proveedor
+
+Presenta el código del proveedor al que se le compró el activo.
+
+Observaciones
+
+Este campo es de solo lectura y la información que se muestre, corresponde al
+tercero indicado en la compra o el cargue inicial del activo en la
+contabilidad.
+
+
+
+﻿
+
+# Motivo baja
+
+Motivo por el cual se registra la baja del activo.
+
+Ejemplo
+
+\- Se tiene un computador portátil y fue hurtado, por lo tanto el motivo de
+baja puede ser: "Robo del computador".
+\- Un vehículo de la empresa sufrió un choque, en el cual se valoró pérdida
+total, por lo tanto el motivo de baja puede ser: "Choque - pérdida total del
+vehículo".
+
+Observaciones
+
+El motivo de baja que se indique quedará registrado en la ficha técnica del
+activo, y podrá ser analizado en la **"Consulta de activos"** cuando se
+indique active la opción: **"Incluir no vigentes"**.
+
+
+
+---
+
+### Planilla de uso de activos
+
+#### [14600] FrmOprPLA7
+
+﻿
+
+# Centro de costos
+
+Código del Centro de costos donde se usó el activo.
+
+Observaciones
+
+  * El centro de costos se utiliza para acumular el valor de la depreciación, cuando un activo se deprecia por horas de uso o unidades de producción.
+  * Si la empresa dentro del licenciamiento cuenta con los módulos de producción, comúnmente el centro de costos puede ser:
+    * Orden de producción.
+    * Línea de producción.
+    * Cultivo transitorio \(para el caso del sistema AgroWin\).
+    * Cultivo perenne \(para el caso del sistema AgroWin\).
+    * También puede ser un centro de costos indirecto de producción \(CIP o CIF\), para que al final del mes se realice el proceso de distribución de costos y \[ContaPyme\] distribuya automáticamente en los centros de costos productivos, la depreciación que corresponda según la configuración que se tenga en el nodo distribuidor.
+  * En el centro de costos que se indique, se podrán consultar estados financieros \(Ej. Estado de resultados\), donde podrá verse la afectación contable que corresponde a la depreciación \(por el uso del activo\).
+
+
+
+﻿
+
+# Labor
+
+Código de la labor en la cual se usó el activo.
+
+Observaciones
+
+  * Este campo se diligencia y es útil cuando en la empresa, se utiliza el módulo de "Actividades y labores". \[ContaPyme\] cuenta permite la creación de diferentes labores empresariales, según las actividades productivas de la empresa.
+  * Al indicar la labor, \[ContaPyme\] permite generar estadísticas de labores en las cuales se analizan los activos que se usaron para cumplir con dicha labor \(mano de obra\).
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible o solo lectura\),
+ver: **\[Menú Operación > Configuración operación > Campos de la operación >
+Configuración de columnas en plantilla de uso de activos.**
+
+
+
+﻿
+
+# Activo usado
+
+Código que identifica al activo que se va a usar.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+MAQ001 | Máquina Fileteadora Optimus SRAM
+Para realizar un proceso de fabricación de 50 camisas, se utilizó la "Máquina
+Fileteadora Optimus SRAM" por 40 horas; por lo tanto en el campo "Activo
+usado", se registra: **MAQ001**.
+
+Observaciones
+
+La "Planilla de uso de activos" es muy útil cuando el **activo se deprecia
+bajo el método de "unidades de producción" o "unidad de uso"** ; puesto que
+con esta planilla se le indica al sistema el tiempo que se utilizó el activo,
+para que al final del mes, bajo la operación "Acciones automáticas de fin de
+mes", se le indique a \[ContaPyme\] que calcule la depreciación que
+corresponde al tiempo usado o unidades producidas.
+
+
+
+﻿
+
+# Unidad
+
+Unidad para la cantidad a depreciar.
+
+Ejemplo
+
+\- Tipo de depreciación lineal: **Unidad:** "mes o día."
+\- Tipo de depreciación unidades de uso: **Unidad:** "horas."
+\- Tipo de depreciación unidades de producción: **Unidad:** "camisas, mesas,
+zapatos, o cualquier unidad según la labor de producción que la empresa
+realice."
+
+Observaciones
+
+La unidad se indica según el tipo de depreciación que se tenga configurada en
+el activo.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible o solo lectura\),
+ver: **\[Menú Operación > Configuración operación > Campos de la operación >
+Configuración de columnas en plantilla de uso de activos.**
+
+
+
+﻿
+
+# Cantidad de uso
+
+Cantidad de unidades usadas.
+
+Ejemplo
+
+Se tiene un activo con la siguiente configuración:  Activo Código | Activo Nombre | Tipo depreciación | Vida útil total
+---|---|---|---
+MAQ001 | Máquina Fotocopiadora | Unidades de uso | 1.000.000 Fotocopias
+
+Durante todo el mes de mayo se sacaron 950 fotocopias, por lo tanto en la
+cantidad de uso se registra: **950**.
+
+Observaciones
+
+Este dato será el que \[ContaPyme\] utilice, \(cuando se ejecuten las acciones
+de fin de mes\), para el cálculo la depreciación del activo "máquina
+fotocopiadora".
+
+
+
+﻿
+
+# Tercero
+
+Persona responsable del uso del activo.
+
+Observaciones
+
+La persona responsable del uso del activo se puede buscar en el catálogo de
+terceros mediante la tecla "F3"; si la persona no está creada en el catálogo
+de terceros, se puede registrar directamente desde esta operación con la tecla
+"F5".
+
+
+
+﻿
+
+# Observaciones
+
+Información adicional y descriptiva para detallar el uso del activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+---
+
+### Reclasificacion de activos
+
+#### [13360] FrmDlgOprACT5
+
+﻿
+
+# Código
+
+Código del activo que se va a reclasificar. Esta operación permite cambiar:
+grupo del activo, método de depreciación, valor residual o la vida útil
+restante.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo
+---|---|---
+VEH001 | Vehículo Ford KII-735 | Flota y equipo de transporte
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones
+OFC001 | Oficina 401 Edificio Caldas | Construcciones y edificaciones
+
+Se pretende reclasificar la Oficina 401 Edificio Caldas, para cambiarla del
+grupo de "Construcciones y edificaciones" por el grupo "Propiedad de
+inversión"; por lo tanto en el campo "Código", se registra: **OFC001**.
+
+
+
+﻿
+
+# Nombre activo
+
+Muestra el nombre del activo correspondiente al código indicado en la columna
+anterior.
+
+Observaciones
+
+Este campo es de solo lectura y solo muestra información si en el campo
+"Código" se tiene algún registro de un activo válido del catálogo de activos.
+
+
+
+﻿
+
+# Nuevo grupo
+
+Permite indicar el nuevo grupo al cual va a pertenecer el activo.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo
+---|---|---
+VEH001 | Vehículo Ford KII-735 | Flota y equipo de transporte
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones
+OFC001 | Oficina 401 Edificio Caldas | Construcciones y edificaciones
+
+Se pretende reclasificar la Oficina 401 Edificio Caldas, para cambiarla del
+grupo de "Construcciones y edificaciones" por el grupo "Propiedad de
+inversión"; por lo tanto en el campo "Nuevo Grupo", se registra: **"Propiedad
+de inversión"**.
+
+Otros ejemplos comunes con el grupo "Construcciones y edificaciones" son:
+\- Cambiar por el grupo "Propiedades de inversión".
+\- Cambiar por el grupo "Activo no corriente mantenido para la venta".
+
+Observaciones
+
+\- Esta operación solo realiza afectación a la contabilidad NIIF, es decir,
+que no afecta los registros bajo la contabilidad fiscal.
+\- Al cambiar el grupo al cual pertenece un activo, \[ContaPyme\]
+automáticamente cancela los registros contables \(Ej. compra y
+depreciaciones\) que tenía el activo con el grupo anterior y los genera de
+nuevo afectando las cuentas contables configuradas en el nuevo grupo indicado.
+
+
+
+﻿
+
+# Nueva cuenta
+
+Permite indicar la nueva cuenta contable a la cual va a pertenecer el activo.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo | Cuenta del Activo
+---|---|---|---
+IMP001 | Impresora Multifuncional HP | Equipo de cómputo y comunicaciones | 152805
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones | 152805
+COM002 | Computador Lenovo | Equipo de cómputo y comunicaciones | 152805
+IMP002 | Impresora Epson | Equipo de cómputo y comunicaciones | 152805
+
+Al interior de la empresa se define la creación de una nueva cuenta contable
+en los activos de propiedad, planta y equipo, para identificar exclusivamente
+las "Impresoras"; por lo tanto se crea la cuenta "152806". Para organizar la
+nueva cuenta "152806" en todos los activos "impresoras" se utiliza la
+operación de "Reclasificación" y en el campo "Nueva cuenta" se indica el
+código de la nueva cuenta contable.
+
+Observaciones
+
+Este cambio de cuenta también es utilizado cuando se cambia de grupo al
+activo.
+
+
+
+﻿
+
+# Tipo depreciación
+
+Indica el nuevo tipo de depreciación para el activo.
+
+Ejemplo
+
+Una empresa que confecciona ropa tiene como activo una máquina fileteadora, la
+cual está configurada para depreciar bajo el modelo "Mensual \(línea recta\)".
+En un análisis técnico, la empresa define que el tipo de depreciación más
+adecuado para este activo es por "Unidades de uso" \(horas\).
+Para esta empresa que tiene un control estricto de las horas de uso, el
+cambiar al nuevo tipo de depreciación, le permitirá tener estados financieros
+más ajustados a la realidad de su proceso administrativo.
+
+Observaciones
+
+Se debe tener presente que \[ContaPyme\] guardará la fecha de este cambio y
+toda transacción que se realice con el activo antes de la fecha continuará con
+el modelo de depreciación que tenía y si la realiza después de la fecha de la
+reclasificación, asumirá el nuevo tipo de depreciación que se le indicó.
+Para mayor información sobre los tipos de depreciación de un activo: [clic
+aquí](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[200\]Label53.html >)
+
+
+
+﻿
+
+# Dato deprec.
+
+Unidad según el tipo de depreciación del activo.
+
+Observaciones
+
+Si el campo "Tipo de depreciación" no se cambia, el "Dato deprec." se muestra
+en modo solo lectura y refleja la unidad de depreciación que se tenga
+configurada para el activo \(meses, horas, unidades, etc.\)
+Si el campo "Tipo de depreciación" se cambia, el "Dato deprec." permite
+indicar la nueva unidad de depreciación que se configurará al activo.
+
+
+
+﻿
+
+# Valor residual
+
+Permite la modificación del valor final de un activo después de su
+depreciación y amortización, es decir, al final de su vida útil
+
+Observaciones
+
+\[ContaPyme\] permite definir el valor residual del activo a través del
+tiempo; esta opción es útil cuando al interior de la empresa, se realiza una
+revisión del activo y detectan que el valor por el cual valoraban que se podía
+vender o transferir el activo una vez se depreciara por completo cambió.
+Recuerde: El valor residual forma parte del importe depreciable.
+
+  * Importe depreciable es el costo del activo, menos su **valor residual.**
+  * Depreciación es la distribución sistemática del importe depreciable de un activo a lo largo de su vida útil.
+
+
+
+﻿
+
+# Vida útil restante
+
+Permite la modificación de la vida útil restante que el activo posee a la
+fecha de la reclasificación.
+
+Ejemplo
+
+Se tiene un activo configurado para depreciar en 5 años, pero al llegar al 4to
+año \(aún vigentes 12 meses\), se hace un análisis técnico del activo y se
+identifica que se puede continuar con su uso por otros 2 años más; por lo
+tanto se hace una reclasificación de la vida útil restante y se pasa de 12
+meses a 36 meses.
+
+Observaciones
+
+Al cambiar la vida útil, se calculará una nueva fecha de finalización de la
+vida útil total del activo:
+FinDeprec. = IniDeprec. + \(VidaUltil \* 30,4375\)
+
+
+
+﻿
+
+# Observaciones
+
+Información adicional y descriptiva para detallar la reclasificación del
+activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+---
+
+### Reclasificaci¾n de activos
+
+#### [13360] FrmDlgOprACT5
+
+﻿
+
+# Código
+
+Código del activo que se va a reclasificar. Esta operación permite cambiar:
+grupo del activo, método de depreciación, valor residual o la vida útil
+restante.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo
+---|---|---
+VEH001 | Vehículo Ford KII-735 | Flota y equipo de transporte
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones
+OFC001 | Oficina 401 Edificio Caldas | Construcciones y edificaciones
+
+Se pretende reclasificar la Oficina 401 Edificio Caldas, para cambiarla del
+grupo de "Construcciones y edificaciones" por el grupo "Propiedad de
+inversión"; por lo tanto en el campo "Código", se registra: **OFC001**.
+
+
+
+﻿
+
+# Nombre activo
+
+Muestra el nombre del activo correspondiente al código indicado en la columna
+anterior.
+
+Observaciones
+
+Este campo es de solo lectura y solo muestra información si en el campo
+"Código" se tiene algún registro de un activo válido del catálogo de activos.
+
+
+
+﻿
+
+# Nuevo grupo
+
+Permite indicar el nuevo grupo al cual va a pertenecer el activo.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo
+---|---|---
+VEH001 | Vehículo Ford KII-735 | Flota y equipo de transporte
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones
+OFC001 | Oficina 401 Edificio Caldas | Construcciones y edificaciones
+
+Se pretende reclasificar la Oficina 401 Edificio Caldas, para cambiarla del
+grupo de "Construcciones y edificaciones" por el grupo "Propiedad de
+inversión"; por lo tanto en el campo "Nuevo Grupo", se registra: **"Propiedad
+de inversión"**.
+
+Otros ejemplos comunes con el grupo "Construcciones y edificaciones" son:
+\- Cambiar por el grupo "Propiedades de inversión".
+\- Cambiar por el grupo "Activo no corriente mantenido para la venta".
+
+Observaciones
+
+\- Esta operación solo realiza afectación a la contabilidad NIIF, es decir,
+que no afecta los registros bajo la contabilidad fiscal.
+\- Al cambiar el grupo al cual pertenece un activo, \[ContaPyme\]
+automáticamente cancela los registros contables \(Ej. compra y
+depreciaciones\) que tenía el activo con el grupo anterior y los genera de
+nuevo afectando las cuentas contables configuradas en el nuevo grupo indicado.
+
+
+
+﻿
+
+# Nueva cuenta
+
+Permite indicar la nueva cuenta contable a la cual va a pertenecer el activo.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo | Cuenta del Activo
+---|---|---|---
+IMP001 | Impresora Multifuncional HP | Equipo de cómputo y comunicaciones | 152805
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones | 152805
+COM002 | Computador Lenovo | Equipo de cómputo y comunicaciones | 152805
+IMP002 | Impresora Epson | Equipo de cómputo y comunicaciones | 152805
+
+Al interior de la empresa se define la creación de una nueva cuenta contable
+en los activos de propiedad, planta y equipo, para identificar exclusivamente
+las "Impresoras"; por lo tanto se crea la cuenta "152806". Para organizar la
+nueva cuenta "152806" en todos los activos "impresoras" se utiliza la
+operación de "Reclasificación" y en el campo "Nueva cuenta" se indica el
+código de la nueva cuenta contable.
+
+Observaciones
+
+Este cambio de cuenta también es utilizado cuando se cambia de grupo al
+activo.
+
+
+
+﻿
+
+# Tipo depreciación
+
+Indica el nuevo tipo de depreciación para el activo.
+
+Ejemplo
+
+Una empresa que confecciona ropa tiene como activo una máquina fileteadora, la
+cual está configurada para depreciar bajo el modelo "Mensual \(línea recta\)".
+En un análisis técnico, la empresa define que el tipo de depreciación más
+adecuado para este activo es por "Unidades de uso" \(horas\).
+Para esta empresa que tiene un control estricto de las horas de uso, el
+cambiar al nuevo tipo de depreciación, le permitirá tener estados financieros
+más ajustados a la realidad de su proceso administrativo.
+
+Observaciones
+
+Se debe tener presente que \[ContaPyme\] guardará la fecha de este cambio y
+toda transacción que se realice con el activo antes de la fecha continuará con
+el modelo de depreciación que tenía y si la realiza después de la fecha de la
+reclasificación, asumirá el nuevo tipo de depreciación que se le indicó.
+Para mayor información sobre los tipos de depreciación de un activo: [clic
+aquí](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[200\]Label53.html >)
+
+
+
+﻿
+
+# Dato deprec.
+
+Unidad según el tipo de depreciación del activo.
+
+Observaciones
+
+Si el campo "Tipo de depreciación" no se cambia, el "Dato deprec." se muestra
+en modo solo lectura y refleja la unidad de depreciación que se tenga
+configurada para el activo \(meses, horas, unidades, etc.\)
+Si el campo "Tipo de depreciación" se cambia, el "Dato deprec." permite
+indicar la nueva unidad de depreciación que se configurará al activo.
+
+
+
+﻿
+
+# Valor residual
+
+Permite la modificación del valor final de un activo después de su
+depreciación y amortización, es decir, al final de su vida útil
+
+Observaciones
+
+\[ContaPyme\] permite definir el valor residual del activo a través del
+tiempo; esta opción es útil cuando al interior de la empresa, se realiza una
+revisión del activo y detectan que el valor por el cual valoraban que se podía
+vender o transferir el activo una vez se depreciara por completo cambió.
+Recuerde: El valor residual forma parte del importe depreciable.
+
+  * Importe depreciable es el costo del activo, menos su **valor residual.**
+  * Depreciación es la distribución sistemática del importe depreciable de un activo a lo largo de su vida útil.
+
+
+
+﻿
+
+# Vida útil restante
+
+Permite la modificación de la vida útil restante que el activo posee a la
+fecha de la reclasificación.
+
+Ejemplo
+
+Se tiene un activo configurado para depreciar en 5 años, pero al llegar al 4to
+año \(aún vigentes 12 meses\), se hace un análisis técnico del activo y se
+identifica que se puede continuar con su uso por otros 2 años más; por lo
+tanto se hace una reclasificación de la vida útil restante y se pasa de 12
+meses a 36 meses.
+
+Observaciones
+
+Al cambiar la vida útil, se calculará una nueva fecha de finalización de la
+vida útil total del activo:
+FinDeprec. = IniDeprec. + \(VidaUltil \* 30,4375\)
+
+
+
+﻿
+
+# Observaciones
+
+Información adicional y descriptiva para detallar la reclasificación del
+activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+---
+
+### Revaluacion de activos
+
+#### [13380] FrmOprACT6
+
+﻿
+
+# Cód. Activo
+
+Código que identifica al activo que se pretende revaluar.
+
+Observaciones
+
+Con la tecla F3 se puede abrir el catálogo de activos y seleccionar el activo
+que se va a revaluar.
+
+
+
+﻿
+
+# Avalúo hoy
+
+Valor del activo, indicado en el dictamen técnico realizado al mismo.
+
+Observaciones
+
+Se debe tener en cuenta lo siguiente:
+
+  * Si el valor registrado en el campo "Avalúo hoy", es superior al valor en libros del activo, se genera una valorización.
+  * Si el valor registrado en el campo "Avalúo hoy", es inferior al valor en libros del activo, se genera una devaluación.
+
+Las cuentas contables que se afectan al procesar la operación de "Revaluación
+de activos", están configuradas en el grupo del activo.
+Para mayor información sobre la contabilización de la revaluación de un
+activo: [clic aquí](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de
+activos\\\[12860\] FrmGrupoActivo\\\[480\]Label75.html >) y también [clic
+aquí.](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[540\]Label46.html >)
+
+
+
+﻿
+
+# Fecha compra
+
+Muestra la fecha en la que se compró el activo.
+
+Observaciones
+
+Al momento de hacer la operación de compra del activo, \[ContaPyme\] registra
+dicha fecha de compra en la ficha técnica del activo; esa misma fecha de
+compra es la que se muestra en este renglón.
+
+
+
+﻿
+
+# Costo hoy
+
+Presenta el valor en libros del activo, según la fecha en la que se está
+registrando la venta..
+
+Observaciones
+
+Este campo es de solo lectura y se origina como resultado de la suma de los
+valores que aumentan el valor del activo menos los valores que restan al valor
+del activo.
+Por ejemplo:  \(+\) | Valor de compra y mayores valores.
+---|---
+\(-\) | Depreciación/amortización.
+\(+\) | Revaluación/valorización.
+\(-\) | Deterioro.
+\(+\) | Ajustes por inflación compra.
+\(-\) | Ajustes por inflación depreciación.
+\(+ o -\) | Otros movimientos. Depende del registro contable si debitó o acreditó al activo.
+
+
+
+﻿
+
+# Proveedor
+
+Presenta el código del proveedor al que se le compró el activo.
+
+Observaciones
+
+Este campo es de solo lectura y la información que se muestre, corresponde al
+tercero indicado en la compra o el cargue inicial del activo en la
+contabilidad.
+
+
+
+﻿
+
+# Detalle
+
+Información adicional y descriptiva para detallar la revaluación del activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+---
+
+### Revaluaci¾n de activos
+
+#### [13380] FrmOprACT6
+
+﻿
+
+# Cód. Activo
+
+Código que identifica al activo que se pretende revaluar.
+
+Observaciones
+
+Con la tecla F3 se puede abrir el catálogo de activos y seleccionar el activo
+que se va a revaluar.
+
+
+
+﻿
+
+# Avalúo hoy
+
+Valor del activo, indicado en el dictamen técnico realizado al mismo.
+
+Observaciones
+
+Se debe tener en cuenta lo siguiente:
+
+  * Si el valor registrado en el campo "Avalúo hoy", es superior al valor en libros del activo, se genera una valorización.
+  * Si el valor registrado en el campo "Avalúo hoy", es inferior al valor en libros del activo, se genera una devaluación.
+
+Las cuentas contables que se afectan al procesar la operación de "Revaluación
+de activos", están configuradas en el grupo del activo.
+Para mayor información sobre la contabilización de la revaluación de un
+activo: [clic aquí](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de
+activos\\\[12860\] FrmGrupoActivo\\\[480\]Label75.html >) y también [clic
+aquí.](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[540\]Label46.html >)
+
+
+
+﻿
+
+# Fecha compra
+
+Muestra la fecha en la que se compró el activo.
+
+Observaciones
+
+Al momento de hacer la operación de compra del activo, \[ContaPyme\] registra
+dicha fecha de compra en la ficha técnica del activo; esa misma fecha de
+compra es la que se muestra en este renglón.
+
+
+
+﻿
+
+# Costo hoy
+
+Presenta el valor en libros del activo, según la fecha en la que se está
+registrando la venta..
+
+Observaciones
+
+Este campo es de solo lectura y se origina como resultado de la suma de los
+valores que aumentan el valor del activo menos los valores que restan al valor
+del activo.
+Por ejemplo:  \(+\) | Valor de compra y mayores valores.
+---|---
+\(-\) | Depreciación/amortización.
+\(+\) | Revaluación/valorización.
+\(-\) | Deterioro.
+\(+\) | Ajustes por inflación compra.
+\(-\) | Ajustes por inflación depreciación.
+\(+ o -\) | Otros movimientos. Depende del registro contable si debitó o acreditó al activo.
+
+
+
+﻿
+
+# Proveedor
+
+Presenta el código del proveedor al que se le compró el activo.
+
+Observaciones
+
+Este campo es de solo lectura y la información que se muestre, corresponde al
+tercero indicado en la compra o el cargue inicial del activo en la
+contabilidad.
+
+
+
+﻿
+
+# Detalle
+
+Información adicional y descriptiva para detallar la revaluación del activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+---
+
+### Venta de activos
+
+#### [13340] FrmOprACT4
+
+﻿
+
+# Incoterms
+
+Términos Internacionales de Comercio. Reflejan las normas de aceptación
+voluntaria por las dos partes \(comprador y vendedor\), acerca de las
+condiciones de entrega de la mercancía y/o productos.
+
+Ejemplo
+
+  * **CFR = COSTO Y FLETE:** El vendedor debe hacer el despacho de la mercancía para su exportación y pagar los Costos y el Flete necesario para transportarla al destino indicado.
+  * **CIF = COSTO, SEGURO Y FLETE:** Es un término similar al CFR, pero en este caso, el vendedor también debe contratar un seguro marítimo para la mercancía del comprador.
+  * **CIP = FLETE Y SEGURO PAGADO HASTA:** Es un término equivalente a CIF, pero se utiliza para el transporte que no sea marítimo.
+  * **CPT = FLETE PAGADO HASTA:** Es un término equivalente al CFR, pero que se utiliza para el transporte que no sea marítimo.
+  * **FCA = ENTREGADO EN FRONTERA O "A MITAD DE PUENTE":** El vendedor debe entregar la mercancía lista para su exportación al transportista en el lugar indicado en las condiciones de embarque.
+  * **DAP = ENTREGADO EN UN PUNTO:** El vendedor debe poner la mercancía a disposición del comprador en el lugar acordado, incluyendo todos los gastos y riesgos asociados a la descarga de la mercancía del medio de transporte.
+  * **DAT = ENTREGADO EN TERMINAL:** El vendedor realiza la entrega cuando la mercancía es puesta a disposición del comprador, sin despachar de aduana para la importación, en la terminal, puerto o aeropuerto convenido en el país de destino.
+  * **DDP = ENTREGADO EN DESTINO CON LOS DERECHOS PAGADOS:** El vendedor se hace cargo de todo, incluyendo los procedimientos necesarios para el despacho de la mercancía y el pago de los derechos aduaneros.
+  * **EXW = EN FÁBRICA:** La única responsabilidad del vendedor, es poner su mercancía a disposición del comprador en su propio local.
+  * **FAS = LIBRE AL COSTADO DEL BUQUE:** El vendedor se hace responsable de colocar la mercancía al costado de la nave en el muelle o en las barcazas, en el lugar indicado en la cotización.
+  * **LIBRE TRANSPORTISTA:** El vendedor debe entregar la mercancía en el lugar acordado con el comprador dentro del país, lo puede hacer en los locales transitorios, estación ferroviaria, etc. El vendedor es responsable de los gastos hasta que la mercancía esté en el lugar pactado.
+  * **FOB = LIBRE A BORDO:** El vendedor se responsabiliza de colocar la mercancía a bordo de una nave en el puerto indicado en el contrato de venta.
+
+Observaciones
+
+Son normas acerca de las condiciones de entrega de las mercancías. Se usan
+para dividir los costos de las transacciones comerciales internacionales,
+delimitando las responsabilidades entre el comprador y el vendedor y reflejan
+la práctica actual en el transporte internacional de mercancías.
+Se utiliza cuando se emite "Facturación electrónica" y el cliente al cual se
+le vende el activo es extranjero y reside fuera del territorio nacional.
+
+
+
+﻿
+
+# Vendido a
+
+Código del tercero al cual se le está realizando la venta del activo.
+
+Ejemplo
+
+Se realiza una factura de venta de un vehículo al tercero: **900852956-7 -
+Transportes Madrigal** , así que en el campo **"Cliente"** se debe indicar Nit
+del tercero Transportes Madrigal: 900852956.
+
+Observaciones
+
+  * La identificación del cliente al que se realiza la venta es obligatorio para la presentación de información exógena.
+  * Al momento de seleccionar el cliente se visualizarán aquellos terceros configurados con el tipo de tercero "Cliente".
+  * Si la cuenta de ingresos o gastos que afecta la venta del activo exige tercero, el dato "Vendido a" será obligatorio.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación: Venta de activos > Configurar operación
+> Campos de la operación > Datos maestros de la operación\]**
+
+
+
+﻿
+
+# Cód. Activo
+
+Código que identifica al activo que se pretende vender.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+COM002 | Computador portátil Acer 1025
+
+Se pretende vender computador Dell 1580, por lo tanto en el campo "Código", se
+registra: **COM001**.
+
+
+
+﻿
+
+# Valor venta
+
+Valor por el cual se realiza la venta del activo.
+
+Ejemplo
+
+Se tiene un activo con la siguiente información:  Activo Código | Activo Nombre | Valor en libros
+---|---|---
+VEH001 | Vehículo Ford KII-735 | $ 40.000.000
+
+Se concreta el negocio de venta del vehículo por valor de **$ 36.000.000** ,
+por lo tanto este monto es el que se debe indicar en el campo "Valor venta".
+
+Observaciones
+
+Se debe tener en cuenta que:
+
+  * Si el activo se vende por mayor valor del que tiene registrado como "saldo en libros", la diferencia se contabiliza como un ingreso por venta de activo.
+  * Si el activo se vende por menor valor del que tiene registrado como "saldo en libros", la diferencia se contabiliza como un gasto o pérdida por venta de activo.
+  * Las anteriores cuentas que se afectan en la venta del activo, están configuradas en el **"Grupo de activo"** que tiene configurado el activo que se está vendiendo.
+
+
+
+﻿
+
+# Fecha compra
+
+Muestra la fecha desde la cual el activo existe en la contabilidad.
+
+Observaciones
+
+Este campo es de solo lectura y la fecha de compra se genera desde el momento
+de realizar:
+\- La operación de compra del activo.
+\- La operación de cargue inicial de activos.
+
+
+
+﻿
+
+# Costo hoy
+
+Presenta el valor en libros del activo, según la fecha en la que se está
+registrando la revaluación.
+
+Observaciones
+
+Este campo es de solo lectura y se origina como resultado de la suma de los
+valores que aumentan el valor del activo menos los valores que restan al valor
+del activo.
+Por ejemplo:  \(+\) | Valor de compra y mayores valores.
+---|---
+\(-\) | Depreciación/amortización.
+\(+\) | Revaluación/valorización.
+\(-\) | Deterioro.
+\(+\) | Ajustes por inflación compra.
+\(-\) | Ajustes por inflación depreciación.
+\(+ o -\) | Otros movimientos. Depende del registro contable si debitó o acreditó al activo.
+
+Nota: Se debe recordar que el costo de un activo puede variar si se analiza
+desde el punto de vista la contabilidad local \(fiscal\) o desde las NIIF;
+puesto que existen operaciones como es el caso del registro del "Deterioro"
+que solo afectan la contabilidad NIIF.
+
+
+
+﻿
+
+# Proveedor
+
+Presenta el código del proveedor al que se le compró el activo.
+
+Observaciones
+
+Este campo es de solo lectura y la información que se muestre, corresponde al
+tercero indicado en la compra o el cargue inicial del activo en la
+contabilidad.
+
+
+
+﻿
+
+# Detalle
+
+Información adicional y descriptiva para detallar la venta del activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+﻿
+
+# % a vender
+
+Porcentaje o parte del activo que se pretende vender.
+
+Ejemplo
+
+Se tiene un terreno que mide 2 hectáreas, pero al momento de venderlo solo se
+venderá una hectárea, por lo tanto en el campo "% a vender", se indica:
+**50%**
+
+Observaciones
+
+\- Se debe tener presente que la transacción de venta de activos, implica que
+se deben reversar los movimientos contables generados en la compra y la
+depreciación acumulada.
+\- Al momento de registrar la venta de un porcentaje de un activo,
+\[ContaPyme\] reversa los movimientos contables \(generados en la compra y
+depreciaciones\) de forma proporcional al "porcentaje de venta indicado".
+
+
+
+---
+
+## Tipo: Configuraciones
+
+### ACT1 - Cargue inicial activos
+
+#### [13260] FrmDlgOprACT1
+
+﻿
+
+# Deprec. ajustes por inflación
+
+Valor correspondiente a los posibles ajustes por inflación de la depreciación
+acumulada del activo.
+
+Observaciones
+
+Algunos países \(incluyendo Colombia\) no manejan economía inflacionaria, por
+lo tanto no se generan ni contabilizan ajustes por inflación.
+En Colombia desde el año 2007 no se permite dicho manejo de ajustes por
+inflación, y con la adopción de las NIIF los posibles saldos en cuentas de
+inflación se debieron cancelar con la cuenta de "Adopción por primera vez."
+El objetivo de los ajustes por inflación consiste en reflejar con mayor
+precisión la situación real de los balances de las empresas en países que
+tienen alta inflación.
+
+
+
+﻿
+
+# Valorización + / -
+
+Presenta el valor correspondiente a la valorización o devaluación del activo.
+
+Ejemplo
+
+A un vehículo se le reemplazaron repuestos y se le realizaron mejoras en
+lámina y pintura, según el avalúo técnico de un perito, dictamina que el
+vehículo después de dichas mejoras, aumentó su valor comercial en $ 3.500.000
+
+Observaciones
+
+La valorización de un activo se puede analizar como el mayor valor resultante
+entre el valor en libros y el valor comercial.
+La devaluación de un activo se puede analizar como la diferencia negativa
+entre el valor comercial respecto al valor en libros.
+
+Configuración
+
+Para configurar este campo como visible, solo lectura o requerido, puede
+ingresar por: **\[Menú operación > Configurar operación > Campos de la
+operación > Configuración de columnas en cargues de activos\]**
+
+
+
+﻿
+
+# Valor total resultante
+
+Valor final del activo que se registra en la contabilidad después de registrar
+los valores en el cargue.
+
+Observaciones
+
+Este campo es de solo lectura y se origina de la suma o resta de los valores
+indicados en los campos:
+
+  * Valor de compra.
+  * \(+\) Costos de activos
+  * \(+\) Ajustes inflación compra.
+  * \(-\) Depreciación acumulada.
+  * \(-\) Ajustes inflación depreciación.
+  * \(+/-\)Valorización.
+
+Configuración
+
+Para configurar este campo como visible, solo lectura o requerido, puede
+ingresar por: **\[Menú operación > Configurar operación > Campos de la
+operación > Configuración de columnas en cargues de activos\]**
+
+
+
+﻿
+
+# Vida útil restante local
+
+Vida útil que le resta al activo en contabilización local
+
+Ejemplo
+
+Se tiene el siguiente activo:
+
+  * Fecha de compra del activo: 01-05-2016
+  * Vida útil total del activo: 5 años \(60 meses\)
+  * Fecha cargue inicial de activos: 31-12-2017
+  * Total de meses depreciados \(según fecha de compra y fecha de cargue inicial\): 20
+  * **Vida útil restante local: 40**
+
+Observaciones
+
+El tiempo o unidad de uso restante que se indique en este campo, será el dato
+que \[ContaPyme\] asuma para realizar la depreciación automática del activo.
+Se recomienda consultar con el encargado del área contable, la vida útil
+restante de cada activo, dato que se obtiene analizando la fecha de compra,
+fecha del cargue de activos y meses efectivamente depreciados en la
+contabilidad anterior.
+La vida útil restante local puede ser diferente a la vida útil restante NIIF,
+puesto que en la norma local se tienen rangos o tablas definidas para la
+depreciación de cada grupo de activos mientras que en la norma NIIF son
+estimaciones según el uso que se le pretenda dar al activo.
+
+
+
+﻿
+
+# Vida útil restante NIIF
+
+Vida útil que le resta al activo en contabilización NIIF
+
+Ejemplo
+
+La empresa tiene una política en la cual se indica que los vehículos se
+renuevan así:
+
+  * Área administrativa y gerencial, cada 4 años \(48 meses\).
+  * Área comercial y logística, cada 7 años \(84 meses\).
+
+La vida útil restante NIIF de cada activo dependerá del análisis que la
+empresa realice sobre el **tiempo estimado** que desea seguir usando el
+activo.
+
+Observaciones
+
+El tiempo o unidad de uso restante que se indique en este campo, será el dato
+que \[ContaPyme\] asuma para realizar la depreciación automática del activo
+bajo la norma NIIF.
+Bajo la norma internacional \(NIIF\) un activo se puede depreciar en mucho más
+o menos tiempo que lo indicado en la norma local, pues en NIIF se indica la
+estimación o proyección de uso del activo para indicar su vida útil \(NIC 16 o
+Sección 17\).
+Aunque un activo ya esté depreciado bajo la norma local, si éste aún se está
+usando en la empresa y se pretende usar por varios meses más, dichos meses de
+uso futuro se deben indicar como la vida útil restante NIIF. La vida útil
+restante NIIF puede ser diferente a la vida útil restante local, puesto que en
+la norma local se tienen rangos o tablas definidas para la depreciación de
+cada grupo de activos mientras que en la norma NIIF son estimaciones según el
+uso que se le pretenda dar al activo.
+
+
+
+﻿
+
+# Descripción
+
+Observaciones adicionales sobre el activo
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+﻿
+
+# Activo Código
+
+Código del activo al cual se realiza el registro de información.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+COM002 | Computador portátil Acer 1025
+Se requiere hacer el cargue inicial de información para el computador Dell
+1580, por lo tanto en el campo "Código", se registra: **COM001**.
+
+Observaciones
+
+
+
+Para registrar información asociada a un activo, dicho activo debe estar
+creado previamente en el catálogo de activos.
+Utilice las teclas:
+
+  * F3: Seleccionar un activo que ya está registrado.
+  * F5: Crear un nuevo activo.
+
+
+
+﻿
+
+# Nombre
+
+Nombre del activo al cual se realiza el registro de información.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+COM002 | Computador portátil Acer 1025
+Se requiere hacer el cargue inicial de información para el activo con código
+COM001, por lo tanto en el campo "Nombre", se visualiza: **Computador Dell
+1580**.
+
+Observaciones
+
+Este campo es de solo lectura, quiere decir, que la información que presenta
+no se puede modificar, pues el nombre está asociado al código del activo
+seleccionado.
+
+Configuración
+
+Este campo se puede configurar como visible o no. Para esto puede ingresar
+por: **\[Menú Operación > Configurar operación > Campos de la operación >
+Columnas del cargue de activos\]**
+
+
+
+﻿
+
+# Fecha compra
+
+Fecha en la que se adquirió el activo.
+
+Ejemplo
+
+Se realiza un cargue de activos el día 31-12-2017, en dicho cargue se registra
+la adquisición de un Computador el cual fue comprado el 14-05-2017, por lo
+tanto esta es la fecha que se debe registrar en este campo: **14-05-2017**.
+
+Observaciones
+
+Se recomienda que si no se tiene la fecha exacta de la compra del activo, se
+registre una fecha aproximada de dicha adquisición.
+La fecha que se registre en este campo será la que \[ContaPyme\] asuma como
+inicio de la depreciación del activo.
+
+Configuración
+
+Este campo se puede configurar como visible o no. Para esto puede ingresar
+por: **\[Menú Operación > Configurar operación > Campos de la operación >
+Columnas del cargue de activos\]**
+
+
+
+﻿
+
+# Comprado a
+
+Código del tercero \(proveedor\) a quien se realizó la compra del activo.
+
+Ejemplo
+
+Se registra en el cargue inicial un computador portátil el cual fue comprado a
+la empresa Equipartes S.A.S, identificada con el código: 810500600. Por lo
+tanto en este campo queda el registro del código del proveedor Equipartes, es
+decir: 810500600
+
+Observaciones
+
+Al momento de seleccionar el proveedor se visualizan aquellos terceros
+configurados con el tipo de tercero "Proveedor".
+Ubicado en este campo, utilice las teclas:
+
+  * F3: Seleccionar un proveedor que ya está creado en el catálogo de terceros.
+  * F5: Crear un nuevo proveedor.
+
+
+
+﻿
+
+# Valor de compra
+
+Valor del activo \(ofrecido por el proveedor\) al momento de su adquisición.
+
+Ejemplo
+
+Activo | Valor de compra
+---|---
+Escritorio gerencia | $ 1.700.000 | Computador Dell 1580 | $ 2.800.000
+
+Observaciones
+
+Este valor forma parte fundamental del costo del activo, el cual se utiliza
+para generar el importe depreciable y así calcular la depreciación mensual.
+
+Configuración
+
+Para configurar este campo como visible, solo lectura o requerido, puede
+ingresar por: **\[Menú operación > Configurar operación > Campos de la
+operación > Configuración de columnas en cargues de activos\]**
+
+
+
+﻿
+
+# Costos activo
+
+Costos adicionales al valor de compra ofrecido por el proveedor.
+
+Ejemplo
+
+Se compra una máquina para análisis de suelos por $ 30.000.000, pero se
+incurren en costos adicionales así:
+Conceptos | Costos del activo
+---|---
+Aranceles de importación | $ 2.500.000
+Costos de emplazamiento | $ 3.000.000
+Costos de instalación y montaje | $ 5.500.000
+Total costos del activo | $ 11.000.000
+
+Observaciones
+
+Según la NIC 16 \(NIIF plenas\) o Sección 17 \(NIIF Pymes\) se recomienda
+tener en cuenta los siguientes componentes del costo al momento de registrar
+el costo de un activo:
+
+  * Precio de adquisición, que incluye honorarios legales y de intermediación, aranceles de importación.
+  * Todos los costos atribuibles a la ubicación del activo en el lugar para que pueda funcionar correctamente:
+    * Costos de preparación del emplazamiento.
+    * Costos de entrega y manipulación inicial.
+    * Costos de instalación y montaje.
+    * Costos de comprobación de funcionamiento del activo.
+
+Este valor forma parte fundamental del costo del activo, el cual se utiliza
+para generar el importe depreciable y así calcular la depreciación mensual.
+
+Configuración
+
+Para configurar este campo como visible, solo lectura o requerido, puede
+ingresar por: **\[Menú operación > Configurar operación > Campos de la
+operación > Configuración de columnas en cargues de activos\]**
+
+
+
+﻿
+
+# Ajustes inflación compra
+
+Valor correspondiente a los posibles ajustes por inflación al momento de
+registrar la compra del activo.
+
+Observaciones
+
+Algunos países \(incluyendo Colombia\) no manejan economía inflacionaria, por
+lo tanto no se generan ni contabilizan ajustes por inflación.
+En Colombia desde el año 2007 no se permite dicho manejo de ajustes por
+inflación, y con la adopción de las NIIF los posibles saldos en cuentas de
+inflación se debieron cancelar con la cuenta de "Adopción por primera vez."
+El objetivo de los ajustes por inflación consiste en reflejar con mayor
+precisión la situación real de los balances de las empresas en países que
+tienen alta inflación.
+
+
+
+﻿
+
+# Deprec. acumulada
+
+Valor correspondiente a la depreciación acumulada generada por el uso del
+activo desde la fecha de adquisición hasta la fecha del cargue inicial.
+
+Ejemplo
+
+Se tiene el siguiente activo:
+
+  * Costo del computador: $ 4.800.000
+  * Fecha de compra del activo: 01-05-2017
+  * Vida útil total del activo: 5 años \(60 meses\)
+  * Fecha cargue inicial de activos: 31-12-2017
+  * Total de meses depreciados \(según fecha de compra y fecha de cargue inicial\): 8
+  * Valor depreciado por mes: \($ 4.800.000 / 60\) = $ 80.000
+  * **Valor Depreciación acumulada: $ 640.0000**
+
+Observaciones
+
+Antes de indicar esta información se recomienda analizar por cada activo, la
+depreciación acumulada que el contador de la empresa tiene registrada en los
+estados financieros.
+
+Configuración
+
+Para configurar este campo como visible, solo lectura o requerido, puede
+ingresar por: **\[Menú operación > Configurar operación > Campos de la
+operación > Configuración de columnas en cargues de activos\]**
+
+
+
+# Acerca de ventana
+
+##  CATÁLOGO GRUPOS DE ACTIVOS
+
+##  Objetivo
+
+Registrar por primera vez en la contabilidad, los diferentes activos que la
+empresa posee. Comúnmente es utilizada cuando la empresa va a iniciar con el
+uso del módulo de activos y requiere registrar la información actualizada
+\(fecha de compra, valor en libros y vida útil restante\) por cada activo; a
+partir de este registro \[ContaPyme\] iniciará el proceso de automatización
+contable del activo.
+
+## Ejemplo de información a registrar
+
+Se debe indicar información actualizada a la fecha de registro de la operación
+de cargue inicial.
+
+Ejemplo:
+
+Cód. Activo | Nombre activo | Fecha compra | Valor compra | Depreciación acumulada | Valor total resultante | Vida útil restante local | Vida útil restante NIIF
+---|---|---|---|---|---|---|---
+COM001 | Computador Dell | 01-01-2017 | $ 1.800.000 | $ 600.000 | $ 1.200.000 | 24 meses | 40 meses
+VEH01 | Vehículo Toyota | 01-02-2016 | $ 60.000.000 | $ 23.000.000 | $ 37.000.000 | 37 meses | 70 meses
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Sección encabezado de la operación
+
+Esta operación está basada en el tipo de documento de soporte “Cargue inicial
+de saldos”; esto quiere decir que \[ContaPyme\] permite realizar el registro
+de información de los activos de la empresa y se encargará de generar los
+movimientos contables correspondientes a la información indicada, pero se debe
+tener presente que la contrapartida \(para dejar el balance inicial cuadrado y
+que se cumpla la ecuación patrimonial Activo = Pasivo + Patrimonio\) se debe
+realizar de manera adicional mediante la operación de “Cargue inicial de
+cuentas”.
+
+**IMPORTANTE:** Recuerde que las operaciones de cargue inicial \(activos,
+inventarios y cuentas\) son las únicas que permiten ser procesadas sin que la
+sumatoria de débitos sea igual a los créditos; pero \[ContaPyme\] analiza que
+la sumatoria de todos los débitos y créditos de todas ellas \(en conjunto\),
+sí coincida y cumpla con la ecuación patrimonial.
+
+
+
+## Secciones de la operación
+
+Lista de activos: En esta área se cargan todos los activos \(los cuales fueron
+previamente creados en el catálogo de activos\), y se indica por cada uno los
+datos que quedarán relacionados en el cargue inicial de saldos actualizados.
+Es importante que la información a registrar en esta sección sea validada por
+el responsable del área contable en la empresa, para que posteriormente los
+estados financieros queden cuadrados según la información que la empresa
+posee.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Esta operación se puede imprimir en una nota de contabilidad, para poderse
+imprimir la operación debe estar procesada, pues en la nota de contabilidad se
+reflejan todos los registros contables \(débitos y créditos\) que dicha
+operación genera. Es muy útil tener el documento impreso para así poder
+realizar la operación de cargue inicial de cuentas y cuadrar la ecuación
+patrimonial.
+
+
+
+---
+
+### ACT2 - Compra de activos
+
+#### [13280] FrmDlgOprACT2
+
+﻿
+
+# Fecha
+
+Fecha del documento de soporte en el que se hace el pago o gasto.
+
+Ejemplo
+
+El 15-01-2018 se compra un Computador Dell 1580 \(COM001\) y ese mismo día se
+realiza el pago de un flete como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otro documento "Factura FC-00987", se activa
+la opción **"Permitir diferentes tipos de documento y terceros por cada
+gasto"** y en el campo **Fecha** se registra la fecha en la que se realiza el
+pago del flete.
+CONCEPTO DE PAGO | VALOR | FECHA  | TIPO DE DOCUMENTO | NÚMERO DOCUMENTO | TERCERO
+---|---|---|---|---|---
+COM001 - Computador Dell 1580 | $ 170.000 | **15/01/2018** | 1 - Factura compra | FC-00987 | Transportadora ABS SAS
+
+Observaciones
+
+Se recomienda que la fecha de registro de los otros gastos sea igual a la
+fecha en la cual se registra la compra del activo.
+
+Configuración
+
+Este campo se puede configurar como visible, solo lectura o requerido, ver:
+**\[Menú Operación > Configurar operación > Campos de la operación >
+Configuración de columnas en gastos\]**
+
+
+
+﻿
+
+# Comprado a
+
+Código o identificador del tercero \(proveedor\), al cual se realiza la compra
+del activo.
+
+Ejemplo
+
+Se compra a la empresa Equipartes S.A.S, identificada con el código: 810500600
+un computador portátil. Por lo tanto en este campo queda el registro del
+código del proveedor Equipartes, es decir: **810500600**
+
+Observaciones
+
+Al momento de seleccionar el proveedor se visualizan aquellos terceros
+configurados con el tipo de tercero "Proveedor".
+Ubicado en este campo, puede utilizar las teclas:
+
+  * F3: Seleccionar un proveedor que ya está creado en el catálogo de terceros.
+  * F5: Crear un nuevo proveedor.
+
+El tercero que registre en este campo será el que \[ContaPyme\] muestre como
+"Proveedor" en la ficha técnica del activo.
+
+Configuración
+
+Este campo se puede configurar como: visible, solo lectura, requerido y valor
+por defecto. Para esto, ingrese dentro de la operación por: **\[Menú:
+Operación > Configurar operación > Campos de la operación > Datos maestros de
+la operación\]**
+
+
+
+﻿
+
+# Tercero
+
+Tercero al cual se realiza el pago del gasto.
+
+Ejemplo
+
+Se compra un Computador Dell 1580 \(COM001\) y ese mismo día se realiza el
+pago de un flete como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor \(Transportadora ABS SAS\) mediante documento
+"Factura FC-00987", se activa la opción **"Permitir diferentes tipos de
+documento y terceros por cada gasto"** y en el campo **Tercero** se registra
+el código del tercero al cual se realiza el pago del flete.
+CONCEPTO DE PAGO | VALOR | FECHA  | TIPO DE DOCUMENTO | NÚMERO DOCUMENTO | TERCERO
+---|---|---|---|---|---
+COM001 - Computador Dell 1580 | $ 170.000 | 15/01/2018 | 1 - Factura compra | FC-00987 | **Transportadora ABS SAS**
+
+Observaciones
+
+Al momento de seleccionar el proveedor se visualizan aquellos terceros
+configurados con el tipo de tercero "Proveedor".
+Ubicado en este campo, utilice las teclas:
+
+  * F3: Seleccionar un proveedor que ya está creado en el catálogo de terceros.
+  * F5: Crear un nuevo proveedor.
+
+Configuración
+
+Este campo se puede configurar como visible, solo lectura o requerido, ver:
+**\[Menú Operación > Configurar operación > Campos de la operación >
+Configuración de columnas en gastos\]**
+
+
+
+﻿
+
+# Permitir diferentes tipos de documento y terceros por cada gasto
+
+Al activar esta opción, se visualizan columnas adicionales que permiten
+asignar un tipo de documento, número de documento, fecha y tercero distinto
+para cada renglón de gastos.
+
+Ejemplo
+
+Se realiza una compra de los siguientes activos:
+
+**FECHA: 15/01/2018**
+**FACTURA: FC-001234**
+**PROVEEDOR: Proveedor Tecnológico Ltda**
+PRODUCTO |  PRECIO | Computador HP | $ 1.800.000
+Computador Dell | $ 1.600.000
+Impresora Multifuncional Epson | $ 1.100.000
+
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otra factura, se activa la opción
+**"Permitir diferentes tipos de documento y terceros por cada gasto"** para
+registrar los datos correspondientes a dicho pago.
+
+CONCEPTO DE PAGO | VALOR | FECHA:  | FACTURA No  | PROVEEDOR
+---|---|---|---|---
+513085 - Transporte de mercancía | $ 200.000 | 15/01/2018 | FC-00987 | Transportadora ABS SAS
+
+Observaciones
+
+En este caso, la fecha debe estar dentro del mismo mes que la fecha de soporte
+de la operación.
+Al momento de procesar la operación el registro de otros gastos quedará con la
+información registrada en cada una de las columnas y se podrá visualizar en
+los exploradores e informes contables.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configuración operación > Campos
+de la operación > Datos maestros de la operación > Permitir diferentes
+terceros c./renglón\].**
+
+
+
+﻿
+
+# Activo
+
+Código que identifica al activo al que se le registra un mayor valor.
+
+Observaciones
+
+Cuando se indica el código del activo, y se registra un valor, el sistema suma
+como mayor mayor el monto indicado al activo reportado.
+Si se va a registrar un mayor valor a un activo se recomienda activar la
+opción: "Permitir diferentes tipos de documentos y terceros por cada gasto",
+para mayor información: [clic aquí.](<\[20\]Chk_BShowSupportInfo.html>)
+Tenga en cuenta que la información que se registra al activo se trata como un
+mayor valor del mismo, para más información: [clic
+aquí.](<\[70\]GridCargueActivos_MCostos.hmtl>)
+
+Configuración
+
+Este campo se puede configurar como: visible, solo lectura y requerido. Para
+esto, ingrese dentro de la operación por: **\[Menú: Operación > Configurar
+operación > Campos de la operación > Configuración de columnas en gastos\]**
+
+
+
+﻿
+
+# Concepto de pago
+
+Código de una cuenta relacionada en el "Plan Único de Cuentas", la cual
+identifica el concepto del gasto a registrar.
+
+Ejemplo
+
+Si en la compra de un activo se requiere registrar un gasto \(flete o
+transporte\) por la entrega del activo, en esta columna de "Concepto de pago"
+se relaciona la cuenta del plan de cuentas correspondiente a dicho concepto.
+Para el plan de cuentas del sector comercial se tiene configurado este
+concepto en la cuenta: **"513550 - Transportes, fletes y acarreos."**
+
+Observaciones
+
+Este campo puede ser utilizado cuando se activa la opción "Permitir diferentes
+tipos de documentos y terceros por cada gasto", puesto que el concepto de pago
+registrado \(Ej. Gasto por flete o transporte\) normalmente es pagado a otro
+tercero diferente al que se le registra la compra del activo. Para mayor
+información: [clic aquí.](<\[20\]Chk_BShowSupportInfo.html>)
+Al registrar este campo se inhabilita el campo "Activo", es decir, se registra
+un valor como "Mayor valor a un activo" o como un "Concepto de gasto".
+
+
+
+﻿
+
+# CC. a cargar
+
+Código del centro de costos al que se le carga el gasto en el campo "Concepto
+de pago."
+
+Ejemplo
+
+Se registra en la cuenta **"513550"** , un flete o transporte por la entrega
+del activo. Como es un gasto, éste se registra en un centro de costos el cual
+ya está creado en el "Explorador gráfico de la empresa".
+
+Observaciones
+
+El CC. a cargar es requerido cuando se registra información en el campo
+"Concepto de pago." Para mayor información: [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)
+El CC. a cargar se inhabilita \(se presenta como de solo lectura\) cuando se
+registra información en el campo "Activo". Para mayor información: [clic
+aquí.](<\[30\]GridIngresosEgresos_IACTIVO.html>)
+La información cargada al centro de costos se puede consultar en reportes como
+"estado de resultados, mayor y balances, tablas comparativas, etc."
+
+
+
+﻿
+
+# Valor
+
+Valor adicional que se registra directamente al activo \(mayor valor\) o como
+gasto.
+
+Ejemplo
+
+Se compra un Computador Dell 1580 \(COM001\) por $ 2.500.000 y se realiza el
+pago de un flete como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otra factura, se activa la opción
+**"Permitir diferentes tipos de documento y terceros por cada gasto"** para
+registrar los datos correspondientes a dicho pago.
+
+CONCEPTO DE PAGO | VALOR | FECHA  | NÚMERO DOCUMENTO | TERCERO
+---|---|---|---|---
+COM001 - Computador Dell 1580 | **$ 170.000** | 15/01/2018 | FC-00987 | Transportadora ABS SAS
+
+Observaciones
+
+Este valor puede indicar mayores componentes del costo del activo, para más
+información: [clic aquí.](<\[70\]GridCargueActivos_MCostos.hmtl>)
+Tenga en cuenta que la cuantía que se registra al activo se trata como un
+mayor valor del mismo, para más información: [clic
+aquí.](<\[70\]GridCargueActivos_MCostos.hmtl>)
+La cuenta contable en la cual se registra el mayor valor, es la que el activo
+tiene configurada en su ficha técnica.
+
+
+
+﻿
+
+# Detalle
+
+Detalle y observación
+
+Ejemplo
+
+Se compra un Computador Dell 1580 \(COM001\) por $ 2.500.000 y se realiza el
+pago de un flete como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otra factura, se activa la opción
+**"Permitir diferentes tipos de documento y terceros por cada gasto"** para
+registrar los datos correspondientes a dicho pago.
+
+CONCEPTO DE PAGO | VALOR | FECHA  | NÚMERO DOCUMENTO | TERCERO  | DETALLE
+---|---|---|---|---|---
+COM001 - Computador Dell 1580 | $ 170.000 | 15/01/2018 | FC-00987 | Transportadora ABS SAS | **Pago de flete o transporte por la compra del computador.**
+
+Observaciones
+
+Descripción o comentario sobre el registro realizado. Útil para usar cuando se
+registra un mayor valor del activo y se requiere dejar la indicación o motivo
+de dicha transacción.
+Cuando se está haciendo transición a las NIIF, un usuario puede indicar si el
+registro indicado en el renglón afecta solo la norma local, la norma NIIF o
+ambas. Para esto se puede usar las etiquetas:
+
+  * SOLOLOCAL
+  * SOLONIIF
+  * LOCALYNIIF
+
+O puede ingresar por la opción: **\[Menú Herramientas > Afectación del renglón
+seleccionado\]**
+
+Configuración
+
+Este campo se puede configurar como visible, solo lectura o requerido, ver:
+**\[Menú Operación > Configurar operación > Campos de la operación >
+Configuración de columnas en gastos\]**
+
+
+
+﻿
+
+# Tipo de documento
+
+Tipo de documento de soporte que sustenta la transacción registrada.
+
+Ejemplo
+
+Se compra un Computador Dell 1580 \(COM001\) y se realiza el pago de un flete
+como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otro documento "Factura FC-00987", se activa
+la opción **"Permitir diferentes tipos de documento y terceros por cada
+gasto"** y en el campo **Tipo de documento** se selecciona la factura de
+compra
+CONCEPTO DE PAGO | VALOR | FECHA  | TIPO DE DOCUMENTO | NÚMERO DOCUMENTO | TERCERO
+---|---|---|---|---|---
+COM001 - Computador Dell 1580 | $ 170.000 | 15/01/2018 | **1 - Factura compra** | FC-00987 | Transportadora ABS SAS
+
+Observaciones
+
+\[ContaPyme\] tiene pre-configurados múltiples documentos de soporte, para
+seleccionar el indicado basta con dar doble clic sobre el campo o usar la
+tecla F3.
+
+
+
+﻿
+
+# Número documento
+
+Número del documento de soporte que sustenta el gasto o pago.
+
+Ejemplo
+
+Se compra un Computador Dell 1580 \(COM001\) y se realiza el pago de un flete
+como mayor valor por $ 170.000.
+Se requiere registrar el flete o transporte de esta compra, como este pago se
+realiza a otro proveedor mediante otro documento "Factura FC-00987", se activa
+la opción **"Permitir diferentes tipos de documento y terceros por cada
+gasto"** y en el campo **Número documento** se registra el número de la
+factura que sustenta dicho pago.
+CONCEPTO DE PAGO | VALOR | FECHA  | TIPO DE DOCUMENTO | NÚMERO DOCUMENTO | TERCERO
+---|---|---|---|---|---
+COM001 - Computador Dell 1580 | $ 170.000 | 15/01/2018 | 1 - Factura compra | **FC-00987** | Transportadora ABS SAS
+
+Observaciones
+
+Regularmente el número de documento corresponde a la factura, recibo o
+comprobante que envía directamente el proveedor que presta el servicio.
+
+Configuración
+
+Este campo se puede configurar como visible, solo lectura o requerido, ver:
+**\[Menú Operación > Configurar operación > Campos de la operación >
+Configuración de columnas en gastos\]**
+
+
+
+# Acerca de ventana
+
+##  OPERACIÓN COMPRA ACTIVOS
+
+##  Objetivo
+
+Registrar la entrada o compra del activo para que éste quede relacionado en la
+contabilidad de la empresa. A partir del momento de la compra, \[ContaPyme\]
+podrá tener el control de la información contable del activo e iniciará una
+serie de cálculos automáticos cuando se le indique que realice transacciones
+como depreciación, venta, baja, etc., del activo.
+
+## Ejemplo de información a registrar
+
+El 01-05-2017, mediante factura FC-01020 se realiza la compra de un vehículo
+Toyota a la empresa Vehimás Ltda, por valor de $ 50.000.000; la forma de pago
+fue mediante una transferencia bancaria.
+
+La información relevante para registrar en la compra del activo es:
+
+  * Número de la factura de compra: FC-01020.
+  * Fecha de compra: 01-05-2017.
+  * Proveedor a quien se le compró el activo: Vehimás Ltda.
+  * Activo comprado: Vehículo Toyota.
+  * Valor compra: $ 50.000.000
+  * Forma pago: Bancolombia \(transferencia\).
+
+Puede haber otra información relevante en la negociación que se pueda
+registrar en la operación de compra, como:
+
+  * Mayores valores asociados a la adquisición del activo y que incrementen el costo del mismo.
+  * Gastos \(fletes\) relacionados por la entrega del activo.
+  * Impuestos asociados a la transacción de compra.
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Sección encabezado de la operación
+
+Esta operación se basa en el documento de soporte “Factura de compra”, dicho
+documento permite que el usuario registre manualmente el número de la factura
+que el proveedor le envía por dicha transacción.
+
+
+## Secciones de la operación
+
+Lista de activos
+
+En esta área se registran los activos que se están adquiriendo al proveedor y
+el respectivo valor de compra.
+
+**IMPORTANTE:** Se debe tener en cuenta que para poder registrar la compra, el
+o los activos deben estar previamente creados en el catálogo de activos.
+
+
+
+Lista de otros gastos y pagos
+
+En esta sección se pueden registrar valores adicionales asociados a la compra
+del activo, los cuales pueden afectar como un mayor valor del costo del activo
+o como un gasto. Un ejemplo de registro de información en esta sección puede
+ser un flete por transporte de entrega del activo, dicho valor podría
+registrarse como un incremento al costo del activo o como un gasto directo
+\(esto depende de las políticas empresariales\).
+
+Lista de conceptos de liquidación
+
+En esta área se relacionan todos los impuestos asociados al proceso de
+adquisición del activo \(IVA, retenciones, etc.\)
+
+Descripción de la forma de pago
+
+En esta área se registra la forma como se va a pagar el activo adquirido, se
+puede hacer registro de pago en cada opción \(caja, banco, cuenta por pagar\)
+y dependiendo de la opción seleccionada, \[ContaPyme\] solicitará que se
+registre cierta información relacionada a la forma de pago.
+
+Ejemplo:
+
+  * **Si indica caja:** solicita la cuenta del plan único de cuentas destinada para administrar el dinero en efectivo. También flujo de caja si la empresa utiliza la funcionalidad de flujos de efectivo.
+  * **Si indica banco:** solicita la cuenta del plan único de cuentas asociada a la entidad bancaria de la cual va a sacar el dinero, también puede solicitar información del tipo de movimiento bancario, número y fecha de la transacción y el concepto de flujo de efectivo si la empresa utiliza las funcionalidades de conciliación bancaria y flujos de efectivo.
+  * **Si indica cuenta por pagar:** solicita la cuenta del plan único de cuentas que se utiliza para contabilizar los pagos a los proveedores, también requiere información de la fecha de pago o el detalle de las diferentes cuotas en las que se va a pagar el activo.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Esta operación de compra comúnmente no se imprime, puesto que es directamente
+el proveedor quien envía a la empresa la factura asociada a la transacción con
+el activo; sin embargo la empresa podría imprimir el comprobante de compra o
+factura equivalente para tener un registro físico adicional de la adquisición
+del activo.
+
+
+
+---
+
+### ACT7 - Deterioro de activos
+
+#### [13290] FrmCalculoDeterioroActivo
+
+﻿
+
+# Cálculo del valor en uso
+
+Flujo de efectivo proyectado y convertido a valor presente de los posibles
+beneficios que genera un activo.
+
+Ejemplo
+
+Se tiene un taxi el cual se estima que por año deja un flujo neto antes de
+impuestos de $ 10.000.000. Se hace la estimación para el cálculo del valor en
+uso para 4 años con una tasa del 1%:
+Período | Valor
+---|---
+Año 1 | 10.000.000
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+Tasa de descuento | 1%
+**Valor en uso** | 39.019.655
+
+Observaciones
+
+Para calcular el valor en uso de un activo, se utiliza la fórmula de MS-Excel:
+**VA \(Valor Actual.\)** La cual tiene en cuenta datos como:
+\- Tasa de descuento.
+\- Total de períodos.
+\- Flujo de efectivo en cada período.
+
+El valor en uso es un concepto que se requiere para el cálculo del deterioro
+de un activo, y está contemplado en la NIC 36 "Deterioro del valor de los
+activos." Dicho valor en uso se utiliza para calcular el **Importe
+recuperable** de un activo.
+El importe recuperable es el mayor valor entre "Valor razonable" y el "Valor
+en uso".
+
+
+
+﻿
+
+# Cálculo del valor razonable
+
+Valor que se recibirá en el mercado por la venta o transferencia del activo
+\(en sus condiciones actuales\) y descontando los costos asociados a la venta.
+
+Ejemplo
+
+Al interior de la empresa se tiene un vehículo que hace varios años está en
+uso y tiene un valor en libros de $ 30.000.000 \(Dato solo informativo\).
+Se hizo un análisis y según el mercado, dicho vehículo comercialmente tiene un
+valor de $ 24.000.000 y por la venta un comisionista cobra $ 1.000.000.
+Por lo tanto el valor razonable es:
+
+Valor del mercado | $ 24.000.000
+---|---
+\(-\) Costos de venta | $ 1.000.000
+**Valor razonable** | **$ 23.000.000**
+
+Observaciones
+
+El valor razonable en uso es un concepto que se requiere para el cálculo del
+deterioro de un activo, y está contemplado en la NIIF 13. Dicho valor
+razonable se utiliza para calcular el **Importe recuperable** de un activo.
+El importe recuperable es el mayor valor entre "Valor razonable" y el "Valor
+en uso".
+
+
+
+﻿
+
+# Valor de mercado
+
+Valor que se recibiría en un mercado por la venta o transferencia del activo
+\(en sus condiciones actuales\).
+
+Ejemplo
+
+Al interior de la empresa se tiene un vehículo que hace varios años está en
+uso y tiene un valor en libros de $ 30.000.000 \(Dato solo informativo\).
+Se hizo un análisis en el mercado, y dicho vehículo comercialmente tiene un
+valor de $ 24.000.000; este es el valor de mercado.
+
+Observaciones
+
+El valor de mercado es el precio al que un bien puede comprarse en un mercado
+libre y corresponde a un estudio que al interior de la empresa se realiza para
+detectar comercialmente y bajo las funcionalidades actuales del activo, el
+valor que puede recibir la empresa por vender el bien.
+El valor de mercado es un concepto que se usa para el cálculo del deterioro de
+un activo y se utiliza para calcular el **Valor razonable** de un activo.
+
+
+
+﻿
+
+# Costos de venta
+
+Valor o gasto en el que se incurre para vender o transferir el activo.
+
+Ejemplo
+
+Al interior de la empresa se tiene un vehículo que hace varios años está en
+uso y tiene un valor en libros de $ 30.000.000 \(Dato solo informativo\).
+Se hizo un análisis en el mercado, y dicho vehículo comercialmente tiene un
+valor de $ 24.000.000; pero para poderlo vender se requiere pagar a un
+vendedor \(comisionista\) que se encarga del peritaje, los trámites de
+impuestos y transferencia del vehículo, para estos servicios el comisionista
+cobra $ 1.000.000; este es el valor de los costos de venta.
+
+Observaciones
+
+El costo de venta es un concepto que se usa para el cálculo del deterioro de
+un activo y se utiliza para calcular el **Valor razonable** de un activo.
+
+
+
+﻿
+
+# Tasa de descuento
+
+Tasa o porcentaje que se resta de una cantidad esperada para obtener una
+cantidad en el presente.
+
+Ejemplo
+
+Se tiene un taxi el cual se estima que por año deja un flujo neto antes de
+impuestos de $ 10.000.000. Se hace la estimación para el cálculo del valor en
+uso para 4 años con una **tasa de descuento del 1%:**
+Período | Valor
+---|---
+Año 1 | 10.000.000
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+**Tasa de descuento** | 1%
+Valor en uso | 39.019.655
+
+Observaciones
+
+Los flujos de dinero son los que disminuyen su valor presente al aplicar el
+tipo de descuento. Al sumar todos los flujos de dinero de los diferentes
+períodos \(aplicada la tasa de descuento\) se obtiene el valor en uso del
+activo.
+
+Para calcular el valor en uso de un activo, se utiliza la fórmula de MS-Excel:
+**VA \(Valor Actual.\)** La cual tiene en cuenta datos como:
+\- Tasa de descuento.
+\- Total de períodos.
+\- Flujo de efectivo en cada período.
+
+
+
+
+﻿
+
+# Valor razonable
+
+Valor que se recibirá en el mercado por la venta o transferencia del activo
+\(en sus condiciones actuales\) y descontando los costos asociados a la venta.
+
+Ejemplo
+
+Al interior de la empresa se tiene un vehículo que hace varios años está en
+uso y tiene un valor en libros de $ 30.000.000 \(Dato solo informativo\).
+Se hizo un análisis y según el mercado, dicho vehículo comercialmente tiene un
+valor de $ 24.000.000 y por la venta un comisionista cobra $ 1.000.000.
+Por lo tanto el valor razonable es:
+
+Valor del mercado | $ 24.000.000
+---|---
+\(-\) Costos de venta | $ 1.000.000
+**Valor razonable** | **$ 23.000.000**
+
+Observaciones
+
+El valor razonable en uso es un concepto que se requiere para el cálculo del
+deterioro de un activo, y está contemplado en la NIIF 13. Dicho valor
+razonable se utiliza para calcular el **Importe recuperable** de un activo.
+El importe recuperable es el mayor valor entre "Valor razonable" y el "Valor
+en uso".
+
+
+
+﻿
+
+# Valor en uso
+
+Valor presente neto de los futuros flujos de caja que se espera sean generados
+por el activo. Se calcula aplicando una tasa de descuento, sobre los futuros
+flujos de caja esperados, antes de impuestos.
+
+Ejemplo
+
+Se tiene un taxi el cual se estima que por año deja un flujo neto antes de
+impuestos de $ 10.000.000. Se hace la estimación para el cálculo del valor en
+uso para 4 años con una tasa del 1%:
+Período | Valor
+---|---
+Año 1 | 10.000.000
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+Tasa de descuento | 1%
+**Valor en uso** | 39.019.655
+
+Observaciones
+
+Para calcular el valor en uso de un activo, se utiliza la fórmula de MS-Excel:
+**VA \(Valor Actual.\)** La cual tiene en cuenta datos como:
+\- Tasa de descuento.
+\- Total de períodos.
+\- Flujo de efectivo en cada período.
+
+El valor en uso es un concepto que se requiere para el cálculo del deterioro
+de un activo, y está contemplado en la NIC 36 "Deterioro del valor de los
+activos." Dicho valor en uso se utiliza para calcular el **Importe
+recuperable** de un activo.
+El importe recuperable es el mayor valor entre "Valor razonable" y el "Valor
+en uso".
+
+
+
+﻿
+
+# Cálculo del deterioro
+
+Deterioro es el desgaste, degenere o empeoramiento de la calidad o
+funcionalidad de un activo.
+Cuando el valor en libros es **mayor** que el importe recuperable se genera
+**Deterioro.**
+Cuando el valor en libros es **menor** que el importe recuperable se genera
+**Reversión del Deterioro.**
+
+Ejemplo
+
+Se tiene un taxi que hace varios años está en uso y tiene un valor en libros
+de $ 45.000.000.
+Se hizo un análisis y según el mercado, dicho vehículo comercialmente tiene un
+valor de $ 38.000.000 y por la venta un comisionista cobra $ 1.000.000.
+**Valor razonable**
+Valor del mercado | $ 38.000.000
+---|---
+\(-\) Costos de venta | $ 1.000.000
+**Valor razonable** | **$ 37.000.000**
+
+Se estima que por año el taxi deja un flujo neto antes de impuestos de $
+10.000.000. Se hace la estimación para el cálculo del valor en uso para 4 años
+con una tasa del 1%
+**Valor en uso**
+Año 1 | 10.000.000
+---|---
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+Tasa de descuento | 1%
+**Valor en uso** | 39.019.655
+
+Con la información anterior de desea hacer el cálculo del deterioro:
+**Cálculo del deterioro** Valor en libros | 45.000.000
+---|---
+\(-\) Importe recuperable | 39.019.655 \(Mayor entre valor razonable y valor en uso\)
+**Deterioro** | **5.980.345**
+
+Observaciones
+
+Para mayor información sobre el deterioro de activos se puede consultar la NIC
+36.
+Importe recuperable de un activo es el mayor entre su valor razonable y su
+valor en uso.
+Para mayor información sobre el cálculo del valor razonable: [clic
+aquí.](<\[130\]Label25.html>)
+Para mayor información sobre el cálculo del valor en uso: [clic
+aquí.](<\[10\]Label26.html>)
+
+
+
+﻿
+
+# Valor en libros
+
+Es el importe o valor neto por el que un activo se encuentra registrado en la
+contabilidad.
+
+Observaciones
+
+Este campo es de solo lectura y es presentado por \[ContaPyme\] según la
+información que se tenga registrada del activo en la contabilidad.
+El valor en libros puede variar dependiendo de la fecha de consulta, pues
+transacciones como: valorización, depreciación acumulada, deterioro o
+cualquier corrección valorativa sobre el activo afectan su costo en libros.
+
+
+
+﻿
+
+# Importe recuperable
+
+Importe recuperable de un activo es el mayor entre su valor razonable y su
+valor en uso.
+
+Ejemplo
+
+Para conocer el importe recuperable de un activo se debe conocer cuál es el
+valor razonable y el valor en uso de dicho activo.
+Se tiene un taxi que hace varios años está en uso y tiene un valor en libros
+de $ 45.000.000 \(dato solo informativo\). Se hizo un análisis y según el
+mercado, dicho vehículo comercialmente tiene un valor de $ 38.000.000 y por la
+venta un comisionista cobra $ 1.000.000.
+
+**Valor razonable**
+Valor del mercado | $ 38.000.000
+---|---
+\(-\) Costos de venta | $ 1.000.000
+**Valor razonable** | **$ 37.000.000**
+
+Se estima que por año el taxi deja un flujo neto antes de impuestos de $
+10.000.000. Se hace la estimación para el cálculo del valor en uso para 4 años
+con una tasa del 1%
+**Valor en uso**
+Año 1 | 10.000.000
+---|---
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+Tasa de descuento | 1%
+**Valor en uso** | **39.019.655**
+
+Con la información anterior de desea conocer el importe recuperable del
+activo:
+**Importe recuperable** | 39.019.655 **\(Mayor entre valor razonable y valor en uso\)**
+---|---
+
+Observaciones
+
+Para mayor información sobre el cálculo del valor razonable: [clic
+aquí.](<\[130\]Label25.html>)
+Para mayor información sobre el cálculo del valor en uso: [clic
+aquí.](<\[10\]Label26.html>)
+
+
+
+﻿
+
+# Flujos netos antes de impuestos
+
+Movimientos de efectivo \(ingresos y gastos\) en un período determinado.
+
+Ejemplo
+
+Se tiene un vehículo para prestar servicio de transporte de pasajeros, el
+flujo neto en un mes se calcula:
+\- Ingresos: $ 3.500.000 \(Corresponde al dinero que se recauda por la
+prestación del servicio de transporte.\)
+\- Gastos: $ 2.000.000 \(Corresponde a los gastos como: pago al conductor,
+combustible, permiso de rodamiento, etc.\)
+\- Flujo neto: $ 1.500.000
+
+Observaciones
+
+La proyección de los flujos netos \(antes de impuestos\) son la base para
+calcular el **Valor en uso.** Para mayor información: [clic
+aquí.](<\[10\]Label26.html>)
+
+
+
+﻿
+
+# Deterioro
+
+Cuando el valor en libros es **mayor** que el importe recuperable se genera
+**Deterioro.**
+Cuando el valor en libros es **menor** que el importe recuperable se genera
+**Reversión del Deterioro.**
+
+Ejemplo
+
+Se tiene un taxi que hace varios años está en uso y tiene un valor en libros
+de $ 45.000.000.
+Se hizo un análisis y según el mercado, dicho vehículo comercialmente tiene un
+valor de $ 38.000.000 y por la venta un comisionista cobra $ 1.000.000.
+**Valor razonable**
+Valor del mercado | $ 38.000.000
+---|---
+\(-\) Costos de venta | $ 1.000.000
+**Valor razonable** | **$ 37.000.000**
+
+Se estima que por año el taxi deja un flujo neto antes de impuestos de $
+10.000.000. Se hace la estimación para el cálculo del valor en uso para 4 años
+con una tasa del 1%
+**Valor en uso**
+Año 1 | 10.000.000
+---|---
+Año 2 | 10.000.000
+Año 3 | 10.000.000
+Año 4 | 10.000.000
+Tasa de descuento | 1%
+**Valor en uso** | 39.019.655
+
+Con la información anterior de desea hacer el cálculo del deterioro:
+**Cálculo del deterioro** Valor en libros | 45.000.000
+---|---
+\(-\) Importe recuperable | 39.019.655 \(Mayor entre valor razonable y valor en uso\)
+**Deterioro** | **5.980.345**
+
+Observaciones
+
+Para mayor información sobre el deterioro de activos se puede consultar la NIC
+36.
+
+
+
+# Acerca de ventana
+
+##  CÁLCULO DETERIORO ACTIVOS
+
+##  Objetivo
+
+Calcular el valor del deterioro \(o reversión del deterioro\) de un activo, a
+partir de la diferencia entre el valor en libros y el mayor valor entre el
+valor en uso y el valor razonable.
+
+## Ejemplo de información a registrar
+
+![calcdeact.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/050%20AF/Oprs/ACT7%20-%20Deterioro%20de%20activos/%5B13290%5D%20FrmCalculoDeterioroActivo/calcdeact.jpg)
+
+
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Secciones de la operación
+
+Cálculo del valor en uso
+
+Flujo de efectivo proyectado y convertido a valor presente de los posibles
+beneficios que genera un activo. El valor en uso es un concepto que se
+requiere para el cálculo del deterioro de un activo, y se utiliza para
+calcular el importe recuperable de un activo. El importe recuperable es el
+mayor valor entre "Valor razonable" y el "Valor en uso".
+
+Cálculo del valor razonable
+
+Valor que se recibirá en el mercado por la venta o transferencia del activo
+\(en sus condiciones actuales\) y descontando los costos asociados a la venta.
+
+Cálculo del deterioro
+
+Deterioro es el desgaste, degenere o empeoramiento de la calidad o
+funcionalidad de un activo. Se debe tener en cuenta que cuando el valor en
+libros es mayor que el importe recuperable se genera **“deterioro”** y cuando
+el valor en libros es menor que el importe recuperable se genera **“reversión
+del deterioro”**.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Este asistente no permite impresión, pues actúa como guía para generar el
+cálculo del deterioro el cual se refleja en la operación “Deterioro de
+activos”.
+
+
+
+---
+
+#### [13400] FrmOprACT7
+
+﻿
+
+# Calcular deterioro
+
+Abre una ventana o asistente especial que permite calcular para cada activo el
+deterioro o la reversión del deterioro.
+
+Observaciones
+
+Este asistente permite conocer:
+
+  * **Importe en libros:** Valor que tiene un activo una vez deducida la depreciación acumulada.
+  * **Importe recuperable:** Es la mayor cuantía entre el valor razonable y el valor en uso.
+    * **Valor razonable:** Precio que se recibiría por vender el activo restando los costos de venta.
+\- Ej. Precio de venta en el mercado del activo con sus condiciones actuales y
+restando los costos asociados a dicha venta.
+
+    * **Valor en uso:** Valor presente de los flujos futuros de efectivo estimados que se espera obtener de un activo.
+-Ej. Dinero que podría ganar una empresa en los próximos años por trabajar con el activo \(estimación\).
+
+El deterioro de valor de los activos se define como una pérdida que se produce
+cuando el **importe en libros** de un activo es **superior** a su **importe
+recuperable.**
+
+
+
+﻿
+
+# Cód. Activo
+
+Código del activo al cual se le registra el deterioro o la reversión del
+deterioro.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+COM002 | Computador portátil Acer 1025
+Se requiere registrar el deterioro para el Vehículo Ford KII-735, por lo tanto
+en el campo "Código", se registra: **VEH001**.
+
+Observaciones
+
+
+
+Para registrar información asociada a un activo, dicho activo debe estar
+creado previamente en el catálogo de activos.
+Utilice las teclas:
+
+  * F3: Seleccionar un activo que ya está registrado.
+  * F5: Crear un nuevo activo.
+
+
+
+﻿
+
+# Nuevo valor
+
+Nuevo valor del activo después de aplicado el deterioro.
+
+Ejemplo
+
+COD. ACTIVO | VALOR HOY | VALOR DETERIORO | NUEVO VALOR
+---|---|---|---
+VEH001 - Vehículo Ford KII-735 | $ 45.000.000 | $ 6.000.000 | **$ 39.000.000**
+
+Observaciones
+
+El deterioro afecta el importe en libros de un activo, pues el importe en
+libros NIIF es el valor por el que se reconoce un activo una vez deducida la
+depreciación acumulada y las pérdidas por deterioro.
+El deterioro de un activo solo afecta la contabilidad bajo la norma
+internacional NIIF, por lo tanto la contabilidad local o fiscal no se afecta
+por el registro del deterioro y el valor en libros del activo seguirá igual.
+
+
+
+﻿
+
+# Valor deterioro
+
+Valor neto del deterioro del activo
+Deterioro es el desgaste, degenere o empeoramiento de la calidad o
+funcionalidad de un activo.
+
+Ejemplo
+
+Se tiene un vehículo con valor en libros de $ 45.000.000.
+Se hizo un peritaje y se evidenció que por las condiciones actuales el valor
+comercial del activo disminuyó, concluyendo que el importe recuperable del
+activo es: $ 39.000.000.
+Ante esto, se debe generar un deterioro por: $ 6.000.000
+
+Observaciones
+
+Para mayor información sobre el cálculo del deterioro de un activo: [clic
+aquí.](<\[260\]Label27.html>)
+El valor registrado en este campo se contabiliza en la cuenta de deterioro
+configurada en el "Grupo de activo" al cual pertenece el activo que se está
+deteriorando.
+Para mayor información sobre la contabilización del deterioro de un activo:
+[clic aquí.](<..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[700\]Label15.html >)
+
+
+
+﻿
+
+# Observaciones
+
+Detalle o comentario sobre el registro del deterioro realizado.
+
+Observaciones
+
+Útil para registrar información del motivo del deterioro o comentarios que
+permitan en el futuro recordar por qué se hizo dicho deterioro.
+
+
+
+﻿
+
+# Registro de deterioros
+
+Al activar esta opción, \[ContaPyme\] asume que todos los valores registrados
+en la columna **"Valor deterioro"** serán considerados como deterioros y por
+tanto, **disminuirán el costo del activo.**
+
+Observaciones
+
+Deterioro es el desgaste, degenere o empeoramiento de la calidad o
+funcionalidad de un activo.
+\[ContaPyme\] permite registrar tanto el deterioro como la reversión del
+deterioro de un activo.
+Para mayor información sobre la contabilización del deterioro de un activo:
+[clic aquí.](<..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[700\]Label15.html >)
+
+
+
+﻿
+
+# Registro de reversión de deterioros
+
+Al activar esta opción, \[ContaPyme\] asume que todos los valores registrados
+en la columna **"Valor deterioro"** serán considerados como reversiones de
+deterioros.
+La reversión implica devolver o deshacer \(parcial o totalmente\) la
+contabilización realizada en el deterioro de un activo.
+
+Observaciones
+
+Es importante resaltar que la normatividad \(NIC 36\) no permite que un
+activo, después de una reversión de deterioro, quede con un costo mayor al que
+tenía originalmente antes del deterioro.
+\[ContaPyme\] hace esta verificación y mostrará el mensaje adecuado en caso de
+encontrar alguna inconsistencia.
+El valor registrado en este campo se contabiliza en la cuenta de deterioro
+configurada en el "Grupo de activo" al cual pertenece el activo que se está
+deteriorando.
+Para mayor información sobre la contabilización de la reversión del deterioro
+de un activo: [clic aquí.](<..\\..\\..\\..\\050 AF\\Cats\\Grupos de
+activos\\\[12860\] FrmGrupoActivo\\\[760\]Label40.html >)
+
+
+
+﻿
+
+# Reversión de deterioro en distinto periodo
+
+Al activar esta opción permite indicar a \[ContaPyme\] que la reversión al
+deterioro se va a realizar en otro periodo diferente al que se registró el
+deterioro inicial.
+La reversión implica devolver o deshacer \(parcial o totalmente\) la
+contabilización realizada en el deterioro de un activo.
+
+Ejemplo
+
+Puede suceder que el deterioro de un activo se registre en el mes de noviembre
+2017, pero en mayo de 2018 al activo se le realicen mejoras y reparaciones que
+después de un peritaje técnico originen una reversión al deterioro.
+Como el deterioro se realizó en noviembre 2017, seguramente para mayo 2018
+\(fecha de la reversión\), el año 2017 ya se puede estar cerrado
+contablemente.
+Implicaría que se debe activar la opción **Reversión de deterioro en distinto
+periodo.**
+
+Observaciones
+
+Cuando la reversión al deterioro es en el mismo periodo, no se debe activar
+esta opción y \[ContaPyme\] acredita la cuenta de gastos configurada en el
+grupo al cual pertenece el activo.
+Cuando la reversión al deterioro es en otro periodo, se activa esta opción y
+\[ContaPyme\] acredita la cuenta de ingresos configurada en el grupo al cual
+pertenece el activo.
+Para mayor información sobre la contabilización de la reversión del deterioro
+de un activo: [clic aquí.](<..\\..\\..\\..\\050 AF\\Cats\\Grupos de
+activos\\\[12860\] FrmGrupoActivo\\\[760\]Label40.html >)
+
+
+
+﻿
+
+# Centro de costos para imputación de gastos/ingresos
+
+Indique el código del centro de costos al cual serán imputados los gastos o
+ingresos, por el deterioro o reversión de deterioro de los activos
+registrados.
+
+Ejemplo
+
+Se tiene un vehículo para realizar entregas de los productos vendidos, el área
+responsable del activo es el departamento comercial.
+Por lo tanto, si el vehículo sufre un deterioro y éste se contabiliza; el
+gasto asociado a dicho deterioro se puede cargar al centro de costos
+"Departamento comercial".
+
+Observaciones
+
+Un centro de costos es un acumulador de ingresos y gastos, al cual se le
+pueden consultar diferentes informes que permiten conocer las entradas y
+salidas de dinero \(utilidad\) que ha generado para la empresa.
+
+
+
+# Acerca de ventana
+
+##  OPERACIÓN DETERIORO ACTIVOS
+
+##  Objetivo
+
+Se debe indicar si se va a realizar un deterioro o una reversión del deterioro
+a un activo.
+Se tiene un vehículo que hace varios años está en uso y tiene un valor en
+libros de $ 45.000.000; se hizo un avalúo \(peritaje técnico\) y según las
+condiciones físicas el vehículo, comercialmente tiene un valor de $
+38.000.000.
+En este caso se registra un deterioro por $ 7.000.000.
+\[ContaPyme\] generará los asientos contables correspondientes a dicho
+deterioro, teniendo presente la configuración de cuentas contables indicadas
+en el grupo de activos.
+
+## Secciones
+
+Explicación de las secciones en la operación.
+
+## Sección encabezado de la operación
+
+El tipo de documento de soporte relacionado con esta operación es el
+comprobante de deterioro y es importante puesto que con este identificado se
+genera un consecutivo que permite en el tiempo analizar por qué se registró un
+deterioro a un activo.
+Se recomienda utilizar el botón
+![deterioroactivos1.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/050%20AF/Oprs/ACT7%20-%20Deterioro%20de%20activos/%5B13400%5D%20FrmOprACT7/deterioroactivos1.jpg)
+“Adicionar nota a los estados financieros” para que se debe evidencia escrita
+de los motivos por los cuales se registró esta operación. El describir una
+nota clara y detallada permite hacer procesos de auditoría y comprensión de
+los estados financieros de una manera más clara.
+
+Se debe indicar si el registro que se va a realizar corresponde a:
+
+  * **Registro de deterioro:** Se presenta cuando el valor en libros el activo es mayor que su importe recuperable.
+  * **Registro de reversión del deterioro \(dentro del mismo o en diferente período contable\):** Se presenta cuando el valor en libros del activo es menor que su importe recuperable.
+
+Se debe indicar el centro de costos al cual se le registrará contablemente el
+gasto generado por el deterioro del activo.
+
+
+## Secciones de la operación
+
+Lista de activos
+
+En esta área se registra la información correspondiente al deterioro de cada
+activo; se selecciona el código del activo para que se presente \(en modo de
+solo lectura\) el valor a hoy o en libros del activo y se le pueda indicar el
+valor del deterioro, para que así continúe con un nuevo valor en libros.
+
+
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**
+
+Esta operación se puede imprimir en una nota de contabilidad. Para poderse
+imprimir la operación debe estar procesada, pues en la nota de contabilidad se
+reflejan todos los registros contables \(débitos y créditos\) que dicha
+operación genera.
+
+
+
+---
+
+### Baja de activos
+
+#### [13420] FrmOprACT8
+
+﻿
+
+# Cód. Activo
+
+Código que identifica al activo que se pretende dar de baja.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+COM002 | Computador portátil Acer 1025
+Se pretende dar de baja \(por robo\) el computador Dell 1580, por lo tanto en
+el campo "Código", se registra: **COM001**.
+
+
+
+﻿
+
+# Fecha compra
+
+Muestra la fecha desde la cual el activo existe en la contabilidad.
+
+Observaciones
+
+Este campo es de solo lectura y la fecha de compra se genera desde el momento
+de realizar:
+\- La operación de compra del activo.
+\- La operación de cargue inicial de activos.
+
+
+
+﻿
+
+# Costo hoy
+
+Presenta el valor en libros del activo, según la fecha en la que se está
+registrando la baja.
+
+Observaciones
+
+Este campo es de solo lectura y se origina como resultado de la suma de los
+valores que aumentan el valor del activo menos los valores que restan al valor
+del activo.
+Por ejemplo:  \(+\) | Valor de compra y mayores valores.
+---|---
+\(-\) | Depreciación/amortización.
+\(+\) | Revaluación/valorización.
+\(-\) | Deterioro.
+\(+\) | Ajustes por inflación compra.
+\(-\) | Ajustes por inflación depreciación.
+\(+ o -\) | Otros movimientos. Depende del registro contable si debitó o acreditó al activo.
+
+Nota: Se debe recordar que el costo de un activo puede variar si se analiza
+desde el punto de vista la contabilidad local \(fiscal\) o desde las NIIF;
+puesto que existen operaciones como es el caso del registro del "Deterioro"
+que solo afectan la contabilidad NIIF.
+
+
+
+﻿
+
+# Proveedor
+
+Presenta el código del proveedor al que se le compró el activo.
+
+Observaciones
+
+Este campo es de solo lectura y la información que se muestre, corresponde al
+tercero indicado en la compra o el cargue inicial del activo en la
+contabilidad.
+
+
+
+﻿
+
+# Motivo baja
+
+Motivo por el cual se registra la baja del activo.
+
+Ejemplo
+
+\- Se tiene un computador portátil y fue hurtado, por lo tanto el motivo de
+baja puede ser: "Robo del computador".
+\- Un vehículo de la empresa sufrió un choque, en el cual se valoró pérdida
+total, por lo tanto el motivo de baja puede ser: "Choque - pérdida total del
+vehículo".
+
+Observaciones
+
+El motivo de baja que se indique quedará registrado en la ficha técnica del
+activo, y podrá ser analizado en la **"Consulta de activos"** cuando se
+indique active la opción: **"Incluir no vigentes"**.
+
+
+
+---
+
+### Planilla de uso de activos
+
+#### [14600] FrmOprPLA7
+
+﻿
+
+# Centro de costos
+
+Código del Centro de costos donde se usó el activo.
+
+Observaciones
+
+  * El centro de costos se utiliza para acumular el valor de la depreciación, cuando un activo se deprecia por horas de uso o unidades de producción.
+  * Si la empresa dentro del licenciamiento cuenta con los módulos de producción, comúnmente el centro de costos puede ser:
+    * Orden de producción.
+    * Línea de producción.
+    * Cultivo transitorio \(para el caso del sistema AgroWin\).
+    * Cultivo perenne \(para el caso del sistema AgroWin\).
+    * También puede ser un centro de costos indirecto de producción \(CIP o CIF\), para que al final del mes se realice el proceso de distribución de costos y \[ContaPyme\] distribuya automáticamente en los centros de costos productivos, la depreciación que corresponda según la configuración que se tenga en el nodo distribuidor.
+  * En el centro de costos que se indique, se podrán consultar estados financieros \(Ej. Estado de resultados\), donde podrá verse la afectación contable que corresponde a la depreciación \(por el uso del activo\).
+
+
+
+﻿
+
+# Labor
+
+Código de la labor en la cual se usó el activo.
+
+Observaciones
+
+  * Este campo se diligencia y es útil cuando en la empresa, se utiliza el módulo de "Actividades y labores". \[ContaPyme\] cuenta permite la creación de diferentes labores empresariales, según las actividades productivas de la empresa.
+  * Al indicar la labor, \[ContaPyme\] permite generar estadísticas de labores en las cuales se analizan los activos que se usaron para cumplir con dicha labor \(mano de obra\).
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible o solo lectura\),
+ver: **\[Menú Operación > Configuración operación > Campos de la operación >
+Configuración de columnas en plantilla de uso de activos.**
+
+
+
+﻿
+
+# Activo usado
+
+Código que identifica al activo que se va a usar.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+MAQ001 | Máquina Fileteadora Optimus SRAM
+Para realizar un proceso de fabricación de 50 camisas, se utilizó la "Máquina
+Fileteadora Optimus SRAM" por 40 horas; por lo tanto en el campo "Activo
+usado", se registra: **MAQ001**.
+
+Observaciones
+
+La "Planilla de uso de activos" es muy útil cuando el **activo se deprecia
+bajo el método de "unidades de producción" o "unidad de uso"** ; puesto que
+con esta planilla se le indica al sistema el tiempo que se utilizó el activo,
+para que al final del mes, bajo la operación "Acciones automáticas de fin de
+mes", se le indique a \[ContaPyme\] que calcule la depreciación que
+corresponde al tiempo usado o unidades producidas.
+
+
+
+﻿
+
+# Unidad
+
+Unidad para la cantidad a depreciar.
+
+Ejemplo
+
+\- Tipo de depreciación lineal: **Unidad:** "mes o día."
+\- Tipo de depreciación unidades de uso: **Unidad:** "horas."
+\- Tipo de depreciación unidades de producción: **Unidad:** "camisas, mesas,
+zapatos, o cualquier unidad según la labor de producción que la empresa
+realice."
+
+Observaciones
+
+La unidad se indica según el tipo de depreciación que se tenga configurada en
+el activo.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible o solo lectura\),
+ver: **\[Menú Operación > Configuración operación > Campos de la operación >
+Configuración de columnas en plantilla de uso de activos.**
+
+
+
+﻿
+
+# Cantidad de uso
+
+Cantidad de unidades usadas.
+
+Ejemplo
+
+Se tiene un activo con la siguiente configuración:  Activo Código | Activo Nombre | Tipo depreciación | Vida útil total
+---|---|---|---
+MAQ001 | Máquina Fotocopiadora | Unidades de uso | 1.000.000 Fotocopias
+
+Durante todo el mes de mayo se sacaron 950 fotocopias, por lo tanto en la
+cantidad de uso se registra: **950**.
+
+Observaciones
+
+Este dato será el que \[ContaPyme\] utilice, \(cuando se ejecuten las acciones
+de fin de mes\), para el cálculo la depreciación del activo "máquina
+fotocopiadora".
+
+
+
+﻿
+
+# Tercero
+
+Persona responsable del uso del activo.
+
+Observaciones
+
+La persona responsable del uso del activo se puede buscar en el catálogo de
+terceros mediante la tecla "F3"; si la persona no está creada en el catálogo
+de terceros, se puede registrar directamente desde esta operación con la tecla
+"F5".
+
+
+
+﻿
+
+# Observaciones
+
+Información adicional y descriptiva para detallar el uso del activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+---
+
+### Reclasificacion de activos
+
+#### [13360] FrmDlgOprACT5
+
+﻿
+
+# Código
+
+Código del activo que se va a reclasificar. Esta operación permite cambiar:
+grupo del activo, método de depreciación, valor residual o la vida útil
+restante.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo
+---|---|---
+VEH001 | Vehículo Ford KII-735 | Flota y equipo de transporte
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones
+OFC001 | Oficina 401 Edificio Caldas | Construcciones y edificaciones
+
+Se pretende reclasificar la Oficina 401 Edificio Caldas, para cambiarla del
+grupo de "Construcciones y edificaciones" por el grupo "Propiedad de
+inversión"; por lo tanto en el campo "Código", se registra: **OFC001**.
+
+
+
+﻿
+
+# Nombre activo
+
+Muestra el nombre del activo correspondiente al código indicado en la columna
+anterior.
+
+Observaciones
+
+Este campo es de solo lectura y solo muestra información si en el campo
+"Código" se tiene algún registro de un activo válido del catálogo de activos.
+
+
+
+﻿
+
+# Nuevo grupo
+
+Permite indicar el nuevo grupo al cual va a pertenecer el activo.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo
+---|---|---
+VEH001 | Vehículo Ford KII-735 | Flota y equipo de transporte
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones
+OFC001 | Oficina 401 Edificio Caldas | Construcciones y edificaciones
+
+Se pretende reclasificar la Oficina 401 Edificio Caldas, para cambiarla del
+grupo de "Construcciones y edificaciones" por el grupo "Propiedad de
+inversión"; por lo tanto en el campo "Nuevo Grupo", se registra: **"Propiedad
+de inversión"**.
+
+Otros ejemplos comunes con el grupo "Construcciones y edificaciones" son:
+\- Cambiar por el grupo "Propiedades de inversión".
+\- Cambiar por el grupo "Activo no corriente mantenido para la venta".
+
+Observaciones
+
+\- Esta operación solo realiza afectación a la contabilidad NIIF, es decir,
+que no afecta los registros bajo la contabilidad fiscal.
+\- Al cambiar el grupo al cual pertenece un activo, \[ContaPyme\]
+automáticamente cancela los registros contables \(Ej. compra y
+depreciaciones\) que tenía el activo con el grupo anterior y los genera de
+nuevo afectando las cuentas contables configuradas en el nuevo grupo indicado.
+
+
+
+﻿
+
+# Nueva cuenta
+
+Permite indicar la nueva cuenta contable a la cual va a pertenecer el activo.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo | Cuenta del Activo
+---|---|---|---
+IMP001 | Impresora Multifuncional HP | Equipo de cómputo y comunicaciones | 152805
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones | 152805
+COM002 | Computador Lenovo | Equipo de cómputo y comunicaciones | 152805
+IMP002 | Impresora Epson | Equipo de cómputo y comunicaciones | 152805
+
+Al interior de la empresa se define la creación de una nueva cuenta contable
+en los activos de propiedad, planta y equipo, para identificar exclusivamente
+las "Impresoras"; por lo tanto se crea la cuenta "152806". Para organizar la
+nueva cuenta "152806" en todos los activos "impresoras" se utiliza la
+operación de "Reclasificación" y en el campo "Nueva cuenta" se indica el
+código de la nueva cuenta contable.
+
+Observaciones
+
+Este cambio de cuenta también es utilizado cuando se cambia de grupo al
+activo.
+
+
+
+﻿
+
+# Tipo depreciación
+
+Indica el nuevo tipo de depreciación para el activo.
+
+Ejemplo
+
+Una empresa que confecciona ropa tiene como activo una máquina fileteadora, la
+cual está configurada para depreciar bajo el modelo "Mensual \(línea recta\)".
+En un análisis técnico, la empresa define que el tipo de depreciación más
+adecuado para este activo es por "Unidades de uso" \(horas\).
+Para esta empresa que tiene un control estricto de las horas de uso, el
+cambiar al nuevo tipo de depreciación, le permitirá tener estados financieros
+más ajustados a la realidad de su proceso administrativo.
+
+Observaciones
+
+Se debe tener presente que \[ContaPyme\] guardará la fecha de este cambio y
+toda transacción que se realice con el activo antes de la fecha continuará con
+el modelo de depreciación que tenía y si la realiza después de la fecha de la
+reclasificación, asumirá el nuevo tipo de depreciación que se le indicó.
+Para mayor información sobre los tipos de depreciación de un activo: [clic
+aquí](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[200\]Label53.html >)
+
+
+
+﻿
+
+# Dato deprec.
+
+Unidad según el tipo de depreciación del activo.
+
+Observaciones
+
+Si el campo "Tipo de depreciación" no se cambia, el "Dato deprec." se muestra
+en modo solo lectura y refleja la unidad de depreciación que se tenga
+configurada para el activo \(meses, horas, unidades, etc.\)
+Si el campo "Tipo de depreciación" se cambia, el "Dato deprec." permite
+indicar la nueva unidad de depreciación que se configurará al activo.
+
+
+
+﻿
+
+# Valor residual
+
+Permite la modificación del valor final de un activo después de su
+depreciación y amortización, es decir, al final de su vida útil
+
+Observaciones
+
+\[ContaPyme\] permite definir el valor residual del activo a través del
+tiempo; esta opción es útil cuando al interior de la empresa, se realiza una
+revisión del activo y detectan que el valor por el cual valoraban que se podía
+vender o transferir el activo una vez se depreciara por completo cambió.
+Recuerde: El valor residual forma parte del importe depreciable.
+
+  * Importe depreciable es el costo del activo, menos su **valor residual.**
+  * Depreciación es la distribución sistemática del importe depreciable de un activo a lo largo de su vida útil.
+
+
+
+﻿
+
+# Vida útil restante
+
+Permite la modificación de la vida útil restante que el activo posee a la
+fecha de la reclasificación.
+
+Ejemplo
+
+Se tiene un activo configurado para depreciar en 5 años, pero al llegar al 4to
+año \(aún vigentes 12 meses\), se hace un análisis técnico del activo y se
+identifica que se puede continuar con su uso por otros 2 años más; por lo
+tanto se hace una reclasificación de la vida útil restante y se pasa de 12
+meses a 36 meses.
+
+Observaciones
+
+Al cambiar la vida útil, se calculará una nueva fecha de finalización de la
+vida útil total del activo:
+FinDeprec. = IniDeprec. + \(VidaUltil \* 30,4375\)
+
+
+
+﻿
+
+# Observaciones
+
+Información adicional y descriptiva para detallar la reclasificación del
+activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+---
+
+### Reclasificaci¾n de activos
+
+#### [13360] FrmDlgOprACT5
+
+﻿
+
+# Código
+
+Código del activo que se va a reclasificar. Esta operación permite cambiar:
+grupo del activo, método de depreciación, valor residual o la vida útil
+restante.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo
+---|---|---
+VEH001 | Vehículo Ford KII-735 | Flota y equipo de transporte
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones
+OFC001 | Oficina 401 Edificio Caldas | Construcciones y edificaciones
+
+Se pretende reclasificar la Oficina 401 Edificio Caldas, para cambiarla del
+grupo de "Construcciones y edificaciones" por el grupo "Propiedad de
+inversión"; por lo tanto en el campo "Código", se registra: **OFC001**.
+
+
+
+﻿
+
+# Nombre activo
+
+Muestra el nombre del activo correspondiente al código indicado en la columna
+anterior.
+
+Observaciones
+
+Este campo es de solo lectura y solo muestra información si en el campo
+"Código" se tiene algún registro de un activo válido del catálogo de activos.
+
+
+
+﻿
+
+# Nuevo grupo
+
+Permite indicar el nuevo grupo al cual va a pertenecer el activo.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo
+---|---|---
+VEH001 | Vehículo Ford KII-735 | Flota y equipo de transporte
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones
+OFC001 | Oficina 401 Edificio Caldas | Construcciones y edificaciones
+
+Se pretende reclasificar la Oficina 401 Edificio Caldas, para cambiarla del
+grupo de "Construcciones y edificaciones" por el grupo "Propiedad de
+inversión"; por lo tanto en el campo "Nuevo Grupo", se registra: **"Propiedad
+de inversión"**.
+
+Otros ejemplos comunes con el grupo "Construcciones y edificaciones" son:
+\- Cambiar por el grupo "Propiedades de inversión".
+\- Cambiar por el grupo "Activo no corriente mantenido para la venta".
+
+Observaciones
+
+\- Esta operación solo realiza afectación a la contabilidad NIIF, es decir,
+que no afecta los registros bajo la contabilidad fiscal.
+\- Al cambiar el grupo al cual pertenece un activo, \[ContaPyme\]
+automáticamente cancela los registros contables \(Ej. compra y
+depreciaciones\) que tenía el activo con el grupo anterior y los genera de
+nuevo afectando las cuentas contables configuradas en el nuevo grupo indicado.
+
+
+
+﻿
+
+# Nueva cuenta
+
+Permite indicar la nueva cuenta contable a la cual va a pertenecer el activo.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre | Grupo del Activo | Cuenta del Activo
+---|---|---|---
+IMP001 | Impresora Multifuncional HP | Equipo de cómputo y comunicaciones | 152805
+COM001 | Computador Dell 1580 | Equipo de cómputo y comunicaciones | 152805
+COM002 | Computador Lenovo | Equipo de cómputo y comunicaciones | 152805
+IMP002 | Impresora Epson | Equipo de cómputo y comunicaciones | 152805
+
+Al interior de la empresa se define la creación de una nueva cuenta contable
+en los activos de propiedad, planta y equipo, para identificar exclusivamente
+las "Impresoras"; por lo tanto se crea la cuenta "152806". Para organizar la
+nueva cuenta "152806" en todos los activos "impresoras" se utiliza la
+operación de "Reclasificación" y en el campo "Nueva cuenta" se indica el
+código de la nueva cuenta contable.
+
+Observaciones
+
+Este cambio de cuenta también es utilizado cuando se cambia de grupo al
+activo.
+
+
+
+﻿
+
+# Tipo depreciación
+
+Indica el nuevo tipo de depreciación para el activo.
+
+Ejemplo
+
+Una empresa que confecciona ropa tiene como activo una máquina fileteadora, la
+cual está configurada para depreciar bajo el modelo "Mensual \(línea recta\)".
+En un análisis técnico, la empresa define que el tipo de depreciación más
+adecuado para este activo es por "Unidades de uso" \(horas\).
+Para esta empresa que tiene un control estricto de las horas de uso, el
+cambiar al nuevo tipo de depreciación, le permitirá tener estados financieros
+más ajustados a la realidad de su proceso administrativo.
+
+Observaciones
+
+Se debe tener presente que \[ContaPyme\] guardará la fecha de este cambio y
+toda transacción que se realice con el activo antes de la fecha continuará con
+el modelo de depreciación que tenía y si la realiza después de la fecha de la
+reclasificación, asumirá el nuevo tipo de depreciación que se le indicó.
+Para mayor información sobre los tipos de depreciación de un activo: [clic
+aquí](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[200\]Label53.html >)
+
+
+
+﻿
+
+# Dato deprec.
+
+Unidad según el tipo de depreciación del activo.
+
+Observaciones
+
+Si el campo "Tipo de depreciación" no se cambia, el "Dato deprec." se muestra
+en modo solo lectura y refleja la unidad de depreciación que se tenga
+configurada para el activo \(meses, horas, unidades, etc.\)
+Si el campo "Tipo de depreciación" se cambia, el "Dato deprec." permite
+indicar la nueva unidad de depreciación que se configurará al activo.
+
+
+
+﻿
+
+# Valor residual
+
+Permite la modificación del valor final de un activo después de su
+depreciación y amortización, es decir, al final de su vida útil
+
+Observaciones
+
+\[ContaPyme\] permite definir el valor residual del activo a través del
+tiempo; esta opción es útil cuando al interior de la empresa, se realiza una
+revisión del activo y detectan que el valor por el cual valoraban que se podía
+vender o transferir el activo una vez se depreciara por completo cambió.
+Recuerde: El valor residual forma parte del importe depreciable.
+
+  * Importe depreciable es el costo del activo, menos su **valor residual.**
+  * Depreciación es la distribución sistemática del importe depreciable de un activo a lo largo de su vida útil.
+
+
+
+﻿
+
+# Vida útil restante
+
+Permite la modificación de la vida útil restante que el activo posee a la
+fecha de la reclasificación.
+
+Ejemplo
+
+Se tiene un activo configurado para depreciar en 5 años, pero al llegar al 4to
+año \(aún vigentes 12 meses\), se hace un análisis técnico del activo y se
+identifica que se puede continuar con su uso por otros 2 años más; por lo
+tanto se hace una reclasificación de la vida útil restante y se pasa de 12
+meses a 36 meses.
+
+Observaciones
+
+Al cambiar la vida útil, se calculará una nueva fecha de finalización de la
+vida útil total del activo:
+FinDeprec. = IniDeprec. + \(VidaUltil \* 30,4375\)
+
+
+
+﻿
+
+# Observaciones
+
+Información adicional y descriptiva para detallar la reclasificación del
+activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+---
+
+### Revaluacion de activos
+
+#### [13380] FrmOprACT6
+
+﻿
+
+# Cód. Activo
+
+Código que identifica al activo que se pretende revaluar.
+
+Observaciones
+
+Con la tecla F3 se puede abrir el catálogo de activos y seleccionar el activo
+que se va a revaluar.
+
+
+
+﻿
+
+# Avalúo hoy
+
+Valor del activo, indicado en el dictamen técnico realizado al mismo.
+
+Observaciones
+
+Se debe tener en cuenta lo siguiente:
+
+  * Si el valor registrado en el campo "Avalúo hoy", es superior al valor en libros del activo, se genera una valorización.
+  * Si el valor registrado en el campo "Avalúo hoy", es inferior al valor en libros del activo, se genera una devaluación.
+
+Las cuentas contables que se afectan al procesar la operación de "Revaluación
+de activos", están configuradas en el grupo del activo.
+Para mayor información sobre la contabilización de la revaluación de un
+activo: [clic aquí](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de
+activos\\\[12860\] FrmGrupoActivo\\\[480\]Label75.html >) y también [clic
+aquí.](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[540\]Label46.html >)
+
+
+
+﻿
+
+# Fecha compra
+
+Muestra la fecha en la que se compró el activo.
+
+Observaciones
+
+Al momento de hacer la operación de compra del activo, \[ContaPyme\] registra
+dicha fecha de compra en la ficha técnica del activo; esa misma fecha de
+compra es la que se muestra en este renglón.
+
+
+
+﻿
+
+# Costo hoy
+
+Presenta el valor en libros del activo, según la fecha en la que se está
+registrando la venta..
+
+Observaciones
+
+Este campo es de solo lectura y se origina como resultado de la suma de los
+valores que aumentan el valor del activo menos los valores que restan al valor
+del activo.
+Por ejemplo:  \(+\) | Valor de compra y mayores valores.
+---|---
+\(-\) | Depreciación/amortización.
+\(+\) | Revaluación/valorización.
+\(-\) | Deterioro.
+\(+\) | Ajustes por inflación compra.
+\(-\) | Ajustes por inflación depreciación.
+\(+ o -\) | Otros movimientos. Depende del registro contable si debitó o acreditó al activo.
+
+
+
+﻿
+
+# Proveedor
+
+Presenta el código del proveedor al que se le compró el activo.
+
+Observaciones
+
+Este campo es de solo lectura y la información que se muestre, corresponde al
+tercero indicado en la compra o el cargue inicial del activo en la
+contabilidad.
+
+
+
+﻿
+
+# Detalle
+
+Información adicional y descriptiva para detallar la revaluación del activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+---
+
+### Revaluaci¾n de activos
+
+#### [13380] FrmOprACT6
+
+﻿
+
+# Cód. Activo
+
+Código que identifica al activo que se pretende revaluar.
+
+Observaciones
+
+Con la tecla F3 se puede abrir el catálogo de activos y seleccionar el activo
+que se va a revaluar.
+
+
+
+﻿
+
+# Avalúo hoy
+
+Valor del activo, indicado en el dictamen técnico realizado al mismo.
+
+Observaciones
+
+Se debe tener en cuenta lo siguiente:
+
+  * Si el valor registrado en el campo "Avalúo hoy", es superior al valor en libros del activo, se genera una valorización.
+  * Si el valor registrado en el campo "Avalúo hoy", es inferior al valor en libros del activo, se genera una devaluación.
+
+Las cuentas contables que se afectan al procesar la operación de "Revaluación
+de activos", están configuradas en el grupo del activo.
+Para mayor información sobre la contabilización de la revaluación de un
+activo: [clic aquí](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de
+activos\\\[12860\] FrmGrupoActivo\\\[480\]Label75.html >) y también [clic
+aquí.](<..\\..\\..\\..\\..\\050 AF\\Cats\\Grupos de activos\\\[12860\]
+FrmGrupoActivo\\\[540\]Label46.html >)
+
+
+
+﻿
+
+# Fecha compra
+
+Muestra la fecha en la que se compró el activo.
+
+Observaciones
+
+Al momento de hacer la operación de compra del activo, \[ContaPyme\] registra
+dicha fecha de compra en la ficha técnica del activo; esa misma fecha de
+compra es la que se muestra en este renglón.
+
+
+
+﻿
+
+# Costo hoy
+
+Presenta el valor en libros del activo, según la fecha en la que se está
+registrando la venta..
+
+Observaciones
+
+Este campo es de solo lectura y se origina como resultado de la suma de los
+valores que aumentan el valor del activo menos los valores que restan al valor
+del activo.
+Por ejemplo:  \(+\) | Valor de compra y mayores valores.
+---|---
+\(-\) | Depreciación/amortización.
+\(+\) | Revaluación/valorización.
+\(-\) | Deterioro.
+\(+\) | Ajustes por inflación compra.
+\(-\) | Ajustes por inflación depreciación.
+\(+ o -\) | Otros movimientos. Depende del registro contable si debitó o acreditó al activo.
+
+
+
+﻿
+
+# Proveedor
+
+Presenta el código del proveedor al que se le compró el activo.
+
+Observaciones
+
+Este campo es de solo lectura y la información que se muestre, corresponde al
+tercero indicado en la compra o el cargue inicial del activo en la
+contabilidad.
+
+
+
+﻿
+
+# Detalle
+
+Información adicional y descriptiva para detallar la revaluación del activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+---
+
+### Venta de activos
+
+#### [13340] FrmOprACT4
+
+﻿
+
+# Incoterms
+
+Términos Internacionales de Comercio. Reflejan las normas de aceptación
+voluntaria por las dos partes \(comprador y vendedor\), acerca de las
+condiciones de entrega de la mercancía y/o productos.
+
+Ejemplo
+
+  * **CFR = COSTO Y FLETE:** El vendedor debe hacer el despacho de la mercancía para su exportación y pagar los Costos y el Flete necesario para transportarla al destino indicado.
+  * **CIF = COSTO, SEGURO Y FLETE:** Es un término similar al CFR, pero en este caso, el vendedor también debe contratar un seguro marítimo para la mercancía del comprador.
+  * **CIP = FLETE Y SEGURO PAGADO HASTA:** Es un término equivalente a CIF, pero se utiliza para el transporte que no sea marítimo.
+  * **CPT = FLETE PAGADO HASTA:** Es un término equivalente al CFR, pero que se utiliza para el transporte que no sea marítimo.
+  * **FCA = ENTREGADO EN FRONTERA O "A MITAD DE PUENTE":** El vendedor debe entregar la mercancía lista para su exportación al transportista en el lugar indicado en las condiciones de embarque.
+  * **DAP = ENTREGADO EN UN PUNTO:** El vendedor debe poner la mercancía a disposición del comprador en el lugar acordado, incluyendo todos los gastos y riesgos asociados a la descarga de la mercancía del medio de transporte.
+  * **DAT = ENTREGADO EN TERMINAL:** El vendedor realiza la entrega cuando la mercancía es puesta a disposición del comprador, sin despachar de aduana para la importación, en la terminal, puerto o aeropuerto convenido en el país de destino.
+  * **DDP = ENTREGADO EN DESTINO CON LOS DERECHOS PAGADOS:** El vendedor se hace cargo de todo, incluyendo los procedimientos necesarios para el despacho de la mercancía y el pago de los derechos aduaneros.
+  * **EXW = EN FÁBRICA:** La única responsabilidad del vendedor, es poner su mercancía a disposición del comprador en su propio local.
+  * **FAS = LIBRE AL COSTADO DEL BUQUE:** El vendedor se hace responsable de colocar la mercancía al costado de la nave en el muelle o en las barcazas, en el lugar indicado en la cotización.
+  * **LIBRE TRANSPORTISTA:** El vendedor debe entregar la mercancía en el lugar acordado con el comprador dentro del país, lo puede hacer en los locales transitorios, estación ferroviaria, etc. El vendedor es responsable de los gastos hasta que la mercancía esté en el lugar pactado.
+  * **FOB = LIBRE A BORDO:** El vendedor se responsabiliza de colocar la mercancía a bordo de una nave en el puerto indicado en el contrato de venta.
+
+Observaciones
+
+Son normas acerca de las condiciones de entrega de las mercancías. Se usan
+para dividir los costos de las transacciones comerciales internacionales,
+delimitando las responsabilidades entre el comprador y el vendedor y reflejan
+la práctica actual en el transporte internacional de mercancías.
+Se utiliza cuando se emite "Facturación electrónica" y el cliente al cual se
+le vende el activo es extranjero y reside fuera del territorio nacional.
+
+
+
+﻿
+
+# Vendido a
+
+Código del tercero al cual se le está realizando la venta del activo.
+
+Ejemplo
+
+Se realiza una factura de venta de un vehículo al tercero: **900852956-7 -
+Transportes Madrigal** , así que en el campo **"Cliente"** se debe indicar Nit
+del tercero Transportes Madrigal: 900852956.
+
+Observaciones
+
+  * La identificación del cliente al que se realiza la venta es obligatorio para la presentación de información exógena.
+  * Al momento de seleccionar el cliente se visualizarán aquellos terceros configurados con el tipo de tercero "Cliente".
+  * Si la cuenta de ingresos o gastos que afecta la venta del activo exige tercero, el dato "Vendido a" será obligatorio.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación: Venta de activos > Configurar operación
+> Campos de la operación > Datos maestros de la operación\]**
+
+
+
+﻿
+
+# Cód. Activo
+
+Código que identifica al activo que se pretende vender.
+
+Ejemplo
+
+Se tiene un catálogo con el siguiente listado de activos:  Activo Código | Activo Nombre
+---|---
+VEH001 | Vehículo Ford KII-735
+COM001 | Computador Dell 1580
+COM002 | Computador portátil Acer 1025
+
+Se pretende vender computador Dell 1580, por lo tanto en el campo "Código", se
+registra: **COM001**.
+
+
+
+﻿
+
+# Valor venta
+
+Valor por el cual se realiza la venta del activo.
+
+Ejemplo
+
+Se tiene un activo con la siguiente información:  Activo Código | Activo Nombre | Valor en libros
+---|---|---
+VEH001 | Vehículo Ford KII-735 | $ 40.000.000
+
+Se concreta el negocio de venta del vehículo por valor de **$ 36.000.000** ,
+por lo tanto este monto es el que se debe indicar en el campo "Valor venta".
+
+Observaciones
+
+Se debe tener en cuenta que:
+
+  * Si el activo se vende por mayor valor del que tiene registrado como "saldo en libros", la diferencia se contabiliza como un ingreso por venta de activo.
+  * Si el activo se vende por menor valor del que tiene registrado como "saldo en libros", la diferencia se contabiliza como un gasto o pérdida por venta de activo.
+  * Las anteriores cuentas que se afectan en la venta del activo, están configuradas en el **"Grupo de activo"** que tiene configurado el activo que se está vendiendo.
+
+
+
+﻿
+
+# Fecha compra
+
+Muestra la fecha desde la cual el activo existe en la contabilidad.
+
+Observaciones
+
+Este campo es de solo lectura y la fecha de compra se genera desde el momento
+de realizar:
+\- La operación de compra del activo.
+\- La operación de cargue inicial de activos.
+
+
+
+﻿
+
+# Costo hoy
+
+Presenta el valor en libros del activo, según la fecha en la que se está
+registrando la revaluación.
+
+Observaciones
+
+Este campo es de solo lectura y se origina como resultado de la suma de los
+valores que aumentan el valor del activo menos los valores que restan al valor
+del activo.
+Por ejemplo:  \(+\) | Valor de compra y mayores valores.
+---|---
+\(-\) | Depreciación/amortización.
+\(+\) | Revaluación/valorización.
+\(-\) | Deterioro.
+\(+\) | Ajustes por inflación compra.
+\(-\) | Ajustes por inflación depreciación.
+\(+ o -\) | Otros movimientos. Depende del registro contable si debitó o acreditó al activo.
+
+Nota: Se debe recordar que el costo de un activo puede variar si se analiza
+desde el punto de vista la contabilidad local \(fiscal\) o desde las NIIF;
+puesto que existen operaciones como es el caso del registro del "Deterioro"
+que solo afectan la contabilidad NIIF.
+
+
+
+﻿
+
+# Proveedor
+
+Presenta el código del proveedor al que se le compró el activo.
+
+Observaciones
+
+Este campo es de solo lectura y la información que se muestre, corresponde al
+tercero indicado en la compra o el cargue inicial del activo en la
+contabilidad.
+
+
+
+﻿
+
+# Detalle
+
+Información adicional y descriptiva para detallar la venta del activo.
+
+Observaciones
+
+Este campo es opcional y permite hasta 190 caracteres.
+
+
+
+﻿
+
+# % a vender
+
+Porcentaje o parte del activo que se pretende vender.
+
+Ejemplo
+
+Se tiene un terreno que mide 2 hectáreas, pero al momento de venderlo solo se
+venderá una hectárea, por lo tanto en el campo "% a vender", se indica:
+**50%**
+
+Observaciones
+
+\- Se debe tener presente que la transacción de venta de activos, implica que
+se deben reversar los movimientos contables generados en la compra y la
+depreciación acumulada.
+\- Al momento de registrar la venta de un porcentaje de un activo,
+\[ContaPyme\] reversa los movimientos contables \(generados en la compra y
+depreciaciones\) de forma proporcional al "porcentaje de venta indicado".
+
+
+
+---

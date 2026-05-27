@@ -1,0 +1,6120 @@
+# Acerca de ventana
+
+## CATÁLOGO DE TERCEROS
+
+##  Objetivo
+
+Crear y configurar los terceros que tienen relación con la empresa y con los
+cuales se interactúa a través de las diferentes operaciones o transacciones
+realizadas en el sistema.
+
+
+## Ejemplo de información a registrar
+
+Al momento de crear un tercero, bien sea un cliente, un proveedor, un
+vendedor, un empleado o cualquier otra persona que interactúe con la empresa,
+dentro de la información más relevante a registrar se encuentra el código y el
+nombre, pues estos datos permiten identificar al tercero para poderlo
+relacionar en las diferentes operaciones del sistema. También es muy
+importante determinar el tipo de tercero, pues a partir de esta definición se
+activarán secciones adicionales para el registro de información.
+
+Además, de cada tercero se deben indicar datos de contacto como teléfono,
+celular, dirección, correo, entre otros, los cuales permitan establecer
+comunicación efectiva con el tercero por diferentes medios. Así como también
+es muy importante configurar la clasificación tributaria del tercero para que
+el sistema pueda realizar el cálculo automático de impuestos en las
+operaciones.
+
+
+Ejemplo:
+
+los datos a registrar de un tercero serían, entre otros:
+
+Código | 10123456
+---|---
+Nombre | Juan Carlos Perez
+Tipo de tercero | Cliente
+Teléfono | 57 6 880 1899
+Celular | 301 288 22 47
+Dirección | Cra 28 \# 45 – 37 Centro
+Correo | jcperez@gmail.com
+Clasificación tributaria | Clasificación tributaria para personas naturales
+
+
+
+
+## Definición conceptos
+
+## Tercero
+
+Persona, bien sea natural o jurídica, que tiene relación con la empresa y con
+la cual se realizan diferentes operaciones o transacciones.
+
+## Clasificación tributaria
+
+Clasificación que se realiza a los contribuyentes, bien sean personas
+naturales o personas jurídicas, para determinar qué tipos de tributos o
+impuestos deben recaudar y pagar al estado.
+
+
+
+
+## Secciones
+
+## Sección tipo de tercero
+
+Se define el tipo de tercero aplicable a la persona o empresa que se está
+creando, dependiendo del tipo de tercero seleccionado se habilitarán secciones
+adicionales para el registro de información.
+En esta sección también se podrán habilitar los manejos de la información del
+tercero de acuerdo con las necesidades del usuario, es decir, se podrá definir
+qué campos estarán visibles para el registro de la información en las
+diferentes secciones del editor.
+
+## Sección datos tercero
+
+Se definen datos como profesión, sexo, fecha de nacimiento, teléfono, celular,
+correo, dirección y demás datos de contacto del tercero. En esta sección
+también se configura si el tercero permite el envío de e-mails bien sea
+transaccionales o promocionales, esto es de vital importancia para el envío de
+e-mails a través del módulo de Campañas.
+
+## Sección datos adicionales
+
+Se configuran datos de libre definición y manejo por parte del usuario de
+acuerdo con sus necesidades. Los datos de esta sección pueden ser configurados
+como texto, valor numérico o fecha y podrán tener la etiqueta que el usuario
+desee asignar.
+
+## Sección sucursales
+
+Se crean y configuran las sucursales, negocios, almacenes o tiendas que están
+bajo el mismo NIT o Código del tercero, pero que deben representar terceros
+independientes en el catálogo de terceros.
+
+## Sección área
+
+Se define la unidad de medida de área que se manejará en los centros de costos
+que se creen asociados a la sede, esto con el fin de utilizar el área como
+peso de distribución de costos. También se define la vigencia del área, pues
+este dato puede cambiar a través del tiempo, por ejemplo, si se trata de una
+finca, el área inicial puede ser de 1000 hectáreas, pero a los 6 meses se
+puede ampliar a 1200 hectáreas pues se compró otra parte de terreno.
+Esta sección es visible si se activa la opción “Esta sede y sus centros de
+costos requieren que se les registre el área” en la sección “Datos a
+solicitar”.
+
+## Sección notas
+
+Se definen las notas u observaciones adicionales del tercero.
+
+---
+
+# Concepto base
+
+Concepto base al cual está asociado el concepto de nómina.
+
+El concepto base define el comportamiento \(prestación, devengo, deducción o
+aporte a cargo de la empresa\), la información para el reporte de nómina
+electrónica \(cantidad, valor y/o porcentaje\) y determina la fórmula por
+defecto del concepto de nómina.
+
+Al configurar un concepto de nómina, este se debe asociar al concepto base
+indicado de acuerdo al comportamiento que se requiera y para el correcto
+reporte de nómina electrónica.
+
+
+Ejemplo
+
+La empresa CMB Muebles y Hogar necesita configurar los conceptos de nómina de
+los empleados del departamento administrativo, por ejemplo salario, aporte
+salud empleado, entre otros. Para ello, a los concepto de nómina deben
+asociarle el concepto base correcto, con el fin de que queden correctamente
+configurados. Al revisar los conceptos base de ContaPyme, la empresa asocia
+los conceptos base mostrados en la siguiente tabla ya que cumplen con las
+características requeridas.
+
+Concepto de nómina | Concepto base | Comportamiento | Información para el RNE
+---|---|---|---
+Salario básico | Salario básico | Devengo | Cantidad de días y valor del concepto
+Auxilio de transporte | Auxilio legal de transporte | Devengo | Cantidad de días y valor del concepto
+Aporte salud empleado | Aporte salud empleado | Deducción empleado | Porcentaje de deducción y valor del concepto
+Aporte ARL | Aportes ARL | Aporte o provisión a cargo de la empresa | Porcentaje del aporte y valor del concepto
+De esta forma, tras asociar correctamente los conceptos base a los conceptos
+de nómina, podrá realizar las operaciones de pago de nómina y los reportes de
+nómina electrónica cumpliendo con todos los requerimientos de ley.
+
+
+Observaciones
+
+Los conceptos de nómina preconfigurados en ContaPyme tienen asociado el
+concepto base para el correcto funcionamiento de las operaciones y los
+reportes de nómina electrónica, usted solo debe asociarlos cuando desee crear
+un concepto nuevo. Los conceptos base no se pueden crear, eliminar o
+modificar, únicamente se pueden asociar al concepto de nómina que se esté
+configurando.
+
+Configuración
+
+Para consultar los conceptos base, ver: **\[Pestaña: Nómina > Conceptos de
+nómina > Conceptos base.\]**
+
+---
+
+# Descripción
+
+Resumen de las características heredadas del concepto base.
+
+En este campo se encuentran datos como el grupo del concepto, el
+comportamiento, el tipo de registro y la unidad con la que se hace el reporte
+de nómina electrónica.
+
+Asignar el concepto base al concepto de nómina determina el comportamiento y
+las reglas para el reporte de nómina electrónica del concepto.
+
+
+Ejemplo
+
+Concepto de nómina | Grupo | Comportamiento | Tipo de registro | Unidad
+---|---|---|---|---
+Salario | Salario básico | Devengo empleado | Cantidad y valor del concepto | Días
+Aporte salud empleado | Aporte salud empleado | Deducción empleado | Porcentaje de deducción y valor del concepto | No aplica
+Aporte ARL | Aportes ARL | Aporte o provisión a cargo de la empresa | Porcentaje del aporte y valor del concepto | No aplica
+Prima | Prima legal | Prestaciones | Cantidad y valor del concepto | Días
+
+Observaciones
+
+La información presente en este campo depende del concepto base que se haya
+asociado en el concepto de nómina pues estas configuraciones están
+predeterminadas en el concepto base.
+
+---
+
+# Pago recurrente
+
+Manejo que permite indicar si un concepto va a tener una periodicidad de pago
+determinada
+
+En caso de activarse este manejo, se habilitará la pestaña de pago recurrente
+y será necesario definir una periodicidad para la liquidación del concepto
+dentro de las operaciones de pago de nómina.
+
+Si no se activa el manejo, no se habilitará la pestaña de pago recurrente y no
+será necesario definir una periodicidad para la liquidación del concepto en
+las operaciones de pago.
+
+
+Ejemplo
+
+Ejemplos de conceptos de nómina de pago recurrente: salario básico, auxilio de
+transporte, prima legal o cesantías consignadas al fondo.
+
+Ejemplos de conceptos de nómina de pago no recurrente: horas extra,
+vacaciones, incapacidades, comisiones \(novedades\).
+
+
+Observaciones
+
+En caso de que un concepto tenga la opción de pago recurrente desactivada,
+este se tendrá que incluir en la operación de pago por medio de una novedad.
+
+---
+
+# Incluir en el comprobante de impresión.
+
+Active esta casilla si desea que el concepto de nómina se incluya en el
+comprobante impreso de pago de nómina.
+
+Ejemplo
+
+Conceptos de nómina incluidos en el comprobante de pago de nómina: devengos,
+deducciones y prestaciones sociales pagadas al empleado.
+
+Conceptos de nómina no incluidos en el comprobante de pago de nómina:
+provisiones de prestaciones sociales y costos o aportes de la empresa.
+
+
+Observaciones
+
+Usted puede modificar esta opción activando o desactivando la casilla en los
+conceptos de nómina.
+
+Para configurar el documento de impresión, ver: **\[Pestaña: Básico >
+Documento de impresión\].**
+
+---
+
+# Incluir en el comprobante de impresión de la operación de liquidación de
+contrato.
+
+Active esta casilla si desea que el concepto de nómina se incluya en el
+comprobante impreso de la liquidación de contrato del empleado.
+
+Ejemplo: Conceptos de nómina incluidos en el comprobante de liquidación de
+contrato.
+
+En la liquidación de contrato del empleado Alejandro Quintero, se desea
+incluir todos los devengos, prestaciones sociales acumuladas a la fecha
+pagadas al empleado, la indemnización por retiro por despido sin justa causa y
+deducciones del empleado.
+
+Conceptos de nómina no incluidos en el comprobante de pago de nómina:
+provisiones de prestaciones sociales y costos o aportes de la empresa.
+
+
+Observaciones
+
+Usted puede modificar esta opción activando o desactivando la casilla en los
+conceptos de nómina.
+
+Para configurar el documento de impresión, ver: **\[Pestaña: Básico >
+Documento de impresión\].**
+
+---
+
+# Incluir dentro del cálculo para la distribución
+
+\[19540160\] CBoxBIncDistribCC
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Periodicidad
+
+Frecuencia con la cual el usuario desea que se realice el pago del concepto de
+Nómina. El usuario puede seleccionar entre las siguientes opciones de
+periodicidad:
+
+\* Cada pago.
+\* Anual.
+\* Semestral.
+\* Trimestral.
+\* Bimestral.
+\* Mensual.
+
+Al seleccionar cualquiera de las opciones listadas anteriormente en el campo
+de periodicidad se determina la frecuencia con la que el concepto se carga en
+la operación de pago.
+
+Ejemplo
+
+La empresa CMB muebles y hogar necesita configurar el concepto "Bonificación
+alimentos" de forma que se cargue en la operación de pago cada mes, para ello
+el a realiza la siguiente configuración en ContaPyme:
+
+![\[200\]LblIPeriodicidad.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B200%5DLblIPeriodicidad.jpg)
+
+Al seleccionar la periodicidad "mensual", el concepto estará configurado para
+que se pague de forma mensual.
+
+Observaciones
+
+Para completar la configuración del concepto, se debe indicar también el campo
+mes y el campo fecha de pago.
+
+Si se selecciona periodicidad mensual, en el campo mes se debe indicar la
+opción "no aplica".
+
+Configuración
+
+Para realizar la configuración de la periodicidad y del pago recurrente,
+ingresar por la siguiente ruta en ContaPyme: **Nómina > Conceptos de Nómina >
+Seleccionar concepto a configurar > Pestaña de pago recurrente. **
+
+---
+
+# Nombre
+
+Nombre del concepto de nómina.
+
+Es muy recomendable que asigne un nombre descriptivo que permita identificar
+el tipo de concepto.
+
+Este nombre será visible en las operaciones del módulo de nómina \(pago de
+nómina, novedades y reportes de nómina electrónica\), al igual que en los
+exploradores de nómina.
+
+Ejemplo
+
+Código | Nombre
+---|---
+SALARIO | Salario básico
+AUX\_LEG\_TR | Auxilio de transporte
+PR\_VACAC | Provisión de vacaciones
+
+---
+
+# Mes
+
+Mes en el cual el usuario desea que se realice el pago del concepto de Nómina.
+
+Ejemplo
+
+La empresa CMB muebles y hogar necesita configurar el concepto de prima legal
+para que el pago se realice el sexto mes de cada semestre, para ello el
+administrador del sistema realiza la siguiente configuración en ContaPyme:
+
+![\[210\]LblIMes.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B210%5DLblIMes.jpg)
+Al seleccionar "mes 6" en la configuración del campo Mes, el concepto estará
+configurado para que se pague en el sexto mes de cada semestre, ya que en el
+campo periodicidad se tiene seleccionada la opción "semestral".
+
+Observaciones
+
+Para completar la configuración del concepto, se debe indicar también el campo
+periodicidad y el campo fecha de pago.
+
+Si se selecciona periodicidad anual, en el campo mes se debe indicar la opción
+"no aplica".
+
+Configuración
+
+Para realizar la configuración de la periodicidda y del pago recurrente,
+ingresar por la siguiente ruta en ContaPyme: **Nómina > Conceptos de Nómina >
+Seleccionar concepto a configurar > Pestaña de pago recurrente. **
+
+---
+
+# Día
+
+Día en el cual el usuario desea que se realice el pago del concepto de Nómina.
+
+Ejemplo
+
+La empresa CMB muebles y hogar necesita configurar el concepto de prima legal
+para que el pago se realice el día 15 del sexto mes de cada semestre, para
+ello el administrador del sistema realiza la siguiente configuración en
+ContaPyme:
+
+![\[220\]LblIDia.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B220%5DLblIDia.jpg)
+Al seleccionar "día 15" en la configuración del campo Día, el concepto estará
+configurado para que se pague en el día 15. Al haber indicado periodicidad
+semestral y mes 6, el concepto estará configurado para pagarse en las
+siguientes fechas: 15/6/20XX, 15/12/20XX.
+
+Observaciones
+
+Para completar la configuración del concepto, se debe indicar también el campo
+periodicidad y el campo fecha de pago.
+
+Si se selecciona periodicidad anual, en el campo mes se debe indicar la opción
+"no aplica".
+
+Configuración
+
+Para realizar la configuración de la periodicidda y del pago recurrente,
+ingresar por la siguiente ruta en ContaPyme: **Nómina > Conceptos de Nómina >
+Seleccionar concepto a configurar > Pestaña de pago recurrente. **
+
+---
+
+# Tipo de cálculo de la cantidad
+
+Seleccione el tipo de calculo que requiere para la cantidad del concepto, se
+tienen las siguientes opciones:
+
+**1\. Cantidad Manual:** Active esta opción si desea indicar la cantidad de
+días u horas de forma manual por medio de la operación novedades de nómina.
+
+**2\. Fórmula:** Active esta opción si desea que el sistema calcule de forma
+automática los días del concepto según las normativas vigentes.
+
+Ejemplo
+
+**Opción Manual:**
+La empresa requiere indicar los días trabajados del empleado en cada línea de
+producción, en este caso por medio de la operación de novedades se podrá
+indicar dicho dato y cuando se realice le pago de nómina el sistema cargará
+los días indicados en cada centro de costo o línea de producción.
+
+**Novedad de nómina primera quincena**
+![\[300\]CalculoCantidad2.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B300%5DCalculoCantidad2.png)
+
+**Pago de nómina primera quincena**
+![\[300\]CalculoCantidad3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B300%5DCalculoCantidad3.png)
+
+
+**Opción fórmula:**
+El empleado tiene un contrato a término indefinido pago quincenal, en este
+caso cuando se realice el pago al empleado de cada quincena el sistema
+asignará en cantidad 15 días trabajados de forma automática.
+
+**Pago de nómina primera quincena**
+![\[300\]CalculoCantidad1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B300%5DCalculoCantidad1.png)
+
+Observaciones
+
+En caso de requerir indicar la cantidad manual, se recomienda crear un
+concepto nuevo con esa configuración, de esta manera no se afectarán los
+conceptos que el sistema trae por defecto cuando se realice actualizaciones de
+las fórmulas.
+
+---
+
+# Personalizar fórmula
+
+Active la opción si requiere personalizar la fórmula para la cantidad del
+concepto.
+
+Al activar la opción “Personalizar fórmula” el sistema permite que el usuario
+realice sus propias fórmulas para el cálculo de la cantidad del concepto
+
+Observaciones
+
+Para más información de como personalizar el campo ver: [Fórmula cantidad
+personalizada](<\[310\]LblExpresionCantidad \(NR-NA\).html>)
+
+---
+
+# Visible en selección
+
+Active esta opción para que el concepto de nómina sea visible y se pueda
+seleccionar desde los diferentes catálogos del sistema. Por defecto, los
+conceptos traen esta opción activa.
+
+Puede desactivar esta opción para ocultar los conceptos de nómina que ya no
+están activos y que no deben ser eliminados.
+
+
+Ejemplos
+
+
+
+Conceptos de nómina marcados con la opción visible en selección: Todos los
+conceptos que se utilizan actualmente en las novedades, pagos, reportes y/o
+exploradores de nómina.
+
+Conceptos desmarcados con la opción visible en selección: Los conceptos que ya
+no son utilizados en las operaciones o exploradores de nómina pero que deben
+existir por trazabilidad en el sistema.
+
+Observaciones
+
+
+
+Se debe tener en cuenta que aunque el concepto tenga desactivada la opción
+visible en selección, este puede ser seleccionado en los catálogos, informes y
+operaciones de nómina, indicando su respectivo código.
+
+Configuración
+
+Para indicar que en el catálogo de conceptos de nómina unicamente se vean los
+marcados como visible en selección diríjase a: **\[Cinta de opciones > Vista >
+Botón mostrar\]**
+
+---
+
+# Fórmula de cantidad por defecto
+
+\[19490310\] LblExpresionCantidad
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Tipo de cálculo del valor
+
+Seleccione el tipo de cálculo que requiere para el valor del concepto, se
+tienen las siguientes opciones:
+
+**1\. Valor Manual:** Esta opción permite indicar el valor del concepto de
+forma manual por medio de la operación novedades de nómina o en el contrato
+del empleado.
+
+**2\. Fórmula:** Active esta opción si desea que el sistema calcule de forma
+automática el valor del concepto según las normativas vigentes.
+
+Ejemplo
+
+**1\. Opción Manual:** La empresa requiere indicar el valor de las horas
+extras realizada por el empleado de forma manual, en este caso por medio de la
+operación de novedades se podrá indicar dicho dato y cuando se realice le pago
+de nómina el sistema cargará el valor indicado por el usuario.
+
+**Operación novedad de nómina**
+![\[320\]CalculoValor3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B320%5DCalculoValor3.png)
+
+**Operación pago de nómina**
+![\[320\]CalculoValor4.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B320%5DCalculoValor4.png)
+
+**2\. Opción Fórmula:** El empleado realiza 5 horas extras en el mes.
+
+\- Para conocer el valor a pagar, el sistema de forma automática realiza el
+siguiente cálculo: Divide el salario en 30 días del mes, y a su vez lo divide
+en 8 horas laborales, correspondiente a la intensidad horaria indicada en el
+perfil de contrato.
+
+**$1.000.000/ 30 días/ 8 horas = 4.166,66** , este corresponde al valor de la
+hora ordinaria de un trabajador que devenga un salario de $1.000.000 al mes y
+trabaja tiempo completo.
+
+\- Para cálcular la hora extra diurna, tomamos la hora ordinaria de $4.166,66
+y se le suma el 25%, el cual sería $1.041,66, para un total de $5.208,32.
+
+Cálculo que realiza el sistema: **\($4.166,66\*125%\) \* 5 horas extras =
+26.041,67**
+
+\- Nota: Por medio de una novedad de nómina solo se requiere indicar las horas
+extras laboradas por el empleado y el sistema de forma automática calcula el
+valor correspondiente de la hora extra en el momento del pago de nómina.
+
+**Operación novedad de nómina**
+![\[320\]CalculoValor1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B320%5DCalculoValor1.png)
+
+
+**Operación pago de nómina**
+![\[320\]CalculoValor2.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B320%5DCalculoValor2.png)
+
+
+Observaciones
+
+En caso de requerir indicar el valor manual, se recomienda crear un concepto
+nuevo con esa configuración, de esta manera no se afectarán los conceptos que
+el sistema trae por defecto cuando se realice actualizaciones de las fórmulas.
+
+---
+
+# Personalizar fórmula
+
+Active la opción si requiere personalizar la fórmula para el valor del
+concepto.
+
+Al activar la opción “Personalizar fórmula” el sistema permite que el usuario
+realice sus propias fórmulas para el cálculo el valor unitario del concepto
+
+Observaciones
+
+Para más información de como personalizar el campo ver: [Fórmula valor
+unitario personalizada](<\[330\]LblExpresionValor \(NR-NA\).html>)
+
+---
+
+# Fórmula valor unitario personalizada
+
+Visor de la fórmula personalizada para el valor de este concepto.
+
+Al activar la opción **“Personalizar fórmula”** el sistema permite que el
+usuario realice sus propias fórmulas para el cálculo del valor del concepto.
+
+Ejemplo
+
+Para el concepto de comisiones la empresa necesita que de forma automática el
+sistema calcule el 10% del salario mínimo legal vigente. Esta condición se
+puede manejar de la siguiente manera:
+
+Multiplicamos la variable SMMLV \(Salario mínimo mensual legal vigente\) de
+nómina por el 10%, de la siguiente manera:
+
+  * Result = SMMMLV\(\) \* 0.10;
+
+_De esta manera cuando se cargue el concepto COMISIÓN en el pago de nómina del
+empleado se calculará el 10% del salario mínimo legal vidente de forma
+automática_
+
+Observaciones
+
+Es importante tener presente que, para personalizar las fórmulas de los
+conceptos, debe tener conocimientos en las funciones que utiliza ContaPyme
+para el cálculo de las mismas. También es importante considerar que los
+cambios o personalizaciones deben cumplir con las normativas legales.
+
+ContaPyme ofrece al usuario la facilidad de calcular de forma personalizada el
+valor de un campo. Esto se podrá realizar mediante expresiones matemáticas,
+las cuales están basadas en lenguajes de programación como Pascal, JavaScript,
+C++ y Visual Basic; adicionalmente el usuario tendrá la posibilidad de
+realizar algoritmos más complejos, que le permitan calcular el valor de un
+concepto.
+
+La característica principal de estas expresiones es que se cuenta con una gran
+variedad de operadores, instrucciones y funciones de los lenguajes ya
+mencionados, así como las funciones de ContaPyme para Excel.
+
+Configuración
+
+Para más información sobre las funciones de _ContaPyme para Excel_ y cómo
+usarlas, ingrese a **\[Editor de expresiones para el cálculo > Menú > Ayuda >
+Funciones ContaExcel\]**
+
+---
+
+# Tipo de cálculo del porcentaje
+
+Seleccione el tipo de cálculo que requiere para el porcentaje del concepto.
+
+**1\. Porcentaje Manual:** Esta opción permite indicar el porcentaje del
+concepto de forma manual por medio de la operación novedades de nómina.
+
+**2\. Porcentaje Fijo:** Esta opción permite indicar un porcentaje fijo para
+este concepto, es decir, cuando se realice el pago de nómina siempre se va a
+manejar el mismo porcentaje.
+
+**3\. Fórmula:** Esta opción permite formular el porcentaje del concepto,
+aplica para conceptos que manejan diferentes porcentajes según las normativas
+vigentes, como por ejemplo ARL y fondo de solidaridad pensional, ya que son
+conceptos que manejan porcentajes según unos rangos de salarios o según su
+nivel de riesgo.
+
+Ejemplo
+
+**1\. Opción Manual:** Se requiere aplicar un porcentaje manual para el
+cálculo del fondo de solidaridad de un empleado que en el mes devengó
+$16.000.000, en este caso por medio de la operación de novedades se podrá
+indicar dicho dato y cuando se realice el pago de nómina, el sistema cargará
+el valor indicado por el usuario.
+
+![\[340\]CalculoPorcentaje1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B340%5DCalculoPorcentaje1.png)
+
+
+**2\. Opción porcentaje fijo:** Para los conceptos de horas extras, según el
+Art.168 del código sustantivo del trabajo, para realizar la liquidación de
+horas extras se debe aplicar por ejemplo las siguientes tasas:
+
+Tipo de hora | %
+---|---
+Valor hora extra diurna | 25%
+Valor hora extra Nocturna | 75%
+Como son tarifas definidas según el Art. 168 CST, se configuran como
+porcentaje fijo en el concepto correspondiente.
+
+**3\. Opción formulada:** Para el concepto de aportes a la administradora de
+riesgos laborales ARL, el sistema maneja el porcentaje formulado para cumplir
+con la siguiente tabla, según lo establecido en el artículo 2.2.4.3.5 del
+Decreto 1072 de 2015, que reglamenta el artículo 27 del Decreto 1295 de 1994
+los porcentajes de cotización según el nivel de riesgo.
+
+Nivel de riesgo | % Cotización
+---|---
+Riesgo I | 0.522%
+Riesgo II | 1.044%
+Riesgo III | 2.436%
+Riesgo IV | 4.350%
+Riesgo V | 6.960%
+Cuando se realice el pago de nómina, el sistema validará la clase de riesgo
+que esté definido en el contrato de cada empleado y aplicará el porcentaje
+correspondiente, siempre y cuando este tenga definido dicho concepto.
+
+**Nota:** Si requiere personalizar las fórmulas de los porcentajes, debe tener
+en cuenta que la expresión para el cálculo podrá ser editada haciendo uso de
+diferentes lenguajes de programación como lo son Pascal, JavaScript, C++ o
+Visual Basic.
+
+En la fórmula es importante hacer uso de diferentes variables que contienen
+información relacionada a la operación. Con estas variables podrá realizar
+operaciones matemáticas u otras validaciones para el cálculo correspondiente.
+Para más información ver:[ Fórmula de porcentaje por
+defecto](<\[360\]LblExpresionPorcentaje \(NR-NA\).html>)
+
+Observaciones
+
+-Se recomienda no realizar cambios en los conceptos que trae el sistema por defecto, ya que la mayoría de estos vienen definidos según las normativas y los estándares definidos por la DIAN y por la Planilla Integrada de Liquidación de Aportes \(PILA\).
+-Se recomienda crear nuevos conceptos en caso de requerir hacer cambios y personalizaciones según el manejo de su empresa. Tener presente que estos cambios deben cumplir con los estándares requeridos por la DIAN y las entidades de vigilancia y control que correspondan.
+
+---
+
+# Porcentaje acumulado
+
+Al activar esta opción, se sumará el 100% al porcentaje fijo indicado en el
+concepto.
+
+Ejemplo
+
+**\- Horas extras:** El cálculo de las horas extras consiste en hallar su
+valor incluyendo el recargo, por lo que se puede recurrir a la siguiente
+formula:**Hora ordinaria x \(100% + Recargo\).**
+
+Para aplicar la fórmula requiere el valor de la hora ordinaria y el porcentaje
+del recargo:
+
+**1.** Para hallar el valor extra de la hora ordinaria se divide el salario en
+30 días del mes, y a su vez se divide en 8 horas laborales, correspondiente a
+la intensidad horaria indicada en el perfil de contrato.
+
+**$1.000.000/ 30 días/ 8 horas = $4.166,66 ,** este corresponde al valor de la
+hora ordinaria de un trabajador que devenga un salario de $1.000.000 al mes y
+trabaja tiempo completo.
+
+**2.** Se define el porcentaje del recargo para la hora extra diurna que
+equivale al 25%, según el Art.168 del código sustantivo del trabajo.
+
+**_Teniendo los valores ya identificados se reemplaza en la fórmula:_**
+
+Hora ordinaria x \(100% + Recargo\)= **4.166,66 x \(100%+25%\) equivalente a
+125%**.
+
+**Por último se tiene: 4.166,66 \*125%= 5.208,32.**. Es lo que vale cada hora
+extra diurna.
+
+Observaciones
+
+Para el ejemplo de horas extras, en caso de no activar esta opción, el sistema
+se multiplica la hora extra solo por el porcentaje fijo. Para el ejemplo
+anterior, el 25% equivale a multiplicar la hora extra por 0.25, es decir, se
+calcula únicamente el recargo , y el trabajador tiene derecho al valor de la
+hora ordinaria más el recargo del 25%.
+
+Suponga que el valor de la hora ordinaria vale $5.000, y como la hora extra
+diurna se paga con un recargo del 25%, se puede concluir que la hora extra
+diurna tendrá un valor de $ 6.250.
+
+Si multiplica $5.000 por 0.25 o 25%, obtendrá 1.250, que es sólo el recargo,
+al cual debe sumar al valor de la hora ordinaria $5.000 para llegar a los $
+6.250.
+
+Para que el cálculo se realice en un solo paso, simplemente activamos la
+opción **"Porcentaje acumulado"** , de esta forma, el sistema se encarga de
+sumar el 100% y de multiplicar por 125%, de manera que el 100% recoge el valor
+de la hora ordinaria
+
+**$5.000 x 125% = $ 6.250.**
+
+Está configuración aplica para los demás conceptos de horas extras nocturnas,
+dominicales y festivas donde sólo cambia el recargo, como en la extra nocturna
+que se multiplica por 175%, o la hora nocturna que se multiplica por 135%.
+
+---
+
+# Porcentaje
+
+Porcentaje fijo que el sistema utilizará para realizar el cálculo del concepto
+en el pago de nómina.
+
+Ejemplo
+
+Concepto | % Porcentaje
+---|---
+Aporte salud empleado | 4
+Aporte pensión empleado | 4
+Aportes salud empleador | 8,5
+Aportes pensión empleador | 12
+
+---
+
+# Personalizar fórmula
+
+Active la opción si requiere personalizar la fórmula para el porcentaje del
+concepto.
+
+Observaciones
+
+Para más información de como personalizar el campo ver: [Fórmula porcentaje
+personalizada](<\[360\]LblExpresionPorcentaje \(NR-NA\).html>)
+
+---
+
+# Fórmula de porcentaje por defecto
+
+Asistente de la fórmula personalizada en el porcentaje de este concepto.
+
+-Al activar la opción **“Personalizar fórmulas”** el sistema permite que el usuario realice sus propias fórmulas para el cálculo del concepto.
+
+Ejemplo
+
+Para el concepto Aportes ARL, se requiere que el sistema valide el nivel de
+riesgo que tiene el empleado y de esta forma asigne el porcentaje
+correspondiente. Esta condición se puede manejar de la siguiente manera:
+
+**1\. Se define una variable llamada Riegos para que capture el tipo de riesgo
+que tiene asignado el contrato del empleado mediante un atributo de ContaPyme
+para EXCEL llamado “ATRIBUTOCONTRATOTERCERO”.**
+
+Ejemplo: var Riesgo = ATRIBUTOCONTRATOTERCERO\("IRIESGO",IEmpleado,IContrato,
+FechaLiquidar \);
+
+**2\. Después de tener definido el nivel de riesgo del empleado en la variable
+Riesgo, podemos realizar la validación con la sentencia condicional if, que se
+utiliza para tomar decisiones, es decir “Si el Riesgo es igual a 1 tome el
+porcentaje 0.522” y así con los demás niveles de riesgos:**
+
+Ejemplo:
+
+if \(Riesgo == 1\)\{
+Result = 0.522 ;
+\}
+if \(Riesgo == 2\)
+\{
+Result = 1.044 ;
+\}
+if \(Riesgo == 3\)
+\{
+Result = 2.436 ;
+\}
+if \(Riesgo == 4\)
+\{
+Result = 4.35 ;
+\}
+if \(Riesgo == 5\)
+\{
+Result = 6.96 ;
+\}
+
+Observaciones
+
+Es importante tener presente que, para personalizar las fórmulas de los
+conceptos, debe tener conocimientos en las funciones que utiliza ContaPyme
+para el cálculo de las mismas. También es importante considerar que los
+cambios o personalizaciones deben cumplir con las normativas legales.
+
+ContaPyme ofrece al usuario la facilidad de calcular de forma personalizada el
+valor de un campo. Esto se podrá realizar mediante expresiones matemáticas,
+las cuales están basadas en lenguajes de programación como Pascal, JavaScript,
+C++ y Visual Basic; adicionalmente el usuario tendrá la posibilidad de
+realizar algoritmos más complejos, que le permitan calcular el valor de un
+concepto.
+
+La característica principal de estas expresiones es que se cuenta con una gran
+variedad de operadores, instrucciones y funciones de los lenguajes ya
+mencionados, así como las funciones de ContaPyme para Excel.
+
+Configuración
+
+Para mayor información sobre las funciones de _ContaPyme para Excel_ y cómo
+usarlas, ingrese a **\[Editor de expresiones para el cálculo > Menú > Ayuda >
+Funciones ContaExcel\]**
+
+---
+
+# Consideraciones
+
+Brinda al usuario una explicación conceptual, según la normativa vigente, del
+concepto base del concepto en cuestión.
+
+Ejemplo
+
+
+Si visualizamos el concepto "Prima legal" que tiene por concepto base "prima
+legal" podemos visualizar lo siguiente:
+"La prestación social denominada prima de servicios que corresponde a 30 días
+de salario por año. La prima de servicios se reconoce en dos pagos, así: la
+mitad máximo el 30 de junio y la otra mitad a más tardar los primeros veinte
+días de diciembre. Su reconocimiento se hará por todo el semestre trabajado o
+proporcionalmente al tiempo trabajado. Art. 306 CST."
+Lo anterior corresponde a la explicación conceptual del concepto base "Prima
+legal" según la normativa vigente a la fecha de 29/04/2022.
+
+Observaciones
+
+Este campo solo permite ser visualizado por el usuario, pero no modificado.
+
+---
+
+# Cuenta de egreso del concepto \(Débito\)
+
+Indique la cuenta del gasto o del pasivo a la que se realizará contablemente
+el movimiento del débito.
+
+Ejemplo
+
+Cuenta | Nombre cuenta
+---|---
+510506 | Sueldos
+510527 | Auxilio de transporte
+510515 | Horas extras
+261025 | Prima de servicios
+250501 | Sueldos por pagar
+23700502 | Seguridad social
+
+Observaciones
+
+\- La cuenta que se indique en el concepto afectará contablemente de forma
+automática al realizar la operación de pago de nómina.
+\- Si la empresa maneja diferentes centros de costos y por cada centro de
+costos requiere afectar una cuenta distinta, puede activar la opción
+**“Configurar la cuenta según clase contable del centro de costos”** , ver
+como [configurar la cuenta según clase contable del centro de
+costos](<\[420\]CBoxBCuentaDebClaseCC \(NR-NA\).html>)
+
+Configuración
+
+Para crear y configurar las cuentas de nómina de su empresa, ver: **\[Pestaña:
+Contabilidad > Catálogo de Plan de cuentas\].**
+
+---
+
+# Controlar cuenta por pagar o cobrar con la referencia de la novedad.
+
+Active esta opción, si desea que la referencia de la cuenta por pagar o por
+cobrar quede con el número de la novedad de nómina.
+
+En caso de no activar está opción, la cuenta por pagar o por cobrar quedará
+con el número del pago de nómina como referencia.
+
+Ejemplo
+
+Se requiere descontar al empleado **$100.000** por concepto de deuda de un
+anticipo de salario y controlar la cuenta por cobrar con la referencia de la
+novedad de nómina, de está forma los informes de cartera quedará la novedad
+como referencia para la cuenta por cobrar.
+
+**1\. Novedad de nómina \# NNV5**
+![\[445\]CBoxBReferenciaNovedadNov.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B445%5DCBoxBReferenciaNovedadNov.png)
+
+**2\. Pago de nómina \# NPG4**
+![\[445\]CBoxBReferenciaNovedadCre.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B445%5DCBoxBReferenciaNovedadCre.png)
+
+**3\. Movimiento contable de la operación de pago nómina**
+![\[445\]CBoxBReferenciaNovedadMov.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B445%5DCBoxBReferenciaNovedadMov.png)
+Como podemos observar, la referencia para el movimiento contable de la cuenta
+anticipos a trabajadores, quedó registrada con el número de documento de la
+novedad de nómina **NNV5**.
+
+Observaciones
+
+\- Dependiendo de esta configuración, el sistema mostrará la referencia
+correspondiente al número de la novedad o del pago de nómina de las cuentas
+por pagar y por cobrar en los informes de contabilidad y cartera.
+\- Para el manejo de esta opción, es necesario que la cuenta indicada tenga el
+atributo de referencia en su configuración.
+
+Configuración
+
+Para configurar el manejo de referencia en las cuentas, ver: **\[Pestaña:
+Contabilidad > Catálogo de Plan de cuentas\].**
+
+---
+
+# Nombre corto
+
+Nombre corto del concepto de nómina.
+
+Es muy recomendable que asigne un nombre corto que permita identificar el tipo
+de concepto.
+
+Este será usado en informes y consultas donde el espacio es limitado.
+
+Ejemplo
+
+Código | Nombre
+---|---
+SALARIO | Salario básico
+AUX\_LEG\_TR | Auxilio de transporte
+PR\_VACAC | Provisión de vacaciones
+
+---
+
+# Usar como tercero en transacción
+
+Seleccione el tipo de entidad o tercero sobre el cual se generará el asiento
+contable del concepto de nómina como tercero en transacción. Se tienen dos
+opciones:
+
+**1\. El tipo de entidad o tercero definido en este paso:** Active esta
+casilla si desea que al procesar la operación de pago de nómina en la que se
+utilice este concepto, se asigne para la cuenta del gasto el tercero o entidad
+definido en el este paso, normalmente es el tercero empleado \[EMPLEADO\].
+
+**Ejemplo:** Para el concepto de nómina **aportes pensión empleador** , se
+selecciona como tipo de entidad o tercero el empleado \[EMPLEADO\] que se
+indique en la operación de nómina.
+
+![\[410\]CBoxBUsarINitCxX1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B410%5DCBoxBUsarINitCxX1.png)
+
+En este caso el sistema asignará a la cuenta del gasto como tercero principal
+el empleado.
+
+**2\. El tipo de entidad o tercero definido en el paso de cuenta crédito:**
+Active esta casilla si desea que al procesar la operación de pago de nómina en
+la que se utilice este concepto, se asigne en la cuenta del gasto el tercero o
+entidad definido en el paso cuenta crédito, normalmente el tercero es la
+entidad de nómina que presta el servicio en el que se encuentre afiliado el
+empleado \[PENSIÓN\], \[SALUD\], \[ARL\] entre otros.
+
+**Ejemplo:** Para el concepto de nómina **aportes pensión empleador** , se
+selecciona como tipo de entidad o tercero, la entidad para el fondo de
+pensiones en la que se encuentre afilado el empleado \[PENSION\].
+
+![\[410\]CBoxBUsarINitCxX2.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B410%5DCBoxBUsarINitCxX2.png)
+
+
+
+![\[410\]CBoxBUsarINitCxX3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B410%5DCBoxBUsarINitCxX3.png)
+
+En este caso el tercero para la cuenta por pagar y el tercero para la cuenta
+egreso o gasto sería el mismo, es decir la entidad para el fondo de pensiones.
+
+Observaciones
+
+Para mas información sobre los tipos de entidades o tercero, ver: [Tipo de
+entidad o tercero](<\[415\]LblINitCxXDeb \(NR-NA\).html>)
+
+---
+
+# Tipo de entidad o tercero
+
+Entidad o tercero sobre el cual se generará el asiento contable del concepto
+de nómina \(cuenta por cobrar, cuenta por pagar o gasto\).
+
+Los tipos de entidad permiten indicar un tercero del sistema que es usado de
+forma general y que normalmente representa a una entidad. Los tipos entidades
+para terceros son útiles puesto que están referenciados a terceros ya
+existentes y en caso de necesitar cambiar dicho tercero, el cambio solo se
+realizaría en los tipos de entidades y no de forma general en cada concepto de
+nómina.
+
+Ejemplo
+
+Concepto de nómina | Tipo de entidad a usar | Tercero proveedor
+---|---|---
+ARL - Aportes ARL | \[ARL\] | ARL SURA - Administradora de Riesgos Laborales SURA
+PR\_CESAN - Provisión cesantías | \[CESANTIAS\] | AFCE FNA - Fondo Nacional del Ahorro
+DTO\_SALUD-Aporte salud empleado | \[EPS\] | NUEVA EPS - Nueva Empresa Promotora de Salud S.A
+
+Observaciones
+
+\- Las entidades deben estar creadas con anterioridad desde el catálogo de
+Tipos de entidades.
+\- Las entidades se deben indicar entre corchetes \[ \].
+\- Si no desea seleccionar un tipo de entidad para el concepto de nómina,
+puede indicar directamente un código de tercero ya existente en el sistema.
+
+Configuración
+
+Para ingresar al catálogo de Tipos de entidades de terceros,
+ver:\[**:\[Pestaña básico > despliega la flecha hacia abajo del Ícono de
+Terceros > Tipos de entidad\]**
+
+---
+
+# Configurar la cuenta según clase contable del centro de costos
+
+Si activa esta opción, el sistema habilitará una lista, en la cual puede
+especificar las cuentas contables de nómina, de acuerdo con las diferentes
+clases contables de los centros de costos.
+
+Ejemplo
+
+Se requiere manejar una cuenta de egreso para los empleados del departamento
+administrativo, otra cuenta para los empleados del departamento de ventas y
+otra para los empleados del departamento de producción de la empresa, de la
+siguiente manera:
+
+Lista de cuentas a imputar según clase contable del centro de costos:
+Clase CC destino | Cuenta en CC destino
+---|---
+Gasto | 510506 – sueldo personal administrativo
+Ventas | 520506 - sueldo personal de ventas
+Producción | 720506- sueldo personal de producción
+
+Cuando realice el pago de nómina de un empleado que maneje este concepto de
+nómina, si el centro de costos que tiene configurado el empleado es de clase
+contable " Gasto ", afectará la cuenta de gasto \( 510506\), si el centro de
+costos es de clase contable de " Ventas ", afectará la cuenta de gasto \(
+520506\) y si el centro de costos es de clase contable de " Producción ",
+afectará la cuenta de costos de producción \(720506\) , si la clase contable
+del centro de costos no está definida en la lista, se afectará la cuenta por
+defecto 510506.
+
+Observaciones
+
+Cuando realice un pago de nómina, el sistema imputará los valores indicados a
+una cuenta en el centro de costos definido en el contrato del empleado o
+novedad de nómina, acorde con la clase contable de ese centro de costos, según
+la lista definida en este paso; si la clase del centro de costos destino no
+está relacionada en esta lista, se usará la cuenta por defecto.
+
+Configuración
+
+Si desea modificar la lista de clase centros de costos, ver: **\[Menú:
+Principal > Catálogo de títulos > Clases de centros de costos\].**
+
+---
+
+# Cuenta de descuento, aporte y retenciones de nómina \(Crédito\)
+
+Indique la cuenta para descuentos, aportes o retenciones a la que se realizará
+contablemente el movimiento del crédito.
+
+Ejemplo
+
+Cuenta | Nombre cuenta
+---|---
+252501 | Vacaciones consolidadas
+261005 | Cesantías
+261025 | Prima de servicios
+236505 | Salarios y pagos laborales
+23803001 | Fondos de cesantías y/o pensiones Patrono
+
+Observaciones
+
+-La cuenta que se indique en el concepto afectará contablemente de forma automática al realizar la operación de pago de nómina.
+-Si la cuenta maneja tercero o tercero en cartera es muy importante definir el tipo de entidad o tercero que se tendrá en cuenta, para más información ver:[ Tipo de entidad o tercero](<\[415\]LblINitCxXDeb \(NR-NA\).html>)
+-Si desea manejar una fecha de pago especial para este concepto puede definir una tabla de fechas de pago, para más información ver:[ Tabla de fechas de pago](<\[455\]LblITablaPago \(NR-NA\).html>)
+
+Configuración
+
+Para crear y configurar las cuentas de nómina de su empresa, ver: **\[Pestaña:
+Contabilidad > Catálogo de Plan de cuentas\].**
+
+---
+
+# Controlar cuenta por pagar con la referencia de la novedad.
+
+Active esta opción, si desea que la referencia de la cuenta por pagar o por
+cobrar quede con el número de la novedad de nómina.
+
+En caso de no activar está opción, la cuenta por pagar o por cobrar quedará
+con el número del pago de nómina como referencia.
+
+Ejemplo
+
+Se requiere descontar al empleado **$100.000** por concepto de deuda de un
+anticipo de salario y controlar la cuenta por cobrar con la referencia de la
+novedad de nómina, de está forma los informes de cartera quedará la novedad
+como referencia para la cuenta por cobrar.
+
+**1\. Novedad de nómina \# NNV5**
+![\[445\]CBoxBReferenciaNovedadNov.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B445%5DCBoxBReferenciaNovedadNov.png)
+
+**2\. Pago de nómina \# NPG4**
+![\[445\]CBoxBReferenciaNovedadCre.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B445%5DCBoxBReferenciaNovedadCre.png)
+
+**3\. Movimiento contable de la operación de pago nómina**
+![\[445\]CBoxBReferenciaNovedadMov.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B445%5DCBoxBReferenciaNovedadMov.png)
+Como podemos observar, la referencia para el movimiento contable de la
+retención en la fuente quedó registrada con el número de documento de la
+novedad de nómina **NNV5**.
+
+Observaciones
+
+\- Dependiendo de esta configuración, el sistema mostrará la referencia
+correspondiente al número de la novedad o del pago de nómina de las cuentas
+por pagar y por cobrar en los informes de contabilidad y cartera.
+\- Para el manejo de esta opción, es necesario que la cuenta indicada tenga el
+atributo de referencia en su configuración.
+
+Configuración
+
+Para configurar el manejo de referencia en las cuentas, ver: **\[Pestaña:
+Contabilidad > Catálogo de Plan de cuentas\].**
+
+---
+
+# Tipo de entidad o tercero
+
+Entidad o tercero sobre el cual se generará el asiento contable del concepto
+de nómina \(cuenta por cobrar, cuenta por pagar o gasto\).
+
+Los tipos de entidad permiten indicar un tercero del sistema que es usado de
+forma general y que normalmente representa a una entidad. Los tipos entidades
+para terceros son útiles puesto que están referenciados a terceros ya
+existentes y en caso de necesitar cambiar dicho tercero, el cambio solo se
+realizaría en los tipos de entidades y no de forma general en cada concepto de
+nómina.
+
+Ejemplo
+
+Concepto de nómina | Tipo de entidad a usar | Tercero proveedor
+---|---|---
+ARL - Aportes ARL | \[ARL\] | ARL SURA - Administradora de Riesgos Laborales SURA
+PR\_CESAN - Provisión cesantías | \[CESANTIAS\] | AFCE FNA - Fondo Nacional del Ahorro
+DTO\_SALUD-Aporte salud empleado | \[EPS\] | NUEVA EPS - Nueva Empresa Promotora de Salud S.A
+
+Observaciones
+
+\- Las entidades deben estar creadas con anterioridad desde el catálogo de
+Tipos de entidades.
+\- Las entidades se deben indicar entre corchetes \[ \].
+\- Si no desea seleccionar un tipo de entidad para el concepto de nómina,
+puede indicar directamente un código de tercero ya existente en el sistema.
+
+Configuración
+
+Para ingresar al catálogo de Tipos de entidades de terceros,
+ver:\[**:\[Pestaña básico > despliega la flecha hacia abajo del Ícono de
+Terceros > Tipos de entidad\]**
+
+---
+
+# Tabla de fechas de pago
+
+Tabla que define la fecha estimada en la que se cancelará la cuenta por cobrar
+o por pagar definida en el concepto.
+
+La tabla de definición de fechas de pago permite definir las fechas de pago
+para los periodos en que se cause la transacción. Cada tabla programa el
+vencimiento de la cuenta por pagar o por cobrar dependiendo de la fecha de
+soporte de la operación en la cual se use el concepto.
+
+![\[455\]tabla1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B455%5Dtabla1.png)
+
+El sistema cuenta con un catálogo de tablas de definición de fechas de pagos
+desde el cual se puede seleccionar la tabla que corresponda de acuerdo con el
+tipo de concepto.
+
+Ejemplo
+
+Tipo de concepto de liquidación | Tabla a usar
+---|---
+Concepto de retención en la fuente | RETENCION
+Concepto de cesantías | CESANTIAS
+Concepto de vacaciones | VACACIONES
+Conceptos de EPS, ARL, pensión | EPS, ARP, PENSION
+
+Configuración
+
+Para ingresar al catálogo de tablas de definición de fechas de pago, ver: **:
+\[Pestaña contabilidad > despliega la flecha hacia abajo del Ícono de Plan de
+cuentas > Tablas de fecha de pagos\]**
+
+---
+
+# Descripción
+
+Según la necesidad del usuario, este campo permite adicionar información según
+sea requerido para el concepto en cuestión.
+
+Ejemplo
+
+La empresa decidió crear un concepto llamado "Cómisión por antigüedad". En la
+descripción de este concepto se indicó lo siguiente: "Este concepto se
+asignará y se otrogará única y exclusivamente a las personas que lleven mas de
+10 años de trabajo en la empresa"
+
+Observaciones
+
+Se sugiere para este campo que se indique la razón y/o el uso del concepto en
+cuestión de tal forma que cualquier usuario esté en capacidad de entender y
+hacer uso de los conceptos creados por cualquier otro usuario.
+
+---
+
+# Especifique el año y mes desde el cual estará vigente este concepto
+
+Se debe indicar mes y año para el cual el concepto en cuestión será
+automáticamente calculado por el sistema en caso de que el anterior se haya
+asignado a algún contrato.
+
+Ejemplo
+
+Asumamos que para el año 2023 le vamos a otorgar un bono por antigüedad a los
+empleados que han laborado en la empresa más de 10 años. En primera instancia
+creamos el concepto y asignamos su vigencia a partir de enero de 2023:
+
+![\[600\]LblVigencia1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B600%5DLblVigencia1.png)
+![\[600\]LblVigencia2.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B600%5DLblVigencia2.png)
+Posteriormente asignamos este concepto a uno de nuestros empleados que cumpla
+con las características y validamos realizando una operación de pago de
+nómina, primero para diciembre 2022 y posteriormente enero 2023:
+**Pago diciembre 2022**
+![\[600\]LblVigencia3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B600%5DLblVigencia3.png)
+**Pago enero 2023**
+![\[600\]LblVigencia4.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/%5B600%5DLblVigencia4.png)
+Notemos que para el pago de enero 2023 el concepto **COMANT\(Comisión
+antigüedad\)** es calculado automáticamente por el sistema. Situación que no
+ocurre en el mes de diciembre 2022 teniendo en cuenta que nosotros
+anteriormente asignamos la vigencia de dicho concepto para 2023.
+
+---
+
+# Acerca de ventana
+
+## REGISTRO DE CONCEPTOS DE NÓMINA
+
+##  Objetivo
+
+Crear y configurar los conceptos de nómina que tienen relación con la empresa
+y con los cuales se interactúa a través de las diferentes operaciones o
+transacciones realizadas en el sistema para la nómina.
+
+
+## Ejemplo de información a registrar
+
+Al momento de crear un concepto de nómina, bien sea un devengo para el
+empleado, una deducción, una deducción, un aporte a cargo del empleador o una
+provisión, dentro de la información más relevante a registrar se encuentra el
+código y el nombre, pues estos datos permiten identificar el concepto y así
+poderlo relacionar en las diferentes operaciones del sistema. También es muy
+importante determinar el tipo de concepto base, pues a partir de esta
+definición se informará en los reportes de nómina electrónica, los cuales se
+envían a la DIAN, además de lo anteriormente mencionado, el concepto base
+determinará el comportamiento que tendrá el concepto \(tipo devengo,
+deducción, aporte o provisión\)
+
+Además, al crear cada concepto, se debe indicar datos básicos como el manejo
+\(si es de pago recurrente o si se requiere incluir el valor del concepto para
+el cálculo de la distribución entre centros de costos al registrar el
+movimiento contable\), la disponibilidad \(si se desea incluir en los
+comprobantes impresos de las operación de pago y de liquidación\), forma de
+cálculo, manejo contable, descripción, vigencia, entre otros, los cuales
+permitirán un correcto funcionamiento y precisión en los cálculos del concepto
+de nómina.
+
+
+##  Configuración de conceptos de nómina
+
+En esta sección se definen los conceptos de nómina que se calcularán al
+momento de registrar el pago de nómina.
+
+## Requisitos
+
+Verificar los conceptos de nómina que maneja la empresa. Tener creadas y
+configuradas las cuentas contables de nómina y los tipos de entidades.
+
+## Preparación de la información
+
+Defina la recurrencia, la forma de cálculo, el manejo contable con las cuentas
+auxiliares a afectar y la entidad de nómina, que el sistema usará para generar
+la imputación contable por cada concepto de nómina.
+
+## Procedimiento en \[ContaPyme\]
+
+Ingrese al catálogo de conceptos de nómina **\[Cinta de opciones: Pestaña
+Nómina > Conceptos de nómina\].**.
+
+Seleccione el concepto a configurar.
+
+Ejemplo:
+
+**\- DTO\_SALUD** \- Aporte salud empleado
+
+
+![ConfConpNomPaso2.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/.%5CConfConpNomPaso2.png)
+
+
+Configure en el concepto seleccionado la información solicitada en la pestaña
+definición, pago recurrente, la forma de cálculo, el manejo contable con las
+cuentas auxiliares a afectar y la entidad de nómina, que el sistema usará para
+generar la imputación contable por cada concepto de nómina y la vigencia.
+
+
+![ConfConpNomPaso3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/NomConceptos/%5B19490%5D%20FrmNomConcepto/.%5CConfConpNomPaso3.png)
+
+
+**Nota:** Tenga presente que la mayoría de los conceptos vienen con una
+configuración por defecto en la pestaña **"forma de cálculo"**. Los campos
+como valor, cantidad y porcentaje son formulados y de forma automática se
+realizará el cálculo en el momento de hacer el pago.
+
+---
+
+# Acerca de ventana
+
+## REGISTRO DE PERFIL DE CONTRATO
+
+##  Objetivo
+
+Crear y configurar los perfiles de contrato que se utilizan en la empresa y
+los cuales se podrán asociar en los contratos de los empleados cargando de
+manera predeterminada los datos indicados en el mismo.
+Al momento de crear un perfil,defina los tipos de contratos, periodos de
+pagos, métodos de pago, clases de riegos, tipos de salarios y conceptos de
+nómina que maneja la empresa para sus empleados, pues estos datos permiten
+realizar adecuadamente el registro de los contratos y adicionalmente cargar la
+información pertinente para llevar a cabo el pago de nómina.
+
+Además, en cada perfil de contrato debe validar los días laborales e
+intensidad que se emplean en la empresa. Así como también es muy importante
+corroborar la información sugerida en la pestaña de conceptos para pago de
+nómina y para liquidación de contrato, pues estos serán los que se calcularán
+automáticamente en las operaciones para aquellos empleados que tengan dicho
+perfil de contrato asignado.
+
+## Ejemplo de información a registrar
+
+Al momento de crear un perfil de contrato, la información más relevante a
+registrar es el tipo de contrato, el tipo de salario, los días laborales, la
+intensidad horaria y los conceptos para pago.
+
+La empresa ABC cuenta con contratos a término indefinido, tipo de salario
+variable y realiza los pagos de manera mensual. Por lo tanto, realiza la
+adecuada configuración en el perfil definido para tal objetivo \(Término
+indefinido pago mensual\) indicando y verificando la configuración establecida
+por el sistema por defecto, garantizando un montaje correcto según los
+requerimientos puntuales de la empresa.
+
+## Definición conceptos
+
+## Tipo de salario
+
+**Salario Fijo:** Es una remuneración que se caracteriza por tener un valor
+constante y predeterminado durante un periodo de tiempo específico. Este tipo
+de salario no se ve afectado por el rendimiento individual del trabajador ni
+por las comisiones o incentivos.
+
+**Salario Variable:** Es una remuneración que se caracteriza por no tener un
+valor fijo y predeterminado. Depende de diversos factores como el rendimiento
+individual del trabajador, comisiones por ventas, cumplimiento de metas,
+productividad del equipo.
+
+**Salario Integral:** Es una remuneración que incluye se incluye en una sola
+suma \(Salario básico, prestaciones sociales, los recargos nocturnos y las
+horas extras, las primas y los bonos y cualquier otro beneficio que reciba el
+trabajador como contraprestación por sus servicios\).
+
+## Perfil basado en el mínimo
+
+Active esta opción si desea indicar el factor para el cálculo del salario en
+cada empleado.
+
+Esta opción es útil si en la empresa se tienen empleados que devengan el
+salario mínimo, ya que anualmente el sistema actualizará automáticamente el
+valor correspondiente para el salario básico del empleado.
+
+Esta opción también es útil si en la empresa utilizan la metodología de pagar
+el salario del empleado según la metodología de factor de cálculo. Por
+ejemplo: El empleado Andrés Pérez devenga 3.5 SMMLV. Por lo tanto, el sistema
+multiplicará el valor del salario mínimo mensual vigente por la cantidad del
+factor, en este caso 3.5
+
+## Extranjero que no cotiza a pensión
+
+Active esta opción si desea establecer por defecto en el perfil de contrato
+dicha opción y por lo tanto, no se calcularán los aportes a pensión por parte
+del empleado ni por parte del empleador.
+
+## Colombiano en el exterior
+
+Active esta opción si desea establecer por defecto en el perfil de contrato
+dicha opción y por lo tanto, en la planilla PILA se indicará la fecha a partir
+de la cual el empleado se encuentra en el exterior.
+
+## Empleado que realiza labores de obra \(Artículo 310 del CST\)
+
+Active esta opción si desea establecer por defecto en el perfil de contrato
+dicha opción y si los empleado realizan labores de obra\(Obras o actividades
+de construcción que tienen por objeto construir cualquier clase de casas o
+edificios o actividades inherentes a esa construcción\)
+
+## Secciones
+
+## Sección Días laborales e intensidad horaria
+
+**Días laborales** Indique los días laborales correspondientes al perfil de
+contrato. Estos días aplicarán al cálculo de la nómina de los empleados que
+tengan contratos asociados a dicho perfil de nómina.
+
+**Trabajo en días festivos** En esta sección tendrá la posibilidad de indicar
+si los empleados asociados a dicho perfil trabajan los días festivos.
+
+**Intensidad horaria diaria** Indique la cantidad de horas que laboran
+diariamente los empleados asociados al perfil de contrato y adicional podrá
+indicar si los empleados asociados al perfil trabajan medio tiempo.
+
+Este dato es de suma relevancia ya que de esto dependerán los cálculos que se
+apliquen sobre las fórmulas del sistema.
+
+## Sección conceptos de pago
+
+Defina los conceptos de nómina que se cargarán al crear los contratos de
+nómina a los diferentes empleados que estén asociados al perfil. Esto
+facilitará y agilizará el montaje de su nómina.
+
+## Sección conceptos de liquidación
+
+Defina los conceptos de nómina que el sistema cargará de manera predeterminada
+al momento de realizar las liquidaciones de contrato.
+
+Tenga presente que las fórmulas de nómina están diseñadas para cargar los
+conceptos de nómina como prestaciones sociales, novedades de nómina del
+período y los devengos, deducciones y aportes pendientes de pago al momento de
+la liquidación, sin embargo, si requiere personalizar las acciones de la
+operación podrá definir los conceptos en este apartado.
+
+---
+
+# Acerca de ventana
+
+## CATÁLOGO DE TERCEROS
+
+##  Objetivo
+
+Crear y configurar los terceros que tienen relación con la empresa y con los
+cuales se interactúa a través de las diferentes operaciones o transacciones
+realizadas en el sistema.
+
+
+## Ejemplo de información a registrar
+
+Al momento de crear un tercero, bien sea un cliente, un proveedor, un
+vendedor, un empleado o cualquier otra persona que interactúe con la empresa,
+dentro de la información más relevante a registrar se encuentra el código y el
+nombre, pues estos datos permiten identificar al tercero para poderlo
+relacionar en las diferentes operaciones del sistema. También es muy
+importante determinar el tipo de tercero, pues a partir de esta definición se
+activarán secciones adicionales para el registro de información.
+
+Además, de cada tercero se deben indicar datos de contacto como teléfono,
+celular, dirección, correo, entre otros, los cuales permitan establecer
+comunicación efectiva con el tercero por diferentes medios. Así como también
+es muy importante configurar la clasificación tributaria del tercero para que
+el sistema pueda realizar el cálculo automático de impuestos en las
+operaciones.
+
+
+Ejemplo:
+
+los datos a registrar de un tercero serían, entre otros:
+
+Código | 10123456
+---|---
+Nombre | Juan Carlos Perez
+Tipo de tercero | Cliente
+Teléfono | 57 6 880 1899
+Celular | 301 288 22 47
+Dirección | Cra 28 \# 45 – 37 Centro
+Correo | jcperez@gmail.com
+Clasificación tributaria | Clasificación tributaria para personas naturales
+
+
+
+
+## Definición conceptos
+
+## Tercero
+
+Persona, bien sea natural o jurídica, que tiene relación con la empresa y con
+la cual se realizan diferentes operaciones o transacciones.
+
+## Clasificación tributaria
+
+Clasificación que se realiza a los contribuyentes, bien sean personas
+naturales o personas jurídicas, para determinar qué tipos de tributos o
+impuestos deben recaudar y pagar al estado.
+
+
+
+
+## Secciones
+
+## Sección tipo de tercero
+
+Se define el tipo de tercero aplicable a la persona o empresa que se está
+creando, dependiendo del tipo de tercero seleccionado se habilitarán secciones
+adicionales para el registro de información.
+En esta sección también se podrán habilitar los manejos de la información del
+tercero de acuerdo con las necesidades del usuario, es decir, se podrá definir
+qué campos estarán visibles para el registro de la información en las
+diferentes secciones del editor.
+
+## Sección datos tercero
+
+Se definen datos como profesión, sexo, fecha de nacimiento, teléfono, celular,
+correo, dirección y demás datos de contacto del tercero. En esta sección
+también se configura si el tercero permite el envío de e-mails bien sea
+transaccionales o promocionales, esto es de vital importancia para el envío de
+e-mails a través del módulo de Campañas.
+
+## Sección datos adicionales
+
+Se configuran datos de libre definición y manejo por parte del usuario de
+acuerdo con sus necesidades. Los datos de esta sección pueden ser configurados
+como texto, valor numérico o fecha y podrán tener la etiqueta que el usuario
+desee asignar.
+
+## Sección sucursales
+
+Se crean y configuran las sucursales, negocios, almacenes o tiendas que están
+bajo el mismo NIT o Código del tercero, pero que deben representar terceros
+independientes en el catálogo de terceros.
+
+## Sección área
+
+Se define la unidad de medida de área que se manejará en los centros de costos
+que se creen asociados a la sede, esto con el fin de utilizar el área como
+peso de distribución de costos. También se define la vigencia del área, pues
+este dato puede cambiar a través del tiempo, por ejemplo, si se trata de una
+finca, el área inicial puede ser de 1000 hectáreas, pero a los 6 meses se
+puede ampliar a 1200 hectáreas pues se compró otra parte de terreno.
+Esta sección es visible si se activa la opción “Esta sede y sus centros de
+costos requieren que se les registre el área” en la sección “Datos a
+solicitar”.
+
+## Sección notas
+
+Se definen las notas u observaciones adicionales del tercero.
+
+---
+
+#  Proveedor estándar
+
+El proveedor estándar, es aquella persona natural o jurídica que suministra o
+abastece a otras empresas con productos o servicios para el correcto
+desarrollo de su objeto social.
+
+Si activa esta casilla, podrá relacionar información adicional de pagos a
+proveedores, líneas y productos.
+
+Ejemplo
+
+La empresa ABC provee la materia prima necesaria para que la empresa XYZ pueda
+fabricar sus productos, a cambio de una retribución económica.
+
+Observaciones
+
+Este dato es necesario para indicarle al sistema, que este proveedor le
+suministra productos o servicios para el desarrollo de su actividad económica.
+
+Adicionalmente, tenga en cuenta que en la pestaña "Productos", podrá
+relacionar aquellos elementos del inventario ofrecidos por el proveedor y que
+a su vez, le facilitan el proceso para la recepción de documentos
+electrónicos.
+
+Configuración
+
+No aplica configuración adicional para este apartado.
+
+---
+
+# Proveedor: Entidad de nómina
+
+Active esta casilla si este tercero presta servicios como entidad de nómina y
+está relacionado con el proceso de la misma.
+
+Ejemplo
+
+Sura es una empresa que organiza y garantiza la prestación de servicios de
+salud para los colaboradores de la empresa ABC. Es decir, es una entidad de
+nómina ya que presta servicios relacionados con la misma.
+
+Observaciones
+
+Este dato es necesario para indicarle al sistema, que este proveedor le presta
+servicios para el proceso de la nómina de su organización.
+
+Tenga en cuenta que al activar esta casilla, tendrá la posibilidad de indicar
+qué tipo de servicio presta esta entidad.
+
+De esta forma, al momento de configurar las entidades a las cuales está
+afiliado el empleado, estas estarán filtradas según el tipo de servicio que
+preste respectivamente.
+Esto facilitará y agilizará la configuración de sus empleados.
+
+Configuración
+
+En la pestaña "Entidades nómina" podrá seleccionar el tipo de servicio que
+presta este tercero, según corresponda
+
+
+Sin embargo, si la entidad de nómina no presta a ninguno de los servicios que
+aparecen en dicho listado, podrá adicionar nuevos tipos de servicio en la ruta
+**Básico > Terceros > Tipos de entidad **
+
+
+Allí debe crear el nuevo tipo de entidad y marcarlo con la opción "Este tipo
+de entidad es de nómina".
+De esta forma, podrá indicar el tipo de servicio que presta el tercero en los
+datos del proveedor.
+
+---
+
+# Active los tipos de servicio que presta este tercero como entidad de nómina
+
+Marque el campo que corresponda para indicarle al sistema, qué tipo de
+servicio le presta este proveedor de nómina a su organización.
+
+Ejemplo
+
+Sura es una empresa que organiza y garantiza la prestación de servicios de
+salud para los colaboradores de la empresa ABC.
+
+Al ser una entidad de nómina que presta el servicio de salud, podrá marcar el
+tipo de servicio como EPS.
+
+Observaciones
+
+1\. Al configurar el tipo de servicio que presta este proveedor, permitirá al
+sistema clasificarlo correctamente entre las entidades que prestan
+específicamente dicho servicio.
+
+2\. Al momento de indicar las entidades a las cuales están asociados sus
+empleados, el sistema las filtrará según el servicio que prestan. Esto
+agilizará el proceso de parametrización inicial de sus colaboradores.
+
+Configuración
+
+Si desea adicionar nuevos tipos de servicio en este listado, podrá crearlos en
+el catálogo de tipos de entidad, en la ruta **Básico > Terceros > Tipos de
+entidad **
+
+Allí debe crear el nuevo tipo de entidad y marcarlo con la opción "Este tipo
+de entidad es de nómina".
+De esta forma, se adicionará en el listado de tipos de servicios que presta la
+entidad de nómina.
+
+---
+
+#  Adicionar contrato
+
+![IconoAdicionarContrato.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/catTercero/%5B11370%5D%20FrmTerceros/.%5CIconoAdicionarContrato.png)Inserta
+nuevos contratos para el empleado; los renglones que hay después de la
+selección, son desplazados hacia abajo.
+
+---
+
+# Editar contrato del empleado
+
+![IconoEditarContrato.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/catTercero/%5B11370%5D%20FrmTerceros/.%5CIconoEditarContrato.png)Permite
+modificar el contrato del empleado para cambiar datos existentes.
+
+---
+
+#  Historial de cambios del contrato
+
+![IconoHistorialContrato.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/catTercero/%5B11370%5D%20FrmTerceros/.%5CIconoHistorialContrato.png)Permite
+visualizar las diferentes modificaciones realizadas sobre el contrato
+seleccionado.
+
+Ejemplo
+
+El empleado Juan Perez fue configurado inicialmente en el centro de costos
+"Sede Bogotá", sin embargo, dicho empleado, ha cambiado a "Sede Medellín".
+
+Este apartado permitirá visualizar el histórico de centros de costos a los que
+ha pertenecido el colaborador,así como los demás cambios aplicados previamente
+para tener una correcta trazabilidad de modificaciones sobre el contrato.
+
+---
+
+#  Eliminar contrato
+
+![IconoEliminarContrato.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/catTercero/%5B11370%5D%20FrmTerceros/.%5CIconoEliminarContrato.png)Elimina
+el contrato del renglón seleccionado.
+Tenga presente que la información eliminada no podrá ser recuperada.
+
+---
+
+# Recodificar contrato
+
+![IconoRecodificarContrato.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Cats/catTercero/%5B11370%5D%20FrmTerceros/.%5CIconoRecodificarContrato.png)Permite
+cambiar el código del contrato seleccionado.
+Tenga en cuenta que deberá indicar un nuevo código válido para el registro.
+
+Observaciones
+
+Es importante tener presente que en caso de haber realizado operaciones con el
+contrato que recodificará, estas serán reemplazadas por el nuevo código
+indicado.
+
+---
+
+# Ver / Ocultar Contrato
+
+Muestre u oculte el contrato seleccionado
+
+Ejemplo
+
+Esta opción la puede utilizar cuando desee ocultar contratos no vigentes en el
+contrato del empleado. A esta herramienta puede encontrarle mayor utilidad
+cuando el empleado ha tenido múltiples contratos y que actualmente ya no se
+encuentran vigentes.
+
+---
+
+# Ver / Ocultar Contrato
+
+Muestre u oculte el contrato seleccionado
+
+Ejemplo
+
+Esta opción la puede utilizar cuando desee ocultar contratos no vigentes en el
+contrato del empleado. A esta herramienta puede encontrarle mayor utilidad
+cuando el empleado ha tenido múltiples contratos y que actualmente ya no se
+encuentran vigentes.
+
+---
+
+# Ver / Ocultar Contrato
+
+Muestre u oculte el contrato seleccionado
+
+Ejemplo
+
+Esta opción la puede utilizar cuando desee ocultar contratos no vigentes
+
+---
+
+# Ver / Ocultar Contrato
+
+Muestre u oculte el contrato seleccionado
+
+Ejemplo
+
+Esta opción la puede utilizar cuando desee ocultar contratos no vigentes
+
+---
+
+# Devengos del empleado
+
+Los devengos son todos los conceptos que constituyen un ingreso de dinero para
+el empleado, debido a los diferentes acuerdos contractuales entre las partes.
+
+Ejemplo
+
+Devengos del empleado
+---
+Salario básico
+Auxilio de transporte
+Auxilio extralegal de transporte
+Bono de alimentación \(permanente\)
+
+
+Observaciones
+
+En este apartado debe configurar los conceptos de nómina que son recurrentes,
+es decir, que no son novedades de nómina.
+
+Configuración
+
+Si requiere configurar nuevos conceptos de nómina para los devengos de los
+empleados de su organización, diríjase a la ruta: **Nómina > Conceptos de
+nómina> Crear nuevo concepto de nómina**
+
+---
+
+# Autorización
+
+Indique el código de autorización que confirma la aprobación de los cambios
+que se realizarán sobre el contrato del empleado.
+
+El número de autorización consiste en dar consentimiento, permitir o aprobar
+los cambios que se realicen en los contratos de los empleados, esto con el fin
+de tener un control de dichos cambios y la información para posibles
+auditorías.
+
+Observaciones
+
+Es un campo obligatorio, el número puede ser numérico o alfanumérico, y tiene
+diez dígitos de longitud. Los cambios en los datos del contrato aparecerán en
+el panel histórico de datos del contrato con su número de autorización, fecha
+de cambio y usuario.
+
+---
+
+# Fecha de inicio de vigencia del cambio
+
+Indique la fecha a partir del cual el sistema aplicará los cambios que se
+realicen en el contrato del empleado.
+
+La fecha de inicio de vigencia marca el periodo a partir del cual entran
+aplicar los cambios que se realicen en el contrato cuando se realice una
+operación de novedad de nómina, pago de nómina, reportes de nómina entre
+otros.
+
+Ejemplo
+
+Un empleado tiene contrato a término fijo y se requiere renovar por 3 meses
+más a partir del 1 de junio de 2022.
+
+
+
+En ese caso como fecha de inicio de vigencia se indica 1 de junio de 2022 que
+es la fecha que empieza aplicar las nuevas condiciones del contrato por 3
+meses, adicionalmente se indica las fechas de inicio y finalización
+correspondientes.
+
+Observaciones
+
+Es un campo obligatorio. Los cambios en los datos del contrato aparecerán en
+el panel histórico de datos del contrato con su número de autorización, fecha
+de cambio y usuario.
+
+---
+
+# Número del Contrato
+
+Indique el número que tendrá el contrato del empleado.
+
+Observaciones
+
+Este campo es de libre definición por el usuario, sin embargo, se sugiere que
+se tenga un orden para control y manejo interno.
+
+Este consecutivo se verá reflejado en las operaciones de nómina \(pago,
+novedades y reportes electrónicos\), en los exploradores e informes del módulo
+de nómina y en el resumen del contrato del tercero.
+
+---
+
+# Perfil de contrato
+
+Indique el perfil que aplica para el empleado, el cual define las condiciones
+y conceptos de nómina asociados al contrato.
+
+En los perfiles de contrato se definen las condiciones del contrato, tales
+como:
+
+  * **Tipo de contrato:** Término Indefinido, Término fijo, Aprendiz Sena, Obra o labor…
+  * **Intensidad horaria:** 8, 6, 4… horas diarias.
+  * **Periodicidad de pago:** Semanal, Quincenal, Mensual…
+  * **Tipos de salario:** Fijo, variable, integral.
+  * Entre otras condiciones.
+
+También se definen los conceptos que se cargarán por defecto en el contrato
+del empleado, por ejemplo:
+
+  * Conceptos salariales.
+  * Aportes a seguridad social.
+  * Provisiones y prestaciones.
+  * Entre otros conceptos.
+
+Ejemplo
+
+La empresa contrata un empleado con contrato a término fijo, periodicidad
+quincenal por 6 meses.
+
+El sistema cuenta con un listado de perfiles de contrato con ciertas
+condiciones, para el caso anterior se puede seleccionar el perfil de contrato
+llamado **“1040- Término fijo pago quincenal”** que cumple con las condiciones
+planteadas anteriormente.
+
+En caso de no encontrar un perfil con las condiciones que requiere la empresa,
+puede ingresar al catálogo de perfiles de contrato y crear o modificar los
+perfiles según loa criterios y condiciones de la empresa.
+
+Observaciones
+
+Este campo es obligatorio, con el cual se cargarán de forma automática las
+condiciones y los conceptos de nómina definidos en el perfil en el contrato
+del empleado.
+
+El sistema carga las condiciones por defecto que se configuraron en el perfil
+de contrato, pero si el empleado tiene alguna condición especial, como por
+ejemplo el tipo de salario, se puede personalizar en el contrato de cada
+empleado.
+
+El sistema tiene los conceptos de nómina ya definidos en los perfiles de
+contrato, si existe algún concepto de nómina que no aplica para la empresa, se
+recomienda modificar el perfil y definir solo los conceptos que aplican, de
+esta manera solo se cargarán en el contrato y operaciones los conceptos
+correspondientes.
+
+Configuración
+
+Para crear o modificar los perfiles de contrato, ver: **\[Pestaña: Nómina >
+Perfiles de contrato\].**
+
+---
+
+# Fecha de inicio
+
+Indique la fecha en la que inicia la ejecución de los términos y condiciones
+estipulados en el contrato del empleado.
+
+Observaciones
+
+\- Es un campo obligatorio.
+\- La fecha de inicio se tendrá en cuenta para calcular los días laborados por
+el empleado en una liquidación de contrato o por ejemplo liquidación de
+prestaciones sociales.
+\- Con este dato se calculará el tiempo laborado del empleado que se envía en
+el documento electrónico a la DIAN.
+
+---
+
+# Fecha de finalización
+
+Indique la fecha en la que finaliza la ejecución de los términos y condiciones
+estipulados en el contrato del empleado.
+
+Observaciones
+
+\- Es un campo opcional para los tipos de contrato a término indefinido, para
+contrato de aprendiz, término fijo, entre otros, el campo es obligatorio.
+\- La fecha de finalización se tendrá en cuenta para calcular los días
+laborados por el empleado en una liquidación de contrato o por ejemplo
+liquidación de prestaciones sociales.
+
+---
+
+# Factor de cálculo
+
+Indique el factor para calcular el valor del salario del empleado.
+
+El factor se multiplicará por el salario mínimo legal vigente y el resultado
+será el valor que se defina como salario para el empleado.
+
+Ejemplo
+
+El salario mínimo legal vigente para el año 2022 en Colombia, es igual a
+**$1.000.000 de pesos** , si se define como factor de cálculo **1.5** , el
+salario del empleado corresponderá a **$1.500.000 de pesos.**
+
+Observaciones
+
+Este campo es obligatorio y se activa cuando en el perfil del contrato del
+empleado se activa la opción **“Este perfil maneja salario basado en el mínimo
+\(en cada empleado deberá registrar el factor para el cálculo\)”**.
+
+Cada que cambie el salario mínimo legal vigente en Colombia, se actualizará el
+salario del empleado según el factor definido en el contrato.
+
+Configuración
+
+Para crear o modificar los perfiles de contrato, ver:**\[Pestaña: Nómina >
+Perfiles de contrato\].**
+
+---
+
+# Centro de costos
+
+Código del centro de costo al que se le va a cargar o a imputar
+automáticamente al valor del concepto de nómina en la afectación contable.
+
+El identificador del centro de costo debe estar previamente creado desde el
+explorador gráfico de empresas.
+
+Ejemplo
+
+La empresa tiene creado dos centros de costos para consultar y controlar la
+nómina del departamento administrativo y la nómina del departamento comercial.
+
+Código | Nombre centro de costo
+---|---
+ADM1 | Departamento comercial.
+COM1 | Departamento administrativo.
+
+Al realizar el pago para el personal administrativo y personal de comercial
+quedaría de la siguiente manera:
+
+Empleado | Nombre centro de costo | Concepto de nómina | Valor
+---|---|---|---
+Maria Gonzales | Departamento comercial. | Sueldo | $1.000.000
+Carlos Corrales | Departamento administrativo. | Sueldo | $1.200.000
+
+Observaciones
+
+Este campo es obligatorio, el cual se cargará de forma automática en las
+novedades y pagos de nómina del empleado.
+
+Según la clase que maneje el centro de costos, se podrá definir en el concepto
+de nómina la cuenta contable que afectará el pago de nómina de forma
+automática.
+
+Configuración
+
+Para crear los centros de costos ver:**\[Pestaña: Básico > Explorador gráfico
+de empresas> clic derecho sobre la empresa o sede > crear centro de costo\]**
+
+---
+
+# Jefe inmediato
+
+Indique el código de identificación del jefe inmediato del empleado.
+
+Este dato debe corresponder a un tercero válido; si la identificación del jefe
+inmediato no existe en el catálogo de terceros el sistema no permitirá
+continuar con la creación del contrato.
+
+Ejemplo
+
+Una empresa productora maneja la siguiente estructura organizacional dentro
+del departamento de producción:
+
+  * **Departamento:** Producción.
+  * **Jefe inmediato: Director de producción** ; es el encargado de coordinar la producción y la programación de trabajo en el área de producción para surtir los pedidos, así como del traslado de la producción de la empresa a los clientes que incluye la contratación y el monitoreo del proceso productico.
+
+  * **Supervisar a:** Supervisor de producción, asistentes de producción y jefes de personal.
+
+Observaciones
+
+Este campo es solo informativo, el cual estará disponible en los exploradores
+de nómina del sistema.
+
+Configuración
+
+Para crear los jefes inmediatos como terceros ingresar a: **\[Pestaña Básico -
+> Catálogo de Terceros-> Crear tercero\].**
+
+---
+
+# Tipo de salario
+
+Indique el tipo de salario que maneja el empleado en el contrato.
+
+  1. **
+
+Salario Fijo:
+
+** Se hace referencia a salario fijo cuando se paga el mismo valor en cada
+periodo de pago \(mensual, quincenal, semanal o jornal\), de manera que
+siempre el trabajador recibirá el mismo salario, es importante tener en cuenta
+que un trabajador con salario fijo puede que en cada mes reciba un valor
+diferente porque presenta alguna novedad, sin que convierta ese salario fijo
+en variable, como por ejemplo:
+
+     * Ausencias laborales.
+     * Horas extras.
+     * Recargo trabajo nocturno ordinario.
+     * Recargo trabajo diurno dominical o festivo.
+     * Entre otros.
+
+
+Observaciones
+
+Esta configuración se tendrá en cuenta para reportar el tipo de salario que
+tiene el cotizante en la planilla PILA teniendo en cuenta:
+
+Active este campo cuando el tipo de salario del cotizante sea fijo en
+ejercicio de la libertad de estipulación, y el monto de la remuneración
+ordinaria establecida como contraprestación directa del servicio se mantenga
+inmodificable. Para las liquidaciones realizadas a través del cargue de
+archivos planos para la planilla integrada de liquidación de aportes \(PILA\),
+se reportará en el campo 41 del detalle del cotizante el valor "F".
+
+Adicionalmente si el empleado tiene salario fijo, para el cálculo de las
+incapacidades el sistema tendrá en cuenta el salario que este devengando el
+empleado al momento de la incapacidad para hacer el cálculo del concepto, de
+acuerdo con el artículo 228 del Código Sustantivo del Trabajo -CST-.
+
+  2. **
+
+Salario Variable:
+
+** Se hace referencia a salario variable cuando el trabajador recibe
+remuneraciones sujetas a la ejecución de determinados hechos; generalmente la
+variación se constituye como beneficios otorgados debido al desempeño laboral,
+como por ejemplo:
+
+     * Comisiones.
+     * Primas.
+     * Bonificaciones habituales.
+     * Sobresueldos.
+     * Porcentajes sobre ventas.
+Conceptos que según el artículo 127 del Código Sustantivo del Trabajo hacen
+parte del salario.
+
+
+Observaciones
+
+Esta configuración se tendrá en cuenta para reportar el tipo de salario que
+tiene el cotizante en la planilla PILA teniendo en cuenta:
+
+Active este campo cuando el tipo de salario del cotizante sea variable en
+ejercicio de la libertad de estipulación y el monto de la remuneración
+ordinaria establecida como contraprestación directa del servicio resulte de
+las acciones ejecutadas o los resultados obtenidos. Para las liquidaciones
+realizadas a través del cargue de archivos planos para la planilla integrada
+de liquidación de aportes \(PILA\), se reportará en el campo 41 del detalle
+del cotizante el valor "V".
+
+Adicionalmente si el empleado tiene salario variable, para el cálculo de las
+incapacidades el sistema tendrá en cuenta el promedio devengado por el
+empleado del último año para el cálculo de la incapacidad, de acuerdo con el
+artículo 228 del Código Sustantivo del Trabajo -CST-.
+
+  3. **Salario Integral:** El salario integral es una modalidad de salario contemplada en el Código Sustantivo del Trabajo \(C.S.T.\), en donde se estipula que cuando un trabajador devengue diez \(10\) o más S.M.M.L.V., podrá pactar con el empleador por escrito, un salario en el que además de recibir el pago ordinario por la prestación de sus servicios, podrá adicionarse a dicho valor un monto correspondiente al 30% de dicha cuantía que compensé también el valor de las prestaciones, recargos y beneficios tales como el correspondiente al trabajo nocturno, extraordinario o al dominical y festivo, el de las primas legales, extralegales, las cesantías y sus intereses, subsidios y suministros en especie; y en general, las que se incluyan en la estipulación hecha por las partes, exceptuando de dichos valores, el correspondiente a las vacaciones.
+
+Observaciones
+
+Esta configuración se tendrá en cuenta para reportar el tipo de salario que
+tiene el cotizante en la planilla PILA teniendo en cuenta:
+
+Active este campo cuando el tipo de salario del cotizante sea integral de
+acuerdo con lo establecido en el artículo 132 del Código Sustantivo del
+Trabajo. Para las liquidaciones realizadas a través del cargue de archivo
+plano para la planilla integrada de liquidación de aportes \(PILA\), se
+reportará en el campo 41 del detalle del cotizante el valor "X".
+
+Adicionalmente, si el empleado tiene salario integral, el sistema realizará de
+forma automática los aportes para el sistema general de seguridad social,
+fondo de solidaridad pensional y parafiscales tomando el 70% del salario
+integral, tener en cuenta que todas las prestaciones que pague la seguridad
+social, también se realizará sobre el 70% del salario como por ejemplo
+licencias de maternidad e incapacidades laborales.
+
+---
+
+# Colombiano en el exterior.
+
+Si se tiene marcado en el contrato del empleado la opción **"Colombiano en el
+exterior"** , no deberá aportar en salud al Sistema General de Seguridad
+Social, de acuerdo con lo establecido en el artículo 2.1.3.17 del Decreto 780
+de 2016.
+
+Si activa está opción es muy importe indicar la fecha desde cuando el empleado
+empieza a trabaja en el exterior.
+
+Observaciones
+
+Para reportar la residencia en el exterior, el aportante debe realizar los
+procesos administrativos ante la EPS para el reporte de la novedad. En la
+planilla PILA debe marcar la opción de colombiano residente en el exterior e
+indicar la fecha de radicación en el exterior; con estos datos el sistema no
+liquidará valor a pagar a la EPS.
+
+En el caso de que el empleado quiera seguir aportando a salud, porque tiene
+beneficiarios en el país, no se debe marcar la opción de **"Colombiano en el
+Exterior** y se deberá realizar el pago completo a la EPS.
+
+Configuración
+
+Si desea activar por defecto la opción **"Colombiano en el exterior"** en el
+perfil ver:**Pestaña de nómina > Perfiles de contrato > clic derecho modificar
+perfil.**
+
+---
+
+# El empleado realiza labores de obra \(art. 310 CST\)
+
+Active esta opción si el empleado realiza labores de obra \(obras o
+actividades de construcción las que tiene por objeto construir cualquier clase
+de casas o edificios y las inherentes a esa construcción, excepto su
+conservación o reparación\).
+
+**A continuación, se relaciona el respectivo artículo para su conocimiento:**
+
+_"A los trabajadores de obras o actividades de construcción cuyo valor exceda
+\($10.000\) se les reconocerá el auxilio de cesantía y las vacaciones, así:
+
+a\) El auxilio de cesantía por todo el tiempo servido, a razón de tres \(3\)
+días de salario por cada mes completo de trabajo, siempre que se haya servido
+siquiera un mes, y debe pagarse a la terminación del contrato por cualquier
+causa.
+b\) Las vacaciones remuneradas de quince \(15\) días hábiles y consecutivos
+por cada año de servicios, y proporcionalmente por fracciones de año, cuando
+se haya trabajado por lo menos un \(1\) mes"._
+
+Observaciones
+
+Le recomendamos validar con su contador o revisor fiscal antes de activar esta
+opción, ya que los cálculos del sistema se verán afectados por esta
+configuración.
+
+Configuración
+
+No aplica configuración adicional para este apartado. ****
+
+---
+
+# Fecha desde
+
+Fecha a partir de la cual el empleado se encuentra en el exterior.
+
+Observaciones
+
+Para mayor información sobre la importancia de esta fecha, le recomendamos ver
+el botón de ayuda del campo "Colombiano en el exterior"
+
+---
+
+# Extranjero que no cotiza a pensión
+
+Al seleccionar esta opción, el sistema no realizará el cálculo de los
+conceptos de aportes a pensión para este empleado\(tanto por parte del
+empleado, como del empleador\)
+
+Ejemplo
+
+Puede hacer uso de esta opción cuando el colaborador se encuentra en el
+exterior y no realiza la cotización al sistema pensional del país en el que se
+encuentra la organización.
+
+---
+
+# Cargo
+
+Cargo o rol que tiene el tercero en la empresa.
+
+Ejemplo
+
+Gerente, administrador/a, Secretario/a, Operario/a, etc.
+
+---
+
+# Tipo de trabajador
+
+Defina la relación laboral existente entre el colaborador y la organización.
+
+Ejemplo
+
+Seleccione la opción que se adecúe, según la vinculación laboral que tiene el
+empleado con la empresa.
+
+Tipo de trabajador
+---
+Dependiente
+Aprendiz Sena \(Etapa lectiva o productiva\)
+Funcionario Público
+Servicio doméstico
+Otro
+
+
+Configuración
+
+Si desea adicionar nuevos tipos de trabajadores, diríjase a la ruta **Nómina >
+Conceptos de nómina > Tipos de trabajador**
+
+
+
+Observaciones
+
+Tenga presente que al crear nuevos tipos de trabajadores debe indicar un
+código, y a su vez, este debe corresponder al código a reportar a la DIAN.
+
+---
+
+# Subtipo de trabajador
+
+Indique si el empleado aplica como subtipo de trabajador.
+
+Ejemplo
+
+Seleccione la opción que se adecúe, según la vinculación laboral que tiene el
+empleado con la empresa.
+
+Configuración
+
+Si desea adicionar nuevos subtipos de trabajadores, diríjase a la ruta
+**Nómina > Conceptos de nómina > Subtipo de trabajador**
+
+
+
+Observaciones
+
+Tenga presente que al crear nuevos subtipos de trabajadores debe indicar un
+código, y a su vez, este debe corresponder al código a reportar a la DIAN.
+
+---
+
+#  Lugar de trabajo
+
+Defina la dirección de trabajo del colaborador.
+
+Observaciones
+
+Tendrá la posibilidad de indicar la dirección de trabajo del empleado según
+corresponda. Si escoge la opción "Definir dirección", se desplegará un nuevo
+asistente para discriminar el país, departamento y municipio.
+
+Lugar de trabajo
+---
+Usar dirección definida en el empleado
+Usar dirección definida en la empresa
+Usar dirección de sede de centro de costo | Definir dirección
+
+---
+
+# País
+
+País de domicilio o residencia donde el tercero lleva a cabo sus labores. Al
+seleccionar el país se filtran los departamentos/estados en el siguiente
+campo..
+
+Ejemplo
+
+País | Código
+---|---
+Colombia | 169
+México | 493
+
+Observaciones
+
+La codificación de paises se realiza según el estándar definido por la DIAN
+\(Para Colombia\).
+
+---
+
+# Dirección
+
+Dirección completa de domicilio o donde reside el tercero, aclarando: calle,
+carrera, avenida, número, etc.
+
+Ejemplo
+
+Dirección
+---
+Carrera 45 N°17 - 68
+Calle 51 N°36 - 93
+
+---
+
+# Departamento \(estado\)
+
+Código del departamento o estado.
+
+Ejemplo
+
+Departamento | Código
+---|---
+Antioquia | 05
+Santander | 68
+
+Observaciones
+
+La codificación de departamentos se realiza según el estándar definido por la
+DIAN \(Para Colombia\).
+
+---
+
+# Ciudad \(municipio\)
+
+Código de la ciudad o municipio
+
+Ejemplo
+
+Ciudad | Código
+---|---
+Bogotá | 001
+Guatapé | 321
+
+Observaciones
+
+La codificación de departamentos se realiza según el estándar definido por la
+DIAN \(Para Colombia\).
+
+---
+
+# Observaciones para el contrato
+
+Detalles y observaciones que aplican para el respectivo contrato. Tenga
+presente que las observaciones son de libre uso y definición del usuario.
+
+Ejemplo
+
+Puede indicar la información que considere relevante o que se deba tener en
+cuenta, así como:
+
+•Notas adicionales sobre las labores que realiza el colaborador.
+•Formas de pago.
+•Términos acordados entre las partes
+•Otras condiciones especiales del contrato.
+
+---
+
+# Cláusulas del contrato
+
+Las cláusulas son aquellas disposiciones, términos o estipulaciones que
+definen, principalmente las obligaciones y compromisos que se desean pactar y
+que se adquieren en una relación laboral.
+
+Ejemplo
+
+Puede indicar cláusulas estipuladas dentro del contrato y que se deben tener
+en cuenta, así como:
+
+•Plazo del contrato.
+•Cuantía salarial.
+•Jornada laboral.
+•Períodos de vacaciones
+•Confidencialidad
+•Otras claúsulas definidas en el contrato.
+
+---
+
+# Empresa
+
+Indique la empresa a la que aplica el contrato del empleado.
+
+Ejemplo
+
+En el área de trabajo existe la empresa MP computadores y la empresa
+Hipercómputo, el empleado tiene contrato por medio tiempo con cada una de las
+empresas, por lo tanto, para cada contrato se debe especificar el código de la
+empresa correspondiente.
+
+Observaciones
+
+El campo es obligatorio y único para cada contrato del empleado.
+
+---
+
+# Observaciones finales del contrato
+
+Indique las observaciones y consideraciones finales a tener en cuenta para el
+contrato.
+
+Ejemplo
+
+En este apartado puede indicar beneficios adicionales a los cuales puede
+acceder el empleado. Adicionalmente, puede usarlo para mencionar excepciones
+que aplican específicamente dentro de la organización.
+
+
+
+Observaciones
+
+Tenga presente que este campo es de libre definición por el usuario y puede
+definirse según las necesidades de cada empresa.
+
+---
+
+# Acerca de ventana
+
+## OPERACIÓN CARGUE INICIAL CONCEPTOS DE NÓMINA
+
+##  Objetivo
+
+Esta ventana tiene como finalidad el registro de una operación de cargue
+inicial de conceptos de nómina.
+La operación de cargue inicial de conceptos de nómina permite el ingreso
+histórico de los pagos realizados a los empleados en meses anteriores.
+Esta operación no genera movimiento contable, ya que solo es un registro
+histórico de los conceptos que hacen base para el cálculo de las prestaciones.
+Los conceptos que se carguen en la operación se tendrán en cuenta para el
+cálculo automático de conceptos que usan promedios históricos como:
+
+  * **Vacaciones:** se requiere el promedio 12 meses\(se recomienda cargar el histórico de los últimos 12 meses\).
+  * **Cesantías:** se requiere el promedio 12 meses\(se recomienda cargar el histórico de los últimos 12 meses\).
+  * **Prima:** se requiere promedio últimos seis meses\(se recomienda cargar el histórico de los últimos 6 meses\).
+  * **Incapacidades:** Se requiere IBC mes anterior.
+  * **Otros.**
+
+Es decir, si cargamos conceptos como comisiones, horas extras, salarios
+variables, estos valores se tendrán en cuenta al momento de calcular el valor
+para el pago de vacaciones, prima o cesantías.
+
+
+## Ejemplo de información a registrar
+
+**Ejemplo de uso**
+
+La empresa va a realizar los pagos de sus empleados con el módulo de nómina a
+partir de del mes de enero del presente año y requiere cargar los conceptos
+históricos de la nómina registrada a sus empleados en meses anteriores.
+
+Ejemplo:
+
+
+**MES A CARGAR: DICIEMBRE**
+
+![\[AD\]conceptoscargue.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Oprs/OprCargueInicial/%5B19417%5D%20FrmDlgOprNom0/%5BAD%5Dconceptoscargue.png)
+
+
+## Secciones
+
+## Sección encabezado de la operación
+
+Tipo de documento de soporte
+
+La operación de cargue inicial de conceptos de nómina viene configurada por
+defecto con el tipo de documento de soporte 990- cargue inicial de saldos.
+Este documento puede ser cambiado de ser necesario, pero se recomienda
+utilizar el documento por defecto para que la información registrada por esta
+operación se pueda encontrar fácilmente.
+
+Número de documento de soporte
+
+El consecutivo generado por el tipo de documento de soporte 990- cargue
+inicial de saldos, está programado para arrojar el prefijo “CIS” y un
+consecutivo numérico correspondiente a los dos últimos dígitos del año de
+soporte, los dos dígitos del mes de soporte y dos cifras numéricas. Este
+número de documento de soporte puede ser cambiado de ser necesario, pero se
+recomienda utilizar el consecutivo por defecto.
+
+Fecha de soporte de la operación
+
+Para la fecha de soporte de la operación se recomienda indicar el mes anterior
+o mes actual en que se van a empezar a registrar los pagos por el módulo de
+nómina.
+
+
+## Sección año y mes a cargar
+
+Se debe indicar el año y mes de los pagos de nómina históricos que se requiere
+registrar para los empleados y conceptos de nómina.
+Se hace una operación de cargue inicial por mes y se registran los valores de
+los conceptos por tercero.
+
+
+## Sección lista de terceros y conceptos a cargar
+
+En esta área se cargan todos los empleados y conceptos de nómina \(se
+recomienda tener previamente creados y configurados los conceptos de nómina y
+los empleados\). Posteriormente, indicar por cada uno, los datos que quedarán
+relacionados en el cargue inicial de conceptos de nómina.
+**¿Qué conceptos se recomiendan registrar?**
+Todos los conceptos que hacen base para el cálculo de las prestaciones como
+vacaciones, prima, cesantías e intereses a las cesantías, por ejemplo:
+
+  * Salario
+  * Apoyo sostenimiento
+  * Conceptos salariales
+  * Horas extras
+  * Incapacidades
+  * Licencias remuneradas
+  * Recargos diurnos
+  * Recargos nocturnos
+  * Vacaciones disfrutadas
+  * Provisiones acumuladas
+
+
+Es importante que la información a registrar en esta sección sea validada por
+el responsable del área contable o de nómina en la empresa, para que
+posteriormente los cálculos de las bases para las prestaciones sean correctos.
+
+
+**Observaciones**
+Si tiene pagos de nómina para sus empleados registrados desde el módulo de
+contabilidad o nómina contable podrá hacer uso del botón asistente
+![\[AD\]asistente.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Oprs/OprCargueInicial/%5B19417%5D%20FrmDlgOprNom0/%5BAD%5Dasistente.png)
+y realizar el cargue inicial asistido.
+
+**Cargue inicial asistido:** Carga de forma automática los valores en cada uno
+de los conceptos de nómina con relación a la cuenta contable configurada en el
+concepto.
+
+**Ejemplo:** La empresa ya tiene unos registros contables de los pagos de sus
+empleados por medio de la operación de nómina contable, como se define en la
+siguiente tabla:
+
+**Mes de diciembre:**
+
+![\[AD\]ejemplocuentascargue.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Oprs/OprCargueInicial/%5B19417%5D%20FrmDlgOprNom0/%5BAD%5Dejemplocuentascargue.png)
+
+Adicionalmente los conceptos de nómina como salario, auxilio de trasporte y
+horas extras, tienen definidas las mismas cuentas contables, por lo tanto, si
+utilizamos el asistente para realizar el cargue inicial asistido, el sistema
+se encargará de consultar la información que tiene registrada en la cuenta
+contable y cargará los valores en el concepto correspondientes al mes indicado
+en la operación.
+
+**Mes de diciembre:**
+
+![\[AD\]ejemploconceptoscargue.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Oprs/OprCargueInicial/%5B19417%5D%20FrmDlgOprNom0/%5BAD%5Dejemploconceptoscargue.png)
+
+
+
+
+
+## Recomendaciones
+
+\- Realizar todos los cargues iniciales en el mes anterior o en el mes en el
+cuál se va a iniciar con el módulo de nómina, de esta manera no tendrá que
+reabrir meses o años anteriores ya cerrados.
+\- Si en el mes actual se va a realizar el pago del empleado por el módulo de
+nómina, no es necesario realizar cargue inical para ese mes.
+\- En caso de tener los pagos de los empleados por el módulo de contabilidad o
+nómina contable puede hacer uso de la opción del cargue inicial asistido.
+\- En caso de realizar el cargue inicial asistido,se aconseja validar que los
+valores que el sistema carga de forma autómatica por cada concepto sean
+correctos.
+
+**\- ¿En qué casos no se hace cargue inicial de conceptos de nómina?**
+
+  * _Cuando la empresa es nueva:_ En este caso no se tiene un histórico, por lo tanto, no es necesario realizar cargue inicial de conceptos de nómina.
+  * _Cuando el devengo del empleado no es variable:_ En este caso, como los devengos del empleado son los mismos en cada pago, el sistema tendrá en cuenta como valor base el último pago realizado al empleado para el cálculo de las prestaciones .
+  * _Si se prefiere registrar los valores manuales:_ En ese caso, el usuario tendrá que configurar los conceptos de prestaciones de forma manual e indicar los valores por medio de la operación de novedades de nómina.
+
+---
+
+# Autorización
+
+Indique el código de autorización que confirma la aprobación de los cambios
+que se realizarán sobre el contrato del empleado.
+
+El número de autorización consiste en dar consentimiento, permitir o aprobar
+los cambios que se realicen en los contratos de los empleados, esto con el fin
+de tener un control de dichos cambios y la información para posibles
+auditorías.
+
+Observaciones
+
+Es un campo obligatorio, el número puede ser numérico o alfanumérico, y tiene
+diez dígitos de longitud. Los cambios en los datos del contrato aparecerán en
+el panel histórico de datos del contrato con su número de autorización, fecha
+de cambio y usuario.
+
+---
+
+# Fecha de inicio de vigencia del cambio
+
+Indique la fecha a partir del cual el sistema aplicará los cambios que se
+realicen en el contrato del empleado.
+
+La fecha de inicio de vigencia marca el periodo a partir del cual entran
+aplicar los cambios que se realicen en el contrato cuando se realice una
+operación de novedad de nómina, pago de nómina, reportes de nómina entre
+otros.
+
+Ejemplo
+
+Un empleado tiene contrato a término fijo y se requiere renovar por 3 meses
+más a partir del 1 de junio de 2022.
+
+
+
+En ese caso como fecha de inicio de vigencia se indica 1 de junio de 2022 que
+es la fecha que empieza aplicar las nuevas condiciones del contrato por 3
+meses, adicionalmente se indica las fechas de inicio y finalización
+correspondientes.
+
+Observaciones
+
+Es un campo obligatorio. Los cambios en los datos del contrato aparecerán en
+el panel histórico de datos del contrato con su número de autorización, fecha
+de cambio y usuario.
+
+---
+
+# Número del Contrato
+
+Indique el número que tendrá el contrato del empleado.
+
+Observaciones
+
+Este campo es de libre definición por el usuario, sin embargo, se sugiere que
+se tenga un orden para control y manejo interno.
+
+Este consecutivo se verá reflejado en las operaciones de nómina \(pago,
+novedades y reportes electrónicos\), en los exploradores e informes del módulo
+de nómina y en el resumen del contrato del tercero.
+
+---
+
+# Perfil de contrato
+
+Indique el perfil que aplica para el empleado, el cual define las condiciones
+y conceptos de nómina asociados al contrato.
+
+En los perfiles de contrato se definen las condiciones del contrato, tales
+como:
+
+  * **Tipo de contrato:** Término Indefinido, Término fijo, Aprendiz Sena, Obra o labor…
+  * **Intensidad horaria:** 8, 6, 4… horas diarias.
+  * **Periodicidad de pago:** Semanal, Quincenal, Mensual…
+  * **Tipos de salario:** Fijo, variable, integral.
+  * Entre otras condiciones.
+
+También se definen los conceptos que se cargarán por defecto en el contrato
+del empleado, por ejemplo:
+
+  * Conceptos salariales.
+  * Aportes a seguridad social.
+  * Provisiones y prestaciones.
+  * Entre otros conceptos.
+
+Ejemplo
+
+La empresa contrata un empleado con contrato a término fijo, periodicidad
+quincenal por 6 meses.
+
+El sistema cuenta con un listado de perfiles de contrato con ciertas
+condiciones, para el caso anterior se puede seleccionar el perfil de contrato
+llamado **“1040- Término fijo pago quincenal”** que cumple con las condiciones
+planteadas anteriormente.
+
+En caso de no encontrar un perfil con las condiciones que requiere la empresa,
+puede ingresar al catálogo de perfiles de contrato y crear o modificar los
+perfiles según loa criterios y condiciones de la empresa.
+
+Observaciones
+
+Este campo es obligatorio, con el cual se cargarán de forma automática las
+condiciones y los conceptos de nómina definidos en el perfil en el contrato
+del empleado.
+
+El sistema carga las condiciones por defecto que se configuraron en el perfil
+de contrato, pero si el empleado tiene alguna condición especial, como por
+ejemplo el tipo de salario, se puede personalizar en el contrato de cada
+empleado.
+
+El sistema tiene los conceptos de nómina ya definidos en los perfiles de
+contrato, si existe algún concepto de nómina que no aplica para la empresa, se
+recomienda modificar el perfil y definir solo los conceptos que aplican, de
+esta manera solo se cargarán en el contrato y operaciones los conceptos
+correspondientes.
+
+Configuración
+
+Para crear o modificar los perfiles de contrato, ver: **\[Pestaña: Nómina >
+Perfiles de contrato\].**
+
+---
+
+# Fecha de inicio
+
+Indique la fecha en la que inicia la ejecución de los términos y condiciones
+estipulados en el contrato del empleado.
+
+Observaciones
+
+\- Es un campo obligatorio.
+\- La fecha de inicio se tendrá en cuenta para calcular los días laborados por
+el empleado en una liquidación de contrato o por ejemplo liquidación de
+prestaciones sociales.
+\- Con este dato se calculará el tiempo laborado del empleado que se envía en
+el documento electrónico a la DIAN.
+
+---
+
+# Fecha de finalización
+
+Indique la fecha en la que finaliza la ejecución de los términos y condiciones
+estipulados en el contrato del empleado.
+
+Observaciones
+
+\- Es un campo opcional para los tipos de contrato a término indefinido, para
+contrato de aprendiz, término fijo, entre otros, el campo es obligatorio.
+\- La fecha de finalización se tendrá en cuenta para calcular los días
+laborados por el empleado en una liquidación de contrato o por ejemplo
+liquidación de prestaciones sociales.
+
+---
+
+# Factor de cálculo
+
+Indique el factor para calcular el valor del salario del empleado.
+
+El factor se multiplicará por el salario mínimo legal vigente y el resultado
+será el valor que se defina como salario para el empleado.
+
+Ejemplo
+
+El salario mínimo legal vigente para el año 2022 en Colombia, es igual a
+**$1.000.000 de pesos** , si se define como factor de cálculo **1.5** , el
+salario del empleado corresponderá a **$1.500.000 de pesos.**
+
+Observaciones
+
+Este campo es obligatorio y se activa cuando en el perfil del contrato del
+empleado se activa la opción **“Este perfil maneja salario basado en el mínimo
+\(en cada empleado deberá registrar el factor para el cálculo\)”**.
+
+Cada que cambie el salario mínimo legal vigente en Colombia, se actualizará el
+salario del empleado según el factor definido en el contrato.
+
+Configuración
+
+Para crear o modificar los perfiles de contrato, ver:**\[Pestaña: Nómina >
+Perfiles de contrato\].**
+
+---
+
+# Centro de costos
+
+Código del centro de costo al que se le va a cargar o a imputar
+automáticamente al valor del concepto de nómina en la afectación contable.
+
+El identificador del centro de costo debe estar previamente creado desde el
+explorador gráfico de empresas.
+
+Ejemplo
+
+La empresa tiene creado dos centros de costos para consultar y controlar la
+nómina del departamento administrativo y la nómina del departamento comercial.
+
+Código | Nombre centro de costo
+---|---
+ADM1 | Departamento comercial.
+COM1 | Departamento administrativo.
+
+Al realizar el pago para el personal administrativo y personal de comercial
+quedaría de la siguiente manera:
+
+Empleado | Nombre centro de costo | Concepto de nómina | Valor
+---|---|---|---
+Maria Gonzales | Departamento comercial. | Sueldo | $1.000.000
+Carlos Corrales | Departamento administrativo. | Sueldo | $1.200.000
+
+Observaciones
+
+Este campo es obligatorio, el cual se cargará de forma automática en las
+novedades y pagos de nómina del empleado.
+
+Según la clase que maneje el centro de costos, se podrá definir en el concepto
+de nómina la cuenta contable que afectará el pago de nómina de forma
+automática.
+
+Configuración
+
+Para crear los centros de costos ver:**\[Pestaña: Básico > Explorador gráfico
+de empresas> clic derecho sobre la empresa o sede > crear centro de costo\]**
+
+---
+
+# Jefe inmediato
+
+Indique el código de identificación del jefe inmediato del empleado.
+
+Este dato debe corresponder a un tercero válido; si la identificación del jefe
+inmediato no existe en el catálogo de terceros el sistema no permitirá
+continuar con la creación del contrato.
+
+Ejemplo
+
+Una empresa productora maneja la siguiente estructura organizacional dentro
+del departamento de producción:
+
+  * **Departamento:** Producción.
+  * **Jefe inmediato: Director de producción** ; es el encargado de coordinar la producción y la programación de trabajo en el área de producción para surtir los pedidos, así como del traslado de la producción de la empresa a los clientes que incluye la contratación y el monitoreo del proceso productico.
+
+  * **Supervisar a:** Supervisor de producción, asistentes de producción y jefes de personal.
+
+Observaciones
+
+Este campo es solo informativo, el cual estará disponible en los exploradores
+de nómina del sistema.
+
+Configuración
+
+Para crear los jefes inmediatos como terceros ingresar a: **\[Pestaña Básico -
+> Catálogo de Terceros-> Crear tercero\].**
+
+---
+
+# Tipo de salario
+
+Indique el tipo de salario que maneja el empleado en el contrato.
+
+  1. **
+
+Salario Fijo:
+
+** Se hace referencia a salario fijo cuando se paga el mismo valor en cada
+periodo de pago \(mensual, quincenal, semanal o jornal\), de manera que
+siempre el trabajador recibirá el mismo salario, es importante tener en cuenta
+que un trabajador con salario fijo puede que en cada mes reciba un valor
+diferente porque presenta alguna novedad, sin que convierta ese salario fijo
+en variable, como por ejemplo:
+
+     * Ausencias laborales.
+     * Horas extras.
+     * Recargo trabajo nocturno ordinario.
+     * Recargo trabajo diurno dominical o festivo.
+     * Entre otros.
+
+
+Observaciones
+
+Esta configuración se tendrá en cuenta para reportar el tipo de salario que
+tiene el cotizante en la planilla PILA teniendo en cuenta:
+
+Active este campo cuando el tipo de salario del cotizante sea fijo en
+ejercicio de la libertad de estipulación, y el monto de la remuneración
+ordinaria establecida como contraprestación directa del servicio se mantenga
+inmodificable. Para las liquidaciones realizadas a través del cargue de
+archivos planos para la planilla integrada de liquidación de aportes \(PILA\),
+se reportará en el campo 41 del detalle del cotizante el valor "F".
+
+Adicionalmente si el empleado tiene salario fijo, para el cálculo de las
+incapacidades el sistema tendrá en cuenta el salario que este devengando el
+empleado al momento de la incapacidad para hacer el cálculo del concepto, de
+acuerdo con el artículo 228 del Código Sustantivo del Trabajo -CST-.
+
+  2. **
+
+Salario Variable:
+
+** Se hace referencia a salario variable cuando el trabajador recibe
+remuneraciones sujetas a la ejecución de determinados hechos; generalmente la
+variación se constituye como beneficios otorgados debido al desempeño laboral,
+como por ejemplo:
+
+     * Comisiones.
+     * Primas.
+     * Bonificaciones habituales.
+     * Sobresueldos.
+     * Porcentajes sobre ventas.
+Conceptos que según el artículo 127 del Código Sustantivo del Trabajo hacen
+parte del salario.
+
+
+Observaciones
+
+Esta configuración se tendrá en cuenta para reportar el tipo de salario que
+tiene el cotizante en la planilla PILA teniendo en cuenta:
+
+Active este campo cuando el tipo de salario del cotizante sea variable en
+ejercicio de la libertad de estipulación y el monto de la remuneración
+ordinaria establecida como contraprestación directa del servicio resulte de
+las acciones ejecutadas o los resultados obtenidos. Para las liquidaciones
+realizadas a través del cargue de archivos planos para la planilla integrada
+de liquidación de aportes \(PILA\), se reportará en el campo 41 del detalle
+del cotizante el valor "V".
+
+Adicionalmente si el empleado tiene salario variable, para el cálculo de las
+incapacidades el sistema tendrá en cuenta el promedio devengado por el
+empleado del último año para el cálculo de la incapacidad, de acuerdo con el
+artículo 228 del Código Sustantivo del Trabajo -CST-.
+
+  3. **Salario Integral:** El salario integral es una modalidad de salario contemplada en el Código Sustantivo del Trabajo \(C.S.T.\), en donde se estipula que cuando un trabajador devengue diez \(10\) o más S.M.M.L.V., podrá pactar con el empleador por escrito, un salario en el que además de recibir el pago ordinario por la prestación de sus servicios, podrá adicionarse a dicho valor un monto correspondiente al 30% de dicha cuantía que compensé también el valor de las prestaciones, recargos y beneficios tales como el correspondiente al trabajo nocturno, extraordinario o al dominical y festivo, el de las primas legales, extralegales, las cesantías y sus intereses, subsidios y suministros en especie; y en general, las que se incluyan en la estipulación hecha por las partes, exceptuando de dichos valores, el correspondiente a las vacaciones.
+
+Observaciones
+
+Esta configuración se tendrá en cuenta para reportar el tipo de salario que
+tiene el cotizante en la planilla PILA teniendo en cuenta:
+
+Active este campo cuando el tipo de salario del cotizante sea integral de
+acuerdo con lo establecido en el artículo 132 del Código Sustantivo del
+Trabajo. Para las liquidaciones realizadas a través del cargue de archivo
+plano para la planilla integrada de liquidación de aportes \(PILA\), se
+reportará en el campo 41 del detalle del cotizante el valor "X".
+
+Adicionalmente, si el empleado tiene salario integral, el sistema realizará de
+forma automática los aportes para el sistema general de seguridad social,
+fondo de solidaridad pensional y parafiscales tomando el 70% del salario
+integral, tener en cuenta que todas las prestaciones que pague la seguridad
+social, también se realizará sobre el 70% del salario como por ejemplo
+licencias de maternidad e incapacidades laborales.
+
+---
+
+# Colombiano en el exterior.
+
+Si se tiene marcado en el contrato del empleado la opción **"Colombiano en el
+exterior"** , no deberá aportar en salud al Sistema General de Seguridad
+Social, de acuerdo con lo establecido en el artículo 2.1.3.17 del Decreto 780
+de 2016.
+
+Si activa está opción es muy importe indicar la fecha desde cuando el empleado
+empieza a trabaja en el exterior.
+
+Observaciones
+
+Para reportar la residencia en el exterior, el aportante debe realizar los
+procesos administrativos ante la EPS para el reporte de la novedad. En la
+planilla PILA debe marcar la opción de colombiano residente en el exterior e
+indicar la fecha de radicación en el exterior; con estos datos el sistema no
+liquidará valor a pagar a la EPS.
+
+En el caso de que el empleado quiera seguir aportando a salud, porque tiene
+beneficiarios en el país, no se debe marcar la opción de **"Colombiano en el
+Exterior** y se deberá realizar el pago completo a la EPS.
+
+Configuración
+
+Si desea activar por defecto la opción **"Colombiano en el exterior"** en el
+perfil ver:**Pestaña de nómina > Perfiles de contrato > clic derecho modificar
+perfil.**
+
+---
+
+# El empleado realiza labores de obra \(art. 310 CST\)
+
+Active esta opción si el empleado realiza labores de obra \(obras o
+actividades de construcción las que tiene por objeto construir cualquier clase
+de casas o edificios y las inherentes a esa construcción, excepto su
+conservación o reparación\).
+
+**A continuación, se relaciona el respectivo artículo para su conocimiento:**
+
+_"A los trabajadores de obras o actividades de construcción cuyo valor exceda
+\($10.000\) se les reconocerá el auxilio de cesantía y las vacaciones, así:
+
+a\) El auxilio de cesantía por todo el tiempo servido, a razón de tres \(3\)
+días de salario por cada mes completo de trabajo, siempre que se haya servido
+siquiera un mes, y debe pagarse a la terminación del contrato por cualquier
+causa.
+b\) Las vacaciones remuneradas de quince \(15\) días hábiles y consecutivos
+por cada año de servicios, y proporcionalmente por fracciones de año, cuando
+se haya trabajado por lo menos un \(1\) mes"._
+
+Observaciones
+
+Le recomendamos validar con su contador o revisor fiscal antes de activar esta
+opción, ya que los cálculos del sistema se verán afectados por esta
+configuración.
+
+Configuración
+
+No aplica configuración adicional para este apartado. ****
+
+---
+
+# Fecha desde
+
+Fecha a partir de la cual el empleado se encuentra en el exterior.
+
+Observaciones
+
+Para mayor información sobre la importancia de esta fecha, le recomendamos ver
+el botón de ayuda del campo "Colombiano en el exterior"
+
+---
+
+# Extranjero que no cotiza a pensión
+
+Al seleccionar esta opción, el sistema no realizará el cálculo de los
+conceptos de aportes a pensión para este empleado\(tanto por parte del
+empleado, como del empleador\)
+
+Ejemplo
+
+Puede hacer uso de esta opción cuando el colaborador se encuentra en el
+exterior y no realiza la cotización al sistema pensional del país en el que se
+encuentra la organización.
+
+---
+
+# Código del empleado
+
+Código del empleado al cual se realizará la creación o modificación del
+contrato.
+
+Observaciones
+
+-Tenga presente que la creación de nuevos contratos o modificaciones al mismo, se verán reflejadas en la ficha del empleado.
+
+Para más información ver:**\[Catálogo de empleados > modificar empleado >
+datos del empleado\] **
+
+-Tenga en cuenta que existe una operación propia del sistema para realizar la creación de nuevos contratos al empleado. Así mismo, existe una operación independiente para la modificación al contrato del empleado.
+
+Configuración
+
+Si requiere crear nuevos empleados utilice la opción "crear empleado" desde la
+operación de creación de contrato o diríjase al catálogo de empleados y cree
+el respectivo tercero. Ruta:**\[Pestaña básico > Catálogo de terceros >
+Catálogo de empleados > crear empleado \] **
+
+---
+
+# Cargo
+
+Cargo o rol que tiene el tercero en la empresa.
+
+Ejemplo
+
+Gerente, administrador/a, Secretario/a, Operario/a, etc.
+
+---
+
+# Centro de trabajo
+
+De acuerdo con el Decreto 1530 del 26 de agosto de 1996, se entiende por
+centro de trabajo toda edificación o área a cielo abierto en el que laboran
+los trabajadores, destinada a una actividad económica en una empresa
+determinada.
+
+Cuando una empresa tenga más de un centro de trabajo, los trabajadores de uno
+o más de ellos podrán clasificarse en una clase de riesgo diferente, siempre
+que se cumplan algunas condiciones.
+
+**¿Qué condiciones debe cumplir un centro de trabajo?**
+1\. Debe existir una clara diferenciación de las actividades desarrolladas en
+cada uno de ellos.
+2\. Las edificaciones y/o áreas a cielo abierto de los centros de trabajo
+deben ser independientes entre sí, de tal modo que los trabajadores de otras
+áreas no laboren parcial o totalmente en la misma edificación o área a cielo
+abierto.
+3\. Los factores de riesgo determinados por la actividad económica del centro
+de trabajo no deben implicar exposición directa o indirecta para los
+trabajadores del otro u otros centros de trabajo, ni viceversa.
+
+Ejemplo
+
+Una empresa de construcción tiene una obra en construcción en la ciudad de
+Bogotá. En esta obra, hay varios trabajadores que realizan diferentes
+actividades, como excavar, levantar muros y colocar techos.
+
+La obra es un centro de trabajo porque cumple con los siguientes requisitos:
+
+-Es un lugar fijo o identificable. La obra tiene un terreno específico donde se desarrollan las actividades laborales.
+-Tiene una organización específica. La obra tiene un plan de construcción que establece las diferentes etapas del proceso y las responsabilidades de cada trabajador.
+-Está dada de alta ante la autoridad laboral. La empresa de construcción tiene un registro ante el Ministerio del Trabajo que la identifica como empleadora.
+El centro de trabajo en este ejemplo es la obra en construcción. Los
+trabajadores que realizan sus actividades laborales en la obra son los
+empleados de la empresa de construcción y a los cuales se les asigna un nivel
+de riesgo según el centro de trabajo.
+
+Observaciones
+
+Tenga en cuenta que un centro de trabajo puede tener varios niveles de riesgo,
+por lo tanto, debe asegurarse de seleccionar el nivel de riesgo que
+corresponda para el empleado al cual le está realizando la creación o
+modificación de contrato.
+
+Configuración
+
+Si requiere crear nuevos centros de trabajo diríjase a la ruta **Pestaña
+básico > explorador gráfico de empresa > modificar empresa > clasificación
+tributaria > actividades económicas > asignar centro de trabajo y nombre del
+centro de trabajo. **
+
+---
+
+# Tipo de trabajador
+
+Defina la relación laboral existente entre el colaborador y la organización.
+
+Ejemplo
+
+Seleccione la opción que se adecúe, según la vinculación laboral que tiene el
+empleado con la empresa.
+
+Tipo de trabajador
+---
+Dependiente
+Aprendiz Sena \(Etapa lectiva o productiva\)
+Funcionario Público
+Servicio doméstico
+Otro
+
+
+Configuración
+
+Si desea adicionar nuevos tipos de trabajadores, diríjase a la ruta **Nómina >
+Conceptos de nómina > Tipos de trabajador**
+
+
+
+Observaciones
+
+Tenga presente que al crear nuevos tipos de trabajadores debe indicar un
+código, y a su vez, este debe corresponder al código a reportar a la DIAN.
+
+---
+
+# Subtipo de trabajador
+
+Indique si el empleado aplica como subtipo de trabajador.
+
+Ejemplo
+
+Seleccione la opción que se adecúe, según la vinculación laboral que tiene el
+empleado con la empresa.
+
+Configuración
+
+Si desea adicionar nuevos subtipos de trabajadores, diríjase a la ruta
+**Nómina > Conceptos de nómina > Subtipo de trabajador**
+
+
+
+Observaciones
+
+Tenga presente que al crear nuevos subtipos de trabajadores debe indicar un
+código, y a su vez, este debe corresponder al código a reportar a la DIAN.
+
+---
+
+# Tarifa especial pensión
+
+En el caso de los aviadores, senadores, personas con actividades de alto
+riesgo y miembros del CTI, existen tarifas especiales para pensiones que se
+aplican de acuerdo con su actividad o función.
+
+Observaciones
+
+Estas tarifas están diseñadas para beneficiar a ciertos grupos de
+trabajadores, específicamente a los mencionados anteriormente.
+
+Configuración
+
+Si requiere indicar una tarifa especial para pensión por defecto en la
+creación de nuevos contratos de trabajo para los empleados, ver: **\[Cinta de
+opciones: Básico > Manejador de operaciones > Nómina > Creación de contrato >
+Operación > Configurar operación > Tarifa especial para pensión. **
+
+---
+
+# No aplica auxilio de transporte
+
+Si en el contrato está activada la opción "No aplica auxilio de transporte",
+este valor no se tendrá en cuenta para la base de liquidación de prestaciones
+sociales y adicionalmente, el sistema no calculará este concepto a pesar de
+que el empleado no supere el tope de los 2 SMMLV.
+
+Es fundamental señalar que existen otras circunstancias en las cuales, a pesar
+de que el empleado devengue menos de 2 salarios mínimos mensuales legales
+vigentes \(SMMLV\), no se debe efectuar el pago del auxilio de transporte.
+Esto se debe a la activación de la opción **"No aplica auxilio de
+transporte"** , la cual se habilita en casos específicos, **como cuando el
+empleado reside en el lugar de trabajo o cuando la empresa proporciona
+transporte** , según lo establecido en los artículos 2 y 5 de la Ley 15 de
+1959.
+
+Ejemplo
+
+La empleada Laura Restrepo vive en el lugar de trabajo. En este caso, el
+trabajador no tendrá derecho al auxilio de transporte, a pesar de que su
+salario sea inferior a 2 SMMLV. Esto se debe a que la trabajadora no necesita
+utilizar su propio medio de transporte para llegar al trabajo.
+
+Observaciones
+
+La sentencia SCL STL16012/2022 emitida por la Sala Laboral de la Corte Suprema
+de Justicia establece que el auxilio de transporte solo debe incluirse en el
+cálculo de las prestaciones sociales si realmente fue devengado por el
+trabajador.
+
+Por lo tanto, si el trabajador tiene derecho al auxilio de transporte por
+percibir menos de 2 salarios mínimos, pero se encuentra en alguna de las
+situaciones contempladas en la norma que impiden su pago, **no procede
+imputarlo como factor salarial para la base de liquidación de las prestaciones
+sociales.**
+
+Configuración
+
+Si se desea activar esta opción, le sugerimos tener en cuenta cada una de las
+observaciones e indicaciones realizadas anteriormente.
+
+---
+
+#  Lugar de trabajo
+
+Defina la dirección de trabajo del colaborador.
+
+Observaciones
+
+Tendrá la posibilidad de indicar la dirección de trabajo del empleado según
+corresponda. Si escoge la opción "Definir dirección", se desplegará un nuevo
+asistente para discriminar el país, departamento y municipio.
+
+Lugar de trabajo
+---
+Usar dirección definida en el empleado
+Usar dirección definida en la empresa
+Usar dirección de sede de centro de costo | Definir dirección
+
+---
+
+# País
+
+País de domicilio o residencia donde el tercero lleva a cabo sus labores. Al
+seleccionar el país se filtran los departamentos/estados en el siguiente
+campo..
+
+Ejemplo
+
+País | Código
+---|---
+Colombia | 169
+México | 493
+
+Observaciones
+
+La codificación de paises se realiza según el estándar definido por la DIAN
+\(Para Colombia\).
+
+---
+
+# Departamento \(estado\)
+
+Código del departamento o estado.
+
+Ejemplo
+
+Departamento | Código
+---|---
+Antioquia | 05
+Santander | 68
+
+Observaciones
+
+La codificación de departamentos se realiza según el estándar definido por la
+DIAN \(Para Colombia\).
+
+---
+
+# Ciudad \(municipio\)
+
+Código de la ciudad o municipio
+
+Ejemplo
+
+Ciudad | Código
+---|---
+Bogotá | 001
+Guatapé | 321
+
+Observaciones
+
+La codificación de departamentos se realiza según el estándar definido por la
+DIAN \(Para Colombia\).
+
+---
+
+# Dirección
+
+Dirección completa de domicilio o donde reside el tercero, aclarando: calle,
+carrera, avenida, número, etc.
+
+Ejemplo
+
+Dirección
+---
+Carrera 45 N°17 - 68
+Calle 51 N°36 - 93
+
+---
+
+# Empresa
+
+Indique la empresa a la que aplica el contrato del empleado.
+
+Ejemplo
+
+En el área de trabajo existe la empresa MP computadores y la empresa
+Hipercómputo, el empleado tiene contrato por medio tiempo con cada una de las
+empresas, por lo tanto, para cada contrato se debe especificar el código de la
+empresa correspondiente.
+
+Observaciones
+
+El campo es obligatorio y único para cada contrato del empleado.
+
+---
+
+# Cláusulas del contrato
+
+Las cláusulas son aquellas disposiciones, términos o estipulaciones que
+definen principalmente las obligaciones y compromisos que se desean pactar y
+que se adquieren en una relación laboral.
+
+Ejemplo
+
+Puede indicar cláusulas estipuladas dentro del contrato y que se deben tener
+en cuenta, así como:
+
+•Plazo del contrato.
+•Cuantía salarial.
+•Jornada laboral.
+•Períodos de vacaciones
+•Confidencialidad
+•Otras claúsulas definidas en el contrato.
+
+Observaciones
+
+Este apartado es de libre definición por el usuario, según las cláusulas que
+se requieran en la relación laboral.
+
+---
+
+# Observaciones para el contrato
+
+Detalles y observaciones que aplican para el respectivo contrato. Tenga
+presente que las observaciones son de libre uso y definición del usuario.
+
+Ejemplo
+
+Puede indicar la información que considere relevante o que se deba tener en
+cuenta, así como:
+
+•Notas adicionales sobre las labores que realiza el colaborador.
+•Formas de pago.
+•Términos acordados entre las partes
+•Otras condiciones especiales del contrato.
+
+---
+
+# Conceptos de nómina
+
+Los conceptos de nómina, son todos los conceptos que constituyen ...
+
+Ejemplo
+
+Devengos del empleado
+---
+Salario básico
+Auxilio de transporte
+Auxilio extralegal de transporte
+Bono de alimentación \(permanente\)
+
+
+Observaciones
+
+En este apartado debe configurar los conceptos de nómina que son recurrentes,
+es decir, que no son novedades de nómina.
+
+Configuración
+
+Si requiere configurar nuevos conceptos de nómina para los devengos de los
+empleados de su organización, diríjase a la ruta: **Nómina > Conceptos de
+nómina> Crear nuevo concepto de nómina**
+
+---
+
+# Cargar conceptos de nómina de un perfil de contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Copiar conceptos de nómina de otro contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Asignar valor
+
+Asigna un valor al renglón seleccionado
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Devengos del empleado
+
+Los devengos son todos los conceptos que constituyen un ingreso de dinero para
+el empleado, debido a los diferentes acuerdos contractuales entre las partes.
+
+Ejemplo
+
+Devengos del empleado
+---
+Salario básico
+Auxilio de transporte
+Auxilio extralegal de transporte
+Bono de alimentación \(permanente\)
+
+
+Observaciones
+
+En este apartado debe configurar los conceptos de nómina que son recurrentes,
+es decir, que no son novedades de nómina.
+
+Configuración
+
+Si requiere configurar nuevos conceptos de nómina para los devengos de los
+empleados de su organización, diríjase a la ruta: **Nómina > Conceptos de
+nómina> Crear nuevo concepto de nómina**
+
+---
+
+# Cargar devengos de un perfil de contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Copiar devengos de otro contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Concepto de nómina
+
+Indique los conceptos de nómina que serán reconocidos en el pago de nómina del
+empleado.
+
+Ejemplo
+
+Devengos | Deducciones | Costos de la empresa
+---|---|---
+Salario básico | Aporte salud empleado | Aportes ARL
+Auxilio de transporte | Aporte pensión empleado | Provisión de cesantías
+
+
+Observaciones
+
+Tenga presente que los conceptos indicados en este listado deben ser
+recurrentes y se pagarán al empleado según la periodicidad del mismo.
+
+Los conceptos de nómina se dividen en devengos, deducciones y costos de
+empresa. Los devengos suman al valor a pagar al empleado, mientras que las
+deducciones restan de dicho valor. Los costos de la empresa no tienen ningún
+impacto en el valor a pagar al empleado.
+
+Configuración
+
+Para cambiar la configuración de los conceptos de nómina o para la creación de
+nuevos conceptos de nómina, diríjase a la ruta **Pestaña Nómina > Conceptos de
+nómina > Crear / modificar concepto de nómina**
+
+---
+
+# Periodo de liquidación - Periodicidad
+
+Indica la periodicidad que tendrá el concepto en los pagos de nómina
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Periodo de liquidación - Mes
+
+Indica el mes en el que se aplicará el concepto al pago de nómina
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Valor mensual
+
+Cuando aplique, indique el valor mensual del concepto de nómina
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Valor periodo
+
+Cuando aplique, indique el valor según el periodo de pago
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Fecha de pago
+
+Día del mes en el que se hará el pago del concepto de nómina
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Vigencia - Fecha inicial
+
+Fecha desde la cual se incluye el concepto en el pago de nómina del empleado
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Vigencia - Fecha final
+
+Fecha hasta la cual se incluye el concepto en el pago de nómina del empleado
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Observaciones
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Prestaciones
+
+Las prestaciones...
+
+Ejemplo
+
+Devengos del empleado
+---
+Salario básico
+Auxilio de transporte
+Auxilio extralegal de transporte
+Bono de alimentación \(permanente\)
+
+
+Observaciones
+
+En este apartado debe configurar los conceptos de nómina que son recurrentes,
+es decir, que no son novedades de nómina.
+
+Configuración
+
+Si requiere configurar nuevos conceptos de nómina para los devengos de los
+empleados de su organización, diríjase a la ruta: **Nómina > Conceptos de
+nómina> Crear nuevo concepto de nómina**
+
+---
+
+# Cargar prestaciones de un perfil de contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Copiar prestaciones de otro contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Deducciones del empleado
+
+Las deducciones de nómina son los descuentos que se realizan al salario de un
+empleado por ley o por acuerdo entre el empleado y el empleador. Estos
+descuentos se aplican al salario bruto para determinar el salario neto, que es
+la cantidad de dinero que el empleado recibe en su cuenta bancaria.
+
+Ejemplo
+
+Los tipos de deducciones de nómina más comunes son:
+
+  * **Cuotas a la Seguridad Social:** Estas cuotas se destinan a financiar los servicios de salud, pensiones, desempleo, etc. El empleador y el empleado contribuyen a estas cuotas según el contrato laboral o las condiciones laborales estipuladas por la ley.
+  * **Retenciones de impuestos** : En Colombia, estas retenciones se realizan para el pago del impuesto sobre la renta. El porcentaje de retención depende del salario del empleado
+  * **Cuotas sindicales:** En algunos casos, los empleados están afiliados a un sindicato, que les cobra una cuota mensual.
+  * **Deducciones voluntarias:** El empleado puede solicitar al empleador que le descuente de su nómina cantidades para fines específicos, como la compra de un automóvil, la educación de sus hijos, un préstamo o un aporte voluntario a pensión, entre otros.
+
+
+
+Deducciones del empleado
+---
+Aporte a salud empleado
+Fondo de empleados
+Retención en la fuente
+Descuento de seguro de vida
+
+
+Observaciones
+
+En este apartado debe configurar los conceptos de nómina que son recurrentes,
+es decir, que no son novedades de nómina.
+
+Configuración
+
+Si requiere configurar nuevos conceptos de nómina para las deducciones de los
+empleados de su organización, diríjase a la ruta: **Nómina > Conceptos de
+nómina> Crear nuevo concepto de nómina**
+
+---
+
+# Cargar deducciones de un perfil de contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Copiar deducciones de otro contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Costos de la empresa
+
+Son todos aquellos costos y gastos en los que incurre la empresa para cumplir
+con sus obligaciones laborales con sus empleados.
+
+
+Ejemplo
+
+Algunos costos de empresa son:
+
+  * Provisiones de prestaciones sociales \(cesantías, prima de servicios, intereses de cesantías y vacaciones\)
+  * Aportes ARL
+  * Aportes parafiscales \(Caja de compensación, ICBF, Sena\)
+
+Observaciones
+
+En este apartado debe configurar los conceptos de nómina que son recurrentes y
+que se reconocerán en los pagos de nómina del empleado, según la periodicidad
+del concepto.
+
+Configuración
+
+Si requiere configurar nuevos conceptos de nómina para los costos de empresa,
+diríjase a la ruta: **Nómina > Conceptos de nómina> Crear nuevo concepto de
+nómina**
+
+---
+
+# Cargar costo empresa de un perfil de contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Copiar costo empresa de otro contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Beneficiarios adicionales UPC
+
+...
+
+Ejemplo
+
+Devengos del empleado
+---
+Salario básico
+Auxilio de transporte
+Auxilio extralegal de transporte
+Bono de alimentación \(permanente\)
+
+
+Observaciones
+
+En este apartado debe configurar los conceptos de nómina que son recurrentes,
+es decir, que no son novedades de nómina.
+
+Configuración
+
+Si requiere configurar nuevos conceptos de nómina para los devengos de los
+empleados de su organización, diríjase a la ruta: **Nómina > Conceptos de
+nómina> Crear nuevo concepto de nómina**
+
+---
+
+# Copiar beneficiarios adicionales UPC de otro contrato
+
+Texto de la ayuda del control
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Beneficiario Tipo documento
+
+Seleccione el tipo de documento del beneficiario UPC
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Documento
+
+Indique el número del documento del beneficiario UPC, sin puntos ni comas
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Nombres
+
+Indique el nombre\(s\) del beneficiario UPC
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Apellidos
+
+Indique los apellidos del beneficiario UPC
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Tipo de cotizante
+
+Automáticamente se asigna tipo de contizante, según configuración definida en
+catálogo de terceros
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Concepto de nómina
+
+Automáticamente se asigna concepto de nómina, según configuración definida en
+catálogo de terceros
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Periodo de liquidación - Periodicidad
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Periodo de liquidación - Mes
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Valor UPC adicional - Valor mensual
+
+Indique el valor mensual a pagar, según tipo beneficiario y año
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Valor periodo
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Fecha pago
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Vigencia - Fecha inicial
+
+Fecha desde la cual se incluye el concepto en el pago de nómina del empleado
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Vigencia - Fecha final
+
+Fecha hasta la cual se incluye el concepto en el pago de nómina del empleado
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# País
+
+Seleccione el país de resicencia del beneficiario
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Depto./estado
+
+Seleccione el departamento de resicencia del beneficiario
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Ciudad
+
+Seleccione la ciudad de resicencia del beneficiario
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Observaciones
+
+...
+
+Ejemplo
+
+Texto del ejemplo
+
+Observaciones
+
+Texto de de observaciones
+
+Configuración
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Dato del contrato
+
+El dato permite adicionar más información que el usuario desee almacenar del
+tercero. Este campo es de libre definición y uso para el usuario.
+
+Ejemplo
+
+Si la empresa se dedica al mantenimiento y reparación de vehículos, puede
+almacenar en el campo dato, más información tanto del cliente como del
+vehículo, por ejemplo el color.
+
+Observaciones
+
+Este dato se encuentra disponible en todos los exploradores del sistema para
+generarlos filtrados por dato.
+
+Configuración
+
+Para personalizar la etiqueta \(darle un nombre al campo\), ver:**\[Catálogo
+de terceros > Configuración > Requerimiento de datos por pestaña > Pestaña
+clasificación\].**
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Catálogo de terceros > Configuración >
+Requerimiento de datos por pestaña > Pestaña clasificación\].**
+
+---
+
+# Valor
+
+El valor permite adicionar más información que el usuario desee almacenar del
+tercero. Este campo es numérico, de libre definición y uso para el usuario.
+
+Ejemplo
+
+Si la empresa se dedica al mantenimiento y reparación de vehículos, puede
+almacenar en el campo dato, más información tanto del cliente como del
+vehículo, por ejemplo el modelo.
+
+Observaciones
+
+Este dato se encuentra disponible en todos los exploradores del sistema para
+generarlos filtrados por valor.
+
+Configuración
+
+Para personalizar la etiqueta \(darle un nombre al campo\), ver:**\[Catálogo
+de terceros > Configuración > Requerimiento de datos por pestaña > Pestaña
+clasificación\].**
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Catálogo de terceros > Configuración >
+Requerimiento de datos por pestaña > Pestaña clasificación\].**
+
+---
+
+# Fecha del tercero
+
+La fecha permite adicionar más información que el usuario desee almacenar del
+tercero. Este campo habilita el calendario para la selección de la fecha
+exacta, es de libre definición y uso para el usuario.
+
+Ejemplo
+
+Si la empresa se dedica al mantenimiento y reparación de vehículos, puede
+almacenar en el campo fecha, más información tanto del cliente como del
+vehículo, por ejemplo la última fecha de cambio de aceite.
+
+Observaciones
+
+Este dato se encuentra disponible en todos los exploradores del sistema para
+generarlos filtrados por fecha.
+
+Configuración
+
+Para personalizar la etiqueta \(darle un nombre al campo\), ver:**\[Catálogo
+de terceros > Configuración > Requerimiento de datos por pestaña > Pestaña
+clasificación\].**
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Catálogo de terceros > Configuración >
+Requerimiento de datos por pestaña > Pestaña clasificación\].**
+
+---
+
+# Acerca de ventana
+
+##
+![NovedadesNomina.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Oprs/OprNovedadNomina/%5B19830%5D%20FrmDlgOprNom5/.%5CNovedadesNomina.png)OPERACIÓN
+DE NOVEDADES DE NÓMINA
+
+
+
+## Objetivo
+
+Esta ventana tiene como finalidad explicar el registro de las novedades de
+nómina que aplican durante un período determinado, como horas extra,
+bonificaciones, comisiones y demás conceptos que son variables cada mes o como
+corresponda su liquidación.
+
+Siempre que se presenten novedades, la operación debe registrarse antes de que
+se genere la operación de pago de nómina, ya que aunque esta operación no
+genera ningún tipo de movimiento contable, sí registra las novedades y luego
+las carga en la liquidación de la operación de pago nómina.
+
+La operación de novedades de nómina también pertenece al módulo de Nómina.
+
+## Ejemplo de información a registrar
+
+Se registra novedad de nómina del empleado Tomás Cardona \(identificado con
+código 12365478\), por concepto de horas extras diurnas, con fecha de pago el
+15/02/2023.
+
+La información relevante para registrar la operación de novedades de nómina
+es:
+
+  * Código del tercero empleado para el cual se registra la novedad.
+  * Concepto de nómina, al cual se realiza la imputación contable.
+  * Centro de costos.
+  * Fecha a liquidar dicho concepto de nómina.
+  * Cantidad.
+  * Valor unitario a pagar por el concepto de nómina que se está registrando.
+  * Porcentaje.
+  * Fecha inicial en la cual empezó la novedad de nómina y la fecha en la cual terminó dicha novedad.
+
+## Secciones
+
+Secciones de la operación:
+
+## Sección encabezado
+
+Permite seleccionar el tipo de documento con el cual se soportará la
+operación, que normalmente puede ser novedad de nómina, este tipo de documento
+se puede definir por defecto, y el sistema automáticamente asignará el
+consecutivo correspondiente según su configuración.
+
+También se debe indicar la fecha en la cual se registran las novedades, esta
+puede ser la misma fecha en que se liquida la nómina o una fecha anterior,
+pero siempre debe estar registrada y procesada en el sistema antes de proceder
+a realizar el pago de nómina.
+
+## Sección registro
+
+En la zona de registro hay diferentes columnas que permiten registrar la
+información básica de la operación como: código del tercero empleado para el
+cual se registra la novedad, concepto de nómina, centro de costos, valor
+unitario y cantidad del concepto registrado, así como la fecha en la cual se
+aplicará el pago de la novedad.
+
+El sistema permite registrar tantas novedades de nómina como sean necesarias,
+para diferentes empelados.
+
+## Sección impresión de soportes
+
+N/A
+
+## Sección proceso de la operación
+
+Una vez procesada la información, el sistema guardará los registros y estos se
+cargarán en la próxima operación de pago de nómina.
+
+---
+
+# Acerca de ventana
+
+## OPERACIÓN DE PAGO DE NÓMINA
+
+
+
+## Objetivo
+
+Esta operación tiene como finalidad agilizar el registro de la nómina,
+liquidar automáticamente los devengos, deducciones, aportes y provisiones de
+cada empleado y liquidar las novedades de nómina que se presenten, así como
+también cancelar las cuentas por cobrar que tenga pendientes el empleado al
+momento de liquidar la nómina.
+
+Los registros de esta operación afectan directamente la contabilidad y
+alimentan los informes del módulo de cartera, contabilidad y nómina.
+
+La operación de pago de nómina se encuentra incluída en el módulo de nómina
+básico y nómina plus.
+
+## Ejemplo de información a registrar
+
+Ejemplos:
+
+Registrar el pago de la nómina del empleado Jorge Carvajal para la primera
+quincena del me de abril de 2024.
+
+Liquidar la nómina para el empleado Norma Rocío Rodríguez con quien la empresa
+tiene pendientes varias cuentas por cobrar de un préstamo realizado.
+
+Realizar la operación de nómina, con las novedades registradas para el
+empleado Alberto López en el mes de abril.
+
+La información relevante para registrar la operación de nómina es:
+
+  * Código del tercero empleado al cual se registra la nómina.
+  * Concepto de nómina, al cual se realiza la imputación.
+  * Valor total a pagar por el concepto de nómina que se está registrando.
+  * Novedades causadas por pagar.
+  * Abono a préstamos o créditos.
+  * Forma de pago.
+
+## Secciones
+
+Secciones de la operación:
+
+## Sección encabezado
+
+Permite seleccionar el tipo de documento con el cual se soportará la
+operación, que normalmente puede ser comprobante de pago de nómina, este tipo
+de documento se puede definir por defecto, y el sistema automáticamente
+asignará el consecutivo correspondiente según su configuración.
+
+También es necesario identificar la fecha de soporte y el empleado a quien se
+está registrando la nómina.
+
+## Sección Devengos
+
+En la zona de devengos hay diferentes columnas en las cuales se carga
+automáticamente la información indicada en el contrato del empleado: los
+conceptos de devengos de nómina como sueldo, auxilio de transporte,
+bonificaciones, el centro de costos y el valor total a pagar por el concepto
+de nómina registrado. Con estos datos registrados, el sistema evaluará los
+valores para liquidar las deducciones, los aportes y las provisiones
+necesarias.
+
+
+## Sección Deducciones
+
+Se cargarán automáticamente las deducciones respectivas para el empleado.
+
+Ejemplo:
+
+Aportes a salud y a pensión del empleado
+
+Aporte a fondo de solidaridad y fondo de subsistencia
+
+Retención en la fuente sobre salarios
+
+Adicionalmente la operación cargará en esta sección todas aquellas novedades
+de nómina que resten al total a pagar al empleado en caso de que se hayan
+generado en el período a evaluar.
+
+
+## Sección cuentas por cobrar al empleado
+
+Se cargarán automáticamente todas las cuentas por cobrar que se tengan al
+empleado a la fecha de soporte. Esta opción permite al empleador, descontar al
+empleado el total de la deuda o un valor parcial de la misma.
+
+Ejemplo:
+
+Préstamos causados a la fecha de soporte.
+
+## Sección aportes y provisiones a cargo de la empresa
+
+Se cargarán automáticamente los conceptos de nómina como: aportes a salud y de
+pensión del empleador, aportes a la ARL, aportes parafiscales y las
+provisiones para las prestaciones sociales.
+
+Se debe tener presente que estos son los conceptos que se configuraron desde
+el contrato del empleado.
+
+
+## Sección forma de pago
+
+Permite definir la forma como se realizará el pago de la nómina:
+
+  * Efectivo \(caja\).
+  * Bancos.
+  * Generar cuenta por pagar \(CXP\).
+  * Cruce \(cruce con CXC al empleado\).
+
+El sistema permite fijar una forma de pago por defecto para este tipo de
+operación.
+
+## Sección proceso de la operación
+
+Una vez aceptada la información, el proceso de la información generará
+automáticamente los movimientos contables correspondientes:
+
+  * Genera el movimiento contable de los diferentes registros de la transacción.
+  * Afecta los diferentes informes de cartera, contabilidad y de nómina.
+  * Procesa los descuentos o cargos que apliquen en la operación.
+  * Procesa la forma de pago.
+
+---
+
+# Empleado
+
+Permite seleccionar del catálogo de terceros al empleado \(código de
+identificación\), al cual se le va a realizar el reporte de anulación de
+nómina.
+
+Ejemplo
+
+En el mes de enero 2022 se generó el pago de nómina al empleado Jorge Carvajal
+identificado con **cédula: 123456** , dicho pago fue reportado a la DIAN
+mediante operación de "Reporte de nómina electrónica: RNE01".
+Se necesita generar un reporte de anulación a dicho envío de nómina
+electrónica, puesto que el empleado estuvo trabajando hasta el mes de
+diciembre del año 2021 y por error generaron el pago y registro a la DIAN del
+mes de enero 2022.
+
+La información relevante para registrar la operación de anulación de nómina
+es:
+
+  * **Empleado: 123456**
+  * Mes a anular: Enero 2022
+  * Referencia: RNE01
+
+Observaciones
+
+Esta operación no cuenta con un área de registro de datos \(devengos y
+deducciones\), puesto que su funcionalidad no es generar reporte de nuevos
+registros, sino anular por completo los registros \(devengos y deducciones\)
+que previamente se habían reportado a la DIAN según dato indicado en el campo
+"Referencia".
+
+---
+
+# Mes a anular
+
+Permite indicar el mes que se va a reportar ante la DIAN como anulado.
+
+Ejemplo
+
+En el mes de enero 2022 se generó el pago de nómina al empleado Jorge Carvajal
+identificado con cédula: 123456, dicho pago fue reportado a la DIAN mediante
+operación de "Reporte de nómina electrónica: RNE01".
+Se necesita generar un reporte de anulación a dicho envío de nómina
+electrónica, puesto que el empleado estuvo trabajando hasta el mes de
+diciembre del año 2021 y por error generaron el pago y registro a la DIAN del
+mes de enero 2022.
+
+La información relevante para registrar la operación de anulación de nómina
+es:
+
+  * Empleado: 123456
+  * **Mes a anular: Enero 2022**
+  * Referencia: RNE01
+
+Observaciones
+
+Esta operación no cuenta con un área de registro de datos \(devengos y
+deducciones\), puesto que su funcionalidad no es generar reporte de nuevos
+registros, sino anular por completo los registros \(devengos y deducciones\)
+que previamente se habían reportado a la DIAN según dato indicado en el campo
+"Referencia".
+
+---
+
+# Referencia
+
+Permite seleccionar el número del documento \(reporte de pago de nómina o
+reporte de ajuste de nómina\) que se pretende anular.
+
+Ejemplo
+
+En el mes de enero 2022 se generó el pago de nómina al empleado Jorge Carvajal
+identificado con cédula: 123456, dicho pago fue reportado a la DIAN mediante
+operación de "Reporte de nómina electrónica: RNE01".
+Se necesita generar un reporte de anulación a dicho envío de nómina
+electrónica, puesto que el empleado estuvo trabajando hasta el mes de
+diciembre del año 2021 y por error generaron el pago y registro a la DIAN del
+mes de enero 2022.
+
+La información relevante para registrar la operación de anulación de nómina
+es:
+
+  * Empleado: 123456
+  * Mes a anular: Enero 2022
+  * **Referencia: RNE01**
+
+Observaciones
+
+Esta operación no cuenta con un área de registro de datos \(devengos y
+deducciones\), puesto que su funcionalidad no es generar reporte de nuevos
+registros, sino anular por completo los registros \(devengos y deducciones\)
+que previamente se habían reportado a la DIAN según dato indicado en el campo
+"Referencia".
+
+---
+
+# Contrato
+
+Permite indicar el número del contrato que el empleado tiene registrado.
+
+Ejemplo
+
+En el mes de enero 2022 se generó el pago de nómina al empleado Jorge Carvajal
+identificado con cédula: 123456, el cual tiene contrato CTR-1020. Dicho pago
+fue reportado a la DIAN mediante operación de "Reporte de nómina electrónica:
+RNE01".
+Se necesita generar un reporte de anulación a dicho envío de nómina
+electrónica, puesto que el empleado estuvo trabajando hasta el mes de
+diciembre del año 2021 y por error generaron el pago y registro a la DIAN del
+mes de enero 2022.
+
+La información relevante para registrar la operación de anulación de nómina
+es:
+
+  * Empleado: 123456
+  * Mes a anular: Enero 2022
+  * Referencia: RNE01
+  * **Contrato: CTR-1020**
+
+Observaciones
+
+Esta operación no cuenta con un área de registro de datos \(devengos y
+deducciones\), puesto que su funcionalidad no es generar reporte de nuevos
+registros, sino anular por completo los registros \(devengos y deducciones\)
+que previamente se habían reportado a la DIAN según dato indicado en el campo
+"Referencia".
+
+---
+
+# Acerca de ventana
+
+## OPERACIÓN REPORTE DE AJUSTE NÓMINA ELECTRÓNICA
+
+
+
+## Objetivo
+
+Un reporte de ajuste constituye el medio por el cual se realizan ajustes al
+documento soporte de pago de nómina electrónica, por errores aritméticos o de
+contenido, y que el sujeto obligado deberá ajustar o corregir para reportar de
+nuevo a la entidad de control DIAN.
+Al registrar dentro de la operación información del "Empleado", "Mes a
+ajustar" y "Referencia a ajustar" de manera automática se cargarán en el área
+de registro todos los devengos y deducciones que se registraron en la nómina
+del empleado indicado \(nómina que tuvo que haber sido previamente modificada
+en sus datos respecto al envío de reporte inicial, puesto que la finalidad de
+esta operación es reportar las correcciones o ajustes en los devengos o
+deducciones del empleado\); con esta información se genera el archivo XML de
+ajuste que se debe enviar a la DIAN para su validación y aceptación.
+Los registros de esta operación no afectan la contabilidad ni sus informes,
+puesto que los datos allí cargados se originan de los registros de la
+operación de "Pago de nómina" la cual sí tiene una afectación contable \(si es
+que el usuario en su licenciamiento posee dicho módulo de contabilidad\).
+
+## Ejemplo de información a registrar
+
+Ejemplo:
+
+En el mes de enero 2022 se generó el pago de nómina al empleado Jorge Carvajal
+identificado con cédula: 123456, el cual tiene contrato CTR-1020, dicho pago
+fue reportado a la DIAN mediante operación de "Reporte de nómina electrónica:
+RNE01".
+Se necesita generar un reporte de ajuste a dicho envío de nómina electrónica,
+puesto que se requiere incluir unas bonificaciones y unas horas extras que
+inicialmente no se le registraron en el pago de nómina de enero y se tendrían
+que haber registrado y por ende reportado a la DIAN.
+
+La información relevante para registrar la operación de ajuste de nómina es:
+
+  * Código del tercero empleado al que se le va a reportar el ajuste de nómina electrónica: **CC: 123456**
+  * Código del contrato que el empleado tiene en su vinculación laboral: **CTR-1020**
+  * Confirmación del mes a ajustar en la nómina electrónica: **Enero 2022**
+  * Confirmación de la referencia a ajustar: **RNE01**
+
+**\* NOTA:** Como seguramente el pago de nómina del empleado ya se reportó a
+la DIAN bajo un "Reporte de nómina electrónica", para realizar una operación
+de reporte de ajuste de nómina electrónica se recomienda tener en cuenta lo
+siguiente:
+
+  * Si es que faltaron por reportar algunos conceptos, se debe de realizar la operación de registro de novedades de nómina en la cual se incluyan los conceptos de devengos o deducciones que apliquen y que no se tuvieron en cuenta al momento de realizar el pago de nómina al empleado en el mes.
+  * Se debe anular la operación de pago de nómina en el sistema \(clic derecho anular operación\). Esto con la finalidad de que el pago de la nómina que está incompleto no afecte los registros contables y que no quede doble cuando se registre la nueva operación de pago de nómina con los cambios.
+  * Se debe crear una nueva operación de pago de nómina al empleado, verificando que se carguen todos los conceptos que se requieren reportar de nuevo a la DIAN \(incluyendo los conceptos que adicionaron o modificaron en la operación de novedades de nómina\). Esta operación generará los registros de contables y en especial los registros de conceptos de nómina que serán usados en el reporte de ajuste de nómina electrónica.
+  * Al momento de realizar la operación de "Reporte de ajuste de nómina electrónica" el sistema cargará todos los conceptos de devengos y deducciones de la nueva operación de pago de nómina creada para el empleado; información que será enviada en formato XML a la DIAN y que reemplazará los datos de nómina inicialmente reportados para ese empleado en dicho mes de ajuste.
+
+.
+
+## Secciones
+
+Secciones de la operación:
+
+## Sección encabezado
+
+**Tipo de documento de soporte:** Permite seleccionar el tipo de documento con
+el cual se soportará la operación, normalmente es el documento denominado
+"Reporte de ajuste de nómina electrónica". Este tipo de documento de soporte
+debe estar previamente configurado como documento electrónico, el cual, al
+momento de usarse, convertirá la información de la operación en un formato XML
+para que sea enviada al proveedor tecnológico, y éste a su vez a la DIAN para
+su validación.
+
+**Fecha:** Es necesario identificar la fecha de soporte de la operación, la
+cual según normatividad y anexo técnico de nómina electrónica, un reporte de
+ajuste de nómina electrónica se debe hacer dentro de los 10 primeros días
+hábiles del mes siguiente al que se hizo el pago de la nómina del empleado.
+
+**Empleado:** Permite seleccionar del catálogo de terceros al empleado
+\(código de identificación\), para el cual se van a cargar los conceptos de
+devengos y deducciones que se incluirán en el reporte de ajuste de nómina
+electrónica.
+
+**Contrato:** Una vez seleccionado el "Empleado" el sistema presentará en este
+campo el número del contrato de trabajo que el empleado tenía vigente al
+momento de realizar el pago de nómina. Es indispensable que siempre se
+verifique esta información antes de proceder con el envío del reporte de
+ajuste de nómina electrónica, puesto que según el número del contrato se
+enviará en el XML a la DIAN información como: tipo de contrato, fecha de
+inicio, etc.
+
+**Mes a ajustar:** Una vez seleccionados los datos "Empleado" y "Contrato" se
+debe indicar el mes que se pretende ajustar en nómina electrónica. Cuando se
+indica el mes, el sistema de manera automática cargará en la sección de
+registro todos los conceptos de devengos y deducciones que en las operaciones
+nuevas de pago de nómina de dicho mes se registraron para el empleado.
+
+**Referencia a ajustar:** Una vez seleccionados los datos "Empleado",
+"Contrato" y "Mes a ajustar" se debe indicar la referencia \(número del
+documento: reporte de pago de nómina o reporte de ajuste de nómina\) que se
+pretende ajustar y notificar a la DIAN que ya no será válido dicho documento
+sino que será reemplazado por este nuevo envío.
+
+
+## Sección registro
+
+En esta sección se carga de manera automática toda la lista de conceptos
+"devengos y deducciones" que el empleado tenga registrados en las operaciones
+de pago de nómina en el mes indicado a ajustar y reportar.
+Los registros que en esta sección se muestran, corresponden a devengos y
+deducciones que se registraron en operaciones de pago de nómina, por lo tanto,
+es necesario que verifique que dichas operaciones de pago de nómina estén
+precesadas y contengan los nuevos registros que se pretenden ajustar y
+reportar a la DIAN.
+Esta sección contiene diferentes columnas \(código, nombre, tipo, cantidad,
+valor, etc.\) las cuales muestran en formato "solo lectura" la información
+cargada del empleado, es decir, que la información presentada en esta área no
+se puede modificar, ya que depende de los registros realizados en operaciones
+previas de pago de nómina. Por lo tanto si se requiere modificar algún dato,
+es necesario que se corrija o modifique en la operación de pago de nómina de
+dicho empleado en el mes que se está reportando.
+Se debe tener en cuenta por ejemplo, que si a un empleado se le paga
+quincenal, en esta sección de registro el sistema cargará automáticamente
+todos los conceptos de devengos y deducciones de ambas quincenas y los
+acumulará en un solo reporte de nómina electrónica \(cumpliendo así el
+requerimiento normativo que se indica en la resolución de documento de soporte
+de pago nómina electrónica expedida por la DIAN\).
+
+## Sección finalizar la operación
+
+Una vez finalizada la operación, se procederá a generar el archivo XML con la
+información registrada para enviar al proveedor tecnológico y éste a la DIAN
+para su validación.
+El envío de manera inmediata dependerá de la configuración que se tenga en el
+documento de soporte, puesto que el sistema permite diferentes opciones para
+la aprobación del documento: aprobación automática al finalizar la operación,
+solicitar aprobación al finalizar la operación o aprobación manual. Según el
+tipo de configuración se ejecutará o no de manera inmediata el envío del
+documento electrónico al proveedor tecnológico.
+
+---
+
+# Acerca de ventana
+
+## OPERACIÓN REPORTE DE ANULACIÓN NÓMINA ELECTRÓNICA
+
+
+
+## Objetivo
+
+Un reporte de anulación constituye el medio por el cual se realizan
+anulaciones al documento soporte de pago de nómina electrónica o a otro
+reporte de ajuste previamente enviado a la DIAN, por errores de envío que el
+sujeto obligado deberá reportar a la entidad de control DIAN.
+Al registrar dentro de la operación información del "Empleado", "Referencia" y
+"Mes a anular" de manera automática se genera el archivo XML de anulación que
+se debe enviar a la DIAN para su validación y aceptación.
+Este reporte de anulación de nómina electrónica se utiliza cuando se reportó a
+la DIAN información de un empleado que no se tenía que reportar en dicho mes y
+que realmente no se va a volver a reportar en ese mismo mes con nueva
+información. **La diferencia entre un reporte de ajuste y un reporte de
+anulación** , es que el reporte de ajuste sí implica un nuevo envío a la DIAN
+con correcciones en los devengos y deducciones del empleado para dicho mes,
+mientras que con el reporte de anulación no se envía a la DIAN nueva
+información del empleado para ese mes, sino que anula cualquier reporte que se
+haya generado previamente en el mes.
+Los registros de esta operación no afectan la contabilidad ni sus informes.
+
+## Ejemplo de información a registrar
+
+Ejemplo:
+
+En el mes de enero 2022 se generó el pago de nómina al empleado Jorge Carvajal
+identificado con cédula: 123456, el cual tenía contrato CTR-1020, dicho pago
+fue reportado a la DIAN mediante operación de "Reporte de nómina electrónica:
+RNE01".
+Se necesita generar un reporte de anulación a dicho envío de nómina
+electrónica, puesto que el empleado estuvo trabajando hasta el mes de
+diciembre del año 2021 y por error generaron el pago y registro a la DIAN del
+mes de enero 2022.
+
+La información relevante para registrar la operación de anulación de nómina
+es:
+
+  * Código del tercero empleado al que se le va a reportar la anulación de nómina electrónica: **CC: 123456**
+  * Código del contrato que el empleado tenía en su vinculación laboral: **CTR-1020**
+  * Confirmación del mes a anular en la nómina electrónica: **Enero 2022**
+  * Confirmación de la referencia a ajustar: **RNE01**
+
+**\* NOTA:** Esta operación no cuenta con un área de registro de datos
+\(devengos y deducciones\), puesto que su funcionalidad no es generar reporte
+de nuevos registros, sino anular por completo los registros \(devengos y
+deducciones\) que previamente se habían reportado a la DIAN según dato
+indicado en el campo "Referencia".
+
+## Secciones
+
+Secciones de la operación:
+
+## Sección encabezado
+
+**Tipo de documento de soporte:** Permite seleccionar el tipo de documento con
+el cual se soportará la operación, normalmente es el documento denominado
+"Reporte de anulación de nómina electrónica". Este tipo de documento de
+soporte debe estar previamente configurado como documento electrónico, el
+cual, al momento de usarse, convertirá la información de la operación en un
+formato XML para que sea enviada al proveedor tecnológico, y éste a su vez a
+la DIAN para su validación.
+
+**Fecha:** Es necesario identificar la fecha de soporte de la operación, la
+cual según normatividad y anexo técnico de nómina electrónica, un reporte de
+anulación de nómina electrónica se debe hacer dentro de los 10 primeros días
+hábiles del mes siguiente al que se hizo el pago de la nómina del empleado.
+
+**Empleado:** Permite seleccionar del catálogo de terceros el empleado
+\(código de identificación\), al cual se le va a realizar el reporte de
+anulación.
+
+**Referencia:** Permite seleccionar el número del documento \(reporte de pago
+de nómina o reporte de ajuste de nómina\) que se pretende anular.
+
+**Mes a anular:** Una vez seleccionados los datos "Empleado" y "Referencia",
+el sistema de manera automática cargará este campo.
+
+
+## Sección finalizar la operación
+
+Una vez finalizada la operación, se procederá a generar el archivo XML con la
+información registrada para enviar al proveedor tecnológico y éste a la DIAN
+para su validación.
+El envío de manera inmediata dependerá de la configuración que se tenga en el
+documento de soporte, puesto que el sistema permite diferentes opciones para
+la aprobación del documento: aprobación automática al finalizar la operación,
+solicitar aprobación al finalizar la operación o aprobación manual. Según el
+tipo de configuración se ejecutará o no de manera inmediata el envío del
+documento electrónico al proveedor tecnológico.
+
+---
+
+# Doc. referencia
+
+Número de documento referencia del cual se carga el concepto, normalmente
+corresponde al número del documento de soporte que se generó para el pago de
+nómina del empleado para ese mes.
+
+Ejemplo
+
+Durante el mes de enero se hizo el pago de nómina del empleado mediante
+documento: NPG01 y se debe generar el reporte de nómina electrónica a la DIAN.
+
+Concepto | Tipo | Cantidad | Valor | Porcentaje | Doc. Referencia
+---|---|---|---|---|---
+Salario básico | Devengo | 30 días | $ 1.400.000 |  | **NPG01**
+Auxilio legal de transporte | Devengo | 30 días | $ 117.172 |  | **NPG01**
+Aporte salud empleado | Deducción | 30 días | $ 56.000 | 4% | **NPG01**
+Aporte pensión empleado | Deducción | 30 días | $ 56.000 | 4% | **NPG01**
+
+
+Observaciones
+
+Este dato lo registra de manera automática el sistema, según la indicación del
+mes a reportar y el último comprobante de pago de nómina generado en dicho mes
+para el empleado.
+
+---
+
+# Mes a reportar
+
+Mes que se pretende reportar en nómina electrónica para el empleado
+seleccionado.
+
+Ejemplo
+
+Reportar a la DIAN \(durante los primeros 10 días del mes de febrero\) el pago
+de la nómina para el mes de enero 2022 del empleado Jorge Carvajal
+identificado con cédula: 123456, el cual tiene contrato CTR-1020.
+La información relevante para registrar la operación de nómina es:
+
+  * Empleado: CC: 123456
+  * Contrato: CTR-1020
+  * **Mes a reportar: Enero 2022**
+
+Observaciones
+
+**Mes a reportar:** Una vez seleccionados los datos "Empleado" y "Contrato" se
+debe indicar el mes que se pretende reportar en nómina electrónica. Cuando se
+indica el mes, el sistema de manera automática cargará en la sección de
+registro todos los conceptos de devengos y deducciones que en las operaciones
+de pago de nómina de dicho mes se registraron para el empleado.
+Se debe tener presente que según normatividad de la DIAN, el **envío o
+transmisión del documento de soporte de pago de nómina electrónica se debe
+realizar dentro de los 10 primeros días hábiles del mes siguiente al cual
+corresponde el pago.**
+
+---
+
+# Contrato
+
+Contrato que tiene el empleado durante el mes que se va a reportar en nómina
+electrónica.
+
+Ejemplo
+
+Reportar a la DIAN \(durante los primeros 10 días del mes de febrero\) el pago
+de la nómina para el mes de enero 2022 del empleado Jorge Carvajal
+identificado con cédula: 123456, el cual tiene contrato CTR-1020.
+La información relevante para registrar la operación de nómina es:
+
+  * Empleado: CC: 123456
+  * **Contrato: CTR-1020**
+  * Mes a reportar: Enero 2022
+
+Observaciones
+
+De este campo "Contrato" que está definido en el tercero empleado, se obtiene
+información relevante para la generación del archivo XML a enviar a la DIAN,
+información como: fecha de inicio de vinculación laboral, tipo de contrato,
+tipo de trabajador, clase de riesgo, etc.
+
+---
+
+# Referencia a ajustar
+
+Número de documento referencia del cual se carga el concepto, normalmente
+corresponde al número del documento de soporte que se generó para el pago de
+nómina del empleado para ese mes.
+
+Ejemplo
+
+En el mes de enero 2022 se generó el pago de nómina al empleado Jorge Carvajal
+identificado con cédula: 123456, el cual tiene contrato CTR-1020, dicho pago
+fue reportado a la DIAN mediante operación de **"Reporte de nómina
+electrónica: RNE01".**
+Se necesita generar un reporte de ajuste a dicho envío de nómina electrónica,
+puesto que se requiere incluir unas bonificaciones y unas horas extras que
+inicialmente no se le registraron en el pago de nómina de enero y se tendrían
+que haber registrado y por ende reportado a la DIAN.
+
+La información relevante para registrar la operación de ajuste de nómina es:
+
+  * Empleado: CC: 123456
+  * Contrato: CTR-1020
+  * Mes a ajustar: Enero 2022
+  * **Referencia a ajustar: RNE01**
+
+Observaciones
+
+**\* NOTA:** Como seguramente el pago de nómina del empleado ya se reportó a
+la DIAN bajo un "Reporte de nómina electrónica", para realizar una operación
+de reporte de ajuste de nómina electrónica se recomienda tener en cuenta lo
+siguiente:
+
+  * Si es que faltaron por reportar algunos conceptos, se debe de realizar la operación de registro de novedades de nómina en la cual se incluyan los conceptos de devengos o deducciones que apliquen y que no se tuvieron en cuenta al momento de realizar el pago de nómina al empleado en el mes.
+  * Se debe anular la operación de pago de nómina en el sistema \(clic derecho anular operación\). Esto con la finalidad de que el pago de la nómina que está incompleto no afecte los registros contables y que no quede doble cuando se registre la nueva operación de pago de nómina con los cambios.
+  * Se debe crear una nueva operación de pago de nómina al empleado, verificando que se carguen todos los conceptos que se requieren reportar de nuevo a la DIAN \(incluyendo los conceptos que adicionaron o modificaron en la operación de novedades de nómina\). Esta operación generará los registros de contables y en especial los registros de conceptos de nómina que serán usados en el reporte de ajuste de nómina electrónica.
+  * Al momento de realizar la operación de "Reporte de ajuste de nómina electrónica" el sistema cargará todos los conceptos de devengos y deducciones de la nueva operación de pago de nómina creada para el empleado; información que será enviada en formato XML a la DIAN y que reemplazará los datos de nómina inicialmente reportados para ese empleado en dicho mes de ajuste.
+
+---
+
+# Importar desde Excel
+
+Esta opción permite cargar desde Excel el registro de conceptos de nómina que
+se pretenden reportar en el documento electrónico \(XML\) a la DIAN.
+
+Ejemplo
+
+Durante el mes de enero se registró en Excel la nómina del empleado Jorge
+Carvajal identificado con cédula: 123456, el cual tiene contrato CTR-1020.
+Se requiere reportar dicha nómina de manera electrónica a la DIAN, por lo
+tanto los registros que se tienen en Excel \(devengos y deducciones a cargo
+del empleado\) se pueden importar a la operación de "Reporte de nómina
+electrónica" siempre y cuando, se respete el orden de columnas que se tiene
+predefinido en el área de registro de datos de dicha operación.
+El archivo en Excel sería así:
+![200ImpExcel.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/Oprs/OprReporteNominaElectronica/%5B19400%5D%20FrmDlgOprNom6/200ImpExcel.png)
+
+Luego de hacer la importación quedaría así en el sistema:  Código | Nombre | Tipo | Cantidad | Unidad | Valor | Porcentaje | Fecha/hora inicio | Fecha/hora fin | Clasificador | Doc. Referencia | Observaciones
+---|---|---|---|---|---|---|---|---|---|---|---
+SALARIO | Salario básico | Devengo | 30 | Días | $ 1.400.000 |  |  |  |  | NPG01 |
+AUX\_LEG\_TR | Auxilio legal de transporte | Devengo | 30 | Días | $ 117.172 |  |  |  |  | NPG01 |
+HED | Hora extra diurna | Devengo | 2 | Hora | $ 17.291 | 25 | 27/01/2022 18:00:00 | 27/01/2022 20:00:00 |  | NPG01 | Tiempo extra aprobado por gerencia
+BONIF\_S | Bonificación salarial | Devengo |  |  | $ 130.000 |  |  |  |  | NPG01 | Bonificación por meta cumplida
+DTO\_SALUD | Aporte salud empleado | Deducción | 30 | Días | $ 61.891 | 4 |  |  |  | NPG01 |
+DTO\_PENS | Aporte pensión empleado | Deducción | 30 | Días | $ 61.891 | 4 |  |  |  | NPG01 |
+
+Observaciones
+
+Se deben tener en cuenta las siguientes consideraciones para hacer una
+importación exitosa de registros:
+
+  * La información del campo "Código" debe corresponder al mismo código que se tiene dentro del sistema en el "Catálogo de conceptos de nómina".
+  * Los datos a importar deben estar en el mismo orden de columnas que el sistema presenta en la operación de "Reporte de nómina electrónica", si un campo no se requiere usar la columna debe quedar vacía.
+  * Al realizar importación de registros, el usuario se hace responsable de los cálculos e información a presentar, pues el sistema no realiza ninguna validación \(valores, porcentajes, etc.\) de los datos importados.
+  * Esta funcionalidad se puede usar cuando el usuario no registra la nómina directamente en el sistema, sino que la calcula por aparte y dicha información la requiere reportar en formato XML a la DIAN.
+
+---
+
+# Empleado
+
+Permite seleccionar del catálogo de terceros al empleado \(código de
+identificación\), para el cual se van a cargar los conceptos de devengos y
+deducciones que se incluirán en el reporte de nómina electrónica.
+Al seleccionar el empleado, el sistema cargará de manera automática todos los
+conceptos de devengos y deducciones registrados en los pagos de nómina del mes
+que se pretende reportar.
+
+Ejemplo
+
+Reportar a la DIAN \(durante los primeros 10 días del mes de febrero\) el pago
+de la nómina para el mes de enero 2022 del empleado **Jorge Carvajal
+identificado con cédula: 123456** , el cual tiene contrato CTR-1020.
+La información relevante para registrar la operación de nómina es:
+
+  * **Empleado: CC: 123456**
+  * Contrato: CTR-1020
+  * Mes a reportar: Enero 2022
+
+---
+
+# Cargar conceptos
+
+Permite cargar o actualizar la lista de conceptos \(devengos y deducciones\)
+que se van a reportar en la nómina electrónica.
+
+Ejemplo
+
+Durante el mes de enero se generó la nómina del empleado Jorge Carvajal
+identificado con cédula: 123456, el cual tiene contrato CTR-1020.
+Se debe reportar la nómina de manera electrónica a la DIAN, por lo tanto los
+registros de devengos y deducciones se requieren cargar en la lista de
+conceptos,para esto se utiliza el botón "Cargar conceptos".
+Código | Nombre | Tipo | Cantidad | Unidad | Valor | Porcentaje | Fecha/hora inicio | Fecha/hora fin | Clasificador | Doc. Referencia | Observaciones
+---|---|---|---|---|---|---|---|---|---|---|---
+SALARIO | Salario básico | Devengo | 30 | Días | $ 1.400.000 |  |  |  |  | NPG01 |
+AUX\_LEG\_TR | Auxilio legal de transporte | Devengo | 30 | Días | $ 117.172 |  |  |  |  | NPG01 |
+HED | Hora extra diurna | Devengo | 2 | Hora | $ 17.291 | 25 | 27/01/2022 18:00:00 | 27/01/2022 20:00:00 |  | NPG01 | Tiempo extra aprobado por gerencia
+BONIF\_S | Bonificación salarial | Devengo |  |  | $ 130.000 |  |  |  |  | NPG01 | Bonificación por meta cumplida
+DTO\_SALUD | Aporte salud empleado | Deducción | 30 | Días | $ 61.891 | 4 |  |  |  | NPG01 |
+DTO\_PENS | Aporte pensión empleado | Deducción | 30 | Días | $ 61.891 | 4 |  |  |  | NPG01 |
+
+Observaciones
+
+Al dar clic en este botón, el sistema cargará los registros por primera vez
+\(si es que apenas se está relacionando el pago de nómina\) o los actualizará
+\(si es que ya estaban cargados y se hicieron cambios en las operaciones de
+pago de nómina, los cuales implican la modificación de los conceptos
+\(devengos y deducciones\) que ya se tenían registrados\).
+
+---
+
+# Observaciones
+
+Descripción adicional y complementaria para el concepto de nómina.
+
+Ejemplo
+
+
+
+Se generó el pago de nómina al empleado el cual dentro de los devengos se
+incluye un concepto de bonificación salarial y se requiere indicar dicha
+bonificación a qué corresponde:
+
+Concepto | Tipo | Valor | Observaciones
+---|---|---|---
+Bonificación salarial | Devengo | $ 350.000 | Bonificación especial por cumplimiento de metas en el mes.
+
+Observaciones
+
+
+
+La observación es de libre definición del usuario.
+
+---
+
+# Acerca de ventana
+
+## OPERACIÓN REPORTE DE NÓMINA ELECTRÓNICA
+
+
+
+## Objetivo
+
+Esta ventana tiene como finalidad generar el reporte electrónico de nómina a
+la entidad DIAN \(Colombia\). Al registrar dentro de la operación información
+del "Empleado", "Contrato" y "Mes a reportar" de manera automática se cargarán
+en el área de registro todos los devengos y deducciones que se registraron en
+la nómina del empleado indicado; con esta información se genera el archivo XML
+que se debe enviar a la DIAN para su validación y aceptación.
+
+Los registros de esta operación no afectan la contabilidad ni sus informes,
+puesto que los datos allí cargados se originan de los registros de la
+operación de "Pago de nómina" la cual sí tiene una afectación contable \(si es
+que el usuario en su licenciamiento posee dicho módulo de contabilidad\).
+
+## Ejemplo de información a registrar
+
+Ejemplo:
+
+Reportar a la DIAN \(durante los primeros 10 días del mes de febrero\) el pago
+de la nómina para el mes de enero 2022 del empleado Jorge Carvajal
+identificado con cédula: 123456, el cual tiene contrato CTR-1020.
+
+La información relevante para registrar la operación de nómina es:
+
+  * Código del tercero empleado que se va a reportar en nómina electrónica: **CC: 123456**
+  * Código del contrato que el empleado tiene en su vinculación laboral: **CTR-1020**
+  * Confirmación del mes a reportar en la nómina electrónica: **Enero 2022**
+
+## Secciones
+
+Secciones de la operación:
+
+## Sección encabezado
+
+**Tipo de documento de soporte:** Permite seleccionar el tipo de documento con
+el cual se soportará la operación, normalmente es el documento denominado
+"Reporte de nómina electrónica". Este tipo de documento de soporte debe estar
+previamente configurado como documento electrónico, el cual, al momento de
+usarse, convertirá la información de la operación en un formato XML para que
+sea enviada al proveedor tecnológico, y éste a su vez a la DIAN para su
+validación.
+
+**Fecha:** Es necesario identificar la fecha de soporte de la operación, la
+cual según normatividad y anexo técnico de nómina electrónica, un reporte de
+nómina electrónica se debe hacer dentro de los 10 primeros días hábiles del
+mes siguiente al que se hizo el pago de la nómina del empleado.
+
+**Empleado:** Permite seleccionar del catálogo de terceros al empleado
+\(código de identificación\), para el cual se van a cargar los conceptos de
+devengos y deducciones que se incluirán en el reporte de nómina electrónica.
+
+**Contrato:** Una vez seleccionado el "Empleado" el sistema cargará en este
+campo el número del contrato de trabajo que el empleado tenía vigente al
+momento de realizar el pago de nómina. Es indispensable que siempre se
+verifique esta información antes de proceder con el envío del reporte de
+nómina electrónica, puesto que según el número del contrato se enviará en el
+XML a la DIAN información como: tipo de contrato, fecha de inicio, etc.
+
+**Mes a reportar:** Una vez seleccionados los datos "Empleado" y "Contrato" se
+debe indicar el mes que se pretende reportar en nómina electrónica. Cuando se
+indica el mes, el sistema de manera automática cargará en la sección de
+registro todos los conceptos de devengos y deducciones que en las operaciones
+de pago de nómina de dicho mes se registraron para el empleado.
+
+
+## Sección registro
+
+En esta sección se carga de manera automática toda la lista de conceptos
+"devengos y deducciones" que el empleado tenga registrados en las operaciones
+de pago de nómina en el mes indicado a reportar.
+Esta sección contiene diferentes columnas \(código, nombre, tipo, cantidad,
+valor, etc.\) las cuales muestran en formato "solo lectura" la información
+cargada del empleado, es decir, que la información presentada en esta área no
+se puede modificar, ya que depende de los registros realizados en operaciones
+previas de pago de nómina. Por lo tanto si se requiere modificar algún dato,
+es necesario que se corrija o modifique en la operación de pago de nómina de
+dicho empleado en el mes que se está reportando.
+Se debe tener en cuenta por ejemplo, que si a un empleado se le paga
+quincenal, en esta sección de registro el sistema cargará automáticamente
+todos los conceptos de devengos y deducciones de ambas quincenas y los
+acumulará en un solo reporte de nómina electrónica \(cumpliendo así el
+requerimiento normativo que se indica en la resolución de documento de soporte
+de pago nómina electrónica expedida por la DIAN\).
+
+## Sección finalizar la operación
+
+Una vez finalizada la operación, se procederá a generar el archivo XML con la
+información registrada para enviar al proveedor tecnológico y éste a la DIAN
+para su validación.
+El envío de manera inmediata dependerá de la configuración que se tenga en el
+documento de soporte, puesto que el sistema permite diferentes opciones para
+la aprobación del documento: aprobación automática al finalizar la operación,
+solicitar aprobación al finalizar la operación o aprobación manual. Según el
+tipo de configuración se ejecutará o no de manera inmediata el envío del
+documento electrónico al proveedor tecnológico.
+
+---
+
+# Acerca del módulo
+
+##
+
+## NÓMINA
+
+## Explicación conceptual
+
+El módulo de Nómina permite el registro, contabilización y envío de la nómina
+y el cálculo automático de las prestaciones sociales, seguridad social,
+aportes parafiscales y provisiones de los empleados de la empresa.
+
+También cuenta con un asistente que permite registrar las novedades de nómina
+del periodo como horas extras, bonificaciones, comisiones, etc; las cuales se
+cargarán de forma automática al pago de nómina.
+
+Adicionalmente cuenta con una completa integración con los demás módulos, en
+donde se podrán cancelar en la nómina las cuentas por cobrar que el empleado
+tenga pendientes al momento de la cancelación y causando automáticamente las
+cuentas por pagar a las entidades de nómina correspondientes.
+
+
+## Relación con otros módulos
+
+El módulo de nómina se integra totalmente con los demás módulos del sistema,
+evitando la generación de interfaces que le quitarán tiempo y le prevendrán de
+omitir o repetir información.
+
+Cada asistente del módulo de nómina procesa la información integrándola
+automáticamente a todos los módulos del sistema como el módulo de
+contabilidad, cartera y proveedores, presupuesto, inventarios, costos de
+producción entre otros.
+
+## Manejos que incluye el módulo
+
+El módulo de nómina incluye dos módulos, los cuales se describen a
+continuación:
+
+## Nómina Lite
+
+El módulo de nómina lite cuenta con herramientas automatizadas que permiten el
+registro y cancelación de la nómina y el cálculo automático de cada una de las
+rubros que corresponden para los empleados.
+
+Cuenta con múltiples operaciones que facilitan la gestión de la nómina y
+permiten cumplir con las obligaciones en este proceso administrativo, como lo
+es el reporte electrónico a la Dirección de impuestos y aduanas \(DIAN\) y
+contabilizar la obligación con cada entidad que tiene relación con el
+empleado.
+
+## Nómina Plus
+
+El módulo de nómina plus es una herramienta que permite agilizar al máximo el
+registro de los pagos, reporte de la nómina electrónica y la cancelación de la
+seguridad social de una manera automatizada y fácil para el usuario,
+permitiendo reducir los trámites adminsitrativos, errores y también reducir
+signitivamente el tiempo dedicado en el proceso de la nómina.
+
+## Operaciones que incluye el módulo
+
+
+
+Operaciones de Nómina Lite
+
+
+
+Operación de Creación de contratos
+
+Esta operación tiene como finalidad agilizar el registro de los contratos para
+cada uno de los empleados, en donde se pueden establecer todas las
+condiciones, cláusulas y criterios que van a regir la relación laboral.
+
+Los registros de esta operación permitirán el correcto funcionamiento de la
+operación de pago de nómina, reportes y planillas, ya que se heredarán datos
+relevantes como conceptos de nómina, datos básicos del tercero, entre otros.
+
+Operación de Modificación de contratos
+
+Esta operación permite realizar cambios a los datos del contrato, inicialmente
+planteados en la creación de contratos. Esta opción permite que los cálculos e
+información del empleado se cargue adecuadamente en las demás operaciones del
+módulo según la información vigente del empleado.
+
+Operación de Modificación de contratos en bloque
+
+Esta poderosa herramienta permite realizar de manera rápida la modificación de
+datos del contrato de múltiples empleados en un sólo documento.
+Adicionalmente, esta operación permite agilizar los cambios que se pueden
+realizar en los contratos, ya sea en los atributos y/o conceptos de nómina.
+\(Ejemplo: Actualización masiva de salarios, cambio de cargos, centros de
+costos, etc\)
+
+Operación de Liquidación de Contratos
+
+Esta operación permite realizar un proceso formal y transparente para cerrar
+el acuerdo laboral de manera definitiva una vez finalizado el contrato, ya sea
+por cumplimiento de las obligaciones, mutuo acuerdo o terminación unilateral.
+
+La liquidación de contratos es un proceso administrativo y financiero que
+tiene como objetivo conciliar las cuentas entre las partes involucradas en un
+contrato finalizado. Este proceso implica la revisión y el cálculo de todas
+las obligaciones pendientes, pagos realizados, indemnizaciones \(en caso de
+corresponder\) y ajustes necesarios para determinar el saldo final entre las
+partes.
+
+La liquidación de contratos cobra gran relevancia ya que permite transparencia
+el cierre de la relación laboral, cumplimiento de obligaciones entre las
+partes, prevención de conflictos laborales y permite un cálculo automatizado
+de los conceptos de nómina pendientes a la fecha de liquidación.
+
+Operación de Novedades de nómina
+
+Esta operación tiene como finalidad realizar el registro de las novedades de
+nómina que aplican durante un período determinado, como horas extra,
+bonificaciones, comisiones y demás conceptos que son variables cada mes o como
+corresponda en la liquidación.
+
+Siempre que se presenten novedades, la operación debe registrarse antes de que
+se genere la operación de pago de nómina, ya que aunque esta operación no
+genera ningún tipo de movimiento contable, sí registra las novedades y luego
+las carga en la liquidación de la operación de pago nómina.
+
+Operación de Pago de nómina
+
+La operación de pago de nómina individual automatiza el cálculo y la
+generación de la nómina para cada empleado, basándose en la información de su
+contrato y las novedades del mes.
+Este proceso incluye la determinación de los días laborados, salario,
+novedades y descuentos de seguridad social para el empleado, así como el
+registro de aportes de seguridad social, parafiscales y provisión de
+prestaciones por parte de la empresa.
+
+Todos los cálculos automáticos siguen la normativa colombiana, asegurando
+precisión y cumplimiento.
+Al finalizar el pago, la operación realiza automáticamente los asientos
+contables correspondientes.
+
+Operación de Reporte de nómina electrónica
+
+Esta operación tiene como finalidad generar el reporte electrónico de nómina a
+la entidad DIAN \(Colombia\). Al registrar dentro de la operación información
+del "Empleado", "Contrato" y "Mes a reportar" de manera automática se cargarán
+en el área de registro todos los devengos y deducciones \(o provisiones de
+prestaciones sociales dependiendo de la configuración de la base de datos\)
+que se registraron en la nómina del empleado indicado; con esta información se
+genera el archivo XML que se debe enviar a la DIAN para su validación y
+aceptación.
+
+Los registros de esta operación no afectan la contabilidad ni sus informes,
+puesto que los datos allí cargados se originan de los registros de la
+operación de "Pago de nómina" la cual sí tiene una afectación contable. Sin
+embargo, a través de los exploradores de nómina podrá ver los envíos
+electrónicos que se han generado con la entidad DIAN.
+
+Operación de Reporte de ajuste de nómina electrónica
+
+Esta operación implica un nuevo envío a la DIAN con correcciones en los
+devengos y deducciones del empleado para dicho mes, generar el reporte de
+ajuste electrónico de nómina permitirá corregir datos enviados previamente del
+empleado ante la entidad DIAN \(Colombia\). Al registrar dentro de la
+operación información del "Empleado", "Contrato" y "Mes a reportar" de manera
+automática se cargarán en el área de registro todos los devengos y deducciones
+\(o provisiones de prestaciones sociales dependiendo de la configuración de la
+base de datos\) que se registraron en la nómina del empleado indicado; con
+esta información se genera el archivo XML que se debe enviar a la DIAN para su
+validación y aceptación.
+
+Los registros de esta operación no afectan la contabilidad ni sus informes,
+puesto que los datos allí cargados se originan de los registros de la
+operación de "Pago de nómina" la cual sí tiene una afectación contable. Sin
+embargo, a través de los exploradores de nómina podrá ver los envíos
+electrónicos que se han generado con la entidad DIAN.
+
+Operación de Reporte de Anulación de nómina electrónica
+
+Un reporte de anulación constituye el medio por el cual se realizan
+anulaciones al documento soporte de pago de nómina electrónica o a otro
+reporte de ajuste previamente enviado a la DIAN, por errores de envío que el
+sujeto obligado deberá reportar a la entidad de control DIAN.
+
+Al registrar dentro de la operación información del "Empleado", "Referencia" y
+"Mes a anular" de manera automática se genera el archivo XML de anulación que
+se debe enviar a la DIAN para su validación y aceptación.
+
+Este reporte de anulación de nómina electrónica se utiliza cuando se reportó a
+la DIAN información de un empleado que no se tenía que reportar en dicho mes y
+que realmente no se va a volver a reportar en ese mismo mes con nueva
+información.
+
+La diferencia entre un reporte de ajuste y un reporte de anulación, es que el
+reporte de ajuste sí implica un nuevo envío a la DIAN con correcciones en los
+devengos y deducciones del empleado para dicho mes, mientras que con el
+reporte de anulación no se envía a la DIAN nueva información del empleado para
+ese mes, sino que anula cualquier reporte que se haya generado previamente en
+el mes.
+
+Es importante resaltar que los registros de esta operación no afectan la
+contabilidad ni sus informes.
+
+Operaciones de Nómina Plus
+
+
+
+Operación de pago de nómina en planilla
+
+La operación de pago de nómina en planilla automatiza el proceso de cálculo y
+generación de la nómina para todos los empleados en un solo documento,
+utilizando la información de sus contratos y las novedades del mes.
+Realiza los cálculos correspondientes para determinar días laborados,
+salarios, novedades y descuentos de seguridad social para cada empleado, así
+como el registro de aportes de seguridad social, parafiscales y provisión de
+prestaciones por parte de la empresa. Todos los conceptos están formulados
+según la normativa colombiana, garantizando precisión y cumplimiento
+normativo.
+
+A diferencia de los pagos de nómina individual, esta planilla consolida todos
+los pagos de nómina en un único documento, facilitando el seguimiento
+detallado de todos los pagos en un solo lugar. Aunque quedan registrados pagos
+individuales, se presenta en una única planilla, eliminando la necesidad de
+gestionar pago por pago de manera separada. Esta consolidación optimiza
+significativamente tiempo y recursos. Al finalizar el proceso de pago, la
+operación también realiza automáticamente los correspondientes asientos
+contables.
+
+Operación de Reportes de nómina electrónica en Planilla
+
+La operación simplifica el proceso de generación de reportes de nómina
+electrónica para cada empleado, cumpliendo con los requisitos de la DIAN.
+
+A diferencia de los reportes individuales, esta planilla consolida todos los
+reportes de nómina electrónica en un único documento en el sistema. Aunque se
+generan y se envían reportes individuales para cada empleado, todo queda
+registrado y accesible en una sola planilla, eliminando la necesidad de
+gestionar reporte por reporte. Esto no solo cumple con los requisitos de
+presentación ante la DIAN, sino que también facilita el seguimiento detallado
+de todos los reportes en un solo lugar, optimizando así tiempo y recursos en
+la gestión de la nómina electrónica.
+
+Operación de Planilla de Aportes \(PILA\)
+
+Esta operación permite a los usuarios generar un archivo plano PILA para
+realizar el pago de seguridad social de los empleados.
+Antes de la generación del archivo, la operación carga detalladamente la
+información de cada empleado, incluyendo aspectos como los sistemas de salud,
+pensión, ARL y aportes parafiscales.
+
+Para cada sistema, se presenta el valor del Ingreso Base de Cotización
+\(IBC\), el monto a pagar conforme a las normativas, días laborados, novedades
+mensuales, así como el desglose del valor a pagar tanto por empleado como por
+empresa, los totales por sistema y el total general. Esto se basa en los pagos
+registrados en el mes, asegurando la integridad y trazabilidad de los datos.
+
+Adicionalmente, se proporciona información detallada acerca de las
+administradoras a las cuales los empleados están registrados. Este nivel de
+detalle posibilita a los usuarios verificar con precisión la información antes
+de proceder con la generación del archivo plano.
+En caso de conformidad, se solicita indicar la forma de pago para concluir el
+proceso. La operación automatiza la generación del registro contable y realiza
+ajustes necesarios, culminando con la creación del archivo plano PILA, el cual
+queda listo para ser cargado en la plataforma de cada proveedor de PILA.
+
+Informes, consultas y exploradores
+
+Explorador de novedades de nómina
+
+Es una consulta detallada que presenta las novedades registradas para cada
+empleado en un periodo específico de manera clara y completa. Este informe
+incluye información importante como el concepto de la novedad, su valor, la
+cantidad o porcentaje correspondiente, y otros detalles relevantes.
+
+La funcionalidad del informe permite filtrar las novedades de dos maneras
+distintas: se puede optar por visualizar todas las novedades registradas o,
+visualizar únicamente aquellas que están pendientes de pago.
+Esta capacidad de filtrado facilita a los usuarios enfocarse en la información
+que necesitan en un momento dado, ya sea para revisión general o para abordar
+específicamente las novedades pendientes.
+
+Explorador de conceptos de nómina
+
+Es un explorador detallado que ofrece una completa visión de los conceptos de
+nómina pagados en un periodo determinado. Proporciona información importante
+como el empleado, contrato y número de comprobante de pago por cada concepto.
+
+Con detalles precisos sobre valores, cantidades y porcentajes, este explorador
+permite la aplicación de filtros y agrupaciones para facilitar la revisión y
+comparación de los pagos realizados a cada empleado, ofreciendo una
+herramienta versátil para la gestión eficiente y la trazabilidad de la
+información de la nómina.
+
+Explorador de pagos
+
+Este informe proporciona una visión rápida de los pagos de nómina en un
+período específico a cada empleado. Cada registro incluye el número de
+comprobante, fecha de pago, número de contrato, devengos, deducciones y el
+total pagado, con un apartado para el costo total para la empresa. Además,
+cuenta con un filtro para acceder fácilmente a los reportes de nómina
+electrónica realizados en el periodo.
+
+Consulta de contratos
+
+Este informe de tipo consulta permite al usuario revisar la información
+detallada de los contratos de cada uno de los empleados.
+
+Permite acceder a los datos como:
+
+  * **Datos del empleado:** Dirección, cuenta bancaria, datos de contacto
+  * **Datos del contrato:** Centro de costos, perfil de contrato, cargo, lugar de trabajo
+  * **Conceptos de nómina asociados al contrato:** Devengos, deducciones, costos de empresa
+  * **Datos del beneficiario adicional:** Información asociada al beneficiario.
+  * **Entidades de nómina:** Entidades a las cuales está afiliado cada empleado
+  * **Operaciones:** Permite revisar todas las operaciones en las cuales se ha referenciado el contrato del empleado.
+
+Detalle de pagos
+
+Es un informe que proporciona una visión detallada de los pagos de nómina de
+cada empleado.
+Utiliza colores para categorizar la información:
+
+  * Verde para devengos
+  * Roja para deducciones
+  * Azul para costos de empresa
+
+En esta consulta detallada, se desglosan los salarios, comisiones,
+bonificaciones, entre otros, así como deducciones relacionadas con la salud,
+pensiones y otros descuentos.
+Además, se incluyen los costos para la empresa, como los asociados con la
+salud, pensiones, ARL y provisiones de prestaciones sociales. Cada columna
+agrupa el total de cada concepto para el conjunto de empleados, abarcando
+desde el salario total hasta bonificaciones y descuentos de salud, entre otros
+elementos.
+
+A nivel individual, se proporciona un desglose detallado de devengos,
+deducciones y costos para la empresa por cada empleado en líneas separadas. La
+presentación es dinámica, adaptándose al periodo consultado. Cada bloque, ya
+sea devengos, deducciones o costos para la empresa, muestra de forma dinámica
+los conceptos específicos calculados en cada pago. Esto convierte al informe
+en una herramienta integral y transparente para la verificación, consulta y
+auditoría de la nómina.
+
+Certificado laboral
+
+Esta herramienta agiliza la entrega de los certificados laborales a los
+empleados. Genera el certificado laboral de los empleados, incluyendo
+información relevante como salarios, promedio salarial, fecha de inicial de la
+relación laboral, entre otros.
+
+---
+
+# Guía de montaje
+
+## NÓMINA
+
+Esta guía lo orientará en el montaje de la nómina y reportes de nómina
+electrónica. Su alcance se limita a llevar el control de las novedades y pagos
+de nómina a los empleados por conceptos según su comportamiento, como
+devengos, deducciones, prestaciones, aporte y provisiones a cargo de la
+empresa.
+
+
+
+##  Requisitos iniciales
+
+Esta sección indica cuales son los requisitos que se deben cumplir previo al
+montaje de una nómina.
+
+## Realice el montaje del sistema básico
+
+Creación de la empresa y centros de costos, creación de terceros,
+personalización del plan de cuentas, documentos de soporte y documentos de
+impresión.
+Para más información consulte la Guía de montaje de sistema básico
+[aquí](<../010 BS/\[GM\]\[10\] Guia de montaje modulo basico.html>).
+
+## Realice el proceso de capacitación del módulo de nómina
+
+Ver Curso de Nómina [aquí](<https://www.contapyme.com/capacitacion-
+virtual/#/CP40MOD094>).
+
+##  Creación de cuentas de nómina
+
+En esta sección se crean en el plan de cuentas, las cuentas auxiliares para el
+registro de la nómina.
+
+## Requisitos
+
+Identificar las cuentas auxiliares que se requieren crear en el plan de
+cuentas y que serán usadas en el registro de la nómina.
+
+## Preparación de la información
+
+Definir si dichas cuentas auxiliares pertenecen al grupo de gastos o de costos
+para ser creadas en el respectivo grupo.
+
+## Procedimiento en \[ContaPyme\]
+
+Ingrese al catálogo de Plan de cuentas **\[Cinta de opciones: Pestaña
+Contabilidad > Catálogos > Plan de cuentas\]**.
+
+
+![ConfPlanCuentasPaso1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfPlanCuentasPaso1.png)
+
+
+Seleccione la cuenta o sub-cuenta a la cual va a pertenecer la cuenta auxiliar
+a crear, ejemplo sub-cuenta **510506 Sueldos**.
+
+
+![ConfPlanCuentasPaso2.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfPlanCuentasPaso2.png)
+
+
+Cree la nueva cuenta auxiliar **\[Cinta de opciones > Crear\].**
+
+
+![ConfPlanCuentasPaso3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfPlanCuentasPaso3.png)
+
+
+Indique el código que tendrá la cuenta auxiliar, ejemplo: 51050610.
+
+
+![ConfPlanCuentasPaso4.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfPlanCuentasPaso4.png)
+
+
+Realice las configuraciones correspondientes: Asigne nombre a la cuenta,
+verifique que el tipo de cuenta sea de **"5-Egresos"** , que se encuentre
+activa la opción **"Afectable directamente por el usuario"** , **"Disponible
+en operaciones de gastos/ingresos"** , **"disponible para presupuesto”** ,
+asigne como clase **"1-Normal"** , si maneja y exige tercero y si exige centro
+de costos.
+
+
+![ConfPlanCuentasPaso5.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfPlanCuentasPaso5.png)
+
+
+##  Configuración de Tipo de entidad
+
+En esta sección se configuran las entidades de nómina que trae el sistema por
+defecto. Las entidades de nómina que el sistema trae por defecto corresponden
+a los proveedores de servicios como: **Salud, pensión, ARL, caja de
+compensación, entre otros**. Adicional permite crear más entidades de nómina
+que el usuario requiera.
+
+Los tipos de entidad permiten indicar un tercero del sistema que es usado de
+forma general y que normalmente representa a una entidad.
+
+**Ejemplo:**
+
+
+Tipo de entidad: **CCF - Caja de Compensación Familiar**
+
+Tercero del sistema: **60013570 - Caja de Compensación Familiar CAFAM**
+
+Los tipos de entidad son útiles puesto que están referenciando a terceros ya
+existentes y en caso de necesitar cambiar dicho tercero, el cambio solo se
+realizaría en los tipos de entidad y no de forma general en cada concepto de
+nómina.
+
+## Requisitos
+
+Tener creados en el sistema como terceros, las entidades a las cuales se
+encuentra afiliado el empleado. Estas entidades se deben crear como tipo de
+tercero proveedor, así: **Ingrese a la pestaña Datos proveedor y active la
+opción:**"Proveedor entidad de nómina..."**. **
+
+
+![ConfTiposEntidadReq.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfTiposEntidadReq.png)
+
+
+## Preparación de la información
+
+Verificar las entidades a las cuales se encuentra afiliado el empleado y
+requieran ser configuradas como entidades de nómina.
+
+## Procedimiento en \[ContaPyme\]
+
+Ingrese al catálogo de tipo de entidad **\[Cinta de opciones: Pestaña Básico >
+Desplegar el Menú: Catálogo de terceros > Tipos de entidad\]**.
+
+Seleccione la entidad de nómina a configurar.
+
+Ejemplo:
+
+**\- CCF** – Caja de Compensación Familiar.
+
+
+![ConfTiposEntidadPaso3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfTiposEntidadPaso3.png)
+
+Seleccione del catálogo de terceros, el tercero por defecto al cual hace
+referencia la entidad, ejemplo: CAFAM.
+
+
+![ConfTiposEntidadPaso4.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfTiposEntidadPaso4.png)
+
+##  Configuración de conceptos de nómina
+
+En esta sección se definen los conceptos de nómina que se calcularán al
+momento de registrar el pago de nómina.
+
+## Requisitos
+
+Verificar los conceptos de nómina que maneja la empresa. Tener creadas y
+configuradas las cuentas contables de nómina y los tipos de entidades.
+
+## Preparación de la información
+
+Defina la recurrencia, la forma de cálculo, el manejo contable con las cuentas
+auxiliares a afectar y la entidad de nómina, que el sistema usará para generar
+la imputación contable por cada concepto de nómina.
+
+## Procedimiento en \[ContaPyme\]
+
+Ingrese al catálogo de conceptos de nómina **\[Cinta de opciones: Pestaña
+Nómina > Conceptos de nómina\].**.
+
+Seleccione el concepto a configurar.
+
+Ejemplo:
+
+**\- DTO\_SALUD** \- Aporte salud empleado
+
+
+![ConfConpNomPaso2.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfConpNomPaso2.png)
+
+
+Configure en el concepto seleccionado la información solicitada en la pestaña
+definición, pago recurrente, la forma de cálculo, el manejo contable con las
+cuentas auxiliares a afectar y la entidad de nómina, que el sistema usará para
+generar la imputación contable por cada concepto de nómina y la vigencia.
+
+
+![ConfConpNomPaso3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfConpNomPaso3.png)
+
+
+**Nota:** Tenga presente que la mayoría de los conceptos vienen con una
+configuración por defecto en la pestaña **"forma de cálculo"**. Los campos
+como valor, cantidad y porcentaje son formulados y de forma automática se
+realizará el cálculo en el momento de hacer el pago.
+
+
+
+##  Creación perfiles de contratos
+
+En esta sección se configuran los perfiles de contratos que se cargarán en los
+contratos de los empleados.
+
+## Requisitos
+
+Configurar los conceptos de nómina que aplican para la empresa.
+
+## Preparación de la información
+
+Defina los tipos de contratos, periodos de pagos, métodos de pago, clases de
+riegos, tipos de salarios y conceptos de nómina que maneja la empresa para sus
+empleados.
+
+## Procedimiento en \[ContaPyme\]
+
+Ingrese al catálogo de Perfiles de contratos **\[Cinta de opciones: Pestaña
+nómina > Catálogo Perfiles de contratos\]**.
+
+Seleccione el perfil a configurar y dé clic derecho modificar.
+
+En la **Pestaña definición** , configure el tipo de contrato, periodo de pago,
+forma de pago, método de pago, clase de riesgos, tipo de salario e intesidad
+horaria que tendrán los empleados que se les configure este perfil de
+contrato. Adicionalmente defina si este perfil va a manejar o no salario
+basado en el mínimo, extranjeros que no cotizan pensión y colombiano en el
+exterior.
+
+
+![ConfPerfilNomPaso3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfPerfilNomPaso3.png)
+
+
+En la **Pestaña conceptos de nómina** , defina los conceptos que aplican para
+el perfil de contrato según su comportamiento. Por ejemplo: **Devengos**
+\(Sueldos, Auxilio de transporte…\), **Prestaciones** \(Prima,
+Cesantías…\),**Deducciones** \(Aporte a salud, Aporte a pensión…\), **Costo
+empresa** \(Aportes a salud empleador, Aportes ARL…\).
+
+
+![ConfPerfilNomPaso4.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfPerfilNomPaso4.png)
+
+
+##  Creación de los terceros empleados
+
+En esta sección se crean en el catálogo de terceros, todos aquellos terceros
+que tienen un contrato laboral con la empresa.
+
+## Requisitos
+
+Tener configurados los conceptos de nómina, perfiles de contratos y crear los
+terceros entidad de nómina.
+
+## Preparación de la información
+
+Conocer toda la información relacionada con el empleado, datos de contacto,
+tipo de contrato, entidades a las cuales se encuentra afiliado, entre otros.
+
+## Procedimiento en \[ContaPyme\]
+
+Ingrese al catálogo de Terceros **\[Cinta de opciones: Pestaña Básico >
+Catálogo Terceros\]**.
+
+Dé clic derecho sobre el catálogo y seleccione la opción **Crear** , o en la
+cinta de opción clic en la opción **Crear**.
+
+
+![ConfTercEmpPaso2.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfTercEmpPaso2.png)
+
+
+Seleccione el tipo de tercero **Empleado**.
+
+
+![ConfTercEmpPaso3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfTercEmpPaso3.png)
+
+
+En la pestaña **Datos empleado** , en la opción **Contratos** dé clic en
+adicionar para crear el contrato del empleado.
+
+
+![ConfTercEmpPaso4.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfTercEmpPaso4.png)
+
+
+En la opción crear **Datos de contratos** , configure el número de contrato,
+el perfil de contrato, fecha de inicio y finalización del contrato, centro de
+costos, tipos de salario, el jefe inmediato y demás información que solicite
+el asistente.
+
+
+![ConfTercEmpPaso5.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfTercEmpPaso5.png)
+
+
+En la opción **Conceptos de nómina asociados al contrato** , defina para el
+empleado qué conceptos aplica según su comportamiento.
+
+
+![ConfTercEmpPaso6.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfTercEmpPaso6.png)
+
+
+**Nota:** Al configurar un perfil de contrato se cargarán de forma automática
+los conceptos de nómina asignado a dicho perfil. Se recomienda adicionar o
+quitar los conceptos que apliquen para cada empleado según sea requerido.
+
+En la opción **Entidades de nómina** defina para cada entidad el tercero
+proveedor de nómina en que se encuentra afiliado el empleado.
+
+
+![ConfTercEmpPaso7.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CConfTercEmpPaso7.png)
+
+
+**Nota:** En caso de no indicar las entidades de nómina del empleado, el
+sistema tomará por defecto el tercero referencia definido en el catálogo de
+tipos de entidad.
+
+En la pestaña **Cuenta bancaria** configure los datos de la cuenta del
+empleado a la cual se realizarán los respectivos pagos de nómina.
+
+
+##  Configuración del documento de soporte para Pago de nómina.
+
+Esta sección indica cómo configurar el documento de soporte a usar en el
+proceso de Pago de Nómina.
+
+## Requisitos
+
+No hay requisitos.
+
+## Preparación de la información
+
+Defina la máscara del documento para el pago de nómina. Para mas información
+sobre la máscara, ver [aquí](<https://www.contapyme.com/capacitacion-
+virtual/#/CP40MOD094>).
+
+**Nombre** | **Máscara**
+---|---
+Pago de nómina | NPG\#
+Pago de nómina | NPG@@&&\#
+
+## Procedimiento en \[ContaPyme\]
+
+Ingrese al catálogo de documentos de soporte **\[Cinta de opciones: Pestaña
+Básico > Doc. soporte\].**
+
+
+![confDosopPagoPaso1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CconfDosopPagoPaso1.png)
+
+
+Ubicar el documento que tiene por nombre **“Pago de nómina”** y modificar su
+información.
+**\(Menú superior, opción: Modificar. O Clic derecho, opción: Modificar\)**
+
+
+![confDosopPagoPaso2.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CconfDosopPagoPaso2.png)
+
+
+Indicar en el encabezado la empresa que usará el documento y complemente el
+registro de información de la pestaña **"Definición del documento"**.
+
+Ingrese a la pestaña: **Definición del documento > Menú izquierdo, opción:
+Numeración: **
+
+    * Verificar el tipo de numeración: **“Automática”**.
+    * **Numeración:** Registrar el prefijo, su consecutivo inicial y consecutivo final, fecha inicial y fecha final.
+
+![confDosopPagoPaso3.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CconfDosopPagoPaso3.png)
+
+
+Complementar el registro de información de Definición del documento:
+**Acciones**.
+
+**Pestaña:Definición del documento. Menú izquierdo, opción: Acciones.**
+
+    * Verificar que esté activa la opción: **“Envío de email automático”**.
+    * Verificar que esté activa la opción: **“Solicitar aprobación al finalizar”**.
+
+![confDosopPagoPaso4.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CconfDosopPagoPaso4.png)
+
+
+Complementar el registro de información en Impresión de documento.
+
+**Pestaña: Impresión de documento.**
+
+    * En documento de impresión por defecto y alterno, verificar que esté seleccionado el documento que tiene por nombre:**“Comprobante de pago de nómina”**.
+
+![confDosopPagoPaso5.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CconfDosopPagoPaso5.png)
+
+
+Complementar el registro de información en Envío de email.
+
+**Pestaña: Envío de email.**
+
+    * Verificar que esté configurado el envío de email con el encabezado de información de la empresa y la opción para enviar al cliente **\[Tercero\]**.
+    * Verificar que en la opción “tipo de contenido” esté activa la opción Documento en HTML y configurado el código de documento HTML **“Comprobante de pago de nómina”**.
+
+![confDosopPagoPaso6.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/045%20NO/.%5CconfDosopPagoPaso6.png)
+
+
+Finalizar la configuración dando clic en la opción:**“Aceptar”**
+
+
+
+##  Configuración del documento de soporte para novedad de nómina.
+
+Esta sección indica cómo configurar el documento de soporte Novedad de nómina.
+
+## Requisitos
+
+No hay requisitos.
+
+## Preparación de la información
+
+Defina la máscara del documento Novedad de nómina según lo requiera.
+
+**Nombre** | **Máscara**
+---|---
+Novedad de nómina | NN\#
+Novedad de nómina | NN@@&&\#\#</td> </tr> </tbody> </table> </p> </div> <div class="subseccion"> <div class="subtitulo seccion">Procedimiento en \[ContaPyme\]</div> <p class="texto\_seccion"> <span class="paso">1</span>Ingrese al catálogo de documentos de soporte <span class="ruta\_config">\[Cinta de opciones: Pestaña Básico > Doc. soporte\].</span>.<br><br> <ul><img style="width:100%;" src=".\confDosopPagoPaso1.png"><br><br></ul> <span class="paso">2</span>Ubicar el documento que tiene por nombre <b>“Novedad de nómina”</b> y modificar su información.<br> <span class="ruta\_config">\(Menú superior, opción: Modificar. O Clic derecho, opción: Modificar\)</span><br><br> <ul><img style="width:100%;" src=".\confDosopNovPaso2.png"><br><br></ul> <span class="paso">3</span>Indicar en el encabezado la empresa que usará el documento y complemente el registro de información de la pestaña <b>"Definición del documento"</b>.<br> <ul><span class="paso">3.1</span>Ingrese a la pestaña: <span class="ruta\_config">Definición del documento > Menú izquierdo, opción: Numeración: </span> <ul> <li>Verificar el tipo de numeración: <b>“Automática”</b>.</li> <li><b>Numeración:</b> Registrar el prefijo, su consecutivo inicial y consecutivo final, fecha inicial y fecha final.</li> </ul><br> <img style=" width:100%;" src=".\confDosopNovPaso3.png"><br><br></ul> Finalizar la configuración dando clic en la opción: “Aceptar” </p> </div> </p> <br> <div class="titulo seccion" id="configdocsop" iconindex="86"> <span class="paso">9</span><img class="imgseccion" ruta="ruta-imagenes" iconindex="114" imagelist="IMG32"> Configuración del documento de soporte para Reporte de nómina. </div> <p class="texto\_seccion"> Esta sección indica cómo configurar el documento de soporte a usar en el proceso de Reporte pago de nómina electrónica.<br> <div class="subseccion"> <div class="subtitulo seccion">Requisitos</div> <p class="texto\_seccion"> Tener activado la configuración <b>“Manejo de nómina electrónica”</b> en la empresa > Pestaña servicios electrónicos. </p> </div> <div class="subseccion"> <div class="subtitulo seccion">Preparación de la información</div> <p class="texto\_seccion"> Defina la máscara del documento para el reporte de nómina electrónica.<br><br> <table> <tbody> <tr> <th><b>Nombre</b></th> <th><b>Máscara</b></th> </tr> <tr> <td>Reporte de nómina electrónica</td> <td>RNE\#</td> </tr> </tbody> </table> </p> </div> <div class="subseccion"> <div class="subtitulo seccion">Procedimiento en \[ContaPyme\]</div> <p class="texto\_seccion"> <span class="paso">1</span>Ingrese al catálogo de documentos de soporte <span class="ruta\_config">\[Cinta de opciones: Pestaña Básico > Doc. soporte\]</span>.<br><br> <ul><img style="width:100%;" src=".\confDosopPagoPaso1.png"><br><br></ul> <span class="paso">2</span>Ubicar el documento que tiene por nombre <b>“Reporte de nómina electrónica”</b> y modificar su información.<br> <span class="ruta\_config">\(Menú superior, opción: Modificar. O Clic derecho, opción: Modificar\)</span><br><br> <ul><img style="width:100%;" src=".\confDosopRepNomPaso2.png"><br><br></ul> <span class="paso">3</span>Indicar en el encabezado la empresa que usará el documento y complemente el registro de información de la pestaña <b>"Definición del documento"</b>.<br> <ul><span class="paso">3.1</span><span class="ruta\_config">Pestaña: Definición del documento. Menú izquierdo, opción: Numeración:</span> <br> <ul> <li><b>Activar la opción:</b> “Hace parte de nómina electrónica”.</li> <li>Verificar el tipo de numeración: <b>“Automática”</b></li> <li><b>Numeración:</b> Registrar el prefijo, su consecutivo inicial y consecutivo final.</li> </ul><br> <img style=" width:100%;" src=".\confDosopRepNomPaso3.png"><br><br></ul> <span class="paso">4</span>Complementar el registro de información de Definición del documento: <b>Acciones</b>.</span>.<br> <ul><span class="paso">4.1</span><span class="ruta\_config">Pestaña: Definición del documento. Menú izquierdo, opción: Acciones.</span> <ul> <li>Verificar que esté activa la opción: <b>“Envío de email automático”</b>.</li> <li>Verificar que esté activa la opción: <b>“Solicitar aprobación al finalizar”</b>.</li> </ul><br> <img style=" width:100%;" src=".\confDosopRepNomPaso4.png"><br><br> </ul> <span class="paso">5</span>Complementar el registro de información en Nómina electrónica.</span><br> <ul><span class="paso">5.1</span><span class="ruta\_config">Pestaña: Nómina electrónica.</span>. <ul> <li>Seleccionar al proveedor tecnológico correspondiente, por ejemplo: <b>“Cadena”</b></li> <li>Verificar que tipo de documento sea: <b>“Nómina electrónica”</b>.</li> </ul><br> <img style=" width:100%;" src=".\confDosopRepNomPaso5.png"><br><br></ul> Finalizar la configuración dando clic en la opción: “Aceptar” </p> </div> </p> <br> <div class="titulo seccion" id="configdocsop" iconindex="86"> <span class="paso">10</span><img class="imgseccion" ruta="ruta-imagenes" iconindex="114" imagelist="IMG32"> Configuración del documento de soporte para Reporte de ajuste de nómina. </div> <p class="texto\_seccion"> Esta sección indica cómo configurar el documento de soporte a usar en el proceso de Reporte de ajuste de nómina electrónica.<br> <div class="subseccion"> <div class="subtitulo seccion">Requisitos</div> <p class="texto\_seccion"> Tener activado la configuración <b>“Manejo de nómina electrónica”</b> en la empresa > Pestaña servicios electrónicos. </p> </div> <div class="subseccion"> <div class="subtitulo seccion">Preparación de la información</div> <p class="texto\_seccion"> Defina la máscara del documento para el reporte de ajuste de nómina electrónica.<br><br> <table> <tbody> <tr> <th><b>Nombre</b></th> <th><b>Máscara</b></th> </tr> <tr> <td>Reporte de nómina electrónica</td> <td>RNA\#</td> </tr> </tbody> </table> </p> </div> <div class="subseccion"> <div class="subtitulo seccion">Procedimiento en \[ContaPyme\]</div> <p class="texto\_seccion"> <span class="paso">1</span>Ingrese al catálogo de documentos de soporte <span class="ruta\_config">\[Cinta de opciones: Pestaña Básico > Doc. soporte\]</span>.<br><br> <ul><img style="width:100%;" src=".\confDosopPagoPaso1.png"><br><br></ul> <span class="paso">2</span>Ubicar el documento que tiene por nombre <b>“Reporte de ajuste de nómina electrónica”</b> y modificar su información.<br> <span class="ruta\_config">\(Menú superior, opción: Modificar. O Clic derecho, opción: Modificar\)</span><br><br> <ul><img style="width:100%;" src=".\confDocRepAjPaso2.png"><br><br></ul> <span class="paso">3</span>Indicar en el encabezado la empresa que usará el documento y complemente el registro de información de la pestaña <b>"Definición del documento"</b>.<br> <ul><span class="paso">3.1</span><span class="ruta\_config">Pestaña: Definición del documento. Menú izquierdo, opción: Numeración:</span> <br> <ul> <li><b>Activar la opción:</b> “Hace parte de nómina electrónica”.</li> <li>Verificar el tipo de numeración: <b>“Automática”</b></li> <li><b>Numeración:</b> Registrar el prefijo, su consecutivo inicial y consecutivo final.</li> </ul><br> <img style=" width:100%;" src=".\confDocRepAjPaso3.png"><br><br></ul> <span class="paso">4</span>Complementar el registro de información de Definición del documento: <b>Acciones</b></span>.<br> <ul><span class="paso">4.1</span> <span class="ruta\_config">Pestaña: Definición del documento. Menú izquierdo, opción: Acciones.</span> <ul> <li>Verificar que esté activa la opción: <b>“Envío de email automático”</b>.</li> <li>Verificar que esté activa la opción: <b>“Solicitar aprobación al finalizar”</b>.</li> </ul><br> <img style=" width:100%;" src=".\confDocRepAjPaso4.png"><br><br> </ul> <span class="paso">5</span>Complementar el registro de información en Nómina electrónica.</span>.<br> <ul><span class="paso">5.1</span> <span class="ruta\_config">Pestaña: Nómina electrónica.</span>. <ul> <li>Seleccionar al proveedor tecnológico correspondiente, por ejemplo: <b>“Cadena”</b></li> <li>Verificar que tipo de documento sea:<b> “Ajuste nómina electrónica”</b>.</li> </ul><br> <img style=" width:100%;" src=".\confDocRepAjPaso5.png"><br><br></ul> Finalizar la configuración dando clic en la opción:<b> “Aceptar”</b> </p> </div> </p> <br> <div class="titulo seccion" id="configdocsop" iconindex="86"> <span class="paso">11</span><img class="imgseccion" ruta="ruta-imagenes" iconindex="114" imagelist="IMG32"> Configuración del documento de soporte para Reporte de anulación de nómina </div> <p class="texto\_seccion"> Esta sección indica cómo configurar el documento de soporte a usar en el proceso de Reporte de anulación de nómina electrónica.<br> <div class="subseccion"> <div class="subtitulo seccion">Requisitos</div> <p class="texto\_seccion"> Tener activado la configuración <b>“Manejo de nómina electrónica”</b> en la empresa > Pestaña servicios electrónicos. </p> </div> <div class="subseccion"> <div class="subtitulo seccion">Preparación de la información</div> <p class="texto\_seccion"> Defina la máscara del documento para el reporte de ajuste de nómina electrónica.<br><br> <table> <tbody> <tr> <th><b>Nombre</b></th> <th><b>Máscara</b></th> </tr> <tr> <td>Reporte de nómina electrónica</td> <td>RNB\#</td> </tr> </tbody> </table> </p> </div> <div class="subseccion"> <div class="subtitulo seccion">Procedimiento en \[ContaPyme\]</div> <p class="texto\_seccion"> <span class="paso">1</span>Ingrese al catálogo de documentos de soporte <span class="ruta\_config">\[Cinta de opciones: Pestaña Básico > Doc. soporte\]</span>.<br><br> <ul><img style="width:100%;" src=".\confDosopPagoPaso1.png"><br><br></ul> <span class="paso">2</span>Ubicar el documento que tiene por nombre <b>“Reporte de anulación nómina electrónica”</b> y modificar su información.<br> <span class="ruta\_config">\(Menú superior, opción: Modificar. O Clic derecho, opción: Modificar\)</span><br><br> <ul><img style="width:100%;" src=".\confDosopRepAnuPaso2.png"><br><br></ul> <span class="paso">3</span>Indicar en el encabezado la empresa que usará el documento y complemente el registro de información de la pestaña <b>"Definición del documento"</b>.<br> <ul><span class="paso">3.1</span><span class="ruta\_config">Pestaña: Definición del documento. Menú izquierdo, opción: Numeración:</span> <br> <ul> <li><b>Activar la opción:</b> “Hace parte de nómina electrónica”.</li> <li>Verificar el tipo de numeración: <b>“Automática”</b></li> <li><b>Numeración:</b> Registrar el prefijo, su consecutivo inicial y consecutivo final.</li> </ul><br> <img style=" width:100%;" src=".\confDosopRepAnuPaso3.png"><br><br></ul> <span class="paso">4</span>Complementar el registro de información de Definición del documento: <b>Acciones</b>.</span><br> <ul><span class="paso">4.1</span><span class="ruta\_config">Pestaña: Definición del documento. Menú izquierdo, opción: Acciones.</span> <ul> <li>Verificar que esté activa la opción:<b> “Solicitar aprobación al finalizar”</b>.</li> </ul><br> <img style=" width:100%;" src=".\confDosopRepAnuPaso4.png"><br><br> </ul> <span class="paso">5</span>Complementar el registro de información en Nómina electrónica.</span><br> <ul><span class="paso">5.1</span><span class="ruta\_config">Pestaña: Nómina electrónica.</span>. <ul> <li>Seleccionar al proveedor tecnológico correspondiente, por ejemplo: “Cadena”</li> <li>Verificar que tipo de documento sea: “Ajuste nómina electrónica”.</li> </ul><br> <img style=" width:100%;" src=".\confDosopRepAnuPaso5.png"><br><br></ul> Finalizar la configuración dando clic en la opción: <b>“Aceptar”</b> </p> </div> </p> <br> <\!--- Guías de montaje relacionadas ---> <div class="texto\_relacionados"> <div class="titulo seccion" id="guiasrel" iconindex="12">Guías relacionadas</div> <ul> <li> <a href="../010 BS/\[GM\]\[10\] Guia de montaje modulo basico.html">Guía de montaje sistema básico</a></li> </ul> </div> <div class="final">¡Y listo\! Podrá empezar a registrar operaciones de pago de nómina y novedades de nómina.</div> </div> </body>

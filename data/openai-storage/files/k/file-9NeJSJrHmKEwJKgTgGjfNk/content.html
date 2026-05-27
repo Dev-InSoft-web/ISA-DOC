@@ -1,0 +1,207 @@
+﻿<!-- 
+   Autor: SAmaya
+   Revisor: SAmaya
+   Fecha creación: Abril 2018
+   Fecha modificación: Abril 2018      
+-->
+
+
+<head>
+   <link rel="stylesheet" type="text/css" href="R:\120_Recursos_CP\Estilos CSS ContaPyme\EstiloBase.css"/>
+   
+</head>
+<body alto="550" ancho="500">
+   <div class="masinfo">
+      <h1><img iconindex="732" ruta="ruta-imagenes"> Adicionar variable</h1>
+      
+      <div class="texto_descripcion">
+
+         Mediante el botón <img iconindex="732" ruta="ruta-imagenes">, podrá agregar variables al detalle de la operación, al concepto de la cuenta por cobrar (CxC) o cuenta por pagar (CxP) y al detalle u observaciones de los conceptos a programar para los terceros. 
+         Estas variables serán reemplazadas por su valor correspondiente en el momento en el cual se generan las operaciones en bloque.
+      
+         <p>
+            Para adicionar una variable, dé clic en el botón <img iconindex="732" ruta="ruta-imagenes">, allí se desplegará la lista de variables disponibles, donde podrá seleccionar la que desea agregar.
+         </p>
+      </div>
+
+      <div class="titulo_ejemplo">Ejemplo:</div>
+      <div class="texto_ejemplo">
+         <p>
+            Se solicita generar una factura mensualmente para los arrendatarios de una propiedad horizontal. 
+            En el detalle de su repectivo documento (Operación a generar), se debe especificar el mes y año en el cual fue 
+            generada la factura. 
+         </p>
+		    <p>
+            Para esto se podrá hacer uso de las variables <b>[NMES]</b> y <b>[FAÑO]</b> en el detalle para la operación, así: <br>
+            <b>Factura de arrendamiento [NMES]-[FAÑO]</b>
+          </p>
+          <p>
+            El detalle de la operación generada, quedará registrada en el sistema de la siguiente forma: <br>
+            <b>Factura de arrendamiento Feb-2018</b>
+          </p>
+	   </div>
+
+      <div class="titulo_observaciones">Observaciones</div>
+      <div class="texto_observaciones">   
+
+         <i>
+            [CONTAPYME] brinda la posibilidad de agregar variables asociadas a la fecha de soporte que tendrá la operación 
+            a genrerar o asociadas al periodo al cual corresponde la operación. 
+         </i>
+
+         <p>
+            La lista de variables disponibles, son las siguientes:
+         </p>
+         <table>
+            <thead>
+                <tr>               
+                  <th style="width: 70px;">Variable</th>
+                  <th>Descripción</th>               
+                  <th style="width: 35%;">Ejemplo</th>               
+               </tr>   
+               <tr>
+                  <th colspan="3" style="text-align: center;">Según fecha de soporte de la operación</th>
+               </tr>                 
+            </thead>
+            <tbody>   
+               <tr>
+                  <td>[FECHA]</td>
+                  <td>Corresponde a la fecha de soporte con la cual se genera la operación. Esta se mostrará en formato <i>Año-mes-día</i></td>
+                  <td>
+                     <p><b>2018-Abr-1</b></p>
+                     <p><b>2018-May-25</b></p>
+                  </td>
+               </tr>
+               <tr>
+                  <td>[FAÑO]</td>
+                  <td>Corresponde al año de la fecha de soporte con la cual se genera la operación</td>
+                  <td>
+                     <p><b>2017</b></p>
+                     <p><b>2018</b></p>
+                  </td>
+               </tr>
+               <tr>
+                  <td>[NMES]</td>
+                  <td>Nombre corto del mes correspondiente la fecha de soporte con la cual se genera la operación</td>
+                  <td>
+                     <p><b>Ene</b></p>
+                     <p><b>Feb</b></p>
+                  </td>
+               </tr>
+               <tr>
+                  <td>[#MES]</td>
+                  <td>Número del mes correspondiente a la fecha de soporte con la cual se genera la operación</td>
+                  <td>
+                     <p><b>1 </b><i>(Enero)</i></p>
+                     <p><b>2 </b><i>(Febrero)</i></p>
+                  </td>
+               </tr>
+               <tr>
+                  <td>[NDIA]</td>
+                  <td>Nombre del día de la semana correspondiente a la fecha de soporte con la cual se genera la operación</td>
+                  <td>
+                     <p><b>Lunes</b></p>
+                     <p><b>Miércoles</b></p>
+                  </td>
+               </tr>
+               <tr>
+                  <td>[#DIA-S]</td>
+                  <td>
+                     <p>Número del día de la semana correspondiente a la fecha de soporte con la cual se genera la operación.</p>                   
+                     <p>
+                        <i>
+                           <b>Nota: </b>El número asociado al día de la semana, podrá variar según la configuración de 
+                        [CONTAPYME] que indica el <b>primer día de la semana</b> (<i>Ver <a href="#configuraciones">configuraciones</a></i>). 
+                        </i>
+                     </p>
+                  </td>
+                  <td>
+
+                     <table>
+                        <thead>
+                           <tr>
+                              <td style="border-right: 1px solid #fff;"><b>Primer día es el <i>domingo</i></b></td>
+                              <td><b>Primer día es el <i>lunes</i></b></td>
+                           </tr>                        
+                        </thead>
+                        <tbody>
+                           <tr>
+                              <td style="border-right: 1px solid #fff;">
+                                 <p><b>1 </b><i>(Domingo)</i></p>
+                                 <p><b>2 </b><i>(Lunes)</i></p>
+                                 <p><b>7 </b><i>(Sábado)</i></p>
+                              </td>                           
+                              <td>
+                                 <p><b>1 </b><i>(Lunes)</i></p>
+                                 <p><b>2 </b><i>(Martes)</i></p>
+                                 <p><b>7 </b><i>(Domingo)</i></p>   
+                              </td>
+                           </tr>                        
+                        </tbody>
+                     </table>
+                  </td>
+               </tr>
+               <tr>
+                  <td>[#DIA-M]</td>
+                  <td>Número del día del mes correspondiente a la fecha de soporte con la cual se genera la operación</td>
+                  <td>
+                     <p><b>15</b></p>
+                     <p><b>31</b></p>
+                  </td>
+               </tr>     
+               <tr>
+                  <td>[#SEM]</td>
+                  <td>Número de la semana del año correspondiente a la fecha de soporte con la cual se genera la operación</td>
+                  <td>
+                     <p><b>25</b> <i>(Semana 25 del año)</i></p>
+                     <p><b>50</b> <i>(Semana 50 del año)</i></p>
+                  </td>
+               </tr>   
+               <tr>
+                  <th colspan="3" style="text-align: center;">Según el periodo a generar</th>
+               </tr>  
+               <tr>
+                  <td>[FAÑO-PER]</td>
+                  <td>Corresponde al año del periodo del cual se genera la operación</td>
+                  <td>
+                     <p><b>2017</b></p>
+                     <p><b>2018</b></p>
+                  </td>
+               </tr>      
+               <tr>
+                  <td>[NMES-PER]</td>
+                  <td>Nombre corto del mes que corresponde al periodo del cual se genera la operación</td>
+                  <td>
+                     <p><b>Ene</b></p>
+                     <p><b>Feb</b></p>
+                  </td>
+               </tr>
+               <tr>
+                  <td>[#MES-PER]</td>
+                  <td>Número del mes que corresponde al periodo del cual se genera la operación</td>
+                  <td>
+                     <p><b>1 </b><i>(Enero)</i></p>
+                     <p><b>2 </b><i>(Febrero)</i></p>
+                  </td>
+               </tr>
+               <tr>
+                  <td>[#SEM-PER]</td>
+                  <td>Número de la semana del año, asociada al periodo del cual se genera la operación</td>
+                  <td>
+                     <p><b>25</b> <i>(Semana 25 del año)</i></p>
+                     <p><b>50</b> <i>(Semana 50 del año)</i></p>
+                  </td>
+               </tr>   
+
+            </tbody>     
+         </table>	  
+      </div>
+      
+      <div class="titulo_configuracion" id="configuraciones">Configuración</div>
+      <div class="texto_configuracion">
+         Para modificar la configuración de días hábiles de trabajo vaya a 
+      <span class="ruta_config">[[CONTAPYME] > Botón redondo > Configuración > Configuración general del sistema > Primer día de la semana]</span>
+      </div>
+
+   </div>   
+</body>

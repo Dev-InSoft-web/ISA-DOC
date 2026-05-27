@@ -1,0 +1,13165 @@
+# Referencia
+
+Seleccione el documento de la recepción de materiales, registrada
+anteriormente, que se tomará como base para el registro de la devolución de
+materiales.  
+
+Ejemplo
+
+Se registra la devolución de materiales DMP-18116598 al proveedor Provee Más
+Ltda. de 1 computador todo en uno, el cual se recibió mediante la recepción de
+materiales RMP-18102685, en este caso en el campo referencia se indica el
+número de la recepción de materiales RMP-18102685 para que carguen los
+elementos de inventario.  
+
+Observaciones
+
+Es posible cargar varios documentos como referencia para el registro de la
+devolución de materiales. La referencia carga en la devolución de materiales
+los productos o servicios según el número de documento indicado. Este campo
+permite hacer trazabilidad para conocer los documentos cerrados con otras
+operaciones. Se pueden consultar informes a traves de los exploradores de
+inventarios plus. Para acceder a los exploradores de inventarios plus ingrese
+a: **\[Pestaña Inventarios > Cinta de Opciones > Movimientos > Inventarios
+Plus \(cotizaciones, pedidos, remisiones, etc\)\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura o
+requerido\) ver: **\[Configuración de la Operación > Campos de la operación >
+Datos maestros de la operación > Referencia\]**
+
+---
+
+# Observaciones
+
+Descripción breve del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se registra devolución de materiales DMP-1811900 al proveedor Alfa Equipos
+Ltda. por un Computadore Todo en Uno, indicando las características del
+equipo.  
+  
+PRODUCTO | CANT. | OBSERVACIÓN  
+---|---|---  
+Computador Todo en Uno | 1 | Procesador 2,2GHz - Pantalla 23,9" - Conectividad WiFi b / g / n, Bluetooth 4.0 + LE - Memoria 4 GB  
+  
+Observaciones
+
+Esta observación es cargada de forma automática en la operación al seleccionar
+el elemento de inventario en el renglón.  
+  
+La observación del elemento de inventario en el renglón es de libre uso y
+definición del usuario y se configura como descripción directamente en cada
+elemento de inventario, para adicionar esta descripción al elemento de
+inventario ver **\[Pestaña Inventarios > Elementos de Inventario > Modificar >
+Descripción\]**  
+  
+Esta observación puede ser modificada por el usuario directamente en la
+operación, bien sea para cambiarla o complementarla.  
+  
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en orden de compra >
+Observación.\]**
+
+---
+
+# Dato 1
+
+Presenta información adicional para el producto en la operación.
+
+Ejemplo
+
+El almacén Su Vestido SAS comercializa prendas de vestir, el usuario requiere
+indicar información adicional para el producto como la talla, para esto se
+habilita el campo adicional Dato 1 en las operaciones de inventario.
+
+Código |  Producto | Dato 1 - Talla  
+---|---|---  
+CAMHOM250 | Camisa hombre Skit |  S  
+CAMHOM250 | Camisa hombre Skit |  M  
+CAMHOM250 | Camisa hombre Skit |  L  
+  
+En el campo **"Dato 1"** , debe indicar la información adicional que se
+requiere mostrar en los documentos de impresión o visualizar en el explorador
+de inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Dato 1 por Talla.
+
+---
+
+# Valor 1
+
+Presenta valores adicionales para el producto en la operación.  
+
+Ejemplo
+
+Un Minimercado mide los inventarios de los productos de abarrotes \(arroz,
+frijol, lenteja\) en libras y requiere conocer las existencias de ciertos
+productos en kilos, para conocer este dato se configura el campo adicional
+Valor 1 en las operaciones de inventario.  
+  
+Código | Producto | Unidad | \(VALOR 1\) Kilos   
+---|---|---|---  
+AR001 | Arroz blanco | 50 Libras | 25 Kilos  
+AZ005 | Azúcar Morena | 100 Libras  | 50 Kilos   
+  
+En el campo **"Valor 1"** , debe indicar el valor adicional que se requiere
+mostrar en los documentos de impresión o visualizar en el explorador de
+inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Valor 1 por Kilo.
+
+---
+
+# Código bodega
+
+Código de la bodega de la cual egresarán los productos a devolver de cada
+renglón.
+
+Ejemplo
+
+El supermercado Merca Ahorro, cuenta con diferentes bodegas para el manejo de
+sus productos:
+
+Código | Nombre  
+---|---  
+1 | Bodega de productos alimenticios  
+2 |  Bodega de productos de aseo  
+  
+
+Al momento de registrar una devolución de materiales, en este campo puede
+seleccionar la bodega correspondiente de la cual egresará cada producto a
+devolver, los productos alimenticios de la **"Bodega 1"** y los productos de
+aseo de la **"Bodega 2"**.
+
+Observaciones
+
+Para cada renglón de la operación se puede indicar una bodega diferente y el
+sistema respetará esta aunque en la operación se indique una bodega por
+defecto.  
+  
+La empresa puede crear tantas bodegas como requiera para facilitar el manejo
+los elementos de inventario.
+
+Configuración
+
+Para configurar la funcionalidad del campo Código Bodega \(visible, solo
+lectura, requerido, etc.\), ver: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en el listado de productos
+>\]**
+
+---
+
+# Proveedor
+
+Código de identificación del tercero \(proveedor\) a quien se realiza la
+devolución de los elementos de inventario que se registran mediante la
+devolución de materiales.
+
+Ejemplo
+
+Se registra devolución de materiales DMP-1811003 al proveedor Alfa Equipos
+Ltda. en la cual devuleven 3 unidades del elemento de inventario Computador
+todo en Uno. En el campo Proveedor se indica el código de identificación de
+Alfa Equipos Ltda.  
+  
+CÓDIGO | NOMBRE  
+---|---  
+811250654 | Alfa Equipos Ltda.  
+  
+
+Observaciones
+
+Para que el tercero pueda ser seleccionado en la operación de devolución de
+materiales, se debe crear con el tipo de tercero **"Proveedor"**.  
+  
+Para configurar el tipo de tercero ver **\[Pestaña Básico > Terceros >
+Modificar > Tipo de Tercero\]**  
+  
+Al abrir el seleccionador de terceros en la devolución de materiales, éste se
+filtra solo por aquellos terceros cuyo tipo es **"Proveedor"**.  
+  
+Cuando se registra la devolución de materiales basado en una recepción de
+materiales, el tercero proveedor cargado en este campo es el mismo registrado
+en la recepción de materiales.  
+  
+Se pueden generar informes y reportes de compras filtrados por el campo
+**"Proveedor"**.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Proveedor\].**
+
+---
+
+# Bodega
+
+Código de la bodega de donde egresan los productos a devolver al proveedor.  
+
+Ejemplo
+
+La empresa MP Computadores cuenta con varias bodegas para el almacenamiento de
+sus productos:  
+Código | Bodega  
+---|---  
+1 | Bodega Principal  
+2 | Bodega Centro  
+2 | Bodega Norte  
+  
+Se registra la devolución de materiales DMP-1811548 al proveedor Compumas
+S.A.S. y se indica que la bodega de la cual saldrán los elementos de
+inventario es la **"Bodega Centro"**.  
+  
+
+Observaciones
+
+Es posible indicar una bodega para cada renglón de la operación de devolución
+de materiales, para activar este manejo ver: **\[Menú Operación > Configurar
+operación > Campos de la operación > Configuración de columnas en el listado
+de productos\]**.  
+  
+Cuando la devolución de materiales se registra basada en una recepción de
+materiales, en este campo se carga la bodega registrada en la recepción de
+materiales.
+
+Configuración
+
+Para configurar la funcionalidad del campo Bodega \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Bodega\]**
+
+---
+
+# Valor Parcial
+
+Valor total de los elementos de inventario cargados en la devolución de
+materiales antes de impuestos y descuentos.
+
+Ejemplo
+
+Se devulve mediante devolución de materiales DMP-1811136 al proveedor
+Suministros.com los siguientes productos discriminando cantidad, valor
+unitario, descuento y valor parcial.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | DCTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 2 | $ 800.000 |  10.00% | $ 720.000  
+Computador mini Dell | 3 | $ 780.000 |  10.00% | $ 702.000  
+**Subtotal Valor Parcial** | **$ 2.340.000**  
+  
+
+Observaciones
+
+Este campo corresponde a la sumatoria del valor parcial de cada elemento de
+inventario cargado en la devolución de materiales antes de aplicar descuentos
+e impuestos.  
+  
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los datos registrados en la operación.
+
+---
+
+# Valor Descuento
+
+Valor total de los descuentos otorgados por el proveedor por cada elememento
+de inventario cargado en la devolución de materiales
+
+Ejemplo
+
+Se registra devolución de materiales DMP-1811430 al proveedor Alfa Equipos
+Ltda. con los siguientes productos discriminando producto, cantidad, valor
+unitario, % de descuento, y valor parcial.
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 |  5.00% | $ 720.000  
+Computador mini Dell | 1 | $ 780.000 |  5.00% | $ 702.000  
+Computador todo en uno | 1 | $ 1.050.000 |  3.00% | $ 945.000  
+Total Descuento |  |  |  $ 110.500 |   
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Valor IVA
+
+Valor total del IVA de los productos cargados en la devolución de materiales.
+
+Ejemplo
+
+  
+
+Se registra devolución de materiales DMP-1811430 al proveedor Alfa Equipos
+Ltda. con los siguientes productos discriminando producto, cantidad, valor
+unitario, valor parcial y el IVA.
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | VALOR PARCIAL  
+---|---|---|---  
+Computador mini Hp | 2 | $ 800.000 | $ 1.600.000  
+Computador mini Dell | 1 | $ 780.000 | $ 780.000  
+Computador todo en uno | 1 | $ 1.050.000 | $ 1.050.000  
+Total IVA |  |  $ 651.700 |   
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Valor Total
+
+Valor total de los elementos de inventario a devolver al proveedor mediante la
+devolución de materiales, y equivale a la sumatoria del valor parcial, menos
+descuentos más IVA.
+
+Ejemplo
+
+Se envía mediante devolución de materiales DMC-1811005 al proveedor Alfa
+Equipos Ltda. los siguientes productos discriminando cantidad, precio
+unitario, valor parcial, iva, y los totales, seguido del valor total.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | VALOR PARCIAL  
+---|---|---|---  
+Computador mini Hp | 1 | $ 925.000 | $ 925.000  
+Computador mini Dell | 1 | $ 850.000 | $ 850.000  
+**Subtotal Valor Parcial** | **$ 1.775.000**  
+**Impuesto de venta \(19%\)** | **$ 337.250** | Valor Total | $ 2.112.250  
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Transportador
+
+Código del tercero \(transportador\) quien realizará la entrega de los
+productos a devolver al proveedor mediante la devolución de materiales.
+
+Ejemplo
+
+* Se registra la devolución de materiales DMP-1811301 al proveedor Alfa Equipos Ltda. quien se encuentra ubicado en la ciudad de Bogotá por 5 unidades del producto Computador Todo en Uno, el envío de los roductos a devolver se realiza por medio de la empresa transportadora Servientrega.  
+En el campo transportador se indica el código de la empresa **"Servientrega"**
+
+  
+
+* Se registra la devolución de materiales DMP-1811001 al proveedor Suministros.com quien se encuentra en la ciudad de Manizales por 2 unidades del producto Impresora de inyección, la entrega del producto lo realiza directamente la empresa por medio del empleado Jairo Villa.  
+En el campo transportador se indica el código del empleado **"Jairo Villa"** o
+el código de identificación de la empresa.
+
+Observaciones
+
+Para seleccionar el transportador en la devolución de materiales, éste debe
+estar creado en el catálogo de terceros de la empresa.  
+  
+Si las entregas de los productos siempre las realiza el mismo transportador,
+es posible asignar un transportador por defecto por medio de la configuración
+de este campo en la operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Transportador\]**
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al producto.
+
+Ejemplo
+
+La empresa Comercial de alimentos, entre sus productos comercializa huevos, y
+debe especificar su tipo en las operaciones, así:  
+Producto | Tipo  
+---|---  
+Huevo blanco | A  
+Huevo blanco | AA  
+Huevo blanco | Extra  
+  
+  
+
+Observaciones
+
+Este campo es de libre uso y definición del usuario.  
+  
+Asignar en la operación un tipo al produto, evita que se deba crear en el
+catálogo de elementos de inventario, un producto por cada especificación que
+se necesite.  
+  
+La especificación dada al producto en esta columna estará visible en los
+exploradores de inventarios plus.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > Tipo\]**
+
+---
+
+#  Observaciones para la devolución de materiales
+
+Indique las observaciones que aparecen en la devolución de matriales impresa o
+algún otro documento que se imprima a partir de esta operación.
+
+Ejemplo
+
+Se realiza devolución del producto Oftal ya que se presenta averías en el
+empaque, la reposición de las cantidades devueltas se puede hacer los días
+martes y jueves de 2:00 p.m. a 4:00 p.m.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+El catálogo de observaciones permite crear observaciones en las cuales el
+usuario puede complementar información de los productos devueltos.  
+  
+Se pueden crear tantas observaciones como se requieran con la información que
+se desee visualizar en el documento, ejemplo:
+
+* Condiciones sobre la recepción de los productos.
+* Información sobre de devoluciones.
+* Formas de pago.
+* Recomendaciones técnicas.
+
+Configuración
+
+Para crear o modificar observaciones ver: **\[Pestaña inventarios > Cinta de
+opciones > Otros > Observaciones.\]**
+
+---
+
+# Unidad
+
+Medida general utilizada para discriminar la cantidad del producto en las
+operaciones.
+
+Ejemplo
+
+* En una carnicería manejan la carne por kilos, por lo tanto la unidad de medida es:**Kg**
+* En una ferretería venden los tubos de pvc por metros, por lo tanto la unidad de medida es: **Mts**
+* Una empresa de servicios ofrece a sus clientes capacitaciones por horas, por lo tanto la unidad de medida es: **Hora**
+
+Observaciones
+
+Las cantidades de los productos que se muestran en los diferentes informes y
+reportes de inventario son basados en esta unidad.  
+  
+La unidad de medida se debe configurar en cada uno de los elementos de
+inventario.  
+  
+Este campo no es modificable por el usuario en la opereación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo como visible, ver: **\[Menú
+Operación > Configurar operación > Campos de la operación > Configuración de
+columnas en orden de compra > Unidad\]**
+
+---
+
+# Cantidad
+
+Número de unidades del elemento de inventario a devolver al proveedor mediante
+la devolución de materiaes.
+
+Ejemplo
+
+Se reaiza devolución de materiaes DMP-18116598 al proveedor Redes y PC Ltda.
+de los siguientes productos:
+
+CÓDIGO | PRODUCTO | CANTIDAD  
+---|---|---  
+COMHP001 | Computador mini Hp | 1  
+COMDELL002 | Computador mini Dell | 1  
+Al momento de registrar la devolución de materiales, en este campo se indica
+el número de unidades a devolver por cada elemento de inventario.  
+  
+
+Observaciones
+
+La cantidad indicada en este campo se carga automáticamente de la recepción de
+materiales tomada como base para el registro de la devolución de materiales.  
+  
+Este campo es requerido en la operación, es decir que su diligenciamiento es
+obligatorio para procesar la operación.
+
+---
+
+# Precio
+
+Valor de compra por unidad que ha sido dado por el proveedor a cada producto
+
+Ejemplo
+
+Se registra devolución de materiales recibidos DMP-18116598 del proveedor Redes y PC Ltda. de los siguientes productos:  Producto | Precio  
+---|---  
+Lector de memoria | $ 20.000  
+Memoria USB 8GB | $ 18.000  
+  
+Observaciones
+
+El precio que se carga por cada producto es el registrado en la recepción de
+materiles que se tomó como referencia para la devolución de materiales
+recibidos.
+
+Configuración
+
+Para configurar la funcionalidad del campo precio \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Manejo de
+listado de productos > Registrar la cantidad, precio, y descuento de cada
+producto remisionado\]**
+
+---
+
+# % desc.
+
+Porcentaje de descuento otorgado por el proveedor al elemento de inventario
+cargado en el renglón.
+
+Ejemplo
+
+Se registra devolución de materiales recibidos DMP-1811005 al proveedor Alfa Equipos Ltda. y en la rcepción tomada como referencia se otorgó descuento por temporada escolar en algunos de los productos:  Producto | Precio | Descuento  
+---|---|---  
+Computador Todo en Uno | $ 700.000 | 10 %  
+Minitorres genérica | $ 300.000 | 7 %  
+  
+Observaciones
+
+Este descuento puede ser indicado de forma manual por el usuario.  
+  
+Si en la recepción de materiales tomada como referencia para el registro de la
+devolución de materiales, se indicó % de descuento, éste será cargado de forma
+automática en el devolución de materiales recibidos.
+
+Configuración
+
+Para configurar la funcionalidad del % desc. \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Manejo de
+listado de productos > Registrar la cantidad, precio, y descuento de cada
+producto remisionado\]**
+
+---
+
+# Valor compra
+
+Valor total de las unidades del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se realiza devolución de materiales recibidos DMP-18116587 al proveedor Alfa
+Equipos Ltda. con los siguientes productos:  
+PRODUCTO | PRECIO | CANT. | VALOR COMPRA  
+---|---|---|---  
+Computador Todo en Uno | $ 875.000 | 1 | $ 875.000  
+Computador mini Dell | $ 630.000 | 1 | $ 630.000  
+  
+
+Observaciones
+
+Este valor es el producto de las cantidades a devolver al proveedor mediante
+la devolución de materiales recibidos, por el valor unitario.  
+
+Configuración
+
+Para configurar la funcionalidad del % desc. \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Manejo de
+listado de productos > Registrar la cantidad, precio, y descuento de cada
+producto remisionado\]**
+
+---
+
+# Referencia
+
+Seleccione el documento de la recepción de materiales, registrada
+anteriormente, que se tomará como base para el registro de la devolución de
+materiales.  
+
+Ejemplo
+
+Se registra la devolución de materiales DMP-18116598 al proveedor Provee Más
+Ltda. de 1 computador todo en uno, el cual se recibió mediante la recepción de
+materiales RMP-18102685, en este caso en el campo referencia se indica el
+número de la recepción de materiales RMP-18102685 para que carguen los
+elementos de inventario.  
+
+Observaciones
+
+Es posible cargar varios documentos como referencia para el registro de la
+devolución de materiales. La referencia carga en la devolución de materiales
+los productos o servicios según el número de documento indicado. Este campo
+permite hacer trazabilidad para conocer los documentos cerrados con otras
+operaciones. Se pueden consultar informes a traves de los exploradores de
+inventarios plus. Para acceder a los exploradores de inventarios plus ingrese
+a: **\[Pestaña Inventarios > Cinta de Opciones > Movimientos > Inventarios
+Plus \(cotizaciones, pedidos, remisiones, etc\)\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura o
+requerido\) ver: **\[Configuración de la Operación > Campos de la operación >
+Datos maestros de la operación > Referencia\]**
+
+---
+
+# Observaciones
+
+Descripción breve del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se registra devolución de materiales DMP-1811900 al proveedor Alfa Equipos
+Ltda. por un Computadore Todo en Uno, indicando las características del
+equipo.  
+  
+PRODUCTO | CANT. | OBSERVACIÓN  
+---|---|---  
+Computador Todo en Uno | 1 | Procesador 2,2GHz - Pantalla 23,9" - Conectividad WiFi b / g / n, Bluetooth 4.0 + LE - Memoria 4 GB  
+  
+Observaciones
+
+Esta observación es cargada de forma automática en la operación al seleccionar
+el elemento de inventario en el renglón.  
+  
+La observación del elemento de inventario en el renglón es de libre uso y
+definición del usuario y se configura como descripción directamente en cada
+elemento de inventario, para adicionar esta descripción al elemento de
+inventario ver **\[Pestaña Inventarios > Elementos de Inventario > Modificar >
+Descripción\]**  
+  
+Esta observación puede ser modificada por el usuario directamente en la
+operación, bien sea para cambiarla o complementarla.  
+  
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en orden de compra >
+Observación.\]**
+
+---
+
+# Dato 1
+
+Presenta información adicional para el producto en la operación.
+
+Ejemplo
+
+El almacén Su Vestido SAS comercializa prendas de vestir, el usuario requiere
+indicar información adicional para el producto como la talla, para esto se
+habilita el campo adicional Dato 1 en las operaciones de inventario.
+
+Código |  Producto | Dato 1 - Talla  
+---|---|---  
+CAMHOM250 | Camisa hombre Skit |  S  
+CAMHOM250 | Camisa hombre Skit |  M  
+CAMHOM250 | Camisa hombre Skit |  L  
+  
+En el campo **"Dato 1"** , debe indicar la información adicional que se
+requiere mostrar en los documentos de impresión o visualizar en el explorador
+de inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Dato 1 por Talla.
+
+---
+
+# Valor 1
+
+Presenta valores adicionales para el producto en la operación.  
+
+Ejemplo
+
+Un Minimercado mide los inventarios de los productos de abarrotes \(arroz,
+frijol, lenteja\) en libras y requiere conocer las existencias de ciertos
+productos en kilos, para conocer este dato se configura el campo adicional
+Valor 1 en las operaciones de inventario.  
+  
+Código | Producto | Unidad | \(VALOR 1\) Kilos   
+---|---|---|---  
+AR001 | Arroz blanco | 50 Libras | 25 Kilos  
+AZ005 | Azúcar Morena | 100 Libras  | 50 Kilos   
+  
+En el campo **"Valor 1"** , debe indicar el valor adicional que se requiere
+mostrar en los documentos de impresión o visualizar en el explorador de
+inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Valor 1 por Kilo.
+
+---
+
+# Código bodega
+
+Código de la bodega de la cual egresarán los productos a devolver de cada
+renglón.
+
+Ejemplo
+
+El supermercado Merca Ahorro, cuenta con diferentes bodegas para el manejo de
+sus productos:
+
+Código | Nombre  
+---|---  
+1 | Bodega de productos alimenticios  
+2 |  Bodega de productos de aseo  
+  
+
+Al momento de registrar una devolución de materiales, en este campo puede
+seleccionar la bodega correspondiente de la cual egresará cada producto a
+devolver, los productos alimenticios de la **"Bodega 1"** y los productos de
+aseo de la **"Bodega 2"**.
+
+Observaciones
+
+Para cada renglón de la operación se puede indicar una bodega diferente y el
+sistema respetará esta aunque en la operación se indique una bodega por
+defecto.  
+  
+La empresa puede crear tantas bodegas como requiera para facilitar el manejo
+los elementos de inventario.
+
+Configuración
+
+Para configurar la funcionalidad del campo Código Bodega \(visible, solo
+lectura, requerido, etc.\), ver: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en el listado de productos
+>\]**
+
+---
+
+# Proveedor
+
+Código de identificación del tercero \(proveedor\) a quien se realiza la
+devolución de los elementos de inventario que se registran mediante la
+devolución de materiales.
+
+Ejemplo
+
+Se registra devolución de materiales DMP-1811003 al proveedor Alfa Equipos
+Ltda. en la cual devuleven 3 unidades del elemento de inventario Computador
+todo en Uno. En el campo Proveedor se indica el código de identificación de
+Alfa Equipos Ltda.  
+  
+CÓDIGO | NOMBRE  
+---|---  
+811250654 | Alfa Equipos Ltda.  
+  
+
+Observaciones
+
+Para que el tercero pueda ser seleccionado en la operación de devolución de
+materiales, se debe crear con el tipo de tercero **"Proveedor"**.  
+  
+Para configurar el tipo de tercero ver **\[Pestaña Básico > Terceros >
+Modificar > Tipo de Tercero\]**  
+  
+Al abrir el seleccionador de terceros en la devolución de materiales, éste se
+filtra solo por aquellos terceros cuyo tipo es **"Proveedor"**.  
+  
+Cuando se registra la devolución de materiales basado en una recepción de
+materiales, el tercero proveedor cargado en este campo es el mismo registrado
+en la recepción de materiales.  
+  
+Se pueden generar informes y reportes de compras filtrados por el campo
+**"Proveedor"**.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Proveedor\].**
+
+---
+
+# Bodega
+
+Código de la bodega de donde egresan los productos a devolver al proveedor.  
+
+Ejemplo
+
+La empresa MP Computadores cuenta con varias bodegas para el almacenamiento de
+sus productos:  
+Código | Bodega  
+---|---  
+1 | Bodega Principal  
+2 | Bodega Centro  
+2 | Bodega Norte  
+  
+Se registra la devolución de materiales DMP-1811548 al proveedor Compumas
+S.A.S. y se indica que la bodega de la cual saldrán los elementos de
+inventario es la **"Bodega Centro"**.  
+  
+
+Observaciones
+
+Es posible indicar una bodega para cada renglón de la operación de devolución
+de materiales, para activar este manejo ver: **\[Menú Operación > Configurar
+operación > Campos de la operación > Configuración de columnas en el listado
+de productos\]**.  
+  
+Cuando la devolución de materiales se registra basada en una recepción de
+materiales, en este campo se carga la bodega registrada en la recepción de
+materiales.
+
+Configuración
+
+Para configurar la funcionalidad del campo Bodega \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Bodega\]**
+
+---
+
+# Valor Parcial
+
+Valor total de los elementos de inventario cargados en la devolución de
+materiales antes de impuestos y descuentos.
+
+Ejemplo
+
+Se devulve mediante devolución de materiales DMP-1811136 al proveedor
+Suministros.com los siguientes productos discriminando cantidad, valor
+unitario, descuento y valor parcial.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | DCTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 2 | $ 800.000 |  10.00% | $ 720.000  
+Computador mini Dell | 3 | $ 780.000 |  10.00% | $ 702.000  
+**Subtotal Valor Parcial** | **$ 2.340.000**  
+  
+
+Observaciones
+
+Este campo corresponde a la sumatoria del valor parcial de cada elemento de
+inventario cargado en la devolución de materiales antes de aplicar descuentos
+e impuestos.  
+  
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los datos registrados en la operación.
+
+---
+
+# Valor Descuento
+
+Valor total de los descuentos otorgados por el proveedor por cada elememento
+de inventario cargado en la devolución de materiales
+
+Ejemplo
+
+Se registra devolución de materiales DMP-1811430 al proveedor Alfa Equipos
+Ltda. con los siguientes productos discriminando producto, cantidad, valor
+unitario, % de descuento, y valor parcial.
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 |  5.00% | $ 720.000  
+Computador mini Dell | 1 | $ 780.000 |  5.00% | $ 702.000  
+Computador todo en uno | 1 | $ 1.050.000 |  3.00% | $ 945.000  
+Total Descuento |  |  |  $ 110.500 |   
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Valor IVA
+
+Valor total del IVA de los productos cargados en la devolución de materiales.
+
+Ejemplo
+
+  
+
+Se registra devolución de materiales DMP-1811430 al proveedor Alfa Equipos
+Ltda. con los siguientes productos discriminando producto, cantidad, valor
+unitario, valor parcial y el IVA.
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | VALOR PARCIAL  
+---|---|---|---  
+Computador mini Hp | 2 | $ 800.000 | $ 1.600.000  
+Computador mini Dell | 1 | $ 780.000 | $ 780.000  
+Computador todo en uno | 1 | $ 1.050.000 | $ 1.050.000  
+Total IVA |  |  $ 651.700 |   
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Valor Total
+
+Valor total de los elementos de inventario a devolver al proveedor mediante la
+devolución de materiales, y equivale a la sumatoria del valor parcial, menos
+descuentos más IVA.
+
+Ejemplo
+
+Se envía mediante devolución de materiales DMC-1811005 al proveedor Alfa
+Equipos Ltda. los siguientes productos discriminando cantidad, precio
+unitario, valor parcial, iva, y los totales, seguido del valor total.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | VALOR PARCIAL  
+---|---|---|---  
+Computador mini Hp | 1 | $ 925.000 | $ 925.000  
+Computador mini Dell | 1 | $ 850.000 | $ 850.000  
+**Subtotal Valor Parcial** | **$ 1.775.000**  
+**Impuesto de venta \(19%\)** | **$ 337.250** | Valor Total | $ 2.112.250  
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Transportador
+
+Código del tercero \(transportador\) quien realizará la entrega de los
+productos a devolver al proveedor mediante la devolución de materiales.
+
+Ejemplo
+
+* Se registra la devolución de materiales DMP-1811301 al proveedor Alfa Equipos Ltda. quien se encuentra ubicado en la ciudad de Bogotá por 5 unidades del producto Computador Todo en Uno, el envío de los roductos a devolver se realiza por medio de la empresa transportadora Servientrega.  
+En el campo transportador se indica el código de la empresa **"Servientrega"**
+
+  
+
+* Se registra la devolución de materiales DMP-1811001 al proveedor Suministros.com quien se encuentra en la ciudad de Manizales por 2 unidades del producto Impresora de inyección, la entrega del producto lo realiza directamente la empresa por medio del empleado Jairo Villa.  
+En el campo transportador se indica el código del empleado **"Jairo Villa"** o
+el código de identificación de la empresa.
+
+Observaciones
+
+Para seleccionar el transportador en la devolución de materiales, éste debe
+estar creado en el catálogo de terceros de la empresa.  
+  
+Si las entregas de los productos siempre las realiza el mismo transportador,
+es posible asignar un transportador por defecto por medio de la configuración
+de este campo en la operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Transportador\]**
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al producto.
+
+Ejemplo
+
+La empresa Comercial de alimentos, entre sus productos comercializa huevos, y
+debe especificar su tipo en las operaciones, así:  
+Producto | Tipo  
+---|---  
+Huevo blanco | A  
+Huevo blanco | AA  
+Huevo blanco | Extra  
+  
+  
+
+Observaciones
+
+Este campo es de libre uso y definición del usuario.  
+  
+Asignar en la operación un tipo al produto, evita que se deba crear en el
+catálogo de elementos de inventario, un producto por cada especificación que
+se necesite.  
+  
+La especificación dada al producto en esta columna estará visible en los
+exploradores de inventarios plus.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > Tipo\]**
+
+---
+
+#  Observaciones para la devolución de materiales
+
+Indique las observaciones que aparecen en la devolución de matriales impresa o
+algún otro documento que se imprima a partir de esta operación.
+
+Ejemplo
+
+Se realiza devolución del producto Oftal ya que se presenta averías en el
+empaque, la reposición de las cantidades devueltas se puede hacer los días
+martes y jueves de 2:00 p.m. a 4:00 p.m.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+El catálogo de observaciones permite crear observaciones en las cuales el
+usuario puede complementar información de los productos devueltos.  
+  
+Se pueden crear tantas observaciones como se requieran con la información que
+se desee visualizar en el documento, ejemplo:
+
+* Condiciones sobre la recepción de los productos.
+* Información sobre de devoluciones.
+* Formas de pago.
+* Recomendaciones técnicas.
+
+Configuración
+
+Para crear o modificar observaciones ver: **\[Pestaña inventarios > Cinta de
+opciones > Otros > Observaciones.\]**
+
+---
+
+# Unidad
+
+Medida general utilizada para discriminar la cantidad del producto en las
+operaciones.
+
+Ejemplo
+
+* En una carnicería manejan la carne por kilos, por lo tanto la unidad de medida es:**Kg**
+* En una ferretería venden los tubos de pvc por metros, por lo tanto la unidad de medida es: **Mts**
+* Una empresa de servicios ofrece a sus clientes capacitaciones por horas, por lo tanto la unidad de medida es: **Hora**
+
+Observaciones
+
+Las cantidades de los productos que se muestran en los diferentes informes y
+reportes de inventario son basados en esta unidad.  
+  
+La unidad de medida se debe configurar en cada uno de los elementos de
+inventario.  
+  
+Este campo no es modificable por el usuario en la opereación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo como visible, ver: **\[Menú
+Operación > Configurar operación > Campos de la operación > Configuración de
+columnas en orden de compra > Unidad\]**
+
+---
+
+# Cantidad
+
+Número de unidades del elemento de inventario a devolver al proveedor mediante
+la devolución de materiaes.
+
+Ejemplo
+
+Se reaiza devolución de materiaes DMP-18116598 al proveedor Redes y PC Ltda.
+de los siguientes productos:
+
+CÓDIGO | PRODUCTO | CANTIDAD  
+---|---|---  
+COMHP001 | Computador mini Hp | 1  
+COMDELL002 | Computador mini Dell | 1  
+Al momento de registrar la devolución de materiales, en este campo se indica
+el número de unidades a devolver por cada elemento de inventario.  
+  
+
+Observaciones
+
+La cantidad indicada en este campo se carga automáticamente de la recepción de
+materiales tomada como base para el registro de la devolución de materiales.  
+  
+Este campo es requerido en la operación, es decir que su diligenciamiento es
+obligatorio para procesar la operación.
+
+---
+
+# Precio
+
+Valor de compra por unidad que ha sido dado por el proveedor a cada producto
+
+Ejemplo
+
+Se registra devolución de materiales recibidos DMP-18116598 del proveedor Redes y PC Ltda. de los siguientes productos:  Producto | Precio  
+---|---  
+Lector de memoria | $ 20.000  
+Memoria USB 8GB | $ 18.000  
+  
+Observaciones
+
+El precio que se carga por cada producto es el registrado en la recepción de
+materiles que se tomó como referencia para la devolución de materiales
+recibidos.
+
+Configuración
+
+Para configurar la funcionalidad del campo precio \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Manejo de
+listado de productos > Registrar la cantidad, precio, y descuento de cada
+producto remisionado\]**
+
+---
+
+# % desc.
+
+Porcentaje de descuento otorgado por el proveedor al elemento de inventario
+cargado en el renglón.
+
+Ejemplo
+
+Se registra devolución de materiales recibidos DMP-1811005 al proveedor Alfa Equipos Ltda. y en la rcepción tomada como referencia se otorgó descuento por temporada escolar en algunos de los productos:  Producto | Precio | Descuento  
+---|---|---  
+Computador Todo en Uno | $ 700.000 | 10 %  
+Minitorres genérica | $ 300.000 | 7 %  
+  
+Observaciones
+
+Este descuento puede ser indicado de forma manual por el usuario.  
+  
+Si en la recepción de materiales tomada como referencia para el registro de la
+devolución de materiales, se indicó % de descuento, éste será cargado de forma
+automática en el devolución de materiales recibidos.
+
+Configuración
+
+Para configurar la funcionalidad del % desc. \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Manejo de
+listado de productos > Registrar la cantidad, precio, y descuento de cada
+producto remisionado\]**
+
+---
+
+# Valor compra
+
+Valor total de las unidades del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se realiza devolución de materiales recibidos DMP-18116587 al proveedor Alfa
+Equipos Ltda. con los siguientes productos:  
+PRODUCTO | PRECIO | CANT. | VALOR COMPRA  
+---|---|---|---  
+Computador Todo en Uno | $ 875.000 | 1 | $ 875.000  
+Computador mini Dell | $ 630.000 | 1 | $ 630.000  
+  
+
+Observaciones
+
+Este valor es el producto de las cantidades a devolver al proveedor mediante
+la devolución de materiales recibidos, por el valor unitario.  
+
+Configuración
+
+Para configurar la funcionalidad del % desc. \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Manejo de
+listado de productos > Registrar la cantidad, precio, y descuento de cada
+producto remisionado\]**
+
+---
+
+# Valor venta
+
+Valor total de cada uno de los productos o servicios según la cantidad
+indicada en el pedido.
+
+Ejemplo
+
+El cliente Muebles MG solicita un pedido de: 2 Compudores mini HP, 1
+computador mini Dell y 4 computadores todo en 1.  
+PRODUCTO | PRECIO | CANTIDAD | VALOR VENTA  
+---|---|---|---  
+Computador mini Hp | $ 925.000 | 2 | $ 1.850.000  
+Computador mini Dell | $ 850.000 | 1 | $ 850.000  
+Computador todo en uno | $ 1.200.000 | 4 | $ 4.800.000  
+  
+Observaciones
+
+Este valor de venta es el producto de las cantidades indicadas por el precio
+unitario. Este valor también puede ser indicado de forma manual por el
+usuario, así el sistema calcula de forma automática el valor unitario del
+mismo \(tomando como referencia las cantidades\). Puede ser valor total o
+parcial por cada producto o servicio, dependiendo de la lista de precios
+utilizada en el pedido. Este valor permite conocer al final de la operación el
+valor total que deberá cancelar el cliente.
+
+Configuración
+
+Para indicar el precio total del producto en el renglón ver: **\[Menú
+Operación > Opciones > Registrar valores totales\]**
+
+---
+
+# Cliente
+
+Especifique el código del cliente al cual será enviado el pedido.  
+
+Ejemplo
+
+Se genera el pedido PED-1801445 de la empresa Almacenes M&M de 2 computadores
+todo en uno por lo tanto en este campo se debe indicar el nit del cliente.  
+
+Observaciones
+
+El tercero debe estar creado en el catálogo de terceros y marcado como
+cliente. Para configurar el tipo de tercero ver: **\[Básico > Terceros >
+Modificar > Tipo de Tercero\]** Se pueden buscar los datos del cliente por
+cédula o nombre. Es muy importante que los terceros \(clientes\) esten bien
+creados, porque su información se verá reflejada al momento de enviar el
+pedido en el documento de impresión. Esto permite hacer trazabilidad de
+documentos, para conocer los pedidos enviados a cada cliente. El pedido
+posteriormente se enlaza con la facturación, por lo tanto estos datos son muy
+importantes porque cargan la información para presentar medios magnéticos. Se
+pueden generar informes y exploradores por cliente para analizar indicadores y
+seguimiento de pedidos enviados y facturados.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura o
+requerido\) ver: **\[Configuración de la Operación > Campos de la operación >
+Datos maestros de la operación > Vendedor\]**
+
+---
+
+# Observaciones
+
+Descripción breve de los productos o servicios indicados en el pedido.
+
+Ejemplo
+
+Se está realizando el pedido PED-1820144 para la empresa Almacenes H&M de un
+computador todo en uno, en el campo observaciones puede indicarse lo
+siguiente:  
+
+_Este computador incluye monitor, teclado y mouse de marca Dell._
+
+Observaciones
+
+Esta observación es cargada de forma automática en la operación según
+configuración del elemento de inventario. La información ingresada en este
+campo se verá reflejada en el documento impreso que será enviado al cliente.
+Este campo permite personalizar información por cada uno de los productos o
+servicios que fueron indicados en el pedido. Para configurar la observación
+del elemento de inventario ver: **\[Pestaña Inventarios > Elementos de
+Inventario > Modificar > Descripción\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\) ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en cotización al cliente >
+Observación.\]**
+
+---
+
+# Dato 1
+
+Presenta información adicional para el producto en la operación.
+
+Ejemplo
+
+El almacén Su Vestido SAS comercializa prendas de vestir, el usuario requiere
+indicar información adicional para el producto como la talla, para esto se
+habilita el campo adicional Dato 1 en las operaciones de inventario.
+
+Código |  Producto | Dato 1 - Talla  
+---|---|---  
+CAMHOM250 | Camisa hombre Skit |  S  
+CAMHOM250 | Camisa hombre Skit |  M  
+CAMHOM250 | Camisa hombre Skit |  L  
+En el campo **"Dato 1"** , debe indicar la información adicional que se
+requiere mostrar en los documentos de impresión o visualizar en el explorador
+de inventarios.
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Dato 1 por Talla.
+
+---
+
+# Valor 1
+
+Presenta valores adicionales para el producto en la operación.  
+
+Ejemplo
+
+Un Minimercado mide los inventarios de los productos de abarrotes \(arroz,
+frijol, lenteja\) en libras y requiere conocer las existencias de ciertos
+productos en kilos, para conocer este dato se configura el campo adicional
+Valor 1 en las operaciones de inventario.  
+  
+Código | Producto | Unidad | \(VALOR 1\) Kilos   
+---|---|---|---  
+AR001 | Arroz blanco | 50 Libras | 25 Kilos  
+AZ005 | Azúcar Morena | 100 Libras  | 50 Kilos   
+En el campo **"Valor 1"** , debe indicar el valor adicional que se requiere
+mostrar en los documentos de impresión o visualizar en el explorador de
+inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Valor 1 por Kilo.
+
+---
+
+# Cantidad 2
+
+Cantidad de unidades de presentación.
+
+Ejemplo
+
+La empresa Nacional Flowers comercializa cajas de flores, en el pedido
+PEPD-184110 se están indicando 3 cajas de flores, en el campo cantidad 2 se
+carga automáticamente cantidad de flores que tiene cada caja, ejemplo 30.  
+
+Observaciones
+
+Este campo carga por defecto en la operación, se alimenta automáticamente y no
+permite ser modificado por el usuario. Se debe habilitar la cantidad 2 a cada
+el elemento de inventario, con su respectiva presentación y cantidad.
+
+Configuración
+
+Para configurar la catidad 2 en cada elemento, ver: **\[Pestaña Inventarios >
+Elementos de Inventario > Modificar > Unidad de presentación o empaque >
+Maneja unidad de presentación > Applicar conversión de unidades\]**
+
+---
+
+# Bodega
+
+Código de la bodega desde la cual se egresarán los productos cuando éstos sean
+enviados al cliente, permite calcular la disponibilidad de cada producto.  
+
+Ejemplo
+
+La empresa Almaneces M&M maneja las bodegas 1, 2 y 3 y al momento de realizar
+el pedido PED-184022 del cliente Muebles MB desea ver la disponibilidad de la
+bodega 2, por lo tanto en el campo bodega indica la bodega 2.  
+
+Observaciones
+
+Es posible también definir una bodega por cada producto pedido. Para activar
+bodega por producto \(visible, solo lectura o rquerida\) ver: **\[Operación >
+Configuración de Operación > Config. Campos/Columnas de datos > Configuración
+de Columnas en pedido al cliente > Bodega\]** Se pueden indicar diferentes
+bodegas, en una operación de pedido.
+
+Configuración
+
+Para activar bodega en el encabezado como \(visible, solo lectura o rquerida\)
+ver: **\[Operación > Configuración de Operación > Config. Campos/Columnas de
+datos > Datos maestros de la operación > Bodega\]**
+
+---
+
+# Lista de precios
+
+Especifique la lista de precios que se usará para cargar los precios de cada
+producto registrado en el pedido.  
+
+Ejemplo
+
+La empresa Almacenes M&M maneja las siguientes listas de precios: 1. Clientes,
+2. Empleados y 3. Clientes VIP, para el pedido PED-184511 desea tomar la lista
+de precios 3. Clientes VIP, por lo tanto la debe indicar en el campo lista de
+precios, así los valores cargados serán automáticamente de esta lista ya
+definida.  
+
+Observaciones
+
+El sistema permite definir diferentes listas de precios, según el manejo de
+cada cliente. Para acceder al catálogo de listas de precios ver: **\[Pestaña
+Inventarios > Cinta de Opciones > Listas de Precios\]** El sistema para
+seleccionar una lista de precios abre el catálogo para que el usuario pueda
+escoger la que requiere.  
+Los valores cargados en la lista de precios son lo que automáticamente
+cargarán en la factura al momento de enlazar el documento.
+
+Configuración
+
+Para activar este campo como \(visible, solo lectura, requerido o un valor por
+defecto\) ver: **\[Operación > Configuración Operación > Campos de la
+operación > Datos maestros de la operación > Lista de Precios\]**
+
+---
+
+# ![360
+Candado.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD1%20-%20Pedido/%5B14350%5D%20FrmOprOrd1/360%20Candado.png)Cerrar
+Referencia
+
+Da por finalizado \(cerrado\) el o los documentos que fueron cargados en el
+campo referencia como base para el registro del pedido.
+
+Ejemplo
+
+* Al cliente Muebles MG se le realizó el pedido PED-182544 de 2 unidades del computador mini Hp pero solo adquirió 1, en ese caso se deja abierto el documento con la finalidad de poderlo cargar posteriormente en otro documento.
+* Al cliente Muebles MG se le realizó el pedido PED-182544 de 2 unidades del computador mini Hp y adquirió las 2 unidades, en ese caso se cierra el documento.
+
+Observaciones
+
+Al momento de dar por cerrado el documento, no se volverá a cargar o estar
+visible en el seleccionador para otras operaciones. Los documentos se pueden
+dejar abiertos en caso de no facturar todas las cantidades indicadas en el
+pedido, con el fin de poder cargar esta referencia en otra operación. Si en la
+operación no se cargó ningún número de referencia no es necesario usar el
+botón. Es muy importante hacer el cierre de los documentos para que no
+aparezcan referencias pendientes estando ya facturas o cargadas en otra
+cotización o pedido. Este cierre de documentos tambien realizar manualmente
+por la operación \(cerrar documentos\).
+
+---
+
+# ![145
+iaPrintPreview.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD1%20-%20Pedido/%5B14350%5D%20FrmOprOrd1/145%20iaPrintPreview.png)Ver
+documento impreso
+
+Visualice el documento impreso para el pedido especificado en el campo
+"Referencia".  
+
+Ejemplo
+
+La empresa Almacenes M&M realiza el pedido PED-114525 y carga como referencia
+el pedido PED-1801002, al dar clic en el botón \(ver documento\) se puede
+obtener una vista previa del pedido PED-1801002 con todos sus detalles.  
+
+Observaciones
+
+Si se cargan varias referencias solo se podrá visualizar la que se encuentre
+en la primera posición.
+
+---
+
+# Referencia
+
+Indique un número de documento realizado anteriormente con el fin de tomarlo
+como base para la generación del pedido.  
+
+Ejemplo
+
+Se realiza la cotización CTC-180501 del cliente Almacenes M&H el 5 de enero de
+2018 de 1 computador todo en uno, el cliente el 20 de febrero de 2018 solicita
+un pedido basado en la cotización enviada, en ese caso en el campo referencia
+se indica el número de la cotización anteriormente CTC-180501 para que carguen
+los elementos de inventario, y se envía al cliente el nuevo documento.  
+
+Observaciones
+
+Se pueden cargar varías referencias en una pedido. La referencia carga en el
+pedido actual los productos o servicios según el número de documento indicado.
+Este campo permite hacer trazabilidad para conocer los documentos cerrados con
+otras operaciones. Se pueden consultar informes de pedidos cargadas en otros
+documentos a traves de los exploradores de inventarios plus. Para acceder a
+los exploradores de inventarios plus ingrese a: **\[Pestaña Inventarios >
+Cinta de Opciones > Movimientos > Inventarios Plus \(cotizaciones, pedidos,
+remisiones, etc\)\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura o
+requerido\) ver: **\[Configuración de la Operación > Campos de la operación >
+Datos maestros de la operación > Referencia\]**
+
+---
+
+# Vendedor
+
+Código del vendedor o responsable del pedido.  
+
+Ejemplo
+
+La empresa Computadores M&M cuenta con 3 vendedores: Juliana Hincapie, Felipe
+Osorio y Luisa Valencia, si la señora Juliana realiza el pedido PED-1824112,
+debe indicar en el campo vendedor el número de su cédula para que carguen sus
+datos.  
+
+Observaciones
+
+El tercero debe estar creado en el catálogo de terceros y marcado como
+vendedor. Para configurar el tipo de tercero ingrese por: **\[Básico >
+Terceros > Modificar > Tipo de Tercero\]** Se pueden buscar los datos del
+vendedor por cédula o nombre. Se pueden especificar los datos para que se
+impriman en la firma del pedido y el cliente pueda contactar al vendedor
+fácilmente. Esto permite hacer trazabilidad de documentos, para conocer los
+pedidos realizados por cada vendedor. El pedido posterior enlaza con una
+cotización o factura, por lo tanto estos datos son utilizados para el cálculo
+de comisiones. Se pueden generar informes y exploradores por vendedor para
+analizar indicadores de efectividad.
+
+Configuración
+
+Este campo se puede configurar como \(visible, solo lectura o requerido\) ver:
+**\[Configuración de la Operación > Campos de la operación > Datos maestros de
+la operación > Vendedor\]**
+
+---
+
+# Producto
+
+Código del producto o servicio que será cargado en el pedido para el cliente.
+
+Ejemplo
+
+Si el cliente Almacenes El Mayorista S.A.S. solicita un pedido de un
+computador mini HP 3012, se debe cargar el elemento con toda su información,
+indicando su código HPMI001.
+
+Referencia | Nombre | Existencias  
+---|---|---  
+HPMI001 | Computador mini HP 3012 | 3  
+HPMI002 | Computador mini DELL 2201 | 5  
+HPMI003 | Computador mini ACER 1401 | 1  
+  
+Se validan las existencias de los inventarios para proceder con la generación
+del pedido.
+
+Observaciones
+
+Los productos o servicios que serán cargados en el pedido deben estar creados
+en el catálogo de elementos de inventario. La búsqueda de los productos o
+servicios que serán cargados en el pedido se puede hacer por referencia,
+nombre o código de barras.
+
+Configuración
+
+Para crear los elementos de inventario ver: **\[Inventarios > Cinta de
+opciones > Elementos de Inventario > Crear\]**
+
+---
+
+# Valor Parcial
+
+Sumatoria del precio de los productos o servicios indicados en el pedido antes
+de impuestos \(independientemente de la lista de precios\).
+
+Ejemplo
+
+El cliente Almacenes H&M realiza el pedido PED-185211 de 3 opciones de
+computadores, en la operación se discrimina cantidad, valor unitario,
+descuento y valor parcial.  
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 | 10% | $ 800.000  
+Computador mini Dell | 1 | $ 700.000 | 10% | $ 700.000  
+Computador todo en uno | 2 | $ 1.000.000 | 10% | $ 1.800.000  
+**Subtotal Valor Parcial** | **$ 3.300.000**  
+  
+Observaciones
+
+Este es un campo que no es modificable por el usuario, se actualiza
+automáticamente con los datos registrados en el pedido. Es la sumatoria del
+valor parcial de cada producto cargado en el pedido antes de aplicar
+descuentos e impuestos.
+
+---
+
+# Valor Descuento
+
+Sumatoria de los descuentos asignados a cada elemento cargado del pedido.
+
+Ejemplo
+
+La empresa Almacenes H&M realiza el pedido PED-1802145 de 3 opciones de
+computadores, al cliente le otorgan un descuento del 10%, en la operación se
+discrimina producto, cantidad, valor unitario, porcentaje descuento y valor
+parcial.  
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 | 10% | $ 800.000  
+Computador mini Dell | 1 | $ 700.000 | 10% | $ 700.000  
+Computador todo en uno | 2 | $ 1.000.000 | 10% | $ 1.800.000  
+Total Descuento | $ 330.000 Observaciones Este campo no es modificable por el usuario, se actualiza automáticamente con los datos registrado en el pedido.
+
+---
+
+# Valor IVA
+
+Sumatoria del IVA del cada elemento cargado en el pedido.
+
+Ejemplo
+
+Se realiza el pedido PED-184521 del cliente Muebles M&G por 3 opciones de
+computadores, en la operación se discrimina producto, precio, IVA y total IVA.  
+
+**Tabla de ejemplo**  
+  
+PRODUCTO | PRECIO | IVA  
+---|---|---  
+Computador mini Hp | $ 925.000 | 19%  
+Computador mini Dell | $ 850.000 | 19%  
+Computador todo en uno | $ 1.200.000 | 19%  
+Total IVA | $ 565.250  
+  
+Observaciones
+
+Este campo no es modificable por el usuario, se alimenta automáticamente con
+la información de la operación.
+
+Equivale a la sumatoria del valor del IVA de cada elemento de inventario
+cargado en el pedido.
+
+---
+
+# Valor Total
+
+Valor completo que el cliente va a pagar por los productos o servicios
+cargados en el pedido.
+
+Ejemplo
+
+Se realiza el pedido PED-184520 al cliente Amlacenes M&M 3 opciones de
+computadores, en la operación de pedido se discrimina producto, cantidad,
+precio unitario, descuento, valor parcial, iva, y los totales, seguido del
+valor total.  
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 | 10% | $ 800.000  
+Computador mini Dell | 1 | $ 700.000 | 10% | $ 700.000  
+Computador todo en uno | 2 | $ 1.000.000 | 10% | $ 1.800.000  
+**Subtotal Valor Parcial** | **$ 3.300.000**  
+**Impuesto de venta \(19%\)** | **$ 627.000** | Valor Total | $ 3.927.000  
+  
+Observaciones
+
+Es el valor que la persona va a cancelar o va a quedar debiendo al momento de
+facturar y equivale a la sumatoria del valor parcial, menos descuentos, más
+impuestos. Este campo no es modificable por el usuario, \[ContaPyme\] presenta
+la información de este campo con los datos indicados en el pedido. Este campo
+permite realizar el cálculo de las comisiones al momento de enlazar el
+documento con una factura.
+
+---
+
+# Usar otra moneda en el pedido
+
+Permite realizar un pedido en moneda local e imprimirlo y visualizarlo en otra
+moneda para ser enviado a un cliente.
+
+Ejemplo
+
+La empresa Almacenes M&M es de Colombia y su moneda local es el peso, se
+registra pedido del cliente Muebles NLS de Nicaragua. La operación de pedido
+se registra en la moneda local, al imprimir o visualizar el pedido del cliente
+se puede usar otra moneda, en este caso dólares.  
+
+Observaciones
+
+Esta opción activa otras configuraciones como tasa de cambio, para que el
+sistema pueda hacer la conversión de los pesos a dólares. Si esta opción no es
+activada el pedido se generará e impimirá solo en moneda local.
+
+Configuración
+
+Para activar esta opción ver: **\[Operación > Configuración Operación > Campos
+de la operación > Datos maestros de la operación > Usar otra moneda en la
+cotización\]**
+
+---
+
+# Información Unidad Moneda
+
+Mesaje que indica la ruta para activar la opción de usar otra moneda en el
+pedido.
+
+Observaciones
+
+Es un mensaje que da a conocer información pero no puede ser modificado por el
+usuario. Solo se carga si la opción usar otra moneda en el pedido está
+desactivada.
+
+---
+
+# Unidad Pedidos
+
+Datos básicos que permiten indicar que el pedido se va a imprimir en una
+moneda diferente a la moneda local.
+
+Ejemplo
+
+El cliente Muebles NLS de Ecuador solicita un pedido a la empresa Colombiana
+Almacenes MG, por lo tanto se genera el pedido PED-184524 el cual se debe
+envíar en dólares. Se hace el registro del pedido en moneda local \(pesos\)
+pero se usa otra moneda en este caso dólar para que se visualice e imprima en
+dólares.  
+
+Observaciones
+
+En ese caso el pedido queda generado en moneda local, los dólares solo se
+veran reflejados en documento impreso que será enviado al cliente. Los datos
+ingresados en este espacio como unidad de moneda local y tasa de cambio
+permiten que pedido se genere en moneda local pero se imprima en cualquier
+otra moneda.
+
+Configuración
+
+Para activar la opción de usar otra moneda, ver: **\[Básico > Usuarios >
+Perfines de Seguridad > Modificar Perfil > Inventarios Plus \(cotizaciones,
+pedidos y órdenes\) > Opciones > General\]**
+
+---
+
+# Sucursal Cliente
+
+Sucursal registrada para el cliente, cuya dirección será la del envío del
+pedido.
+
+Ejemplo
+
+La empresa Muebles MB realiza un pedido para el cliente Tecnoinsumos RG, el
+cual tiene 3 sedes: sede centro, sede nogales y sede villamaría. El cliente
+solicita que el pedido sea enviado a **sede nogales**. Por lo tanto, se debe
+indicar esta sede para que en el pedido se especifique la dirección de
+entrega.
+
+Observaciones
+
+El cliente debe tener activa la opción de "tiene sucursales". Para asignar
+sedes a un cliente, ingrese por: **\[Básico > Terceros > Modificar > Dirección
+> Otras Direcciones\]**
+
+La sede debe estar registrada y asociada al cliente con la información
+completa.
+
+Es una lista que permite seleccionar los datos de las diferentes sedes que
+tiene un cliente, con el fin de especificar el lugar de entrega del pedido.
+Los datos de la sede que se seleccione quedarán impresos en el pedido.
+
+Si en este campo no se indica sede, se asume que la entrega del pedido es en
+la dirección registrada en el cliente principal.
+
+Para que se muestren los datos de la sucursal seleccionada en el documento de
+impresión \(como nombre, dirección, teléfono, ciudad y otros datos\), es
+necesario personalizar el diseño del documento de impresión del pedido. A
+continuación, siga los siguientes pasos:
+
+#### Pasos para personalizar el diseño:
+
+  * Vaya a la ruta: **\[Básico > Documentos de Impresión\]**.
+  * Busque el documento para pedidos.
+  * Haga clic derecho sobre el documento y seleccione "Modificar".
+  * En la pestaña "General", active la opción: **"Crear un diseño personalizado a partir de la plantilla base"**.
+  * En la pestaña "Diseño", podrá personalizar el diseño del documento e incluir los datos de la sucursal seleccionada.
+
+Después de personalizar el diseño, los datos de la sucursal se mostrarán al
+imprimir el pedido según la configuración realizada.
+
+![Imagen de ejemplo del diseño
+personalizado](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD1%20-%20Pedido/%5B14350%5D%20FrmOprOrd1/380%20Doc.Impresion.png)
+
+Configuración
+
+Para activar la opción "tiene sucursales", vea: **\[Básico > Terceros >
+Modificar > Tiene Sucursales\]**
+
+---
+
+# Planeación de la entrega
+
+Estimación de días de trabajo hábiles para entregar el pedido, o bien, la
+fecha planeada de entrega.  
+
+Ejemplo
+
+El 1 de febrero se realiza el pedido PED-180445 para el cliente Muebles M&G de
+10 computadores HP 231, al cliente se le notifica que la fecha máxima de
+entrega es el 10 de febrero, por lo tanto en días hábiles se indican 10 días y
+el sistema automáticamente cambia la fecha y le indica la fecha estimada de
+entrega.  
+
+Observaciones
+
+Al indicar los días se carga automáticamente la fecha de entrega. Esta fecha
+es muy importante, porque permite conocer los días estimados de entrega por
+cada pedido, el promedio de fechas de entrega. A traves de los exploradores de
+Inventarios Plus se puede conocer y filtrar las fechas de entrega de los
+pedidos.
+
+Configuración
+
+Para congurar los días hábiles, ver: **\[Menú principal \(botón redondo\) >
+configuración > Días Hábiles de Trabajo\]**
+
+---
+
+# Días hábiles
+
+Días hábiles estimados para la entrega de los productos del pedido.  
+
+Ejemplo
+
+Se realiza el pedido PED-014522 el 1 de febrero de 10 computadores HP 2314 del
+cliente Almacenes M&M, al cliente se le notifica que la fecha máxima de
+entrega es el 10 de febrero, por lo tanto se indican 10 días para que quede la
+fecha en el documento impreso qué será enviado al cliente.  
+
+Observaciones
+
+Al modificar los días, automáticamente se cambia la fecha máxima de entrega
+Esta fecha es muy importante, porque permite conocer los días estimados de
+entrega por cada pedido, el promedio de fechas de entrega. A traves de los
+exploradores de Inventarios Plus se puede conocer y filtrar las fechas de
+entrega de los pedidos.
+
+Configuración
+
+Para configurar los días hábiles, ver: **\[Opciones > Días hábiles de
+trabajo\]**
+
+---
+
+# Tipo
+
+Configuración o clasificación especial dada al elemento de inventario.
+
+Ejemplo
+
+El usuario comercializa huevos de diferentes tipos:  
+
+* Huevos tipo AA
+* Huevos tipo AAA
+* Huevos tipo Jumbo
+
+Observaciones
+
+Este campo es de libre uso y definición del usuario. Asignar en la operación
+un tipo al produto, evita que se deba crear en el catálogo de elementos de
+inventario, un producto por cada especificación que se necesite. La
+especificación dada al producto en esta columna estará visible en los
+exploradores de inventarios plus
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en el pedido > Tipo\]**
+
+---
+
+# Fecha de entrega
+
+Fecha máxima en que se podrán entregar los productos solicitados en este
+pedido.  
+
+Ejemplo
+
+Se realiza el pedido PED-1804521 de 10 computadores HP 2314 del cliente
+Almacenes M&M, se le notifica al cliente la fecha máxima de entrega 10 de
+febrero, al indicarlo en el pedido, queda en el documento impreso enviado al
+cliente.  
+
+Observaciones
+
+Estos datos se ingresan manualmente en la operación. Esta información es muy
+importante porque es cargada en los informes y exploradores de inventarios
+plus.
+
+Configuración
+
+Para asignar el campo visible en la operación, ver: **\[Operación >
+Configuración Operación > Conf. de campos/columnas de datos > Datos maestros
+de la operación > Planeación Entrega\]**
+
+---
+
+# Condiciones comerciales
+
+Condiciones comerciales pactadas con el cliente para la generación del pedido.
+
+Ejemplo
+
+En la negociación con el cliente Compu Partes Ltda. se definen las siguientes
+condiciones comerciales:
+
+FORMA DE ENVÍO | FORMA DE PAGO | CONDICIÓN ADICIONAL  
+---|---|---  
+Entregado en oficina cliente | Pago a 30 días | Flete por cuenta del cliente  
+  
+Observaciones
+
+Estas condiciones comerciales son de libre uso y definición del usuario.  
+  
+Las condiciones comerciales registradas en el pedido serán cargadas en otra
+operación en la cual se use el pedido como documento referencia.  
+  
+Esta información permite tener claras las condiciones pactadas en la relación
+comercial.
+
+Configuración
+
+Para configurar la funcionalidad de este paso visible, ver: **\[Operación >
+Configurar operación > Visualización de la operación > Pasos en el asistente >
+Datos adic. del pedido\].**
+
+---
+
+# Forma de envío
+
+Medio seleccionado para hacer entrega de los productos solicitados en el
+pedido.  
+
+Ejemplo
+
+* Entregados en la oficina del cliente \(solo se realizan envíos nacionales\).
+* Envío solo por medio electrónico.
+
+Observaciones
+
+Son de libre definición por el usuario. El sistema ya tiene creadas algunas
+que sirven como base, pero pueden ser modificadas. Es importante porque se le
+deja al cliente por escrito el medio por le cual se entragarán los productos.
+
+Configuración
+
+Para modificar o crear formas de envío en el sistema, ver: **\[Operación >
+Herramientas > Formas de envío\]**
+
+---
+
+# Forma de pago
+
+Opciones dadas al cliente para realizar el pago del pedido.  
+  
+
+Ejemplo
+
+* De contado contraentrega.
+* Pago a 30 días.
+* Pago 50% de contado y 50% a 30 días.
+
+Observaciones
+
+Son de libre definición por el usuario. El sistema ya tiene creadas algunas
+que sirven como base las cuales se pueden modificar. Es muy importante dejar
+por escrito cómo se debe realizar el pago del pedido para dejar claras las
+condiciones comerciales.
+
+Configuración
+
+Para modificar o crear formas de pago en el sistema, ver: **\[Operación >
+Herramientas > Formas de pago\]**
+
+---
+
+# Condición adicional
+
+Condiciones comerciales adicionales que apliquen al pedido.  
+
+Ejemplo
+
+* Los productos solo se entregan una vez realizado el pago del pedido.
+* Para realizar un cambio o reclamo sobre alguno de los productos del pedido debe presentar el documento de recibido firmado.
+
+Observaciones
+
+Las condiciones adicionales son de libre uso y definición del usuario.
+Permiten dar detalles adicionales de la pedido o datos puntuales a tener en
+cuenta.
+
+Configuración
+
+Para modificar o crear condiciones adicionales en el sistema, ver:
+**\[Operación > Herramientas > Condiciones adicionales\]**
+
+---
+
+# Unidad de moneda local
+
+Nombre de la moneda local que tiene configurada la empresa.
+
+Ejemplo
+
+La empresa Colombiana Muebles M&M tiene como moneda local es el peso, en este
+campo cargará automáticamente PESOS.  
+
+Observaciones
+
+Este campo puede ser modificado desde la operación de pedido. El sistema toma
+por defecto la moneda que tiene configurada el equipo donde se realiza la
+operación. Para cambiar la moneda del equipo, vea: **\[Inicio > Panel de
+Control > Región > Configuración Adicional > Moneda\]**
+
+Configuración
+
+Para la generación de un pedido en otra moneda, vea: **\[Básico > Usuarios >
+Perfiles de Seguridad > Modificar Perfil > Inventarios Plus \(cotizaciones,
+pedidos y órdenes\) > Opciones > General\]**
+
+---
+
+# Moneda
+
+Información de la moneda en la cual se visualizará el pedido.
+
+Ejemplo
+
+El cliente Almacenes NLS de Nicaragua solicita un pedido a la empresa
+Colombiana Muebles MG por lo tanto el pedido se debe enviar en dólares, en
+este campo se debe indicar DÓLAR.  
+
+Observaciones
+
+El sistema da una lista de opciones para seleccionar las diferentes monedas ya
+creadas en el respectivo catálogo. A través de los exploradores e informes de
+inventarios plus se pueden consultar los pedidos en dólares que han sido
+enviados.
+
+Configuración
+
+Para acceder al catálogo de monedas ingrese, ver: **\[Contabilidad > Plan de
+Cuentas > Monedas\]**
+
+---
+
+# Modificar
+
+Activa el campo para cambiar el valor de la tasa de cambio.
+
+Ejemplo
+
+La empresa Muebles MG realiza el pedido PED-145230 al cliente de Nicaragua
+Almacenes NLS se debe activar el check para indicar el valor de la tasa de
+cambio \(valor equivalente de un dólar en pesos\).  
+
+* 1 Dólar equivale a $3.000 a la fecha en que se genera el pedido, se activa este check de modificar para indicar el valor $3.000.
+
+Observaciones
+
+Si no se habilita el campo quedá gris, es decir, no se puede modificar por el
+usuario. Este cálculo se debe hacer manualmente.
+
+---
+
+# Tasa de cambio
+
+Texto de la ayuda del control
+
+  
+  
+
+Ejemplo
+
+  
+
+Texto del ejemplo  
+
+  
+
+Observaciones
+
+  
+
+Texto de de observaciones
+
+  
+
+Configuración
+
+  
+
+Texto de configuración **Ruta configuración**
+
+---
+
+# Unidad
+
+Medida utilizada para discriminar la cantidad de producto o servicio que se
+desea cargar en el pedido.
+
+Ejemplo
+
+* En una carnicería manejan la carne po kilos, por lo tanto la unidad de medida es:**Kg**
+* En una ferretería venden los tubos de pvc por metos, por lo tanto la unidad de medida es:**Mts**
+* Una empresa de servicios ofrece a sus clientes capacitaciones por horas, por lo tanto la unidad de medida es:**Hora**
+
+Observaciones
+
+Si el elemento de inventario maneja unidad de compra diferente a la unidad de
+medida general, en el pedido se carga la unidad de compra configurada al
+elemento de inventario. Las cantidades de los productos que se muestran en los
+diferentes informes y reportes de inventario son basados en esta unidad. La
+unidad de medida es muy importante y es utilizada para conocer las cantidades
+disponibles del producto. La unidad de medida se debe configurar en cada uno
+de los elementos de inventario. Para configurar la unidad de medida de los
+elementos de inventario, ver: **\[Inventarios > Cinta de Opciones > Elementos
+de inventario > Modificar > Unidad\]** Este campo no es modificable por el
+usuario.
+
+Configuración
+
+Para configurar la funcionalidad de este campo como visible, ver:
+**\[Operación > Configurar operación > Campos de la operación > Configuración
+de columnas en cotización al cliente > Unidad\]**
+
+---
+
+# Observaciones para el pedido de un cliente
+
+Ingrese información que aparecerá en el pedido impreso o algún otro documento
+que se imprima a partir de esta operación.  
+
+Ejemplo
+
+Se está generando el pedido PED-1845200 de un televisor LG de 40", es
+importante adicionar un comentario referente a la garantía del producto
+**\(para hacer efectiva la garantía debe presentar la factura de compra\)** ,
+se puede indicar manualmente en este campo para que carga la información en el
+documento impreso.  
+
+Observaciones
+
+Estas observaciones son de libre definición por el usuario. Las observaciones
+pueden estar creadas previamente en el catálogo de observaciones o pueden
+ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones, ver: **\[Inventarios > Cinta de
+Opciones > Observaciones\]**
+
+---
+
+# ![650 Guardar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD1%20-%20Pedido/%5B14350%5D%20FrmOprOrd1/650%20Guardar%20nota.png)Cargar
+Encabezado
+
+Carga observaciones previamente creadas como encabezado del pedido, se puede
+definir tratamiento, nombre y apellido del cliente y una pequeña introducción
+de la información presentada en el pedido.
+
+Ejemplo
+
+La empresa Computadores HM desea que el encabezado de sus pedidos sea el
+siguiente:
+
+_Apreciado Señor Felipe Giraldo, A continuación estamos presentando el pedido
+de nuestros productos y servicios de capacitación que usted amablemente nos ha
+solicitado._  
+
+Observaciones
+
+Las observaciones permiten personalizar la información que será enviada al
+cliente. El sistema carga automáticamente los datos propios del cliente como
+el nombre y tratamiento \(así se tiene una información dirigida a cada cliente
+que se le envía un pedido\). Las observaciones son de libre uso y definición
+del usuario, estas pueden ser escritas o cargadas directamente desde el
+catálogo de observaciones. La información de estas observaciones se verá
+reflejada al visualizar o imprimir el documento en la parte de encabezado o
+saludo al cliente. Se pueden estandarizar observaciones como saludo, despedida
+y comentarios que pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones, ver: **\[Inventarios > Cinta de
+opciones > Observaciones\]**
+
+---
+
+# ![651 Eliminar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD1%20-%20Pedido/%5B14350%5D%20FrmOprOrd1/651%20Eliminar%20nota.png)Limpiar
+Encabezado
+
+Da la opción de borrar los datos que fueron cargados en el encabezado u
+observaciones del pedido.
+
+Observaciones
+
+Los datos pueden limpierse y ser cargados nuevamente.
+
+---
+
+# ![649 Fijar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD1%20-%20Pedido/%5B14350%5D%20FrmOprOrd1/649%20Fijar%20nota.png)Fijar
+Encabezado
+
+Asigna por defecto una de las observaciones como encabezado de la operación.
+
+Ejemplo
+
+Si al momento de enviar información se debe indicar reiteradamete el mismo
+texto, este se puede fijar. Apreciado Señor Felipe Giraldo, A continuación
+estamos presentando el pedido de nuestros productos y servicios que usted
+amablemente nos ha solicitado.  
+
+Observaciones
+
+Esta opción permite dejar información fija para no tener que modificar cada
+vez que se le envíe un pedido a un cliente. Aunque la observación se encuentre
+fija, el usuario puede adicionar o quitar información desde la operación. Las
+observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones. La
+información de estas observaciones se verá reflejada al visualizar o imprimir
+el documento en la parte de observaciones. Se pueden estandarizar
+observaciones como saludo, despedida y comentarios que pueden ser comunes para
+múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones, ver: **\[Inventarios > Cinta de
+Opciones > Observaciones\]**
+
+---
+
+# Cuenta de clientes
+
+Cuenta contable donde se registra la cuenta por pagar al cliente por el
+anticipo dado, para luego hacer el respectivo cruce.
+
+Ejemplo
+
+Se emite el pedido PED-18023364 del cliente Compuequipos S.A. por un valor de
+$1.550.000, el cliente entrega un anticipo de $550.000 para garantizar la
+entrega de los productos, este anticipo se registra en la cuenta 220505.  
+NOTA: Este anticipo se cruza luego con la factura de venta correspondiente.
+
+Observaciones
+
+Este campo por defecto no está disponible para editar, se activa al momento de
+indicar valor por anticipo.  
+  
+Cuando el cliente realiza un abono a un pedido para poner el firme la
+negociación \(sin haber recibido los productos\), la empresa genera una cuenta
+por pagar la cual deberá ser cruzada al momento de la entrega de los
+productos, y teniendo la totalidad del pago del clente.  
+  
+La cuenta por pagar a la cual se lleve el valor del anticipo depende del plan
+de cuentas con el cual trabaje el usuario.  
+  
+Los anticipos registrados en el pedido pueden ser cruzados luego con la
+factura de venta correspondiente.  
+  
+Al registrar un anticipo en el pedido del cliente, automáticamente se afecta
+también el módulo de cartera y proveedores, ya que la cuenta por pagar que
+genera el anticipo estará disponible en los diferentes informes, reportes y
+exploradores.  
+  
+Si se registra anticipo en el pedido hay afectación contable.  
+  
+
+Configuración
+
+Para configurar la visualización del paso formas de pago del primer anticipo,
+ver: **\[Operación > Configurar operación > Visualización de la operación >
+Pasos en el asistente > Forma de pago del primer anticipo\]** Para configurar
+la funcionalidad de este campo como visible o de solo lectura, ver:
+**\[Operación > Configurar operación > Campos de la operación > Datos maestros
+de la operación > Cuenta de clientes\]**
+
+---
+
+# Centro de costos
+
+Centro de costos al cual se carga el anticipo realizado por el cliente
+operación.
+
+Ejemplo:
+
+La empresa MP Computadores en su sede Medellín emite el pedido PED-18012336 a
+Compuequipos S.A. por un valor de $1.550.000, se entrega un anticipo de
+$550.000 para garantizar la entrega anticipada de los productos.  
+  
+CUENTA DE CLIENTES | VALOR ANTICIPO | CENTRO DE COSTOS  
+---|---|---  
+130505 | $ 550.000 | Sede Medellín  
+  
+Observaciones
+
+Este campo solo se activa si la cuenta de cartera a la cual se lleva el
+anticipo exige centros de costos.  
+  
+Asignar un centro de costos al anticipo realizado al cliente, permite al
+usuario llevar un mayor control, en caso por ejemplo que la empresa cuente con
+sedes en diferentes ciudades y cada una de ellas registre sus pedidos y
+anticipos.
+
+Configuración
+
+Para configurar la visualización del paso Formas de pago del primer anticipo,
+ver: **\[Operación > Configurar operación > Visualización de la operación >
+Pasos en el asistente > Forma de pago del primer anticipo\]**
+
+---
+
+# Cantidad
+
+Número de unidades del producto o servicio que serán cargados en el pedido del
+cliente.
+
+Ejemplo
+
+Se genera el pedido PED-1802114 para el cliente Almacenes M&M de 2 computadores mini Hp, 1 computar mini Dell y un todo en uno, en cantidad deberá indicarse el número de unidades que la persona solicita por cada producto.  REFERENCIA | PRODUCTO | CANTIDAD  
+---|---|---  
+COMHP001 | Computador mini Hp | 2  
+COMDELL002 | Computador mini Dell | 1  
+COMTD003 | Computador todo en uno | 1  
+  
+Observaciones
+
+La cantidad indicada en este campo será cargada en otra operación en la cual
+se tome como referencia este documento, como la factura de venta. Es un campo
+obligatoria que se carga por defecto en la operación.
+
+---
+
+# Cargar productos pedido/cotización
+
+Carga los elementos de un pedido o cotización previamente realizada y enviada
+al cliente.  
+
+Ejemplo
+
+Al cliente Huevos Máximo se le envió el pedido PED-1801001 el 01 de febrero,
+el cliente solicita nuevamente una pedido el 20 de marzo, en ese caso se carga
+el pedido PED-1801001 y a traves del botón se cargan los elementos
+seleccionados en el pedido \(toma como referencia pedidos enviadas con
+anterioridad\).  
+
+Observaciones
+
+Este botón carga por defecto todos los elementos del pedido, pero estos
+elementos pueden modificarse desde la operación. Es importante tener presente
+que si la referencia ya fue indicada y los elementos cargados, al dar clic en
+el boton cargarán nuevamente los elementos pero el sistema solicita
+confirmación. Si no hay referencia indicada, al dar clic en el botón, se abre
+automáticamemte el catálogo de cotizaciones y pedidos.
+
+---
+
+# Precio
+
+Valor por unidad asignado a cada producto.
+
+Ejemplo
+
+La empresa Computadores HM maneja los siguientes elementos de inventario, cada
+uno de ellos con el respectivo precio.
+
+REFERENCIA | PRODUCTO | PRECIO  
+---|---|---  
+COMHP001 | Computador mini Hp | $ 700.000  
+COMDELL002 | Computador mini Dell | $ 800.000  
+COMTD003 | Computador todo en uno | $ 1.000.000  
+  
+Observaciones
+
+Este campo por defecto está como no modificable por el usuario. El precio se
+puede definir según las políticas de la empresa con o sin IVA incluido. Si el
+producto tiene definido el precio este se carga automáticamente, de lo
+contrario se puede ingresar desde la operación. Para definir los precios a los
+elementos de inventario, ver:**\[Inventarios > Cinta de Opciones > Elementos
+de Inventario > Modificar > Lista de Precios > Precio\]** El precio es un
+campo muy importante, porque cuando se enlaza con una operación como la
+factura, este dato carga exactamente igual y es utilizado para darle al
+cliente el valor a cancelar.
+
+Configuración
+
+Para activar el campo y registrar precio ver:**\[Menú Operación > Opciones >
+Registrar Precios\]**
+
+---
+
+# Porcentaje descuento
+
+Descuento que se aplicará a cada uno de los productos o servicios cargados en
+el pedido.
+
+Ejemplo
+
+Se registra el pedido PED-1548001 para la empresa Computadores HM en el cual
+se discrimina el descuento vigente al momento de la generación del pedido, en
+este caso 10%.  
+  
+REFERENCIA | PRODUCTO | PRECIO | DESCUENTO  
+---|---|---|---  
+COMHP001 | Computador mini Hp | $ 700.000 | 10%  
+COMDELL002 | Computador mini Dell | $ 800.000 | 10%  
+COMTD003 | Computador todo en uno | $ 1.000.000 | 10%  
+  
+Observaciones
+
+Se pueden definir descuentos fijos por cliente o producto. Si el usuario que
+realiza el registro de la información tiene los permisos, puede cambiar o
+asginar descuentos desde la operación. Los descuentos indicados en el pedido,
+se cargaran automáticamente al momento de enlazar el documento con una factura
+de venta. Se puede generar a través de un explorador de inventarios plus, una
+consulta para conocer los pedidos enviados con descuentos, o filtrar según los
+descuentos asignados.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en cotización al cliente > %
+desc.\]**
+
+---
+
+# Porcentaje IVA
+
+Porcentaje de IVA aplicado a cada uno de los productos o servicios indicados
+en el pedido.
+
+Ejemplo
+
+En la empresa Computadores MH maneja los siguientes porcentajes de IVA para todos los elementos de inventario.  REFERENCIA | PRODUCTO | PRECIO | % IVA  
+---|---|---|---  
+COMHP001 | Computador mini Hp | $ 700.000 | 19%  
+COMDELL002 | Computador mini Dell | $ 800.000 | 19%  
+COMTD003 | Computador todo en uno | $ 1.000.000 | 8%  
+  
+Observaciones
+
+Este porcentaje de IVA es tomado por el sistema de la configuración realizada
+al elemento de inventario y se configura en el grupo de inventario. Para
+acceder a catálogo de grupos de inventario ver: **\[Pestaña Inventarios >
+Cinta de Opciones > Grupos de Inventario\]** Los productos o servicios pueden
+manejar diferentes porcentajes de IVA o productos que son excluidos. El
+porcentaje de IVA cargado en el pedido va automáticamente a la factura al
+momento de enlazar el documento. Es un campo muy importante porque lleva
+información directamente a los informes de anexos y certificados de IVA una
+vez se factura. Este campo no permite ser modificado desde la operación de
+pedido.
+
+Configuración
+
+Para acceder los conceptos de liquidación ingrese a: **\[Pestaña Contabilidad
+> Pan de Cuentas > Conceptos de liquidación en ingreso/egreso\]**
+
+---
+
+# Acerca de ventana
+
+##  OPERACIÓN DE PEDIDO DE UN CLIENTE
+
+##  Objetivo
+
+La operación de pedido de un cliente, permite registrar en el sistema una
+solicitud de envío de los productos o prestación de servicios de la empresa
+que ya han sido presentados previamente al cliente o a un interesado.  
+  
+Con el pedido del cliente se formaliza la intención de adquisición del
+producto por parte del tercero para luego ser remisionado o facturado.  
+  
+La operación de pedido del cliente genera movimiento en el inventario
+disponible, ya que supone un compromiso con el cliente o interesado de
+entregar a determinada fecha los productos o servicios solicitados,
+descontando así de las existencias disponibles en la bodega.  
+  
+Esta operación no afecta el inventario físico puesto que aún no se ha
+realizado la salida de los productos de la bodega, ni el inventario contable
+ya que no se ha generado la factura de venta.  
+  
+
+## Ejemplo de información a registrar
+
+Para el registro de la operación de pedido de un cliente, es necesario indicar
+el tercero quien está realizando la solicitud de envío de los productos, bien
+sea un tercero interesado o un tercero que ya es cliente.  
+  
+Es posible registrar el pedido de un cliente tomando otro documento como
+referencia, puede ser basado en una cotización, importando la información
+registrada en ella, y realizar las modificaciones necesarias.  
+  
+Seleccionar del catálogo de elementos de inventario, el listado de productos
+solicitados, indicar el respectivo precio, y asignar descuento cada producto.  
+  
+Se puede indicar las condiciones comerciales para los productos solicitados
+por el cliente, fecha de entrega del pedido, formas de pago, de entrega, entre
+otras.  
+  
+Si el cliente realiza un anticipo de dinero a la empresa por los productos
+solicitados, es posible registrar dicho anticipo en la operación de pedido del
+cliente, así el sistema realizará el respectivo movimiento contable y generará
+la respectiva cuenta por pagar al cliente.  
+  
+
+## Secciones
+
+## Encabezado de la operación
+
+En el encabezado de la operación de cotización es posible seleccionar un
+documento especializado para el soporte de la operación y es el documento
+Pedido de un Cliente, este tipo de documento se puede definir por defecto, y
+el sistema automáticamente asignará el consecutivo correspondiente según su
+configuración.  
+  
+Para esta operación también es posible seleccionar en el encabezado la lista
+de precios que se asignará a los productos cuando estos sean llamados en la
+operación.  
+  
+
+## Secciones de la operación
+
+Pedido de un cliente
+
+En esa sección, adicional a la información a indicar en el encabezado de la
+operación, se indican los elementos de inventario solicitados por el tercero
+con la información comercial correspondiente, como es la cantidad, el precio
+unitario \(si no se indicó una lista de precios en el encabezado\) descuento a
+otorgar y observaciones de cada elemento.  
+  
+También se pueden indicar condiciones comerciales como, la forma de pago, la
+forma de envío y si se tienen condiciones adicionales para el pedido del
+cliente.  
+  
+Si es necesario registrar el pedido en otra moneda diferente a la local, en
+esta sección se puede indicar otra unidad de moneda, previa configuración
+correspondiente.  
+  
+
+Datos adicionales de la cotización
+
+En esta sección se indica la planeación de la entrega, es decir la fecha
+máxima en la cual se entregarán los productos solicitados por él.  
+  
+La cuenta de inventarios se puede personalizar a nivel de grupo o elemento de
+inventario.
+
+Observaciones del pedido
+
+Esta sección permite configurar información que se visualiza en el pedido
+impreso, estas observaciones se pueden digitar o seleccionar del catálogo de
+observaciones, como también se pueden dejar fijas para que siempre que se
+ingrese en la operación ya se encuentren registradas sin necesidad de
+seleccionarlas.  
+  
+
+Forma de pago del primer anticipo
+
+Es posible registrar en la operación anticipos realizados por los terceros,
+afectando así contablemente por la recepción del dinero y generando una cuenta
+por pagar al cliente.  
+  
+Este anticipo será cruzado luego al momento de emitir la factura de venta al
+cliente por los productos solicitados.  
+  
+
+## Documentos de impresión
+
+Es posible generar la impresión de la operación de pedido de un cliente para
+ser tenido en cuenta para el respectivo envío de los productos solicitados,
+esta impresión de puede realizar en formato PDF o en HTML para ser enviada a
+través del correo electrónico.
+
+---
+
+# Centro de costos
+
+Código del centro de costos al que se cargará el ingreso cuando se registre la
+venta del elemento de inventario.
+
+Ejemplo
+
+Se registra la remisión RMC-18020032 al cliente Almacén Tu Equipo con los
+siguientes productos:
+
+PRODUCTO | PRECIO | CANT. | VALOR VENTA | CC. INGRESO  
+---|---|---|---|---  
+Computador Todo en Uno | $ 950.000 | 1 | $ 950.000 | 1COM - Comercial 1  
+Computador mini Dell | $ 700.000 | 1 | $ 700.000 | 1COM - Comercial 1  
+Minitorre Genérica | $ 450.000 | 1 | $ 450.000 | 1COM - Comercial 1  
+  
+Observaciones
+
+  
+
+Este campo será cargado en la operación de ventas en la cual se llame como
+documento referencia la remisión al cliente.  
+  
+Por lo general la operación de compra en su movimiento contable efectúa
+imputaciones a la cuenta de inventarios, siempre y cuando se controle
+cantidades en el inventario del producto comprado, de lo contrario la
+operación de compra ya no realizará la imputación a una cuenta de inventarios
+sino que lo hará a una cuenta del gasto o costo, por tal motivo solicita que
+se indique el centro de costo.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en listado de productos > Centro de
+costos\]**
+
+---
+
+# Referencia
+
+Código del documento en el cual se basa el registro de la remisión al cliente,
+este puede ser un pedido del cliente o una cotización enviada al cliente.
+
+Ejemplo
+
+El día 10 de febrero se envía la cotización CTC-1802001 al cliente Carlos
+Grisales, en la cual se presentan los siguientes productos:
+
+Producto | Unidad | Cantidad | Precio  
+---|---|---|---  
+Computador mini Hp |  Unid |  1 | $ 925.000  
+Computador mini Dell |  Unid |  1 | $ 850.000  
+  
+
+El día 18 de febrero el cliente acepta la cotización y solicita sean enviados
+los productos, pero que la factura se envíe en el próximo mes.
+
+Los productos son enviados mediante remisión al cliente, y en el campo
+referencia, se selecciona la cotización CTC-1802001 enviada previamente al
+cliente y aceptada por él.
+
+Observaciones
+
+* Para indicar un documento como referencia en la remisión al cliente, este se debe registrar previamente.
+* Se puede indicar uno o varios documentos como referencia para el registro de la remisión al cliente.
+* Al seleccionar un documento como referencia para el registro de la remisión al cliente, se carga en la operación todos los datos registrados en el documento referencia: Nombre del cliente, productos a enviar y precios indicados.
+* Al seleccionar un documento como referencia para el registro de la remisión al cliente, se establece una trazabilidad entre ambos documentos, esto permite al usuario establecer relación entre ellos.
+* Es posible cargar en la remisión al cliente cantidades parciales de los productos registrados en el documento tomado como referencia, así, si al momento de registrar la remisión al cliente, el documento referencia ya ha sido usado en otra operación y quedaron cantidades pendientes por enviar o si por el contrario al momento de enviar la remisión al cliente no se cuenta con la disponibilidad de todas las cantidades, quedando así disponible para ser usado en otra operación.
+* Solo es posible tomar como referencia en la remisión al cliente un documento que se encuentre abierto, los documentos cerrados no están disponibles en el seleccionador de referencias.
+* Al abrir el seleccionador de referencias es posible conocer la vigencia de los documentos que se pueden tomar como referencia para el registro de la remisión, conocer si cuentan con vigencia, si está próximo a vencerse o si ya está vencido.
+* Si la remisión al cliente se registró con base en otro documento, el usuario de igual forma puede realizar modificaciones en la operación.
+* La operación de remisión al cliente no afecta el inventario contable, solo afecta el inventario físico y de disponibilidad.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Operación > Configurar operación > Config.de
+campos/columnas de datos > Datos maestros de la operación > Referencia\]**
+
+---
+
+# Observaciones
+
+Descripción breve del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se registra remisión RMC-1802450 al cliente Compu Trek por dos Computadores
+Todo en Uno, indicando las características del equipo.  
+  
+PRODUCTO | CANT. | OBSERVACIÓN  
+---|---|---  
+Computador Todo en Uno | 2 | Procesador 2,2GHz - Pantalla 23,9" - Conectividad WiFi b / g / n, Bluetooth 4.0 + LE - Memoria 4 GB  
+  
+Observaciones
+
+Esta observación es cargada de forma automática en la operación al seleccionar
+el elemento de inventario en el renglón.  
+  
+La observación del elemento de inventario en el renglón es de libre uso y
+definición del usuario y se configura como descripción directamente en cada
+elemento de inventario, para adicionar esta descripción al elemento de
+inventario ver **\[Pestaña Inventarios > Elementos de Inventario > Modificar >
+Descripción\]**  
+  
+Esta observación puede ser modificada por el usuario directamente en la
+operación, bien sea para cambiarla o complementarla.  
+  
+Cuando la remisión al cliente sea usada como documento referencia en otra
+operación, la información de este campo se cargará automáticamente en la nueva
+operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en orden de compra >
+Observación.\]**
+
+---
+
+# Dato 1
+
+Presenta información adicional para el producto en la operación.
+
+Ejemplo
+
+El almacén Su Vestido SAS comercializa prendas de vestir, el usuario requiere
+indicar información adicional para el producto como la talla, para esto se
+habilita el campo adicional Dato 1 en las operaciones de inventario.
+
+Código |  Producto | Dato 1 - Talla  
+---|---|---  
+CAMHOM250 | Camisa hombre Skit |  S  
+CAMHOM250 | Camisa hombre Skit |  M  
+CAMHOM250 | Camisa hombre Skit |  L  
+En el campo **"Dato 1"** , debe indicar la información adicional que se
+requiere mostrar en los documentos de impresión o visualizar en el explorador
+de inventarios.
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Dato 1 por Talla.
+
+---
+
+# Valor 1
+
+Presenta valores adicionales para el producto en la operación.  
+
+Ejemplo
+
+Un Minimercado mide los inventarios de los productos de abarrotes \(arroz,
+frijol, lenteja\) en libras y requiere conocer las existencias de ciertos
+productos en kilos, para conocer este dato se configura el campo adicional
+Valor 1 en las operaciones de inventario.  
+  
+Código | Producto | Unidad | \(VALOR 1\) Kilos   
+---|---|---|---  
+AR001 | Arroz blanco | 50 Libras | 25 Kilos  
+AZ005 | Azúcar Morena | 100 Libras  | 50 Kilos   
+En el campo **"Valor 1"** , debe indicar el valor adicional que se requiere
+mostrar en los documentos de impresión o visualizar en el explorador de
+inventarios.
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Valor 1 por Kilo.
+
+---
+
+# Código bodega
+
+Código de la bodega de la cual egresa el producto de cada renglón, esta es la
+misma bodega que se afecta al momento de registrar la factura de venta.
+
+Ejemplo
+
+El supermercado Merca Ahorro, cuenta con diferentes bodegas para el manejo de
+sus productos:
+
+Código | Nombre  
+---|---  
+1 | Bodega de productos alimenticios  
+2 |  Bodega de productos de aseo  
+  
+
+Al momento de registrar una remisión al cliente, en este campo puede
+seleccionar la bodega correspondiente de la cual saldrá cada producto, los
+productos alimenticios de la **"Bodega 1"** y los productos de aseo de la
+**"Bodega 2"**.
+
+Observaciones
+
+Para cada renglón de la operación se puede indicar una bodega diferente y el
+sistema respetará esta aunque en la operación se indique una bodega por
+defecto.  
+  
+La empresa puede crear tantas bodegas como requiera para facilitar el manejo
+los elementos de inventario.
+
+Configuración
+
+Para configurar la funcionalidad del campo bodega por renglón \(visible, solo
+lectura, requerido, etc.\), ver: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en orden de compra >
+Bodega\]**
+
+---
+
+# Cliente
+
+Código de identificación del tercero \(cliente\) a quien se registra la
+remisión de elementos de inventario.
+
+Ejemplo
+
+Se registra la remisión RMC-1801265 al cliente Computadores y Redes S.A, en la
+cual se hace envío de un Computador todo en Uno. En el campo cliente se indica
+el código de identificación de Computadores y Redes S.A.  
+  
+CÓDIGO | NOMBRE  
+---|---  
+900004632 | Computadores y Redes S.A.  
+  
+Observaciones
+
+Para que el tercero pueda ser seleccionado en la operación de remisión al
+cliente, se debe crear con el tipo de tercero **"Cliente"**.  
+  
+Para configurar el tipo de tercero ver **\[Pestaña Básico > Terceros >
+Modificar > Tipo de Tercero\]**  
+  
+Al abrir el seleccionador de terceros en la remisión al cliente, éste se
+filtra solo por aquellos terceros cuyo tipo es **"Cliente"**.  
+  
+El cliente indicado en la remisión, será el mismo que se cargue en otra
+operación la cual se use como documento referencia la remisión al cliente.  
+  
+Se pueden generar informes y reportes de ventas filtrados por el campo
+**"Cliente"**.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Proveedor\].**
+
+---
+
+# Lista de precios
+
+Se selecciona la lista de precios que se usará para el registro de la
+operación, así cuando se cargue un elemento de inventario en el renglón traerá
+el precio configurado en la lista de precios seleccionada.
+
+Ejemplo
+
+Le empresa MP Computadores maneja diferentes listas de precios para sus
+clientes:  
+CÓDIGO | NOMBRE  
+---|---  
+01 | Precios público  
+02 | Precios clientes VIP  
+03 | Precios mayoristas  
+  
+Se registra una remisión al cliente Juan Carlos Díaz, y se selecciona la lista
+de precios Público, así al seleccionar los elementos de inventario a enviar al
+cliente, en la operación se carga el precio asignado al elemento en esta lista
+de precios.
+
+Observaciones
+
+Es posible crear tantas listas de precios como el usuario las requiera. Las
+listas de precios se pueden crear en **\[Pestaña Inventarios > Cinta de
+Opciones > Listas de Precios\]**  
+  
+Estas listas de precios se pueden crear con IVA incluido.  
+  
+Si el cliente ya tiene asignada una lista de precios por defecto diferente a
+la seleccionada en la operación, se respeta la lista de precios asignada al
+cliente.
+
+Configuración
+
+Para asignar la lista de precios a los elementos de inventarios ver:
+**\[Pestaña Inventarios > Elementos de inventario > Modificar elemento >
+Pestaña Listas de precios\]**
+
+---
+
+# Bodega
+
+Código de la bodega desde la cual saldrán los productos que se envían al
+cliente.  
+
+Ejemplo
+
+La empresa Compumás cuenta con varias bodegas para el almacenamiento de sus
+productos:  
+Código | Bodega  
+---|---  
+1 | Bodega Principal  
+2 | Bodega Centro  
+2 | Bodega Norte  
+  
+Se registra la remisión RMC-1803245 al cliente Juan Guillermo García y se
+indica que la bodega de la cual saldrán todos los productos será la **"Bodega
+Centro"**.  
+
+Observaciones
+
+Es posible indicar una bodega para cada renglón de la operación de remisión al
+cliente, para activar este manejo ver: **\[Menú Operación > Configurar
+operación > Campos de la operación > Configuración de columnas en el listado
+de productos\]**.  
+  
+Esta es la bodega que se cargará cuando la remisión al cliente sea usada como
+documento referencia en otra operación.
+
+Configuración
+
+Para configurar la funcionalidad del campo Bodega \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Bodega\]**
+
+---
+
+#  Ver documento impreso
+
+Permite visualizar la información registrada en el documento indicado en el
+campo **"Referencia"**.  
+
+Ejemplo
+
+Se registra la remisión RMC-180345 al cliente Jesús García, y se toma como
+referencia el pedido PED-180263.  
+Se usa el botón **"Ver documento impreso"** para tener una vista de los datos
+registrados en el pedido tomado como referencia.
+
+Observaciones
+
+Si en el campo **"Referencia"** no se indica ningún documento, el botón estará
+activo pero no mostrará nada.
+
+---
+
+#  Botón Cerrar Referencia
+
+Da por finalizado \(cerrado\) el o los documentos que fueron cargados en el
+campo referencia como base para el registro de la operación.
+
+Ejemplo
+
+* Se registra la remisión RMC-1802547 al cliente Todo Computadores con base en la cotización CTC-1802365 y se hace entrega de todos los productos registrados en ella, por tal motivo se da por cerrada la cotización CTC-1802365 para que ya no esté más disponible.
+  
+
+* Se registra la remisión RMC-1803254 al cliente Tecnimás con base en el pedido PED-1802365 y quedan pendientes por entregar algunos elementos de inventarios, por tal motivo se deja abierto el pedido del cliente para que esté disponible para ser usado en otra operación.
+
+Observaciones
+
+Al momento de dar por cerrado el documento tomado como referencia, no se
+volverá a cargar o estar visible en el seleccionador para otras operaciones.  
+  
+El documento referencia se puede dejar abierto, en caso de enviar al cliente
+todos los productos registrados en él, con el fin de poder cargar esta
+referencia en una nueva operación.  
+  
+Si en la operación no se cargó ningún documento como referencia no es
+necesario usar este botón.  
+  
+Es muy importante hacer el cierre de los documentos tomados como referencia
+para que no queden como pendientes estando ya usados en otra operación.  
+  
+El clierre de documentos también se puede hacer a través de la operación de
+Cierre de documentos.  
+  
+Es posible visualizar los documentos cerrados en los exploradores de
+inventarios plus
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Referencia\].**
+
+---
+
+# Valor Parcial
+
+Valor total de los elementos de inventario cargados en la remisión al cliente
+antes de impuestos y descuentos.
+
+Ejemplo
+
+Se envía mediante remisión RMC-1801659 al cliente Carlos García los siguientes
+productos discriminando cantidad, valor unitario, descuento y valor parcial.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | DCTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 925.000 |  10.00% | $ 832.500  
+Computador mini Dell | 1 | $ 850.000 |  10.00% | $ 765.000  
+Computador todo en uno | 2 | $ 1.200.000 |  10.00% | $ 1.080.000  
+**Subtotal Valor Parcial** | **$ 2.975.000**  
+  
+
+Observaciones
+
+Este campo corresponde a la sumatoria del valor parcial de cada elemento de
+inventario cargado en la remisión antes de aplicar descuentos e impuestos.  
+  
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los datos registrados en la operación.
+
+---
+
+# Valor Descuento
+
+Valor total de los descuentos otorgados al cliente por cada elememento de
+inventario cargado en la remisión.
+
+Ejemplo
+
+Se envía mediante remisión RMC-18032578 al cliente Carlos Grisales los
+siguientes productos discriminando producto, cantidad, valor unitario, % de
+descuento, y valor parcial.
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 925.000 |  10.00% | $ 832.500  
+Computador mini Dell | 1 | $ 850.000 |  10.00% | $ 765.000  
+Computador todo en uno | 1 | $ 1.200.000 |  10.00% | $ 1.080.000  
+Total Descuento |  |  |  $ 297.500 |   
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Producto
+
+Código del elemento de inventarios que se envía al cliente en la remisión.
+
+Ejemplo
+
+El día 13 de febrero se realiza envío mediante remisión RMC-180256 al cliente Beatriz Duque los siguientes productos:  Código | Nombre  
+---|---  
+MON001 | Monitor de 27"  
+EQP001 | Minitorres Genérica  
+  
+Al momento de registrar la remisión al cliente, en este campo se selecciona
+para cada renglón el producto a enviar.  
+Estos productos se envían mediante remisión al cliente ya que solicitó que la
+factura de venta se emita con fecha del próximo mes.
+
+Observaciones
+
+Los productos a enviar al cliente en la remisión se pueden seleccionar
+directamente del catálogo de elementos de inventario o se cargan del documento
+tomado como referencia para el registro de la remisión.  
+  
+Para visualizar en el campo **"Producto"** el nombre de éste y no el código,
+dé clic en el botón "Formato"  y amplíe la columna en la operación.  
+  
+Si el cliente cuenta con una estructura para el manejo de código de barras,
+puede seleccionar los elementos en la remisión con el lector de código de
+barras.  
+  
+La visualización de los elementos de inventario en el seleccionador de
+elementos de inventario depende de las existencias en la bodega indicada en la
+operación, si no se cuenta con existencias de algún producto, éste no se
+visualiza en el seleccionador.  
+  
+Es posible generar informes, reportes y exploradores con base en el código del
+elemento de inventario seleccionado en la remisión al cliente.  
+  
+Al registrar salida de productos mediante la remisión al cliente no se fecta
+el inventario contable, solo se afectan el inventario físico y el inventarios
+disponible, y se integra con el módulo de inventarios, puesto que se da una
+salida de los productos de este.  
+  
+El registro de este campo en la operación de remisión al cliente es requerido,
+esto quiere decir que si no se registra información en este campo, no es
+posible procesar la operación.
+
+---
+
+# Valor Total
+
+Valor total de los elementos de inventario enviados al cliente mediante la
+remisión, y equivale a la sumatoria del valor parcial, menos descuentos más
+IVA.
+
+Ejemplo
+
+Se envía mediante remisión RMC-18032578 al cliente Carlos Grisales los
+siguientes productos discriminando cantidad, precio unitario, valor parcial,
+iva, y los totales, seguido del valor total.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | VALOR PARCIAL  
+---|---|---|---  
+Computador mini Hp | 1 | $ 925.000 | $ 925.000  
+Computador mini Dell | 1 | $ 850.000 | $ 850.000  
+Computador todo en uno | 1 | $ 1.200.000 | $ 1.200.000  
+**Subtotal Valor Parcial** | **$ 3.807.500**  
+**Impuesto de venta \(19%\)** | **$ 723.425** | Valor Total | $ 4.530.925  
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Transportador
+
+Código del tercero \(transportador\) encargado de entregar los elementos de
+inventario remisionados al cliente.
+
+Ejemplo
+
+* Se registra la remisión RMC-1802458 al cliente Felipe Gómez en la ciudad de Bogotá por 1 Computador Todo en Uno, el envío se realiza por medio de la empresa transportadora Servientrega.  
+En el campo transportador se indica el código de la empresa **"Servientrega"**
+
+  
+
+* Se registra la remisión RMC-1801659 al cliente Camila Sánchez en la ciudad de Manizales por 1 Impresora de inyección, la entrega del producto lo realiza directamente la empresa por medio del empleado Carlos Bustamante.  
+En el campo transportador se indica el código del empleado **"Carlos
+Bustamante"**
+
+Observaciones
+
+Para seleccionar el transportador en la remisión al cliente, éste debe estar
+creado en el catálogo de terceros de la empresa.  
+  
+Si las entregas de los productos siempre las realiza el mismo transportador,
+es posible asignar un transportador por defecto por medio de la configuración
+de este campo en la operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Transportador\]**
+
+---
+
+# Dirección
+
+Seleccione la sucursal del cliente en la cual se realiza la entrega de los
+elementos de inventario remisionados.
+
+Ejemplo
+
+Se hace envío de 3 Computadores Todo en Uno al cliente MP Computadores con la
+remisión RMC-1803654.  
+El cliente cuenta con dos sucursales para recepción de productos:  
+  
+SUCURSAL | DIRECCIÓN  
+---|---  
+Sucursal Centro | Calle 19 No 22-18  
+Sucursal Chapinero | Calle 66 No 9-24  
+  
+El cliente solicita que se realice la entrega de los productos remisionados en
+la **"Sucursal Centro"** , entonces en el campo se selecciona ésta sucursal.
+
+Observaciones
+
+Para seleccionar la sucursal del cliente en la operación, ésta debe estar
+creada en el tercero cliente.
+
+Configuración
+
+Para visualizar este paso en la operación ver: **\[Menú Operación >
+Configuración de la operación > Visualización de la operación > Pasos en el
+asistente > Datos de entrega y observaciones\]**
+
+Para configurar la funcionalidad de este campo como visible ver: **\[Menú
+Operación > Configuración de la operación > Campos de la operación > Datos
+maestros de la operación > Enviar a > Enviar a\]**
+
+---
+
+#  Observaciones para la remisión
+
+Indique las observaciones que aparecen en la remisión impresa o algún otro
+documento que se imprima a partir de esta operación.
+
+Ejemplo
+
+Pasados 5 días de la entrega de los productos, no se aceptan devoluciones por
+mal estado de los productos.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+El catálogo de observaciones permite crear observaciones en las cuales el
+usuario puede complementar información que el cliente tenga presente para la
+negociación.  
+  
+Se pueden crear tantas observaciones como se requieran con la información que
+se desee visualizar en el documento, ejemplo:
+
+* Condiciones sobre la entrega de los productos.
+* Información sobre recepción de devoluciones.
+* Formas de pago.
+* Recomendaciones técnicas.
+
+Configuración
+
+Para crear o modificar observaciones ver: **\[Pestaña inventarios > Cinta de
+opciones > Otros > Observaciones.\]**
+
+---
+
+#  Cargar Encabezado
+
+Carga en la remisión al cliente observaciones previamente creadas en el
+catálogo de observaciones.
+
+Ejemplo
+
+Se puede crear una observación estandar para el encabezado de la observación:  
+Apreciado _CLIENTE MP Computadores._  
+Por políticas de empresa, no se aceptan devoluciones pasados 5 días despues de
+la entrega de los productos.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+Es posible configurar el sistema para que tome los datos del cliente, así la
+observación es personalizada.  
+  
+La información de estas observaciones se verá reflejada al visualizar o
+imprimir el documento.  
+  
+Se pueden estandarizar observaciones como saludo, despedida y comentarios que
+pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Pestaña Inventarios > Cinta
+de opciones > Observaciones\]**
+
+---
+
+#  Limpiar encabezado
+
+Borra las observaciones cargadas en la operación.
+
+Observaciones
+
+Las observaciones se pueden limpiar en la operación para ser cargadas
+nuevamente o digitarlas.
+
+---
+
+#  Fijar Encabezado
+
+Asigna observaciones por defecto en la operación.
+
+Ejemplo
+
+Si al momento de registrar una remisión al cliente se debe indicar siempre la
+misma información, ésta se puede registrar como una observación y fijarla para
+que siempre que se registre la operación, la observación se encuentre cargada
+en el campo.  
+  
+_Apreciado CLIENTE MP Computadores._  
+Por políticas de empresa, no se aceptan devoluciones pasados 5 días después de
+la entrega de los elementos de inventario.
+
+Observaciones
+
+Fijar las observaciones permite ahorrar tiempo en el registro de la operación,
+ya que si requiere indicar siempre la misma información, no deberá digitarla
+ni selecionarla.  
+  
+Aunque la observación se encuentre fija, el usuario puede adicionar o quitar
+información desde la operación.  
+  
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+\[ContaPyme\] cuenta con un catálogo de observaciones, este ya tiene algunas
+observaciones creadas, el usuario puede modificarlas o crear cuantas requiera.  
+  
+La información de estas observaciones se verá reflejada al visualizar o
+imprimir el documento.  
+  
+Se pueden estandarizar observaciones como saludo, despedida y comentarios que
+pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Pestaña Inventarios > Cinta
+de Opciones > Observaciones\]**
+
+---
+
+#  Cargar pedido
+
+Carga en la remisión al cliente los elementos de inventario asociados al
+documento tomado como referencia \(si se indicó alguno\).
+
+Ejemplo
+
+Se registra remisión RMC-1801325 al cliente Pilar Diaz tomando como referencia
+el pedido PED-1801896.  
+  
+_**Nota:**_ Se da clic en este botón  para cargar nuevamente en la remisión
+los elementos de inventario registrados en el pedido PED-1801896 tomado como
+referencia.
+
+Observaciones
+
+Este botón carga por defecto todos los elementos del documento tomado como
+referencia.  
+  
+Si el documento referencia tiene saldos pendientes, solo cargará los productos
+pendientes del documento referencia.  
+  
+Si la referencia ya fue indicada y los elementos cargados, al dar clic en el
+botón, se cargan nuevamente los elementos en la operación y el sistema
+solicita confirmación.  
+  
+Para visualizar esta opción el usuario debe estar ubicado en cualquier columna
+del área de registro de la operación.
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al producto.
+
+Ejemplo
+
+La empresa Comercial de alimentos, entre sus productos comercializa huevos, y
+debe especificar su tipo en las operaciones, así:  
+Producto | Tipo  
+---|---  
+Huevo blanco | A  
+Huevo blanco | AA  
+Huevo blanco | Extra  
+  
+  
+
+Observaciones
+
+Este campo es de libre uso y definición del usuario.  
+  
+Asignar en la operación un tipo al produto, evita que se deba crear en el
+catálogo de elementos de inventario, un producto por cada especificación que
+se necesite.  
+  
+La especificación dada al producto en esta columna estará visible en los
+exploradores de inventarios plus.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > Tipo\]**
+
+---
+
+#  Series/Lotes \(Ctrl+F2\)
+
+Registra información de seguimiento para el elemento de inventario en el
+renglón \(series/lotes, fechas de vencimiento, proveedor, etc.\).
+
+Ejemplo
+
+La Comercializadora de medicamentos Comedic, registra para cada uno de sus
+elementos de inventario el número del lote del fabricante, con la respectiva
+fecha de fabricación, de vencimiento y las cantidades recibidas por cada lote.  
+  
+Se envía a la droguería Su Salud, 10 unidades del producto Gotas Oftálmicas
+Oftal, mediante la remisión al cliente RMC-1802111, indicando en la operación
+el lote, y las respectivas unidades enviadas al cliente por cada lote:  
+  
+PRODUCTO | LOTE | CANTIDAD  
+---|---|---  
+Oftal | L-171215 | 3  
+Oftal | L-180103 | 7  
+  
+Observaciones
+
+Este botón solo se activa cuando en la operación se ubica el cursor sobre un
+elemento de inventario que esté configurado para el manejo de series/lotes.  
+  
+El manejo de series y lotes se configura directamente en el grupo de
+inventario.  
+  
+La información indicada por medio de este botón no se visualiza en la
+operación o en el documento impreso, solo permite realizar control.  
+  
+Se recomienda que se realice la trazabilidad de series y lotes tanto en los
+ingresos de los elementos de inventario \(Recepción, compras\) como en las
+salidas \(Remisión, venta\).
+
+Configuración
+
+Para configurar el manejo de series/lotes a los grupos de inventario ver:
+**\[Pestaña inventarios > Catálogos > Grupos inv. > Modificar > Pestaña
+General > Meneja series/lotes\].**
+
+---
+
+# Unidad
+
+Medida general utilizada para discriminar la cantidad del producto en las
+operaciones.
+
+Ejemplo
+
+* En una carnicería manejan la carne por kilos, por lo tanto la unidad de medida es:**Kg**
+* En una ferretería venden los tubos de pvc por metros, por lo tanto la unidad de medida es: **Mts**
+* Una empresa de servicios ofrece a sus clientes capacitaciones por horas, por lo tanto la unidad de medida es: **Hora**
+
+Observaciones
+
+Si el elemento de inventario maneja unidad de compra diferente a la unidad de
+medida general, en la orden de compra se carga la unidad de compra configurada
+al elemento de inventario.  
+  
+Las cantidades de los productos que se muestran en los diferentes informes y
+reportes de inventario son basados en esta unidad.  
+  
+La unidad de medida se debe configurar en cada uno de los elementos de
+inventario.  
+  
+Este campo no es modificable por el usuario en la opereación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo como visible, ver: **\[Menú
+Operación > Configurar operación > Campos de la operación > Configuración de
+columnas en orden de compra > Unidad\]**
+
+---
+
+# Cantidad
+
+Número de unidades del elemento de inventario enviadas al cliente mediante
+remisión.
+
+Ejemplo
+
+Se envía al cliente Almacén Tu Equipo mediante la remisión RMC-1803005 los
+siguientes productos:
+
+CÓDIGO | PRODUCTO | CANTIDAD  
+---|---|---  
+COMHP001 | Computador mini Hp | 3  
+COMDELL002 | Computador mini Dell | 2  
+COMTD003 | Computador todo en uno | 2  
+Al momento de registrar la remisión al cliente, en este campo se indica el
+número de unidades a enviar por cada elemento de inventario.  
+  
+
+Observaciones
+
+La cantidad indicada en este campo será cargada en otra operación en la cual
+se tome como referencia esta remisión.  
+  
+Este campo es requerido en la operación, es decir que su diligenciamiento es
+obligatorio para procesar la operación.
+
+---
+
+# Precio
+
+Valor de venta por unidad asignado a cada producto.
+
+Ejemplo
+
+Se envía al cliente Almacén Tu Equipo mediante la remisión RMC-1803005 los siguientes productos:  Producto | Precio  
+---|---  
+Lector de memoria | $ 35.000  
+Memoria USB 8GB | $ 25.000  
+  
+Observaciones
+
+Este campo por defecto no es modificable por el usuario, ya que el sistema
+sugiere el precio según la lista de precios indicada en la operación, o el
+precio indicado al elemento de inventario en el documento tomado como
+referencia para el registro de la remisión al cliente.  
+  
+Para conocer cómo configurar la lista de precios a los elementos de inventario
+[Clic aquí.](<..\\..\\..\\..\\080 IN\\Cats\\Elementos de inventario\\\[12450\]
+FrmElementoControl\\\[840\]Grid_ListaPrecios_ILista.html>)  
+  
+También es posible indicar de forma manual el precio de cada elemento de
+inventario en la operación, para conocer como hacerlo ver **\[Menú Operación >
+Opciones > Registrar precio.\]**  
+  
+El precio indicado a cada elemento de inventario en la remisión, será cargado
+en la operación de facturación en la cual se llame como referencia la remisión
+al cliente.  
+  
+Este campo permite al cliente conocer el valor del producto que recibe, antes
+de tener la factura de venta.
+
+---
+
+# % desc.
+
+Porcentaje de descuento a otorgar al cliente para el elemento de inventario
+cargado en el renglón.
+
+Ejemplo
+
+Se registra remisión RMC-1803005 al cliente Almacén Tu Equipo y se otorga descuento por temporada escolar en algunos de los productos:  Producto | Precio | Descuento  
+---|---|---  
+Computador Todo en Uno | $ 850.000 | 10 %  
+Minitorres genérica | $ 350.000 | 7 %  
+  
+Observaciones
+
+Este descuento puede ser indicado de forma manual por el usuario.  
+  
+Registrar el descuento en la remisón al cliente, le permite a éste conocer los
+beneficios otorgados y que se verán reflejados al momento de recibir la
+factura de venta.  
+  
+Es posible generar informes, reportes y exploradores para comparar los
+descuentos otorgados para un mismo producto por parte de diferentes
+proveedores y tomar decisiones de compra.  
+  
+Este descuento será cargado en otra operación en la cual se tome como
+documento referencia la remisión al cliente.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > % desc.\]**
+
+---
+
+# Valor compra
+
+Valor total de las unidades del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se envía al cliente Almacén Tu Equipo la remisión RMC-1803005 con los
+siguientes productos:  
+PRODUCTO | PRECIO | CANT. | VALOR VENTA  
+---|---|---|---  
+Computador Todo en Uno | $ 950.000 | 1 | $ 950.000  
+Computador mini Dell | $ 700.000 | 1 | $ 700.000  
+Minitorre Genérica | $ 450.000 | 1 | $ 450.000  
+  
+Observaciones
+
+Este valor es el producto de las cantidades a enviar al cliente en la remisión
+por el valor unitario.  
+  
+Este valor también puede ser indicado de forma manual por el usuario, así el
+sistema calcula de forma automática el valor unitario del mismo. Para indicar
+el valor total del elemento de inventario de forma manual ver **\[Operación
+Remisión al cliente > Opciones > Registrar valores totales.\]**
+
+---
+
+# Acerca de ventana
+
+##  OPERACIÓN DE REMISIÓN AL CLIENTE
+
+##  Objetivo
+
+La remisión al cliente, permite registrar la salida de los productos de bodega
+cuando aún no se ha registrado la factura de venta para ser enviada al cliente
+junto con los productos.  
+  
+Adicionalmente sirve como comprobante de recepción de dichos productos por
+parte del cliente.  
+  
+Es posible registrar la remisión al cliente, basada en un pedido, cargando
+automáticamente la información registrada en él, y realizar las modificaciones
+necesarias.  
+  
+Es posible registrar una factura de venta, basada en una o varias remisiones,
+cargando automáticamente la información registrada en la remisión y realizar
+modificaciones si es necesario.  
+  
+La operación de remisión al cliente genera movimiento en el inventario físico
+al igual que en el inventario de disponibilidad, ya que se genera la salida de
+los productos de la bodega disminuyendo las cantidades con las cuales se puede
+contar.  
+  
+La remisión al cliente no genera ningún tipo de registro contable.  
+  
+
+## Ejemplo de información a registrar
+
+Para el registro de la operación de remisión al cliente, es necesario indicar
+el tercero a quien se realiza el envío de los productos.  
+  
+Es posible registrar la remisión al cliente tomando otro documento como
+referencia, puede ser un pedido del cliente o una cotización enviada
+previamente, importando así la información registrada en ella, y realizar las
+modificaciones necesarias.  
+  
+Seleccionar del catálogo de elementos de inventario, el listado de productos
+solicitados, indicar el respectivo precio, y asignar descuento cada producto.  
+  
+Es posible indicar en la operación el tercero quien transporta los productos a
+entregar al cliente, enviar a una sucursal específica y adicionar
+observaciones para la entrega de los productos mediante remisión.  
+  
+
+## Secciones
+
+## Sección encabezado de la operación
+
+En el encabezado de la operación de cotización es posible seleccionar un
+documento especializado para el soporte de la operación y es el documento
+Remisión al Cliente, este tipo de documento se puede definir por defecto, y el
+sistema automáticamente asignará el consecutivo correspondiente según su
+configuración.  
+  
+Para esta operación también es posible seleccionar en el encabezado la lista
+de precios que se asignará a los productos cuando estos sean llamados en la
+operación.  
+  
+
+## Secciones de la operación
+
+Remisión al cliente
+
+En esta sección, adicional a la información a indicar en el encabezado de la
+operación, se indican los elementos de inventario enviados al cliente con la
+información comercial correspondiente, como es la cantidad, el precio unitario
+\(si no se indicó una lista de precios en el encabezado\) descuento a otorgar
+y observaciones de cada elemento.  
+  
+
+Datos de entrega y observaciones
+
+En esta sección se puede indicar un transportador de los productos, es decir
+la empresa o persona quien se encargará de entregar los productos al cliente.  
+  
+También se puede especificar una sucursal registrada para el cliente a la cual
+se realizará la entrega de los productos.  
+  
+Para la remisión al cliente se pueden registrar observaciones las cuales se
+visualizan en la remisión impresa, estas observaciones se pueden digitar o
+seleccionar del catálogo de observaciones, como también se pueden dejar fijas
+para que siempre que se ingrese en la operación ya se encuentren registradas
+sin necesidad de seleccionarlas.  
+  
+
+## Documentos de impresión
+
+Es posible generar la impresión de la operación de remisión al cliente para
+ser enviado al tercero, esta impresión de puede realizar en formato PDF o en
+HTML para ser enviada a través del correo electrónico.
+
+---
+
+# Centro de costos
+
+Código del centro de costos al que se cargará el ingreso cuando se registre la
+venta del elemento de inventario.
+
+Ejemplo
+
+Se registra la remisión RMC-18020032 al cliente Almacén Tu Equipo con los
+siguientes productos:
+
+PRODUCTO | PRECIO | CANT. | VALOR VENTA | CC. INGRESO  
+---|---|---|---|---  
+Computador Todo en Uno | $ 950.000 | 1 | $ 950.000 | 1COM - Comercial 1  
+Computador mini Dell | $ 700.000 | 1 | $ 700.000 | 1COM - Comercial 1  
+Minitorre Genérica | $ 450.000 | 1 | $ 450.000 | 1COM - Comercial 1  
+  
+Observaciones
+
+  
+
+Este campo será cargado en la operación de ventas en la cual se llame como
+documento referencia la remisión al cliente.  
+  
+Por lo general la operación de compra en su movimiento contable efectúa
+imputaciones a la cuenta de inventarios, siempre y cuando se controle
+cantidades en el inventario del producto comprado, de lo contrario la
+operación de compra ya no realizará la imputación a una cuenta de inventarios
+sino que lo hará a una cuenta del gasto o costo, por tal motivo solicita que
+se indique el centro de costo.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en listado de productos > Centro de
+costos\]**
+
+---
+
+# Referencia
+
+Código del documento en el cual se basa el registro de la remisión al cliente,
+este puede ser un pedido del cliente o una cotización enviada al cliente.
+
+Ejemplo
+
+El día 10 de febrero se envía la cotización CTC-1802001 al cliente Carlos
+Grisales, en la cual se presentan los siguientes productos:
+
+Producto | Unidad | Cantidad | Precio  
+---|---|---|---  
+Computador mini Hp |  Unid |  1 | $ 925.000  
+Computador mini Dell |  Unid |  1 | $ 850.000  
+  
+
+El día 18 de febrero el cliente acepta la cotización y solicita sean enviados
+los productos, pero que la factura se envíe en el próximo mes.
+
+Los productos son enviados mediante remisión al cliente, y en el campo
+referencia, se selecciona la cotización CTC-1802001 enviada previamente al
+cliente y aceptada por él.
+
+Observaciones
+
+* Para indicar un documento como referencia en la remisión al cliente, este se debe registrar previamente.
+* Se puede indicar uno o varios documentos como referencia para el registro de la remisión al cliente.
+* Al seleccionar un documento como referencia para el registro de la remisión al cliente, se carga en la operación todos los datos registrados en el documento referencia: Nombre del cliente, productos a enviar y precios indicados.
+* Al seleccionar un documento como referencia para el registro de la remisión al cliente, se establece una trazabilidad entre ambos documentos, esto permite al usuario establecer relación entre ellos.
+* Es posible cargar en la remisión al cliente cantidades parciales de los productos registrados en el documento tomado como referencia, así, si al momento de registrar la remisión al cliente, el documento referencia ya ha sido usado en otra operación y quedaron cantidades pendientes por enviar o si por el contrario al momento de enviar la remisión al cliente no se cuenta con la disponibilidad de todas las cantidades, quedando así disponible para ser usado en otra operación.
+* Solo es posible tomar como referencia en la remisión al cliente un documento que se encuentre abierto, los documentos cerrados no están disponibles en el seleccionador de referencias.
+* Al abrir el seleccionador de referencias es posible conocer la vigencia de los documentos que se pueden tomar como referencia para el registro de la remisión, conocer si cuentan con vigencia, si está próximo a vencerse o si ya está vencido.
+* Si la remisión al cliente se registró con base en otro documento, el usuario de igual forma puede realizar modificaciones en la operación.
+* La operación de remisión al cliente no afecta el inventario contable, solo afecta el inventario físico y de disponibilidad.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Operación > Configurar operación > Config.de
+campos/columnas de datos > Datos maestros de la operación > Referencia\]**
+
+---
+
+# Observaciones
+
+Descripción breve del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se registra remisión RMC-1802450 al cliente Compu Trek por dos Computadores
+Todo en Uno, indicando las características del equipo.  
+  
+PRODUCTO | CANT. | OBSERVACIÓN  
+---|---|---  
+Computador Todo en Uno | 2 | Procesador 2,2GHz - Pantalla 23,9" - Conectividad WiFi b / g / n, Bluetooth 4.0 + LE - Memoria 4 GB  
+  
+Observaciones
+
+Esta observación es cargada de forma automática en la operación al seleccionar
+el elemento de inventario en el renglón.  
+  
+La observación del elemento de inventario en el renglón es de libre uso y
+definición del usuario y se configura como descripción directamente en cada
+elemento de inventario, para adicionar esta descripción al elemento de
+inventario ver **\[Pestaña Inventarios > Elementos de Inventario > Modificar >
+Descripción\]**  
+  
+Esta observación puede ser modificada por el usuario directamente en la
+operación, bien sea para cambiarla o complementarla.  
+  
+Cuando la remisión al cliente sea usada como documento referencia en otra
+operación, la información de este campo se cargará automáticamente en la nueva
+operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en orden de compra >
+Observación.\]**
+
+---
+
+# Dato 1
+
+Presenta información adicional para el producto en la operación.
+
+Ejemplo
+
+El almacén Su Vestido SAS comercializa prendas de vestir, el usuario requiere
+indicar información adicional para el producto como la talla, para esto se
+habilita el campo adicional Dato 1 en las operaciones de inventario.
+
+Código |  Producto | Dato 1 - Talla  
+---|---|---  
+CAMHOM250 | Camisa hombre Skit |  S  
+CAMHOM250 | Camisa hombre Skit |  M  
+CAMHOM250 | Camisa hombre Skit |  L  
+En el campo **"Dato 1"** , debe indicar la información adicional que se
+requiere mostrar en los documentos de impresión o visualizar en el explorador
+de inventarios.
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Dato 1 por Talla.
+
+---
+
+# Valor 1
+
+Presenta valores adicionales para el producto en la operación.  
+
+Ejemplo
+
+Un Minimercado mide los inventarios de los productos de abarrotes \(arroz,
+frijol, lenteja\) en libras y requiere conocer las existencias de ciertos
+productos en kilos, para conocer este dato se configura el campo adicional
+Valor 1 en las operaciones de inventario.  
+  
+Código | Producto | Unidad | \(VALOR 1\) Kilos   
+---|---|---|---  
+AR001 | Arroz blanco | 50 Libras | 25 Kilos  
+AZ005 | Azúcar Morena | 100 Libras  | 50 Kilos   
+En el campo **"Valor 1"** , debe indicar el valor adicional que se requiere
+mostrar en los documentos de impresión o visualizar en el explorador de
+inventarios.
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Valor 1 por Kilo.
+
+---
+
+# Código bodega
+
+Código de la bodega de la cual egresa el producto de cada renglón, esta es la
+misma bodega que se afecta al momento de registrar la factura de venta.
+
+Ejemplo
+
+El supermercado Merca Ahorro, cuenta con diferentes bodegas para el manejo de
+sus productos:
+
+Código | Nombre  
+---|---  
+1 | Bodega de productos alimenticios  
+2 |  Bodega de productos de aseo  
+  
+
+Al momento de registrar una remisión al cliente, en este campo puede
+seleccionar la bodega correspondiente de la cual saldrá cada producto, los
+productos alimenticios de la **"Bodega 1"** y los productos de aseo de la
+**"Bodega 2"**.
+
+Observaciones
+
+Para cada renglón de la operación se puede indicar una bodega diferente y el
+sistema respetará esta aunque en la operación se indique una bodega por
+defecto.  
+  
+La empresa puede crear tantas bodegas como requiera para facilitar el manejo
+los elementos de inventario.
+
+Configuración
+
+Para configurar la funcionalidad del campo bodega por renglón \(visible, solo
+lectura, requerido, etc.\), ver: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en orden de compra >
+Bodega\]**
+
+---
+
+# Cliente
+
+Código de identificación del tercero \(cliente\) a quien se registra la
+remisión de elementos de inventario.
+
+Ejemplo
+
+Se registra la remisión RMC-1801265 al cliente Computadores y Redes S.A, en la
+cual se hace envío de un Computador todo en Uno. En el campo cliente se indica
+el código de identificación de Computadores y Redes S.A.  
+  
+CÓDIGO | NOMBRE  
+---|---  
+900004632 | Computadores y Redes S.A.  
+  
+Observaciones
+
+Para que el tercero pueda ser seleccionado en la operación de remisión al
+cliente, se debe crear con el tipo de tercero **"Cliente"**.  
+  
+Para configurar el tipo de tercero ver **\[Pestaña Básico > Terceros >
+Modificar > Tipo de Tercero\]**  
+  
+Al abrir el seleccionador de terceros en la remisión al cliente, éste se
+filtra solo por aquellos terceros cuyo tipo es **"Cliente"**.  
+  
+El cliente indicado en la remisión, será el mismo que se cargue en otra
+operación la cual se use como documento referencia la remisión al cliente.  
+  
+Se pueden generar informes y reportes de ventas filtrados por el campo
+**"Cliente"**.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Proveedor\].**
+
+---
+
+# Lista de precios
+
+Se selecciona la lista de precios que se usará para el registro de la
+operación, así cuando se cargue un elemento de inventario en el renglón traerá
+el precio configurado en la lista de precios seleccionada.
+
+Ejemplo
+
+Le empresa MP Computadores maneja diferentes listas de precios para sus
+clientes:  
+CÓDIGO | NOMBRE  
+---|---  
+01 | Precios público  
+02 | Precios clientes VIP  
+03 | Precios mayoristas  
+  
+Se registra una remisión al cliente Juan Carlos Díaz, y se selecciona la lista
+de precios Público, así al seleccionar los elementos de inventario a enviar al
+cliente, en la operación se carga el precio asignado al elemento en esta lista
+de precios.
+
+Observaciones
+
+Es posible crear tantas listas de precios como el usuario las requiera. Las
+listas de precios se pueden crear en **\[Pestaña Inventarios > Cinta de
+Opciones > Listas de Precios\]**  
+  
+Estas listas de precios se pueden crear con IVA incluido.  
+  
+Si el cliente ya tiene asignada una lista de precios por defecto diferente a
+la seleccionada en la operación, se respeta la lista de precios asignada al
+cliente.
+
+Configuración
+
+Para asignar la lista de precios a los elementos de inventarios ver:
+**\[Pestaña Inventarios > Elementos de inventario > Modificar elemento >
+Pestaña Listas de precios\]**
+
+---
+
+# Bodega
+
+Código de la bodega desde la cual saldrán los productos que se envían al
+cliente.  
+
+Ejemplo
+
+La empresa Compumás cuenta con varias bodegas para el almacenamiento de sus
+productos:  
+Código | Bodega  
+---|---  
+1 | Bodega Principal  
+2 | Bodega Centro  
+2 | Bodega Norte  
+  
+Se registra la remisión RMC-1803245 al cliente Juan Guillermo García y se
+indica que la bodega de la cual saldrán todos los productos será la **"Bodega
+Centro"**.  
+
+Observaciones
+
+Es posible indicar una bodega para cada renglón de la operación de remisión al
+cliente, para activar este manejo ver: **\[Menú Operación > Configurar
+operación > Campos de la operación > Configuración de columnas en el listado
+de productos\]**.  
+  
+Esta es la bodega que se cargará cuando la remisión al cliente sea usada como
+documento referencia en otra operación.
+
+Configuración
+
+Para configurar la funcionalidad del campo Bodega \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Bodega\]**
+
+---
+
+#  Ver documento impreso
+
+Permite visualizar la información registrada en el documento indicado en el
+campo **"Referencia"**.  
+
+Ejemplo
+
+Se registra la remisión RMC-180345 al cliente Jesús García, y se toma como
+referencia el pedido PED-180263.  
+Se usa el botón **"Ver documento impreso"** para tener una vista de los datos
+registrados en el pedido tomado como referencia.
+
+Observaciones
+
+Si en el campo **"Referencia"** no se indica ningún documento, el botón estará
+activo pero no mostrará nada.
+
+---
+
+#  Botón Cerrar Referencia
+
+Da por finalizado \(cerrado\) el o los documentos que fueron cargados en el
+campo referencia como base para el registro de la operación.
+
+Ejemplo
+
+* Se registra la remisión RMC-1802547 al cliente Todo Computadores con base en la cotización CTC-1802365 y se hace entrega de todos los productos registrados en ella, por tal motivo se da por cerrada la cotización CTC-1802365 para que ya no esté más disponible.
+  
+
+* Se registra la remisión RMC-1803254 al cliente Tecnimás con base en el pedido PED-1802365 y quedan pendientes por entregar algunos elementos de inventarios, por tal motivo se deja abierto el pedido del cliente para que esté disponible para ser usado en otra operación.
+
+Observaciones
+
+Al momento de dar por cerrado el documento tomado como referencia, no se
+volverá a cargar o estar visible en el seleccionador para otras operaciones.  
+  
+El documento referencia se puede dejar abierto, en caso de enviar al cliente
+todos los productos registrados en él, con el fin de poder cargar esta
+referencia en una nueva operación.  
+  
+Si en la operación no se cargó ningún documento como referencia no es
+necesario usar este botón.  
+  
+Es muy importante hacer el cierre de los documentos tomados como referencia
+para que no queden como pendientes estando ya usados en otra operación.  
+  
+El clierre de documentos también se puede hacer a través de la operación de
+Cierre de documentos.  
+  
+Es posible visualizar los documentos cerrados en los exploradores de
+inventarios plus
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Referencia\].**
+
+---
+
+# Valor Parcial
+
+Valor total de los elementos de inventario cargados en la remisión al cliente
+antes de impuestos y descuentos.
+
+Ejemplo
+
+Se envía mediante remisión RMC-1801659 al cliente Carlos García los siguientes
+productos discriminando cantidad, valor unitario, descuento y valor parcial.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | DCTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 925.000 |  10.00% | $ 832.500  
+Computador mini Dell | 1 | $ 850.000 |  10.00% | $ 765.000  
+Computador todo en uno | 2 | $ 1.200.000 |  10.00% | $ 1.080.000  
+**Subtotal Valor Parcial** | **$ 2.975.000**  
+  
+
+Observaciones
+
+Este campo corresponde a la sumatoria del valor parcial de cada elemento de
+inventario cargado en la remisión antes de aplicar descuentos e impuestos.  
+  
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los datos registrados en la operación.
+
+---
+
+# Valor Descuento
+
+Valor total de los descuentos otorgados al cliente por cada elememento de
+inventario cargado en la remisión.
+
+Ejemplo
+
+Se envía mediante remisión RMC-18032578 al cliente Carlos Grisales los
+siguientes productos discriminando producto, cantidad, valor unitario, % de
+descuento, y valor parcial.
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 925.000 |  10.00% | $ 832.500  
+Computador mini Dell | 1 | $ 850.000 |  10.00% | $ 765.000  
+Computador todo en uno | 1 | $ 1.200.000 |  10.00% | $ 1.080.000  
+Total Descuento |  |  |  $ 297.500 |   
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Producto
+
+Código del elemento de inventarios que se envía al cliente en la remisión.
+
+Ejemplo
+
+El día 13 de febrero se realiza envío mediante remisión RMC-180256 al cliente Beatriz Duque los siguientes productos:  Código | Nombre  
+---|---  
+MON001 | Monitor de 27"  
+EQP001 | Minitorres Genérica  
+  
+Al momento de registrar la remisión al cliente, en este campo se selecciona
+para cada renglón el producto a enviar.  
+Estos productos se envían mediante remisión al cliente ya que solicitó que la
+factura de venta se emita con fecha del próximo mes.
+
+Observaciones
+
+Los productos a enviar al cliente en la remisión se pueden seleccionar
+directamente del catálogo de elementos de inventario o se cargan del documento
+tomado como referencia para el registro de la remisión.  
+  
+Para visualizar en el campo **"Producto"** el nombre de éste y no el código,
+dé clic en el botón "Formato"  y amplíe la columna en la operación.  
+  
+Si el cliente cuenta con una estructura para el manejo de código de barras,
+puede seleccionar los elementos en la remisión con el lector de código de
+barras.  
+  
+La visualización de los elementos de inventario en el seleccionador de
+elementos de inventario depende de las existencias en la bodega indicada en la
+operación, si no se cuenta con existencias de algún producto, éste no se
+visualiza en el seleccionador.  
+  
+Es posible generar informes, reportes y exploradores con base en el código del
+elemento de inventario seleccionado en la remisión al cliente.  
+  
+Al registrar salida de productos mediante la remisión al cliente no se fecta
+el inventario contable, solo se afectan el inventario físico y el inventarios
+disponible, y se integra con el módulo de inventarios, puesto que se da una
+salida de los productos de este.  
+  
+El registro de este campo en la operación de remisión al cliente es requerido,
+esto quiere decir que si no se registra información en este campo, no es
+posible procesar la operación.
+
+---
+
+# Valor Total
+
+Valor total de los elementos de inventario enviados al cliente mediante la
+remisión, y equivale a la sumatoria del valor parcial, menos descuentos más
+IVA.
+
+Ejemplo
+
+Se envía mediante remisión RMC-18032578 al cliente Carlos Grisales los
+siguientes productos discriminando cantidad, precio unitario, valor parcial,
+iva, y los totales, seguido del valor total.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | VALOR PARCIAL  
+---|---|---|---  
+Computador mini Hp | 1 | $ 925.000 | $ 925.000  
+Computador mini Dell | 1 | $ 850.000 | $ 850.000  
+Computador todo en uno | 1 | $ 1.200.000 | $ 1.200.000  
+**Subtotal Valor Parcial** | **$ 3.807.500**  
+**Impuesto de venta \(19%\)** | **$ 723.425** | Valor Total | $ 4.530.925  
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Transportador
+
+Código del tercero \(transportador\) encargado de entregar los elementos de
+inventario remisionados al cliente.
+
+Ejemplo
+
+* Se registra la remisión RMC-1802458 al cliente Felipe Gómez en la ciudad de Bogotá por 1 Computador Todo en Uno, el envío se realiza por medio de la empresa transportadora Servientrega.  
+En el campo transportador se indica el código de la empresa **"Servientrega"**
+
+  
+
+* Se registra la remisión RMC-1801659 al cliente Camila Sánchez en la ciudad de Manizales por 1 Impresora de inyección, la entrega del producto lo realiza directamente la empresa por medio del empleado Carlos Bustamante.  
+En el campo transportador se indica el código del empleado **"Carlos
+Bustamante"**
+
+Observaciones
+
+Para seleccionar el transportador en la remisión al cliente, éste debe estar
+creado en el catálogo de terceros de la empresa.  
+  
+Si las entregas de los productos siempre las realiza el mismo transportador,
+es posible asignar un transportador por defecto por medio de la configuración
+de este campo en la operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Transportador\]**
+
+---
+
+# Dirección
+
+Seleccione la sucursal del cliente en la cual se realiza la entrega de los
+elementos de inventario remisionados.
+
+Ejemplo
+
+Se hace envío de 3 Computadores Todo en Uno al cliente MP Computadores con la
+remisión RMC-1803654.  
+El cliente cuenta con dos sucursales para recepción de productos:  
+  
+SUCURSAL | DIRECCIÓN  
+---|---  
+Sucursal Centro | Calle 19 No 22-18  
+Sucursal Chapinero | Calle 66 No 9-24  
+  
+El cliente solicita que se realice la entrega de los productos remisionados en
+la **"Sucursal Centro"** , entonces en el campo se selecciona ésta sucursal.
+
+Observaciones
+
+Para seleccionar la sucursal del cliente en la operación, ésta debe estar
+creada en el tercero cliente.
+
+Configuración
+
+Para visualizar este paso en la operación ver: **\[Menú Operación >
+Configuración de la operación > Visualización de la operación > Pasos en el
+asistente > Datos de entrega y observaciones\]**
+
+Para configurar la funcionalidad de este campo como visible ver: **\[Menú
+Operación > Configuración de la operación > Campos de la operación > Datos
+maestros de la operación > Enviar a > Enviar a\]**
+
+---
+
+#  Observaciones para la remisión
+
+Indique las observaciones que aparecen en la remisión impresa o algún otro
+documento que se imprima a partir de esta operación.
+
+Ejemplo
+
+Pasados 5 días de la entrega de los productos, no se aceptan devoluciones por
+mal estado de los productos.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+El catálogo de observaciones permite crear observaciones en las cuales el
+usuario puede complementar información que el cliente tenga presente para la
+negociación.  
+  
+Se pueden crear tantas observaciones como se requieran con la información que
+se desee visualizar en el documento, ejemplo:
+
+* Condiciones sobre la entrega de los productos.
+* Información sobre recepción de devoluciones.
+* Formas de pago.
+* Recomendaciones técnicas.
+
+Configuración
+
+Para crear o modificar observaciones ver: **\[Pestaña inventarios > Cinta de
+opciones > Otros > Observaciones.\]**
+
+---
+
+#  Cargar Encabezado
+
+Carga en la remisión al cliente observaciones previamente creadas en el
+catálogo de observaciones.
+
+Ejemplo
+
+Se puede crear una observación estandar para el encabezado de la observación:  
+Apreciado _CLIENTE MP Computadores._  
+Por políticas de empresa, no se aceptan devoluciones pasados 5 días despues de
+la entrega de los productos.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+Es posible configurar el sistema para que tome los datos del cliente, así la
+observación es personalizada.  
+  
+La información de estas observaciones se verá reflejada al visualizar o
+imprimir el documento.  
+  
+Se pueden estandarizar observaciones como saludo, despedida y comentarios que
+pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Pestaña Inventarios > Cinta
+de opciones > Observaciones\]**
+
+---
+
+#  Limpiar encabezado
+
+Borra las observaciones cargadas en la operación.
+
+Observaciones
+
+Las observaciones se pueden limpiar en la operación para ser cargadas
+nuevamente o digitarlas.
+
+---
+
+#  Fijar Encabezado
+
+Asigna observaciones por defecto en la operación.
+
+Ejemplo
+
+Si al momento de registrar una remisión al cliente se debe indicar siempre la
+misma información, ésta se puede registrar como una observación y fijarla para
+que siempre que se registre la operación, la observación se encuentre cargada
+en el campo.  
+  
+_Apreciado CLIENTE MP Computadores._  
+Por políticas de empresa, no se aceptan devoluciones pasados 5 días después de
+la entrega de los elementos de inventario.
+
+Observaciones
+
+Fijar las observaciones permite ahorrar tiempo en el registro de la operación,
+ya que si requiere indicar siempre la misma información, no deberá digitarla
+ni selecionarla.  
+  
+Aunque la observación se encuentre fija, el usuario puede adicionar o quitar
+información desde la operación.  
+  
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+\[ContaPyme\] cuenta con un catálogo de observaciones, este ya tiene algunas
+observaciones creadas, el usuario puede modificarlas o crear cuantas requiera.  
+  
+La información de estas observaciones se verá reflejada al visualizar o
+imprimir el documento.  
+  
+Se pueden estandarizar observaciones como saludo, despedida y comentarios que
+pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Pestaña Inventarios > Cinta
+de Opciones > Observaciones\]**
+
+---
+
+#  Cargar pedido
+
+Carga en la remisión al cliente los elementos de inventario asociados al
+documento tomado como referencia \(si se indicó alguno\).
+
+Ejemplo
+
+Se registra remisión RMC-1801325 al cliente Pilar Diaz tomando como referencia
+el pedido PED-1801896.  
+  
+_**Nota:**_ Se da clic en este botón  para cargar nuevamente en la remisión
+los elementos de inventario registrados en el pedido PED-1801896 tomado como
+referencia.
+
+Observaciones
+
+Este botón carga por defecto todos los elementos del documento tomado como
+referencia.  
+  
+Si el documento referencia tiene saldos pendientes, solo cargará los productos
+pendientes del documento referencia.  
+  
+Si la referencia ya fue indicada y los elementos cargados, al dar clic en el
+botón, se cargan nuevamente los elementos en la operación y el sistema
+solicita confirmación.  
+  
+Para visualizar esta opción el usuario debe estar ubicado en cualquier columna
+del área de registro de la operación.
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al producto.
+
+Ejemplo
+
+La empresa Comercial de alimentos, entre sus productos comercializa huevos, y
+debe especificar su tipo en las operaciones, así:  
+Producto | Tipo  
+---|---  
+Huevo blanco | A  
+Huevo blanco | AA  
+Huevo blanco | Extra  
+  
+  
+
+Observaciones
+
+Este campo es de libre uso y definición del usuario.  
+  
+Asignar en la operación un tipo al produto, evita que se deba crear en el
+catálogo de elementos de inventario, un producto por cada especificación que
+se necesite.  
+  
+La especificación dada al producto en esta columna estará visible en los
+exploradores de inventarios plus.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > Tipo\]**
+
+---
+
+#  Series/Lotes \(Ctrl+F2\)
+
+Registra información de seguimiento para el elemento de inventario en el
+renglón \(series/lotes, fechas de vencimiento, proveedor, etc.\).
+
+Ejemplo
+
+La Comercializadora de medicamentos Comedic, registra para cada uno de sus
+elementos de inventario el número del lote del fabricante, con la respectiva
+fecha de fabricación, de vencimiento y las cantidades recibidas por cada lote.  
+  
+Se envía a la droguería Su Salud, 10 unidades del producto Gotas Oftálmicas
+Oftal, mediante la remisión al cliente RMC-1802111, indicando en la operación
+el lote, y las respectivas unidades enviadas al cliente por cada lote:  
+  
+PRODUCTO | LOTE | CANTIDAD  
+---|---|---  
+Oftal | L-171215 | 3  
+Oftal | L-180103 | 7  
+  
+Observaciones
+
+Este botón solo se activa cuando en la operación se ubica el cursor sobre un
+elemento de inventario que esté configurado para el manejo de series/lotes.  
+  
+El manejo de series y lotes se configura directamente en el grupo de
+inventario.  
+  
+La información indicada por medio de este botón no se visualiza en la
+operación o en el documento impreso, solo permite realizar control.  
+  
+Se recomienda que se realice la trazabilidad de series y lotes tanto en los
+ingresos de los elementos de inventario \(Recepción, compras\) como en las
+salidas \(Remisión, venta\).
+
+Configuración
+
+Para configurar el manejo de series/lotes a los grupos de inventario ver:
+**\[Pestaña inventarios > Catálogos > Grupos inv. > Modificar > Pestaña
+General > Meneja series/lotes\].**
+
+---
+
+# Unidad
+
+Medida general utilizada para discriminar la cantidad del producto en las
+operaciones.
+
+Ejemplo
+
+* En una carnicería manejan la carne por kilos, por lo tanto la unidad de medida es:**Kg**
+* En una ferretería venden los tubos de pvc por metros, por lo tanto la unidad de medida es: **Mts**
+* Una empresa de servicios ofrece a sus clientes capacitaciones por horas, por lo tanto la unidad de medida es: **Hora**
+
+Observaciones
+
+Si el elemento de inventario maneja unidad de compra diferente a la unidad de
+medida general, en la orden de compra se carga la unidad de compra configurada
+al elemento de inventario.  
+  
+Las cantidades de los productos que se muestran en los diferentes informes y
+reportes de inventario son basados en esta unidad.  
+  
+La unidad de medida se debe configurar en cada uno de los elementos de
+inventario.  
+  
+Este campo no es modificable por el usuario en la opereación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo como visible, ver: **\[Menú
+Operación > Configurar operación > Campos de la operación > Configuración de
+columnas en orden de compra > Unidad\]**
+
+---
+
+# Cantidad
+
+Número de unidades del elemento de inventario enviadas al cliente mediante
+remisión.
+
+Ejemplo
+
+Se envía al cliente Almacén Tu Equipo mediante la remisión RMC-1803005 los
+siguientes productos:
+
+CÓDIGO | PRODUCTO | CANTIDAD  
+---|---|---  
+COMHP001 | Computador mini Hp | 3  
+COMDELL002 | Computador mini Dell | 2  
+COMTD003 | Computador todo en uno | 2  
+Al momento de registrar la remisión al cliente, en este campo se indica el
+número de unidades a enviar por cada elemento de inventario.  
+  
+
+Observaciones
+
+La cantidad indicada en este campo será cargada en otra operación en la cual
+se tome como referencia esta remisión.  
+  
+Este campo es requerido en la operación, es decir que su diligenciamiento es
+obligatorio para procesar la operación.
+
+---
+
+# Precio
+
+Valor de venta por unidad asignado a cada producto.
+
+Ejemplo
+
+Se envía al cliente Almacén Tu Equipo mediante la remisión RMC-1803005 los siguientes productos:  Producto | Precio  
+---|---  
+Lector de memoria | $ 35.000  
+Memoria USB 8GB | $ 25.000  
+  
+Observaciones
+
+Este campo por defecto no es modificable por el usuario, ya que el sistema
+sugiere el precio según la lista de precios indicada en la operación, o el
+precio indicado al elemento de inventario en el documento tomado como
+referencia para el registro de la remisión al cliente.  
+  
+Para conocer cómo configurar la lista de precios a los elementos de inventario
+[Clic aquí.](<..\\..\\..\\..\\080 IN\\Cats\\Elementos de inventario\\\[12450\]
+FrmElementoControl\\\[840\]Grid_ListaPrecios_ILista.html>)  
+  
+También es posible indicar de forma manual el precio de cada elemento de
+inventario en la operación, para conocer como hacerlo ver **\[Menú Operación >
+Opciones > Registrar precio.\]**  
+  
+El precio indicado a cada elemento de inventario en la remisión, será cargado
+en la operación de facturación en la cual se llame como referencia la remisión
+al cliente.  
+  
+Este campo permite al cliente conocer el valor del producto que recibe, antes
+de tener la factura de venta.
+
+---
+
+# % desc.
+
+Porcentaje de descuento a otorgar al cliente para el elemento de inventario
+cargado en el renglón.
+
+Ejemplo
+
+Se registra remisión RMC-1803005 al cliente Almacén Tu Equipo y se otorga descuento por temporada escolar en algunos de los productos:  Producto | Precio | Descuento  
+---|---|---  
+Computador Todo en Uno | $ 850.000 | 10 %  
+Minitorres genérica | $ 350.000 | 7 %  
+  
+Observaciones
+
+Este descuento puede ser indicado de forma manual por el usuario.  
+  
+Registrar el descuento en la remisón al cliente, le permite a éste conocer los
+beneficios otorgados y que se verán reflejados al momento de recibir la
+factura de venta.  
+  
+Es posible generar informes, reportes y exploradores para comparar los
+descuentos otorgados para un mismo producto por parte de diferentes
+proveedores y tomar decisiones de compra.  
+  
+Este descuento será cargado en otra operación en la cual se tome como
+documento referencia la remisión al cliente.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > % desc.\]**
+
+---
+
+# Valor compra
+
+Valor total de las unidades del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se envía al cliente Almacén Tu Equipo la remisión RMC-1803005 con los
+siguientes productos:  
+PRODUCTO | PRECIO | CANT. | VALOR VENTA  
+---|---|---|---  
+Computador Todo en Uno | $ 950.000 | 1 | $ 950.000  
+Computador mini Dell | $ 700.000 | 1 | $ 700.000  
+Minitorre Genérica | $ 450.000 | 1 | $ 450.000  
+  
+Observaciones
+
+Este valor es el producto de las cantidades a enviar al cliente en la remisión
+por el valor unitario.  
+  
+Este valor también puede ser indicado de forma manual por el usuario, así el
+sistema calcula de forma automática el valor unitario del mismo. Para indicar
+el valor total del elemento de inventario de forma manual ver **\[Operación
+Remisión al cliente > Opciones > Registrar valores totales.\]**
+
+---
+
+# Código Empleado
+
+Código o identificación el tercero \(empleado\) responsable de la requisición
+interna. El tercero seleccionado como empleado se mostrará en el documento de
+impresión "requisición interna" generado por esta operación.
+
+Ejemplo
+
+En la empresa XYZ, el jefe de producción: Fernando Vargas es el responsable de
+realizar las requisiciones internas de materiales, así que en el campo
+**"Empleado"** de la requisición interna se debe seleccionar del catálogo de
+terceros al señor:**Fernando Vargas**.
+
+Observaciones
+
+El tercero responsable debe estar configurado en el catálogo de terceros como
+tipo de tercero "Empleado".  
+  
+Puede configurarse un tercero por defecto como responsable de las
+requisiciones. Para configurar la funcionalidad de este campo \(visible, solo
+lectura, requerido, valor por defecto\), ver: **\[Operación: Requisición
+interna > Configuración > Campos de la operación > Datos maestros de la
+operación\].**
+
+---
+
+# Observación
+
+Observaciones particulares para el egreso del elemento indicado en el renglón.
+
+Ejemplo
+
+Un ejemplo de observación de una requisición puede ser el código o nombre del
+elemento para el cual se requiere la materia prima solicitada. Ej. MOD1526 -
+Mueble Módular Corzo etc  
+  
+![13860-1.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD3%20-%20Requisicion%20interna/%5B14390%5D%20FrmOprOrd3/13860-1.jpg)
+
+Observaciones
+
+Las observaciones indicadas se muestran como detalle del elemento en el
+documento de impresión "Requisición interna" generado por esta operación
+
+Configuración
+
+Para activar la funcionalidad de esta columna \(visible, solo lectura,
+requerido\), ver: **\[Operación: Requisición Interna > Configuración > Campos
+de la operación > Configuración de columnas en requisición\].**
+
+---
+
+# Dato 1
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | COLOR \(DATO 1\)  
+CSINT-025 - Cuero sintético | 10 Mts | Negro  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | Rosada  
+POLIE-005 - Poliéster | 8 Mts | Blanca  
+  
+En el campo **"Dato 1"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 1" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 1" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 1** por la etiqueta **Color**.
+
+---
+
+# Dato 2
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | MARCA\(DATO 2\)  
+CSINT-025 - Cuero sintético | 10 Mts | Plastex Fabrics  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 |   
+POLIE-005 - Poliéster | 8 Mts | Lafayette  
+  
+En el campo **"Dato 2"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 2" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 2" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 2** por la etiqueta **Marca**.
+
+---
+
+# Dato 3
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | REFERENCIA\(DATO 3\)  
+CSINT-025 - Cuero sintético | 10 Mts | BUYAGAIN G-9  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | TEXSILEN  
+POLIE-005 - Poliéster | 8 Mts | NSYPMAZ736  
+  
+En el campo **"Dato 3"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 3" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 3" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 3** por la etiqueta **Referencia**.
+
+---
+
+# Dato 3
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | REFERENCIA\(DATO 4\)  
+CSINT-025 - Cuero sintético | 10 Mts | BUYAGAIN G-9  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | TEXSILEN  
+POLIE-005 - Poliéster | 8 Mts | NSYPMAZ736  
+  
+En el campo **"Dato 4"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 4" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 4" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 4** por la etiqueta **Referencia**.
+
+---
+
+# Dato 5
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | REFERENCIA\(DATO 5\)  
+CSINT-025 - Cuero sintético | 10 Mts | BUYAGAIN G-9  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | TEXSILEN  
+POLIE-005 - Poliéster | 8 Mts | NSYPMAZ736  
+  
+En el campo **"Dato 5"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 5" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 5" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 5** por la etiqueta **Referencia**.
+
+---
+
+# Dato 6
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | REFERENCIA\(DATO 6\)  
+CSINT-025 - Cuero sintético | 10 Mts | BUYAGAIN G-9  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | TEXSILEN  
+POLIE-005 - Poliéster | 8 Mts | NSYPMAZ736  
+  
+En el campo **"Dato 6"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 6" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 6" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 6** por la etiqueta **Referencia**.
+
+---
+
+# Valor 1
+
+Valor adicional para el elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | DÍAS REPOSICIÓN \(VALOR 1\)  
+CSINT-025 - Cuero sintético | 10 Mts | 15  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | 7  
+POLIE-005 - Poliéster | 8 Mts | 10  
+  
+En el campo **"Valor 1"** , se indica el valor adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Valor 1" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Valor 1" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Valor 1** por la etiqueta **Días reposición**.
+
+---
+
+# Valor 2
+
+Valor adicional para el elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | DÍAS REPOSICIÓN \(VALOR 2\)  
+CSINT-025 - Cuero sintético | 10 Mts | 15  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | 7  
+POLIE-005 - Poliéster | 8 Mts | 10  
+  
+En el campo **"Valor 2"** , se indica el valor adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Valor 2" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Valor 2" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Valor 2** por la etiqueta **Días reposición**.
+
+---
+
+# Valor 3
+
+Valor adicional para el elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | DÍAS REPOSICIÓN \(VALOR 3\)  
+CSINT-025 - Cuero sintético | 10 Mts | 15  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | 7  
+POLIE-005 - Poliéster | 8 Mts | 10  
+  
+En el campo **"Valor 3"** , se indica el valor adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Valor 3" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Valor 3" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Valor 3** por la etiqueta **Días reposición**.
+
+---
+
+# Código bodega
+
+Código de la bodega de donde se egresarán el elemento de inventario indicado
+en el renglón.  
+  
+Todos los elementos indicados en la requisición serán egresados de la misma
+bodega. Si es necesario egresar elementos de bodegas diferentes, será
+necesario hacer una requisición por cada bodega.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+En la columna "Bodega" se debe indicar el código de la bodega de la cual se
+egresarán los elementos: **2 - Bodega de insumos y materiales**.
+
+Observaciones
+
+Puede configurarse una bodega por defecto en las requisiciones. Para
+configurar la funcionalidad de este campo \(visible, solo lectura, requerido,
+valor por defecto\), ver: **\[Operación: Requisición interna > Configuración >
+Campos de la operación > Datos maestros de la operación\].**
+
+---
+
+# Valor 4
+
+Valor adicional para el elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | DÍAS REPOSICIÓN \(VALOR 4\)  
+CSINT-025 - Cuero sintético | 10 Mts | 15  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | 7  
+POLIE-005 - Poliéster | 8 Mts | 10  
+  
+En el campo **"Valor 4"** , se indica el valor adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Valor 4" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Valor 4" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Valor 4** por la etiqueta **Días reposición**.
+
+---
+
+# Centro de costos
+
+Código del centro de costos u orden de producción a la cual quedará asignada
+la requisición de materiales.  
+  
+Si el centro de costos seleccionado es una orden de producción, el sistema
+cargará automáticamente los elementos y cantidades indicados en la orden,
+agilizando el diligenciamiento de la requisición.  
+  
+Así al registrar la planilla de uso y consumo utilizando la requisición
+interna como referencia, se cargará la orden de producción como centro de
+costos imputado.
+
+Ejemplo
+
+El área de producción de la empresa XYZ realiza la orden de producción
+\(OPR-1850\) donde se solicita la producción del siguiente elemento:  
+  
+Elemento | Cantidad | MOD1526 - Mueble Módular Corzo | 5 unid  
+---|---  
+  
+Si al momento de realizar la requisición se selecciona la orden de producción
+**OPR-1850** se cargará automáticamente el elemento: **MOD1526 - Mueble
+Módular Corzo**.
+
+Observaciones
+
+Para crear y seleccionar la orden de producción, el licenciamiento debe contar
+con el módulo de ordenes de producción.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación: Requisición interna > Configuración >
+Campos de la operación > Datos maestros de la operación\]. **
+
+---
+
+# Código bodega
+
+Código de la bodega de donde se egresarán los elementos de inventario
+indicados en la operación.  
+  
+Todos los elementos indicados en la requisición serán egresados de la misma
+bodega. Si es necesario egresar elementos de bodegas diferentes, será
+necesario hacer una requisición por cada bodega.  
+  
+Indicar la bodega de la cual se egresearán los productos es obligatorio en la
+operación.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+En la columna "Bodega" se debe indicar el código de la bodega de la cual se
+egresarán los elementos: **2 - Bodega de insumos y materiales**.
+
+Observaciones
+
+Puede configurarse una bodega por defecto en las requisiciones. Para
+configurar la funcionalidad de este campo \(visible, solo lectura, requerido,
+valor por defecto\), ver: **\[Operación: Requisición interna > Configuración >
+Campos de la operación > Datos maestros de la operación\].**
+
+---
+
+# Total Cantidad
+
+Cantidad total de elementos solicitados en la requisición interna.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+En el campo **"Total Cantidad "** se mostrará la cantidad total de los
+elementos de inventario requeridos: **23**.
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente.
+
+---
+
+# Plazo de entrega
+
+Especifique los días estimados para la entrega de la requisición.  
+Puede indicar "Días hábiles" o "Fecha máxima de entrega".  
+  
+El plazo de entrega se utiliza para mostrar la vigencia del documento en el
+Explorador de Inventarios Plus.
+
+Ejemplo
+
+Si se realiza una requisición interna el 15/10/2018 y en el plazo de entrega
+se indica 20 días, el sistema calculará como fecha máxima de entrega el
+07/11/2018.  
+Si el 26/10/2018 se consulta el explorador de inventarios, el sistema mostrará
+que dicha requisición tiene **"10 días pendientes para entrega"** y el
+semáforo de vigencia de la requisición se mostrará en color amarillo.
+
+Observaciones
+
+Para configurar el semáforo de vencimiento de requisiciones en el Explorador
+de inventarios plus, ver: **\[Pestaña: Inventarios Exploradores: Explorador de
+inventarios plus > Configurar > Configuraciones generales > Requisición
+interna > Semáforo vencimiento requisiciones\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, valor por defecto\), ver: **\[Operación: Requisición interna >
+Configuración > Campos de la operación > Datos maestros de la operación\].**
+
+---
+
+# Días hábiles máximo
+
+Días hábiles a partir de la fecha de registro de la requisición que se estiman
+para la entrega de la misma.  
+Cuando se indican los días hábiles, el sistema calcula automáticamente la
+fecha máxima de entrega.
+
+Ejemplo
+
+Si se realiza una requisición interna el 15/10/2018 y en el campo **"Días
+hábiles máximo"** se indica 20 días, el sistema calculará como fecha máxima de
+entrega el 07/11/2018.  
+
+Observaciones
+
+Para consultar el plazo de una requisición para ser entregada, se debe
+consultar el Explorador de inventarios plus, ver: **\[Pestaña: Inventarios
+Exploradores: Explorador de inventarios plus\}.**
+
+---
+
+# Fecha máxima de entrega
+
+Fecha máxima que se estima para la entrega de la requisición.  
+Cuando se indica la fecha máxima de entrega, el sistema calcula
+automáticamente los días hábiles máximo.
+
+Ejemplo
+
+Si se realiza una requisición interna el 15/10/2018 y en el campo **"Fecha
+máxima de entrega"** se indica el 07/11/2018, el sistema calculará 20 días
+como "Días Hábiles Máximo".  
+
+Observaciones
+
+Para consultar el plazo de una requisición para ser entregada, se debe
+consultar el Explorador de inventarios plus, ver: **\[Pestaña: Inventarios
+Exploradores: Explorador de inventarios plus\}.**
+
+---
+
+# La fecha no corresponde a un día hábil.
+
+Debe indicar cómo fecha máxima de entrega un día hábil \(lunes a sábado\).
+
+---
+
+# Cargar datos de otra requisición
+
+Esta opción permite cargar los elementos que hayan sido registrados en otra
+requisición interna previamente registrada.
+
+Ejemplo
+
+El área de producción de la empresa XYZ realizó la requisición interna
+\(REQ-1823\) de los siguientes elementos:  
+  
+Elemento | Cantidad | Cuero sintético | 15 Mts  
+---|---  
+  
+Si al momento de registrar la requisición REQ-1850 se selecciona la REQ-1823
+se cargará automáticamente el elemento del listado anterior.
+
+Observaciones
+
+Si el listado de elementos de la requisición está vacío, se cargan los
+elementos de forma automática.  
+  
+Si el listado de elementos de la requisición no está vacío, el sistema ofrece
+dos opciones:
+
+  * Adicionar al listado los productos de la requisición.
+  * Limpiar el listado y adicionar los productos de la requisición.
+
+---
+
+# Producto
+
+Código del elemento de inventario solicitado en la requisición.  
+  
+Los elementos de inventario a cargar en la requisición deben estar
+configurados como "Para consumo \(o compras al gasto\)".
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+En la columna "Código" se debe indicar el código de cada uno de los elementos
+de inventarios solicitados: **CSINT-025 - Cuero sintético, ECELC-010 - Espuma
+de celda cerrada, POLIE-005 - Poliéster**.
+
+Observaciones
+
+Para abrir el seleccionador de elementos de inventario utilice la **tecla
+F7**.  
+  
+Para seleccionar el elemento de inventario, la operación cuenta con estas
+opciones:
+
+  * **Por medio del catálogo de elementos de inventario:** Se recomienda para agilidad de la operación, no muestra las existencias del elemento en la bodega.
+  * **Por medio del explorador de saldos de inventario:** Muestra las existencias del elemento en la bodega.
+
+Para configurar cuál seleccionador de elementos usar, ver:**\[Operación:
+Requisición interna > Configuración > Seleccionador de elementos de
+inventario\].**  
+  
+La visualización del código o nombre del elemento de inventario depende del
+ancho de la columna.
+
+---
+
+# Observaciones
+
+Observaciones particulares a registrar a la operación de requisición.
+
+Ejemplo
+
+Las observaciones de una requisición pueden indicar especificaciones
+particulares para los elementos incluidos en la operación. Ej. El elemento
+Cuero sintético debe entregarse cortado en cuadros de 50 x 50 cms.
+
+Observaciones
+
+Las observaciones indicadas se muestran como observaciones en el documento de
+impresión "salida de almacen" generado por esta operación.  
+  
+Estas observaciones son de libre definición por el usuario. Las observaciones
+pueden estar creadas previamente en el catálogo de observaciones o pueden
+ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones, ver: **\[Pestaña: Inventarios >
+Cinta de Opciones > Observaciones\]**
+
+---
+
+# Observaciones
+
+Observaciones particulares a registrar a la operación de requisición.
+
+Ejemplo
+
+Las observaciones de una requisición pueden indicar especificaciones
+particulares para los elementos incluidos en la operación. Ej. El elemento
+Cuero sintético debe entregarse cortado en cuadros de 50 x 50 cms.
+
+Observaciones
+
+Las observaciones indicadas se muestran como observaciones en el documento de
+impresión "salida de almacen" generado por esta operación.  
+  
+Estas observaciones son de libre definición por el usuario. Las observaciones
+pueden estar creadas previamente en el catálogo de observaciones o pueden
+ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones, ver: **\[Pestaña: Inventarios >
+Cinta de Opciones > Observaciones\]**
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al elemento de inventario
+indicado en el renglón.  
+  
+Este campo es informativo, de libre definición por el usuario y admite hasta 6
+caracteres.  
+  
+Un mismo elemento de inventario puede detallar información diferente en el
+campo "Tipo".
+
+Ejemplo
+
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Tipo | Cantidad  
+CSINT-025 - Cuero sintético | Negro | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | Rosada | 5 Mt2  
+POLIE-005 - Poliéster | Blanco | 8 Mts  
+  
+Observaciones
+
+Indicar un tipo para el elemento de inventario, evita crear en el catálogo de
+elementos de inventario, un elemento por cada especificación que se necesite.  
+  
+La información registrada en el campo "Tipo" se muestra en la descripción del
+elemento al imprimir el documento "Requisición Interna".
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación: Requisición interna > Configuración >
+Campos de la operación > Configuración de columnas en requisición\].**
+
+---
+
+# Observaciones
+
+Observaciones particulares a registrar a la operación de requisición.
+
+Ejemplo
+
+Las observaciones de una requisición pueden indicar especificaciones
+particulares para los elementos incluidos en la operación. Ej. El elemento
+Cuero sintético debe entregarse cortado en cuadros de 50 x 50 cms.
+
+Observaciones
+
+Las observaciones indicadas se muestran como observaciones en el documento de
+impresión "salida de almacen" generado por esta operación.  
+  
+Estas observaciones son de libre definición por el usuario. Las observaciones
+pueden estar creadas previamente en el catálogo de observaciones o pueden
+ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones, ver: **\[Pestaña: Inventarios >
+Cinta de Opciones > Observaciones\]**
+
+---
+
+# Observaciones
+
+Observaciones particulares a registrar a la operación de requisición.
+
+Ejemplo
+
+Las observaciones de una requisición pueden indicar especificaciones
+particulares para los elementos incluidos en la operación. Ej. El elemento
+Cuero sintético debe entregarse cortado en cuadros de 50 x 50 cms.
+
+Observaciones
+
+Las observaciones indicadas se muestran como observaciones en el documento de
+impresión "salida de almacen" generado por esta operación.  
+  
+Estas observaciones son de libre definición por el usuario. Las observaciones
+pueden estar creadas previamente en el catálogo de observaciones o pueden
+ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones, ver: **\[Pestaña: Inventarios >
+Cinta de Opciones > Observaciones\]**
+
+---
+
+# Unidad
+
+Unidad en la que se egresará el elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+  * Kg
+  * Mts
+  * Unid
+
+Observaciones
+
+Si maneja unidad de compra \(ejemplo: kilos\) diferente a la unidad de consumo
+\(ejemplo: gramos\), debe configurar por cada elemento la respectiva unidad de
+compra y su equivalencia, [clic aquí.](<\[280\]LblNUnidadCompra.html>)  
+  
+Este campo no es modificable por el usuario en esta operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación: Requisición interna > Configurar
+operación > Campos de la operación > Configuración de columnas en
+requisición\].**
+
+---
+
+# Cantidad
+
+Número de unidades del elemento de inventario requerido.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+En la columna "Cantidad" se debe indicar el número de unidades requerido de
+cada uno de los elementos de inventarios solicitados: Ej. CSINT-025 - Cuero
+sintético : **10 Mts**.
+
+Observaciones
+
+El número de digitos decimales permitido para el registro de cantidades
+depende de la precisión de decimales configurados en la bodega: **\[Pestaña:
+Inventarios > Catálogo de bodegas > Seleccionar bodega > Clic derecho:
+Modificar > Pestaña: General > Precisión de decimales en el manejo de
+inventarios\].**
+
+---
+
+# Acerca de ventana
+
+##  OPERACIÓN DE REQUISICIÓN INTERNA
+
+##  Objetivo
+
+Esta ventana tiene como finalidad el registro de una operación de requisición
+interna.  
+  
+La operación de requisición interna se utiliza para realizar un pedido interno
+de materias primas.  
+  
+Esta operación no genera ningún tipo de movimiento contable, no afecta el
+inventario contable, ni el inventario físico, ni de disponibilidad.  
+  
+Las cantidades requeridas de elemento se pueden consultar en los exploradores
+de inventarios plus y en la consulta de inventario de disponibilidad.  
+  
+La requisición interna se utiliza como referencia al momento de registrar la
+planilla de uso y consumo.  
+  
+
+## Ejemplo de información a registrar
+
+Para la producción de la orden “OPR015823 – Orden Marco Uribe” se solicitan
+los siguientes elementos de inventario:  
+  
+Elemento | Cantidad  
+---|---  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+
+## Secciones
+
+## Sección encabezado de la operación
+
+Permite registrar el tipo de documento en el cual se soportará la operación,
+que por defecto es:  
+
+  * Requisición interna y el número de dicho documento, que generalmente es un consecutivo interno manejado por \[ContaPyme\].
+
+De forma opcional se puede indicar el empleado responsable de la requisición
+interna.  
+  
+De forma obligatoria se debe indicar la bodega de la cual se consumirán los
+elementos y el código del centro de costos u orden de producción a la cual
+quedará asignada la requisición de materiales.  
+  
+Si el centro de costos seleccionado es una orden de producción, el sistema
+cargará automáticamente los elementos y cantidades indicados en la orden,
+agilizando el diligenciamiento de la requisición.  
+  
+
+## Sección elementos a requerir
+
+Lista de los elementos de inventario requeridos.  
+  
+Por cada elemento de inventario es necesario indicar la cantidad requerida.  
+  
+Los elementos de inventario a cargar en la requisición deben estar
+configurados como "Para consumo \(o compras al gasto\)".  
+  
+
+## Sección observaciones
+
+Días estimados para la entrega de la requisición; se puede indicar: "Días
+hábiles" o "Fecha máxima de entrega".  
+  
+El plazo de entrega se utiliza para mostrar la vigencia del documento en el
+Explorador de Inventarios Plus.  
+  
+También se pueden detallar las observaciones de la requisición, como pueden
+ser especificaciones particulares para los elementos incluidos en la
+operación.  
+  
+
+## Sección impresión de soportes
+
+La operación de requisición interna permite la impresión de los siguientes
+documentos como soporte de la transacción:  
+
+  * Requisición interna.
+  * Orden de trabajo.
+
+Los diferentes documentos se pueden imprimir en formato media hoja u hoja
+completa.
+
+---
+
+# Código Empleado
+
+Código o identificación el tercero \(empleado\) responsable de la requisición
+interna. El tercero seleccionado como empleado se mostrará en el documento de
+impresión "requisición interna" generado por esta operación.
+
+Ejemplo
+
+En la empresa XYZ, el jefe de producción: Fernando Vargas es el responsable de
+realizar las requisiciones internas de materiales, así que en el campo
+**"Empleado"** de la requisición interna se debe seleccionar del catálogo de
+terceros al señor:**Fernando Vargas**.
+
+Observaciones
+
+El tercero responsable debe estar configurado en el catálogo de terceros como
+tipo de tercero "Empleado".  
+  
+Puede configurarse un tercero por defecto como responsable de las
+requisiciones. Para configurar la funcionalidad de este campo \(visible, solo
+lectura, requerido, valor por defecto\), ver: **\[Operación: Requisición
+interna > Configuración > Campos de la operación > Datos maestros de la
+operación\].**
+
+---
+
+# Observación
+
+Observaciones particulares para el egreso del elemento indicado en el renglón.
+
+Ejemplo
+
+Un ejemplo de observación de una requisición puede ser el código o nombre del
+elemento para el cual se requiere la materia prima solicitada. Ej. MOD1526 -
+Mueble Módular Corzo etc  
+  
+![13860-1.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD3%20-%20Requisici%C2%BEn%20interna/%5B14390%5D%20FrmOprOrd3/13860-1.jpg)
+
+Observaciones
+
+Las observaciones indicadas se muestran como detalle del elemento en el
+documento de impresión "Requisición interna" generado por esta operación
+
+Configuración
+
+Para activar la funcionalidad de esta columna \(visible, solo lectura,
+requerido\), ver: **\[Operación: Requisición Interna > Configuración > Campos
+de la operación > Configuración de columnas en requisición\].**
+
+---
+
+# Dato 1
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | COLOR \(DATO 1\)  
+CSINT-025 - Cuero sintético | 10 Mts | Negro  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | Rosada  
+POLIE-005 - Poliéster | 8 Mts | Blanca  
+  
+En el campo **"Dato 1"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 1" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 1" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 1** por la etiqueta **Color**.
+
+---
+
+# Dato 2
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | MARCA\(DATO 2\)  
+CSINT-025 - Cuero sintético | 10 Mts | Plastex Fabrics  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 |   
+POLIE-005 - Poliéster | 8 Mts | Lafayette  
+  
+En el campo **"Dato 2"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 2" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 2" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 2** por la etiqueta **Marca**.
+
+---
+
+# Dato 3
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | REFERENCIA\(DATO 3\)  
+CSINT-025 - Cuero sintético | 10 Mts | BUYAGAIN G-9  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | TEXSILEN  
+POLIE-005 - Poliéster | 8 Mts | NSYPMAZ736  
+  
+En el campo **"Dato 3"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 3" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 3" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 3** por la etiqueta **Referencia**.
+
+---
+
+# Dato 3
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | REFERENCIA\(DATO 4\)  
+CSINT-025 - Cuero sintético | 10 Mts | BUYAGAIN G-9  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | TEXSILEN  
+POLIE-005 - Poliéster | 8 Mts | NSYPMAZ736  
+  
+En el campo **"Dato 4"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 4" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 4" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 4** por la etiqueta **Referencia**.
+
+---
+
+# Dato 5
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | REFERENCIA\(DATO 5\)  
+CSINT-025 - Cuero sintético | 10 Mts | BUYAGAIN G-9  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | TEXSILEN  
+POLIE-005 - Poliéster | 8 Mts | NSYPMAZ736  
+  
+En el campo **"Dato 5"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 5" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 5" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 5** por la etiqueta **Referencia**.
+
+---
+
+# Dato 6
+
+Información adicional del elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | REFERENCIA\(DATO 6\)  
+CSINT-025 - Cuero sintético | 10 Mts | BUYAGAIN G-9  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | TEXSILEN  
+POLIE-005 - Poliéster | 8 Mts | NSYPMAZ736  
+  
+En el campo **"Dato 6"** , se indica la información adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Dato 6" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Dato 6" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Dato 6** por la etiqueta **Referencia**.
+
+---
+
+# Valor 1
+
+Valor adicional para el elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | DÍAS REPOSICIÓN \(VALOR 1\)  
+CSINT-025 - Cuero sintético | 10 Mts | 15  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | 7  
+POLIE-005 - Poliéster | 8 Mts | 10  
+  
+En el campo **"Valor 1"** , se indica el valor adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Valor 1" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Valor 1" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Valor 1** por la etiqueta **Días reposición**.
+
+---
+
+# Valor 2
+
+Valor adicional para el elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | DÍAS REPOSICIÓN \(VALOR 2\)  
+CSINT-025 - Cuero sintético | 10 Mts | 15  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | 7  
+POLIE-005 - Poliéster | 8 Mts | 10  
+  
+En el campo **"Valor 2"** , se indica el valor adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Valor 2" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Valor 2" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Valor 2** por la etiqueta **Días reposición**.
+
+---
+
+# Valor 3
+
+Valor adicional para el elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | DÍAS REPOSICIÓN \(VALOR 3\)  
+CSINT-025 - Cuero sintético | 10 Mts | 15  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | 7  
+POLIE-005 - Poliéster | 8 Mts | 10  
+  
+En el campo **"Valor 3"** , se indica el valor adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Valor 3" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Valor 3" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Valor 3** por la etiqueta **Días reposición**.
+
+---
+
+# Código bodega
+
+Código de la bodega de donde se egresarán el elemento de inventario indicado
+en el renglón.  
+  
+Todos los elementos indicados en la requisición serán egresados de la misma
+bodega. Si es necesario egresar elementos de bodegas diferentes, será
+necesario hacer una requisición por cada bodega.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+En la columna "Bodega" se debe indicar el código de la bodega de la cual se
+egresarán los elementos: **2 - Bodega de insumos y materiales**.
+
+Observaciones
+
+Puede configurarse una bodega por defecto en las requisiciones. Para
+configurar la funcionalidad de este campo \(visible, solo lectura, requerido,
+valor por defecto\), ver: **\[Operación: Requisición interna > Configuración >
+Campos de la operación > Datos maestros de la operación\].**
+
+---
+
+# Valor 4
+
+Valor adicional para el elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad | DÍAS REPOSICIÓN \(VALOR 4\)  
+CSINT-025 - Cuero sintético | 10 Mts | 15  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2 | 7  
+POLIE-005 - Poliéster | 8 Mts | 10  
+  
+En el campo **"Valor 4"** , se indica el valor adicional del elemento de
+inventario, que se requiere mostrar en los documentos de impresión y en el
+explorador de detalle de inventarios plus.
+
+Observaciones
+
+La visualización del campo "Valor 4" en la operación de requisición interna se
+configura en el catálogo de elementos de inventario y es visible para todas
+las operaciones de inventario. Para conocer la configuración de este campo
+para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+La información del campo "Valor 4" se puede mostrar en la impresión de la
+requisición interna.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de **Valor 4** por la etiqueta **Días reposición**.
+
+---
+
+# Centro de costos
+
+Código del centro de costos u orden de producción a la cual quedará asignada
+la requisición de materiales.  
+  
+Si el centro de costos seleccionado es una orden de producción, el sistema
+cargará automáticamente los elementos y cantidades indicados en la orden,
+agilizando el diligenciamiento de la requisición.  
+  
+Así al registrar la planilla de uso y consumo utilizando la requisición
+interna como referencia, se cargará la orden de producción como centro de
+costos imputado.
+
+Ejemplo
+
+El área de producción de la empresa XYZ realiza la orden de producción
+\(OPR-1850\) donde se solicita la producción del siguiente elemento:  
+  
+Elemento | Cantidad | MOD1526 - Mueble Módular Corzo | 5 unid  
+---|---  
+  
+Si al momento de realizar la requisición se selecciona la orden de producción
+**OPR-1850** se cargará automáticamente el elemento: **MOD1526 - Mueble
+Módular Corzo**.
+
+Observaciones
+
+Para crear y seleccionar la orden de producción, el licenciamiento debe contar
+con el módulo de ordenes de producción.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación: Requisición interna > Configuración >
+Campos de la operación > Datos maestros de la operación\]. **
+
+---
+
+# Código bodega
+
+Código de la bodega de donde se egresarán los elementos de inventario
+indicados en la operación.  
+  
+Todos los elementos indicados en la requisición serán egresados de la misma
+bodega. Si es necesario egresar elementos de bodegas diferentes, será
+necesario hacer una requisición por cada bodega.  
+  
+Indicar la bodega de la cual se egresearán los productos es obligatorio en la
+operación.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+En la columna "Bodega" se debe indicar el código de la bodega de la cual se
+egresarán los elementos: **2 - Bodega de insumos y materiales**.
+
+Observaciones
+
+Puede configurarse una bodega por defecto en las requisiciones. Para
+configurar la funcionalidad de este campo \(visible, solo lectura, requerido,
+valor por defecto\), ver: **\[Operación: Requisición interna > Configuración >
+Campos de la operación > Datos maestros de la operación\].**
+
+---
+
+# Total Cantidad
+
+Cantidad total de elementos solicitados en la requisición interna.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+En el campo **"Total Cantidad "** se mostrará la cantidad total de los
+elementos de inventario requeridos: **23**.
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente.
+
+---
+
+# Plazo de entrega
+
+Especifique los días estimados para la entrega de la requisición.  
+Puede indicar "Días hábiles" o "Fecha máxima de entrega".  
+  
+El plazo de entrega se utiliza para mostrar la vigencia del documento en el
+Explorador de Inventarios Plus.
+
+Ejemplo
+
+Si se realiza una requisición interna el 15/10/2018 y en el plazo de entrega
+se indica 20 días, el sistema calculará como fecha máxima de entrega el
+07/11/2018.  
+Si el 26/10/2018 se consulta el explorador de inventarios, el sistema mostrará
+que dicha requisición tiene **"10 días pendientes para entrega"** y el
+semáforo de vigencia de la requisición se mostrará en color amarillo.
+
+Observaciones
+
+Para configurar el semáforo de vencimiento de requisiciones en el Explorador
+de inventarios plus, ver: **\[Pestaña: Inventarios Exploradores: Explorador de
+inventarios plus > Configurar > Configuraciones generales > Requisición
+interna > Semáforo vencimiento requisiciones\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, valor por defecto\), ver: **\[Operación: Requisición interna >
+Configuración > Campos de la operación > Datos maestros de la operación\].**
+
+---
+
+# Días hábiles máximo
+
+Días hábiles a partir de la fecha de registro de la requisición que se estiman
+para la entrega de la misma.  
+Cuando se indican los días hábiles, el sistema calcula automáticamente la
+fecha máxima de entrega.
+
+Ejemplo
+
+Si se realiza una requisición interna el 15/10/2018 y en el campo **"Días
+hábiles máximo"** se indica 20 días, el sistema calculará como fecha máxima de
+entrega el 07/11/2018.  
+
+Observaciones
+
+Para consultar el plazo de una requisición para ser entregada, se debe
+consultar el Explorador de inventarios plus, ver: **\[Pestaña: Inventarios
+Exploradores: Explorador de inventarios plus\}.**
+
+---
+
+# Fecha máxima de entrega
+
+Fecha máxima que se estima para la entrega de la requisición.  
+Cuando se indica la fecha máxima de entrega, el sistema calcula
+automáticamente los días hábiles máximo.
+
+Ejemplo
+
+Si se realiza una requisición interna el 15/10/2018 y en el campo **"Fecha
+máxima de entrega"** se indica el 07/11/2018, el sistema calculará 20 días
+como "Días Hábiles Máximo".  
+
+Observaciones
+
+Para consultar el plazo de una requisición para ser entregada, se debe
+consultar el Explorador de inventarios plus, ver: **\[Pestaña: Inventarios
+Exploradores: Explorador de inventarios plus\}.**
+
+---
+
+# La fecha no corresponde a un día hábil.
+
+Debe indicar cómo fecha máxima de entrega un día hábil \(lunes a sábado\).
+
+---
+
+# Cargar datos de otra requisición
+
+Esta opción permite cargar los elementos que hayan sido registrados en otra
+requisición interna previamente registrada.
+
+Ejemplo
+
+El área de producción de la empresa XYZ realizó la requisición interna
+\(REQ-1823\) de los siguientes elementos:  
+  
+Elemento | Cantidad | Cuero sintético | 15 Mts  
+---|---  
+  
+Si al momento de registrar la requisición REQ-1850 se selecciona la REQ-1823
+se cargará automáticamente el elemento del listado anterior.
+
+Observaciones
+
+Si el listado de elementos de la requisición está vacío, se cargan los
+elementos de forma automática.  
+  
+Si el listado de elementos de la requisición no está vacío, el sistema ofrece
+dos opciones:
+
+  * Adicionar al listado los productos de la requisición.
+  * Limpiar el listado y adicionar los productos de la requisición.
+
+---
+
+# Producto
+
+Código del elemento de inventario solicitado en la requisición.  
+  
+Los elementos de inventario a cargar en la requisición deben estar
+configurados como "Para consumo \(o compras al gasto\)".
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+En la columna "Código" se debe indicar el código de cada uno de los elementos
+de inventarios solicitados: **CSINT-025 - Cuero sintético, ECELC-010 - Espuma
+de celda cerrada, POLIE-005 - Poliéster**.
+
+Observaciones
+
+Para abrir el seleccionador de elementos de inventario utilice la **tecla
+F7**.  
+  
+Para seleccionar el elemento de inventario, la operación cuenta con estas
+opciones:
+
+  * **Por medio del catálogo de elementos de inventario:** Se recomienda para agilidad de la operación, no muestra las existencias del elemento en la bodega.
+  * **Por medio del explorador de saldos de inventario:** Muestra las existencias del elemento en la bodega.
+
+Para configurar cuál seleccionador de elementos usar, ver:**\[Operación:
+Requisición interna > Configuración > Seleccionador de elementos de
+inventario\].**  
+  
+La visualización del código o nombre del elemento de inventario depende del
+ancho de la columna.
+
+---
+
+# Observaciones
+
+Observaciones particulares a registrar a la operación de requisición.
+
+Ejemplo
+
+Las observaciones de una requisición pueden indicar especificaciones
+particulares para los elementos incluidos en la operación. Ej. El elemento
+Cuero sintético debe entregarse cortado en cuadros de 50 x 50 cms.
+
+Observaciones
+
+Las observaciones indicadas se muestran como observaciones en el documento de
+impresión "salida de almacen" generado por esta operación.  
+  
+Estas observaciones son de libre definición por el usuario. Las observaciones
+pueden estar creadas previamente en el catálogo de observaciones o pueden
+ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones, ver: **\[Pestaña: Inventarios >
+Cinta de Opciones > Observaciones\]**
+
+---
+
+# Observaciones
+
+Observaciones particulares a registrar a la operación de requisición.
+
+Ejemplo
+
+Las observaciones de una requisición pueden indicar especificaciones
+particulares para los elementos incluidos en la operación. Ej. El elemento
+Cuero sintético debe entregarse cortado en cuadros de 50 x 50 cms.
+
+Observaciones
+
+Las observaciones indicadas se muestran como observaciones en el documento de
+impresión "salida de almacen" generado por esta operación.  
+  
+Estas observaciones son de libre definición por el usuario. Las observaciones
+pueden estar creadas previamente en el catálogo de observaciones o pueden
+ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones, ver: **\[Pestaña: Inventarios >
+Cinta de Opciones > Observaciones\]**
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al elemento de inventario
+indicado en el renglón.  
+  
+Este campo es informativo, de libre definición por el usuario y admite hasta 6
+caracteres.  
+  
+Un mismo elemento de inventario puede detallar información diferente en el
+campo "Tipo".
+
+Ejemplo
+
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Tipo | Cantidad  
+CSINT-025 - Cuero sintético | Negro | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | Rosada | 5 Mt2  
+POLIE-005 - Poliéster | Blanco | 8 Mts  
+  
+Observaciones
+
+Indicar un tipo para el elemento de inventario, evita crear en el catálogo de
+elementos de inventario, un elemento por cada especificación que se necesite.  
+  
+La información registrada en el campo "Tipo" se muestra en la descripción del
+elemento al imprimir el documento "Requisición Interna".
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación: Requisición interna > Configuración >
+Campos de la operación > Configuración de columnas en requisición\].**
+
+---
+
+# Observaciones
+
+Observaciones particulares a registrar a la operación de requisición.
+
+Ejemplo
+
+Las observaciones de una requisición pueden indicar especificaciones
+particulares para los elementos incluidos en la operación. Ej. El elemento
+Cuero sintético debe entregarse cortado en cuadros de 50 x 50 cms.
+
+Observaciones
+
+Las observaciones indicadas se muestran como observaciones en el documento de
+impresión "salida de almacen" generado por esta operación.  
+  
+Estas observaciones son de libre definición por el usuario. Las observaciones
+pueden estar creadas previamente en el catálogo de observaciones o pueden
+ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones, ver: **\[Pestaña: Inventarios >
+Cinta de Opciones > Observaciones\]**
+
+---
+
+# Observaciones
+
+Observaciones particulares a registrar a la operación de requisición.
+
+Ejemplo
+
+Las observaciones de una requisición pueden indicar especificaciones
+particulares para los elementos incluidos en la operación. Ej. El elemento
+Cuero sintético debe entregarse cortado en cuadros de 50 x 50 cms.
+
+Observaciones
+
+Las observaciones indicadas se muestran como observaciones en el documento de
+impresión "salida de almacen" generado por esta operación.  
+  
+Estas observaciones son de libre definición por el usuario. Las observaciones
+pueden estar creadas previamente en el catálogo de observaciones o pueden
+ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones, ver: **\[Pestaña: Inventarios >
+Cinta de Opciones > Observaciones\]**
+
+---
+
+# Unidad
+
+Unidad en la que se egresará el elemento de inventario indicado en el renglón.
+
+Ejemplo
+
+  * Kg
+  * Mts
+  * Unid
+
+Observaciones
+
+Si maneja unidad de compra \(ejemplo: kilos\) diferente a la unidad de consumo
+\(ejemplo: gramos\), debe configurar por cada elemento la respectiva unidad de
+compra y su equivalencia, [clic aquí.](<\[280\]LblNUnidadCompra.html>)  
+  
+Este campo no es modificable por el usuario en esta operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación: Requisición interna > Configurar
+operación > Campos de la operación > Configuración de columnas en
+requisición\].**
+
+---
+
+# Cantidad
+
+Número de unidades del elemento de inventario requerido.
+
+Ejemplo
+
+El área de producción de la empresa XYZ presenta la requisición de los
+siguientes elementos:  
+  
+Bodega: 2 - Bodega de insumos y materiales  
+---  
+Elemento | Cantidad  
+CSINT-025 - Cuero sintético | 10 Mts  
+ECELC-010 - Espuma de celda cerrada | 5 Mt2  
+POLIE-005 - Poliéster | 8 Mts  
+  
+En la columna "Cantidad" se debe indicar el número de unidades requerido de
+cada uno de los elementos de inventarios solicitados: Ej. CSINT-025 - Cuero
+sintético : **10 Mts**.
+
+Observaciones
+
+El número de digitos decimales permitido para el registro de cantidades
+depende de la precisión de decimales configurados en la bodega: **\[Pestaña:
+Inventarios > Catálogo de bodegas > Seleccionar bodega > Clic derecho:
+Modificar > Pestaña: General > Precisión de decimales en el manejo de
+inventarios\].**
+
+---
+
+# Observaciones
+
+Descripción breve de cada uno de los productos o servicios cotizados al
+cliente.
+
+Ejemplo
+
+Se genera la cotización CTC-1801244 para la empresa Almancenes H&M de un
+computador DELL todo en uno, en el campo observaciones puede indicarse lo
+siguiente:  
+
+_Este computador incluye monitor, teclado y mouse de marca Dell y garantía de
+un año._
+
+Observaciones
+
+Esta observación es cargada de forma automática en la operación según
+configuración del elemento de inventario. Para configurar la observación del
+elemento de inventario ver: **\[Pestaña Inventarios > Elementos de Inventario
+> Modificar > Descripción\]** La información ingresada en esta campo se verá
+reflejada en el documento impreso que será enviado al cliente. Este campo
+permite personalizar información por cada uno de los productos o servicios
+cotizados.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\) ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en cotización al cliente >
+Observación.\]**
+
+---
+
+# Dato 1
+
+Presenta información adicional para el producto en la operación.
+
+Ejemplo
+
+El almacén Su Vestido SAS comercializa prendas de vestir, el usuario requiere
+indicar información adicional para el producto como la talla, para esto se
+habilita el campo adicional Dato 1 en las operaciones de inventario.
+
+Código |  Producto | Dato 1 - Talla  
+---|---|---  
+CAMHOM250 | Camisa hombre Skit |  S  
+CAMHOM250 | Camisa hombre Skit |  M  
+CAMHOM250 | Camisa hombre Skit |  L  
+En el campo **"Dato 1"** , debe indicar la información adicional que se
+requiere mostrar en los documentos de impresión o visualizar en el explorador
+de inventarios.
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Dato 1 por Talla.
+
+---
+
+# Valor 1
+
+Presenta valores adicionales para el producto en la operación.  
+
+Ejemplo
+
+Un Minimercado mide los inventarios de los productos de abarrotes \(arroz,
+frijol, lenteja\) en libras y requiere conocer las existencias de ciertos
+productos en kilos, para conocer este dato se configura el campo adicional
+Valor 1 en las operaciones de inventario.  
+  
+Código | Producto | Unidad | \(VALOR 1\) Kilos   
+---|---|---|---  
+AR001 | Arroz blanco | 50 Libras | 25 Kilos  
+AZ005 | Azúcar Morena | 100 Libras  | 50 Kilos   
+En el campo **"Valor 1"** , debe indicar el valor adicional que se requiere
+mostrar en los documentos de impresión o visualizar en el explorador de
+inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Valor 1 por Kilo.
+
+---
+
+# Producto
+
+Código del producto o servicio que será cotizado al cliente.
+
+Ejemplo
+
+Se genera la cotización CTC-180142 para el cliente Almacenes El Mayorista
+S.A.S. de un computador mini HP 3012, se debe cargar el elemento con toda su
+información, indicando su código, en este caso HPMI001.
+
+Referencia | Nombre | Existencias  
+---|---|---  
+HPMI001 | Computador mini HP 3012 | 3  
+HPMI002 | Computador mini DELL 2201 | 5  
+HPMI003 | Computador mini ACER 1401 | 1  
+  
+Se validan las existencias de los inventarios para proceder con la generación
+de la cotización.
+
+Observaciones
+
+Los productos o servicios que serán cotizados deben estar creados en el
+catálogo de elementos de inventario. La búsqueda de los productos o servicios
+que serán cotizados se puede hacer por referencia, nombre o código de barras.
+
+Configuración
+
+Para crear los elementos de inventario, ver: **\[Pestaña Inventarios > Cinta
+de opciones > Elementos de Inventario > Crear\]**
+
+---
+
+# ![694 cargar
+cotizacion.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/694%20cargar%20cotizacion.png)
+Botón Cargar Cotización
+
+Permite cargar los productos o servicios seleccionados en una cotización
+previamente realizada, para tomarla como referencia.
+
+Ejemplo
+
+Al cliente Almancedes H&M se le envío la cotización CTC-18455500 el 2 de enero
+de 2018 de 2 computadores todo en 1, el cliente solicita nuevamente la
+cotización el 5 de febrero del 2018 de 4 computadores todo en 1, en ese caso
+al generar la cotización nueva se carga la cotización enviada anteriormemte en
+el campo referencia y a traves del botón se cargan los elementos cotizados en
+dicho momento y se modifica la cantidad.  
+
+Observaciones
+
+Este botón carga por defecto todos los elementos cotizados, pero estos
+elementos pueden modificarse desde la cotización. Si el campo referencia está
+vacío el sistema abre el explorador de cotizaciones, para seleccionar una de
+ellas y cargar los elementos sin dejar trazabilidad del documento
+seleccionado. Es importante tener presente que si la referencia ya fue
+indicada y los elementos cargados, al dar clic en el boton cargarán nuevamente
+los elementos pero el sistema solicita confirmación. Se pudede analizar la
+trazabilidad de los documentos para conocer cuando una cotización se toma como
+referencia en otra cotización.
+
+---
+
+# Cliente
+
+Código del cliente al cual se le enviará la cotización \(cédula, nit o código
+interno\).  
+
+Ejemplo
+
+La empresa Computadores M&M solicita una cotización de 2 computadores todo en
+uno por lo tanto en este campo se debe indicar el nit del cliente.  
+
+Observaciones
+
+El tercero debe estar creado en el catálogo de terceros y marcado como
+cliente. Para configurar el tipo de tercero ver: **\[Básico > Terceros >
+Modificar > Tipo de Tercero\]** Se pueden buscar los datos del cliente por
+cédula o nombre. Es muy importante que los terceros \(clientes\) esten bien
+creados, porque su información se ve reflejada al momento de enviar la
+cotización. Esto permite hacer trazabilidad de documentos, para conocer las
+cotizaciones enviadas a cada cliente. La cotización posteriormente enlaza con
+la facturación, por lo tanto estos datos son muy importantes porque cargan la
+información para presentar medios magnéticos. Se pueden generar informes y
+exploradores por cliente para analizar indicadores y seguimiento de
+cotizaciones enviadas y facturadas.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Configuración de la Operación > Campos de la
+operación > Datos maestros de la operación > Vendedor\]**
+
+---
+
+# ![360
+Candado.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/360%20Candado.png)Botón
+Cerrar Referencia
+
+Da por finalizado \(cerrado\) el o los documentos que fueron cargados en el
+campo referencia como base para el registro de la cotización.
+
+Ejemplo
+
+* Al cliente Muebles MG se le realizó la cotización CTC-182544 de 2 unidades del computador mini Hp pero solo adquirió 1, en ese caso se deja abierto el documento con la finalidad de poderlo cargar posteriormente en otro documento.
+* Al cliente Muebles MG se le realizó la cotización CTC-182544 de 2 unidades del computador mini Hp y adquirió las 2 unidades, en ese caso se cierra el documento.
+
+Observaciones
+
+Al momento de dar por cerrado el documento, no se volverá a cargar o estar
+visible en el seleccionador para otras operaciones. Los documentos se pueden
+dejar abiertos en caso de no facturar todas las cantidades indicadas en la
+cotización, con el fin de poder cargar esta referencia en otra operación. Si
+en la operación no se cargó ningún número de referencia no es necesario usar
+el botón. Es muy importante hacer el cierre de los documentos para que no
+aparezcan referencias pendientes estando ya facturas o cargadas en otra
+cotización o pedido. Este cierre de documentos tambien realizar manualmente
+por la operación \(cerrar documentos\).
+
+---
+
+# Referencia
+
+Código del documento en el cual se basa el registro de la cotización al
+cliente, puede ser otra cotización o pedido enviado al cliente.  
+
+Ejemplo
+
+Se realiza la cotización CTC-180501 para un cliente Almacenes M&H el 5 de
+enero de 2018 de 1 computador todo en uno, el cliente el 20 de febrero de 2018
+solicita que la cotización sea actualizada para efectos de pago, en ese caso
+en el campo referencia se indica el número de la cotización enviada
+anteriormente CTC-180501 para que carguen los productos o servicios cotizados,
+y se envía al cliente la nueva cotización con la fecha que solicita.  
+
+Observaciones
+
+Se pueden cargar varías referencias en una cotización. La referencia carga en
+la cotización actual los elementos cotizados según el número de documento
+indicado. Este campo permite hacer trazabilidad para conocer los documentos
+cerrados con otras operaciones. Se pueden consultar informes de cotizaciones
+cargadas en otras cotizaciones a traves de los exploradores de inventarios
+plus. Para acceder a los exploradores de inventarios plus ver: **\[Pestaña
+Inventarios > Cinta de Opciones > Movimientos > Inventarios Plus
+\(cotizaciones, pedidos, remisiones, etc\)\]**
+
+Configuración
+
+Este campo se puede configuarar como \(visible, solo lectura o requerido\)
+ver: **\[Configuración de la Operación > Campos de la operación > Datos
+maestros de la operación > Referencia\]**
+
+---
+
+# Vendedor
+
+Especifique el código del vendedor o responsable de la cotización.  
+
+Ejemplo
+
+La empresa Computadores M&M cuenta con 3 vendedores: Juliana Hincapie, Felipe
+Osorio y Luisa Valencia, al registrar una cotización de la vendedora Juliana
+Hincapie, en el campo vendedor se debe indicar el número su número de
+documento para que carguen sus datos.  
+
+Observaciones
+
+El tercero debe estar creado en el catálogo de terceros y marcado como
+vendedor. Se pueden buscar los datos del vendedor por cédula o nombre. Se
+pueden especificar los datos para que se impriman en la firma de la cotización
+y el cliente pueda contactar al vendedor fácilmente. Esto permite hacer
+trazabilidad de documentos, para conocer las cotizaciones realizadas por cada
+vendedor. La cotización posterior enlaza con la facturación, por lo tanto
+estos datos son utilizados para el cálculo de comisiones. Se pueden generar
+informes y exploradores por vendedor para analizar indicadores de efectividad.
+
+Configuración
+
+Para configurar la funcionalidad de este campo como \(visible, solo lectura o
+requerido\), ver: **\[Configuración de la Operación > Campos de la operación >
+Datos maestros de la operación > Vendedor\]** Para configurar la funcionalidad
+de este campo ver: **\[Básico > Terceros > Modificar > Tipo de Tercero\]**
+
+---
+
+# Valor Parcial
+
+Sumatoria del precio de los productos o servicios cargados en la cotización
+antes de impuestos \(independientemente de la lista de precios\).
+
+Ejemplo
+
+Se envía cliente Almacenes H&M la cotización CTC-1845200 de: 3 opciones de
+computadores, en la operación se discrimina cantidad, valor unitario,
+descuento y valor parcial.  
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 | 10% | $ 800.000  
+Computador mini Dell | 1 | $ 700.000 | 10% | $ 700.000  
+Computador todo en uno | 2 | $ 1.000.000 | 10% | $ 1.800.000  
+**Subtotal Valor Parcial** | **$ 3.300.000**  
+  
+Observaciones
+
+Este es un campo que no es modificable por el usuario, se actualiza
+automáticamente con los datos registrado en la cotización. Es la sumatoria del
+valor parcial de cada producto cotizado antes de aplicar descuentos e
+impuestos.
+
+---
+
+# Valor Descuento
+
+Sumatoria de los descuentos asignados a cada elemento de inventario cargado en
+la cotización.
+
+Ejemplo
+
+La empresa Almacenes H&M solicita cotización de 3 opciones de computadores, al
+cliente le otorgan un descuento del 10%, en la operación se discrimina
+producto, cantidad, valor unitario, porcentaje descuento y valor parcial.  
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 | 10% | $ 800.000  
+Computador mini Dell | 1 | $ 700.000 | 10% | $ 700.000  
+Computador todo en uno | 2 | $ 1.000.000 | 10% | $ 1.800.000  
+Total Descuento | $ 330.000 Observaciones Este campo no es modificable por el usuario, se actualiza automáticamente con los datos registrado en la cotización.
+
+---
+
+# Valor IVA
+
+Sumatoria del IVA del cada elemento de inventario cargado en la cotización.
+
+Ejemplo
+
+Se envía al cliente Almacenes M&G la cotización CTC-184520 de 3 opciones de
+computadores, en la operación se discrimina producto, precio, IVA y total IVA.  
+
+PRODUCTO | PRECIO | IVA  
+---|---|---  
+Computador mini Hp | $ 925.000 | 19%  
+Computador mini Dell | $ 850.000 | 19%  
+Computador todo en uno | $ 1.200.000 | 19%  
+Total IVA | $ 565.250  
+  
+
+Observaciones
+
+Este campo no permite ser modificado por el usuario, la información carga
+automáticamente con la información de la operación.
+
+---
+
+# Valor Total
+
+Valor completo que el cliente va a pagar por los productos o servicios
+cotizados.
+
+Ejemplo
+
+Se envía la cotización CTC-18012245 al cliente Amlacenes M&M de 3 opciones de
+computadores, en la operación se discrimina producto, cantidad, precio
+unitario, descuento, valor parcial, iva, y los totales, seguido del valor
+total.  
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 | 10% | $ 800.000  
+Computador mini Dell | 1 | $ 700.000 | 10% | $ 700.000  
+Computador todo en uno | 2 | $ 1.000.000 | 10% | $ 1.800.000  
+**Subtotal Valor Parcial** | **$ 3.300.000**  
+**Impuesto de venta \(19%\)** | **$ 627.000** | Valor Total | $ 3.927.000  
+  
+Observaciones
+
+Es el valor que la persona va a cancelar o va a quedar debiendo al momento de
+facturar y equivale a la sumatoria del valor parcial, menos descuentos, más
+impuestos. Este campo no permite ser modificado por el usuario, \[ContaPyme\]
+presenta la información de este campo con los datos indicados en la
+cotización. Se pueden realizar el cálculo de las comisiones al momento de
+enlazar el documento con una factura.
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al elemento de inventario.
+
+Ejemplo
+
+La empresa Comercial de alimentos, produce y comercializa Naranjas, las cuales
+clasifica según el mercado al cual va dirigido de la siguiente manera:  
+  
+Producto | Tipo  
+---|---  
+Naranja | Categoria A  
+Naranja | Categoria B  
+  
+**Categoria A:** Exportación  
+**Categoria B:** Mercado nacional
+
+Observaciones
+
+Este campo es de libre uso y definición del usuario.  
+  
+La especificación dada al elemento de inventarios en esta columna estará
+visible en los exploradores de inventarios plus.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación > Configurar operación > Campos de la
+operación > Configuración de columnas en orden de compra > Tipo\]**
+
+---
+
+# Usar otra moneda en la cotización
+
+Permite realizar una cotización en moneda local e imprimirla y visualizarla en
+otra moneda para ser enviada a un cliente.
+
+Ejemplo
+
+La empresa Almacenes M&M es de Colombia y su moneda local es el peso, se
+registra la cotización CTC-1801225 del cliente Muebles NLS de Nicaragua. La
+operación de cotización se registra en la moneda local, al imprimir o
+visualizar la cotización del cliente se puede usar otra moneda, en este caso
+dólares.  
+
+Observaciones
+
+Esta opción activa otras configuraciones como tasa de cambio, para que el
+sistema pueda hacer la conversión de los pesos a dólares. Si esta opción no es
+activada la cotización se generará e impimirá solo en moneda local.
+
+Configuración
+
+Para activar esta opción ver: **\[Operación > Configuración Operación > Campos
+de la operación > Datos maestros de la operación > Usar otra moneda en el
+pedido\]**
+
+---
+
+# Información Unidad Moneda
+
+Mesaje que indica la ruta para activar la opción de usar otra moneda en la
+cotización.
+
+Observaciones
+
+Es un mensaje que da a conocer una información pero no puede ser modificado
+por el usuario. Solo se visualiza si la opción usar otra moneda en la
+cotización está inactivada.
+
+---
+
+# Grupo Unidad Cotizaciones
+
+Datos básicos que permiten indicar que la cotización se va a imprimir en una
+moneda diferente a la moneda local.
+
+Ejemplo
+
+El cliente Muebles NLS de Ecuador solicita una cotización a la empresa
+Colombiana Almacenes MG, por lo tanto se genera la cotización CTC-184524 la
+cual se debe envíar en dólares. Se hace el registro de la cotización en moneda
+local \(pesos\) pero se usa otra moneda en este caso dólar para que se
+visualice e imprima en dólares.  
+
+Observaciones
+
+En ese caso la cotización queda generada en moneda local, los dólares solo se
+veran reflejados en documento impreso que será enviado al cliente. Los datos
+ingresados en este espacio como unidad de moneda local y tasa de cambio
+permiten que la cotización se genere en moneda local pero se imprima en
+cualquier otra moneda.
+
+Configuración
+
+Para activar la opción de usar otra moneda, ver: **\[Básico > Usuarios >
+Perfines de Seguridad > Modificar Perfil > Inventarios Plus \(cotizaciones,
+pedidos y órdenes\) > Opciones > General\]**
+
+---
+
+# Información Contacto Cliente
+
+Especifique un contacto registrado para el cliente, cuyos datos serán usados
+para la generación de la cotización.
+
+Ejemplo
+
+De la empresa Muebles MB la gerente Luisa Ospina solicita una cotización, pero
+la empresa tiene asociado al contador Nicolas Osorio y la secretaria Fernanda
+Naranjo, en ese caso se debe cargar como contacto la señoa Luisa Ospina que
+fue la persona que solicitó la cotización, para que vaya dirigida a ella
+directamente.  
+
+Observaciones
+
+El contacto debe estar resgistrado y asociado al cliente. Es una lista que
+permite seleccionar de todos los contactos del cliente a quien va dirigida la
+cotización. Los datos de la persona que se seleccione como tercero serán
+impresos en la cotización. Si la cotización se realizó a una persona natural
+no es necesario usar este campo, pues su datos se cargaran como datos de
+contacto. Si la empresa solo tiene un contacto no es necesario usar esta
+opción, pues cargará por defecto el contacto que tiene la empresa. Si no se
+selecciona ningún contacto la cotización solo saldrá con los datos de la
+empresa, pero es muy importante siempre enviar información dirigida y
+personalizada a cada cliente.
+
+Configuración
+
+Para asignar contactos a un cliente ver: **\[Básico > Terceros > Modificar >
+Contactos\]**
+
+---
+
+# Vigencia de la cotización
+
+La vigencia de la cotización define el plazo durante el cual se mantienen las
+condiciones ofrecidas al cliente. Este plazo puede estar sujeto a diferentes
+políticas comerciales como promociones, ofertas o descuentos.
+
+Ejemplo
+
+Se envía la cotización **CTC-15023365** al cliente Almacenes M&M el 1 de
+febrero con 15 días de vigencia. La cotización caduca el 15 de febrero. Pasada
+esta fecha, la empresa decidirá si cierra o no la cotización.
+
+Observaciones
+
+Este campo puede modificarse según las políticas de la empresa y las
+condiciones aplicables a cada cliente. Según la configuración general del
+sistema, se puede definir si el cálculo de la fecha de caducidad usa **días
+calendario, días hábiles, o días hábiles y festivos.** El sistema ajustará
+automáticamente la fecha de caducidad o los días, según sea el caso.
+**Representación visual** En el Explorador de Inventarios Plus, el estado de
+la vigencia se muestra gráficamente:
+
+  * **Verde:** más de 2 días de vigencia.
+  * **Amarillo:** entre 1 y 2 días de vigencia.
+  * **Rojo:** pasó el período de vigencia.
+
+Para al explorador de inventarios plus ver: **\[Inventarios > Cinta de
+opciones > Exploradores > Inventarios Plus \(cotizaciones, pedidos,
+remisiones, etc\)\]** Se puede observar gráficamente el comportamiento de las
+cotizaciones.
+
+Configuración
+
+Para configurar la funcionalidad de este campo ver: **\[Operación >
+Configuración Campos > vigencia de la cotización\]** Para establecer días
+calendario, hábiles o festivos: **\[Configuraciones generales del sistema >
+Primer día de la semana, días hábiles y festivos\]** .
+
+---
+
+# Días hábiles
+
+Este campo indica la cantidad de días hábiles asignados para la vigencia de la
+cotización. El sistema calcula automáticamente la fecha de caducidad con base
+en estos días.  
+
+Ejemplo
+
+Se genera la cotización CTC-184200 para el cliente Almacenes M&G el 1 de
+febrero con 10 días hábiles. El sistema asigna automáticamente la fecha de
+caducidad teniendo en cuenta los días hábiles configurados.
+
+Observaciones
+
+Se pueden establecer los días hábiles que maneja la empresa.  
+  
+La configuración general del sistema permite elegir entre:
+
+  * **Días calendario.**
+  * **Días hábiles** definidos según los días de trabajo configurados.
+  * **Días hábiles y festivos** que incluyen feriados del país.
+
+Configuración
+
+Para activar este campo ver: **\[Operación > Configuración Campos > vigencia
+de la cotización\]**  
+Para ajustar los días hábiles: **\[Configuraciones generales del sistema >
+Primer día de la semana, días hábiles y festivos\].**
+
+---
+
+# Fecha en que caduca
+
+Es la fecha máxima para la vigencia de la cotización.  
+
+Ejemplo
+
+La cotización **CTC-1802365** tiene una vigencia hasta el 15 de febrero. En
+este caso, el 15 de febrero es la fecha de caducidad.  
+
+Observaciones
+
+Según la configuración general del sistema, la fecha de caducidad se calcula
+automáticamente considerando días calendario, hábiles, o hábiles y festivos.  
+  
+En esta configuración se encuentran:
+
+  1. **Días hábiles de trabajo:** Seleccionar los días de lunes a domingo que son hábiles.
+  2. **Días laborales para inventarios Plus, órdenes de producción y trabajo:**
+     * **Días hábiles:** Considera los días definidos como hábiles en el paso 1.
+     * **Días festivos o feriados:** Excluye festivos nacionales de la empresa.
+
+Si ambas opciones están activas, se consideran ambos. Si ninguna está activa,
+se aplican días calendario.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura o
+requerido\) ver: **\[Operación > Configuración Campos > Validez de la oferta
+\(días\)\]**  
+Para establecer los parámetros generales:**\[Configuraciones generales del
+sistema > Primer día de la semana, días hábiles y festivos\].**
+
+---
+
+# Forma de envío
+
+Medio seleccionado para hacer entrega de los productos solicitados en la
+cotización una vez la persona la apruebe.  
+
+Ejemplo
+
+* Entregados en la oficina del cliente \(solo se realizan envíos nacionales\).
+
+* Envío solo por medio electrónico.
+
+Observaciones
+
+Son de libre definición por el usuario. El sistema ya tiene creadas algunas
+formas de envío que sirven como base las cuales pueden ser modificadas. Es
+importante porque se le deja al cliente por escrito el medio por le cual se
+entragarán los productos.
+
+Configuración
+
+Para modificar o crear formas de envío en el sistema ver: **\[Operación >
+Herramientas > Formas de envío\]**
+
+---
+
+# Forma de pago
+
+Medios de pago dados al cliente para adquirir los productos o servicios
+cotizados.  
+
+Ejemplo
+
+* De contado contraentrega.
+* Pago a 30 días.
+* Pago 50% de contado y 50% a 30 días.
+
+Observaciones
+
+Son de libre definición por el usuario. El sistema ya tiene creadas algunas
+que sirven como base las cuales se pueden modificar. Es muy importante dejar
+por escrito cómo se debe realizar el pago de la cotización.
+
+Configuración
+
+Para modificar o crear formas de pago en el sistema ver: **\[Operación >
+Herramientas > Formas de pago\]**
+
+---
+
+# Condición adicional
+
+Seleccione la condición adicional que aplique a la cotización.  
+
+Ejemplo
+
+* Capacitación personalizada virtual.
+* Instalación asistida.
+* Instalación presencial en las oficinas del cliente.
+
+Observaciones
+
+Las condiciones adicionales son de libre uso y definición del usuario.
+Permiten dar detalles adicionales de la cotización o datos puntuales que el
+cliente debe tener en cuenta.
+
+Configuración
+
+Para modificar o crear condiciones adicionales en el sistema ver:
+**\[Operación > Herramientas > Condiciones adicionales\]**
+
+---
+
+# Unidad de moneda local
+
+Nombre de la moneda local que tiene configurada en la empresa.
+
+Ejemplo
+
+La empresa Muebles M&M es de Colombia y su moneda local es el peso, en este
+campo cargará automáticamente PESOS.  
+
+Observaciones
+
+Este campo puede ser modificado desde la cotización. El sistema toma por
+defecto la moneda que tiene configurada el equipo donde se realiza la
+operación. Para cambiar la moneda del equipo ver: **\[Botón Inicio > Panel de
+Control > Región > Configuración Adicional > Moneda\]**
+
+Configuración
+
+Para la generación de una cotización en otra moneda ver: **\[Pestaña Básico >
+Usuarios > Perfiles de Seguridad > Modificar Perfil > Inventarios Plus
+\(cotizaciones, pedidos y órdenes\) > Opciones > General\]**
+
+---
+
+# Moneda
+
+Información de la moneda en la cual se visualizará la cotizacióm.
+
+Ejemplo
+
+El cliente Almacenes NLS de Nicaragua solicita una cotización a la empresa
+Colombiana Muebles MG por lo tanto la cotización se debe enviar en dólares, en
+este campo se debe indicar DÓLAR.  
+
+Observaciones
+
+El sistema da una lista de opciones para seleccionar las diferentes monedas ya
+creadas en el respectivo catálogo. A través de los exploradores e informes de
+inventarios plus se pueden consultar las cotizaciones en dólares que han sido
+enviadas.
+
+Configuración
+
+Para acceder al catálogo de monedas ingrese, ver: **\[Contabilidad > Plan de
+Cuentas > Monedas\]**
+
+---
+
+# Modificar
+
+Activa el campo para cambiar el valor de la tasa de cambio.
+
+Ejemplo
+
+La empresa Muebles MG realiza la cotización CTC-145230 al cliente de Nicaragua
+Almacenes NLS se debe activar el check para indicar el valor de la tasa de
+cambio \(valor equivalente de un dólar en pesos\).  
+
+* 1 Dólar equivale a $3.000 a la fecha en que se genera la cotización, se activa este check de modificar para indicar el valor $3.000.
+
+Observaciones
+
+Si no se habilita el campo quedá gris, es decir, no se puede modificar por el
+usuario. Este cálculo se debe hacer manualmente.
+
+---
+
+# Unidad
+
+Medida utilizada para discriminar la cantidad de producto o servicio que se
+desea cotizar.
+
+Ejemplo
+
+* En una carnicería manejan la carne por kilos, por lo tanto la unidad de medida es:**Kg**
+* En una ferretería venden los tubos de pvc por metos, por lo tanto la unidad de medida es: **Mts**
+* Una empresa de servicios ofrece a sus clientes capacitaciones por horas, por lo tanto la unidad de medida es: **Hora**
+
+Observaciones
+
+Este campo no es modificable por el usuario. La unidad de medida es muy
+importante y es utilizada para conocer las cantidades disponibles del
+producto. La unidad de medida se debe configurar en cada uno de los elementos
+de inventario. Para configurar la unidad de medida de los elementos de
+inventario, ver: **\[Inventarios > Cinta de Opciones > Elementos de inventario
+> Modificar > Unidad\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo como visible, ver:
+**\[Operación > Configurar operación > Campos de la operación > Configuración
+de columnas en cotización al cliente > Unidad\]**
+
+---
+
+# Observaciones para la cotización de un cliente
+
+Ingrese observaciones que aparecerán en la cotización impresa o algún otro
+documento que se imprima a partir de esta operación.  
+
+Ejemplo
+
+Es importante adicionar un comentario referente a la garantía del producto
+cotizado, se puede indicar en este campo para que carga la información en el
+documento impreso.  
+
+Observaciones
+
+Estas observaciones son de libre definición por el usuario. Estas
+observaciones pueden estar creadas previamente en el catálogo de observaciones
+o pueden ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones ver: **\[Inventarios > Cinta de
+Opciones > Observaciones\]**
+
+---
+
+# ![650 Guardar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/650%20Guardar%20nota.png)Cargar
+Encabezado
+
+Carga observaciones previamente creadas como encabezado de la cotización, se
+puede definir tratamiento, nombre y apellido del cliente y una pequeña
+introducción de la información presentada en la cotización.
+
+Ejemplo
+
+La empresa Computadores HM desea que el encabezado de sus cotizaciones sea el
+siguiente \(dirigido a cada uno de sus clientes\):
+
+_Apreciado SenorR Felipe Giraldo, A continuación estamos presentando la
+propuesta de nuestros productos y servicios que usted amablemente nos ha
+solicitado._  
+
+Observaciones
+
+Las observaciones permiten personalizar la información que será enviada al
+cliente. El sistema carga automáticamente los datos propios del cliente como
+el nombre y tratamiento \(así se tiene un información dirigida a cada cliente
+que se le envíe una cotización\). Las observaciones son de libre uso y
+definición del usuario, estas pueden ser escritas o cargadas directamente
+desde el catálogo de observaciones. La información de estas observaciones se
+verá reflejada al visualizar o imprimir el documento en la parte de encabezado
+o saludo al cliente. Se pueden estandarizar observaciones como saludo,
+despedida y comentarios que pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Inventarios > Cinta de
+opciones > Observaciones\]**
+
+---
+
+# ![651 Eliminar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/651%20Eliminar%20nota.png)Limpiar
+Encabezado
+
+Da la opción de borrar los datos que fueron cargados en el encabezado u
+observaciones del pedido.
+
+Observaciones
+
+Los datos pueden limpierse y ser cargados nuevamente.
+
+---
+
+# ![649 Fijar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/649%20Fijar%20nota.png)Fijar
+Encabezado
+
+Asigna por defecto una de las observaciones como encabezado de la operación.
+
+Ejemplo
+
+Si al momento de enviar información se debe indicar reiteradamete el mismo
+texto, este se puede fijar. Apreciado Señor Felipe Giraldo, A continuación
+estamos presentando el pedido de nuestros productos y servicios que usted
+amablemente nos ha solicitado.  
+
+Observaciones
+
+Esta opción permite dejar información fija para no tener que modificar cada
+vez que se le envíe un pedido a un cliente. Aunque la observación se encuentre
+fija, el usuario puede adicionar o quitar información desde la operación. Las
+observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones. La
+información de estas observaciones se verá reflejada al visualizar o imprimir
+el documento en la parte de observaciones. Se pueden estandarizar
+observaciones como saludo, despedida y comentarios que pueden ser comunes para
+múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones, ver: **\[Inventarios > Cinta de
+Opciones > Observaciones\]**
+
+---
+
+# ![650 Guardar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/650%20Guardar%20nota.png)Cargar
+Pie
+
+Carga observaciones previamente creadas en el pie de la operación.
+
+Ejemplo
+
+La empresa Computadores HM desea que en el pie de las cotizaciones, salga este
+mensaje: _Sugerimos no imprimir este e-mail a menos que sea absolutamente
+necesario. Protejamos el medio ambiente._  
+Se debe crear la observación con el mensaje para poderla cargar
+automáticamente.  
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones. La
+información de estas observaciones se verá reflejada al visualizar o imprimir
+el documento en la parte inferior o pie de la operación. Se pueden
+estandarizar observaciones como saludo, despedida y comentarios que pueden ser
+comunes para múltiples clientes. Las observaciones en una cotización permiten
+personalizar la información que será enviada al cliente.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Inventarios > Cinta de
+opciones > Observaciones\]**
+
+---
+
+# ![651 Eliminar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/651%20Eliminar%20nota.png)Limpiar
+Pie
+
+Da la opción de borrar los datos que fueron cargados en el pie del documento.
+
+Observaciones
+
+Los datos pueden limpierse y ser cargados nuevamente
+
+---
+
+# ![649 Fijar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/649%20Fijar%20nota.png)Fijar
+Pie
+
+Botón que permite fijar una de las observaciones como pie del documento.
+
+Ejemplo
+
+La empresa Computadores HM desea que en el pie de las cotizaciones, salga este
+mensaje: _Sugerimos no imprimir este e-mail a menos que sea absolutamente
+necesario. Protejamos el medio ambiente._  
+Se debe crear la observación con el mensaje para poderla cargar
+automáticamente.  
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.
+
+La información de estas observaciones se verá reflejada al visualizar o
+imprimir el documento en la parte inferior o pie de la operación.
+
+Se pueden estandarizar observaciones como saludo, despedida y comentarios que
+pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Ruta para acceder al catálogo de observaciones ver: **\[Inventarios > Cinta de
+opciones > Observaciones\]**
+
+---
+
+# Observaciones Pie de la cotización
+
+Da la posibilidad de adicionar observaciones manualmente al pie de la
+cotización.
+
+Texto del ejemplo  
+
+Para la cotización que se le está enviando al cliente es importante dejar un
+comentario con los números de cuentas, por lo tanto pueden ingresarse
+manualmente y se verán reflejos en el pie o parte inferior de la cotización.  
+
+Observaciones
+
+Se pueden cargar observaciones previamente creadas o adicionar comentarios
+personalizados.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Inventarios > Cinta de
+Opciones > Observaciones\]**
+
+---
+
+# Cantidad
+
+Número de unidades del producto o servicio que serán cotizadas al cliente.
+
+Ejemplo
+
+Se genera la cotización CTC-175422 para el cliente Almacenes M&M de 2 computadores mini Hp, 1 computador mini Dell y 1 computador todo en uno, en cantidad deberá indicarse el número de unidades solicitadas por cada producto.  REFERENCIA | PRODUCTO | CANTIDAD  
+---|---|---  
+COMHP001 | Computador mini Hp | 2  
+COMDELL002 | Computador mini Dell | 1  
+COMTD003 | Computador todo en uno | 1  
+  
+Observaciones
+
+La cantidad indicada en este campo será cargada en otra operación en la cual
+se tome como referencia este documento, como la factura de venta. Es un campo
+obligatorio que se carga por defecto en la operación.
+
+---
+
+# ![650 Guardar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/650%20Guardar%20nota.png)Cargar
+Anexos
+
+Permite complementar la información que será enviada al cliente en la
+cotización.
+
+Ejemplo
+
+Se envía al cliente Andrés Suárez de la empresa Computadores M&M la cotización
+CTC-17082311 de un computador todo en 1, una vez indicado el producto en la
+cotización, se puede cargar más información a través de los anexos asi:
+**Cotización sin anexo**
+
+![Sin
+Anexo.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/Sin%20Anexo.png)  
+
+**Cotización con anexo** ![Con
+Anexo1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/Con%20Anexo1.png)
+
+Observaciones
+
+Los anexos sirven como complemento a la información que se encuentra en el
+documento, pueden ser imágenes, texto o enlaces. Los anexos son de libre uso y
+definición del usuario, estos se cargan directamente desde el catálogo de
+anexos. Los anexos pueden ser creados como archivos RTF \(Texto enriquecido\)
+o HTML \(Lenguaje de Marcas de Hipertexto\). Ventajas de archivos en HTML:
+
+* Archivos con viñetas, imágenes, colores, fondos.
+* Tablas de diferentes dimensiones y con diseños personalizados.
+* Enlaces de conexión con páginas web. 
+* Visualización desde páginas web.
+  
+Los anexos que sean cargados en HTML se deben visualizar con documentos de
+impresión en HTML.
+
+Configuración
+
+Para crear o modificar anexos ver:**\[Pestaña inventarios > Cinta de opciones
+> Otros > Anexos\]**  
+Para acceder a los catálogos de impresión ver:**\[Pestaña Básico > Cinta de
+opciones > Doc. Impresión\]**
+
+---
+
+# ![651 Eliminar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/651%20Eliminar%20nota.png)Limpiar
+Anexos
+
+Borra los anexos cargados en la operación.
+
+Observaciones
+
+Los datos pueden limpierse y ser cargados nuevamente
+
+---
+
+# ![649 Fijar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/649%20Fijar%20nota.png)Fijar
+Anexos
+
+Asigna por defecto anexos previamente creados a la cotización.
+
+Ejemplo
+
+La empresa Almacenes M&M desea que en todas las cotizaciones se cargue
+automáticamente las formas de pago que tienen disponibles, este anexo se puede
+fijar, de esa manera siempre saldra la información en todas las cotizaciones
+generadas.
+
+Observaciones
+
+Los anexos que se encuentren fijos cargarán por defecto, pero pueden ser
+modificados desde la operación. Los anexos son de libre uso y definición del
+usuario, estos se cargan directamente desde el catálogo de anexos. Los anexos
+sirven como complemento a la información que se encuentra en el documento,
+pueden ser imágenes, texto o enlaces. Los anexos pueden ser creados como
+archivos RTF \(Texto enriquecido\) o HTML \(Lenguaje de Marcas de
+Hipertexto\). Ventajas de archivos en HTML:
+
+* Archivos con viñetas, imágenes, colores, fondos.
+* Tablas de diferentes dimensiones y con diseños personalizados.
+* Enlaces de conexión con páginas web. 
+* Visualización desde páginas web.
+Los anexos que sean cargados en HTML se deben visualizar con documentos de
+impresión en HTML.
+
+Configuración
+
+Para crear o modificar anexos ver:**\[Pestaña inventarios > Cinta de opciones
+> Otros > Anexos\]**
+
+---
+
+# Observación Pie
+
+Adicione observaciones manualmente en el encabezado de la cotización.
+
+Ejemplo  
+
+La empresa Almacenes M&M desea indicar en una cotización la garantía del
+producto cotizado, por lo tanto puede adicionar manualmente el comentario:
+
+Le recordamos que para la garantía del producto debe presentar la factura de
+compra y tiene una vigencia de 6 meses.
+
+Observaciones  
+
+Se pueden cargar observaciones previamente creadas o adicionar comentarios
+personalizados manualmente en cada cotización. Estos comentarios se verán
+reflejados en el documento impreso. Permite envíar información personalizada y
+dirigida a cada uno de los clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Inventarios > Cinta de
+Opciones > Observaciones\]**
+
+---
+
+# Cargar Anexo
+
+Permite seleccionar un archivo anexo que será adicionado al final de la lista.
+
+Ejemplo
+
+Se envía la cotización CTC-17082311 cliente Andrés Suárez de la empresa M&M
+Computadores de un computador todo en 1, desea cargar una información que es
+sólo para este producto y no la tiene como anexo, por lo tanto elabora el
+anexo, lo ubica y lo carga: **Cotización sin anexo**
+
+![Sin
+Anexo.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/Sin%20Anexo.png)  
+
+**Cotización con anexo** ![Con
+Anexo1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/Con%20Anexo1.png)
+
+Observaciones
+
+El archivo puede no estar creado en el catálogo de anexos, se le puede asignar
+cualquier ubicación. Los anexos sirven como complemento a la información que
+se encuentra en el documento, pueden ser imágenes, texto o enlaces. Los anexos
+son de libre uso y definición del usuario, estos se cargan directamente desde
+el catálogo de anexos. Los anexos pueden ser creados como archivos RTF \(Texto
+enriquecido\) o HTML \(Lenguaje de Marcas de Hipertexto\). Ventajas de
+archivos en HTML:
+
+* Archivos con viñetas, imágenes, colores, fondos.
+* Tablas de diferentes dimensiones y con diseños personalizados.
+* Enlaces de conexión con páginas web. 
+* Visualización desde páginas web.
+Los anexos que sean cargados en HTML se deben visualizar con documentos de
+impresión en HTML.
+
+Configuración
+
+Se debe seleccionar el archivo según la ruta de ubicación, ejemplo si esta en
+el escritorio y se llama Anexo 1, ver: **\[Escritorio > Anexo1\]** Para
+acceder a los catálogos de impresión ver:**\[Pestaña Básico > Cinta de
+opciones > Doc. Impresión\]**
+
+---
+
+# Botón Primer Nivel
+
+Permite dar ubicación a los anexos cargados en la cotización, para darles un
+órden específico.
+
+Observaciones
+
+El orden asignado se verá reflejado al momento de imprimir la cotización. Los
+anexos se pueden: subir uno por uno, bajar uno por uno, asignarle el primer o
+el último puesto en la lista.
+
+Configuración
+
+Ruta para acceder a los anexos ver:**\[Inventarios > Cinta de Opciones >
+Anexos\]**
+
+---
+
+# Editar Anexo
+
+Permite ingresar al archivo del anexo seleccionado para hacerle modificaciones
+directamente desde la operación.
+
+Ejemplo
+
+Se cargaron los anexos en la operación pero al visualizar el documento impreso
+la persona se da cuenta de un error de ortografía, en ese caso puede ingresar
+desde la operación a modificar el archivo del anexo para corregirlo.  
+
+Observaciones
+
+Los anexos deben estar en la ruta que indica el sistema para que puedan ser
+abiertos desde la operación.
+
+Configuración
+
+Ruta para acceder a los anexos ver:**\[Unidad C: > ProgramData > InSoft >
+Datos V4 > \[CONTAPYME\] > Cliente > Areas > Documentos > Anexos\]**
+
+---
+
+# Abrir carpeta
+
+Permite abrir la carpeta predeterminada de anexos que se muestra al lado
+izquierdo.
+
+Observaciones
+
+Se utiliza el explorador de Windows para abrir la ubicación.
+
+Configuración
+
+Ruta para ingresar a la configuración de ubicaciones predeterminadas:**\[Botón
+Aplicación > Configuración > Elemento: Configuración general del sistema >
+Elemento: Personalizar ubicación de archivos > Ubicación de anexos\]**
+
+---
+
+# Precio
+
+Valor por unidad asignado a cada producto.
+
+Ejemplo
+
+La empresa Computadores HM maneja los siguientes elementos de inventario, cada
+uno de ellos con el respectivo precio.
+
+**Tabla de ejemplo**  
+  
+REFERENCIA | PRODUCTO | PRECIO  
+---|---|---  
+COMHP001 | Computador mini Hp | $ 700.000  
+COMDELL002 | Computador mini Dell | $ 800.000  
+COMTD003 | Computador todo en uno | $ 1.000.000  
+  
+Observaciones
+
+Este campo por defecto está como no modificable por el usuario. El precio se
+puede definir según las políticas de la empresa con o sin IVA incluido. Si el
+producto tiene cargado el precio este se carga automáticamente, de lo
+contrario se puede ingresar desde la operación. Para cargar los precios a los
+elementos de inventario, ver:**\[Inventarios > Cinta de Opciones > Elementos
+de Inventario > Modificar > Lista de Precios > Precio\]** El precio es un
+campo muy importante, porque cuando se enlaza la cotización con la factura,
+este dato carga exactamente igual y es utilizado para darle al cliente el
+valor a cancelar.
+
+Configuración
+
+Para activar el campo y registrar precios, ver: **\[Menú Operación > Opciones
+> Registrar Precios\]**
+
+---
+
+# Botón Eliminar Anexo
+
+Elimina o limpia uno a uno los anexos cargados en la operación.
+
+Ejemplo
+
+La empresa Almacenes M&M generó la cotización CTC-1802335 a la cual se le
+cargaron los anexos, en este caso 3 archivos, pero 1 de ellos no se debe
+cargar porque el cliente ya tiene esa información, en ese caso este botón
+permite eliminar de la cotización solo ese anexo.  
+
+Observaciones
+
+Se pueden cargar nuevamente anexos que fueron eliminados.
+
+Configuración
+
+Para acceder al catálogo de anexos puede ver: **\[Pestaña Inventarios >
+Anexos\]**
+
+---
+
+# ![009
+iaRefresh.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizacion/%5B14410%5D%20FrmOprOrd4/009%20iaRefresh.png)Cargar
+productos pedido
+
+Carga los elementos de inventario de un pedido o cotización previamente
+realizada y enviada al cliente.  
+
+Ejemplo
+
+Al cliente Huevos Máximo se le envió el pedido PED-1801001 el 01 de febrero,
+el cliente solicita nuevamente una cotización el 20 de marzo, en ese caso se
+carga el pedido PED-1801001 y a través del botón se cargan los elementos
+seleccionados en el pedido \(sirve para tomar como referencia pedidos enviadas
+con anterioridad\).  
+
+Observaciones
+
+Este botón carga por defecto todos los elementos del pedido indicado, pero
+estos elementos pueden modificarse desde la cotización. Es importante tener
+presente que si la referencia ya fue indicada y los elementos cargados, al dar
+clic en el boton cargarán nuevamente los elementos pero el sistema solicita
+confirmación. Si no hay referencia indicada, al dar clic en el botón, se abre
+automáticamemte el catálogo de cotizaciones y pedidos.
+
+---
+
+# Porcentaje de descuento
+
+Descuento que se aplicará a cada uno de los productos o servicios cotizados.
+
+Ejemplo
+
+La empresa Computadores HM genera la cotización CTC-184552 para el cliente
+Muebles MG, por el mes de amor y amistad tiene unos descuentos especiales, al
+momento de cargar los elementos de inventario en la cotización se deben
+asignar los descuentos para el cliente.  
+REFERENCIA | PRODUCTO | PRECIO | DESCUENTO  
+---|---|---|---  
+COMHP001 | Computador mini Hp | $ 700.000 | 10%  
+COMDELL002 | Computador mini Dell | $ 800.000 | 8%  
+COMTD003 | Computador todo en uno | $ 1.000.000 | 10%  
+  
+Observaciones
+
+Se pueden definir descuentos fijos por cliente o producto. Si el usuario que
+realiza el registro de la información tiene los permisos, puede cambiar o
+asignar descuentos desde la operación. Los descuentos indicados en la
+cotización, se cargarán automáticamente al momento de enlazar la cotización
+con la factura. Se puede generar a través de un explorador de inventarios
+plus, una consulta para conocer las cotizaciones enviadas con descuentos, o
+filtrar según los descuentos asignados.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en cotización al cliente > %
+desc.\]**
+
+---
+
+# Porcentaje IVA
+
+Porcentaje de IVA aplicado a cada uno de los productos o servicios cotizados.
+
+Ejemplo
+
+En la empresa Computadores MH maneja los siguientes porcentajes de IVA para
+todos los elementos de inventario. **Tabla de ejemplo**  
+  
+REFERENCIA | PRODUCTO | PRECIO | IVA  
+---|---|---|---  
+COMHP001 | Computador mini Hp | $ 700.000 | 19%  
+COMDELL002 | Computador mini Dell | $ 800.000 | 19%  
+COMTD003 | Computador todo en uno | $ 1.000.000 | 8%  
+  
+Observaciones
+
+Este porcentaje de IVA es tomado por el sistema de la configuración realizada
+al elemento de inventario y se configura en el grupo de inventario. Para
+acceder a catálogo de grupos de inventario ingrese a: **\[Pestaña Inventarios
+> Cinta de Opciones > Grupos de Inventario\]** Los productos o servicios
+pueden manejar diferentes porcentajes de IVA. Este campo no permite ser
+modificado desde la cotización. El porcentaje de IVA cargado en la cotización
+va automáticamente a la factura al momento de enlazar el documento. Es un
+campo muy importante porque lleva información directamente a los informes de
+anexos y certificados de IVA una vez se factura.
+
+Configuración
+
+Para acceder los conceptos de liquidación ingrese a: **\[Pestaña Contabilidad
+> Pan de Cuentas > Conceptos de liquidación en ingreso/egreso\]**
+
+---
+
+# Valor venta
+
+Valor total de cada uno de los productos o servicios según la cantidad
+cotizada.
+
+Ejemplo
+
+El cliente Computadores H&G genera la cotización CTC-185488 de: 2 Compudores mini HP, 1 computador mini Dell y 4 computadores todo en 1.  PRODUCTO | PRECIO | CANTIDAD | VALOR VENTA  
+---|---|---|---  
+Computador mini Hp | $ 925.000 | 2 | $ 1.850.000  
+Computador mini Dell | $ 850.000 | 1 | $ 850.000  
+Computador todo en uno | $ 1.200.000 | 4 | $ 4.800.000  
+  
+Observaciones
+
+Este valor es el producto de las cantidades solicitadas por el precio unitario
+Este valor también puede ser indicado de forma manual por el usuario, así el
+sistema calcula de forma automática el valor unitario del mismo \(tomando como
+referencia las cantidades\). Puede ser valor total o parcial por cada producto
+o servicio, dependiendo de la lista de precios utilizada en la cotización.
+Este valor permite conocer al final de la cotización el valor total que deberá
+cancelar el cliente.
+
+Configuración
+
+Para indicar el precio total del producto en el renglón ver: **\[Menú
+Operación > Opciones > Registrar valores totales\]**
+
+---
+
+# Acerca de ventana
+
+##  OPERACIÓN DE COTIZACION AL CLIENTE
+
+##  Objetivo
+
+Presentar a los interesados o a los clientes de la empresa, los productos o
+servicios que s prestan, indicando el respectivo precio, descuentos a aplicar,
+formas de pago, entre otras.  
+  
+Esta operación no genera movimiento contable ni de inventarios, ya que solo es
+una propuesta comercial y no garantiza que posteriormente sea facturada.  
+  
+
+## Ejemplo de información a registrar
+
+Para el registro de la operación de cotización es necesario indicar el tercero
+a quien se dirige la propuesta, bien sea un tercero interesado o un tercero
+que ya es cliente.  
+  
+Seleccionar del catálogo de elementos de inventario, el listado de productos o
+servicios a cotizar, indicar el respectivo precio, y asignar descuento a
+otorgar a cada producto.  
+  
+Se puede indicar las condiciones comerciales para los productos presentados,
+formas de pago, de entrega, vigencia de la propuesta, entre otras.  
+  
+Para personalizar aún más el documento a enviar, se puede asignar
+observaciones para el encabezado y para el pie de la cotización, así como
+también anexar otros documentos a la cotización.  
+  
+
+## Secciones
+
+## Sección encabezado de la operación
+
+En el encabezado de la operación de cotización es posible seleccionar un
+documento especializado para el soporte de la operación y es el documento
+Cotización al cliente, este tipo de documento se puede definir por defecto, y
+el sistema automáticamente asignará el consecutivo correspondiente según su
+configuración.  
+  
+Para esta operación también es posible seleccionar en el encabezado la lista
+de precios que se asignará a los productos cuando estos sean llamados en la
+operación.  
+  
+
+## Secciones de la operación
+
+Cotización al cliente
+
+En esa sección, adicional a la información a indicar en el encabezado de la
+operación, se indican los elementos de inventario a presentar al tercero con
+la información comercial correspondiente, como es la cantidad, el precio
+unitario \(si no se indicó una lista de precios en el encabezado\) descuento a
+otorgar y observaciones.  
+  
+
+Datos adicionales de la cotización
+
+En esta sección se indica la vigencia de la propuesta, es decir hasta cuando
+será válida bien sea por políticas o por alguna condición especial.  
+  
+También se pueden indicar condiciones comerciales como, la forma de pago, la
+forma de envío y si se tienen condiciones adicionales para la propuesta, se
+puede indicar el tercero a quien se dirige la cotización.  
+  
+Si es necesario generar la propuesta en otra moneda diferente a la local, en
+esta sección se puede indicar otra unidad de moneda, previa correspondiente
+configuración.  
+  
+
+Observaciones
+
+Esta sección permite configurar información que se visualiza en la cotización,
+en campos como el encabezado, el pie de página y permiten dar un formato más
+personalizado para el tercero.  
+  
+Se puede anexar documentos con información adicional e importante sobre los
+productos presentados, o sobre información adicional relevante de la empresa.  
+  
+
+## Documentos de impresión
+
+Es posible generar la impresión de la operación de cotización al cliente para
+ser enviado al tercero, esta impresión de puede realizar en formato PDF o en
+HTML para ser enviada a través del correo electrónico.
+
+---
+
+# Observaciones
+
+Descripción breve de cada uno de los productos o servicios cotizados al
+cliente.
+
+Ejemplo
+
+Se genera la cotización CTC-1801244 para la empresa Almancenes H&M de un
+computador DELL todo en uno, en el campo observaciones puede indicarse lo
+siguiente:  
+
+_Este computador incluye monitor, teclado y mouse de marca Dell y garantía de
+un año._
+
+Observaciones
+
+Esta observación es cargada de forma automática en la operación según
+configuración del elemento de inventario. Para configurar la observación del
+elemento de inventario ver: **\[Pestaña Inventarios > Elementos de Inventario
+> Modificar > Descripción\]** La información ingresada en esta campo se verá
+reflejada en el documento impreso que será enviado al cliente. Este campo
+permite personalizar información por cada uno de los productos o servicios
+cotizados.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\) ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en cotización al cliente >
+Observación.\]**
+
+---
+
+# Dato 1
+
+Presenta información adicional para el producto en la operación.
+
+Ejemplo
+
+El almacén Su Vestido SAS comercializa prendas de vestir, el usuario requiere
+indicar información adicional para el producto como la talla, para esto se
+habilita el campo adicional Dato 1 en las operaciones de inventario.
+
+Código |  Producto | Dato 1 - Talla  
+---|---|---  
+CAMHOM250 | Camisa hombre Skit |  S  
+CAMHOM250 | Camisa hombre Skit |  M  
+CAMHOM250 | Camisa hombre Skit |  L  
+En el campo **"Dato 1"** , debe indicar la información adicional que se
+requiere mostrar en los documentos de impresión o visualizar en el explorador
+de inventarios.
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Dato 1 por Talla.
+
+---
+
+# Valor 1
+
+Presenta valores adicionales para el producto en la operación.  
+
+Ejemplo
+
+Un Minimercado mide los inventarios de los productos de abarrotes \(arroz,
+frijol, lenteja\) en libras y requiere conocer las existencias de ciertos
+productos en kilos, para conocer este dato se configura el campo adicional
+Valor 1 en las operaciones de inventario.  
+  
+Código | Producto | Unidad | \(VALOR 1\) Kilos   
+---|---|---|---  
+AR001 | Arroz blanco | 50 Libras | 25 Kilos  
+AZ005 | Azúcar Morena | 100 Libras  | 50 Kilos   
+En el campo **"Valor 1"** , debe indicar el valor adicional que se requiere
+mostrar en los documentos de impresión o visualizar en el explorador de
+inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Valor 1 por Kilo.
+
+---
+
+# Producto
+
+Código del producto o servicio que será cotizado al cliente.
+
+Ejemplo
+
+Se genera la cotización CTC-180142 para el cliente Almacenes El Mayorista
+S.A.S. de un computador mini HP 3012, se debe cargar el elemento con toda su
+información, indicando su código, en este caso HPMI001.
+
+Referencia | Nombre | Existencias  
+---|---|---  
+HPMI001 | Computador mini HP 3012 | 3  
+HPMI002 | Computador mini DELL 2201 | 5  
+HPMI003 | Computador mini ACER 1401 | 1  
+  
+Se validan las existencias de los inventarios para proceder con la generación
+de la cotización.
+
+Observaciones
+
+Los productos o servicios que serán cotizados deben estar creados en el
+catálogo de elementos de inventario. La búsqueda de los productos o servicios
+que serán cotizados se puede hacer por referencia, nombre o código de barras.
+
+Configuración
+
+Para crear los elementos de inventario, ver: **\[Pestaña Inventarios > Cinta
+de opciones > Elementos de Inventario > Crear\]**
+
+---
+
+# ![694 cargar
+cotizacion.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/694%20cargar%20cotizacion.png)
+Botón Cargar Cotización
+
+Permite cargar los productos o servicios seleccionados en una cotización
+previamente realizada, para tomarla como referencia.
+
+Ejemplo
+
+Al cliente Almancedes H&M se le envío la cotización CTC-18455500 el 2 de enero
+de 2018 de 2 computadores todo en 1, el cliente solicita nuevamente la
+cotización el 5 de febrero del 2018 de 4 computadores todo en 1, en ese caso
+al generar la cotización nueva se carga la cotización enviada anteriormemte en
+el campo referencia y a traves del botón se cargan los elementos cotizados en
+dicho momento y se modifica la cantidad.  
+
+Observaciones
+
+Este botón carga por defecto todos los elementos cotizados, pero estos
+elementos pueden modificarse desde la cotización. Si el campo referencia está
+vacío el sistema abre el explorador de cotizaciones, para seleccionar una de
+ellas y cargar los elementos sin dejar trazabilidad del documento
+seleccionado. Es importante tener presente que si la referencia ya fue
+indicada y los elementos cargados, al dar clic en el boton cargarán nuevamente
+los elementos pero el sistema solicita confirmación. Se pudede analizar la
+trazabilidad de los documentos para conocer cuando una cotización se toma como
+referencia en otra cotización.
+
+---
+
+# Cliente
+
+Código del cliente al cual se le enviará la cotización \(cédula, nit o código
+interno\).  
+
+Ejemplo
+
+La empresa Computadores M&M solicita una cotización de 2 computadores todo en
+uno por lo tanto en este campo se debe indicar el nit del cliente.  
+
+Observaciones
+
+El tercero debe estar creado en el catálogo de terceros y marcado como
+cliente. Para configurar el tipo de tercero ver: **\[Básico > Terceros >
+Modificar > Tipo de Tercero\]** Se pueden buscar los datos del cliente por
+cédula o nombre. Es muy importante que los terceros \(clientes\) esten bien
+creados, porque su información se ve reflejada al momento de enviar la
+cotización. Esto permite hacer trazabilidad de documentos, para conocer las
+cotizaciones enviadas a cada cliente. La cotización posteriormente enlaza con
+la facturación, por lo tanto estos datos son muy importantes porque cargan la
+información para presentar medios magnéticos. Se pueden generar informes y
+exploradores por cliente para analizar indicadores y seguimiento de
+cotizaciones enviadas y facturadas.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Configuración de la Operación > Campos de la
+operación > Datos maestros de la operación > Vendedor\]**
+
+---
+
+# ![360
+Candado.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/360%20Candado.png)Botón
+Cerrar Referencia
+
+Da por finalizado \(cerrado\) el o los documentos que fueron cargados en el
+campo referencia como base para el registro de la cotización.
+
+Ejemplo
+
+* Al cliente Muebles MG se le realizó la cotización CTC-182544 de 2 unidades del computador mini Hp pero solo adquirió 1, en ese caso se deja abierto el documento con la finalidad de poderlo cargar posteriormente en otro documento.
+* Al cliente Muebles MG se le realizó la cotización CTC-182544 de 2 unidades del computador mini Hp y adquirió las 2 unidades, en ese caso se cierra el documento.
+
+Observaciones
+
+Al momento de dar por cerrado el documento, no se volverá a cargar o estar
+visible en el seleccionador para otras operaciones. Los documentos se pueden
+dejar abiertos en caso de no facturar todas las cantidades indicadas en la
+cotización, con el fin de poder cargar esta referencia en otra operación. Si
+en la operación no se cargó ningún número de referencia no es necesario usar
+el botón. Es muy importante hacer el cierre de los documentos para que no
+aparezcan referencias pendientes estando ya facturas o cargadas en otra
+cotización o pedido. Este cierre de documentos tambien realizar manualmente
+por la operación \(cerrar documentos\).
+
+---
+
+# Referencia
+
+Código del documento en el cual se basa el registro de la cotización al
+cliente, puede ser otra cotización o pedido enviado al cliente.  
+
+Ejemplo
+
+Se realiza la cotización CTC-180501 para un cliente Almacenes M&H el 5 de
+enero de 2018 de 1 computador todo en uno, el cliente el 20 de febrero de 2018
+solicita que la cotización sea actualizada para efectos de pago, en ese caso
+en el campo referencia se indica el número de la cotización enviada
+anteriormente CTC-180501 para que carguen los productos o servicios cotizados,
+y se envía al cliente la nueva cotización con la fecha que solicita.  
+
+Observaciones
+
+Se pueden cargar varías referencias en una cotización. La referencia carga en
+la cotización actual los elementos cotizados según el número de documento
+indicado. Este campo permite hacer trazabilidad para conocer los documentos
+cerrados con otras operaciones. Se pueden consultar informes de cotizaciones
+cargadas en otras cotizaciones a traves de los exploradores de inventarios
+plus. Para acceder a los exploradores de inventarios plus ver: **\[Pestaña
+Inventarios > Cinta de Opciones > Movimientos > Inventarios Plus
+\(cotizaciones, pedidos, remisiones, etc\)\]**
+
+Configuración
+
+Este campo se puede configuarar como \(visible, solo lectura o requerido\)
+ver: **\[Configuración de la Operación > Campos de la operación > Datos
+maestros de la operación > Referencia\]**
+
+---
+
+# Vendedor
+
+Especifique el código del vendedor o responsable de la cotización.  
+
+Ejemplo
+
+La empresa Computadores M&M cuenta con 3 vendedores: Juliana Hincapie, Felipe
+Osorio y Luisa Valencia, al registrar una cotización de la vendedora Juliana
+Hincapie, en el campo vendedor se debe indicar el número su número de
+documento para que carguen sus datos.  
+
+Observaciones
+
+El tercero debe estar creado en el catálogo de terceros y marcado como
+vendedor. Se pueden buscar los datos del vendedor por cédula o nombre. Se
+pueden especificar los datos para que se impriman en la firma de la cotización
+y el cliente pueda contactar al vendedor fácilmente. Esto permite hacer
+trazabilidad de documentos, para conocer las cotizaciones realizadas por cada
+vendedor. La cotización posterior enlaza con la facturación, por lo tanto
+estos datos son utilizados para el cálculo de comisiones. Se pueden generar
+informes y exploradores por vendedor para analizar indicadores de efectividad.
+
+Configuración
+
+Para configurar la funcionalidad de este campo como \(visible, solo lectura o
+requerido\), ver: **\[Configuración de la Operación > Campos de la operación >
+Datos maestros de la operación > Vendedor\]** Para configurar la funcionalidad
+de este campo ver: **\[Básico > Terceros > Modificar > Tipo de Tercero\]**
+
+---
+
+# Valor Parcial
+
+Sumatoria del precio de los productos o servicios cargados en la cotización
+antes de impuestos \(independientemente de la lista de precios\).
+
+Ejemplo
+
+Se envía cliente Almacenes H&M la cotización CTC-1845200 de: 3 opciones de
+computadores, en la operación se discrimina cantidad, valor unitario,
+descuento y valor parcial.  
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 | 10% | $ 800.000  
+Computador mini Dell | 1 | $ 700.000 | 10% | $ 700.000  
+Computador todo en uno | 2 | $ 1.000.000 | 10% | $ 1.800.000  
+**Subtotal Valor Parcial** | **$ 3.300.000**  
+  
+Observaciones
+
+Este es un campo que no es modificable por el usuario, se actualiza
+automáticamente con los datos registrado en la cotización. Es la sumatoria del
+valor parcial de cada producto cotizado antes de aplicar descuentos e
+impuestos.
+
+---
+
+# Valor Descuento
+
+Sumatoria de los descuentos asignados a cada elemento de inventario cargado en
+la cotización.
+
+Ejemplo
+
+La empresa Almacenes H&M solicita cotización de 3 opciones de computadores, al
+cliente le otorgan un descuento del 10%, en la operación se discrimina
+producto, cantidad, valor unitario, porcentaje descuento y valor parcial.  
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 | 10% | $ 800.000  
+Computador mini Dell | 1 | $ 700.000 | 10% | $ 700.000  
+Computador todo en uno | 2 | $ 1.000.000 | 10% | $ 1.800.000  
+Total Descuento | $ 330.000 Observaciones Este campo no es modificable por el usuario, se actualiza automáticamente con los datos registrado en la cotización.
+
+---
+
+# Valor IVA
+
+Sumatoria del IVA del cada elemento de inventario cargado en la cotización.
+
+Ejemplo
+
+Se envía al cliente Almacenes M&G la cotización CTC-184520 de 3 opciones de
+computadores, en la operación se discrimina producto, precio, IVA y total IVA.  
+
+PRODUCTO | PRECIO | IVA  
+---|---|---  
+Computador mini Hp | $ 925.000 | 19%  
+Computador mini Dell | $ 850.000 | 19%  
+Computador todo en uno | $ 1.200.000 | 19%  
+Total IVA | $ 565.250  
+  
+
+Observaciones
+
+Este campo no permite ser modificado por el usuario, la información carga
+automáticamente con la información de la operación.
+
+---
+
+# Valor Total
+
+Valor completo que el cliente va a pagar por los productos o servicios
+cotizados.
+
+Ejemplo
+
+Se envía la cotización CTC-18012245 al cliente Amlacenes M&M de 3 opciones de
+computadores, en la operación se discrimina producto, cantidad, precio
+unitario, descuento, valor parcial, iva, y los totales, seguido del valor
+total.  
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 | 10% | $ 800.000  
+Computador mini Dell | 1 | $ 700.000 | 10% | $ 700.000  
+Computador todo en uno | 2 | $ 1.000.000 | 10% | $ 1.800.000  
+**Subtotal Valor Parcial** | **$ 3.300.000**  
+**Impuesto de venta \(19%\)** | **$ 627.000** | Valor Total | $ 3.927.000  
+  
+Observaciones
+
+Es el valor que la persona va a cancelar o va a quedar debiendo al momento de
+facturar y equivale a la sumatoria del valor parcial, menos descuentos, más
+impuestos. Este campo no permite ser modificado por el usuario, \[ContaPyme\]
+presenta la información de este campo con los datos indicados en la
+cotización. Se pueden realizar el cálculo de las comisiones al momento de
+enlazar el documento con una factura.
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al elemento de inventario.
+
+Ejemplo
+
+La empresa Comercial de alimentos, produce y comercializa Naranjas, las cuales
+clasifica según el mercado al cual va dirigido de la siguiente manera:  
+  
+Producto | Tipo  
+---|---  
+Naranja | Categoria A  
+Naranja | Categoria B  
+  
+**Categoria A:** Exportación  
+**Categoria B:** Mercado nacional
+
+Observaciones
+
+Este campo es de libre uso y definición del usuario.  
+  
+La especificación dada al elemento de inventarios en esta columna estará
+visible en los exploradores de inventarios plus.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación > Configurar operación > Campos de la
+operación > Configuración de columnas en orden de compra > Tipo\]**
+
+---
+
+# Usar otra moneda en la cotización
+
+Permite realizar una cotización en moneda local e imprimirla y visualizarla en
+otra moneda para ser enviada a un cliente.
+
+Ejemplo
+
+La empresa Almacenes M&M es de Colombia y su moneda local es el peso, se
+registra la cotización CTC-1801225 del cliente Muebles NLS de Nicaragua. La
+operación de cotización se registra en la moneda local, al imprimir o
+visualizar la cotización del cliente se puede usar otra moneda, en este caso
+dólares.  
+
+Observaciones
+
+Esta opción activa otras configuraciones como tasa de cambio, para que el
+sistema pueda hacer la conversión de los pesos a dólares. Si esta opción no es
+activada la cotización se generará e impimirá solo en moneda local.
+
+Configuración
+
+Para activar esta opción ver: **\[Operación > Configuración Operación > Campos
+de la operación > Datos maestros de la operación > Usar otra moneda en el
+pedido\]**
+
+---
+
+# Información Unidad Moneda
+
+Mesaje que indica la ruta para activar la opción de usar otra moneda en la
+cotización.
+
+Observaciones
+
+Es un mensaje que da a conocer una información pero no puede ser modificado
+por el usuario. Solo se visualiza si la opción usar otra moneda en la
+cotización está inactivada.
+
+---
+
+# Grupo Unidad Cotizaciones
+
+Datos básicos que permiten indicar que la cotización se va a imprimir en una
+moneda diferente a la moneda local.
+
+Ejemplo
+
+El cliente Muebles NLS de Ecuador solicita una cotización a la empresa
+Colombiana Almacenes MG, por lo tanto se genera la cotización CTC-184524 la
+cual se debe envíar en dólares. Se hace el registro de la cotización en moneda
+local \(pesos\) pero se usa otra moneda en este caso dólar para que se
+visualice e imprima en dólares.  
+
+Observaciones
+
+En ese caso la cotización queda generada en moneda local, los dólares solo se
+veran reflejados en documento impreso que será enviado al cliente. Los datos
+ingresados en este espacio como unidad de moneda local y tasa de cambio
+permiten que la cotización se genere en moneda local pero se imprima en
+cualquier otra moneda.
+
+Configuración
+
+Para activar la opción de usar otra moneda, ver: **\[Básico > Usuarios >
+Perfines de Seguridad > Modificar Perfil > Inventarios Plus \(cotizaciones,
+pedidos y órdenes\) > Opciones > General\]**
+
+---
+
+# Información Contacto Cliente
+
+Especifique un contacto registrado para el cliente, cuyos datos serán usados
+para la generación de la cotización.
+
+Ejemplo
+
+De la empresa Muebles MB la gerente Luisa Ospina solicita una cotización, pero
+la empresa tiene asociado al contador Nicolas Osorio y la secretaria Fernanda
+Naranjo, en ese caso se debe cargar como contacto la señoa Luisa Ospina que
+fue la persona que solicitó la cotización, para que vaya dirigida a ella
+directamente.  
+
+Observaciones
+
+El contacto debe estar resgistrado y asociado al cliente. Es una lista que
+permite seleccionar de todos los contactos del cliente a quien va dirigida la
+cotización. Los datos de la persona que se seleccione como tercero serán
+impresos en la cotización. Si la cotización se realizó a una persona natural
+no es necesario usar este campo, pues su datos se cargaran como datos de
+contacto. Si la empresa solo tiene un contacto no es necesario usar esta
+opción, pues cargará por defecto el contacto que tiene la empresa. Si no se
+selecciona ningún contacto la cotización solo saldrá con los datos de la
+empresa, pero es muy importante siempre enviar información dirigida y
+personalizada a cada cliente.
+
+Configuración
+
+Para asignar contactos a un cliente ver: **\[Básico > Terceros > Modificar >
+Contactos\]**
+
+---
+
+# Vigencia de la cotización
+
+Son los días por los cuales se le puede sostener al cliente la cotización con
+las condiciones indicadas.  
+
+La vigencia puede estar sujeta a diferentes condiciones comerciales
+\(promociones, ofertas, descuentos\).  
+
+Ejemplo
+
+Se envía la cotización CTC-15023365 al cliente Almacenes M&M el 1 de febrero
+del 2018 con 15 días de vigencia, lo que quiere decir que la cotización caduca
+el 15 de febrero del 2018.
+
+Pasados estos 15 días la empresa decide si cierra o no la cotización, teniendo
+en cuenta que su vigencia finalizó.  
+
+Observaciones
+
+Estos campos son modificados por el usuario dependiendo las políticas de la
+empresa y condiciones para cada uno de los clientes. La vigencia cumple un
+papel muy importante, porque carga el explorador de inventarios plus por
+colores así:
+
+* Verde: más de 2 días de vigencia.
+* Amarillo: entre 1 y 2 días de vigencia.
+* Rojo: pasó el período de vigencia.
+Para al explorador de inventarios plus ver: **\[Inventarios > Cinta de
+opciones > Exploradores > Inventarios Plus \(cotizaciones, pedidos,
+remisiones, etc\)\]** Se puede observar gráficamente el comportamiento de las
+cotizaciones.
+
+Configuración
+
+Para configurar la funcionalidad de este campo ver: **\[Operación >
+Configuración Campos > vigencia de la cotización\]**
+
+---
+
+# Días hábiles
+
+Indique los días hábiles que tiene la cotización para su respectiva vigencia.  
+
+Ejemplo
+
+Se genera la cotización CTC-184200 para el cliente Almacenes M&G el 1 de
+febrero al cual se le van a asignar 10 días hábiles, en ese campo se indica el
+número 10 y el sistema carga la fecha automáticamente.  
+
+Observaciones
+
+Se pueden establecer y dejar por defecto los días hábiles o indicarlos en cada
+operación. Para configurar lo días hábiles ver: **\[Herramientas > Días
+hábiles de trabajo\]**
+
+Configuración
+
+Para activar este campo visible ver: **\[Operación > Configuración Campos >
+vigencia de la cotización\]**
+
+---
+
+# Fecha en que caduca
+
+Fecha máxima de plazo para la oferta de la cotización actual.  
+
+Ejemplo
+
+La cotización CTC-1802365 está vigente hasta el 15 de febrero, en ese caso esa
+es la fecha de caducidad.  
+
+Observaciones
+
+No se puede establecer como fecha de caducidad un día festivo, si se
+selecciona el sistema indicará que debe ser modificado. Para configurar los
+días hábiles ver: **\[Herramientas > Días hábiles de trabajo\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura o
+requerido\) ver: **\[Operación > Configuración Campos > Validez de la oferta
+\(días\)\]**
+
+---
+
+# Forma de envío
+
+Medio seleccionado para hacer entrega de los productos solicitados en la
+cotización una vez la persona la apruebe.  
+
+Ejemplo
+
+* Entregados en la oficina del cliente \(solo se realizan envíos nacionales\).
+
+* Envío solo por medio electrónico.
+
+Observaciones
+
+Son de libre definición por el usuario. El sistema ya tiene creadas algunas
+formas de envío que sirven como base las cuales pueden ser modificadas. Es
+importante porque se le deja al cliente por escrito el medio por le cual se
+entragarán los productos.
+
+Configuración
+
+Para modificar o crear formas de envío en el sistema ver: **\[Operación >
+Herramientas > Formas de envío\]**
+
+---
+
+# Forma de pago
+
+Medios de pago dados al cliente para adquirir los productos o servicios
+cotizados.  
+
+Ejemplo
+
+* De contado contraentrega.
+* Pago a 30 días.
+* Pago 50% de contado y 50% a 30 días.
+
+Observaciones
+
+Son de libre definición por el usuario. El sistema ya tiene creadas algunas
+que sirven como base las cuales se pueden modificar. Es muy importante dejar
+por escrito cómo se debe realizar el pago de la cotización.
+
+Configuración
+
+Para modificar o crear formas de pago en el sistema ver: **\[Operación >
+Herramientas > Formas de pago\]**
+
+---
+
+# Condición adicional
+
+Seleccione la condición adicional que aplique a la cotización.  
+
+Ejemplo
+
+* Capacitación personalizada virtual.
+* Instalación asistida.
+* Instalación presencial en las oficinas del cliente.
+
+Observaciones
+
+Las condiciones adicionales son de libre uso y definición del usuario.
+Permiten dar detalles adicionales de la cotización o datos puntuales que el
+cliente debe tener en cuenta.
+
+Configuración
+
+Para modificar o crear condiciones adicionales en el sistema ver:
+**\[Operación > Herramientas > Condiciones adicionales\]**
+
+---
+
+# Unidad de moneda local
+
+Nombre de la moneda local que tiene configurada en la empresa.
+
+Ejemplo
+
+La empresa Muebles M&M es de Colombia y su moneda local es el peso, en este
+campo cargará automáticamente PESOS.  
+
+Observaciones
+
+Este campo puede ser modificado desde la cotización. El sistema toma por
+defecto la moneda que tiene configurada el equipo donde se realiza la
+operación. Para cambiar la moneda del equipo ver: **\[Botón Inicio > Panel de
+Control > Región > Configuración Adicional > Moneda\]**
+
+Configuración
+
+Para la generación de una cotización en otra moneda ver: **\[Pestaña Básico >
+Usuarios > Perfiles de Seguridad > Modificar Perfil > Inventarios Plus
+\(cotizaciones, pedidos y órdenes\) > Opciones > General\]**
+
+---
+
+# Moneda
+
+Información de la moneda en la cual se visualizará la cotizacióm.
+
+Ejemplo
+
+El cliente Almacenes NLS de Nicaragua solicita una cotización a la empresa
+Colombiana Muebles MG por lo tanto la cotización se debe enviar en dólares, en
+este campo se debe indicar DÓLAR.  
+
+Observaciones
+
+El sistema da una lista de opciones para seleccionar las diferentes monedas ya
+creadas en el respectivo catálogo. A través de los exploradores e informes de
+inventarios plus se pueden consultar las cotizaciones en dólares que han sido
+enviadas.
+
+Configuración
+
+Para acceder al catálogo de monedas ingrese, ver: **\[Contabilidad > Plan de
+Cuentas > Monedas\]**
+
+---
+
+# Modificar
+
+Activa el campo para cambiar el valor de la tasa de cambio.
+
+Ejemplo
+
+La empresa Muebles MG realiza la cotización CTC-145230 al cliente de Nicaragua
+Almacenes NLS se debe activar el check para indicar el valor de la tasa de
+cambio \(valor equivalente de un dólar en pesos\).  
+
+* 1 Dólar equivale a $3.000 a la fecha en que se genera la cotización, se activa este check de modificar para indicar el valor $3.000.
+
+Observaciones
+
+Si no se habilita el campo quedá gris, es decir, no se puede modificar por el
+usuario. Este cálculo se debe hacer manualmente.
+
+---
+
+# Unidad
+
+Medida utilizada para discriminar la cantidad de producto o servicio que se
+desea cotizar.
+
+Ejemplo
+
+* En una carnicería manejan la carne por kilos, por lo tanto la unidad de medida es:**Kg**
+* En una ferretería venden los tubos de pvc por metos, por lo tanto la unidad de medida es: **Mts**
+* Una empresa de servicios ofrece a sus clientes capacitaciones por horas, por lo tanto la unidad de medida es: **Hora**
+
+Observaciones
+
+Este campo no es modificable por el usuario. La unidad de medida es muy
+importante y es utilizada para conocer las cantidades disponibles del
+producto. La unidad de medida se debe configurar en cada uno de los elementos
+de inventario. Para configurar la unidad de medida de los elementos de
+inventario, ver: **\[Inventarios > Cinta de Opciones > Elementos de inventario
+> Modificar > Unidad\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo como visible, ver:
+**\[Operación > Configurar operación > Campos de la operación > Configuración
+de columnas en cotización al cliente > Unidad\]**
+
+---
+
+# Observaciones para la cotización de un cliente
+
+Ingrese observaciones que aparecerán en la cotización impresa o algún otro
+documento que se imprima a partir de esta operación.  
+
+Ejemplo
+
+Es importante adicionar un comentario referente a la garantía del producto
+cotizado, se puede indicar en este campo para que carga la información en el
+documento impreso.  
+
+Observaciones
+
+Estas observaciones son de libre definición por el usuario. Estas
+observaciones pueden estar creadas previamente en el catálogo de observaciones
+o pueden ingresarse manualmente.
+
+Configuración
+
+Para acceder a catálogo de observaciones ver: **\[Inventarios > Cinta de
+Opciones > Observaciones\]**
+
+---
+
+# ![650 Guardar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/650%20Guardar%20nota.png)Cargar
+Encabezado
+
+Carga observaciones previamente creadas como encabezado de la cotización, se
+puede definir tratamiento, nombre y apellido del cliente y una pequeña
+introducción de la información presentada en la cotización.
+
+Ejemplo
+
+La empresa Computadores HM desea que el encabezado de sus cotizaciones sea el
+siguiente \(dirigido a cada uno de sus clientes\):
+
+_Apreciado SenorR Felipe Giraldo, A continuación estamos presentando la
+propuesta de nuestros productos y servicios que usted amablemente nos ha
+solicitado._  
+
+Observaciones
+
+Las observaciones permiten personalizar la información que será enviada al
+cliente. El sistema carga automáticamente los datos propios del cliente como
+el nombre y tratamiento \(así se tiene un información dirigida a cada cliente
+que se le envíe una cotización\). Las observaciones son de libre uso y
+definición del usuario, estas pueden ser escritas o cargadas directamente
+desde el catálogo de observaciones. La información de estas observaciones se
+verá reflejada al visualizar o imprimir el documento en la parte de encabezado
+o saludo al cliente. Se pueden estandarizar observaciones como saludo,
+despedida y comentarios que pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Inventarios > Cinta de
+opciones > Observaciones\]**
+
+---
+
+# ![651 Eliminar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/651%20Eliminar%20nota.png)Limpiar
+Encabezado
+
+Da la opción de borrar los datos que fueron cargados en el encabezado u
+observaciones del pedido.
+
+Observaciones
+
+Los datos pueden limpierse y ser cargados nuevamente.
+
+---
+
+# ![649 Fijar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/649%20Fijar%20nota.png)Fijar
+Encabezado
+
+Asigna por defecto una de las observaciones como encabezado de la operación.
+
+Ejemplo
+
+Si al momento de enviar información se debe indicar reiteradamete el mismo
+texto, este se puede fijar. Apreciado Señor Felipe Giraldo, A continuación
+estamos presentando el pedido de nuestros productos y servicios que usted
+amablemente nos ha solicitado.  
+
+Observaciones
+
+Esta opción permite dejar información fija para no tener que modificar cada
+vez que se le envíe un pedido a un cliente. Aunque la observación se encuentre
+fija, el usuario puede adicionar o quitar información desde la operación. Las
+observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones. La
+información de estas observaciones se verá reflejada al visualizar o imprimir
+el documento en la parte de observaciones. Se pueden estandarizar
+observaciones como saludo, despedida y comentarios que pueden ser comunes para
+múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones, ver: **\[Inventarios > Cinta de
+Opciones > Observaciones\]**
+
+---
+
+# ![650 Guardar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/650%20Guardar%20nota.png)Cargar
+Pie
+
+Carga observaciones previamente creadas en el pie de la operación.
+
+Ejemplo
+
+La empresa Computadores HM desea que en el pie de las cotizaciones, salga este
+mensaje: _Sugerimos no imprimir este e-mail a menos que sea absolutamente
+necesario. Protejamos el medio ambiente._  
+Se debe crear la observación con el mensaje para poderla cargar
+automáticamente.  
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones. La
+información de estas observaciones se verá reflejada al visualizar o imprimir
+el documento en la parte inferior o pie de la operación. Se pueden
+estandarizar observaciones como saludo, despedida y comentarios que pueden ser
+comunes para múltiples clientes. Las observaciones en una cotización permiten
+personalizar la información que será enviada al cliente.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Inventarios > Cinta de
+opciones > Observaciones\]**
+
+---
+
+# ![651 Eliminar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/651%20Eliminar%20nota.png)Limpiar
+Pie
+
+Da la opción de borrar los datos que fueron cargados en el pie del documento.
+
+Observaciones
+
+Los datos pueden limpierse y ser cargados nuevamente
+
+---
+
+# ![649 Fijar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/649%20Fijar%20nota.png)Fijar
+Pie
+
+Botón que permite fijar una de las observaciones como pie del documento.
+
+Ejemplo
+
+La empresa Computadores HM desea que en el pie de las cotizaciones, salga este
+mensaje: _Sugerimos no imprimir este e-mail a menos que sea absolutamente
+necesario. Protejamos el medio ambiente._  
+Se debe crear la observación con el mensaje para poderla cargar
+automáticamente.  
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.
+
+La información de estas observaciones se verá reflejada al visualizar o
+imprimir el documento en la parte inferior o pie de la operación.
+
+Se pueden estandarizar observaciones como saludo, despedida y comentarios que
+pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Ruta para acceder al catálogo de observaciones ver: **\[Inventarios > Cinta de
+opciones > Observaciones\]**
+
+---
+
+# Observaciones Pie de la cotización
+
+Da la posibilidad de adicionar observaciones manualmente al pie de la
+cotización.
+
+Texto del ejemplo  
+
+Para la cotización que se le está enviando al cliente es importante dejar un
+comentario con los números de cuentas, por lo tanto pueden ingresarse
+manualmente y se verán reflejos en el pie o parte inferior de la cotización.  
+
+Observaciones
+
+Se pueden cargar observaciones previamente creadas o adicionar comentarios
+personalizados.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Inventarios > Cinta de
+Opciones > Observaciones\]**
+
+---
+
+# Cantidad
+
+Número de unidades del producto o servicio que serán cotizadas al cliente.
+
+Ejemplo
+
+Se genera la cotización CTC-175422 para el cliente Almacenes M&M de 2 computadores mini Hp, 1 computador mini Dell y 1 computador todo en uno, en cantidad deberá indicarse el número de unidades solicitadas por cada producto.  REFERENCIA | PRODUCTO | CANTIDAD  
+---|---|---  
+COMHP001 | Computador mini Hp | 2  
+COMDELL002 | Computador mini Dell | 1  
+COMTD003 | Computador todo en uno | 1  
+  
+Observaciones
+
+La cantidad indicada en este campo será cargada en otra operación en la cual
+se tome como referencia este documento, como la factura de venta. Es un campo
+obligatorio que se carga por defecto en la operación.
+
+---
+
+# ![650 Guardar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/650%20Guardar%20nota.png)Cargar
+Anexos
+
+Permite complementar la información que será enviada al cliente en la
+cotización.
+
+Ejemplo
+
+Se envía al cliente Andrés Suárez de la empresa Computadores M&M la cotización
+CTC-17082311 de un computador todo en 1, una vez indicado el producto en la
+cotización, se puede cargar más información a través de los anexos asi:
+**Cotización sin anexo**
+
+![Sin
+Anexo.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/Sin%20Anexo.png)  
+
+**Cotización con anexo** ![Con
+Anexo1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/Con%20Anexo1.png)
+
+Observaciones
+
+Los anexos sirven como complemento a la información que se encuentra en el
+documento, pueden ser imágenes, texto o enlaces. Los anexos son de libre uso y
+definición del usuario, estos se cargan directamente desde el catálogo de
+anexos. Los anexos pueden ser creados como archivos RTF \(Texto enriquecido\)
+o HTML \(Lenguaje de Marcas de Hipertexto\). Ventajas de archivos en HTML:
+
+* Archivos con viñetas, imágenes, colores, fondos.
+* Tablas de diferentes dimensiones y con diseños personalizados.
+* Enlaces de conexión con páginas web. 
+* Visualización desde páginas web.
+  
+Los anexos que sean cargados en HTML se deben visualizar con documentos de
+impresión en HTML.
+
+Configuración
+
+Para crear o modificar anexos ver:**\[Pestaña inventarios > Cinta de opciones
+> Otros > Anexos\]**  
+Para acceder a los catálogos de impresión ver:**\[Pestaña Básico > Cinta de
+opciones > Doc. Impresión\]**
+
+---
+
+# ![651 Eliminar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/651%20Eliminar%20nota.png)Limpiar
+Anexos
+
+Borra los anexos cargados en la operación.
+
+Observaciones
+
+Los datos pueden limpierse y ser cargados nuevamente
+
+---
+
+# ![649 Fijar
+nota.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/649%20Fijar%20nota.png)Fijar
+Anexos
+
+Asigna por defecto anexos previamente creados a la cotización.
+
+Ejemplo
+
+La empresa Almacenes M&M desea que en todas las cotizaciones se cargue
+automáticamente las formas de pago que tienen disponibles, este anexo se puede
+fijar, de esa manera siempre saldra la información en todas las cotizaciones
+generadas.
+
+Observaciones
+
+Los anexos que se encuentren fijos cargarán por defecto, pero pueden ser
+modificados desde la operación. Los anexos son de libre uso y definición del
+usuario, estos se cargan directamente desde el catálogo de anexos. Los anexos
+sirven como complemento a la información que se encuentra en el documento,
+pueden ser imágenes, texto o enlaces. Los anexos pueden ser creados como
+archivos RTF \(Texto enriquecido\) o HTML \(Lenguaje de Marcas de
+Hipertexto\). Ventajas de archivos en HTML:
+
+* Archivos con viñetas, imágenes, colores, fondos.
+* Tablas de diferentes dimensiones y con diseños personalizados.
+* Enlaces de conexión con páginas web. 
+* Visualización desde páginas web.
+Los anexos que sean cargados en HTML se deben visualizar con documentos de
+impresión en HTML.
+
+Configuración
+
+Para crear o modificar anexos ver:**\[Pestaña inventarios > Cinta de opciones
+> Otros > Anexos\]**
+
+---
+
+# Observación Pie
+
+Adicione observaciones manualmente en el encabezado de la cotización.
+
+Ejemplo  
+
+La empresa Almacenes M&M desea indicar en una cotización la garantía del
+producto cotizado, por lo tanto puede adicionar manualmente el comentario:
+
+Le recordamos que para la garantía del producto debe presentar la factura de
+compra y tiene una vigencia de 6 meses.
+
+Observaciones  
+
+Se pueden cargar observaciones previamente creadas o adicionar comentarios
+personalizados manualmente en cada cotización. Estos comentarios se verán
+reflejados en el documento impreso. Permite envíar información personalizada y
+dirigida a cada uno de los clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Inventarios > Cinta de
+Opciones > Observaciones\]**
+
+---
+
+# Cargar Anexo
+
+Permite seleccionar un archivo anexo que será adicionado al final de la lista.
+
+Ejemplo
+
+Se envía la cotización CTC-17082311 cliente Andrés Suárez de la empresa M&M
+Computadores de un computador todo en 1, desea cargar una información que es
+sólo para este producto y no la tiene como anexo, por lo tanto elabora el
+anexo, lo ubica y lo carga: **Cotización sin anexo**
+
+![Sin
+Anexo.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/Sin%20Anexo.png)  
+
+**Cotización con anexo** ![Con
+Anexo1.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/Con%20Anexo1.png)
+
+Observaciones
+
+El archivo puede no estar creado en el catálogo de anexos, se le puede asignar
+cualquier ubicación. Los anexos sirven como complemento a la información que
+se encuentra en el documento, pueden ser imágenes, texto o enlaces. Los anexos
+son de libre uso y definición del usuario, estos se cargan directamente desde
+el catálogo de anexos. Los anexos pueden ser creados como archivos RTF \(Texto
+enriquecido\) o HTML \(Lenguaje de Marcas de Hipertexto\). Ventajas de
+archivos en HTML:
+
+* Archivos con viñetas, imágenes, colores, fondos.
+* Tablas de diferentes dimensiones y con diseños personalizados.
+* Enlaces de conexión con páginas web. 
+* Visualización desde páginas web.
+Los anexos que sean cargados en HTML se deben visualizar con documentos de
+impresión en HTML.
+
+Configuración
+
+Se debe seleccionar el archivo según la ruta de ubicación, ejemplo si esta en
+el escritorio y se llama Anexo 1, ver: **\[Escritorio > Anexo1\]** Para
+acceder a los catálogos de impresión ver:**\[Pestaña Básico > Cinta de
+opciones > Doc. Impresión\]**
+
+---
+
+# Botón Primer Nivel
+
+Permite dar ubicación a los anexos cargados en la cotización, para darles un
+órden específico.
+
+Observaciones
+
+El orden asignado se verá reflejado al momento de imprimir la cotización. Los
+anexos se pueden: subir uno por uno, bajar uno por uno, asignarle el primer o
+el último puesto en la lista.
+
+Configuración
+
+Ruta para acceder a los anexos ver:**\[Inventarios > Cinta de Opciones >
+Anexos\]**
+
+---
+
+# Editar Anexo
+
+Permite ingresar al archivo del anexo seleccionado para hacerle modificaciones
+directamente desde la operación.
+
+Ejemplo
+
+Se cargaron los anexos en la operación pero al visualizar el documento impreso
+la persona se da cuenta de un error de ortografía, en ese caso puede ingresar
+desde la operación a modificar el archivo del anexo para corregirlo.  
+
+Observaciones
+
+Los anexos deben estar en la ruta que indica el sistema para que puedan ser
+abiertos desde la operación.
+
+Configuración
+
+Ruta para acceder a los anexos ver:**\[Unidad C: > ProgramData > InSoft >
+Datos V4 > \[CONTAPYME\] > Cliente > Areas > Documentos > Anexos\]**
+
+---
+
+# Abrir carpeta
+
+Permite abrir la carpeta predeterminada de anexos que se muestra al lado
+izquierdo.
+
+Observaciones
+
+Se utiliza el explorador de Windows para abrir la ubicación.
+
+Configuración
+
+Ruta para ingresar a la configuración de ubicaciones predeterminadas:**\[Botón
+Aplicación > Configuración > Elemento: Configuración general del sistema >
+Elemento: Personalizar ubicación de archivos > Ubicación de anexos\]**
+
+---
+
+# Precio
+
+Valor por unidad asignado a cada producto.
+
+Ejemplo
+
+La empresa Computadores HM maneja los siguientes elementos de inventario, cada
+uno de ellos con el respectivo precio.
+
+**Tabla de ejemplo**  
+  
+REFERENCIA | PRODUCTO | PRECIO  
+---|---|---  
+COMHP001 | Computador mini Hp | $ 700.000  
+COMDELL002 | Computador mini Dell | $ 800.000  
+COMTD003 | Computador todo en uno | $ 1.000.000  
+  
+Observaciones
+
+Este campo por defecto está como no modificable por el usuario. El precio se
+puede definir según las políticas de la empresa con o sin IVA incluido. Si el
+producto tiene cargado el precio este se carga automáticamente, de lo
+contrario se puede ingresar desde la operación. Para cargar los precios a los
+elementos de inventario, ver:**\[Inventarios > Cinta de Opciones > Elementos
+de Inventario > Modificar > Lista de Precios > Precio\]** El precio es un
+campo muy importante, porque cuando se enlaza la cotización con la factura,
+este dato carga exactamente igual y es utilizado para darle al cliente el
+valor a cancelar.
+
+Configuración
+
+Para activar el campo y registrar precios, ver: **\[Menú Operación > Opciones
+> Registrar Precios\]**
+
+---
+
+# Botón Eliminar Anexo
+
+Elimina o limpia uno a uno los anexos cargados en la operación.
+
+Ejemplo
+
+La empresa Almacenes M&M generó la cotización CTC-1802335 a la cual se le
+cargaron los anexos, en este caso 3 archivos, pero 1 de ellos no se debe
+cargar porque el cliente ya tiene esa información, en ese caso este botón
+permite eliminar de la cotización solo ese anexo.  
+
+Observaciones
+
+Se pueden cargar nuevamente anexos que fueron eliminados.
+
+Configuración
+
+Para acceder al catálogo de anexos puede ver: **\[Pestaña Inventarios >
+Anexos\]**
+
+---
+
+# ![009
+iaRefresh.png](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/Oprs/ORD4%20-%20Cotizaci%C2%BEn/%5B14410%5D%20FrmOprOrd4/009%20iaRefresh.png)Cargar
+productos pedido
+
+Carga los elementos de inventario de un pedido o cotización previamente
+realizada y enviada al cliente.  
+
+Ejemplo
+
+Al cliente Huevos Máximo se le envió el pedido PED-1801001 el 01 de febrero,
+el cliente solicita nuevamente una cotización el 20 de marzo, en ese caso se
+carga el pedido PED-1801001 y a través del botón se cargan los elementos
+seleccionados en el pedido \(sirve para tomar como referencia pedidos enviadas
+con anterioridad\).  
+
+Observaciones
+
+Este botón carga por defecto todos los elementos del pedido indicado, pero
+estos elementos pueden modificarse desde la cotización. Es importante tener
+presente que si la referencia ya fue indicada y los elementos cargados, al dar
+clic en el boton cargarán nuevamente los elementos pero el sistema solicita
+confirmación. Si no hay referencia indicada, al dar clic en el botón, se abre
+automáticamemte el catálogo de cotizaciones y pedidos.
+
+---
+
+# Porcentaje de descuento
+
+Descuento que se aplicará a cada uno de los productos o servicios cotizados.
+
+Ejemplo
+
+La empresa Computadores HM genera la cotización CTC-184552 para el cliente
+Muebles MG, por el mes de amor y amistad tiene unos descuentos especiales, al
+momento de cargar los elementos de inventario en la cotización se deben
+asignar los descuentos para el cliente.  
+REFERENCIA | PRODUCTO | PRECIO | DESCUENTO  
+---|---|---|---  
+COMHP001 | Computador mini Hp | $ 700.000 | 10%  
+COMDELL002 | Computador mini Dell | $ 800.000 | 8%  
+COMTD003 | Computador todo en uno | $ 1.000.000 | 10%  
+  
+Observaciones
+
+Se pueden definir descuentos fijos por cliente o producto. Si el usuario que
+realiza el registro de la información tiene los permisos, puede cambiar o
+asignar descuentos desde la operación. Los descuentos indicados en la
+cotización, se cargarán automáticamente al momento de enlazar la cotización
+con la factura. Se puede generar a través de un explorador de inventarios
+plus, una consulta para conocer las cotizaciones enviadas con descuentos, o
+filtrar según los descuentos asignados.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en cotización al cliente > %
+desc.\]**
+
+---
+
+# Porcentaje IVA
+
+Porcentaje de IVA aplicado a cada uno de los productos o servicios cotizados.
+
+Ejemplo
+
+En la empresa Computadores MH maneja los siguientes porcentajes de IVA para
+todos los elementos de inventario. **Tabla de ejemplo**  
+  
+REFERENCIA | PRODUCTO | PRECIO | IVA  
+---|---|---|---  
+COMHP001 | Computador mini Hp | $ 700.000 | 19%  
+COMDELL002 | Computador mini Dell | $ 800.000 | 19%  
+COMTD003 | Computador todo en uno | $ 1.000.000 | 8%  
+  
+Observaciones
+
+Este porcentaje de IVA es tomado por el sistema de la configuración realizada
+al elemento de inventario y se configura en el grupo de inventario. Para
+acceder a catálogo de grupos de inventario ingrese a: **\[Pestaña Inventarios
+> Cinta de Opciones > Grupos de Inventario\]** Los productos o servicios
+pueden manejar diferentes porcentajes de IVA. Este campo no permite ser
+modificado desde la cotización. El porcentaje de IVA cargado en la cotización
+va automáticamente a la factura al momento de enlazar el documento. Es un
+campo muy importante porque lleva información directamente a los informes de
+anexos y certificados de IVA una vez se factura.
+
+Configuración
+
+Para acceder los conceptos de liquidación ingrese a: **\[Pestaña Contabilidad
+> Pan de Cuentas > Conceptos de liquidación en ingreso/egreso\]**
+
+---
+
+# Valor venta
+
+Valor total de cada uno de los productos o servicios según la cantidad
+cotizada.
+
+Ejemplo
+
+El cliente Computadores H&G genera la cotización CTC-185488 de: 2 Compudores mini HP, 1 computador mini Dell y 4 computadores todo en 1.  PRODUCTO | PRECIO | CANTIDAD | VALOR VENTA  
+---|---|---|---  
+Computador mini Hp | $ 925.000 | 2 | $ 1.850.000  
+Computador mini Dell | $ 850.000 | 1 | $ 850.000  
+Computador todo en uno | $ 1.200.000 | 4 | $ 4.800.000  
+  
+Observaciones
+
+Este valor es el producto de las cantidades solicitadas por el precio unitario
+Este valor también puede ser indicado de forma manual por el usuario, así el
+sistema calcula de forma automática el valor unitario del mismo \(tomando como
+referencia las cantidades\). Puede ser valor total o parcial por cada producto
+o servicio, dependiendo de la lista de precios utilizada en la cotización.
+Este valor permite conocer al final de la cotización el valor total que deberá
+cancelar el cliente.
+
+Configuración
+
+Para indicar el precio total del producto en el renglón ver: **\[Menú
+Operación > Opciones > Registrar valores totales\]**
+
+---
+
+# Centro de costos
+
+Código del centro de costos al que se cargará el gasto cuando se registre la
+compra del elemento de inventario.  
+  
+Esta opción se habilita si el elemento de inventario no tiene activado el
+manejo de control de cantidades.  
+
+Ejemplo
+
+* Se registra la orden de compra ORC-180349 al proveedor Tecnología e informática de 4 horas de capacitación en nuevos productos. Dado que la capacitación es un servicio, ésta no controla cantidad de inventario.  
+PRODUCTO | CANTIDAD | COSTO UNIT. | COSTO TOTAL | CC. CARGAR GASTO  
+---|---|---|---|---  
+Capacitación | 4 Horas | $27.000 | $108.000 | 1GA - Gastos Comerciales  
+  
+  
+
+* Se realiza la compra de unos conectores RJ45 que la empresa necesita para efectuar instalaciones de red a sus clientes, dado que estos conectores se compran en gran cantidad y son objetos de diminuto tamaño, la empresa decidió no controlar cantidad de inventario de estos productos.  
+PRODUCTO | CANTIDAD | COSTO UNIT. | COSTO TOTAL | CC. CARGAR GASTO  
+---|---|---|---|---  
+Conectores Rj 45 | 1.000 Und | $150 | $150.000 | 1SE - Sección de ensamblaje  
+  
+Observaciones
+
+El producto deberá estar configurado para que no controle cantidades en el
+inventario y adicionalmente debe estar configurado como consumo para indicar
+la cuenta de gasto o costo que se imputará automáticamente cuando se realice
+la compra.  
+  
+Este campo será cargado en la operación de compras en la cual se llame como
+documento referencia la orden de compra al proveedor, por lo general la
+operación de compra en su movimiento contable efectúa imputaciones a la cuenta
+de inventarios, siempre y cuando se controle cantidades en el inventario del
+producto comprado, de lo contrario la operación de compra ya no realizará la
+imputación a una cuenta de inventarios sino que lo hará a una cuenta del gasto
+o costo, por tal motivo solicita que se indique el centro de costo.
+
+Configuración
+
+Para configurar el manejo de control de cantidades ver: **\[Pestaña
+Inventarios >Grupos de inventario > Clic derecho sobre el grupo de inventario:
+modificar > Paso: General\].**
+
+---
+
+# Código bodega
+
+Código de la bodega a la cual ingresará el producto del renglón al registrar
+la compra.
+
+Ejemplo
+
+El supermercado Merca Ahorro, cuenta con diferentes bodegas para el manejo de
+sus productos:
+
+Código | Nombre  
+---|---  
+1 | Bodega de productos alimenticios  
+2 |  Bodega de productos de aseo  
+  
+
+Al momento de registrar una orden de compra, en este campo puede seleccionar
+la bodega correspondiente a la cual ingresará cada producto al momento de ser
+recibidos, los productos alimenticios a la **"Bodega 1"** y los productos de
+aseo a la **"Bodega 2"**.
+
+Observaciones
+
+Para cada renglón de la operación se puede indicar una bodega diferente y el
+sistema respetará esta aunque en la operación se indique una bodega por
+defecto.  
+  
+La empresa puede crear tantas bodegas como requiera para facilitar el manejo
+los elementos de inventario.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > Bodega\]**
+
+---
+
+# Observaciones
+
+Descripción breve delelemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se registra al proveedor Compuequipos S.A. la orden de compra ORC-1801523 en
+la cual se solicitan los siguientes productos:  
+  
+PRODUCTO | CANT. | OBSERVACIÓN  
+---|---|---  
+Mouse HP | 2 | Mouse Cableado Hp X900  
+Memoria USB 8GB | 1 | Memoria Usb 8gb Dt Se9  
+Mouse mini USB | 1 | Mouse inalámbrico de bolsillo  
+  
+Observaciones
+
+Esta observación es cargada de forma automática en la operación al seleccionar
+el elemento de inventario en el renglón.  
+  
+La observación del elemento de inventario en el renglón es de libre uso y
+definición del usuario y se configura como descripción directamente en cada
+elemento de inventario, para adicionar esta descripción al elemento de
+inventario ver **\[Pestaña Inventarios > Elementos de Inventario > Modificar >
+Descripción\]**  
+  
+Esta observación puede ser modificada por el usuario directamente en la
+operación, bien sea para cambiarla o complementarla.  
+  
+Cuando la orden de compra sea usada como documento referencia en otra
+operación, la información de este campo se cargará automáticamente en la nueva
+operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > Observación.\]**
+
+---
+
+# Dato 1
+
+Presenta información adicional para el producto en la operación.
+
+Ejemplo
+
+El almacén Su Vestido SAS comercializa prendas de vestir, el usuario requiere
+indicar información adicional para el producto como la talla, para esto se
+habilita el campo adicional Dato 1 en las operaciones de inventario.
+
+Código |  Producto | Dato 1 - Talla  
+---|---|---  
+CAMHOM250 | Camisa hombre Skit |  S  
+CAMHOM250 | Camisa hombre Skit |  M  
+CAMHOM250 | Camisa hombre Skit |  L  
+En el campo **"Dato 1"** , debe indicar la información adicional que se
+requiere mostrar en los documentos de impresión o visualizar en el explorador
+de inventarios.
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Dato 1 por Talla.
+
+---
+
+# Valor 1
+
+Presenta valores adicionales para el producto en la operación.  
+
+Ejemplo
+
+Un Minimercado mide los inventarios de los productos de abarrotes \(arroz,
+frijol, lenteja\) en libras y requiere conocer las existencias de ciertos
+productos en kilos, para conocer este dato se configura el campo adicional
+Valor 1 en las operaciones de inventario.  
+  
+Código | Producto | Unidad | \(VALOR 1\) Kilos   
+---|---|---|---  
+AR001 | Arroz blanco | 50 Libras | 25 Kilos  
+AZ005 | Azúcar Morena | 100 Libras  | 50 Kilos   
+En el campo **"Valor 1"** , debe indicar el valor adicional que se requiere
+mostrar en los documentos de impresión o visualizar en el explorador de
+inventarios.
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Valor 1 por Kilo.
+
+---
+
+# Producto
+
+Código del elemento de inventarios que se solicita al proveedor en la orden de
+compra.
+
+Ejemplo
+
+El día 10 de enero se solicita al proveedor Compuequipos S.A. mediante la orden de compra ORC-18031322 los siguientes productos:  Código | Nombre  
+---|---  
+PRC001 | Procesador 2.6 GHZ  
+MEM005 | Memoria RAM DDR2 4GB  
+  
+Al momento de registrar la orden de compra al proveedor, en este campo se
+selecciona para cada renglón el producto a solicitar.
+
+Observaciones
+
+Los productos a solicitar al proveedor en la orden de compra se pueden
+seleccionar directamente del catálogo de elementos de inventario o se cargan
+del documento tomado como referencia para el registro de la operación.  
+  
+Para visualizar en el campo **"Producto"** el nombre de éste y no el código,
+dé clic en el botón "Formato"  y amplíe la columna en la operación.  
+  
+Si se cuenta con una estructura para el manejo de código de barras, se pueden
+seleccionar los elementos en la operación con el lector de código de barras.  
+  
+Es posible generar informes, reportes y exploradores con base en el código del
+elemento de inventario seleccionado en la orden de compra al proveedor.  
+  
+Al registrar una orden de compra al proveedor solicitando el envío de los
+productos, no se fecta el inventario contable, solo se afecta el inventario
+disponible.  
+  
+El registro de este campo en la operación de orden de compra al proveeedor es
+requerido, esto quiere decir que si no se registra información en este campo,
+no es posible procesar la operación.
+
+---
+
+# Proveedor
+
+Código de identificación del tercero \(proveedor\) a quien se registra la
+orden de compra.
+
+Ejemplo
+
+Se registra la orden de compra ORC-1801547 al proveedor Compuequipos S.A. en
+la cual se solicitan 2 Computadores todo en Uno. En el campo proveedor se
+indica el código de identificación de Compuequipos S.A.  
+  
+CÓDIGO | NOMBRE  
+---|---  
+890562310 | Compuequipos S.A.  
+  
+Observaciones
+
+Para que el tercero pueda ser seleccionado en la operación de orden de compra,
+se debe crear con el tipo de tercero **"Proveedor"**.  
+  
+Para configurar el tipo de tercero ver **\[Pestaña Básico > Terceros >
+Modificar > Tipo de Tercero\]**  
+  
+Al abrir el seleccionador de terceros en la orden de compra, éste se filtra
+solo por aquellos terceros cuyo tipo es **"Proveedor"**.  
+  
+El proveedor indicado en la orden de compra, será el mismo que se cargue en
+otra operación en la cual se use como documento referencia la orden de compra.  
+  
+Se pueden generar informes y reportes de compra filtrados por el campo
+**"Proveedor"**.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Proveedor\].**
+
+---
+
+#  Botón Cerrar Referencia
+
+Da por finalizado \(cerrado\) el o los documentos que fueron cargados en el
+campo referencia como base para el registro de la operación.
+
+Ejemplo
+
+* Se registra la orden de compra ORC-1801658 al proveedor Compu Partes Ltda. con base en la requisición interna REQ-1801235, de esta requisición solo se cargan los productos que nos vende el proveedor y la requisición se deja abierta para poder ser cargada en otra orden de compra a otro proveedor.
+  
+
+* Se registra la orden de compra ORC-1801658 al proveedor Omega Suministros Tecnológicos con base en la requisición interna REQ-1801235, en esta orden de compra se cargan los productos que quedaron pendientes en la orden de compra anterior, se dá por cerrada la requisición interna para que no esté más disponible para ser usada en otras operaciones.
+
+Observaciones
+
+Al momento de dar por cerrado el documento tomado como referencia, no se
+volverá a cargar o estar visible en el seleccionador para otras operaciones.  
+  
+El documento referencia se puede dejar abierto, en caso de no solicitar a este
+proveedor todos los productos registrados en él, con el fin de poder cargar
+esta referencia en una nueva operación.  
+  
+Si en la operación no se cargó ningún documento como referencia no es
+necesario usar este botón.  
+  
+Es muy importante hacer el cierre de los documentos tomados como referencia
+para que no queden como pendientes estando ya usados en otra operación.  
+  
+El clierre de documentos también se puede hacer a través de la operación de
+Cierre de documentos.  
+  
+Es posible visualizar los documentos cerrados en los exploradores de
+inventarios plus
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Referencia\].**
+
+---
+
+# Referencia
+
+Código del documento en el cual se basa el registro de la orden de compra al
+proveedor, éste puede ser un pedido del cliente o una requisición interna.
+
+Ejemplo
+
+El día 15 de febrero se recibe un pedido del cliente María Cárdenas y se
+registra en el sistema con el documento PED-1802005, en este solicita los
+siguientes productos:
+
+Producto | Unidad | Cantidad  
+---|---|---  
+Impresora Matriz de punto | Unid | 2  
+Impresora Laser | Unid | 1  
+  
+
+Al momento de recibir el pedido del cliente no se cuenta con las cantidades en
+existencia, se registra orden de compra al proveedor Compuequipos S.A. y en el
+campo referencia se indica el pedido del cliente **"PED-1802005"**.
+
+Observaciones
+
+Para tomar un documento como referencia en una orden de compra, dicho
+documento referencia debe estar registrado previamente en el sistema.  
+  
+Se puede indicar uno o varios documentos como referencia para el registro de
+la orden de compra.  
+  
+Al seleccionar un documento como referencia para el registro de la orden de
+compra, se cargan en la operación todos los datos registrados en el documento
+referencia: Productos a enviar, unidad y cantidades.  
+  
+Al seleccionar un documento como referencia para el registro de la orden de
+compra, se establece una trazabilidad entre ambos documentos, esto permite al
+usuario establecer relación entre ellos.  
+  
+Es posible cargar en la orden de compra cantidades parciales de los productos
+registrados en el documento tomado como referencia, así, si al momento de
+registrar la orden de compra, el documento referencia ya ha sido usado en otra
+operación y quedaron cantidades pendientes por solicitar, en la orden de
+compra solo se cargan las unidades pendientes.  
+  
+Solo es posible tomar como referencia en la orden de compra un documento que
+se encuentre abierto, los documentos cerrados no están disponibles en el
+seleccionador de referencias.  
+  
+Al abrir el seleccionador de referencias es posible conocer la vigencia de los
+documentos que se pueden tomar como referencia para el registro de la orden de
+compra, conocer si cuentan con vigencia, si está próximo a vencerse o si ya
+está vencido.  
+  
+Si la orden de compra se registró con base en otro documento, el usuario de
+igual forma puede realizar modificaciones en la operación.  
+  
+La operación de orden de compra no afecta el inventario contable, solo afecta
+el inventario físico y de disponibilidad.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Referencia\].**
+
+---
+
+# Bodega destino
+
+Código de la bodega destino a la cual ingresarán los productos al registrar la
+compra.
+
+Ejemplo
+
+La empresa Compumás registra la orden de compra ORC-1801987 a su proveedor, y
+requiere recibir los productos en la **"Bodega Centro"** , aunque cuenta con
+más bodegas:  
+Código | Bodega  
+---|---  
+1 | Bodega Principal  
+2 | Bodega Centro  
+2 | Bodega Norte  
+  
+Se define en la orden de compra que la bodega destino para los productos
+solicitados en la orden de compra ORC-1801987 es la **"Bodega Centro"**.
+
+Observaciones
+
+Es posible indicar una bodega para cada renglón de la operación de orden de
+compra, para activar este manejo ver:**\[Menú Operación > Configurar operación
+> Campos de la operación > Configuración campos > Bodega\]**.  
+  
+Si se cuenta con varias bodegas, puede recibir los productos en la bodega
+destino para luego realizar traslado hacia las demás bodegas.  
+  
+Esta es la bodega que se cargará cuando la orden de compra sea usada como
+documento referencia en otra operación.
+
+Configuración
+
+Para configurar la funcionalidad del campo bodega por renglón \(visible, solo
+lectura, requerido, etc.\),entre por:**\[Menú Operación > Configurar operación
+> Campos de la operación > Configuración de columnas en orden de compra >
+Bodega\]**
+
+---
+
+# Usar otra moneda al imprimir orden de compra
+
+Activa las opciones para registrar la orden de compra en moneda local e
+imprimirla en otra moneda.
+
+Ejemplo
+
+Se registra en pesos la orden de compra ORC-1712451 al proveedor Suministtros
+Téknicos en Estados Unidos, se activa la opción **"Usar otra moneda al
+imprimir orden de compra"** , se indica en otra moneda dólares y la órden de
+compra se visualiza e imprime en dólares.  
+
+Observaciones
+
+Esta opción activa la configuración de tasa de cambio.  
+  
+Si esta opción no se activa, la orden de compra se genera e imprime solo en
+moneda local.  
+  
+Para imprimir la orden de compra en otra moneda se debe registrar previamente
+la operación de Registro de tasas de cambio.
+
+Configuración
+
+Para configurar el uso de otra moneda en la operación de orden de compra ver:
+**\[Pestaña Básico > Usuarios > Perfiles de seguridad > Modificar perfil >
+Inventarios, compras, facturación y punto de venta > Pestaña opciones >
+General\]**
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al elemento de inventario.
+
+Ejemplo
+
+La empresa Comercial de alimentos, produce y comercializa Naranjas, las cuales
+clasifica según el mercado al cual va dirigido de la siguiente manera:  
+  
+Producto | Tipo  
+---|---  
+Naranja | Categoria A  
+Naranja | Categoria B  
+  
+**Categoria A:** Exportación  
+**Categoria B:** Mercado nacional
+
+Observaciones
+
+Este campo es de libre uso y definición del usuario.  
+  
+La especificación dada al elemento de inventarios en esta columna estará
+visible en los exploradores de inventarios plus.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación > Configurar operación > Campos de la
+operación > Configuración de columnas en orden de compra > Tipo\]**
+
+---
+
+# Unidad de moneda local
+
+Muestra la moneda local que se tiene configurada en el momento para el
+registro de la operación.
+
+Ejemplo
+
+EMPRESA | PAÍS | MONEDA LOCAL  
+---|---|---  
+MP Computadores | Colombia | Peso  
+Suministtros Téknicos | Estados Unidos | Dolar  
+K´os Tecnología | España | Euro  
+  
+
+Observaciones
+
+Este campo no puede ser modificado desde la operación.  
+  
+Esta es la moneda en la cual se registra el movimiento contable generado por
+la operación.  
+  
+Cuando la orden de compra sea tomada como referencia para el registro de otra
+operación, ésta es la moneda que se carga.  
+  
+Si se tiene activo el manejo de moneda extranejra, la moneda local la toma de
+la que se configure allí, de lo contrario la toma según la configuración
+regional del equipo, para activar este manejo ver: **\[Plan de cuentas >
+Configuración > Configuraciones generales > Manejo de moneda extranjera >
+Habilitar el manejo de moneda extranjera\]**
+
+---
+
+# Tasa de cambio
+
+Valor en moneda local al cual equivale la otra moneda en la que se desea
+visualizar la orden de compra impresa.
+
+Ejemplo
+
+Se registra la orden de compra ORC-1712451 al proveedor Suministtros Téknicos
+en Estados Unidos, se desea visualizar el documento impreso en dólares.
+
+MONEDA LOCAL | OTRA MONEDA | TASA DE CAMBIO  
+---|---|---  
+Peso | Dólar | $ 2.800  
+  
+
+Así, al día en el cual se registra la orden de compra al proveedor
+Suministtros Téknicos, 1 dólar equivale a $ 2.800.
+
+Observaciones
+
+Para imprimir la orden de compra en otra moneda se debe registrar previamente
+la operación de Registro de tasas de cambio.  
+  
+El valor en este campo es cargado directamente del registro de la operación de
+tasa cambio.  
+  
+Para indicar de forma manual el valor de la tasa de cambio en la operación
+active la opción **"Modificar"**.
+
+---
+
+# Modificar
+
+Permite modificar el valor de la tasa de cambio para la operación.
+
+Ejemplo
+
+Se registra la orden de compra ORC-18036598 al proveedor Proteknic en Estados
+Unidos, en la operación se carga en el campo **"Tasa de cambio"** el valor
+indicado para la otra moneda en moneda local en la operación de **"Registro de
+tasas de cambio"**  
+Para modifcar el valor en este campo se activa la opción **"Modificar".**
+
+Observaciones
+
+Si la opción **"Modificar"** no se activa, el campo "Tasa de cambio" queda en
+gris y no uede ser modificado por el usuario.  
+  
+Este cálculo lo debe realizar el usuario de fomra manual.
+
+---
+
+# Moneda
+
+Seleccionador de la **"Otra moneda** en la cual se desea visualizar e imprimir
+la orden de compra al proveedor.
+
+Ejemplo
+
+Se registra la orden de compra ORC-1712451 al proveedor Suministtros Téknicos
+en Estados Unidos, se desea visualizar el documento impreso en dólares.
+
+MONEDA LOCAL | OTRA MONEDA  
+---|---  
+Peso | Dólar  
+Dólar | Euro  
+  
+En este campo se selecciona la opción **"Dólar"**
+
+Observaciones
+
+La opción **"Otra moneda"** se visualiza cuando en la operación se activa la
+opción **"Usar otra moneda al imprimir orden de compra"**.  
+  
+La otra moneda para la operación se puede seleccionar del catálogo de monedas
+de \[ContaPyme\].  
+  
+El catálogo de monedas permite al usuario crear o modificar las monedas
+necesarias para ser usadas en las operaciones.
+
+Configuración
+
+Para crear o modificar las monedas ver: **\[Contabilidad > Plan de Cuentas >
+Monedas\]**
+
+---
+
+# Valor Parcial
+
+Valor total de los elementos de inventario cargados en la orden de compra
+antes de impuestos y descuentos.
+
+Ejemplo
+
+Se solicita mediante orden de compra ORC-18021548 al proveedor Compu Partes
+Ltda. los siguientes productos, discriminando cantidad, valor unitario,
+descuento y valor parcial.
+
+PRODUCTO | CANT. | VALOR UNITARIO | DCTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 750.000 |  5.00% | $ 750.000  
+Computador mini Dell | 1 | $ 650.000 |  5.00% | $ 650.000  
+Computador todo en uno | 1 | $ 950.000 |  5.00% | $ 950.000  
+**Subtotal Valor Parcial** | **$ 2.350.000**  
+  
+
+Observaciones
+
+Este campo corresponde a la sumatoria del valor parcial de cada elemento de
+inventario solicitado al proveedor antes de aplicar descuentos e impuestos.  
+  
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los datos registrados en la orden de compra.
+
+---
+
+# Valor Descuento
+
+Valor total de los descuentos otorgados por el proveedor a cada elememento de
+inventario cargado en la orden de compra.
+
+Ejemplo
+
+Se solicita mediante orden de compra ORC-1802458 al proveedor Compu Partes
+Ltda. los siguientes productos, discriminando producto, cantidad, valor
+unitario, % de descuento, y valor parcial.
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 750.000 | 5% | $ 712.500  
+Computador mini Dell | 1 | $ 650.000 | 10% | $ 585.000  
+Computador todo en uno | 1 | $ 950.000 | 5% | $ 902.500  
+Total Descuento |  |  |  $ 150.000 |   
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Valor IVA
+
+Sumatoria del valor del IVA de cada elemento de inventario cargado en la orden
+de compra.
+
+Ejemplo
+
+Se solicita mediante orden de compra ORC-180258 al proveedor Compu Partes
+Ltda. los siguientes poductos, discrimando producto, precio, IVA y total IVA.
+
+PRODUCTO | PRECIO | IVA  
+---|---|---  
+Computador mini Hp | $ 750.000 | 19 %  
+Computador mini Dell | $ 650.000 | 19%  
+Computador todo en Uno | $ 950.000 | 19%  
+Total IVA |  | 446.500  
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Valor Total
+
+Valor a pagar al proveedor, equivalente a la sumatoria del valor parcial,
+menos descuentos, más IVA.
+
+Ejemplo
+
+Se solicita mediante orden de compra al proveedor Compu Partes Ltda. los
+siguientes productos discriminando producto, precio, descuento, IVA y valor
+total.
+
+PRODUCTO | PRECIO | DCTO. | IVA | VALOR TOTAL  
+---|---|---|---|---  
+Computador mini Hp | $ 750.000 | 5% | 19% | $ 712.500  
+Computador mini Dell | $ 650.000 | 5% | 19% | $ 617.500  
+Computador todo en Uno | $ 950.000 | 5% | 19% | $ 902.500  
+**Subtotal Valor Parcial** | **$ 2.350.000**  
+**Descuento** | **$ 117.500**  
+**Impuesto de venta \(19%\)** | **$ 424.750** | Valor Total | $ 2.656.675  
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Plazo de entrega
+
+Tiempo estimado que tardará el proveedor en entregar los elementos de
+inventario solicitados en la orden de compra.  
+
+Ejemplo
+
+Se registra la orden de compra ORC-180204 al proveedor Compu Partes Ltda. el
+día 12 de febrero, el plazo máximo de entrega es de 10 días.
+
+PLAZO DÍAS | FECHA MÁXIMA DE ENTREGA  
+---|---  
+10 | 19/03/2018  
+  
+Observaciones
+
+Este plazo se puede indicar en días hábiles, o se puede registrar la fecha
+planeada de entrega.
+
+Configuración
+
+Para configurar la funcionalidad de este paso como visible ver: **\[Menú
+Operación > Configurar operación > Visualización de la operación > Pasos en el
+asistente > Datos adic. de la orden de compra\].**
+
+---
+
+# Días hábiles
+
+Días válidos que tardará el proveedor en realizar la entrega de los elementos
+de inventario solicitados en la orden de compra.  
+
+Ejemplo
+
+Se registra la orden de compra ORC-180289 al proveedor Compu Partes Ltda. el
+día 12 de febrero, el plazo máximo de entrega en días hábiles es de 10 días.
+
+Observaciones
+
+Al indicar los días hábiles, inmediatamente el sistema calcula la fecha de
+entrega de los elementos de invetario solicitados en la orden de compra.  
+  
+Este campo es tenido en cuenta por el sistema para la visualización del estado
+del documento en el explorador de inventarios plus.  
+  
+El sistema tiene en cuenta este campo para la visualización de la vigencia del
+documento en el seleccionador del campo referencia en las operaciones.  
+  
+Esta informción también permite al usuario conocer el tiempo en el cual podrá
+contar con productos en sus bodegas.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Días hábiles\].**
+
+Para configurar los días hábiles en el sistema entre por: **\[Menú Operación >
+Herramientas > Días hábiles de trabajo\].**
+
+---
+
+# Unidad
+
+Medida general utilizada para discriminar la cantidad del producto en las
+operaciones.
+
+Ejemplo
+
+* En una carnicería manejan la carne por kilos, por lo tanto la unidad de medida es:**Kg**
+* En una ferretería venden los tubos de pvc por metros, por lo tanto la unidad de medida es: **Mts**
+* Una empresa de servicios ofrece a sus clientes capacitaciones por horas, por lo tanto la unidad de medida es: **Hora**
+
+Observaciones
+
+Si el elemento de inventario maneja unidad de compra diferente a la unidad de
+medida general, en la orden de compra se carga la unidad de compra configurada
+al elemento de inventario.  
+  
+Las cantidades de los productos que se muestran en los diferentes informes y
+reportes de inventario son basados en esta unidad.  
+  
+La unidad de medida se debe configurar en cada uno de los elementos de
+inventario.  
+  
+Este campo no es modificable por el usuario en la opereación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo como visible, ver: **\[Menú
+Operación > Configurar operación > Campos de la operación > Configuración de
+columnas en orden de compra > Unidad\]**
+
+---
+
+# Fecha de entrega
+
+Fecha máxima en la cual el proveedor realizará la entrega de los elementos de
+inventario solicitados en la orden de compra.
+
+Ejemplo
+
+Se registra la orden de compra ORC-180236 al proveedor Compu Partes Ltda. el
+día 12 de febrero, la fecha máxima de entrega es el 23 de enero.
+
+Observaciones
+
+Al indicar la fecha máxima de entrega, inmediatamente el sistema calcula los
+días hábiles que transcurrirán desde la fecha de registro de la orden de
+compra hasta la fecha de entrega de los elementos de inventario solicitados.  
+  
+Este campo es tenido en cuenta por el sistema para la visualización del estado
+del documento en el explorador de inventarios plus.  
+  
+El sistema tiene en cuenta este campo para la visualización de la vigencia del
+documento en el seleccionador del campo referencia en las operaciones.  
+  
+Esta informción también permite a usuario conocer el tiempo en el cual podrá
+contar con elementos de inventario en sus bodegas.
+
+---
+
+# Condiciones comerciales
+
+Indique las condiciones pactadas con el proveedor para la compra de los
+elementos de inventario.
+
+Ejemplo
+
+En la negociación con el proveedor Compu Partes Ltda. se definen las
+siguientes condiciones comerciales:
+
+FORMA DE ENVÍO | FORMA DE PAGO | CONDICIÓN ADICIONAL  
+---|---|---  
+Entregado en nuestro punto de venta | Pago a 30 días | Flete por cuenta del proveedor  
+  
+Observaciones
+
+Estas condiciones comerciales son de libre uso y definición del usuario.  
+  
+Las condiciones comerciales registradas en la orden de compra serán cargadas
+en otra operación en la cual se use la orden de compra como documento
+referencia.  
+  
+Esta información permite tanto al cliente como al proveedor, tener claras las
+condiciones pactadas en la relación comercial.
+
+Configuración
+
+  
+
+Para configurar la funcionalidad de este paso visible ver: **\[Menú Operación
+> Configurar operación > Visualización de la operación > Pasos en el asistente
+> Datos adic. de la orden de compra\].**
+
+---
+
+# Forma de envío
+
+Seleccione la forma en la cual el proveedor realizará la entrega de los
+elementos de inventario solicitados en la orden de compra.  
+
+Ejemplo
+
+* Entregado en nuestro punto de venta.
+* Envío por Servientrega nacional.
+* Mensajería internacional.
+
+Observaciones
+
+Las formas de envío son de libre uso y definición del usuario y se pueden
+seleccionar del catálogo de formas de envío.  
+  
+\[ContaPyme\] ya tiene creadas algunas formas de envío en su catálogo, estas
+pueden ser modificas por el usuario según lo requiera.  
+  
+El catálogo de formas de envío permite crear diferentes opciones de recepción
+o entrega de los elementos de inventario, para luego ser seleccionadas en las
+diferentes operaciones de inventarios.
+
+Configuración
+
+Para modificar o crear formas de envío en el sistema ver: **\[Menú Operación >
+Herramientas > Formas de envío\]**
+
+---
+
+# Forma de pago
+
+Seleccione la forma en la cual se realizará el pago de la orden de compra al
+proveedor.  
+
+Ejemplo
+
+* De contado contraentrega.
+* Pago a 30 días.
+* Pago 50% de contado y 50% a 30 días.
+
+Observaciones
+
+Las formas de pago son de libre uso y definición del usuario y se pueden
+seleccionar del catálogo de formas de pago.  
+  
+\[ContaPyme\] ya tiene creadas algunas formas de pago en su catálogo, estas
+pueden ser modificas por el usuario según requerimientos.  
+  
+El catálogo de formas de pago permite crear diferentes opciones de pago, para
+luego ser seleccionadas en las diferentes operaciones de inventarios.
+
+Configuración
+
+Para modificar o crear formas de pago en el sistema ver: **\[Menú Operación >
+Herramientas > Formas de pago\]**
+
+---
+
+# Condición adicional
+
+Seleccione la condición adicional que aplique a la orden de compra.  
+
+Ejemplo
+
+* Capacitación personalizada.
+* Instalación asistida.
+* Instalación presencial en oficinas del cliente.
+
+Observaciones
+
+Las condiciones adicionales son de libre uso y definición del usuario.  
+  
+\[ContaPyme\] cuenta con un catálogo de condiciones adicionales, estas pueden
+ser modificas por el usuario según requerimientos.  
+  
+
+Configuración
+
+Para modificar o crear condiciones adicionales en el sistema ver: **\[Menú
+Operación > Herramientas > Condiciones adicionales\]**
+
+---
+
+# Observaciones para la orden de compra
+
+Indique las observaciones que aparecen en la orden de compra impresa o algún
+otro documento que se imprima a partir de esta operación.
+
+Ejemplo
+
+Apreciado Proveedor Compuequipos S.A. solicitamos por favor los elmentos de
+inventario solicitados en esta orden de compra sean entregados en la Bodega
+Principal en la Carrera 22 No 18-15
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+El catálogo de observaciones permite crear observaciones en las cuales el
+usuario puede complementar información que el proveedor tenga presente para la
+negociación.  
+  
+Se pueden crear tantas observaciones como se requieran con la información que
+se desee visualizar en el documento, ejemplo:
+
+* Sedes de la empresa en donde se pueden recibir los productos solicitados.
+* Horarios de recepción de los productos.
+* Formas de pago.
+* Recomendaciones técnicas.
+
+Configuración
+
+Para crear o modificar observaciones ver: **\[Pestaña inventarios > Cinta de
+opciones > Otros > Observaciones.\]**
+
+---
+
+#  Cargar Encabezado
+
+Carga en la orden de compra observaciones previamente creadas en el catálogo
+de observaciones.
+
+Ejemplo
+
+Se puede crear una observación estandar para el encabezado de la observación:  
+Apreciado _PROVEEDOR Alfa Equipos Ltda._  
+A continuación realizamos solicitud de los siguientes equipos de cómputo.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+Es posible configurar el sistema para que tome los datos del proveedor, así la
+observación es personalizada.  
+  
+La información de estas observaciones se verá reflejada al visualizar o
+imprimir el documento.  
+  
+Se pueden estandarizar observaciones como saludo, despedida y comentarios que
+pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Pestaña Inventarios > Cinta
+de opciones > Observaciones\]**
+
+---
+
+#  Limpiar encabezado
+
+Borra las observaciones cargadas en la operación.
+
+Observaciones
+
+Las observaciones se pueden limpiar en la operación para ser cargadas
+nuevamente o digitarlas.
+
+---
+
+# Cantidad
+
+Número de unidades del elemento de inventarios solicitados en la orden de
+compra al proveedor.
+
+Ejemplo
+
+Se solicita al proveedor Compuequipos S.A. mediante la orden de compra
+ORC-1802005 enviar los siguientes productos:
+
+CÓDIGO | PRODUCTO | CANTIDAD  
+---|---|---  
+COMHP001 | Computador mini Hp | 2  
+COMDELL002 | Computador mini Dell | 1  
+COMTD003 | Computador todo en uno | 1  
+Al momento de registrar la orden de compra al proveedor, en este campo se
+indica el número de unidades a solicitar por cada elemento de inventario.  
+  
+
+Observaciones
+
+La cantidad indicada en este campo será cargada en otra operación en la cual
+se tome como referencia esta orden de compra.  
+  
+Este campo es requerido en la operación, es decir que su diligenciamiento es
+obligatorio para procesar la operación.
+
+---
+
+#  Fijar Encabezado
+
+Asigna observaciones por defecto en la operación.
+
+Ejemplo
+
+Si al momento de registrar una orden compra al proveedor se debe indicar
+siempre la misma información, ésta se puede registrar como una observación y
+fijarla para que siempre que se registre la operación, la observación se
+encuentre cargada en el campo.  
+  
+_Apreciado PROVEEDOR Alfa Equipos Ltda._  
+A continuación realizamos solicitud de los siguientes elementos de inventario.
+
+Observaciones
+
+Fijar las observaciones permite ahorrar tiempo en el registro de la operación,
+ya que si requiere indicar siempre la misma información, no deberá digitarla
+ni selecionarla.  
+  
+Aunque la observación se encuentre fija, el usuario puede adicionar o quitar
+información desde la operación.  
+  
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+\[ContaPyme\] cuenta con un catálogo de observaciones, este ya tiene algunas
+observaciones creadas, el usuario puede modificarlas o crear cuantas requiera.  
+  
+La información de estas observaciones se verá reflejada al visualizar o
+imprimir el documento.  
+  
+Se pueden estandarizar observaciones como saludo, despedida y comentarios que
+pueden ser comunes para múltiples clientes.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Pestaña Inventarios > Cinta
+de Opciones > Observaciones\]**
+
+---
+
+# Cuenta de proveedores
+
+Cuenta contable en la cual se registra la cuenta por cobrar al proveedor por
+el anticipo dado.
+
+Ejemplo
+
+Se registra orden de compra ORC-180456 al proveedor Compuequipos S.A. por un
+valor de $1.550.000, se entrega un anticipo de $550.000 para garantizar la
+entrega de los productos, este anticipo se registra en la cuenta 133005.  
+  
+**NOTA:** Este anticipo genera una cuenta por cobrar al proveedor que luego se
+cruza con la factura de compra correspondiente.
+
+Observaciones
+
+Este campo por defecto no está disponible para editar, se activa al momento de
+indicar valor por anticipo.  
+  
+Un anticipo en la orden de compra genera una cuenta por cobrar al proveedor,
+ya que se está realizando una entrega de dinero por unos productos que aún no
+se han recibido.  
+  
+La cuenta de cartera a la cual se lleve el valor del anticipo depende del plan
+de cuentas con el cual trabaje el usuario.  
+  
+Los anticipos registrados en la orden de compra pueden ser cruzados luego con
+la factura de compra correspondiente.  
+  
+Al registrar un anticipo en la orden de compra al proveedor, automáticamente
+se afecta también el módulo de cartera y proveedores, ya que la cuenta por
+cobrar que genera el anticipo estará disponible en los diferentes informes,
+reportes y exploradores.  
+  
+Si se registra anticipo en la orden de compra, esta afecta contablemente, si
+no, solo afecta el inventario disponible.  
+  
+
+Configuración
+
+Para configurar la visualización del paso Formas de pago del primer anticipo
+ver: **\[Menú Operación > Configurar operación > Visualización de la operación
+> Pasos en el asistente > Forma de pago del primer anticipo\]**
+
+Para configurar la funcionalidad de este campo como visible o de solo lectura
+ver: **\[Menú Operación > Configurar operación > Campos de la operación >
+Datos maestros de la operación > Cuenta de proveedores\]**
+
+---
+
+# Centro de costos
+
+Centro de costos al cual se carga el anticipo realizado al proveedor en la
+operación.
+
+Ejemplo:
+
+La empresa MP Computadores en su sede Medellín emite la orden de compra
+ORC-18015698 al proveedor Compuequipos S.A. por un valor de $1.550.000, se
+entrega un anticipo de $550.000 para garantizar la entrega de los productos.  
+  
+CUENTA DE PROVEEDORES | VALOR ANTICIPO | CENTRO DE COSTOS  
+---|---|---  
+133005 | $ 550.000 | Sede Medellín  
+  
+La cuenta de cartera 133005 exige centro de costos en la operación, en este
+caso se indica el centro de costos **"Sede Medellín"** , ya que es este centro
+de costos \(sede\) quien realiza el anticipo al proveedor.
+
+Observaciones
+
+Este campo solo se activa si la cuenta de cartera a la cual se lleva el
+anticipo exige centros de costos.  
+  
+Asignar un centro de costos al anticipo realizado al proveedor, permite al
+usuario llevar un mayor control, en caso por ejemplo que la empresa cuente con
+sedes en diferentes ciudades y cada una de ellas registre sus compras.
+
+Configuración
+
+Para configurar la visualización del paso Formas de pago del primer anticipo
+ver: **\[Menú Operación > Configurar operación > Visualización de la operación
+> Pasos en el asistente > Forma de pago del primer anticipo\]**
+
+---
+
+# Valor de la orden
+
+Valor total a cancelar al proveedor por los productos solicitados en la orden
+de compra.
+
+Ejemplo:
+
+Se solicita mediante orden de compra ORC-18037800 al proveedor Compu Partes
+Ltda. el envío de unos equipos de cómputo y el valor de la orden de compra es
+de **$2.675.000.**
+
+Observaciones
+
+Si se indicó precio a los productos solicitados, en este campo se visualiza el
+valor total de la orden de compra, si no, se visualiza en ceros. Este es el
+valor que deberá cancelar el usuario por los productos solicitados al
+proveedor, cuando estos sean entregados. Este campo no es modificable por el
+usuario, ya que se actualiza según los registros en la orden de compra. Este
+valor corresponde al valor parcial de la orden de compra, menos descuentos,
+más impuestos. Si se usa otra moneda para imprimir la orden de compra, el
+valor de la orden se visualiza en la moneda local.
+
+Configuración
+
+Para configurar la visualización del paso Formas de pago del primer anticipo
+ver: **\[Menú Operación > Configurar operación > Visualización de la operación
+> Pasos en el asistente > Forma de pago del primer anticipo\]**
+
+---
+
+#  Cargar pedido
+
+Carga en la orden de compra los elementos de inventario asociados al documento
+tomado como referencia \(si se indicó alguno\).
+
+Ejemplo
+
+Se registra orden de compra ORC-1803469 al proveedor Provee Más Ltda. tomando
+como referencia el pedido del cliente PED-180542.  
+  
+_**Nota:**_ Se da clic en este botón  para cargar nuevamente en la orden de
+compra los productos registrados en el pedido del cliente PED-180542.
+
+Observaciones
+
+Este botón carga por defecto todos los elementos de inventario del documento
+tomado como referencia.  
+  
+Si el documento referencia tiene saldos pendientes, solo cargará los elementos
+de inventario pendientes del documento referencia.  
+  
+Si la referencia ya fue indicada y los elementos cargados, al dar clic en el
+botón, se cargan nuevamente los elementos en la operación y el sistema
+solicita confirmación.  
+  
+Para visualizar esta opción el usuario debe estar ubicado en cualquier columna
+del área de registro de la operación.
+
+---
+
+# Calcular precios sugeridos
+
+Sugiere el precio de compra para los elementos de inventario seleccionados en
+la orden de compra, según la configuración del usuario.
+
+Ejemplo
+
+Se registra la orden de compra ORC-18046598 al poveedor Compu Partes Ltda. por
+unos computadores, se requiere que el sistema sugiera para cada elemento de
+inventario último precio dado por el proveedor.  
+  
+Producto | Precio  
+---|---  
+Computador Todo en Uno | $ 850.000  
+Parlantes Multimedia | $ 35.000  
+  
+Observaciones
+
+Se puede configurar para que el sistema sugiera el precio de los elementos de
+inventario de las siguientes opciones:  
+  
+
+* El último precio del proveedor
+* El último precio sin importar el proveedor
+* El precio según la cotización recibida.
+  
+Facilita al usuario el registro de la operación, evitando así posibles
+equivocaciones en el registro del precio de los elementos de inventario.
+
+Configuración
+
+Para configurar al sistema cómo sugerir el precio en la orden de compra ver:
+**\[Menú Operación > Configurar operación > Sugerir precio en órdenes de
+compra\]**
+
+---
+
+# Precio
+
+Valor unitario del producto dado por el proveedor.
+
+Ejemplo
+
+Se registra la orden de compra ORC-180210 al proveedor Compuequipos S.A solicitando los siguientes productos:  Producto | Precio  
+---|---  
+Computador Todo en Uno | $ 850.000  
+Parlantes Multimedia | $ 35.000  
+  
+Observaciones
+
+Este campo por defecto no está disponible para ser modificado por el usuario,
+pero se puede configurar para asignarse de forma manual. Para activar la
+opción de registrar precio de forma manual ver **\[Menú Operación > Opciones >
+Registrar precio\].**  
+  
+El precio del producto en la orden de compra puede ser sugerido por el sistema
+según:
+
+* Último precio proveedor.
+* Último precio.
+* Precio según cotización del proveedor.
+  
+Para configurar que el sistema sugiera el precio de compra ver **\[Menú
+Operación > Configurar operación > Sugerir precio en órdenes de compra\].**  
+  
+Al ser el precio sugerido por el sistema, el usuario no deberá recordar de
+memoria el valor del producto dado por el proveedor, sino que se carga de
+forma automática una vez se registre el producto en la operación.
+
+---
+
+# % desc.
+
+Porcentaje de descuento otorgado por el proveedor al elemento de inventario
+cargado en el renglón.
+
+Ejemplo
+
+Se registra la orden de compra ORC-180125 al proveedor Compuequipos S.A. quien
+ha otorgado descuento en algunos de los productos:  
+Producto | Precio | Descuento  
+---|---|---  
+Computador Todo en Uno |  $ 850.000 |  10 %  
+Minitorres genérica |  $ 350.000 |  7 %  
+  
+Observaciones
+
+Este descuento puede ser indicado de forma manual por el usuario.  
+  
+Conocer el valor del descuento otorgado por el proveedor en los productos,
+permite tambien controlar hasta donde se puede transferir este beneficio al
+cliente.  
+  
+Es posible generar informes, reportes y exploradores para comparar los
+descuentos otorgados para un mismo producto por parte de diferentes
+proveedores y tomar decisiones de compra.  
+  
+Este descuento será cargado en otra operación en la cual se tome como
+documento referencia la orden de compra.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > % desc.\]**
+
+---
+
+# IVA
+
+Porcentaje de IVA que aplica al elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+El supermercado Mercamás en sus diferentes elementos de inventario cuenta con
+algunos marcados con diferentes porcentajes de IVA y también algunos
+excluidos:
+
+Código | Producto | IVA  
+---|---|---  
+LAC026 | Yogur entero | 19 %  
+ASE036 | Jabón de ropa | 19 %  
+ALI058 | Avena en hojuelas | 5 %  
+ALI150 | Huevo blanco |   
+  
+
+Observaciones
+
+Cuando un elemento de inventario marcado con IVA sea llamado en el renglón,
+automáticamente se carga el % del IVA en compras configurado para el producto.  
+  
+El porcentaje de IVA que se carga en la operación se configura directamente al
+grupo de inventario al cual pertenece el elemento de inventario, para conocer
+cómo configurar el % de IVA en comrpas al elemento de inventario [Clic
+aquí.](<..\\..\\..\\..\\080 IN\\Cats\\Grupos de inventario\\\[12910\]
+FrmGrupoInventario\\\[1060\]LblImpuestosVentas.html>)  
+  
+Los productos o servicios pueden manejar diferentes porcentajes de IVA.  
+  
+Este campo no permite ser modificado desde la operación.
+
+---
+
+# Valor compra
+
+Valor total de la compra a realizar del elemento de inventario cargado en el
+renglón.
+
+Ejemplo
+
+Se solicita al proveedor Compuequipos S.A. la orden de compra ORC-1802458 los
+siguientes productos:  
+PRODUCTO | PRECIO UND. | CANT. | VALOR COMPRA  
+---|---|---|---  
+Mouse HP | $ 35.000 | 2 | $ 70.000  
+Memoria USB 8GB | $ 15.000 | 1 | $ 15.000  
+Mouse mini USB | $ 40.000 | 2 | $ 80.000  
+  
+Observaciones
+
+El valor de este campo surge de multiplicar el precio unitario del elemento de
+inventario por las cantidades solicitadas.  
+  
+Este valor también se puede registrar de forma manual, al hacer esto el
+sistema calcula de forma automática el valor unitario del producto. Para
+indicar el valor total del elemento de inventario de forma manual ver
+**\[Operación orden de compra > Opciones > Registrar valores totales\].**
+
+---
+
+# Acerca de ventana
+
+## OPERACIÓN DE ORDEN DE COMPRA AL PROVEEDOR
+
+##  Objetivo
+
+Una orden de compra es un documento que emite la empresa, en el cual realiza
+de forma automatizada las solicitudes de envío de productos a sus proveedores.  
+  
+La operación de orden de compra al proveedor permite realizar de forma
+automatizada las solicitudes de productos a los proveedores, de igual forma
+permite imprimir el documento para ser entregado de forma física o imprimirlo
+en formato PDF para ser enviado mediante correo electrónico.  
+  
+Es posible registrar la orden de compra al proveedor basada en un pedido de un
+cliente, en una requisición interna o en otra orden de compra, importando la
+información registrada en dicho documento, y realizar las modificaciones
+necesarias.  
+  
+Al registrar la orden de compra al proveedor, se puede detallar los productos,
+las condiciones comerciales, anticipos si se presentan, entre otros.  
+  
+Al procesar la orden de compra en la cual se registre un anticipo, el sistema
+realiza el respectivo movimiento contable y genera la respectiva cuenta por
+cobrar al proveedor.  
+  
+La operación de orden de compra al proveedor genera movimiento en el
+inventario disponible, ya que supone cantidades de los elementos solicitados
+con los cuales se puede contar a determinada fecha.  
+  
+Esta operación no afecta el inventario físico puesto que aún no se ha
+realizado el ingreso de los productos a la bodega, ni el inventario contable
+ya que no se ha registrado la factura de compra.
+
+## Ejemplo de información a registrar
+
+Para el registro de la operación de orden de compra al proveedor, es necesario
+indicar el tercero proveedor quien está realizando la solicitud de envío de
+los productos.  
+  
+Es posible registrar la orden de compra al proveedor tomando otro documento
+como referencia, puede ser basado en una en pedido de un cliente, importando
+la información registrada en dicho pedido, y realizar las modificaciones
+necesarias.  
+  
+Seleccionar la bodega a la cual ingresarán los productos cuando estos sean
+entregados por el proveedor.  
+  
+Seleccionar del catálogo de elementos de inventario, el listado de productos a
+solicitar, la cantidad a pedir, indicar el respectivo precio, y también es
+posible registrar el descuento otorgado por el proveedor a cada uno de los
+productos.  
+  
+Se puede indicar las condiciones comerciales para los productos que se
+solicitan al proveedor, plazo de entrega, condiciones comerciales como formas
+de pago, de envío, entre otras, al igual que registrar observaciones para la
+orden de compra.  
+
+## Secciones
+
+Explicación de las secciones en la operación.  
+
+## Sección encabezado de la operación
+
+En el encabezado de la operación de orden de compra al proveedor es posible
+seleccionar un documento especializado para el soporte de la operación y es el
+documento Orden de compra al proveedor, este tipo de documento se puede
+definir por defecto, y el sistema automáticamente asignará el consecutivo
+correspondiente según su configuración.  
+  
+
+## Secciones de la operación
+
+Orden de compra al proveedor
+
+En esta sección, adicional a la información a indicar en el encabezado de la
+operación, se indican los elementos de inventario que se pedirán al proveedor
+con la información comercial correspondiente, cantidad del producto
+solicitado, el precio unitario, descuento otorgado por el proveedor y
+observaciones de cada elemento.
+
+Datos adicionales de la orden de compra
+
+En esta sección se indica el plazo de entrega, es decir la fecha máxima en la
+cual la empresa recibirá los elementos solicitados al proveedor en dicha orden
+de compra.  
+  
+También se pueden indicar condiciones comerciales como, la forma de envío, la
+forma de pago y si se tienen condiciones adicionales para la orden de compra.  
+  
+Si es necesario registrar la operación de orden de compra en otra moneda
+diferente a la local, en esta sección se puede indicar otra unidad de moneda,
+previa configuración correspondiente.  
+  
+En este paso es posible registrar observaciones para la operación, información
+relevante para el proveedor que se desean estén visibles en el documento
+impreso, estas se pueden digitar o simplemente seleccionarlas del catálogo de
+observaciones de ContaPyme, también se pueden dejar fijas para que siempre que
+se ingrese en la operación ya se encuentren registradas sin necesidad de
+seleccionarlas.
+
+Forma de pago del primer anticipo
+
+Es posible registrar en la operación anticipos realizados al proveedor,
+afectando así contablemente por la entrega del dinero y generando una cuenta
+por cobrar al proveedor.  
+  
+Este anticipo será cruzado luego al momento de registrar la factura de compra
+enviada por el proveedor con los productos solicitados.
+
+  
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**  
+  
+Es posible generar la impresión de la operación de orden de compra al
+proveedor, para ser enviada o entregada, esta impresión se puede realizar en
+formato PDF o en HTML para ser enviada a través del correo electrónico.
+
+---
+
+# Centro de costos
+
+Código del centro de costos al que se cargará el costo cuando se registre la
+compra del elemento de inventario.
+
+Ejemplo
+
+Se registra la recepción de materiales RMP-1811065 del proveedor Alfa Equipos
+Ltda. con los siguientes productos:
+
+PRODUCTO | PRECIO | CANT. | VALOR COMPRA | CC.  
+---|---|---|---|---  
+Computador Todo en Uno | $ 8000.000 | 1 | $ 800.000 | 150P - Órdenes de Producción  
+Computador mini Dell | $ 630.000 | 1 | $ 630.000 | 150P- Órdenes de Producción  
+Minitorre Genérica | $ 380.000 | 1 | $ 380.000 | 150P - Órdenes de Producción  
+  
+
+Observaciones
+
+Este campo será cargado en la operación de compras en la cual se llame como
+documento referencia la recepción de materiales.  
+  
+Por lo general la operación de compra en su movimiento contable efectúa
+imputaciones a la cuenta de inventarios, siempre y cuando se controle
+cantidades en el inventario del producto comprado, de lo contrario la
+operación de compra ya no realizará la imputación a una cuenta de inventarios
+sino que lo hará a una cuenta del gasto o costo, por tal motivo solicita que
+se indique el centro de costo.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en listado de productos > Centro de
+costos\]**
+
+---
+
+# Valor Total
+
+Valor total de los elementos de inventario recibidos del proveedor mediante la
+recepción de materiales, y equivale a la sumatoria del valor parcial, menos
+descuentos más IVA.
+
+Ejemplo
+
+Se recibe mediante recepción de materiales RMP-18112578 del proveeedor Alfa
+Equipos Ltda. los siguientes productos discriminando cantidad, precio
+unitario, descuento, valor parcial, iva, y los totales, seguido del valor
+total.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | DESC. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 925.000 |  10.00% | $ 925.000  
+Computador mini Dell | 1 | $ 850.000 |  10.00% | $ 850.000  
+Computador todo en uno | 1 | $ 1.200.000 |  10.00% | $ 1.200.000  
+**Subtotal Valor Parcial** | **$ 3.807.500**  
+**Impuesto en compra \(19%\)** | **$ 723.425** | Valor Total | $ 4.530.925  
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Observaciones
+
+Descripción breve del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se registra recepción de materiales RMP-1811254 por parte del proveedor Alfa
+Equipos Ltda. por dos Computadores Todo en Uno, indicando las características
+del equipo.  
+  
+PRODUCTO | CANT. | OBSERVACIÓN  
+---|---|---  
+Computador Todo en Uno | 2 | Procesador 2,2GHz - Pantalla 23,9" - Conectividad WiFi b / g / n, Bluetooth 4.0 + LE - Memoria 4 GB  
+  
+Observaciones
+
+Esta observación es cargada de forma automática en la operación al seleccionar
+el elemento de inventario en el renglón.  
+  
+La observación del elemento de inventario en el renglón es de libre uso y
+definición del usuario y se configura como descripción directamente en cada
+elemento de inventario, para adicionar esta descripción al elemento de
+inventario ver **\[Pestaña Inventarios > Elementos de Inventario > Modificar >
+Descripción\]**  
+  
+Esta observación puede ser modificada por el usuario directamente en la
+operación, bien sea para cambiarla o complementarla.  
+  
+Cuando la recepción de materiales sea usada como documento referencia en otra
+operación, la información de este campo se cargará automáticamente en la nueva
+operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en orden de compra >
+Observación.\]**
+
+---
+
+# Dato 1
+
+Presenta información adicional para el producto en la operación.
+
+Ejemplo
+
+El almacén Su Vestido SAS comercializa prendas de vestir, el usuario requiere
+indicar información adicional para el producto como la talla, para esto se
+habilita el campo adicional Dato 1 en las operaciones de inventario.
+
+Código |  Producto | Dato 1 - Talla  
+---|---|---  
+CAMHOM250 | Camisa hombre Skit |  S  
+CAMHOM250 | Camisa hombre Skit |  M  
+CAMHOM250 | Camisa hombre Skit |  L  
+  
+En el campo **"Dato 1"** , debe indicar la información adicional que se
+requiere mostrar en los documentos de impresión o visualizar en el explorador
+de inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Dato 1 por Talla.
+
+---
+
+# Valor 1
+
+Presenta valores adicionales para el producto en la operación.  
+
+Ejemplo
+
+Un Minimercado mide los inventarios de los productos de abarrotes \(arroz,
+frijol, lenteja\) en libras y requiere conocer las existencias de ciertos
+productos en kilos, para conocer este dato se configura el campo adicional
+Valor 1 en las operaciones de inventario.  
+  
+Código | Producto | Unidad | \(VALOR 1\) Kilos   
+---|---|---|---  
+AR001 | Arroz blanco | 50 Libras | 25 Kilos  
+AZ005 | Azúcar Morena | 100 Libras  | 50 Kilos   
+  
+En el campo **"Valor 1"** , debe indicar el valor adicional que se requiere
+mostrar en los documentos de impresión o visualizar en el explorador de
+inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Valor 1 por Kilo.
+
+---
+
+# Código bodega
+
+Código de la bodega a la cual ingresa el producto de cada renglón, esta es la
+misma bodega que se afecta al momento de registrar la factura de compra.
+
+Ejemplo
+
+El supermercado Merca Ahorro, cuenta con diferentes bodegas para el manejo de
+sus productos:
+
+Código | Nombre  
+---|---  
+1 | Bodega de productos alimenticios  
+2 |  Bodega de productos de aseo  
+  
+
+Al momento de registrar una recepción de materiales, en este campo puede
+seleccionar la bodega correspondiente a la cual ingresará cada producto, los
+productos alimenticios de la **"Bodega 1"** y los productos de aseo de la
+**"Bodega 2"**.
+
+Observaciones
+
+Para cada renglón de la operación se puede indicar una bodega diferente y el
+sistema respetará esta aunque en la operación se indique una bodega por
+defecto.  
+  
+La empresa puede crear tantas bodegas como requiera para facilitar el manejo
+los elementos de inventario.
+
+Configuración
+
+Para configurar la funcionalidad del campo bodega por renglón \(visible, solo
+lectura, requerido, etc.\), ver: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en orden de compra >
+Bodega\]**
+
+---
+
+# Proveedor
+
+Código de identificación del tercero \(proveedor\) de quien se reciben
+elementos de inventario que se registran mediante la recepción de materiales.
+
+Ejemplo
+
+Se registra la recepción de materiales RMP-18110256 del proveedor Alfa Equipos
+Ltda. en la cual se reciben cinco unidades del elemento de inventario
+Computador todo en Uno. En el campo Proveedor se indica el código de
+identificación de Alfa Equipos Ltda.  
+  
+CÓDIGO | NOMBRE  
+---|---  
+811250654 | Alfa Equipos Ltda.  
+  
+Observaciones
+
+Para que el tercero pueda ser seleccionado en la operación de recepción de
+materiales, se debe crear con el tipo de tercero **"Proveedor"**.  
+  
+Para configurar el tipo de tercero ver **\[Pestaña Básico > Terceros >
+Modificar > Tipo de Tercero\]**  
+  
+Al abrir el seleccionador de terceros en la recepción de materiales, éste se
+filtra solo por aquellos terceros cuyo tipo es **"Proveedor"**.  
+  
+El proveedor indicado en la recepción de materiales, será el mismo que se
+cargue en otra operación en la cual se use como documento referencia la
+recepción de materiales registrada.  
+  
+Se pueden generar informes y reportes de compras filtrados por el campo
+**"Proveedor"**.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Proveedor\].**
+
+---
+
+# Bodega
+
+Código de la bodega donde ingresarán los productos recibidos del proveedor.  
+
+Ejemplo
+
+La empresa MP Computadores cuenta con varias bodegas para el almacenamiento de
+sus productos:  
+Código | Bodega  
+---|---  
+1 | Bodega Principal  
+2 | Bodega Centro  
+2 | Bodega Norte  
+  
+
+Se registra la recepción de materiales RMP-1811369 del proveedor Compumas
+S.A.S. y se indica que la bodega a la cual ingresarán los elementos de
+inventario es la **"Bodega Centro"**.  
+  
+
+Observaciones
+
+Es posible indicar una bodega para cada renglón de la operación de recepción
+de materiales, para activar este manejo ver: **\[Menú Operación > Configurar
+operación > Campos de la operación > Configuración de columnas en el listado
+de productos\]**.  
+  
+Esta es la bodega que se cargará cuando la recepción de materiales sea usada
+como documento referencia en otra operación.
+
+Configuración
+
+Para configurar la funcionalidad del campo Bodega \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Bodega\]**
+
+---
+
+#  Botón Cerrar Referencia
+
+Da por finalizado \(cerrado\) el o los documentos que fueron cargados en el
+campo referencia como base para el registro de la operación.
+
+Ejemplo
+
+* Se registra la recepción de materiales RMP-1811631 del proveedor Innova S.A.S con base en la orden de compra ORC-1811987 en la cual se reciben todos los productos registrados en ella, por tal motivo se da por cerrada a orden de compra ORC-1811987 para que ya no esté más disponible.
+  
+
+* Se registra la recepción de materiales RMP-1811650 del proveedorMP Computadores con base en la orden de compra ORC-1810312 y quedan pendientes por entregar algunos elementos de inventarios, por tal motivo se deja abierta la orden de compra ORC-1810312 para que esté disponible para ser usada en otra operación.
+  
+
+Observaciones
+
+Al momento de dar por cerrado el documento tomado como referencia, no se
+volverá a cargar o estar visible en el seleccionador para otras operaciones.  
+  
+El documento referencia se puede dejar abierto, en caso de no recibir por
+parte del proveedor todos los productos registrados en él, con el fin de poder
+cargar esta referencia en una nueva operación.  
+  
+Si en la operación no se cargó ningún documento como referencia no es
+necesario usar este botón.  
+  
+Es muy importante hacer el cierre de los documentos tomados como referencia
+para que no queden como pendientes estando ya usados en otra operación.  
+  
+El clierre de documentos también se puede hacer a través de la operación de
+Cierre de documentos.  
+  
+Es posible visualizar los documentos cerrados en los exploradores de
+inventarios plus
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Referencia\].**
+
+---
+
+# Referencia
+
+Seleccione el documento de la recepción de materiales, registrada
+anteriormente, que se tomará como base para el registro de la devolución de
+materiales.  
+
+Ejemplo
+
+  
+
+Se registra la rcepción de materiales RMP-18116012 del proveedor Provee Más
+Ltda. de 5 computadores todo en uno, los cuales se solicitaron mediante orden
+de compra ORC-18102685, en este caso en el campo referencia se indica el
+número de la orden de comora ORC-18102685 para que carguen los elementos de
+inventario.  
+
+Observaciones
+
+Es posible cargar varios documentos como referencia para el registro de la
+recepción de materiales.
+
+La referencia carga en la recepción de materiales los productos o servicios
+según el número de documento indicado. Este campo permite hacer trazabilidad
+para conocer los documentos cerrados con otras operaciones. Se pueden
+consultar informes a traves de los exploradores de inventarios plus. Para
+acceder a los exploradores de inventarios plus ingrese a: **\[Pestaña
+Inventarios > Cinta de Opciones > Movimientos > Inventarios Plus
+\(cotizaciones, pedidos, remisiones, etc\)\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura o
+requerido\) ver: **\[Configuración de la Operación > Campos de la operación >
+Datos maestros de la operación > Referencia\]**
+
+---
+
+# Valor Parcial
+
+Valor total de los elementos de inventario cargados en la recepción de
+materiales antes de impuestos y descuentos.
+
+Ejemplo
+
+Se recibe mediante recepción de materiales RMP-1811002 del proveedor
+Suministros.com los siguientes productos discriminando cantidad, valor
+unitario, descuento y valor parcial.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | DCTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 |  10.00% | $ 720.000  
+Computador mini Dell | 1 | $ 780.000 |  10.00% | $ 702.000  
+Computador todo en uno | 1 | $ 1.050.000 |  10.00% | $ 945.000  
+**Subtotal Valor Parcial** | **$ 2.630.000**  
+  
+
+Observaciones
+
+Este campo corresponde a la sumatoria del valor parcial de cada elemento de
+inventario cargado en la recepción de materiales antes de aplicar descuentos e
+impuestos.  
+  
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los datos registrados en la operación.
+
+---
+
+# Valor Descuento
+
+Valor total de los descuentos otorgados por el proveedor por cada elememento
+de inventario cargado en la recepción de materiales
+
+Ejemplo
+
+Se recibe mediante recepción de materiales RMP-1811658 del proveedor Alfa
+Equipos Ltda. los siguientes productos discriminando producto, cantidad, valor
+unitario, % de descuento, y valor parcial.
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 |  10.00% | $ 720.000  
+Computador mini Dell | 1 | $ 780.000 |  10.00% | $ 702.000  
+Computador todo en uno | 1 | $ 1.050.000 |  10.00% | $ 945.000  
+Total Descuento |  |  |  $ 263.000 |   
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Transportador
+
+Código del tercero \(transportador\) quien realizó la entrega de los productos
+recibidos por parte del proveedor mediante la recepción de materiales.
+
+Ejemplo
+
+* Se registra la recepcion de materiales RMP-1811301 del proveedor Alfa Equipos Ltda. quien se encuentra ubicado en la ciudad de Bogotá por 10 unidades del producto Computador Todo en Uno, el envío se realiza por medio de la empresa transportadora Servientrega.  
+En el campo transportador se indica el código de la empresa **"Servientrega"**
+
+  
+
+* Se registra la recepción de materiales RMP-1811001 del proveedor Suministros.com quien se encuentra en la ciudad de Manizales por 5 unidades del producto Impresora de inyección, la entrega del producto lo realiza directamente el proveedor por medio del empleado Camilo Ruiz.  
+En el campo transportador se indica el código del empleado **"Camilo Ruiz"** o
+el código de identificación del proveedor.
+
+Observaciones
+
+Para seleccionar el transportador en la recepción de materiales, éste debe
+estar creado en el catálogo de terceros de la empresa.  
+  
+Si las entregas de los productos siempre las realiza el mismo transportador,
+es posible asignar un transportador por defecto por medio de la configuración
+de este campo en la operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Transportador\]**
+
+---
+
+#  Series/Lotes \(Ctrl+F2\)
+
+Registra información de seguimiento para el elemento de inventario en el
+renglón \(series/lotes, fechas de vencimiento, proveedor, etc.\).
+
+Ejemplo
+
+La Comercializadora de medicamentos Comedic, registra para cada uno de sus
+elementos de inventario el número del lote del fabricante, con la respectiva
+fecha de fabricación, de vencimiento y las cantidades recibidas por cada lote.  
+  
+Se recibe por parte del proveedor Su Comercial Droguería, 10 unidades del
+producto Gotas Oftálmicas Oftal, mediante la recepción de materiales
+RMP-1811568, indicando en la operación el lote, y las respectivas unidades
+recibidas del proveedr por cada lote:  
+  
+PRODUCTO | LOTE | CANTIDAD  
+---|---|---  
+Oftal | L-171215 | 3  
+Oftal | L-180103 | 7  
+  
+Observaciones
+
+Este botón solo se activa cuando en la operación se ubica el cursor sobre un
+elemento de inventario que esté configurado para el manejo de series/lotes.  
+  
+El manejo de series y lotes se configura directamente en el grupo de
+inventario.  
+  
+La información indicada por medio de este botón no se visualiza en la
+operación o en el documento impreso, solo permite realizar control.  
+  
+Se recomienda que se realice la trazabilidad de series y lotes tanto en los
+ingresos de los elementos de inventario \(Recepción, compras\) como en las
+salidas \(Remisión, venta\).
+
+Configuración
+
+Para configurar el manejo de series/lotes a los grupos de inventario ver:
+**\[Pestaña inventarios > Catálogos > Grupos inv. > Modificar > Pestaña
+General > Meneja series/lotes\].**
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al producto.
+
+Ejemplo
+
+La empresa Comercial de alimentos, entre sus productos comercializa huevos, y
+debe especificar su tipo en las operaciones, así:  
+Producto | Tipo  
+---|---  
+Huevo blanco | A  
+Huevo blanco | AA  
+Huevo blanco | Extra  
+  
+Observaciones
+
+Este campo es de libre uso y definición del usuario.  
+  
+Asignar en la operación un tipo al produto, evita que se deba crear en el
+catálogo de elementos de inventario, un producto por cada especificación que
+se necesite.  
+  
+La especificación dada al producto en esta columna estará visible en los
+exploradores de inventarios plus.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > Tipo\]**
+
+---
+
+#  Observaciones para la recepción de materiales
+
+Indique las observaciones que aparecen en la recepción de matriales impresa o
+algún otro documento que se imprima a partir de esta operación.
+
+Ejemplo
+
+Se recibe mercancia, queda sujeta a revisión del estado, si se presentan
+daños, esta será devuelta en los siguientes 3 días previos a la recepción de
+los productos.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+El catálogo de observaciones permite crear observaciones en las cuales el
+usuario puede complementar información de los productos recibidos.  
+  
+Se pueden crear tantas observaciones como se requieran con la información que
+se desee visualizar en el documento, ejemplo:
+
+* Condiciones sobre la recepción de los productos.
+* Información sobre de devoluciones.
+* Formas de pago.
+* Recomendaciones técnicas.
+
+Configuración
+
+Para crear o modificar observaciones ver: **\[Pestaña inventarios > Cinta de
+opciones > Otros > Observaciones.\]**
+
+---
+
+#  Cargar Encabezado
+
+Carga en la recepción de materiales observaciones previamente creadas en el
+catálogo de observaciones.
+
+Ejemplo
+
+Se puede crear una observación estandar para el encabezado de la observación:  
+Apreciado _PROVEEDOR Alfa Equipos Ltda._  
+Los productos recibidos mediante esta recepción quedan sujetos a la revisión
+de su estado, si se encuentran daños o averías, estas seráninformadas a
+ustedes antes de 3 días previos a la recepción de los productos.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+Es posible configurar el sistema para que tome los datos del proveedor, así la
+observación es personalizada.  
+  
+La información de estas observaciones se verá reflejada al visualizar o
+imprimir el documento.  
+  
+Se pueden estandarizar observaciones como saludo, despedida y comentarios que
+pueden ser comunes para múltiples proveedores.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Pestaña Inventarios > Cinta
+de opciones > Observaciones\]**
+
+---
+
+# Unidad
+
+Medida general utilizada para discriminar la cantidad del producto en las
+operaciones.
+
+Ejemplo
+
+* En una carnicería manejan la carne por kilos, por lo tanto la unidad de medida es:**Kg**
+* En una ferretería venden los tubos de pvc por metros, por lo tanto la unidad de medida es: **Mts**
+* Una empresa de servicios ofrece a sus clientes capacitaciones por horas, por lo tanto la unidad de medida es: **Hora**
+
+Observaciones
+
+Las cantidades de los productos que se muestran en los diferentes informes y
+reportes de inventario son basados en esta unidad.  
+  
+La unidad de medida se debe configurar en cada uno de los elementos de
+inventario.  
+  
+Este campo no es modificable por el usuario en la opereación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo como visible, ver: **\[Menú
+Operación > Configurar operación > Campos de la operación > Configuración de
+columnas en orden de compra > Unidad\]**
+
+---
+
+# Cantidad
+
+Número de unidades del elemento de inventario recibidas mediante la recepción
+de materiaes.
+
+Ejemplo
+
+Se recibe mediante recepción de materiales RMP-181135 por parte del proveedor
+Redes y PC Ltda. los siguientes productos:
+
+CÓDIGO | PRODUCTO | CANTIDAD  
+---|---|---  
+COMHP001 | Computador mini Hp | 3  
+COMDELL002 | Computador mini Dell | 2  
+COMTD003 | Computador todo en uno | 2  
+  
+Al momento de registrar la recepción de materiales, en este campo se indica el
+número de unidades recibidas por cada elemento de inventario.  
+  
+
+Observaciones
+
+La cantidad indicada en este campo será cargada en otra operación en la cual
+se tome como referencia esta recepción de materiales.  
+  
+Este campo es requerido en la operación, es decir que su diligenciamiento es
+obligatorio para procesar la operación.
+
+---
+
+# Precio
+
+Valor de compra por unidad que ha sido dado por el proveedor a cada producto
+
+Ejemplo
+
+Se recibe por parte del proveedor Redes y PC Ltda. los siguientes productos y se registran mediante recepción de materiales RMP-180714:  Producto | Precio  
+---|---  
+Lector de memoria | $ 20.000  
+Memoria USB 8GB | $ 18.000  
+  
+Observaciones
+
+El sistema sugiere el valor de compra cuando anteriormente ya se han
+registrado recepciones o compras del producto indicado en el renglón, o carga
+el valor de compra indicado para el elemento de inventario en el documento
+tomado como referencia para el registro de la recepción de materiales.  
+  
+También es posible indicar de forma manual el precio de cada elemento de
+inventario en la operación, para conocer como hacerlo ver **\[Menú Operación >
+Opciones > Registrar precio.\]**  
+  
+El precio indicado a cada elemento de inventario en la recepción de
+materiales, será cargado en la operación de compra en la cual se llame como
+referencia la recepción de materiales.
+
+---
+
+# % desc.
+
+Porcentaje de descuento otorgado por el proveedor al elemento de inventario
+cargado en el renglón.
+
+Ejemplo
+
+Se registra recepción de materiales RMP-1811326 por parte del proveedor Alfa Equipos Ltda. y otorgó descuento por temporada escolar en algunos de los productos:  Producto | Precio | Descuento  
+---|---|---  
+Computador Todo en Uno | $ 700.000 | 10 %  
+Minitorres genérica | $ 300.000 | 7 %  
+  
+Observaciones
+
+Este descuento puede ser indicado de forma manual por el usuario.  
+  
+Registrar el descuento en la recepción de materiales, permite conocer los
+beneficios otorgados a la empresa por parte del proveedor y se verán
+reflejados al momento de recibir la respectiva factura de compra.  
+  
+Es posible generar informes, reportes y exploradores para comparar los
+descuentos otorgados para un mismo producto por parte de diferentes
+proveedores y tomar decisiones de compra.  
+  
+Este descuento será cargado en otra operación en la cual se tome como
+documento referencia la recepción de materiales
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > % desc.\]**
+
+---
+
+# Valor compra
+
+Valor total de las unidades del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se recibe por parte del proveedor Alfa Equipos Ltda. los siguientes productos
+y se registran mediante recepción de materiales RMP-1811265:  
+PRODUCTO | PRECIO | CANT. | VALOR COMPRA  
+---|---|---|---  
+Computador Todo en Uno | $ 875.000 | 1 | $ 875.000  
+Computador mini Dell | $ 630.000 | 1 | $ 630.000  
+Minitorre Genérica | $ 380.000 | 1 | $ 380.000  
+  
+
+Observaciones
+
+Este valor es el producto de las cantidades recibidas por el proveedor
+mediante la recepciónd e materiales, por el valor unitario.  
+  
+Este valor también puede ser indicado de forma manual por el usuario, así el
+sistema calcula de forma automática el valor unitario del mismo. Para indicar
+el valor total del elemento de inventario de forma manual ver **\[Operación
+Remisión al cliente > Opciones > Registrar valores totales.\]**
+
+---
+
+# Acerca de ventana
+
+##  OPERACIÓN DE RECEPCIÓN DE MATERIALES
+
+##  Objetivo
+
+La recepción de materiales, permite registrar el ingreso físico de productos a
+las bodegas cuando aún no se ha recibido la factura de compra por parte del
+proveedor.  
+  
+Es posible registrar la recepción de materiales, basada en una orden de
+compra, cargando automáticamente la información registrada en ella, de igual
+forma permite realizar las modificaciones necesarias.  
+  
+Es posible registrar una factura de compra, basada en una o varias recepciones
+de materiales, cargando automáticamente la información registrada allí y
+realizar modificaciones si es necesario.  
+  
+La operación de recepción de materiales genera movimiento en el inventario
+físico al igual que en el inventario de disponibilidad, ya que se genera el
+ingreso de los productos de la bodega incrementando las cantidades con las
+cuales se puede contar.  
+  
+La operación de recepción de materiales no genera ningún tipo de registro
+contable.
+
+## Ejemplo de información a registrar
+
+Para el registro de la operación de recepción de materiales, es necesario
+indicar el proveedor de quien se están recibiendo los productos.  
+  
+Es posible registrar la recepción de materiales tomando otro documento como
+referencia, este puede ser una o varias órdenes de compra al proveedor,
+importando así la información registrada en ella, y realizar las
+modificaciones necesarias.  
+  
+Seleccionar del catálogo de elementos de inventario, el listado de productos a
+recibir, indicar las cantidades recibidas, el respectivo precio, y asignar
+descuento un descuento que hubiese otorgado el proveedor.  
+  
+Seleccionar del catálogo de elementos de inventario, el listado de productos a
+solicitar, la cantidad a pedir, indicar el respectivo precio, y también es
+posible registrar el descuento otorgado por el proveedor a cada uno de los
+productos.  
+  
+Es posible indicar en la operación el tercero quien realiza la entrega de los
+productos, es decir el transportador, al igual que registrar observaciones
+sobre los elementos recibidos mediante dicho documento.  
+
+## Secciones
+
+Explicación de las secciones en la operación.  
+
+## Sección encabezado de la operación
+
+En el encabezado de la operación de recepción de materiales es posible
+seleccionar un documento especializado para el soporte de la operación y es el
+documento Recepción de materiales, este tipo de documento se puede definir por
+defecto, y el sistema automáticamente asignará el consecutivo correspondiente
+según su configuración.  
+  
+
+## Secciones de la operación
+
+Recepción de materiales
+
+En esta sección, adicional a la información a indicar en el encabezado de la
+operación, se indican los elementos de inventario recibidos por el proveedor
+con la información comercial correspondiente, la cantidad recibida, el precio
+unitario, descuento otorgado por el proveedor para cada producto y
+observaciones de cada elemento.
+
+Observaciones
+
+En esta sección se puede indicar el transportador quien realizó la entrega de
+los productos enviados por el proveedor.  
+  
+Para la recepción de materiales se pueden registrar observaciones las cuales
+se visualizan en el documento impreso, estas observaciones se pueden digitar o
+seleccionar del catálogo de observaciones, como también se pueden dejar fijas
+para que siempre que se ingrese en la operación ya se encuentren registradas
+sin necesidad de seleccionarlas.
+
+  
+
+## Documentos de impresión
+
+**Documentos de impresión disponibles para la operación \(.PDF, .HTML\)**  
+  
+Es posible generar la impresión de la operación de recepción de materiales
+bien sea para archivar o entregar a la persona encargada de bodega para ser
+enviado al tercero, esta impresión de puede realizar en formato PDF o en HTML
+para ser enviada a través del correo electrónico.
+
+---
+
+# Centro de costos
+
+Código del centro de costos al que se cargará el costo cuando se registre la
+compra del elemento de inventario.
+
+Ejemplo
+
+Se registra la recepción de materiales RMP-1811065 del proveedor Alfa Equipos
+Ltda. con los siguientes productos:
+
+PRODUCTO | PRECIO | CANT. | VALOR COMPRA | CC.  
+---|---|---|---|---  
+Computador Todo en Uno | $ 8000.000 | 1 | $ 800.000 | 150P - Órdenes de Producción  
+Computador mini Dell | $ 630.000 | 1 | $ 630.000 | 150P- Órdenes de Producción  
+Minitorre Genérica | $ 380.000 | 1 | $ 380.000 | 150P - Órdenes de Producción  
+  
+
+Observaciones
+
+Este campo será cargado en la operación de compras en la cual se llame como
+documento referencia la recepción de materiales.  
+  
+Por lo general la operación de compra en su movimiento contable efectúa
+imputaciones a la cuenta de inventarios, siempre y cuando se controle
+cantidades en el inventario del producto comprado, de lo contrario la
+operación de compra ya no realizará la imputación a una cuenta de inventarios
+sino que lo hará a una cuenta del gasto o costo, por tal motivo solicita que
+se indique el centro de costo.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en listado de productos > Centro de
+costos\]**
+
+---
+
+# Valor Total
+
+Valor total de los elementos de inventario recibidos del proveedor mediante la
+recepción de materiales, y equivale a la sumatoria del valor parcial, menos
+descuentos más IVA.
+
+Ejemplo
+
+Se recibe mediante recepción de materiales RMP-18112578 del proveeedor Alfa
+Equipos Ltda. los siguientes productos discriminando cantidad, precio
+unitario, descuento, valor parcial, iva, y los totales, seguido del valor
+total.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | DESC. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 925.000 |  10.00% | $ 925.000  
+Computador mini Dell | 1 | $ 850.000 |  10.00% | $ 850.000  
+Computador todo en uno | 1 | $ 1.200.000 |  10.00% | $ 1.200.000  
+**Subtotal Valor Parcial** | **$ 3.807.500**  
+**Impuesto en compra \(19%\)** | **$ 723.425** | Valor Total | $ 4.530.925  
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Observaciones
+
+Descripción breve del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se registra recepción de materiales RMP-1811254 por parte del proveedor Alfa
+Equipos Ltda. por dos Computadores Todo en Uno, indicando las características
+del equipo.  
+  
+PRODUCTO | CANT. | OBSERVACIÓN  
+---|---|---  
+Computador Todo en Uno | 2 | Procesador 2,2GHz - Pantalla 23,9" - Conectividad WiFi b / g / n, Bluetooth 4.0 + LE - Memoria 4 GB  
+  
+Observaciones
+
+Esta observación es cargada de forma automática en la operación al seleccionar
+el elemento de inventario en el renglón.  
+  
+La observación del elemento de inventario en el renglón es de libre uso y
+definición del usuario y se configura como descripción directamente en cada
+elemento de inventario, para adicionar esta descripción al elemento de
+inventario ver **\[Pestaña Inventarios > Elementos de Inventario > Modificar >
+Descripción\]**  
+  
+Esta observación puede ser modificada por el usuario directamente en la
+operación, bien sea para cambiarla o complementarla.  
+  
+Cuando la recepción de materiales sea usada como documento referencia en otra
+operación, la información de este campo se cargará automáticamente en la nueva
+operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en orden de compra >
+Observación.\]**
+
+---
+
+# Dato 1
+
+Presenta información adicional para el producto en la operación.
+
+Ejemplo
+
+El almacén Su Vestido SAS comercializa prendas de vestir, el usuario requiere
+indicar información adicional para el producto como la talla, para esto se
+habilita el campo adicional Dato 1 en las operaciones de inventario.
+
+Código |  Producto | Dato 1 - Talla  
+---|---|---  
+CAMHOM250 | Camisa hombre Skit |  S  
+CAMHOM250 | Camisa hombre Skit |  M  
+CAMHOM250 | Camisa hombre Skit |  L  
+  
+En el campo **"Dato 1"** , debe indicar la información adicional que se
+requiere mostrar en los documentos de impresión o visualizar en el explorador
+de inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Dato 1 por Talla.
+
+---
+
+# Valor 1
+
+Presenta valores adicionales para el producto en la operación.  
+
+Ejemplo
+
+Un Minimercado mide los inventarios de los productos de abarrotes \(arroz,
+frijol, lenteja\) en libras y requiere conocer las existencias de ciertos
+productos en kilos, para conocer este dato se configura el campo adicional
+Valor 1 en las operaciones de inventario.  
+  
+Código | Producto | Unidad | \(VALOR 1\) Kilos   
+---|---|---|---  
+AR001 | Arroz blanco | 50 Libras | 25 Kilos  
+AZ005 | Azúcar Morena | 100 Libras  | 50 Kilos   
+  
+En el campo **"Valor 1"** , debe indicar el valor adicional que se requiere
+mostrar en los documentos de impresión o visualizar en el explorador de
+inventarios.  
+  
+
+Observaciones
+
+La información que se carga en este campo, se configura en el catálogo de
+elementos de inventario para todas las operaciones de inventario. Para conocer
+la configuración de este campo para las operaciones de inventario [clic
+aquí.](<\[40\]GridIngresosEgresos_Col003.html>)  
+  
+Esta información se puede adicionar al documento impreso y visualizarlo en el
+explorador de inventarios.  
+  
+Es posible seleccionar una opción para la columna en la operación según lo
+configurado o simplemente escribir la información necesaria para el campo.  
+  
+La etiqueta del campo puede ser modificada según lo requiera el usuario, por
+ejemplo, cambiar el nombre de Valor 1 por Kilo.
+
+---
+
+# Código bodega
+
+Código de la bodega a la cual ingresa el producto de cada renglón, esta es la
+misma bodega que se afecta al momento de registrar la factura de compra.
+
+Ejemplo
+
+El supermercado Merca Ahorro, cuenta con diferentes bodegas para el manejo de
+sus productos:
+
+Código | Nombre  
+---|---  
+1 | Bodega de productos alimenticios  
+2 |  Bodega de productos de aseo  
+  
+
+Al momento de registrar una recepción de materiales, en este campo puede
+seleccionar la bodega correspondiente a la cual ingresará cada producto, los
+productos alimenticios de la **"Bodega 1"** y los productos de aseo de la
+**"Bodega 2"**.
+
+Observaciones
+
+Para cada renglón de la operación se puede indicar una bodega diferente y el
+sistema respetará esta aunque en la operación se indique una bodega por
+defecto.  
+  
+La empresa puede crear tantas bodegas como requiera para facilitar el manejo
+los elementos de inventario.
+
+Configuración
+
+Para configurar la funcionalidad del campo bodega por renglón \(visible, solo
+lectura, requerido, etc.\), ver: **\[Menú Operación > Configurar operación >
+Campos de la operación > Configuración de columnas en orden de compra >
+Bodega\]**
+
+---
+
+# Proveedor
+
+Código de identificación del tercero \(proveedor\) de quien se reciben
+elementos de inventario que se registran mediante la recepción de materiales.
+
+Ejemplo
+
+Se registra la recepción de materiales RMP-18110256 del proveedor Alfa Equipos
+Ltda. en la cual se reciben cinco unidades del elemento de inventario
+Computador todo en Uno. En el campo Proveedor se indica el código de
+identificación de Alfa Equipos Ltda.  
+  
+CÓDIGO | NOMBRE  
+---|---  
+811250654 | Alfa Equipos Ltda.  
+  
+Observaciones
+
+Para que el tercero pueda ser seleccionado en la operación de recepción de
+materiales, se debe crear con el tipo de tercero **"Proveedor"**.  
+  
+Para configurar el tipo de tercero ver **\[Pestaña Básico > Terceros >
+Modificar > Tipo de Tercero\]**  
+  
+Al abrir el seleccionador de terceros en la recepción de materiales, éste se
+filtra solo por aquellos terceros cuyo tipo es **"Proveedor"**.  
+  
+El proveedor indicado en la recepción de materiales, será el mismo que se
+cargue en otra operación en la cual se use como documento referencia la
+recepción de materiales registrada.  
+  
+Se pueden generar informes y reportes de compras filtrados por el campo
+**"Proveedor"**.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Proveedor\].**
+
+---
+
+# Bodega
+
+Código de la bodega donde ingresarán los productos recibidos del proveedor.  
+
+Ejemplo
+
+La empresa MP Computadores cuenta con varias bodegas para el almacenamiento de
+sus productos:  
+Código | Bodega  
+---|---  
+1 | Bodega Principal  
+2 | Bodega Centro  
+2 | Bodega Norte  
+  
+
+Se registra la recepción de materiales RMP-1811369 del proveedor Compumas
+S.A.S. y se indica que la bodega a la cual ingresarán los elementos de
+inventario es la **"Bodega Centro"**.  
+  
+
+Observaciones
+
+Es posible indicar una bodega para cada renglón de la operación de recepción
+de materiales, para activar este manejo ver: **\[Menú Operación > Configurar
+operación > Campos de la operación > Configuración de columnas en el listado
+de productos\]**.  
+  
+Esta es la bodega que se cargará cuando la recepción de materiales sea usada
+como documento referencia en otra operación.
+
+Configuración
+
+Para configurar la funcionalidad del campo Bodega \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Bodega\]**
+
+---
+
+#  Botón Cerrar Referencia
+
+Da por finalizado \(cerrado\) el o los documentos que fueron cargados en el
+campo referencia como base para el registro de la operación.
+
+Ejemplo
+
+* Se registra la recepción de materiales RMP-1811631 del proveedor Innova S.A.S con base en la orden de compra ORC-1811987 en la cual se reciben todos los productos registrados en ella, por tal motivo se da por cerrada a orden de compra ORC-1811987 para que ya no esté más disponible.
+  
+
+* Se registra la recepción de materiales RMP-1811650 del proveedorMP Computadores con base en la orden de compra ORC-1810312 y quedan pendientes por entregar algunos elementos de inventarios, por tal motivo se deja abierta la orden de compra ORC-1810312 para que esté disponible para ser usada en otra operación.
+  
+
+Observaciones
+
+Al momento de dar por cerrado el documento tomado como referencia, no se
+volverá a cargar o estar visible en el seleccionador para otras operaciones.  
+  
+El documento referencia se puede dejar abierto, en caso de no recibir por
+parte del proveedor todos los productos registrados en él, con el fin de poder
+cargar esta referencia en una nueva operación.  
+  
+Si en la operación no se cargó ningún documento como referencia no es
+necesario usar este botón.  
+  
+Es muy importante hacer el cierre de los documentos tomados como referencia
+para que no queden como pendientes estando ya usados en otra operación.  
+  
+El clierre de documentos también se puede hacer a través de la operación de
+Cierre de documentos.  
+  
+Es posible visualizar los documentos cerrados en los exploradores de
+inventarios plus
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver:**\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Referencia\].**
+
+---
+
+# Referencia
+
+Seleccione el documento de la recepción de materiales, registrada
+anteriormente, que se tomará como base para el registro de la devolución de
+materiales.  
+
+Ejemplo
+
+  
+
+Se registra la rcepción de materiales RMP-18116012 del proveedor Provee Más
+Ltda. de 5 computadores todo en uno, los cuales se solicitaron mediante orden
+de compra ORC-18102685, en este caso en el campo referencia se indica el
+número de la orden de comora ORC-18102685 para que carguen los elementos de
+inventario.  
+
+Observaciones
+
+Es posible cargar varios documentos como referencia para el registro de la
+recepción de materiales.
+
+La referencia carga en la recepción de materiales los productos o servicios
+según el número de documento indicado. Este campo permite hacer trazabilidad
+para conocer los documentos cerrados con otras operaciones. Se pueden
+consultar informes a traves de los exploradores de inventarios plus. Para
+acceder a los exploradores de inventarios plus ingrese a: **\[Pestaña
+Inventarios > Cinta de Opciones > Movimientos > Inventarios Plus
+\(cotizaciones, pedidos, remisiones, etc\)\]**
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura o
+requerido\) ver: **\[Configuración de la Operación > Campos de la operación >
+Datos maestros de la operación > Referencia\]**
+
+---
+
+# Valor Parcial
+
+Valor total de los elementos de inventario cargados en la recepción de
+materiales antes de impuestos y descuentos.
+
+Ejemplo
+
+Se recibe mediante recepción de materiales RMP-1811002 del proveedor
+Suministros.com los siguientes productos discriminando cantidad, valor
+unitario, descuento y valor parcial.  
+
+PRODUCTO | CANT. | VALOR UNITARIO | DCTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 |  10.00% | $ 720.000  
+Computador mini Dell | 1 | $ 780.000 |  10.00% | $ 702.000  
+Computador todo en uno | 1 | $ 1.050.000 |  10.00% | $ 945.000  
+**Subtotal Valor Parcial** | **$ 2.630.000**  
+  
+
+Observaciones
+
+Este campo corresponde a la sumatoria del valor parcial de cada elemento de
+inventario cargado en la recepción de materiales antes de aplicar descuentos e
+impuestos.  
+  
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los datos registrados en la operación.
+
+---
+
+# Valor Descuento
+
+Valor total de los descuentos otorgados por el proveedor por cada elememento
+de inventario cargado en la recepción de materiales
+
+Ejemplo
+
+Se recibe mediante recepción de materiales RMP-1811658 del proveedor Alfa
+Equipos Ltda. los siguientes productos discriminando producto, cantidad, valor
+unitario, % de descuento, y valor parcial.
+
+PRODUCTO | CANTIDAD | VALOR UNITARIO | DESCUENTO. | VALOR PARCIAL  
+---|---|---|---|---  
+Computador mini Hp | 1 | $ 800.000 |  10.00% | $ 720.000  
+Computador mini Dell | 1 | $ 780.000 |  10.00% | $ 702.000  
+Computador todo en uno | 1 | $ 1.050.000 |  10.00% | $ 945.000  
+Total Descuento |  |  |  $ 263.000 |   
+  
+
+Observaciones
+
+Este campo no es modificable por el usuario y se actualiza automáticamente con
+los registros realizados en la operación.
+
+---
+
+# Transportador
+
+Código del tercero \(transportador\) quien realizó la entrega de los productos
+recibidos por parte del proveedor mediante la recepción de materiales.
+
+Ejemplo
+
+* Se registra la recepcion de materiales RMP-1811301 del proveedor Alfa Equipos Ltda. quien se encuentra ubicado en la ciudad de Bogotá por 10 unidades del producto Computador Todo en Uno, el envío se realiza por medio de la empresa transportadora Servientrega.  
+En el campo transportador se indica el código de la empresa **"Servientrega"**
+
+  
+
+* Se registra la recepción de materiales RMP-1811001 del proveedor Suministros.com quien se encuentra en la ciudad de Manizales por 5 unidades del producto Impresora de inyección, la entrega del producto lo realiza directamente el proveedor por medio del empleado Camilo Ruiz.  
+En el campo transportador se indica el código del empleado **"Camilo Ruiz"** o
+el código de identificación del proveedor.
+
+Observaciones
+
+Para seleccionar el transportador en la recepción de materiales, éste debe
+estar creado en el catálogo de terceros de la empresa.  
+  
+Si las entregas de los productos siempre las realiza el mismo transportador,
+es posible asignar un transportador por defecto por medio de la configuración
+de este campo en la operación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Datos maestros de la operación > Transportador\]**
+
+---
+
+#  Series/Lotes \(Ctrl+F2\)
+
+Registra información de seguimiento para el elemento de inventario en el
+renglón \(series/lotes, fechas de vencimiento, proveedor, etc.\).
+
+Ejemplo
+
+La Comercializadora de medicamentos Comedic, registra para cada uno de sus
+elementos de inventario el número del lote del fabricante, con la respectiva
+fecha de fabricación, de vencimiento y las cantidades recibidas por cada lote.  
+  
+Se recibe por parte del proveedor Su Comercial Droguería, 10 unidades del
+producto Gotas Oftálmicas Oftal, mediante la recepción de materiales
+RMP-1811568, indicando en la operación el lote, y las respectivas unidades
+recibidas del proveedr por cada lote:  
+  
+PRODUCTO | LOTE | CANTIDAD  
+---|---|---  
+Oftal | L-171215 | 3  
+Oftal | L-180103 | 7  
+  
+Observaciones
+
+Este botón solo se activa cuando en la operación se ubica el cursor sobre un
+elemento de inventario que esté configurado para el manejo de series/lotes.  
+  
+El manejo de series y lotes se configura directamente en el grupo de
+inventario.  
+  
+La información indicada por medio de este botón no se visualiza en la
+operación o en el documento impreso, solo permite realizar control.  
+  
+Se recomienda que se realice la trazabilidad de series y lotes tanto en los
+ingresos de los elementos de inventario \(Recepción, compras\) como en las
+salidas \(Remisión, venta\).
+
+Configuración
+
+Para configurar el manejo de series/lotes a los grupos de inventario ver:
+**\[Pestaña inventarios > Catálogos > Grupos inv. > Modificar > Pestaña
+General > Meneja series/lotes\].**
+
+---
+
+# Tipo
+
+Especificación o clasificación especial dada al producto.
+
+Ejemplo
+
+La empresa Comercial de alimentos, entre sus productos comercializa huevos, y
+debe especificar su tipo en las operaciones, así:  
+Producto | Tipo  
+---|---  
+Huevo blanco | A  
+Huevo blanco | AA  
+Huevo blanco | Extra  
+  
+Observaciones
+
+Este campo es de libre uso y definición del usuario.  
+  
+Asignar en la operación un tipo al produto, evita que se deba crear en el
+catálogo de elementos de inventario, un producto por cada especificación que
+se necesite.  
+  
+La especificación dada al producto en esta columna estará visible en los
+exploradores de inventarios plus.
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), entre por: **\[Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > Tipo\]**
+
+---
+
+#  Observaciones para la recepción de materiales
+
+Indique las observaciones que aparecen en la recepción de matriales impresa o
+algún otro documento que se imprima a partir de esta operación.
+
+Ejemplo
+
+Se recibe mercancia, queda sujeta a revisión del estado, si se presentan
+daños, esta será devuelta en los siguientes 3 días previos a la recepción de
+los productos.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+El catálogo de observaciones permite crear observaciones en las cuales el
+usuario puede complementar información de los productos recibidos.  
+  
+Se pueden crear tantas observaciones como se requieran con la información que
+se desee visualizar en el documento, ejemplo:
+
+* Condiciones sobre la recepción de los productos.
+* Información sobre de devoluciones.
+* Formas de pago.
+* Recomendaciones técnicas.
+
+Configuración
+
+Para crear o modificar observaciones ver: **\[Pestaña inventarios > Cinta de
+opciones > Otros > Observaciones.\]**
+
+---
+
+#  Cargar Encabezado
+
+Carga en la recepción de materiales observaciones previamente creadas en el
+catálogo de observaciones.
+
+Ejemplo
+
+Se puede crear una observación estandar para el encabezado de la observación:  
+Apreciado _PROVEEDOR Alfa Equipos Ltda._  
+Los productos recibidos mediante esta recepción quedan sujetos a la revisión
+de su estado, si se encuentran daños o averías, estas seráninformadas a
+ustedes antes de 3 días previos a la recepción de los productos.
+
+Observaciones
+
+Las observaciones son de libre uso y definición del usuario, estas pueden ser
+escritas o cargadas directamente desde el catálogo de observaciones.  
+  
+Es posible configurar el sistema para que tome los datos del proveedor, así la
+observación es personalizada.  
+  
+La información de estas observaciones se verá reflejada al visualizar o
+imprimir el documento.  
+  
+Se pueden estandarizar observaciones como saludo, despedida y comentarios que
+pueden ser comunes para múltiples proveedores.
+
+Configuración
+
+Para acceder al catálogo de observaciones ver: **\[Pestaña Inventarios > Cinta
+de opciones > Observaciones\]**
+
+---
+
+# Unidad
+
+Medida general utilizada para discriminar la cantidad del producto en las
+operaciones.
+
+Ejemplo
+
+* En una carnicería manejan la carne por kilos, por lo tanto la unidad de medida es:**Kg**
+* En una ferretería venden los tubos de pvc por metros, por lo tanto la unidad de medida es: **Mts**
+* Una empresa de servicios ofrece a sus clientes capacitaciones por horas, por lo tanto la unidad de medida es: **Hora**
+
+Observaciones
+
+Las cantidades de los productos que se muestran en los diferentes informes y
+reportes de inventario son basados en esta unidad.  
+  
+La unidad de medida se debe configurar en cada uno de los elementos de
+inventario.  
+  
+Este campo no es modificable por el usuario en la opereación.
+
+Configuración
+
+Para configurar la funcionalidad de este campo como visible, ver: **\[Menú
+Operación > Configurar operación > Campos de la operación > Configuración de
+columnas en orden de compra > Unidad\]**
+
+---
+
+# Cantidad
+
+Número de unidades del elemento de inventario recibidas mediante la recepción
+de materiaes.
+
+Ejemplo
+
+Se recibe mediante recepción de materiales RMP-181135 por parte del proveedor
+Redes y PC Ltda. los siguientes productos:
+
+CÓDIGO | PRODUCTO | CANTIDAD  
+---|---|---  
+COMHP001 | Computador mini Hp | 3  
+COMDELL002 | Computador mini Dell | 2  
+COMTD003 | Computador todo en uno | 2  
+  
+Al momento de registrar la recepción de materiales, en este campo se indica el
+número de unidades recibidas por cada elemento de inventario.  
+  
+
+Observaciones
+
+La cantidad indicada en este campo será cargada en otra operación en la cual
+se tome como referencia esta recepción de materiales.  
+  
+Este campo es requerido en la operación, es decir que su diligenciamiento es
+obligatorio para procesar la operación.
+
+---
+
+# Precio
+
+Valor de compra por unidad que ha sido dado por el proveedor a cada producto
+
+Ejemplo
+
+Se recibe por parte del proveedor Redes y PC Ltda. los siguientes productos y se registran mediante recepción de materiales RMP-180714:  Producto | Precio  
+---|---  
+Lector de memoria | $ 20.000  
+Memoria USB 8GB | $ 18.000  
+  
+Observaciones
+
+El sistema sugiere el valor de compra cuando anteriormente ya se han
+registrado recepciones o compras del producto indicado en el renglón, o carga
+el valor de compra indicado para el elemento de inventario en el documento
+tomado como referencia para el registro de la recepción de materiales.  
+  
+También es posible indicar de forma manual el precio de cada elemento de
+inventario en la operación, para conocer como hacerlo ver **\[Menú Operación >
+Opciones > Registrar precio.\]**  
+  
+El precio indicado a cada elemento de inventario en la recepción de
+materiales, será cargado en la operación de compra en la cual se llame como
+referencia la recepción de materiales.
+
+---
+
+# % desc.
+
+Porcentaje de descuento otorgado por el proveedor al elemento de inventario
+cargado en el renglón.
+
+Ejemplo
+
+Se registra recepción de materiales RMP-1811326 por parte del proveedor Alfa Equipos Ltda. y otorgó descuento por temporada escolar en algunos de los productos:  Producto | Precio | Descuento  
+---|---|---  
+Computador Todo en Uno | $ 700.000 | 10 %  
+Minitorres genérica | $ 300.000 | 7 %  
+  
+Observaciones
+
+Este descuento puede ser indicado de forma manual por el usuario.  
+  
+Registrar el descuento en la recepción de materiales, permite conocer los
+beneficios otorgados a la empresa por parte del proveedor y se verán
+reflejados al momento de recibir la respectiva factura de compra.  
+  
+Es posible generar informes, reportes y exploradores para comparar los
+descuentos otorgados para un mismo producto por parte de diferentes
+proveedores y tomar decisiones de compra.  
+  
+Este descuento será cargado en otra operación en la cual se tome como
+documento referencia la recepción de materiales
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Menú Operación > Configurar operación > Campos de
+la operación > Configuración de columnas en orden de compra > % desc.\]**
+
+---
+
+# Valor compra
+
+Valor total de las unidades del elemento de inventario cargado en el renglón.
+
+Ejemplo
+
+Se recibe por parte del proveedor Alfa Equipos Ltda. los siguientes productos
+y se registran mediante recepción de materiales RMP-1811265:  
+PRODUCTO | PRECIO | CANT. | VALOR COMPRA  
+---|---|---|---  
+Computador Todo en Uno | $ 875.000 | 1 | $ 875.000  
+Computador mini Dell | $ 630.000 | 1 | $ 630.000  
+Minitorre Genérica | $ 380.000 | 1 | $ 380.000  
+  
+
+Observaciones
+
+Este valor es el producto de las cantidades recibidas por el proveedor
+mediante la recepciónd e materiales, por el valor unitario.  
+  
+Este valor también puede ser indicado de forma manual por el usuario, así el
+sistema calcula de forma automática el valor unitario del mismo. Para indicar
+el valor total del elemento de inventario de forma manual ver **\[Operación
+Remisión al cliente > Opciones > Registrar valores totales.\]**
+
+---
+
+# Tipo documento
+
+Seleccione en cada renglón el tipo de documento de soporte de los documentos a
+cerrar.
+
+Ejemplo
+
+* Orden de compra al proveedor
+* Pedido de un cliente
+* Recepción de materiales
+* Remisión al cliente
+
+Observaciones
+
+Se puede seleccionar un tipo de documento de soporte por renglón.  
+  
+En la misma operación se pueden cerrar diferentes tipos de documento de
+soporte.  
+  
+Este campo es requerido para el registro de la operación.
+
+---
+
+# Referencia
+
+Código del documento a cerrar.
+
+Ejemplo
+
+* ORC-1802321
+* PED-1802134
+* RMP-1802114
+* RMC-1802456
+
+Observaciones
+
+Se puede seleccionar un código de referencia por renglón.  
+  
+En la misma operación se pueden seleccionar diferentes códigos de referencias
+a cerrar.  
+  
+Este campo es requerido para el registro de la operación.
+
+---
+
+# Observaciones
+
+Permite registrar una observación para el cierre del documento.
+
+Ejemplo
+
+Se cierra la cotización al cliente ya que se decidió por la cotización
+CTC-1802345.  
+
+Observaciones
+
+Las observaciones para el cierre del documento son de libre uso y definición
+del usuario
+
+Configuración
+
+Para configurar la funcionalidad de este campo \(visible, solo lectura,
+requerido, etc.\), ver: **\[Operación > Configurar operación > Campos de la
+operación > Configuración de columnas > Obeservación\]**
+
+---
+
+# Acerca de ventana
+
+##  OPERACIÓN DE CIERRE DE DOCUMENTOS
+
+##  Objetivo
+
+La operación de cierre de documentos permite cerrar los documentos como
+cotizaciones, pedidos de clientes, remisión de productos, órdenes de compra
+entre otros, que no han sido tomados como documentos referencia para el
+registro de operaciones de compra y venta.  
+  
+Adicionalmente permite cerrar aquellos documentos que, aunque se tomaron como
+referencia para dichas operaciones no fueron cerrados en su momento.  
+  
+La operación de cierre de documentos permite agilizar la selección de
+documentos relacionados con el cliente o con el proveedor, evitando así cargar
+en el listado aquellos documentos que ya no se encuentren vigentes.  
+  
+Operaciones como la orden de compra al proveedor o el pedido de un cliente
+afectan directamente el informe de inventario de disponibilidad, al cerrar los
+documentos que ya no serán utilizados, este informe permitirá obtener
+información más real acerca de las cantidades disponibles en bodega.  
+  
+Esta operación no genera movimiento contable ni movimiento de inventarios.
+
+## Ejemplo de información a registrar
+
+El registro de la operación de cierre de documentos es muy sencilla, basta con
+indicar el tipo de documento a cerrar \(cotización al cliente, orden de
+compra, etc.\), indicar la referencia del tipo de documento a cerrar y
+observaciones, en la cuales se puede indicar el motivo del cierre del
+documento.  
+
+## Secciones
+
+Explicación de las secciones en la operación.  
+
+## Sección encabezado de la operación
+
+En el encabezado de la operación de cierre de documento es posible seleccionar
+un documento especializado para el soporte de la operación y es el documento
+Nota de eventos, este tipo de documento se puede definir por defecto, y el
+sistema automáticamente asignará el consecutivo correspondiente según su
+configuración.  
+  
+
+## Sección cerrar documentos
+
+La operación de cierre de documentos solo cuenta con un paso, en el cual se
+registra la información del encabezado, se selecciona por cada renglón el tipo
+de documento que se cerrará, por cada renglón dependiendo del tipo de
+documento se selecciona una referencia y se registra para cada uno de ellos
+una observación.
+
+---
+
+# Acerca de módulo
+
+## INVENTARIOS PLUS
+
+  
+
+## Explicación conceptual
+
+El módulo de inventarios plus, permite sistematizar, agilizar, controlar y
+realizar seguimiento a los procesos comerciales, automatizando procesos
+dirigidos a los clientes y a los proveedores.  
+  
+A través del registro de las diferentes operaciones se puede realizar un
+control estricto del inventario físico y proyectado de la empresa, conociendo
+en tiempo real las existencias con las cuales dispone la empresa y las
+existentes en bodega.  
+  
+
+## Tipos de inventario
+
+ContaPyme® a través de las operaciones que se registren, bien sean de
+inventarios, compras, facturación o de las operaciones del módulo de
+inventarios plus, afecta tres tipos de inventarios, los cuales son: Inventario
+contable, inventario físico e inventario disponible.  
+
+Inventario contable
+
+El inventario contable son las existencias registradas en la contabilidad y
+que se reflejan en las respectivas cuentas de inventario.  
+  
+Corresponde a todas las entradas y salidas registradas y contabilizadas por
+medio de las siguientes operaciones:  
+
+  * Compras
+  * Embodegamientos
+  * Ventas
+  * Consumos
+  * Ajustes
+  * Traslados
+
+Inventario físico
+
+El inventario físico son las existencias reales que tiene la empresa, aquellas
+que se pueden contar físicamente en bodega.  
+  
+El inventarío físico corresponde a la suma del inventario contable más las
+recepciones de materiales que se han recibido pero que aún no se han
+registrado en la contabilidad con la factura de compra menos las remisiones
+enviadas al cliente pero que aún no han sido facturadas por parte de la
+empresa.  
+  
+Este inventario es afectado por el registro de las siguientes operaciones:  
+
+  * Remisión al cliente
+  * Recepción de materiales
+
+Inventario disponible
+
+El inventario disponible son las existencias con las cuales va a contar la
+empresa a una fechad determinada.  
+  
+El inventario disponible corresponde al inventario físico más las entradas
+programadas en órdenes de compra y órdenes de producción, menos las salidas
+programadas mediante los pedidos de los clientes.  
+
+  
+
+Ejemplo
+
+Se tiene registrado en la contabilidad 10 unidades del producto Computador
+Todo en Uno, se envía mediante remisión RMC-18036548 5 unidades al cliente
+Sistemas y Tecnología y se solicita mediante orden de compra al proveedor
+Computecno 20 unidades del mismo producto, quedando los inventarios de la
+siguiente manera:  
+Computador Todo en Uno  
+---  
+| Inv. Contable | Inv. Físico | Inv. Disponible  
+| 15 | 15 | 15  
+Remisión RMC-18036548 |  | -5 | -5  
+Orden de compra ORC-18031401 |  |  | 20  
+** Total | 15 | 10 | 30 **  
+  
+De esta forma una vez se registre la respectiva factura de venta de los
+productos enviados mediante remisión, y la factura de compra de los productos
+solicitados en la orden de compra al proveedor, los tres inventarios, quedarán
+cuadrados con las mismas cantidades.
+
+  
+  
+
+## Referenciación o cruce de documentos
+
+Referenciar un documento al registrar una operación, es tomar dicho documento
+como base para el registro de la operación, esto nos lleva al cruce de
+documentos, lo cual permite establecer una relación entre ellos creando una
+trazabilidad.  
+  
+La trazabilidad permite al usuario conocer la historia de una operación o
+documento, es decir, conocer con que otros documentos ha tenido relación la
+operación seleccionada.  
+  
+
+Ejemplo
+
+  * Se registra la cotización CTC-18031245 al cliente Sistemas y tecnología.
+  * El cliente acepta esta cotización y se registra el Pedido del cliente PED-18031548, tomando como referencia la cotización CTC-18031245.
+  * Se envía al cliente los productos solicitados mediante la remisión RMC-18030236, puesto que la factura se enviará al final el mes, esta remisión se registra tomando como documento referencia el pedido PED-18031548.
+  * A final del mes se registra la factura de venta al cliente FV-03265 por los productos enviados y se toma como referencia la remisión enviada RMC-18030236.
+
+  
+De esta forma se establece la relación entre todos los documentos generados al
+cliente Sistemas y tecnología.  
+![acermod1.jpg](https://www.contapyme.com/ayudascontapyme/ayudasmasinfo/ayudas/090%20IP/acermod1.jpg)  
+
+## Relación con otros módulos
+
+## Inventarios
+
+El módulo de inventarios plus guarda estrecha relación con el módulo de
+inventarios, compras, facturación y punto de venta puesto que es este el cual
+le suministra información de los elementos de inventario sobre los cuales se
+registran las operaciones del módulo de inventarios plus, afectando las
+existencias de dichos elementos en los diferentes tipos de inventario.  
+  
+Adicionalmente es posible registrar Facturas de compra y facturas de venta
+\(operaciones del módulo de Inventarios, compras y facturación\) basadas en
+operaciones como Orden de compra, Recepción de materiales, Cotización, Pedido
+de un cliente, Remisión al cliente \(operaciones del módulo de inventarios
+plus\).
+
+  
+
+## Contabilidad
+
+Las operaciones del módulo de inventarios plus, no generan movimiento
+contable, esto significa que no afectan el módulo de contabilidad.  
+Solo afectan este módulo cuando en operaciones como la Orden de compra al
+proveedor o un Pedido de un cliente, se registre un anticipo de dinero.
+
+  
+
+## Cartera y proveedores
+
+Las operaciones del módulo de inventarios plus, no afectan el módulo de
+cartera y proveedores, este módulo solo se afecta cuando en operaciones como
+la Orden de compra al proveedor o un Pedido de un cliente, se registre un
+anticipo de dinero, creando así una cuenta por cobrar al proveedor o una
+cuenta por pagar al cliente.
+
+  
+
+## Costos de producción
+
+El módulo de costos de producción es afectado por operaciones del módulo de
+inventarios plus cuando se registra una orden de producción basada en un
+pedido de un cliente.
+
+  
+
+## Operaciones que incluye el módulo
+
+El módulo de inventarios plus contiene una serie de operaciones que están
+dirigidas al proceso comercial con los clientes, otra serie de operaciones
+dirigidas al proceso comercial con los proveedores y otras operaciones que son
+complementarias.  
+  
+
+## Operaciones dirigidas a los clientes
+
+Estas operaciones permiten automatizar transacciones con los clientes,
+permitiendo realizar un control al proceso comercial con ellos.  
+  
+Las operaciones del módulo de inventarios plus dirigidas a los clientes son:  
+
+  * Cotización al cliente
+  * Pedido de un cliente
+  * Remisión al cliente 
+  * Devolución de productos remitidos
+
+Cotización al cliente
+
+La operación de cotización al cliente, permite presentar a los mismos clientes
+de la empresa o a los interesados, los productos o servicios que se prestan,
+indicando el respectivo precio, descuentos a aplicar, formas de pago, entre
+otras.  
+
+Pedido de un cliente
+
+La operación de pedido de un cliente, permite registrar en el sistema una
+solicitud por parte del tercero de envío de los productos o la prestación de
+servicios de la empresa que ya han sido presentados previamente al cliente o a
+un interesado.  
+
+Remisión al cliente
+
+La remisión al cliente, permite registrar la salida de los productos de bodega
+cuando aún no se ha registrado la factura de venta para ser enviada al cliente
+junto con los productos. Adicionalmente sirve como comprobante de recepción de
+dichos productos por parte del cliente.  
+
+Devolución de productos remitidos
+
+La devolución de productos remitidos, permite registrar nuevamente el ingreso
+a bodega de los productos devueltos total o parcialmente por el cliente y que
+se habían enviado mediante remisión.  
+
+  
+  
+
+## Operaciones dirigidas a los proveedores
+
+Estas operaciones permiten automatizar transacciones con los proveedores,
+permitiendo realizar un control al proceso comercial con ellos.  
+  
+Las operaciones del módulo de inventarios plus dirigidas a los proveedores
+son:  
+
+  * Orden de compra al proveedor
+  * Recepción de materiales
+  * Devolución de materiales recibidos
+
+Orden de compra al proveedor
+
+Una orden de compra es un documento que emite la empresa, en el cual realiza
+de forma automatizada las solicitudes de envío de productos a sus proveedores.  
+
+Recepción de materiales
+
+La operación de recepción de materiales permite registrar en el sistema el
+ingreso de las mercancías enviadas por los proveedores, cuando aún no se ha
+recibido la respectiva factura de compra.  
+
+Devolución de materiales recibidos
+
+La operación de devolución de materiales recibidos, permite registrar la
+salida de bodega de productos recibidos mediante recepción de materiales y que
+serán devueltos al proveedor, que a consideración de la empresa no cuentan con
+las condiciones deseadas para su venta o uso.  
+
+  
+  
+
+## Operaciones complementarias
+
+El módulo de inventarios plus cuenta con dos operaciones complementarias que
+son de uso interno de la empresa, es decir no están dirigidas ni a los
+clientes ni a los proveedores.  
+  
+Las operaciones complementarias del módulo de inventarios plus:  
+
+  * Requisición interna
+  * Cierre de documentos
+
+Requisición interna
+
+La operación de requisición interna, permite listar suministros, servicios o
+materia prima solicitada por los empleados para la realización de un trabajo o
+la realización de un proyecto específico.
+
+Cierre de documentos
+
+La operación de cierre de documentos permite cerrar los documentos como
+cotizaciones, pedidos de clientes, remisión de productos, órdenes de compra
+entre otros, que no han sido tomados como documentos referencia para el
+registro de operaciones de compra y venta.  
+Adicionalmente permite cerrar aquellos documentos que, aunque se tomaron como
+referencia para dichas operaciones no fueron cerrados en su momento.  
+
+  
+
+## Informes, consultas y exploradores del módulo
+
+El módulo de inventarios plus, cuenta con informes que permiten conocer el
+estado de cada uno de los inventarios, mediante la asignación de alarmas tipo
+semáforo se puede definir los días de plazo que tendrá cada documento para
+controlar su vencimiento.  
+  
+Adicionalmente cuenta con informes en consulta y exploradores que permiten
+revisar el movimiento de cada documento, su trazabilidad, agrupando, filtrando
+y totalizando por cualquier variable.  
+  
+
+## Requisitos para funcionamiento del módulo
+
+El módulo de inventarios plus para su funcionamiento requiere del módulo de
+inventarios, compras, facturación y punto de venta, pues es en éste en el cual
+se realizan las configuraciones necesarias para el control de los elementos de
+inventario: bodegas, grupos de inventario y elementos de inventario.
+
+---
+
+[bad old link](</foobar-0.1.tar.gz#md5=1__bad_md5___>)
+
+---
+
+[foobar-0.1.tar.gz](</foobar-0.1.tar.gz#md5=0_correct_md5>)  
+[external homepage](<../../external.html>)
+
+---
+
+MIT License
+
+Copyright (c) 2018 - 2025 Isaac Muse <isaacmuse@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
