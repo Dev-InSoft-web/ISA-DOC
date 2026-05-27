@@ -462,7 +462,6 @@
          <FlexLayout items="center" slot="helperRow" let:node>
             {#if node.kind === "column"}
                <Text color="neutral" lines={1}><code>{node.colType || "—"}</code></Text>
-               {#if node.nullable === "NOT NULL"}<span class="tag tag-nn">NN</span>{/if}
                {#if isPk(node)}<span class="tag tag-pk">PK</span>{/if}
             {/if}
          </FlexLayout>
