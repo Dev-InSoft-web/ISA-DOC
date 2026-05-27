@@ -28,12 +28,41 @@ interface OpenAIItemsList {
 //   3. Lee los mensajes calificados (MENSAJESCALIFICADOS) y el tiquete
 //      asociado (TIQUETESCONVERSACION) de la BD AYUDASCP_IA.
 //   4. Devuelve { conversacion, mensajesOpenAI, mensajesCalificados, tiquete }.
-export const GET: APIRoute = async ({ params }) => {
+//
+// La BD física se resuelve desde `?db=` (alias `prod`/`staging` o nombre
+// exacto). Si no se envía, se usa la BD por defecto del pool
+// (`paty_namedb`).
+const DB_ALIASES: Record<string, string> = {
+	prod: "AYUDASCP_IA",
+	produccion: "AYUDASCP_IA",
+	staging: "AYUDASCP_IA_STAGING",
+	stg: "AYUDASCP_IA_STAGING",
+};
+const DB_NAME_RE = /^[A-Za-z_][A-Za-z0-9_]{0,63}$/;
+
+function resolveDbName(raw: string | null): { name: string } | { error: string } | { none: true } {
+	const v = (raw ?? "").trim();
+	if (!v) return { none: true };
+	const alias = DB_ALIASES[v.toLowerCase()];
+	const name = alias ?? v;
+	if (!DB_NAME_RE.test(name)) return { error: `Nombre de BD inválido: ${v}` };
+	return { name };
+}
+
+function qualify(db: string | null, table: string): string {
+	return db ? `[${db}].dbo.${table}` : table;
+}
+
+export const GET: APIRoute = async ({ params, url }) => {
 	const idRaw = params.id ?? "";
 	const iconversacion = Number(idRaw);
 	if (!Number.isInteger(iconversacion) || iconversacion <= 0) {
 		return json({ ok: false, error: "iconversacion inválido" }, 400);
 	}
+
+	const dbResolved = resolveDbName(url.searchParams.get("db"));
+	if ("error" in dbResolved) return json({ ok: false, error: dbResolved.error }, 400);
+	const dbName: string | null = "none" in dbResolved ? null : dbResolved.name;
 
 	const warnings: string[] = [];
 	let conversacion: Record<string, unknown> | null = null;
@@ -46,7 +75,7 @@ export const GET: APIRoute = async ({ params }) => {
 		const r1 = await pool
 			.request()
 			.input("id", iconversacion)
-			.query("SELECT TOP (1) * FROM CONVERSACIONES WHERE iconversacion = @id");
+			.query(`SELECT TOP (1) * FROM ${qualify(dbName, "CONVERSACIONES")} WHERE iconversacion = @id`);
 		conversacion = (r1.recordset?.[0] as Record<string, unknown>) ?? null;
 	} catch (err) {
 		return json({ ok: false, error: `BD CONVERSACIONES: ${errMsg(err)}` }, 500);
@@ -54,7 +83,7 @@ export const GET: APIRoute = async ({ params }) => {
 
 	if (!conversacion) {
 		return json(
-			{ ok: false, error: `No existe la conversación ${iconversacion} en CONVERSACIONES.` },
+			{ ok: false, error: `No existe la conversación ${iconversacion} en ${dbName ?? "BD por defecto"}.CONVERSACIONES.` },
 			404,
 		);
 	}
@@ -63,10 +92,13 @@ export const GET: APIRoute = async ({ params }) => {
 
 	const [msgsRes, tickRes, openaiRes] = await Promise.allSettled([
 		queryRows(
-			"SELECT * FROM MENSAJESCALIFICADOS WHERE iconversacion = @id ORDER BY imensaje",
+			`SELECT * FROM ${qualify(dbName, "MENSAJESCALIFICADOS")} WHERE iconversacion = @id ORDER BY imensaje`,
 			iconversacion,
 		),
-		queryRows("SELECT * FROM TIQUETESCONVERSACION WHERE iconversacion = @id", iconversacion),
+		queryRows(
+			`SELECT * FROM ${qualify(dbName, "TIQUETESCONVERSACION")} WHERE iconversacion = @id`,
+			iconversacion,
+		),
 		hilo ? obtenerMensajesDeThread(hilo) : Promise.resolve<MensajeOpenAI[]>([]),
 	]);
 
@@ -82,6 +114,7 @@ export const GET: APIRoute = async ({ params }) => {
 	return json({
 		ok: true,
 		iconversacion,
+		db: dbName,
 		conversacion,
 		mensajesOpenAI,
 		mensajesCalificados,

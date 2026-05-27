@@ -451,6 +451,7 @@ const data = await r.json();
 	type SqlRow = Record<string, unknown>;
 
 	let convId: number = 2864;
+	let convDb: "prod" | "staging" = "prod";
 	let convLoading: boolean = false;
 	let convError: string = "";
 	let convWarnings: string[] = [];
@@ -505,7 +506,7 @@ const data = await r.json();
 		}
 		convLoading = true;
 		try {
-			const r = await fetch(`/api/patyia/conversacion/${convId}`);
+			const r = await fetch(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(convDb)}`);
 			const data = (await r.json()) as ConversacionResp;
 			if (!r.ok || data.ok === false) {
 				convError = errorToString(data.error) || `HTTP ${r.status}`;
@@ -878,8 +879,14 @@ const data = await r.json();
 						<ButtonIconify icon="mdi:information-outline" onClick={() => (infoOpen = true)} title="¿Qué hace cada input?" />
 					</header>
 
-					<GridLayout cells={3} items="end">
+					<GridLayout cells={4} items="end">
 						<InputNumber bind:value={convId} label="iconversacion" required={true} />
+						<label class="db-label">Base de datos
+							<select bind:value={convDb} disabled={convLoading} class="db-select">
+								<option value="prod">AYUDASCP_IA (prod)</option>
+								<option value="staging">AYUDASCP_IA_STAGING</option>
+							</select>
+						</label>
 						<Button onClick={cargarConversacionBD} disabled={convLoading} loading={convLoading} style="width: fit-content;">Cargar</Button>
 						<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarConvBD} disabled={convLoading} title="Limpiar" />
 					</GridLayout>
@@ -1164,6 +1171,21 @@ const data = await r.json();
 		border: 1px solid rgba(251, 191, 36, 0.25);
 		border-radius: 4px;
 		padding: 0.4rem 0.6rem;
+	}
+	.db-label {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		font-size: 0.82rem;
+		opacity: 0.9;
+	}
+	.db-select {
+		font-size: 0.85rem;
+		padding: 0.35rem 0.5rem;
+		background: rgba(255,255,255,0.04);
+		color: var(--is-color, #e5e7eb);
+		border: 1px solid rgba(255,255,255,0.15);
+		border-radius: 4px;
 	}
 	.sub {
 		font-size: 0.75rem;
