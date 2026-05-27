@@ -152,14 +152,12 @@ export async function buildBodyTK1429262(): Promise<string> {
 		<th style="${TH_STYLE}">Después (propuesta)</th>
 		</tr></thead>
 		<tbody>
-		<tr><td style="${TD_STYLE}" rowspan="4"><b>Flujo IA</b></td><td style="${TD_STYLE}">Modelo IA</td><td style="${TD_STYLE}">Un único <code>OPENAI_MODEL</code> para clasificación, extracción y respuesta final.</td><td style="${TD_STYLE}">Mapa de modelo por <code>ETAPA</code> y/o <code>TIPO_CONSULTA</code> con fallback global.</td></tr>
-		<tr><td style="${TD_STYLE}">Configuración</td><td style="${TD_STYLE}">Variables individuales en <code>local.settings.json</code>.</td><td style="${TD_STYLE}">Configuración declarativa versionable (JSON env) y, fase posterior, catálogo en BD.</td></tr>
+		<tr><td style="${TD_STYLE}" rowspan="3"><b>Flujo IA</b></td><td style="${TD_STYLE}">Modelo IA</td><td style="${TD_STYLE}">Un único <code>OPENAI_MODEL</code> para clasificación, extracción y respuesta final.</td><td style="${TD_STYLE}">Mapa de modelo por <code>TIPO_CONSULTA</code> con fallback global.</td></tr>
+		<tr><td style="${TD_STYLE}">Configuración</td><td style="${TD_STYLE}">Variables individuales en <code>local.settings.json</code>.</td><td style="${TD_STYLE}">Catálogo en BD.</td></tr>
 		<tr><td style="${TD_STYLE}">Observabilidad</td><td style="${TD_STYLE}">Se guarda <code>modelo_ia</code> final en conversación.</td><td style="${TD_STYLE}">Log por etapa: modelo elegido, tokens, latencia y tipo_consulta.</td></tr>
-		<tr><td style="${TD_STYLE}">Riesgo operativo</td><td style="${TD_STYLE}">Bajo (simple) pero sin optimización fina de costo/rendimiento.</td><td style="${TD_STYLE}">Controlado por fallback + feature flag + despliegue por fases.</td></tr>
-		<tr><td style="${TD_STYLE}" rowspan="4"><b>Base de datos</b></td><td style="${TD_STYLE}">Catálogo de recursos OpenAI</td><td style="${TD_STYLE}"><code>VECTOR_STORE</code> sólo para vector stores; prompts y modelo en <code>.env</code>.</td><td style="${TD_STYLE}"><code>RECURSO_OPENAI</code> genérico que referencia por id cualquier recurso de OpenAI (vector stores, prompts, modelos, chats, etc.) con su nombre asociado.</td></tr>
+		<tr><td style="${TD_STYLE}" rowspan="3"><b>Base de datos</b></td><td style="${TD_STYLE}">Catálogo de recursos OpenAI</td><td style="${TD_STYLE}"><code>VECTOR_STORE</code> sólo para vector stores; prompts y modelo en <code>local.settings.json</code>.</td><td style="${TD_STYLE}"><code>RECURSO_OPENAI</code> genérico que referencia por id cualquier recurso de OpenAI (vector stores, prompts, modelos, chats, etc.) con su nombre asociado.</td></tr>
 		<tr><td style="${TD_STYLE}">Tokens por mensaje</td><td style="${TD_STYLE}">No se registran; sólo <code>CONVERSACIONES.QTOKENS</code> agrega el total.</td><td style="${TD_STYLE}"><code>MENSAJE_METRICAS.TOKENS_IN</code> / <code>TOKENS_OUT</code> por turno y por etapa.</td></tr>
 		<tr><td style="${TD_STYLE}">Costo</td><td style="${TD_STYLE}">No se calcula ni estima.</td><td style="${TD_STYLE}"><code>COSTO_APROX</code> por mensaje vía regla de tres sobre la tarifa vigente.</td></tr>
-		<tr><td style="${TD_STYLE}">Utilidad del mensaje</td><td style="${TD_STYLE}">Bandera binaria, sin distinguir "no evaluado" vs "no útil".</td><td style="${TD_STYLE}"><code>UTIL TINYINT</code> tri-estado (<code>-1 / 0 / 1</code>).</td></tr>
 		</tbody>
 		</table>`,
 	);
@@ -214,7 +212,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 	<tr>
 	<td style="${TD_STYLE}"><b>Hoy</b><br>(antes del plan)</td>
 	<td style="${TD_STYLE}">Modelo único global para toda etapa de todo mensaje.</td>
-	<td style="${TD_STYLE}">Las tres etapas usan <code>gpt-5</code> (definido en <code>OPENAI_MODEL</code>).</td>
+	<td style="${TD_STYLE}">Las tres etapas usan <code>gpt-5.4</code> (definido en <code>OPENAI_MODEL</code>).</td>
 	<td style="${TD_STYLE}">Solo el <code>modelo_ia</code> final en la conversación.</td>
 	<td style="${TD_STYLE}">Editar <code>OPENAI_MODEL</code> y redeploy.</td>
 	</tr>
@@ -242,7 +240,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 	<tr>
 	<td style="${TD_STYLE}"><b>Fase 4</b></td>
 	<td style="${TD_STYLE}">Catálogo de prompts y modelos en <b>SQL</b> (<code>RECURSO_OPENAI</code>). Cada fila de prompt (con su <b>INSTRUCCION</b>) lleva ahora una columna propia con el <b>modelo OpenAI</b> a usar, de modo que el modelo se elige <i>por prompt</i> según su complejidad y ya no todos quedan en <code>gpt-5</code>.</td>
-	<td style="${TD_STYLE}">Modelos elegidos por prompt según complejidad: clasificación y extracción en <code>gpt-4o-mini</code>, respuesta tributaria compleja en <code>gpt-5</code>; un saludo o un soporte_uso bajarían a un modelo aún más liviano. Modelo y prompt se leen de BD y no de <code>.env</code>.</td>
+	<td style="${TD_STYLE}">Modelos elegidos por prompt según complejidad: clasificación y extracción en <code>gpt-4o-mini</code>, respuesta tributaria compleja en <code>gpt-5</code>; un saludo o un soporte_uso bajarían a un modelo aún más liviano. Modelo y prompt se leen de BD y no de <code>local.settings.json</code>.</td>
 	<td style="${TD_STYLE}">Una fila en <code>MENSAJE_METRICAS</code> por etapa (<code>TOKENS_IN/OUT</code>, <code>MODELO</code>, <code>ETAPA</code>, <code>COSTO_APROX</code>) más el <code>IRECURSO</code> usado por etapa.</td>
 	<td style="${TD_STYLE}"><b>Sin redeploy.</b> Cambiar la fila en <code>RECURSO_OPENAI</code> y el próximo mensaje lo toma.</td>
 	</tr>
@@ -298,9 +296,8 @@ export async function buildBodyTK1429262(): Promise<string> {
 </tr></thead>
 <tbody>
 <tr><td style="${TD_STYLE}"><code>IRECURSO</code></td><td style="${TD_STYLE}">INT PK</td><td style="${TD_STYLE}">Identificador interno.</td></tr>
-<tr><td style="${TD_STYLE}"><code>NOMBRE</code></td><td style="${TD_STYLE}">VARCHAR(80)</td><td style="${TD_STYLE}">Alias humano del recurso (páginas de OpenAI no muestran un nombre legible, este sirve para administración interna).</td></tr>
+<tr><td style="${TD_STYLE}"><code>NOMBRE</code></td><td style="${TD_STYLE}">VARCHAR(80)</td><td style="${TD_STYLE}">Label del front.</td></tr>
 <tr><td style="${TD_STYLE}"><code>TIPO</code></td><td style="${TD_STYLE}">VARCHAR(40)</td><td style="${TD_STYLE}"><code>vector_store</code>, <code>prompt</code>, <code>model</code>, <code>chat</code>, …</td></tr>
-<tr><td style="${TD_STYLE}"><code>CONTEXTO</code></td><td style="${TD_STYLE}">VARCHAR(80)</td><td style="${TD_STYLE}">Etapa o uso: <code>PR_GENERAL</code>, <code>PR_TIPO_CONSULTAS</code>, <code>PR_EXTRACTOR_CONSULTAS</code>, <code>PR_CLASIFICADOR_MODULO</code>, <code>OPENAI_MODEL</code>.</td></tr>
 <tr><td style="${TD_STYLE}"><code>VALOR</code></td><td style="${TD_STYLE}">VARCHAR(200)</td><td style="${TD_STYLE}">Identificador externo de OpenAI (id del vector store, prompt, modelo, chat, etc.).</td></tr>
 <tr><td style="${TD_STYLE}"><code>ACTIVO</code></td><td style="${TD_STYLE}">BIT</td><td style="${TD_STYLE}">Permite versionar y activar/desactivar sin borrar.</td></tr>
 </tbody>
@@ -318,23 +315,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 <tr><td style="${TD_STYLE}"><code>TOKENS_IN</code></td><td style="${TD_STYLE}">INT</td><td style="${TD_STYLE}">Tokens del prompt/input enviados a OpenAI.</td></tr>
 <tr><td style="${TD_STYLE}"><code>TOKENS_OUT</code></td><td style="${TD_STYLE}">INT</td><td style="${TD_STYLE}">Tokens generados en la respuesta.</td></tr>
 <tr><td style="${TD_STYLE}"><code>MODELO</code></td><td style="${TD_STYLE}">VARCHAR(60)</td><td style="${TD_STYLE}">Modelo efectivo usado (<code>gpt-4o-mini</code>, <code>gpt-5</code>, …).</td></tr>
-<tr><td style="${TD_STYLE}"><code>ETAPA</code></td><td style="${TD_STYLE}">VARCHAR(40)</td><td style="${TD_STYLE}"><code>clasificacion</code>, <code>extraccion</code>, <code>respuesta</code>, …</td></tr>
 <tr><td style="${TD_STYLE}"><code>COSTO_APROX</code></td><td style="${TD_STYLE}">DECIMAL(10,6)</td><td style="${TD_STYLE}">Aproximación por regla de tres sobre tarifa vigente del modelo.</td></tr>
-<tr><td style="${TD_STYLE}"><code>UTIL</code></td><td style="${TD_STYLE}">TINYINT</td><td style="${TD_STYLE}">Tri-estado de utilidad. El detalle de valores está en la siguiente tabla.</td></tr>
-</tbody>
-</table>`;
-
-	const tablaUtil = `
-<table style="${TABLE_STYLE}">
-<thead><tr>
-<th style="${TH_STYLE}">Valor</th>
-<th style="${TH_STYLE}">Significado</th>
-<th style="${TH_STYLE}">Interpretación</th>
-</tr></thead>
-<tbody>
-<tr><td style="${TD_STYLE}"><code>-1</code></td><td style="${TD_STYLE}">No útil</td><td style="${TD_STYLE}">El asesor marcó explícitamente que la respuesta no sirvió.</td></tr>
-<tr><td style="${TD_STYLE}"><code>0</code></td><td style="${TD_STYLE}">Sin peso (por defecto)</td><td style="${TD_STYLE}">No se evaluó; no debe contar como negativo.</td></tr>
-<tr><td style="${TD_STYLE}"><code>1</code></td><td style="${TD_STYLE}">Útil</td><td style="${TD_STYLE}">El asesor marcó explícitamente que la respuesta fue de utilidad.</td></tr>
 </tbody>
 </table>`;
 
@@ -350,14 +331,6 @@ export async function buildBodyTK1429262(): Promise<string> {
 		await note(
 			"mdi:counter",
 			`<b>Tabla de métricas por mensaje:</b> se requiere una tabla nueva, <code>MENSAJE_METRICAS</code>, enlazada al mensaje, con columnas <code>TOKENS_IN</code>, <code>TOKENS_OUT</code>, <code>MODELO</code>, <code>ETAPA</code> y <code>COSTO_APROX</code>. El costo es una aproximación por regla de tres sobre la tarifa vigente del modelo: el <i>pricing</i> de OpenAI no se obtiene desde una tabla normalizada, pero alcanza con mantener una referencia interna por modelo para estimar el costo de la transacción.${tablaMetricas}`,
-		),
-		await note(
-			"mdi:thumbs-up-down-outline",
-			`<b>Campo <code>UTIL</code> como tri-estado:</b> la métrica actual de utilidad se mueve a la tabla de métricas del mensaje y pasa a ser numérica (<code>TINYINT</code>) con semántica tri-estado. Así se distingue "no se evaluó" de "se evaluó como no útil".${tablaUtil}`,
-		),
-		await note(
-			"mdi:database-alert-outline",
-			`<b>Falta persistir el input:</b> hoy la BD guarda solo el <i>output</i> generado por el modelo, no el <i>input</i> enviado a OpenAI por etapa. Esto limita auditoría, depuración y re-evaluación con otros modelos. Conviene guardar también el <code>INPUT</code> (prompt efectivo o payload mínimo) junto a las métricas del mensaje.`,
 		),
 		await note(
 			"mdi:numeric",
@@ -377,7 +350,22 @@ export async function buildBodyTK1429262(): Promise<string> {
 		</div>`,
 	);
 
-	const presupuesto = `<p style="margin:0.5rem 0;">Se estima que <b>cada fase puede tomar alrededor de 1 hora</b> de implementación, por lo que el ajuste completo tomaría <b>alrededor de 4 horas</b> en el mejor de los casos en que no se presenten inconvenientes.</p>`;
+	const tablaPresupuesto = `
+<table style="${TABLE_STYLE}">
+<thead><tr>
+<th style="${TH_STYLE}">Fase</th>
+<th style="${TH_STYLE}">Trabajo principal</th>
+<th style="${TH_STYLE}">Estimación</th>
+</tr></thead>
+<tbody>
+<tr><td style="${TD_STYLE}"><b>Fase 1</b></td><td style="${TD_STYLE}">Mapa de modelo por etapa + fallback global.</td><td style="${TD_STYLE}">15 min</td></tr>
+<tr><td style="${TD_STYLE}"><b>Fase 2</b></td><td style="${TD_STYLE}">Mapa de modelos en BD (<code>tipo_consulta</code>).</td><td style="${TD_STYLE}">40 min</td></tr>
+<tr><td style="${TD_STYLE}"><b>Fase 3</b></td><td style="${TD_STYLE}">Métricas por etapa (<code>MENSAJE_METRICAS</code>).</td><td style="${TD_STYLE}">40 min</td></tr>
+<tr><td style="${TD_STYLE}"><b>Fase 4</b></td><td style="${TD_STYLE}">Cambio de tabla, ajustes y migración de información.</td><td style="${TD_STYLE}">1 h</td></tr>
+<tr><td style="${TD_STYLE}"><b>Total</b></td><td style="${TD_STYLE}">Sumatoria en el caso idóneo, sin imprevistos.</td><td style="${TD_STYLE}"><b>2 h 35 min</b></td></tr>
+</tbody>
+</table>`;
+	const presupuesto = `<p style="margin:0.5rem 0;">Estimación por fase en el caso idóneo, donde no se presenten situaciones no contempladas. La sumatoria corresponde al tiempo total proyectado.</p>${tablaPresupuesto}`;
 
 	return intro
 		+ h3Estado + estadoActual
