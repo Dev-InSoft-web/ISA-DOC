@@ -1069,7 +1069,7 @@ const data = await r.json();
 				</li>
 				<li>
 					<strong>Normalización.</strong> El endpoint devuelve cada mensaje como
-					<code>{ fecha_hora, autor: "Usuario"|"Asistente", mensaje }</code>.
+					<code>&#123; fecha_hora, autor: "Usuario"|"Asistente", mensaje, archivos &#125;</code>.
 				</li>
 				<li>
 					<strong>Mapeo en el panel.</strong> <code>aMsgVista()</code> convierte cada fila
