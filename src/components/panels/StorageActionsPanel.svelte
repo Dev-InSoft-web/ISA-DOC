@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onMount, onDestroy } from "svelte";
 	import {
 		Button,
 		ButtonIconify,
@@ -69,6 +69,22 @@
 	let busquedaFiles: string = "";
 	let cacheUpdated: string = "";
 	let descargandoTodos: boolean = false;
+	let backupProgreso: {
+		running: boolean; total: number; hecho: number; exitos: number; fallos: number;
+		currentId: string; currentFilename: string; cancelRequested: boolean;
+	} = { running: false, total: 0, hecho: 0, exitos: 0, fallos: 0, currentId: "", currentFilename: "", cancelRequested: false };
+	let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+	interface DuplicateItem { id: string; filename: string; bytes: number; path: string }
+	interface ExactGroup { hash: string; bytes: number; items: DuplicateItem[] }
+	interface SimilarGroup { key: string; items: DuplicateItem[] }
+	let dupAbierto: boolean = false;
+	let dupEscaneando: boolean = false;
+	let dupEliminando: Set<string> = new Set();
+	let dupReporte: {
+		updated: string; totalEscaneados: number; totalConHash: number;
+		exactGroups: ExactGroup[]; similarGroups: SimilarGroup[];
+	} = { updated: "", totalEscaneados: 0, totalConHash: 0, exactGroups: [], similarGroups: [] };
 	let filesPage: number = 1;
 	let filesPageSize: number = 20;
 	let filesTotal: number = 0;
@@ -190,17 +206,121 @@
 			return;
 		}
 		if (!confirm(`Descargar backup local de los ${filesTotal} archivos? Puede tardar.`)) return;
-		descargandoTodos = true;
 		try {
 			const r = await fetch("/api/patyia/openai/files/backup-all", { method: "POST" });
 			const j = await r.json();
 			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
-			toastSuccess(`Backup masivo · ${j.exitos}/${j.total} ok · ${j.fallos} fallos`);
+			descargandoTodos = true;
+			iniciarPolling();
+			toastSuccess(`Backup masivo iniciado · ${j.total} archivos`);
+		} catch (err) {
+			toastError(err instanceof Error ? err.message : String(err));
+		}
+	}
+
+	async function cancelarDescarga(): Promise<void> {
+		try {
+			const r = await fetch("/api/patyia/openai/files/backup-progress", { method: "DELETE" });
+			const j = await r.json();
+			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
+			toastSuccess("Cancelación solicitada");
+		} catch (err) {
+			toastError(err instanceof Error ? err.message : String(err));
+		}
+	}
+
+	async function consultarProgreso(): Promise<void> {
+		try {
+			const r = await fetch("/api/patyia/openai/files/backup-progress");
+			const j = await r.json();
+			if (!j.ok) return;
+			backupProgreso = {
+				running: !!j.running, total: j.total ?? 0, hecho: j.hecho ?? 0,
+				exitos: j.exitos ?? 0, fallos: j.fallos ?? 0,
+				currentId: j.currentId ?? "", currentFilename: j.currentFilename ?? "",
+				cancelRequested: !!j.cancelRequested,
+			};
+			if (backupProgreso.running) {
+				descargandoTodos = true;
+			} else if (descargandoTodos) {
+				descargandoTodos = false;
+				detenerPolling();
+				const cancelado = backupProgreso.cancelRequested && backupProgreso.hecho < backupProgreso.total;
+				if (cancelado) toastError(`Backup cancelado · ${backupProgreso.exitos}/${backupProgreso.total} ok · ${backupProgreso.fallos} fallos`);
+				else toastSuccess(`Backup completado · ${backupProgreso.exitos}/${backupProgreso.total} ok · ${backupProgreso.fallos} fallos`);
+			}
+		} catch {
+			// silencioso
+		}
+	}
+
+	function iniciarPolling(): void {
+		if (pollTimer) return;
+		pollTimer = setInterval(() => { void consultarProgreso(); }, 1000);
+	}
+	function detenerPolling(): void {
+		if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+	}
+
+	async function cargarDuplicados(): Promise<void> {
+		try {
+			const r = await fetch("/api/patyia/openai/files/duplicates");
+			const j = await r.json();
+			if (j.ok) dupReporte = {
+				updated: j.updated ?? "", totalEscaneados: j.totalEscaneados ?? 0, totalConHash: j.totalConHash ?? 0,
+				exactGroups: j.exactGroups ?? [], similarGroups: j.similarGroups ?? [],
+			};
+		} catch {
+			// silencioso
+		}
+	}
+
+	async function abrirDuplicados(): Promise<void> {
+		dupAbierto = true;
+		await cargarDuplicados();
+	}
+
+	async function escanearDuplicados(): Promise<void> {
+		dupEscaneando = true;
+		try {
+			const r = await fetch("/api/patyia/openai/files/duplicates", { method: "POST" });
+			const j = await r.json();
+			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
+			dupReporte = {
+				updated: j.updated, totalEscaneados: j.totalEscaneados, totalConHash: j.totalConHash,
+				exactGroups: j.exactGroups, similarGroups: j.similarGroups,
+			};
+			toastSuccess(`Escaneo · ${j.totalConHash}/${j.totalEscaneados} files · ${j.exactGroups.length} grupos exactos · ${j.similarGroups.length} similares`);
 		} catch (err) {
 			toastError(err instanceof Error ? err.message : String(err));
 		} finally {
-			descargandoTodos = false;
+			dupEscaneando = false;
 		}
+	}
+
+	async function eliminarDuplicado(id: string): Promise<void> {
+		if (!confirm(`Eliminar ${id} de OpenAI? (Irreversible)`)) return;
+		dupEliminando = new Set([...dupEliminando, id]);
+		try {
+			const r = await fetch(`/api/patyia/openai/files/${encodeURIComponent(id)}`, { method: "DELETE" });
+			const j = await r.json();
+			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
+			dupReporte.exactGroups = dupReporte.exactGroups.map((g) => ({ ...g, items: g.items.filter((it) => it.id !== id) })).filter((g) => g.items.length > 1);
+			dupReporte.similarGroups = dupReporte.similarGroups.map((g) => ({ ...g, items: g.items.filter((it) => it.id !== id) })).filter((g) => g.items.length > 1);
+			toastSuccess(`Eliminado ${id}`);
+		} catch (err) {
+			toastError(err instanceof Error ? err.message : String(err));
+		} finally {
+			const next = new Set(dupEliminando);
+			next.delete(id);
+			dupEliminando = next;
+		}
+	}
+
+	function formatBytes(n: number): string {
+		if (n < 1024) return `${n} B`;
+		if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+		return `${(n / 1024 / 1024).toFixed(2)} MB`;
 	}
 
 	async function cargarVS(): Promise<void> {
@@ -410,6 +530,13 @@
 		cargarFiles();
 		cargarVS();
 		cargarSkills();
+		void consultarProgreso().then(() => {
+			if (backupProgreso.running) iniciarPolling();
+		});
+	});
+
+	onDestroy(() => {
+		detenerPolling();
 	});
 </script>
 
@@ -428,10 +555,29 @@
 				<FlexLayout items="center" justify="end" class="botones-fila">
 					<ButtonIconify icon="mdi:database-arrow-down-outline" onClick={cargarFiles} disabled={filesCargando || filesRefrescando} loading={filesCargando} title="Cargar cache" />
 					<ButtonIconify icon="mdi:cloud-sync-outline" onClick={refrescarCache} disabled={filesRefrescando} loading={filesRefrescando} title="Refrescar desde OpenAI" />
-					<ButtonIconify icon="mdi:download-multiple" onClick={descargarTodos} disabled={descargandoTodos || !filesTotal} loading={descargandoTodos} title="Descargar todos (backup local)" />
+					{#if descargandoTodos}
+						<ButtonIconify icon="mdi:download-off-outline" onClick={cancelarDescarga} disabled={backupProgreso.cancelRequested} title={backupProgreso.cancelRequested ? "Cancelando…" : "Cancelar descarga en progreso"} />
+					{:else}
+						<ButtonIconify icon="mdi:download-multiple" onClick={descargarTodos} disabled={!filesTotal} title="Descargar todos (backup local)" />
+					{/if}
 					<ButtonIconify icon="mdi:cloud-upload-outline" onClick={() => (uploadAbierto = true)} title="Subir archivo" />
+					<ButtonIconify icon="mdi:content-duplicate" onClick={abrirDuplicados} title="Buscar duplicados / similares" />
 				</FlexLayout>
 			</div>
+
+			{#if descargandoTodos || backupProgreso.hecho > 0}
+				<div class="backup-progreso" class:terminado={!descargandoTodos}>
+					<div class="barra"><div class="fill" style="width: {backupProgreso.total ? (backupProgreso.hecho / backupProgreso.total * 100) : 0}%"></div></div>
+					<div class="texto">
+						<strong>{backupProgreso.hecho}</strong> / {backupProgreso.total}
+						· ok {backupProgreso.exitos} · fallos {backupProgreso.fallos}
+						{#if backupProgreso.running && backupProgreso.currentFilename}
+							· <em>{backupProgreso.currentFilename}</em>
+						{/if}
+						{#if backupProgreso.cancelRequested && backupProgreso.running} · <span class="cancelando">cancelando…</span>{/if}
+					</div>
+				</div>
+			{/if}
 
 			{#if filesError}
 				<div class="error">{filesError}</div>
@@ -643,11 +789,161 @@
 	</Modal>
 {/if}
 
+{#if dupAbierto}
+	<Modal bind:bshow={dupAbierto} onClose={() => (dupAbierto = false)} style="width: 92vw; max-width: 980px;">
+		<h3 slot="title">Duplicados y similares</h3>
+		<div class="modal-body dup-modal">
+			<FlexLayout items="center" justify="between" class="dup-toolbar">
+				<div class="dup-resumen">
+					{#if dupReporte.updated}
+						Escaneado: <strong>{dupReporte.totalConHash}</strong> / {dupReporte.totalEscaneados} files ·
+						<strong>{dupReporte.exactGroups.length}</strong> grupos exactos ·
+						<strong>{dupReporte.similarGroups.length}</strong> grupos similares
+						<span class="hint">({new Date(dupReporte.updated).toLocaleString()})</span>
+					{:else}
+						<span class="hint">Aún no se ha escaneado.</span>
+					{/if}
+				</div>
+				<Button onClick={escanearDuplicados} loading={dupEscaneando} disabled={dupEscaneando}>
+					{dupReporte.updated ? "Re-escanear" : "Escanear ahora"}
+				</Button>
+			</FlexLayout>
+
+			{#if dupReporte.exactGroups.length}
+				<h4>Duplicados exactos (hash SHA-256 idéntico)</h4>
+				<div class="dup-listado">
+					{#each dupReporte.exactGroups as g (g.hash)}
+						<div class="dup-grupo">
+							<div class="dup-grupo-head">
+								<span class="mono small">{g.hash.slice(0, 12)}…</span>
+								· {g.items.length} archivos · {formatBytes(g.bytes)}
+							</div>
+							{#each g.items as it (it.id)}
+								<div class="dup-item">
+									<span class="dup-name">{it.filename}</span>
+									<span class="mono small">{it.id}</span>
+									<ButtonIconify icon="mdi:delete-outline" onClick={() => eliminarDuplicado(it.id)} disabled={dupEliminando.has(it.id)} loading={dupEliminando.has(it.id)} title="Eliminar de OpenAI" />
+								</div>
+							{/each}
+						</div>
+					{/each}
+				</div>
+			{/if}
+
+			{#if dupReporte.similarGroups.length}
+				<h4>Posibles similares (mismo nombre normalizado, hash distinto)</h4>
+				<div class="dup-listado">
+					{#each dupReporte.similarGroups as g (g.key)}
+						<div class="dup-grupo">
+							<div class="dup-grupo-head">
+								<span class="mono small">{g.key}</span>
+								· {g.items.length} archivos
+							</div>
+							{#each g.items as it (it.id)}
+								<div class="dup-item">
+									<span class="dup-name">{it.filename}</span>
+									<span class="mono small">{it.id}</span>
+									<span class="dup-bytes">{formatBytes(it.bytes)}</span>
+									<ButtonIconify icon="mdi:delete-outline" onClick={() => eliminarDuplicado(it.id)} disabled={dupEliminando.has(it.id)} loading={dupEliminando.has(it.id)} title="Eliminar de OpenAI" />
+								</div>
+							{/each}
+						</div>
+					{/each}
+				</div>
+			{/if}
+
+			{#if dupReporte.updated && !dupReporte.exactGroups.length && !dupReporte.similarGroups.length}
+				<p class="hint">Sin duplicados ni similares detectados.</p>
+			{/if}
+		</div>
+	</Modal>
+{/if}
+
 <style>
 	.storage-panel {
 		display: flex;
 		flex-direction: column;
 		gap: 0.75rem;
+	}
+	.backup-progreso {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		padding: 0.5rem 0.75rem;
+		border: 1px solid var(--isp-border, #c2d4e8);
+		border-radius: 0.4rem;
+		background: var(--isp-bg-alt, #f3f7fb);
+		font-size: 0.85rem;
+	}
+	.backup-progreso.terminado {
+		opacity: 0.75;
+	}
+	.backup-progreso .barra {
+		width: 100%;
+		height: 0.5rem;
+		background: var(--isp-border, #d0dce8);
+		border-radius: 999px;
+		overflow: hidden;
+	}
+	.backup-progreso .fill {
+		height: 100%;
+		background: var(--isp-primary, #2b6cb0);
+		transition: width 0.4s ease;
+	}
+	.backup-progreso .texto em {
+		font-style: italic;
+		color: var(--isp-text-muted, #4a5b6e);
+	}
+	.backup-progreso .cancelando {
+		color: var(--isp-danger, #c53030);
+		font-weight: 600;
+	}
+	.dup-modal {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		max-height: 70vh;
+		overflow-y: auto;
+	}
+	.dup-toolbar {
+		gap: 0.75rem;
+	}
+	.dup-resumen {
+		font-size: 0.9rem;
+	}
+	.dup-listado {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+	.dup-grupo {
+		border: 1px solid var(--isp-border, #c2d4e8);
+		border-radius: 0.4rem;
+		padding: 0.5rem 0.75rem;
+		background: var(--isp-bg-alt, #f6f9fc);
+	}
+	.dup-grupo-head {
+		font-size: 0.85rem;
+		margin-bottom: 0.35rem;
+		color: var(--isp-text-muted, #4a5b6e);
+	}
+	.dup-item {
+		display: grid;
+		grid-template-columns: 1fr auto auto auto;
+		gap: 0.5rem;
+		align-items: center;
+		padding: 0.2rem 0;
+		border-top: 1px dashed var(--isp-border, #d0dce8);
+		font-size: 0.85rem;
+	}
+	.dup-name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.dup-bytes {
+		font-size: 0.8rem;
+		color: var(--isp-text-muted, #4a5b6e);
 	}
 	.tab-body {
 		padding: 0.75rem;
