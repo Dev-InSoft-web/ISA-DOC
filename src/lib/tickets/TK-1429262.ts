@@ -168,7 +168,42 @@ export async function buildBodyTK1429262(): Promise<string> {
 		</table>`,
 	);
 
+	const MERMAID_FASES_URL = "https://mermaid.ink/img/Zmxvd2NoYXJ0IExSCiAgICBGMVsiRmFzZSAxPGJyLz5ldGFwYSAtPiBtb2RlbG88YnIvPisgZmFsbGJhY2sgZ2xvYmFsIl0gLS0+IEYyWyJGYXNlIDI8YnIvPmV0YXBhICsgdGlwb19jb25zdWx0YSAtPiBtb2RlbG8iXQogICAgRjIgLS0+IEYzWyJGYXNlIDM8YnIvPnRyYXphYmlsaWRhZCBwb3IgZXRhcGE8YnIvPnRva2VucywgbGF0ZW5jaWEsIGNvc3RvIl0KICAgIEYzIC0tPiBGNFsiRmFzZSA0PGJyLz5jYXRhbG9nbyBlbiBTUUw8YnIvPlJFQ1VSU09fT1BFTkFJIl0KICAgIGNsYXNzRGVmIGNmZyBmaWxsOiNlM2YyZmQsc3Ryb2tlOiMxOTc2ZDIsY29sb3I6IzBkNDdhMTsKICAgIGNsYXNzRGVmIGJkIGZpbGw6I2ZmZjNlMCxzdHJva2U6I2VmNmMwMCxjb2xvcjojZTY1MTAwOwogICAgY2xhc3MgRjEsRjIgY2ZnOwogICAgY2xhc3MgRjMsRjQgYmQ7";
+
+	const diagramaFases = `
+<div style="text-align:center;margin-top:0.5rem;">
+	<a href="${MERMAID_FASES_URL}" target="_blank" rel="noopener">
+		<img src="${MERMAID_FASES_URL}" alt="Hoja de ruta por fases: 1 mapa por etapa, 2 etapa+tipo, 3 trazabilidad, 4 catalogo SQL" style="max-width:100%;height:auto;border:1px solid #80808040;border-radius:4px;background:#fff;padding:0.5rem;" />
+	</a>
+</div>`;
+
+	const tablaFases = `
+<table style="${TABLE_STYLE}">
+<thead><tr>
+<th style="${TH_STYLE}">Fase</th>
+<th style="${TH_STYLE}">Cambio principal</th>
+<th style="${TH_STYLE}">¿Toca código?</th>
+<th style="${TH_STYLE}">¿Toca BD?</th>
+<th style="${TH_STYLE}">¿Reversible?</th>
+<th style="${TH_STYLE}">Esfuerzo</th>
+</tr></thead>
+<tbody>
+<tr><td style="${TD_STYLE}"><b>1</b></td><td style="${TD_STYLE}">Mapa <code>etapa → modelo</code> + fallback global.</td><td style="${TD_STYLE}">Sí (mínimo)</td><td style="${TD_STYLE}">No</td><td style="${TD_STYLE}">Sí (toggle)</td><td style="${TD_STYLE}">Bajo</td></tr>
+<tr><td style="${TD_STYLE}"><b>2</b></td><td style="${TD_STYLE}">Extiende a <code>etapa + tipo_consulta → modelo</code> reutilizando el clasificador existente.</td><td style="${TD_STYLE}">Sí</td><td style="${TD_STYLE}">No</td><td style="${TD_STYLE}">Sí (toggle)</td><td style="${TD_STYLE}">Bajo</td></tr>
+<tr><td style="${TD_STYLE}"><b>3</b></td><td style="${TD_STYLE}">Trazabilidad por etapa: modelo, tokens, latencia, resultado, costo aproximado.</td><td style="${TD_STYLE}">Sí</td><td style="${TD_STYLE}">Sí (<code>MENSAJE_METRICAS</code>)</td><td style="${TD_STYLE}">Sí (deja de escribir)</td><td style="${TD_STYLE}">Medio</td></tr>
+<tr><td style="${TD_STYLE}"><b>4</b></td><td style="${TD_STYLE}">Mueve <code>PR_*</code> y <code>OPENAI_MODEL</code> a SQL en <code>RECURSO_OPENAI</code>; sin redeploy para ajustar.</td><td style="${TD_STYLE}">Sí</td><td style="${TD_STYLE}">Sí (<code>RECURSO_OPENAI</code>)</td><td style="${TD_STYLE}">Sí (vuelve a env)</td><td style="${TD_STYLE}">Medio</td></tr>
+</tbody>
+</table>`;
+
 	const mejorCamino = noteList(
+		await note(
+			"mdi:map-marker-path",
+			`<b>Hoja de ruta visual</b><br>Las fases avanzan de menor a mayor impacto. <span style="color:#1976d2;">Azul</span>: cambios solo en código/configuración. <span style="color:#ef6c00;">Naranja</span>: cambios también en base de datos.${diagramaFases}`,
+		),
+		await note(
+			"mdi:table",
+			`<b>Comparativa de fases</b>${tablaFases}`,
+		),
 		await note(
 			"mdi:numeric-1-circle-outline",
 			`<b>Fase 1:</b> parametrización por configuración (sin tocar BD) con mapa <code>etapa -&gt; modelo</code> y fallback a <code>OPENAI_MODEL</code>. Es el punto de arranque.`,
