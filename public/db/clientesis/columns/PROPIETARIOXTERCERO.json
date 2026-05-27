@@ -1,10 +1,10 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "SEGURIDADES_CURSOS",
+  "tableref": "PROPIETARIOXTERCERO",
   "tablemeta": {
-    "originalname": "SEGURIDADES_CURSOS",
-    "hasifnotexists": true
+    "originalname": "PROPIETARIOXTERCERO",
+    "hasifnotexists": false
   },
   "nodes": [
     {
@@ -23,18 +23,18 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "ICURSO",
-        "type": "VARCHAR(10)",
-        "primarykey": false,
-        "kind": "col"
+        "name": "IPROPIETARIO",
+        "type": "NVARCHAR(50)",
+        "nullable": "NULL",
+        "primarykey": false
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "IPERMISO",
-        "type": "VARCHAR(25)",
-        "primarykey": false,
-        "kind": "col"
+        "name": "ITERCERO",
+        "type": "NVARCHAR(50)",
+        "nullable": "NULL",
+        "primarykey": false
       }
     ]
   }

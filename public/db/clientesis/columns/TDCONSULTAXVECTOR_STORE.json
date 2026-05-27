@@ -1,10 +1,10 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "ESTRUCTURAS_CURSOS",
+  "tableref": "TDCONSULTAXVECTOR_STORE",
   "tablemeta": {
-    "originalname": "ESTRUCTURAS_CURSOS",
-    "hasifnotexists": true
+    "originalname": "TDCONSULTAXVECTOR_STORE",
+    "hasifnotexists": false
   },
   "nodes": [
     {
@@ -28,26 +28,26 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "ICURSO",
-        "type": "VARCHAR(10)",
-        "primarykey": false,
-        "kind": "col"
+        "name": "ITDCONSULTA",
+        "type": "VARCHAR(32)",
+        "nullable": "NOT NULL",
+        "primarykey": true
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "QNIVEL",
-        "type": "TINYINT",
-        "primarykey": false,
-        "kind": "col"
+        "name": "IVECTORSTORE",
+        "type": "VARCHAR(32)",
+        "nullable": "NOT NULL",
+        "primarykey": true
       },
       {
         "icolumn": "3",
         "flatpath": "3",
-        "name": "NNIVEL",
-        "type": "VARCHAR(255)",
-        "primarykey": false,
-        "kind": "col"
+        "name": "ORDEN",
+        "type": "SMALLINT",
+        "nullable": "NOT NULL",
+        "primarykey": false
       }
     ]
   }

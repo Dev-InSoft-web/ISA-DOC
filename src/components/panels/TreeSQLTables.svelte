@@ -1160,7 +1160,7 @@
                         {:else if node.kind === "domain"}
                            <span class="tree-row" title={`${node.domainType === "bd" ? "Base de datos" : "Dominio"}: ${node.rowName ?? node.domainId ?? ""}${node.prefix ? ` (prefijo ${node.prefix})` : ""}`}>
                               {#if node.domainType === "bd"}
-                                 <span class="badge badge-bd"><Iconify icon="mdi:database" /> BD</span>
+                                 <span class="badge badge-bd">BD</span>
                               {:else}
                                  <span class="badge badge-domain">Domain</span>
                               {/if}

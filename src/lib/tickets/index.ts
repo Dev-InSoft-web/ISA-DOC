@@ -1,6 +1,5 @@
 import { buildTicketHtml, tiempoTotalEstimadoMin } from "./template";
 import { bodyTK1418894 } from "./TK-1418894";
-import { bodyTK1418988 } from "./TK-1418988";
 import { bodyTK1420742 } from "./TK-1420742";
 import { bodyTK1420751 } from "./TK-1420751";
 import { bodyTK1420754 } from "./TK-1420754";
@@ -299,23 +298,10 @@ export const TICKETS: TicketRegistro[] = [
 		fechaSolicitud: "25/may./2026 02:51:03 pm",
 		noMaquillarFechas: true,
 		estimacionMinutos: 0,
-		diligenciaMinutos: 60,
+		diligenciaMinutos: 180,
 		resumen: "Se solicita investigación técnica de viabilidad para evaluar si Paty IA puede seleccionar dinámicamente el modelo OpenAI según la etapa del flujo o el tipo de consulta clasificado, contemplando viabilidad en la API Responses, impacto en el código actual, arquitectura, costos, rendimiento y trazabilidad.",
 		body: bodyTK1429262,
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - ING Servicios Otros" },
-		proyecto: "PatyIA",
-	},
-	{
-		id: "TK-1418988",
-		titulo: "Problemas al cargar imagen en Paty IA",
-		solicitante: "Asesora Viviana Restrepo Quintero",
-		fechaSolicitud: "30/abr./2026 08:21:36 am",
-		noMaquillarFechas: true,
-		estimacionMinutos: 0,
-		diligenciaMinutos: 15,
-		resumen: "Se reporta desde un feedback negativo de Paty IA que una imagen referenciada en ad_inventarios_plus.md no carga correctamente. Se debe validar la codificación de la URL del recurso.",
-		body: bodyTK1418988,
-		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
 		proyecto: "PatyIA",
 	},
 	{

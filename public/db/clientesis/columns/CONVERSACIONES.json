@@ -1,0 +1,210 @@
+{
+  "version": 4,
+  "kind": "columns-tree",
+  "tableref": "CONVERSACIONES",
+  "tablemeta": {
+    "originalname": "CONVERSACIONES",
+    "hasifnotexists": false
+  },
+  "nodes": [
+    {
+      "flatpath": "1",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "2",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "3",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "4",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "5",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "6",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "7",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "8",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "9",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "10",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "11",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "12",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "13",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "14",
+      "ireference": "COLUMN",
+      "kind": "col"
+    },
+    {
+      "flatpath": "15",
+      "ireference": "COLUMN",
+      "kind": "col"
+    }
+  ],
+  "entities": {
+    "COLUMN": [
+      {
+        "icolumn": "1",
+        "flatpath": "1",
+        "name": "ICONVERSACION",
+        "type": "BIGINT",
+        "nullable": "NOT NULL",
+        "primarykey": true
+      },
+      {
+        "icolumn": "2",
+        "flatpath": "2",
+        "name": "ITERCERO",
+        "type": "VARCHAR(50)",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "3",
+        "flatpath": "3",
+        "name": "ICONTACTO",
+        "type": "VARCHAR(50)",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "4",
+        "flatpath": "4",
+        "name": "HILO",
+        "type": "VARCHAR(100)",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "5",
+        "flatpath": "5",
+        "name": "TITULO",
+        "type": "VARCHAR(100)",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "6",
+        "flatpath": "6",
+        "name": "FHCRE",
+        "type": "DATETIME",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "7",
+        "flatpath": "7",
+        "name": "IMODULO",
+        "type": "VARCHAR(100)",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "8",
+        "flatpath": "8",
+        "name": "MODELO_IA",
+        "type": "VARCHAR(20)",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "9",
+        "flatpath": "9",
+        "name": "VERSION_AYUDA",
+        "type": "VARCHAR(20)",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "10",
+        "flatpath": "10",
+        "name": "QMENSAJES",
+        "type": "SMALLINT",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "11",
+        "flatpath": "11",
+        "name": "QTOKENS",
+        "type": "INT",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "12",
+        "flatpath": "12",
+        "name": "PROMPT",
+        "type": "TEXT",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "13",
+        "flatpath": "13",
+        "name": "ITDESTADO",
+        "type": "SMALLINT",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "14",
+        "flatpath": "14",
+        "name": "FHULTACT",
+        "type": "DATETIME",
+        "nullable": "NULL",
+        "primarykey": false
+      },
+      {
+        "icolumn": "15",
+        "flatpath": "15",
+        "name": "BAUTORIZA_VISUALIZACION",
+        "type": "BIT",
+        "nullable": "NULL",
+        "primarykey": false
+      }
+    ]
+  }
+}

@@ -184,6 +184,7 @@ export class TreeSQLTablesAdapter extends TreeRowViewAdapterLegacy<TablesBrowser
 
 	protected override getNodeIcon(node: TTableNodeUX) {
 		if (node?.kind === "domain") {
+			if (node.domainType === "bd") return { icon: "mdi:database", color: "info" as const };
 			if (node.isMaster) return { icon: "mdi:crown", style: "color: hotpink !important;" };
 			return { icon: "mdi:cube-outline", color: "warning" as const };
 		}

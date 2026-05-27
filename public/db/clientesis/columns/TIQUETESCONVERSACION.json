@@ -1,10 +1,10 @@
 {
   "version": 4,
   "kind": "columns-tree",
-  "tableref": "PLANES_CURSOS",
+  "tableref": "TIQUETESCONVERSACION",
   "tablemeta": {
-    "originalname": "PLANES_CURSOS",
-    "hasifnotexists": true
+    "originalname": "TIQUETESCONVERSACION",
+    "hasifnotexists": false
   },
   "nodes": [
     {
@@ -31,11 +31,6 @@
       "flatpath": "5",
       "ireference": "COLUMN",
       "kind": "col"
-    },
-    {
-      "flatpath": "6",
-      "ireference": "COLUMN",
-      "kind": "col"
     }
   ],
   "entities": {
@@ -43,50 +38,42 @@
       {
         "icolumn": "1",
         "flatpath": "1",
-        "name": "IPLAN",
-        "type": "VARCHAR(100)",
-        "primarykey": false,
-        "kind": "col"
+        "name": "ITIQUETE",
+        "type": "BIGINT",
+        "nullable": "NOT NULL",
+        "primarykey": true
       },
       {
         "icolumn": "2",
         "flatpath": "2",
-        "name": "ICURSO",
+        "name": "CODIGOTK",
         "type": "VARCHAR(10)",
-        "primarykey": false,
-        "kind": "col"
+        "nullable": "NULL",
+        "primarykey": false
       },
       {
         "icolumn": "3",
         "flatpath": "3",
-        "name": "TITULO",
-        "type": "VARCHAR(255)",
-        "primarykey": false,
-        "kind": "col"
+        "name": "ICONVERSACION",
+        "type": "BIGINT",
+        "nullable": "NULL",
+        "primarykey": false
       },
       {
         "icolumn": "4",
         "flatpath": "4",
-        "name": "ITEMA",
-        "type": "VARCHAR(25)",
-        "primarykey": false,
-        "kind": "col"
+        "name": "TEMA",
+        "type": "VARCHAR(50)",
+        "nullable": "NULL",
+        "primarykey": false
       },
       {
         "icolumn": "5",
         "flatpath": "5",
-        "name": "IRECURSO",
-        "type": "BIGINT",
-        "primarykey": false,
-        "kind": "col"
-      },
-      {
-        "icolumn": "6",
-        "flatpath": "6",
-        "name": "IPLANPADRE",
-        "type": "VARCHAR(100)",
-        "primarykey": false,
-        "kind": "col"
+        "name": "CLASIFICADOR",
+        "type": "VARCHAR(50)",
+        "nullable": "NULL",
+        "primarykey": false
       }
     ]
   }

@@ -64,6 +64,8 @@ export async function buildBodyTK1429262(): Promise<string> {
 		h3Viabilidad,
 		h3Comparativa,
 		h3Ruta,
+		h3BD,
+		h3Presupuesto,
 		h3Riesgos,
 		h3Conclusion,
 	] = await Promise.all([
@@ -72,8 +74,10 @@ export async function buildBodyTK1429262(): Promise<string> {
 		h3Iconized("mdi:check-decagram-outline", "3) Conclusión de viabilidad"),
 		h3Iconized("mdi:compare", "4) Comparativa antes vs propuesta"),
 		h3Iconized("mdi:map-marker-path", "5) Mejor camino propuesto (sin implementar)"),
-		h3Iconized("mdi:alert-outline", "6) Riesgos y mitigación"),
-		h3Iconized("mdi:clipboard-text-outline", "7) Propuesta para aprobación"),
+		h3Iconized("mdi:database-cog-outline", "6) Análisis de base de datos (STORAGE, métricas y utilidad)"),
+		h3Iconized("mdi:clock-time-four-outline", "7) Presupuesto de tiempos (3 horas)"),
+		h3Iconized("mdi:alert-outline", "8) Riesgos y mitigación"),
+		h3Iconized("mdi:clipboard-text-outline", "9) Propuesta para aprobación"),
 	]);
 
 	const [codeFlujoEntrada, codeModeloUnicoResponses, codeModeloUnicoRespuesta, codeConfigActual] = await Promise.all([
@@ -118,6 +122,10 @@ export async function buildBodyTK1429262(): Promise<string> {
 		await note(
 			"mdi:file-cog-outline",
 			`<b>Archivo:</b> <code>PatyIA/local.settings.json</code><br><b>Configuración actual:</b><br>${codeConfigActual}`,
+		),
+		await note(
+			"mdi:database-edit-outline",
+			`<b>Observación clave:</b> los valores <code>PR_TIPO_CONSULTAS</code>, <code>PR_GENERAL</code>, <code>PR_EXTRACTOR_CONSULTAS</code>, <code>PR_CLASIFICADOR_MODULO</code> y <code>OPENAI_MODEL</code> <b>no deberían ser variables de entorno</b>, sino <b>valores dinámicos</b>. Puede resolverse vía <i>hardcode</i> o, preferiblemente, desde <b>SQL</b>: por temas de <b>persistencia y mantenimiento</b>, la información es más simple de trabajar como dato dinámico que como valor quemado en <code>env</code>, evitando redeploy ante cualquier ajuste de prompt o modelo.`,
 		),
 	);
 
@@ -182,7 +190,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		),
 		await note(
 			"mdi:numeric-4-circle-outline",
-			`<b>Fase 4 (opcional):</b> mover la configuración a BD para administración funcional sin redeploy, únicamente cuando la estrategia ya esté estabilizada.`,
+			`<b>Fase 4 (recomendada):</b> mover el catálogo de <i>prompts</i> y modelo (<code>PR_*</code> y <code>OPENAI_MODEL</code>) a <b>SQL</b> como valores dinámicos administrables, eliminando su dependencia de variables de entorno. Esto simplifica persistencia, mantenimiento y trazabilidad, y permite ajustar prompts/modelo sin redeploy.`,
 		),
 	);
 
