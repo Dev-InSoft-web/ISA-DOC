@@ -1,2 +1,3 @@
 # Backup binario local — no se versiona
 **/content.*
+*-cache.json
