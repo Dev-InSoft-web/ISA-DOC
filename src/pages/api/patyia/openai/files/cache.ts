@@ -28,10 +28,42 @@ interface CacheShape {
 
 const EMPTY: CacheShape = { updated: "", count: 0, files: [] };
 
-// GET → devuelve el cache local (sin tocar OpenAI)
-export const GET: APIRoute = async () => {
+const PAGE_SIZE_DEFAULT = 150;
+const PAGE_SIZE_MAX = 500;
+
+function filtrar(files: OpenAIFile[], q: string, purpose: string): OpenAIFile[] {
+	const s = q.trim().toLowerCase();
+	return files.filter((f) => {
+		if (purpose && f.purpose !== purpose) return false;
+		if (!s) return true;
+		return f.filename.toLowerCase().includes(s) || f.id.toLowerCase().includes(s);
+	});
+}
+
+// GET → devuelve un slice paginado del cache local (sin tocar OpenAI)
+export const GET: APIRoute = async ({ url }) => {
 	const data = await leerJson<CacheShape>(FILES_CACHE, EMPTY);
-	return j({ ok: true, ...data });
+	const page = Math.max(1, parseInt(url.searchParams.get("page") ?? "1", 10) || 1);
+	const rawSize = parseInt(url.searchParams.get("pageSize") ?? String(PAGE_SIZE_DEFAULT), 10) || PAGE_SIZE_DEFAULT;
+	const pageSize = Math.min(PAGE_SIZE_MAX, Math.max(1, rawSize));
+	const q = url.searchParams.get("q") ?? "";
+	const purpose = url.searchParams.get("purpose") ?? "";
+	const filtrados = filtrar(data.files, q, purpose);
+	const total = filtrados.length;
+	const totalPages = Math.max(1, Math.ceil(total / pageSize));
+	const pageClamped = Math.min(page, totalPages);
+	const ini = (pageClamped - 1) * pageSize;
+	const items = filtrados.slice(ini, ini + pageSize);
+	return j({
+		ok: true,
+		updated: data.updated,
+		count: data.count,
+		filtered: total,
+		page: pageClamped,
+		pageSize,
+		totalPages,
+		items,
+	});
 };
 
 // POST → sincroniza el cache trayendo TODOS los files desde OpenAI (paginado)
