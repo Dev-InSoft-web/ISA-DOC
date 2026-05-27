@@ -124,6 +124,7 @@ async function listarVS(apiKey: string): Promise<string[]> {
 		const r = await fetch("https://api.openai.com/v1/vector_stores?limit=100", {
 			method: "GET",
 			headers: { Authorization: `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" },
+			signal: AbortSignal.timeout(30_000),
 		});
 		const text = await r.text();
 		const parsed = JSON.parse(text) as VSList;

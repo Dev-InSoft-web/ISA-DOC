@@ -28,9 +28,19 @@ export const GET: APIRoute = async () => {
 };
 
 // DELETE → marca el flag de cancelación; el worker corta entre archivos.
+// Si ya estaba cancelRequested (worker colgado en un fetch), fuerza el reset del estado.
 export const DELETE: APIRoute = async () => {
 	const data = await leerJson<BackupProgress>(BACKUP_PROGRESS, EMPTY);
 	if (!data.running) return j({ ok: false, error: "No hay backup en progreso" }, 409);
+	if (data.cancelRequested) {
+		data.running = false;
+		data.cancelRequested = false;
+		data.currentId = "";
+		data.currentFilename = "";
+		data.finalizado = new Date().toISOString();
+		await escribirJson(BACKUP_PROGRESS, data);
+		return j({ ok: true, forceReset: true });
+	}
 	data.cancelRequested = true;
 	await escribirJson(BACKUP_PROGRESS, data);
 	return j({ ok: true, cancelRequested: true });

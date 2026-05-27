@@ -2,6 +2,9 @@ import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ensureDir, escribirJson, fileDir, safeExt } from "./storage.ts";
 
+const FETCH_TIMEOUT_MS = 30_000;
+function signalTO(): AbortSignal { return AbortSignal.timeout(FETCH_TIMEOUT_MS); }
+
 export interface OpenAIFileMetaLite {
 	id?: string;
 	filename?: string;
@@ -37,6 +40,7 @@ export async function pedirFileMeta(fileId: string, apiKey: string): Promise<Ope
 	const r = await fetch(`https://api.openai.com/v1/files/${encodeURIComponent(fileId)}`, {
 		method: "GET",
 		headers: { Authorization: `Bearer ${apiKey}` },
+		signal: signalTO(),
 	});
 	const text = await r.text();
 	let parsed: OpenAIFileMetaLite;
@@ -60,6 +64,7 @@ export async function descargarDesdeVS(vsId: string, fileId: string, apiKey: str
 			r = await fetch(u.toString(), {
 				method: "GET",
 				headers: { Authorization: `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" },
+				signal: signalTO(),
 			});
 			text = await r.text();
 			if (r.status !== 429 && r.status < 500) break;
@@ -114,7 +119,7 @@ export async function backupOne(
 		const headers = { Authorization: `Bearer ${apiKey}` };
 		let r: Response | null = null;
 		for (let intento = 0; intento < 3; intento++) {
-			r = await fetch(url, { method: "GET", headers });
+			r = await fetch(url, { method: "GET", headers, signal: signalTO() });
 			if (r.status !== 429 && r.status < 500) break;
 			await new Promise((res) => setTimeout(res, 400 * (intento + 1) ** 2));
 		}
