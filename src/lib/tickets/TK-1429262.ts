@@ -2,7 +2,7 @@
 // consulta en Paty IA. Esta diligencia consolida el análisis técnico de
 // viabilidad basado en el código actual del proyecto PatyIA.
 
-import { codeBlock } from "./snippets";
+import { codeBlock, img } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
@@ -168,14 +168,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		</table>`,
 	);
 
-	const MERMAID_FASES_URL = "https://mermaid.ink/img/Zmxvd2NoYXJ0IExSCiAgICBGMVsiRmFzZSAxPGJyLz5ldGFwYSAtPiBtb2RlbG88YnIvPisgZmFsbGJhY2sgZ2xvYmFsIl0gLS0+IEYyWyJGYXNlIDI8YnIvPmV0YXBhICsgdGlwb19jb25zdWx0YSAtPiBtb2RlbG8iXQogICAgRjIgLS0+IEYzWyJGYXNlIDM8YnIvPnRyYXphYmlsaWRhZCBwb3IgZXRhcGE8YnIvPnRva2VucywgbGF0ZW5jaWEsIGNvc3RvIl0KICAgIEYzIC0tPiBGNFsiRmFzZSA0PGJyLz5jYXRhbG9nbyBlbiBTUUw8YnIvPlJFQ1VSU09fT1BFTkFJIl0KICAgIGNsYXNzRGVmIGNmZyBmaWxsOiNlM2YyZmQsc3Ryb2tlOiMxOTc2ZDIsY29sb3I6IzBkNDdhMTsKICAgIGNsYXNzRGVmIGJkIGZpbGw6I2ZmZjNlMCxzdHJva2U6I2VmNmMwMCxjb2xvcjojZTY1MTAwOwogICAgY2xhc3MgRjEsRjIgY2ZnOwogICAgY2xhc3MgRjMsRjQgYmQ7";
-
-	const diagramaFases = `
-<div style="text-align:center;margin-top:0.5rem;">
-	<a href="${MERMAID_FASES_URL}" target="_blank" rel="noopener">
-		<img src="${MERMAID_FASES_URL}" alt="Hoja de ruta por fases: 1 mapa por etapa, 2 etapa+tipo, 3 trazabilidad, 4 catalogo SQL" style="max-width:100%;height:auto;border:1px solid #80808040;border-radius:4px;background:#fff;padding:0.5rem;" />
-	</a>
-</div>`;
+	const diagramaFases = img("tk1429262-mermaid-hoja-de-ruta.png", 720);
 
 	const tablaFases = `
 <table style="${TABLE_STYLE}">
@@ -222,14 +215,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		),
 	);
 
-	const MERMAID_URL = "https://mermaid.ink/img/ZXJEaWFncmFtCiAgICBDT05WRVJTQUNJT04gfHwtLW97IE1FTlNBSkUgOiBjb250aWVuZQogICAgTUVOU0FKRSB8fC0tfHwgTUVOU0FKRV9NRVRSSUNBUyA6IG1pZGUKICAgIENPTlZFUlNBQ0lPTiB7CiAgICAgICAgSU5UIElDT05WRVJTQUNJT04gUEsKICAgICAgICBJTlQgUVRPS0VOUyAiVE9UQUwgY29udmVyc2FjaW9uIgogICAgfQogICAgTUVOU0FKRSB7CiAgICAgICAgSU5UIElNRU5TQUpFIFBLCiAgICAgICAgSU5UIElDT05WRVJTQUNJT04gRksKICAgICAgICBWQVJDSEFSIFJPTAogICAgICAgIFZBUkNIQVIgQ09OVEVOSURPICJvdXRwdXQiCiAgICAgICAgVkFSQ0hBUiBJTlBVVCAiTlVFVk8iCiAgICB9CiAgICBNRU5TQUpFX01FVFJJQ0FTIHsKICAgICAgICBJTlQgSU1FTlNBSkUgRksKICAgICAgICBJTlQgVE9LRU5TX0lOCiAgICAgICAgSU5UIFRPS0VOU19PVVQKICAgICAgICBWQVJDSEFSIE1PREVMTwogICAgICAgIFZBUkNIQVIgRVRBUEEKICAgICAgICBERUNJTUFMIENPU1RPX0FQUk9YCiAgICAgICAgVElOWUlOVCBVVElMICItMS8wLzEiCiAgICB9CiAgICBSRUNVUlNPX09QRU5BSSB7CiAgICAgICAgSU5UIElSRUNVUlNPIFBLCiAgICAgICAgVkFSQ0hBUiBOT01CUkUgImFsaWFzIGh1bWFubyIKICAgICAgICBWQVJDSEFSIFRJUE8gInZlY3Rvcl9zdG9yZS1wcm9tcHQtbW9kZWwtY2hhdCIKICAgICAgICBWQVJDSEFSIENPTlRFWFRPICJQUl9HRU5FUkFMLCBPUEVOQUlfTU9ERUwuLi4iCiAgICAgICAgVkFSQ0hBUiBWQUxPUiAiaWQgZXh0ZXJubyBPcGVuQUkiCiAgICAgICAgQklUIEFDVElWTwogICAgfQ==";
-
-	const diagramaRelaciones = `
-<div style="text-align:center;margin-top:0.5rem;">
-	<a href="${MERMAID_URL}" target="_blank" rel="noopener">
-		<img src="${MERMAID_URL}" alt="Diagrama ER propuesto: CONVERSACION, MENSAJE, MENSAJE_METRICAS y RECURSO_OPENAI" style="max-width:100%;height:auto;border:1px solid #80808040;border-radius:4px;background:#fff;padding:0.5rem;" />
-	</a>
-</div>`;
+	const diagramaRelaciones = img("tk1429262-mermaid-er-recursos.png", 720);
 
 	const tablaStorage = `
 <table style="${TABLE_STYLE}">
