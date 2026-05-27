@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { onDestroy, onMount } from "svelte";
-	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, Modal, RichEditor, SelectEnum, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, Modal, RichEditor, SelectEnum, TabItem, Tabs, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import ChatMensajesView, { type MsgVista, type ArchivoCita, type OpenFileDetail } from "./ChatMensajesView.svelte";
 	import { marked } from "marked";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 	import TsViewer from "../viewers/TsViewer.svelte";
 	import ImageViewer from "../viewers/ImageViewer.svelte";
+	import StorageActionsPanel from "./StorageActionsPanel.svelte";
 	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/patyia/openaiPricing";
 	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/patyia/patyiaPersist";
 
@@ -47,34 +48,74 @@
 		costoUsd: number | null;
 	}
 
-	type AccionId = "imagenes" | "texto" | "chat" | "conversacion";
-	const ACCIONES: Array<{ id: AccionId; label: string }> = [
+	type AccionId = "imagenes" | "texto" | "chat" | "conversacion" | "storage";
+	type NivelId = "pruebas" | "conversacion" | "storage";
+	type SubPruebaId = "imagenes" | "texto" | "chat";
+	const ACCIONES: Array<{ id: NivelId; label: string }> = [
+		{ id: "pruebas", label: "Pruebas" },
+		{ id: "conversacion", label: "Conversación BD" },
+		{ id: "storage", label: "Storage" },
+	];
+	const ACCIONES_VALIDAS: ReadonlySet<NivelId> = new Set(ACCIONES.map((a) => a.id));
+	const SUB_PRUEBAS: Array<{ id: SubPruebaId; label: string }> = [
 		{ id: "imagenes", label: "Imágenes" },
 		{ id: "texto", label: "Texto" },
 		{ id: "chat", label: "Conversaciones" },
-		{ id: "conversacion", label: "Conversación BD" },
 	];
-	const ACCIONES_VALIDAS: ReadonlySet<AccionId> = new Set(ACCIONES.map((a) => a.id));
+	const SUB_PRUEBAS_VALIDAS: ReadonlySet<SubPruebaId> = new Set(SUB_PRUEBAS.map((a) => a.id));
 
 	const QUERY_TAB_KEY = "tab";
+	const QUERY_TAB2_KEY = "tab2";
 
-	function leerTabDeUrl(): AccionId | null {
-		if (typeof window === "undefined") return null;
-		const raw = new URLSearchParams(window.location.search).get(QUERY_TAB_KEY);
-		if (!raw) return null;
-		return ACCIONES_VALIDAS.has(raw as AccionId) ? (raw as AccionId) : null;
+	function leerTabDeUrl(): { nivel: NivelId; sub: SubPruebaId } {
+		const fallback: { nivel: NivelId; sub: SubPruebaId } = { nivel: "pruebas", sub: "imagenes" };
+		if (typeof window === "undefined") return fallback;
+		const sp = new URLSearchParams(window.location.search);
+		const rawTab = sp.get(QUERY_TAB_KEY) ?? "";
+		const rawTab2 = sp.get(QUERY_TAB2_KEY) ?? "";
+		// Legacy: ?tab=imagenes|texto|chat → nivel=pruebas, sub=<tab>
+		if (SUB_PRUEBAS_VALIDAS.has(rawTab as SubPruebaId)) {
+			return { nivel: "pruebas", sub: rawTab as SubPruebaId };
+		}
+		const nivel: NivelId = ACCIONES_VALIDAS.has(rawTab as NivelId) ? (rawTab as NivelId) : fallback.nivel;
+		const sub: SubPruebaId = SUB_PRUEBAS_VALIDAS.has(rawTab2 as SubPruebaId) ? (rawTab2 as SubPruebaId) : fallback.sub;
+		return { nivel, sub };
 	}
 
-	function escribirTabEnUrl(tab: AccionId): void {
+	function escribirTabEnUrl(nivel: NivelId, sub: SubPruebaId): void {
 		if (typeof window === "undefined") return;
 		const url = new URL(window.location.href);
-		if (url.searchParams.get(QUERY_TAB_KEY) === tab) return;
-		url.searchParams.set(QUERY_TAB_KEY, tab);
-		window.history.replaceState(null, "", url.toString());
+		let cambio = false;
+		if (url.searchParams.get(QUERY_TAB_KEY) !== nivel) {
+			url.searchParams.set(QUERY_TAB_KEY, nivel);
+			cambio = true;
+		}
+		if (nivel === "pruebas") {
+			if (url.searchParams.get(QUERY_TAB2_KEY) !== sub) {
+				url.searchParams.set(QUERY_TAB2_KEY, sub);
+				cambio = true;
+			}
+		} else if (url.searchParams.has(QUERY_TAB2_KEY)) {
+			url.searchParams.delete(QUERY_TAB2_KEY);
+			cambio = true;
+		}
+		if (cambio) window.history.replaceState(null, "", url.toString());
 	}
 
-	let accionActiva: AccionId = "imagenes";
-	$: if (typeof window !== "undefined") escribirTabEnUrl(accionActiva);
+	const _initTab = typeof window !== "undefined" ? leerTabDeUrl() : { nivel: "pruebas" as NivelId, sub: "imagenes" as SubPruebaId };
+	let accionActiva: NivelId = _initTab.nivel;
+	let subPrueba: SubPruebaId = _initTab.sub;
+	let openImagenes: boolean = subPrueba === "imagenes";
+	let openTexto: boolean = subPrueba === "texto";
+	let openChat: boolean = subPrueba === "chat";
+	$: if (openImagenes && subPrueba !== "imagenes") subPrueba = "imagenes";
+	$: if (openTexto && subPrueba !== "texto") subPrueba = "texto";
+	$: if (openChat && subPrueba !== "chat") subPrueba = "chat";
+	$: if (typeof window !== "undefined") escribirTabEnUrl(accionActiva, subPrueba);
+
+	function infoAccionId(): AccionId {
+		return accionActiva === "pruebas" ? subPrueba : (accionActiva as AccionId);
+	}
 
 	interface InfoCampo {
 		campo: string;
@@ -119,9 +160,18 @@
 				{ campo: "Cargar", tipo: "acción", significado: "Ejecuta ambas consultas contra /api/patyia/db/exec y reconstruye la conversación. Útil para hacer experimentos sobre conversaciones reales." },
 			],
 		},
+		storage: {
+			titulo: "Storage · gestión de Files / Vector Stores / Skills",
+			campos: [
+				{ campo: "Files", tipo: "tab", significado: "Lista, filtra, sube, descarga (backup local) y elimina archivos en /v1/files. Soporta editar metadatos locales (categorías, tags, descripción) que se guardan solo en disco, no en OpenAI." },
+				{ campo: "Vector Stores", tipo: "tab", significado: "Lista los vector stores con su status, número de archivos y tamaño. Próxima fase: ver archivos adjuntos y ejecutar update-complex (edit local → reupload → relink → unlink → delete)." },
+				{ campo: "Skills", tipo: "tab", significado: "Lista las skills configuradas (API en rollout). Próxima fase: CRUD con backup local en data/openai-storage/skills/." },
+				{ campo: "Backup local", tipo: "carpeta", significado: "Cada recurso descargado queda en data/openai-storage/{files,vector-stores,skills}/<id>/ con meta.json, local.json y content.<ext>. Los binarios están ignorados por git; los metadatos sí se versionan." },
+			],
+		},
 	};
 	let infoOpen: boolean = false;
-	$: infoActual = INFO_DOCS[accionActiva];
+	$: infoActual = INFO_DOCS[accionActiva === "pruebas" ? subPrueba : (accionActiva as AccionId)];
 
 	const SNIPPETS: Record<AccionId, string> = {
 		imagenes: `// POST /api/patyia/openai/images/generate
@@ -179,6 +229,22 @@ const r = await fetch("/api/patyia/db/exec", {
 });
 const data = await r.json();
 // data => { ok, rows: [ { IMENSAJE, ICONVERSACION, CONTENIDO, BUTIL, IREFERENCIA } ] }`,
+		storage: `// GET /api/patyia/openai/files?purpose=assistants&limit=100
+const r = await fetch("/api/patyia/openai/files?purpose=assistants&limit=100");
+const { ok, data } = await r.json();
+// data => Array<{ id, filename, purpose, bytes, created_at, status }>
+
+// POST /api/patyia/openai/files (multipart)
+const fd = new FormData();
+fd.append("file", archivo, archivo.name);
+fd.append("purpose", "assistants");
+await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
+
+// POST /api/patyia/openai/files/{id}/backup?vs=vs_xxx
+// Descarga el contenido al servidor en data/openai-storage/files/{id}/
+
+// PUT /api/patyia/openai/files/{id}/local-meta
+// Guarda categorías/tags/descripción/notas en local.json (NO va a OpenAI)`,
 	};
 
 	const TModeloImagen = {
@@ -689,8 +755,12 @@ const data = await r.json();
 		persistReady = true;
 		cargarGaleria();
 		const tabUrl = leerTabDeUrl();
-		if (tabUrl) accionActiva = tabUrl;
-		else escribirTabEnUrl(accionActiva);
+		accionActiva = tabUrl.nivel;
+		subPrueba = tabUrl.sub;
+		openImagenes = subPrueba === "imagenes";
+		openTexto = subPrueba === "texto";
+		openChat = subPrueba === "chat";
+		escribirTabEnUrl(accionActiva, subPrueba);
 	});
 
 	$: if (persistReady) saveJson(STORAGE_KEYS.txtHistorial, txtHistorial);
@@ -723,7 +793,14 @@ const data = await r.json();
 		</nav>
 
 		<div class="custom-scrollbar panel-ejecucion">
-			{#if accionActiva === "imagenes"}
+			{#if accionActiva === "pruebas"}
+				<Tabs>
+					<TabItem title="Imágenes" bind:open={openImagenes} />
+					<TabItem title="Texto" bind:open={openTexto} />
+					<TabItem title="Conversaciones" bind:open={openChat} />
+				</Tabs>
+			{/if}
+			{#if accionActiva === "pruebas" && subPrueba === "imagenes"}
 				<div class="seccion">
 					<header class="seccion-head">
 						<div>
@@ -790,7 +867,7 @@ const data = await r.json();
 						{/if}
 					</section>
 				</div>
-			{:else if accionActiva === "texto"}
+			{:else if accionActiva === "pruebas" && subPrueba === "texto"}
 				<div class="seccion">
 					<header class="seccion-head">
 						<div>
@@ -872,7 +949,7 @@ const data = await r.json();
 						{/if}
 					</section>
 				</div>
-			{:else if accionActiva === "chat"}
+			{:else if accionActiva === "pruebas" && subPrueba === "chat"}
 				<div class="seccion">
 					<header class="seccion-head">
 						<div>
@@ -1011,6 +1088,19 @@ const data = await r.json();
 							</div>
 						</section>
 					{/if}
+				</div>
+			{:else if accionActiva === "storage"}
+				<div class="seccion">
+					<header class="seccion-head">
+						<div>
+							<h2>Storage · Files / Vector Stores / Skills</h2>
+							<p class="seccion-sub">Gestión completa de recursos en OpenAI con backup local enriquecido.</p>
+						</div>
+						<FlexLayout items="center">
+							<ButtonIconify icon="mdi:information-outline" onClick={() => (infoOpen = true)} title="¿Qué hace cada tab?" />
+						</FlexLayout>
+					</header>
+					<StorageActionsPanel />
 				</div>
 			{/if}
 		</div>
@@ -1175,7 +1265,7 @@ const data = await r.json();
 
 			<h4 class="snippet-title">Ejemplo de petición</h4>
 			<div class="snippet-host">
-				<TsViewer value={SNIPPETS[accionActiva]} height="320px" />
+				<TsViewer value={SNIPPETS[accionActiva === "pruebas" ? subPrueba : (accionActiva as AccionId)]} height="320px" />
 			</div>
 		</div>
 	</Modal>
