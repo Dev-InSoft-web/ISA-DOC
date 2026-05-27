@@ -9,6 +9,8 @@
 	import StorageActionsPanel from "./StorageActionsPanel.svelte";
 	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/patyia/openaiPricing";
 	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/patyia/patyiaPersist";
+	import { leerState, escribirState, migrarLegacy } from "../../lib/patyia/urlState";
+	type AppStatePartial = { nivel?: unknown; subPruebas?: unknown; subStorage?: unknown };
 
 	interface ImageItem {
 		src: string;
@@ -64,54 +66,43 @@
 	];
 	const SUB_PRUEBAS_VALIDAS: ReadonlySet<SubPruebaId> = new Set(SUB_PRUEBAS.map((a) => a.id));
 
-	const QUERY_TAB_KEY = "tab";
-	const QUERY_TAB2_KEY = "tab2";
-
 	function leerTabDeUrl(): { nivel: NivelId; sub: SubPruebaId } {
 		const fallback: { nivel: NivelId; sub: SubPruebaId } = { nivel: "pruebas", sub: "imagenes" };
-		if (typeof window === "undefined") return fallback;
-		const sp = new URLSearchParams(window.location.search);
-		const rawTab = sp.get(QUERY_TAB_KEY) ?? "";
-		const rawTab2 = sp.get(QUERY_TAB2_KEY) ?? "";
-		// Legacy: ?tab=imagenes|texto|chat → nivel=pruebas, sub=<tab>
-		if (SUB_PRUEBAS_VALIDAS.has(rawTab as SubPruebaId)) {
-			return { nivel: "pruebas", sub: rawTab as SubPruebaId };
+		const st = leerState();
+		const legacy = migrarLegacy({ tab: "nivel", tab2: "subPruebas" });
+		const merged: AppStatePartial = { ...legacy, ...st };
+		const rawNivel = String(merged.nivel ?? "");
+		const rawSub = String(merged.subPruebas ?? "");
+		// Compat: ?tab=imagenes|texto|chat → nivel=pruebas, sub=<tab>
+		if (SUB_PRUEBAS_VALIDAS.has(rawNivel as SubPruebaId)) {
+			return { nivel: "pruebas", sub: rawNivel as SubPruebaId };
 		}
-		const nivel: NivelId = ACCIONES_VALIDAS.has(rawTab as NivelId) ? (rawTab as NivelId) : fallback.nivel;
-		const sub: SubPruebaId = SUB_PRUEBAS_VALIDAS.has(rawTab2 as SubPruebaId) ? (rawTab2 as SubPruebaId) : fallback.sub;
+		const nivel: NivelId = ACCIONES_VALIDAS.has(rawNivel as NivelId) ? (rawNivel as NivelId) : fallback.nivel;
+		const sub: SubPruebaId = SUB_PRUEBAS_VALIDAS.has(rawSub as SubPruebaId) ? (rawSub as SubPruebaId) : fallback.sub;
 		return { nivel, sub };
 	}
 
 	function escribirTabEnUrl(nivel: NivelId, sub: SubPruebaId): void {
-		if (typeof window === "undefined") return;
-		const url = new URL(window.location.href);
-		let cambio = false;
-		if (url.searchParams.get(QUERY_TAB_KEY) !== nivel) {
-			url.searchParams.set(QUERY_TAB_KEY, nivel);
-			cambio = true;
-		}
-		if (nivel === "pruebas") {
-			if (url.searchParams.get(QUERY_TAB2_KEY) !== sub) {
-				url.searchParams.set(QUERY_TAB2_KEY, sub);
-				cambio = true;
-			}
-		} else if (url.searchParams.has(QUERY_TAB2_KEY)) {
-			url.searchParams.delete(QUERY_TAB2_KEY);
-			cambio = true;
-		}
-		if (cambio) window.history.replaceState(null, "", url.toString());
+		escribirState({ nivel, subPruebas: nivel === "pruebas" ? sub : undefined });
 	}
 
 	const _initTab = typeof window !== "undefined" ? leerTabDeUrl() : { nivel: "pruebas" as NivelId, sub: "imagenes" as SubPruebaId };
 	let accionActiva: NivelId = _initTab.nivel;
 	let subPrueba: SubPruebaId = _initTab.sub;
-	let openImagenes: boolean = subPrueba === "imagenes";
-	let openTexto: boolean = subPrueba === "texto";
-	let openChat: boolean = subPrueba === "chat";
-	$: if (openImagenes && subPrueba !== "imagenes") subPrueba = "imagenes";
-	$: if (openTexto && subPrueba !== "texto") subPrueba = "texto";
-	$: if (openChat && subPrueba !== "chat") subPrueba = "chat";
 	$: if (typeof window !== "undefined") escribirTabEnUrl(accionActiva, subPrueba);
+
+	const TITULO_A_SUB: Record<string, SubPruebaId> = {
+		Imágenes: "imagenes",
+		Texto: "texto",
+		Conversaciones: "chat",
+	};
+
+	function onSubTabClick(e: MouseEvent): void {
+		const btn = (e.target as HTMLElement | null)?.closest('button[role="tab"]') as HTMLButtonElement | null;
+		if (!btn) return;
+		const sub = TITULO_A_SUB[(btn.textContent ?? "").trim()];
+		if (sub) subPrueba = sub;
+	}
 
 	function infoAccionId(): AccionId {
 		return accionActiva === "pruebas" ? subPrueba : (accionActiva as AccionId);
@@ -757,9 +748,6 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 		const tabUrl = leerTabDeUrl();
 		accionActiva = tabUrl.nivel;
 		subPrueba = tabUrl.sub;
-		openImagenes = subPrueba === "imagenes";
-		openTexto = subPrueba === "texto";
-		openChat = subPrueba === "chat";
 		escribirTabEnUrl(accionActiva, subPrueba);
 	});
 
@@ -794,11 +782,13 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 
 		<div class="custom-scrollbar panel-ejecucion">
 			{#if accionActiva === "pruebas"}
-				<Tabs>
-					<TabItem title="Imágenes" bind:open={openImagenes} />
-					<TabItem title="Texto" bind:open={openTexto} />
-					<TabItem title="Conversaciones" bind:open={openChat} />
-				</Tabs>
+				<div on:click={onSubTabClick} role="presentation">
+					<Tabs>
+						<TabItem title="Imágenes" open={subPrueba === "imagenes"} />
+						<TabItem title="Texto" open={subPrueba === "texto"} />
+						<TabItem title="Conversaciones" open={subPrueba === "chat"} />
+					</Tabs>
+				</div>
 			{/if}
 			{#if accionActiva === "pruebas" && subPrueba === "imagenes"}
 				<div class="seccion">
