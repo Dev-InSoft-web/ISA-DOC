@@ -67,8 +67,6 @@ export async function buildBodyTK1429262(): Promise<string> {
 		h3BD,
 		h3Referencia,
 		h3Presupuesto,
-		h3Riesgos,
-		h3Conclusion,
 	] = await Promise.all([
 		h3Iconized("mdi:radar", "1) Estado actual del proyecto"),
 		h3Iconized("mdi:file-code-outline", "2) Evidencia técnica en código (PatyIA)"),
@@ -78,8 +76,6 @@ export async function buildBodyTK1429262(): Promise<string> {
 		h3Iconized("mdi:database-cog-outline", "6) Análisis de base de datos"),
 		h3Iconized("mdi:youtube", "7) Recurso de referencia: Harness Engineering"),
 		h3Iconized("mdi:clock-time-four-outline", "8) Presupuesto de tiempos"),
-		h3Iconized("mdi:alert-outline", "9) Riesgos y mitigación"),
-		h3Iconized("mdi:clipboard-text-outline", "10) Propuesta para aprobación"),
 	]);
 
 	const [codeFlujoEntrada, codeModeloUnicoResponses, codeModeloUnicoRespuesta, codeConfigActual] = await Promise.all([
@@ -245,8 +241,8 @@ export async function buildBodyTK1429262(): Promise<string> {
 	</tr>
 	<tr>
 	<td style="${TD_STYLE}"><b>Fase 4</b></td>
-	<td style="${TD_STYLE}">Catálogo de prompts y modelos en <b>SQL</b> (<code>RECURSO_OPENAI</code>).</td>
-	<td style="${TD_STYLE}">Mismos modelos que Fase 3 para este input (<code>gpt-4o-mini</code> en clasificación y extracción, <code>gpt-5</code> en respuesta), pero el modelo y el prompt de cada etapa se leen de BD y no de <code>.env</code>.</td>
+	<td style="${TD_STYLE}">Catálogo de prompts y modelos en <b>SQL</b> (<code>RECURSO_OPENAI</code>). Cada fila de prompt (con su <b>INSTRUCCION</b>) lleva ahora una columna propia con el <b>modelo OpenAI</b> a usar, de modo que el modelo se elige <i>por prompt</i> según su complejidad y ya no todos quedan en <code>gpt-5</code>.</td>
+	<td style="${TD_STYLE}">Modelos elegidos por prompt según complejidad: clasificación y extracción en <code>gpt-4o-mini</code>, respuesta tributaria compleja en <code>gpt-5</code>; un saludo o un soporte_uso bajarían a un modelo aún más liviano. Modelo y prompt se leen de BD y no de <code>.env</code>.</td>
 	<td style="${TD_STYLE}">Una fila en <code>MENSAJE_METRICAS</code> por etapa (<code>TOKENS_IN/OUT</code>, <code>MODELO</code>, <code>ETAPA</code>, <code>COSTO_APROX</code>) más el <code>IRECURSO</code> usado por etapa.</td>
 	<td style="${TD_STYLE}"><b>Sin redeploy.</b> Cambiar la fila en <code>RECURSO_OPENAI</code> y el próximo mensaje lo toma.</td>
 	</tr>
@@ -287,7 +283,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		),
 		await note(
 			"mdi:numeric-4-circle-outline",
-			`<b>Fase 4:</b> mover el catálogo de <i>prompts</i> y modelo (<code>PR_*</code> y <code>OPENAI_MODEL</code>) a <b>SQL</b> como valores dinámicos administrables. Quita la dependencia de variables de entorno y permite ajustar prompts/modelo sin redeploy.`,
+			`<b>Fase 4:</b> mover el catálogo de <i>prompts</i> y modelo (<code>PR_*</code> y <code>OPENAI_MODEL</code>) a <b>SQL</b> como valores dinámicos administrables. Además, cada fila de prompt (columna <b>INSTRUCCION</b>) incorpora una columna propia de <b>modelo OpenAI</b>, de modo que la elección se hace <i>por prompt</i> según su complejidad: ya no todos quedan en <code>gpt-5</code>, sino que cada instrucción usa el modelo más costo-efectivo para su tarea. Quita la dependencia de variables de entorno y permite ajustar prompts/modelo sin redeploy.`,
 		),
 	);
 
@@ -381,80 +377,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		</div>`,
 	);
 
-	const presupuesto = await note(
-		"mdi:clock-outline",
-		`<b>Estimación total: 3 horas (180 min)</b> para diseño + actualización documental, sin desarrollo productivo en código de PatyIA.<br>
-		<table style="border-collapse:collapse;width:100%;margin-top:0.5rem;font-size:0.9rem;">
-		<thead>
-		<tr style="background:#80808015;">
-		<th style="border:1px solid #80808040;padding:0.4rem;text-align:left;">#</th>
-		<th style="border:1px solid #80808040;padding:0.4rem;text-align:left;">Actividad</th>
-		<th style="border:1px solid #80808040;padding:0.4rem;text-align:right;">Tiempo</th>
-		</tr>
-		</thead>
-		<tbody>
-		<tr>
-		<td style="border:1px solid #80808040;padding:0.4rem;">1</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;">Lectura y análisis del código de PatyIA (flujo SSE, <code>OpenIAServer</code>, configuración actual).</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">30 min</td>
-		</tr>
-		<tr>
-		<td style="border:1px solid #80808040;padding:0.4rem;">2</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;">Diseño de la propuesta de selección dinámica de modelo (mapa por etapa/tipo, fallback, feature flag).</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">40 min</td>
-		</tr>
-		<tr>
-		<td style="border:1px solid #80808040;padding:0.4rem;">3</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;">Análisis de BD: <code>VECTOR_STORE</code> → <code>RECURSO_OPENAI</code>, tabla de métricas (<code>TOKENS_IN</code>/<code>TOKENS_OUT</code>, <code>COSTO_APROX</code>), <code>UTIL</code> tri-estado, persistencia de <code>INPUT</code>.</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">50 min</td>
-		</tr>
-		<tr>
-		<td style="border:1px solid #80808040;padding:0.4rem;">4</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;">Redacción de viabilidad, comparativa, hoja de ruta por fases y riesgos.</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">30 min</td>
-		</tr>
-		<tr>
-		<td style="border:1px solid #80808040;padding:0.4rem;">5</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;">Consolidación, revisión y actualización final de la diligencia del ticket.</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">30 min</td>
-		</tr>
-		<tr style="background:#80808010;font-weight:600;">
-		<td style="border:1px solid #80808040;padding:0.4rem;" colspan="2">Total</td>
-		<td style="border:1px solid #80808040;padding:0.4rem;text-align:right;">180 min (3 h)</td>
-		</tr>
-		</tbody>
-		</table>`,
-	);
-
-	const riesgos = noteList(
-		await note(
-			"mdi:alert-decagram-outline",
-			`<b>Riesgo de inconsistencia entre etapas:</b> respuestas heterogéneas entre modelos.<br><b>Mitigación:</b> guardrails de formato y fallback a modelo fuerte cuando falle validación.`,
-		),
-		await note(
-			"mdi:cash-fast",
-			`<b>Riesgo de ahorro no materializado:</b> usar más modelos no garantiza ahorro si crece el retrabajo.<br><b>Mitigación:</b> tablero de costo/latencia por etapa antes de escalar.`,
-		),
-		await note(
-			"mdi:timer-alert-outline",
-			`<b>Riesgo de latencia acumulada:</b> múltiples etapas con modelos distintos pueden aumentar tiempo total.<br><b>Mitigación:</b> límites de timeout por etapa y policy de degradación controlada.`,
-		),
-	);
-
-	const conclusion = noteList(
-		await note(
-			"mdi:thumb-up-outline",
-			`<b>Recomendación técnica:</b> avanzar por fases. Empezar con parametrización por etapa en configuración y fallback global, y dejar los cambios en BD de configuración para cuando haya métricas reales que los justifiquen.`,
-		),
-		await note(
-			"mdi:file-sign",
-			`<b>Propuesta para aprobación:</b> aprobar una fase de diseño técnico detallado (sin desarrollo productivo) para definir el contrato de configuración, las reglas de fallback y el esquema mínimo de trazabilidad.`,
-		),
-		await note(
-			"mdi:shield-check-outline",
-			`<b>Estado de esta diligencia:</b> análisis cerrado como propuesta técnica. No hubo cambios en código de PatyIA dentro de este ticket.`,
-		),
-	);
+	const presupuesto = `<p style="margin:0.5rem 0;">Se estima que <b>cada fase puede tomar alrededor de 1 hora</b> de implementación, por lo que el ajuste completo tomaría <b>alrededor de 4 horas</b> en el mejor de los casos en que no se presenten inconvenientes.</p>`;
 
 	return intro
 		+ h3Estado + estadoActual
@@ -464,9 +387,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 		+ h3Ruta + mejorCamino
 		+ h3BD + analisisBD
 		+ h3Referencia + referencia
-		+ h3Presupuesto + presupuesto
-		+ h3Riesgos + riesgos
-		+ h3Conclusion + conclusion;
+		+ h3Presupuesto + presupuesto;
 }
 
 export const bodyTK1429262: Promise<string> = buildBodyTK1429262();
