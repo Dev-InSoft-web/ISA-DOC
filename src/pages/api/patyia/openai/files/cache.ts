@@ -28,7 +28,7 @@ interface CacheShape {
 
 const EMPTY: CacheShape = { updated: "", count: 0, files: [] };
 
-const PAGE_SIZE_DEFAULT = 50;
+const PAGE_SIZE_DEFAULT = 20;
 const PAGE_SIZE_MAX = 500;
 
 function filtrar(files: OpenAIFile[], q: string, purpose: string): OpenAIFile[] {
