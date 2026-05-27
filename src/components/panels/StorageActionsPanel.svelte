@@ -477,11 +477,11 @@
 					{#if cacheUpdated}· Actualizado: {new Date(cacheUpdated).toLocaleString()}{/if}
 				</div>
 				<FlexLayout items="center" class="paginacion-botones">
-					<Button variant="outlined" onClick={() => irPagina(1)} disabled={filesPage <= 1 || filesCargando}>«</Button>
-					<Button variant="outlined" onClick={() => irPagina(filesPage - 1)} disabled={filesPage <= 1 || filesCargando}>‹</Button>
+					<ButtonIconify icon="mdi:chevron-double-left" onClick={() => irPagina(1)} disabled={filesPage <= 1 || filesCargando} title="Primera" />
+					<ButtonIconify icon="mdi:chevron-left" onClick={() => irPagina(filesPage - 1)} disabled={filesPage <= 1 || filesCargando} title="Anterior" />
 					<span class="pag-info">Página {filesPage} / {filesTotalPages}</span>
-					<Button variant="outlined" onClick={() => irPagina(filesPage + 1)} disabled={filesPage >= filesTotalPages || filesCargando}>›</Button>
-					<Button variant="outlined" onClick={() => irPagina(filesTotalPages)} disabled={filesPage >= filesTotalPages || filesCargando}>»</Button>
+					<ButtonIconify icon="mdi:chevron-right" onClick={() => irPagina(filesPage + 1)} disabled={filesPage >= filesTotalPages || filesCargando} title="Siguiente" />
+					<ButtonIconify icon="mdi:chevron-double-right" onClick={() => irPagina(filesTotalPages)} disabled={filesPage >= filesTotalPages || filesCargando} title="Última" />
 				</FlexLayout>
 			</FlexLayout>
 		</div>
@@ -752,13 +752,19 @@
 	}
 	:global(.paginacion) {
 		margin-top: 0.5rem;
+		padding: 0.4rem 0.25rem 0;
+		border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+	}
+	:global(.paginacion-botones) {
+		gap: 0.25rem;
 	}
 	.pag-info {
 		font-size: 0.78rem;
-		opacity: 0.8;
-		padding: 0 0.4rem;
-		min-width: 7rem;
+		opacity: 0.85;
+		padding: 0 0.5rem;
+		min-width: 7.5rem;
 		text-align: center;
+		white-space: nowrap;
 	}
 	.hint {
 		font-size: 0.78rem;
