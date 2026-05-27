@@ -22,5 +22,5 @@
 		"types": ["svelte", "astro/client"]
 	},
 	"include": [".astro/types.d.ts", "**/*"],
-	"exclude": ["dist", "dist-gh-pages", "scripts", "__apply.cjs"]
+	"exclude": ["dist", "dist-gh-pages", "scripts", "__apply.cjs", "data/openai-storage"]
 }

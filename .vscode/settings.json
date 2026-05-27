@@ -1,0 +1,11 @@
+{
+	"files.exclude": {
+		"data/openai-storage": true
+	},
+	"search.exclude": {
+		"data/openai-storage": true
+	},
+	"files.watcherExclude": {
+		"**/data/openai-storage/**": true
+	}
+}
