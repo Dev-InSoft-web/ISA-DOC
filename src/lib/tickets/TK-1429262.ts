@@ -170,115 +170,76 @@ export async function buildBodyTK1429262(): Promise<string> {
 
 	const diagramaFases = imgFull("tk1429262-mermaid-hoja-de-ruta.png");
 
-	const tablaFases = `
-<table style="${TABLE_STYLE}">
-<thead><tr>
-<th style="${TH_STYLE}">Fase</th>
-<th style="${TH_STYLE}">Cambio principal</th>
-<th style="${TH_STYLE}">¿Toca código?</th>
-<th style="${TH_STYLE}">¿Toca BD?</th>
-<th style="${TH_STYLE}">¿Reversible?</th>
-<th style="${TH_STYLE}">Esfuerzo</th>
-</tr></thead>
-<tbody>
-<tr><td style="${TD_STYLE}"><b>1</b></td><td style="${TD_STYLE}">Mapa <code>etapa → modelo</code> + fallback global.</td><td style="${TD_STYLE}">Sí (mínimo)</td><td style="${TD_STYLE}">No</td><td style="${TD_STYLE}">Sí (toggle)</td><td style="${TD_STYLE}">Bajo</td></tr>
-<tr><td style="${TD_STYLE}"><b>2</b></td><td style="${TD_STYLE}">Extiende a <code>etapa + tipo_consulta → modelo</code> reutilizando el clasificador existente.</td><td style="${TD_STYLE}">Sí</td><td style="${TD_STYLE}">No</td><td style="${TD_STYLE}">Sí (toggle)</td><td style="${TD_STYLE}">Bajo</td></tr>
-<tr><td style="${TD_STYLE}"><b>3</b></td><td style="${TD_STYLE}">Trazabilidad por etapa: modelo, tokens, latencia, resultado, costo aproximado.</td><td style="${TD_STYLE}">Sí</td><td style="${TD_STYLE}">Sí (<code>MENSAJE_METRICAS</code>)</td><td style="${TD_STYLE}">Sí (deja de escribir)</td><td style="${TD_STYLE}">Medio</td></tr>
-<tr><td style="${TD_STYLE}"><b>4</b></td><td style="${TD_STYLE}">Mueve <code>PR_*</code> y <code>OPENAI_MODEL</code> a SQL en <code>RECURSO_OPENAI</code>; sin redeploy para ajustar.</td><td style="${TD_STYLE}">Sí</td><td style="${TD_STYLE}">Sí (<code>RECURSO_OPENAI</code>)</td><td style="${TD_STYLE}">Sí (vuelve a env)</td><td style="${TD_STYLE}">Medio</td></tr>
-</tbody>
-</table>`;
-
 	const INPUT_BOX = `background:#f5f7fa;border-left:3px solid #1976d2;padding:0.5rem 0.75rem;margin:0.5rem 0;font-family:Consolas,Menlo,monospace;font-size:0.85rem;white-space:pre-wrap;`;
 	const OUTPUT_BOX = `background:#f4faf4;border-left:3px solid #2e7d32;padding:0.5rem 0.75rem;margin:0.5rem 0;font-family:Consolas,Menlo,monospace;font-size:0.85rem;white-space:pre-wrap;`;
 
-	const ejemploTrace = `
+	const viajePorFases = `
 <div style="margin-top:0.5rem;">
-	<div><b>Entrada del asesor</b></div>
-	<div style="${INPUT_BOX}">"Necesito calcular el ajuste por inflación de la cartera del cliente Contapyme S.A.S al cierre del periodo 2025, aplicando NIIF para pymes."</div>
-	<div style="margin-top:0.5rem;"><b>Razonamiento del sistema por etapa</b></div>
+	<div><b>Entrada fija del asesor</b></div>
+	<div style="${INPUT_BOX}">"Liquidación de retención en la fuente por servicios técnicos para un proveedor declarante."</div>
+	<div style="margin-top:0.5rem;">El mismo input se procesa distinto según en qué fase esté el sistema:</div>
 	<table style="${TABLE_STYLE}">
 	<thead><tr>
-	<th style="${TH_STYLE}">#</th>
-	<th style="${TH_STYLE}">Etapa</th>
-	<th style="${TH_STYLE}">Modelo elegido</th>
-	<th style="${TH_STYLE}">¿Por qué este modelo?</th>
-	<th style="${TH_STYLE}">Salida intermedia</th>
+	<th style="${TH_STYLE}">Fase</th>
+	<th style="${TH_STYLE}">Clasificación</th>
+	<th style="${TH_STYLE}">Extracción</th>
+	<th style="${TH_STYLE}">Respuesta</th>
+	<th style="${TH_STYLE}">Trazabilidad guardada</th>
+	<th style="${TH_STYLE}">Para ajustar la regla…</th>
 	</tr></thead>
 	<tbody>
 	<tr>
-	<td style="${TD_STYLE}">1</td>
-	<td style="${TD_STYLE}"><code>clasificacion</code></td>
-	<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
-	<td style="${TD_STYLE}">Tarea cerrada: encajar el texto en una de N categorías. No requiere razonamiento profundo, solo emparejamiento semántico. Se usa el modelo barato porque el costo se paga en <b>cada</b> mensaje y la calidad del clasificador rara vez es el cuello de botella.</td>
-	<td style="${TD_STYLE}"><code>tipo_consulta = "contable_niif"</code></td>
+	<td style="${TD_STYLE}"><b>Hoy</b><br>(antes de Fase 1)</td>
+	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(global)</small></td>
+	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(global)</small></td>
+	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(global)</small></td>
+	<td style="${TD_STYLE}">Solo <code>modelo_ia</code> final en la conversación.</td>
+	<td style="${TD_STYLE}">Editar <code>OPENAI_MODEL</code> en <code>local.settings.json</code> y redeploy.</td>
 	</tr>
 	<tr>
-	<td style="${TD_STYLE}">2</td>
-	<td style="${TD_STYLE}"><code>extraccion</code></td>
-	<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
-	<td style="${TD_STYLE}">Extraer entidades estructuradas del texto (cliente, periodo, norma). Otra tarea de baja complejidad que se beneficia del modelo barato, y cuyo output sí debe ser determinístico para alimentar la siguiente etapa.</td>
-	<td style="${TD_STYLE}"><code>{ cliente: "Contapyme S.A.S", periodo: "2025", norma: "NIIF pymes" }</code></td>
+	<td style="${TD_STYLE}"><b>Fase 1</b><br>etapa → modelo</td>
+	<td style="${TD_STYLE}"><code>gpt-4o-mini</code><br><small>(etapa "clasificacion")</small></td>
+	<td style="${TD_STYLE}"><code>gpt-4o-mini</code><br><small>(etapa "extraccion")</small></td>
+	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(etapa "respuesta")</small></td>
+	<td style="${TD_STYLE}">Igual que hoy (solo modelo final).</td>
+	<td style="${TD_STYLE}">Editar el mapa <code>etapa → modelo</code> en configuración y redeploy.</td>
 	</tr>
 	<tr>
-	<td style="${TD_STYLE}">3</td>
-	<td style="${TD_STYLE}"><code>respuesta</code></td>
+	<td style="${TD_STYLE}"><b>Fase 2</b><br>+ tipo_consulta</td>
+	<td style="${TD_STYLE}"><code>gpt-4o-mini</code><br><small>devuelve <code>tipo = tributaria</code></small></td>
+	<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
+	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(respuesta + tributaria → modelo fuerte)</small></td>
+	<td style="${TD_STYLE}">Igual que Fase 1.</td>
+	<td style="${TD_STYLE}">Editar el mapa <code>etapa + tipo → modelo</code> y redeploy. Casos triviales bajan a <code>gpt-4o-mini</code> también en respuesta.</td>
+	</tr>
+	<tr>
+	<td style="${TD_STYLE}"><b>Fase 3</b><br>+ trazabilidad</td>
+	<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
+	<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
 	<td style="${TD_STYLE}"><code>gpt-5</code></td>
-	<td style="${TD_STYLE}">El <code>tipo_consulta</code> obtenido en (1) entra al mapa <code>etapa + tipo → modelo</code>. Para <code>contable_niif</code> + <code>respuesta</code> se enruta a un modelo fuerte: el asesor necesita razonamiento sobre norma y cálculo, no solo redacción. Aquí <b>sí</b> se paga el modelo caro porque es donde se gana o se pierde la calidad percibida.</td>
-	<td style="${TD_STYLE}">Respuesta final con explicación + cálculo paso a paso.</td>
+	<td style="${TD_STYLE}">Una fila en <code>MENSAJE_METRICAS</code> por etapa: <code>TOKENS_IN/OUT</code>, <code>MODELO</code>, <code>ETAPA</code>, <code>COSTO_APROX</code>. Permite ver dónde se concentra el gasto.</td>
+	<td style="${TD_STYLE}">Igual que Fase 2 (la regla no cambia, sí se mide su efecto real).</td>
+	</tr>
+	<tr>
+	<td style="${TD_STYLE}"><b>Fase 4</b><br>+ catálogo en SQL</td>
+	<td style="${TD_STYLE}"><code>gpt-4o-mini</code><br><small>(modelo leído de <code>RECURSO_OPENAI</code>)</small></td>
+	<td style="${TD_STYLE}"><code>gpt-4o-mini</code><br><small>(prompt + modelo desde BD)</small></td>
+	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(prompt + modelo desde BD)</small></td>
+	<td style="${TD_STYLE}">Igual que Fase 3 + queda registrado qué <code>IRECURSO</code> se usó por etapa.</td>
+	<td style="${TD_STYLE}"><b>Sin redeploy.</b> Cambiar la fila en <code>RECURSO_OPENAI</code> (modelo o prompt) y el próximo mensaje lo toma.</td>
 	</tr>
 	</tbody>
 	</table>
-	<div style="margin-top:0.5rem;"><b>Salida al asesor</b></div>
-	<div style="${OUTPUT_BOX}">Para ajustar por inflación la cartera de Contapyme S.A.S al cierre 2025 bajo NIIF para pymes:
+	<div style="margin-top:0.5rem;"><b>Lo que el asesor recibe</b> (idéntico en todas las fases, salvo costo/latencia)</div>
+	<div style="${OUTPUT_BOX}">Para liquidar la retención en la fuente por servicios técnicos a un proveedor declarante:
 
-1. Determinar el saldo de la cartera al 31-dic-2025 …
-2. Aplicar el índice de precios al consumidor (IPC) acumulado del periodo …
-3. Registrar el ajuste contra resultados acumulados …
+1. Identificar la base gravable (valor del servicio antes de IVA) …
+2. Aplicar la tarifa vigente para "servicios técnicos" sobre la base …
+3. Descontar la retención del pago al proveedor y declararla en el formulario 350 …
 
-(respuesta completa generada por <b>gpt-5</b>)</div>
+(respuesta generada por <b>gpt-5</b>)</div>
+	<div style="margin-top:0.5rem;font-style:italic;color:#555;">Lectura: la calidad percibida es la misma a partir de Fase 1; lo que mejora en cada fase es el <b>costo</b> (etapas 1-2 baratas), la <b>visibilidad</b> (Fase 3) y la <b>agilidad operativa</b> (Fase 4, sin redeploy).</div>
 </div>`;
-
-	const tablaEnrutamiento = `
-<table style="${TABLE_STYLE}">
-<thead><tr>
-<th style="${TH_STYLE}">Entrada del asesor</th>
-<th style="${TH_STYLE}"><code>tipo_consulta</code> (etapa 1)</th>
-<th style="${TH_STYLE}">Modelo de respuesta</th>
-<th style="${TH_STYLE}">Razonamiento del sistema</th>
-</tr></thead>
-<tbody>
-<tr>
-<td style="${TD_STYLE}">"Hola, ¿cómo estás?"</td>
-<td style="${TD_STYLE}"><code>saludo</code></td>
-<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
-<td style="${TD_STYLE}">Conversación trivial: modelo barato responde igual de bien y la latencia baja mejora la experiencia.</td>
-</tr>
-<tr>
-<td style="${TD_STYLE}">"¿En qué módulo registro una nota crédito?"</td>
-<td style="${TD_STYLE}"><code>soporte_uso</code></td>
-<td style="${TD_STYLE}"><code>gpt-4o</code></td>
-<td style="${TD_STYLE}">Pregunta funcional sobre el producto. Requiere precisión y consulta al vector store de manuales, pero no razonamiento normativo. Modelo intermedio.</td>
-</tr>
-<tr>
-<td style="${TD_STYLE}">"Ajuste por inflación NIIF para pymes 2025"</td>
-<td style="${TD_STYLE}"><code>contable_niif</code></td>
-<td style="${TD_STYLE}"><code>gpt-5</code></td>
-<td style="${TD_STYLE}">Requiere razonamiento sobre norma + cálculo. Aquí el costo extra se justifica porque define la calidad percibida.</td>
-</tr>
-<tr>
-<td style="${TD_STYLE}">"Liquidación de retención en la fuente por servicios técnicos"</td>
-<td style="${TD_STYLE}"><code>tributaria</code></td>
-<td style="${TD_STYLE}"><code>gpt-5</code></td>
-<td style="${TD_STYLE}">Norma tributaria con tarifas y excepciones; modelo fuerte para minimizar alucinación sobre porcentajes.</td>
-</tr>
-<tr>
-<td style="${TD_STYLE}">"Sin clasificar (clasificador devuelve <code>otros</code>)"</td>
-<td style="${TD_STYLE}"><code>otros</code></td>
-<td style="${TD_STYLE}"><code>OPENAI_MODEL</code> (fallback)</td>
-<td style="${TD_STYLE}">Cuando el mapa no tiene entrada específica, cae al modelo global por seguridad. Garantiza que ningún caso quede sin respuesta.</td>
-</tr>
-</tbody>
-</table>`;
 
 	const mejorCamino = noteList(
 		await note(
@@ -286,16 +247,8 @@ export async function buildBodyTK1429262(): Promise<string> {
 			`<b>Hoja de ruta visual</b><br>Las fases avanzan de menor a mayor impacto. <span style="color:#1976d2;">Azul</span>: cambios solo en código/configuración. <span style="color:#ef6c00;">Naranja</span>: cambios también en base de datos.${diagramaFases}`,
 		),
 		await note(
-			"mdi:table",
-			`<b>Comparativa de fases</b>${tablaFases}`,
-		),
-		await note(
-			"mdi:lightbulb-on-outline",
-			`<b>Ejemplo concreto end-to-end (estado post-fase 2)</b><br>Cómo se vería un mensaje real recorriendo el flujo, con el razonamiento que justifica cada elección de modelo:${ejemploTrace}`,
-		),
-		await note(
-			"mdi:vector-difference",
-			`<b>Cómo enruta el sistema según el <code>tipo_consulta</code></b><br>Varios mensajes distintos sobre el mismo mapa de configuración:${tablaEnrutamiento}`,
+			"mdi:flask-outline",
+			`<b>Caso de prueba: un mismo input recorriendo las 4 fases</b><br>Útil para visualizar qué cambia exactamente en cada fase y qué permanece igual:${viajePorFases}`,
 		),
 		await note(
 			"mdi:numeric-1-circle-outline",
