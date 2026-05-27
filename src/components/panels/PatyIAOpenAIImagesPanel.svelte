@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, Modal, RichEditor, SelectEnum, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
-	import ChatMensajesView, { type MsgVista } from "./ChatMensajesView.svelte";
+	import ChatMensajesView, { type MsgVista, type ArchivoCita, type OpenFileDetail } from "./ChatMensajesView.svelte";
+	import { marked } from "marked";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 	import TsViewer from "../viewers/TsViewer.svelte";
 	import ImageViewer from "../viewers/ImageViewer.svelte";
@@ -456,6 +457,64 @@ const data = await r.json();
 	let convLoading: boolean = false;
 	let convModalOpen: boolean = false;
 	let tutorialOpen: boolean = false;
+
+	let fileModalOpen: boolean = false;
+	let fileLoading: boolean = false;
+	let fileError: string = "";
+	let fileMeta: { file_id: string; filename: string; bytes?: number; purpose?: string } | null = null;
+	let fileTexto: string = "";
+	let fileEsTexto: boolean = false;
+	let fileEsMarkdown: boolean = false;
+	let fileBlobUrl: string = "";
+
+	async function abrirArchivoOpenAI(detail: OpenFileDetail): Promise<void> {
+		cerrarArchivoOpenAI();
+		fileMeta = { file_id: detail.fileId, filename: detail.filename };
+		fileModalOpen = true;
+		fileLoading = true;
+		try {
+			const r = await fetch(`/api/patyia/openai/file/${encodeURIComponent(detail.fileId)}?content=1`);
+			if (!r.ok) {
+				const txt = await r.text();
+				throw new Error(`HTTP ${r.status}: ${txt.slice(0, 200)}`);
+			}
+			const ct = r.headers.get("content-type") ?? "";
+			const filenameSrv = r.headers.get("x-openai-filename") ?? detail.filename;
+			const purpose = r.headers.get("x-openai-purpose") ?? "";
+			fileEsTexto = ct.startsWith("text/") || ct.includes("json") || ct.includes("xml") || ct.includes("yaml");
+			fileEsMarkdown = ct.includes("markdown") || /\.(md|markdown)$/i.test(filenameSrv);
+			if (fileEsTexto) {
+				fileTexto = await r.text();
+			} else {
+				const blob = await r.blob();
+				fileBlobUrl = URL.createObjectURL(blob);
+			}
+			fileMeta = { file_id: detail.fileId, filename: filenameSrv, purpose };
+		} catch (err) {
+			fileError = err instanceof Error ? err.message : String(err);
+		} finally {
+			fileLoading = false;
+		}
+	}
+
+	function cerrarArchivoOpenAI(): void {
+		if (fileBlobUrl) {
+			try { URL.revokeObjectURL(fileBlobUrl); } catch {}
+		}
+		fileBlobUrl = "";
+		fileTexto = "";
+		fileError = "";
+		fileEsTexto = false;
+		fileEsMarkdown = false;
+		fileMeta = null;
+		fileModalOpen = false;
+	}
+
+	onDestroy(() => {
+		if (fileBlobUrl) {
+			try { URL.revokeObjectURL(fileBlobUrl); } catch {}
+		}
+	});
 	let convError: string = "";
 	let convWarnings: string[] = [];
 	let convRow: SqlRow | null = null;
@@ -558,8 +617,12 @@ const data = await r.json();
 		const fecha = formatearFechaMsg(pickStr(m, FECHA_KEYS));
 		const lower = rol.toLowerCase();
 		const esUsuario = lower.startsWith("usu") || lower === "user";
+		const rawArchivos = (m as { archivos?: unknown }).archivos;
+		const archivos: ArchivoCita[] = Array.isArray(rawArchivos)
+			? (rawArchivos as ArchivoCita[]).filter((a) => a && typeof a.file_id === "string" && typeof a.marcador === "string")
+			: [];
 
-		return { idMsg, rol, contenido, fecha, esUsuario };
+		return { idMsg, rol, contenido, fecha, esUsuario, archivos };
 	}
 
 	$: vistaMensajes = convMensajes.map(aMsgVista);
@@ -938,7 +1001,7 @@ const data = await r.json();
 								</FlexLayout>
 							</FlexLayout>
 							<div class="chat-inline">
-								<ChatMensajesView mensajes={vistaMensajes} />
+								<ChatMensajesView mensajes={vistaMensajes} on:openFile={(e) => abrirArchivoOpenAI(e.detail)} />
 							</div>
 						</section>
 					{/if}
@@ -956,7 +1019,7 @@ const data = await r.json();
 	>
 		<h3 slot="title">Conversación #{convId} ({vistaMensajes.length} mensajes)</h3>
 		<div class="conv-modal-body custom-scrollbar">
-			<ChatMensajesView mensajes={vistaMensajes} />
+			<ChatMensajesView mensajes={vistaMensajes} on:openFile={(e) => abrirArchivoOpenAI(e.detail)} />
 		</div>
 	</Modal>
 {/if}
@@ -1042,6 +1105,41 @@ const data = await r.json();
 				En este hilo la fuente activa es:
 				<strong>{convFuenteMensajes === "openai" ? "API OpenAI" : convFuenteMensajes === "calificados" ? "BD (MENSAJESCALIFICADOS)" : "vacío"}</strong>.
 			</p>
+		</div>
+	</Modal>
+{/if}
+
+{#if fileModalOpen}
+	<Modal
+		bind:bshow={fileModalOpen}
+		onClose={cerrarArchivoOpenAI}
+		style="width: 95vw; max-width: 95vw; height: 95vh; max-height: 95vh;"
+	>
+		<h3 slot="title">
+			{fileMeta?.filename ?? "Archivo"} <span class="sub">· {fileMeta?.file_id ?? ""}</span>
+		</h3>
+		<div class="file-modal-body custom-scrollbar">
+			{#if fileLoading}
+				<p>Cargando archivo desde OpenAI…</p>
+			{:else if fileError}
+				<div class="error">{fileError}</div>
+			{:else if fileEsMarkdown}
+				<div class="prose">{@html marked.parse(fileTexto, { async: false })}</div>
+			{:else if fileEsTexto}
+				<pre class="file-pre">{fileTexto}</pre>
+			{:else if fileBlobUrl}
+				<p>
+					Archivo binario.
+					<a href={fileBlobUrl} download={fileMeta?.filename ?? "archivo"} class="btn-descargar">
+						Descargar {fileMeta?.filename ?? "archivo"}
+					</a>
+				</p>
+				{#if /\.(png|jpe?g|gif|webp|svg)$/i.test(fileMeta?.filename ?? "")}
+					<img src={fileBlobUrl} alt={fileMeta?.filename ?? ""} class="file-img" />
+				{:else if /\.pdf$/i.test(fileMeta?.filename ?? "")}
+					<iframe src={fileBlobUrl} title={fileMeta?.filename ?? "PDF"} class="file-iframe"></iframe>
+				{/if}
+			{/if}
 		</div>
 	</Modal>
 {/if}
@@ -1300,6 +1398,59 @@ const data = await r.json();
 		background: color-mix(in srgb, var(--is-primary), transparent 90%);
 		border-radius: 0 4px 4px 0;
 	}
+	.file-modal-body {
+		height: 100%;
+		overflow: auto;
+		padding: 1rem 1.25rem;
+		font-size: 0.92rem;
+		line-height: 1.55;
+	}
+	.file-modal-body .prose :global(h1) { font-size: 1.4rem; margin: 0.6rem 0 0.4rem; }
+	.file-modal-body .prose :global(h2) { font-size: 1.2rem; margin: 0.6rem 0 0.4rem; }
+	.file-modal-body .prose :global(h3) { font-size: 1.05rem; margin: 0.5rem 0 0.3rem; }
+	.file-modal-body .prose :global(pre) {
+		background: rgba(0, 0, 0, 0.35);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 4px;
+		padding: 0.7rem;
+		overflow: auto;
+		font-size: 0.85rem;
+	}
+	.file-modal-body .prose :global(code) {
+		font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+		background: rgba(255, 255, 255, 0.08);
+		padding: 0.05rem 0.3rem;
+		border-radius: 3px;
+		font-size: 0.85em;
+	}
+	.file-modal-body .prose :global(table) { border-collapse: collapse; margin: 0.5rem 0; }
+	.file-modal-body .prose :global(th),
+	.file-modal-body .prose :global(td) {
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		padding: 0.3rem 0.55rem;
+	}
+	.file-pre {
+		white-space: pre-wrap;
+		word-break: break-word;
+		font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+		font-size: 0.85rem;
+		background: rgba(0, 0, 0, 0.35);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 4px;
+		padding: 0.75rem;
+		margin: 0;
+	}
+	.btn-descargar {
+		display: inline-block;
+		margin-left: 0.5rem;
+		padding: 0.3rem 0.65rem;
+		background: var(--is-primary);
+		color: #fff;
+		border-radius: 4px;
+		text-decoration: none;
+	}
+	.file-img { max-width: 100%; height: auto; display: block; margin-top: 0.75rem; }
+	.file-iframe { width: 100%; height: calc(95vh - 8rem); border: 0; margin-top: 0.75rem; }
 	.warnings {
 		display: flex;
 		flex-direction: column;

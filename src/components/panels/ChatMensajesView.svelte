@@ -1,32 +1,83 @@
 <script lang="ts" context="module">
+	export interface ArchivoCita {
+		marcador: string;
+		file_id: string;
+		filename?: string;
+	}
+
 	export interface MsgVista {
 		idMsg: string;
 		rol: string;
 		contenido: string;
 		fecha: string;
 		esUsuario: boolean;
+		archivos: ArchivoCita[];
+	}
+
+	export interface OpenFileDetail {
+		fileId: string;
+		filename: string;
 	}
 </script>
 
 <script lang="ts">
+	import { createEventDispatcher } from "svelte";
 	import { Card, FlexLayout } from "@ingenieria_insoft/ispsveltecomponents";
 	import { marked } from "marked";
 
 	export let mensajes: MsgVista[] = [];
 
+	const dispatch = createEventDispatcher<{ openFile: OpenFileDetail }>();
+
 	marked.setOptions({ gfm: true, breaks: true });
+
+	function escaparHtml(s: string): string {
+		return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+	}
 
 	function mdToHtml(src: string): string {
 		if (!src) return "";
 		try {
 			return marked.parse(src, { async: false }) as string;
 		} catch {
-			return src.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+			return escaparHtml(src);
 		}
+	}
+
+	function insertarCitas(html: string, archivos: ArchivoCita[]): string {
+		let out = html;
+		const vistos = new Set<string>();
+		for (const a of archivos) {
+			if (vistos.has(a.marcador)) continue;
+			vistos.add(a.marcador);
+			const escMarcador = escaparHtml(a.marcador);
+			const re = new RegExp(escMarcador.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g");
+			const filename = a.filename ?? "archivo";
+			const btn = `<button type="button" class="cita-archivo" data-file-id="${escaparHtml(a.file_id)}" data-filename="${escaparHtml(filename)}" title="Abrir ${escaparHtml(filename)}">📎 ${escaparHtml(filename)}</button>`;
+			out = out.replace(re, btn);
+		}
+
+		return out.replace(/【[^】]*】/g, (m) => {
+			const inner = m.slice(1, -1);
+			const partes = inner.split("\u2020");
+			const filename = partes[1]?.trim() || inner;
+			return `<span class="cita-sin-id" title="Sin file_id en annotations">📎 ${escaparHtml(filename)}</span>`;
+		});
+	}
+
+	function onChatClick(e: MouseEvent): void {
+		const t = e.target as HTMLElement | null;
+		const btn = t?.closest?.(".cita-archivo") as HTMLButtonElement | null;
+		if (!btn) return;
+		e.preventDefault();
+		const fileId = btn.getAttribute("data-file-id");
+		const filename = btn.getAttribute("data-filename") ?? "archivo";
+		if (!fileId) return;
+		dispatch("openFile", { fileId, filename });
 	}
 </script>
 
-<div class="chat-historial custom-scrollbar">
+<div class="chat-historial custom-scrollbar" on:click={onChatClick} role="presentation">
 	{#each mensajes as m}
 		<FlexLayout justify={m.esUsuario ? "end" : "start"} items="start" style="width: 100%;">
 			<div class="msg-wrap">
@@ -35,7 +86,7 @@
 					style={m.esUsuario ? "background-color: var(--is-primary); color: #fff;" : ""}
 				>
 					<div class="msg-head">#{m.idMsg} · {m.rol}{m.fecha ? ` · ${m.fecha}` : ""}</div>
-					<div class="msg-body prose">{@html mdToHtml(m.contenido)}</div>
+					<div class="msg-body prose">{@html insertarCitas(mdToHtml(m.contenido), m.archivos)}</div>
 				</Card>
 			</div>
 		</FlexLayout>
@@ -119,5 +170,33 @@
 		padding: 0.25rem 0.5rem;
 	}
 	.msg-body :global(img) { max-width: 100%; height: auto; }
+	.msg-body :global(.cita-archivo) {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		background: rgba(96, 165, 250, 0.18);
+		border: 1px solid rgba(96, 165, 250, 0.5);
+		color: inherit;
+		font: inherit;
+		font-size: 0.82em;
+		padding: 0.05rem 0.45rem;
+		border-radius: 999px;
+		cursor: pointer;
+		margin: 0 0.1rem;
+	}
+	.msg-body :global(.cita-archivo:hover) {
+		background: rgba(96, 165, 250, 0.32);
+	}
+	.msg-body :global(.cita-sin-id) {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px dashed rgba(255, 255, 255, 0.25);
+		font-size: 0.82em;
+		padding: 0.05rem 0.45rem;
+		border-radius: 999px;
+		opacity: 0.8;
+	}
 </style>
 
