@@ -10,6 +10,7 @@
 		toastError,
 		toastSuccess,
 	} from "@ingenieria_insoft/ispsveltecomponents";
+	import { leerState, escribirState, migrarLegacy } from "../../lib/patyia/urlState";
 
 	interface OpenAIFile {
 		id: string;
@@ -68,6 +69,13 @@
 	let busquedaFiles: string = "";
 	let cacheUpdated: string = "";
 	let descargandoTodos: boolean = false;
+	let filesPage: number = 1;
+	let filesPageSize: number = 150;
+	let filesTotal: number = 0;
+	let filesTotalFiltrado: number = 0;
+	let filesTotalPages: number = 1;
+	let busquedaTimer: ReturnType<typeof setTimeout> | null = null;
+	let filesInicializado: boolean = false;
 
 	let vstores: VectorStore[] = [];
 	let vsCargando: boolean = false;
@@ -87,32 +95,42 @@
 	let tab2: Tab2 = "files";
 
 	function leerTab2(): Tab2 {
-		if (typeof window === "undefined") return "files";
-		const raw = new URLSearchParams(window.location.search).get("tab2");
-		if (raw && TAB2_VALIDAS.has(raw as Tab2)) return raw as Tab2;
-		return "files";
-	}
-	function escribirTab2(t: Tab2): void {
-		if (typeof window === "undefined") return;
-		const url = new URL(window.location.href);
-		if (url.searchParams.get("tab2") === t) return;
-		url.searchParams.set("tab2", t);
-		window.history.replaceState(null, "", url.toString());
+		const st = leerState();
+		const legacy = migrarLegacy({ tab2: "subStorage" });
+		const raw = String((st.subStorage ?? legacy.subStorage) ?? "");
+		return raw && TAB2_VALIDAS.has(raw as Tab2) ? (raw as Tab2) : "files";
 	}
 	function setTab2(t: Tab2): void {
 		tab2 = t;
-		escribirTab2(t);
+		escribirState({ subStorage: t });
 	}
 
-	$: filesFiltrados = filtrar(files, busquedaFiles, purposeFiltro);
+	function onFiltroPurpose(): void {
+		filesPage = 1;
+		cargarFiles();
+	}
 
-	function filtrar(arr: OpenAIFile[], q: string, purpose: string): OpenAIFile[] {
-		const s = q.trim().toLowerCase();
-		return arr.filter((f) => {
-			if (purpose && f.purpose !== purpose) return false;
-			if (!s) return true;
-			return f.filename.toLowerCase().includes(s) || f.id.toLowerCase().includes(s);
-		});
+	function onBusquedaInput(): void {
+		if (busquedaTimer) clearTimeout(busquedaTimer);
+		busquedaTimer = setTimeout(() => {
+			filesPage = 1;
+			cargarFiles();
+		}, 300);
+	}
+
+	$: if (filesInicializado) {
+		void purposeFiltro;
+		onFiltroPurpose();
+	}
+	$: if (filesInicializado) {
+		void busquedaFiles;
+		onBusquedaInput();
+	}
+
+	function irPagina(p: number): void {
+		if (p < 1 || p > filesTotalPages || p === filesPage) return;
+		filesPage = p;
+		cargarFiles();
 	}
 
 	function idCorto(id: string): string {
@@ -124,16 +142,26 @@
 		filesCargando = true;
 		filesError = "";
 		try {
-			const r = await fetch("/api/patyia/openai/files/cache");
+			const u = new URL("/api/patyia/openai/files/cache", window.location.origin);
+			u.searchParams.set("page", String(filesPage));
+			u.searchParams.set("pageSize", String(filesPageSize));
+			if (busquedaFiles.trim()) u.searchParams.set("q", busquedaFiles.trim());
+			if (purposeFiltro) u.searchParams.set("purpose", purposeFiltro);
+			const r = await fetch(u.toString());
 			const j = await r.json();
 			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
-			files = (j.files ?? []) as OpenAIFile[];
+			files = (j.items ?? []) as OpenAIFile[];
 			cacheUpdated = j.updated ?? "";
+			filesTotal = j.count ?? 0;
+			filesTotalFiltrado = j.filtered ?? 0;
+			filesTotalPages = j.totalPages ?? 1;
+			filesPage = j.page ?? 1;
 		} catch (err) {
 			filesError = err instanceof Error ? err.message : String(err);
 			files = [];
 		} finally {
 			filesCargando = false;
+			filesInicializado = true;
 		}
 	}
 
@@ -144,9 +172,10 @@
 			const r = await fetch("/api/patyia/openai/files/cache", { method: "POST" });
 			const j = await r.json();
 			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
-			files = (j.files ?? []) as OpenAIFile[];
 			cacheUpdated = j.updated ?? "";
 			toastSuccess(`Cache actualizado · ${j.count} archivos`);
+			filesPage = 1;
+			await cargarFiles();
 		} catch (err) {
 			filesError = err instanceof Error ? err.message : String(err);
 			toastError(filesError);
@@ -156,11 +185,11 @@
 	}
 
 	async function descargarTodos(): Promise<void> {
-		if (!files.length) {
+		if (!filesTotal) {
 			toastError("No hay archivos en el cache. Refresca primero.");
 			return;
 		}
-		if (!confirm(`Descargar backup local de los ${files.length} archivos? Puede tardar.`)) return;
+		if (!confirm(`Descargar backup local de los ${filesTotal} archivos? Puede tardar.`)) return;
 		descargandoTodos = true;
 		try {
 			const r = await fetch("/api/patyia/openai/files/backup-all", { method: "POST" });
@@ -399,7 +428,7 @@
 				<FlexLayout items="center" justify="end" class="botones-fila">
 					<Button onClick={cargarFiles} disabled={filesCargando || filesRefrescando} loading={filesCargando}>Cargar cache</Button>
 					<Button onClick={refrescarCache} disabled={filesRefrescando} loading={filesRefrescando}>Refrescar</Button>
-					<Button onClick={descargarTodos} disabled={descargandoTodos || !files.length} loading={descargandoTodos}>Descargar todos</Button>
+					<Button onClick={descargarTodos} disabled={descargandoTodos || !filesTotal} loading={descargandoTodos}>Descargar todos</Button>
 					<Button onClick={() => (uploadAbierto = true)}>Subir archivo</Button>
 				</FlexLayout>
 			</div>
@@ -421,7 +450,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each filesFiltrados as f (f.id)}
+						{#each files as f (f.id)}
 							<tr>
 								<td class="mono" title={f.id}>{idCorto(f.id)}</td>
 								<td>{f.filename}</td>
@@ -441,10 +470,20 @@
 					</tbody>
 				</table>
 			</div>
-			<div class="resumen">
-				Total: {filesFiltrados.length} / {files.length}
-				{#if cacheUpdated}· Actualizado: {new Date(cacheUpdated).toLocaleString()}{/if}
-			</div>
+			<FlexLayout items="center" justify="between" class="paginacion">
+				<div class="resumen">
+					Mostrando {files.length} de {filesTotalFiltrado}
+					{#if filesTotalFiltrado !== filesTotal}(filtrado de {filesTotal}){/if}
+					{#if cacheUpdated}· Actualizado: {new Date(cacheUpdated).toLocaleString()}{/if}
+				</div>
+				<FlexLayout items="center" class="paginacion-botones">
+					<Button variant="outlined" onClick={() => irPagina(1)} disabled={filesPage <= 1 || filesCargando}>«</Button>
+					<Button variant="outlined" onClick={() => irPagina(filesPage - 1)} disabled={filesPage <= 1 || filesCargando}>‹</Button>
+					<span class="pag-info">Página {filesPage} / {filesTotalPages}</span>
+					<Button variant="outlined" onClick={() => irPagina(filesPage + 1)} disabled={filesPage >= filesTotalPages || filesCargando}>›</Button>
+					<Button variant="outlined" onClick={() => irPagina(filesTotalPages)} disabled={filesPage >= filesTotalPages || filesCargando}>»</Button>
+				</FlexLayout>
+			</FlexLayout>
 		</div>
 	{:else if tab2 === "vs"}
 		<div class="tab-body">
@@ -710,6 +749,16 @@
 	.resumen {
 		font-size: 0.78rem;
 		opacity: 0.7;
+	}
+	:global(.paginacion) {
+		margin-top: 0.5rem;
+	}
+	.pag-info {
+		font-size: 0.78rem;
+		opacity: 0.8;
+		padding: 0 0.4rem;
+		min-width: 7rem;
+		text-align: center;
 	}
 	.hint {
 		font-size: 0.78rem;
