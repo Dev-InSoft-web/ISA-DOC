@@ -70,7 +70,7 @@
 	let cacheUpdated: string = "";
 	let descargandoTodos: boolean = false;
 	let filesPage: number = 1;
-	let filesPageSize: number = 150;
+	let filesPageSize: number = 50;
 	let filesTotal: number = 0;
 	let filesTotalFiltrado: number = 0;
 	let filesTotalPages: number = 1;
