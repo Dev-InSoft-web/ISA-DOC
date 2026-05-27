@@ -6,19 +6,14 @@ import { parseTableFragment, type ParsedTable } from "../tableSchema.ts";
  * - Consulta `INFORMATION_SCHEMA` y `sys.foreign_keys` para CADA base de datos
  *   en `DATABASES`, usando consultas calificadas `[DB].INFORMATION_SCHEMA.X`
  *   sobre la misma conexión expuesta por `/api/patyia/db/exec`.
- * - Prefija con `STG__` SOLAMENTE las tablas del entorno staging cuyo nombre
- *   también existe en producción (colisión). Las tablas únicas de staging
- *   conservan su nombre original. Esto se decide tras escanear todas las BDs
- *   y calcular el conjunto de nombres en colisión.
+ * - Cada base de datos es un contenedor hermetico independiente; las tablas
+ *   conservan su nombre original aunque coincida con otra BD. La distincion
+ *   visual se hace mediante el nodo contenedor `bd` en el arbol.
  * - Sintetiza un script `CREATE TABLE` con `PRIMARY KEY` inline y `REFERENCES`
- *   inline por cada FK simple. Las FK siempre apuntan a `prefixedName(refDb,
- *   refTable)` para que tras el parseo se conserven las relaciones aun cuando
- *   ambas BDs tengan tablas con el mismo nombre lógico.
+ *   inline por cada FK simple.
  */
 
 const DATABASES = ["AYUDASCP_IA", "AYUDASCP_IA_STAGING"];
-const STG_PREFIX = "STG__";
-const STAGING_DB = "AYUDASCP_IA_STAGING";
 const LEN_TYPES = new Set(["varchar", "nvarchar", "char", "nchar", "varbinary", "binary"]);
 
 interface ColumnRow {
@@ -141,14 +136,7 @@ export interface PatyiaSchemaResult {
 
 export async function loadPatyiaSchema(): Promise<PatyiaSchemaResult> {
    const raws = await Promise.all(DATABASES.map(loadRawDbSchema));
-   const namesByDb = new Map(raws.map((r) => [r.db, new Set(r.tableNames)]));
-   const collisions = new Set<string>();
-   const prodNames = namesByDb.get("AYUDASCP_IA") ?? new Set<string>();
-   const stagingNames = namesByDb.get(STAGING_DB) ?? new Set<string>();
-   for (const n of stagingNames) if (prodNames.has(n)) collisions.add(n);
-
-   const prefixFor = (db: string, name: string): string =>
-      db === STAGING_DB && collisions.has(name) ? STG_PREFIX : "";
+   const prefixFor = (): string => "";
 
    const tables: ParsedTable[] = [];
    const tableIdsByDatabase: Record<string, string[]> = {};
