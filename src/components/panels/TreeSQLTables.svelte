@@ -1159,7 +1159,11 @@
                            </span>
                         {:else if node.kind === "domain"}
                            <span class="tree-row" title={`${node.domainType === "bd" ? "Base de datos" : "Dominio"}: ${node.rowName ?? node.domainId ?? ""}${node.prefix ? ` (prefijo ${node.prefix})` : ""}`}>
-                              <span class={`badge ${node.domainType === "bd" ? "badge-bd" : "badge-domain"}`}>{node.domainType === "bd" ? "BD" : "Domain"}</span>
+                              {#if node.domainType === "bd"}
+                                 <span class="badge badge-bd"><Iconify icon="mdi:database" /> BD</span>
+                              {:else}
+                                 <span class="badge badge-domain">Domain</span>
+                              {/if}
                               {#if node.prefix}<span class="tree-row-name" title="Prefijo aplicado a las tablas del dominio">{node.prefix}</span>
                               {:else if node.rowName}<span class="tree-row-name">{node.rowName}</span>{/if}
                            </span>
@@ -1719,6 +1723,9 @@
       background: color-mix(in srgb, var(--is-info) 25%, transparent);
       color: var(--is-info);
       border: 1px solid color-mix(in srgb, var(--is-info) 50%, transparent);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
    }
    .badge-pivot {
       background: color-mix(in srgb, orange 25%, transparent);
