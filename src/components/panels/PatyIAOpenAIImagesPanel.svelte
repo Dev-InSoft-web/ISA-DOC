@@ -455,6 +455,7 @@ const data = await r.json();
 	let convDb: "prod" | "staging" = "prod";
 	let convLoading: boolean = false;
 	let convModalOpen: boolean = false;
+	let tutorialOpen: boolean = false;
 	let convError: string = "";
 	let convWarnings: string[] = [];
 	let convRow: SqlRow | null = null;
@@ -931,7 +932,10 @@ const data = await r.json();
 						<section>
 							<FlexLayout justify="between" items="center">
 								<h3 style="margin: 0;">Mensajes ({vistaMensajes.length}) <span class="sub">· fuente: {convFuenteMensajes === "openai" ? "OpenAI threads" : "MENSAJESCALIFICADOS (fallback)"}</span></h3>
-								<ButtonIconify icon="mdi:arrow-expand" onClick={() => (convModalOpen = true)} title="Abrir conversación ampliada" />
+								<FlexLayout items="center">
+									<ButtonIconify icon="mdi:help-circle-outline" onClick={() => (tutorialOpen = true)} title="¿Cómo se genera este hilo?" />
+									<ButtonIconify icon="mdi:arrow-expand" onClick={() => (convModalOpen = true)} title="Abrir conversación ampliada" />
+								</FlexLayout>
 							</FlexLayout>
 							<div class="chat-inline">
 								<ChatMensajesView mensajes={vistaMensajes} />
@@ -953,6 +957,91 @@ const data = await r.json();
 		<h3 slot="title">Conversación #{convId} ({vistaMensajes.length} mensajes)</h3>
 		<div class="conv-modal-body custom-scrollbar">
 			<ChatMensajesView mensajes={vistaMensajes} />
+		</div>
+	</Modal>
+{/if}
+
+{#if tutorialOpen}
+	<Modal
+		bind:bshow={tutorialOpen}
+		onClose={() => (tutorialOpen = false)}
+		style="width: min(820px, 95vw); max-width: 95vw; max-height: 90vh;"
+	>
+		<h3 slot="title">¿Cómo se genera el hilo de conversación?</h3>
+		<div class="tutorial-body custom-scrollbar">
+			<p class="lead">
+				Los <strong>inputs (mensajes)</strong> NO se almacenan completos en la BD propia. La fuente primaria
+				es la <strong>API de OpenAI</strong> (threads / conversations). La BD solo se usa como
+				<em>fallback</em> y para metadatos.
+			</p>
+
+			<ol class="steps">
+				<li>
+					<strong>UI → endpoint.</strong> El panel hace
+					<code>GET /api/patyia/conversacion/&lt;iconversacion&gt;?db=prod|staging</code>.
+				</li>
+				<li>
+					<strong>BD: metadatos.</strong> Con un pool único (usuario cross-DB) se consulta
+					<code>[AYUDASCP_IA].dbo.CONVERSACIONES</code> (o <code>_STAGING</code>) para obtener
+					<code>ithreadexterno</code>, <code>itiquete</code> y demás campos. <em>(fuente: BD)</em>
+				</li>
+				<li>
+					<strong>Decisión por prefijo de <code>ithreadexterno</code>:</strong>
+					<ul>
+						<li>
+							<code>thread_*</code> → OpenAI Assistants v2:
+							<code>GET /v1/threads/&lt;id&gt;/messages</code> con header
+							<code>OpenAI-Beta: assistants=v2</code>. <em>(fuente: API)</em>
+						</li>
+						<li>
+							<code>conv_*</code> → OpenAI Conversations:
+							<code>GET /v1/conversations/&lt;id&gt;/items</code>. <em>(fuente: API)</em>
+						</li>
+						<li>
+							Sin externo o llamada fallida → fallback BD:
+							<code>SELECT * FROM [AYUDASCP_IA].dbo.MENSAJESCALIFICADOS WHERE iconversacion = &lt;id&gt;</code>.
+							<em>(fuente: BD)</em>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<strong>Normalización.</strong> El endpoint devuelve cada mensaje como
+					<code>{ fecha_hora, autor: "Usuario"|"Asistente", mensaje }</code>.
+				</li>
+				<li>
+					<strong>Mapeo en el panel.</strong> <code>aMsgVista()</code> convierte cada fila
+					<code>SqlRow</code> a <code>MsgVista</code> usando llaves flexibles
+					(<code>ROLE_KEYS</code>, <code>CONTENT_KEYS</code>, <code>ID_KEYS</code>,
+					<code>FECHA_KEYS</code>) para soportar ambas fuentes.
+				</li>
+				<li>
+					<strong>Render.</strong> <code>ChatMensajesView</code> recibe el arreglo y dibuja
+					<code>FlexLayout</code> + <code>Card</code> (primary para usuario a la derecha, default a la
+					izquierda) y aplica <code>marked</code> para convertir el markdown del mensaje a HTML.
+				</li>
+				<li>
+					<strong>Vista ampliada.</strong> El botón <code>mdi:arrow-expand</code> abre un
+					<code>Modal</code> 95 vw / 95 vh con el mismo render para lectura cómoda.
+				</li>
+			</ol>
+
+			<h4 class="fuente-titulo">Resumen de fuentes</h4>
+			<table class="fuente-tabla">
+				<thead>
+					<tr><th>Dato</th><th>Fuente</th><th>Detalle</th></tr>
+				</thead>
+				<tbody>
+					<tr><td>Metadatos conversación</td><td><strong>BD</strong></td><td><code>CONVERSACIONES</code></td></tr>
+					<tr><td>Mensajes (caso normal)</td><td><strong>API OpenAI</strong></td><td>threads o conversations</td></tr>
+					<tr><td>Mensajes (fallback)</td><td><strong>BD</strong></td><td><code>MENSAJESCALIFICADOS</code></td></tr>
+					<tr><td>Tiquete asociado</td><td><strong>BD</strong></td><td><code>TIQUETES</code> vía <code>itiquete</code></td></tr>
+				</tbody>
+			</table>
+
+			<p class="nota">
+				En este hilo la fuente activa es:
+				<strong>{convFuenteMensajes === "openai" ? "API OpenAI" : convFuenteMensajes === "calificados" ? "BD (MENSAJESCALIFICADOS)" : "vacío"}</strong>.
+			</p>
 		</div>
 	</Modal>
 {/if}
@@ -1177,6 +1266,39 @@ const data = await r.json();
 		height: 100%;
 		overflow: hidden;
 		padding: 0.5rem;
+	}
+	.tutorial-body {
+		padding: 1rem 1.25rem;
+		overflow: auto;
+		max-height: calc(90vh - 4rem);
+		line-height: 1.55;
+		font-size: 0.92rem;
+	}
+	.tutorial-body .lead { margin-top: 0; opacity: 0.9; }
+	.tutorial-body .steps { padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem; }
+	.tutorial-body .steps ul { margin: 0.3rem 0 0 1rem; padding: 0; }
+	.tutorial-body code {
+		font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+		font-size: 0.85em;
+		background: rgba(255, 255, 255, 0.08);
+		padding: 0.05rem 0.35rem;
+		border-radius: 3px;
+	}
+	.fuente-titulo { margin: 1.25rem 0 0.5rem; }
+	.fuente-tabla { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+	.fuente-tabla th,
+	.fuente-tabla td {
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		padding: 0.35rem 0.6rem;
+		text-align: left;
+	}
+	.fuente-tabla th { background: rgba(255, 255, 255, 0.05); }
+	.tutorial-body .nota {
+		margin-top: 1rem;
+		padding: 0.5rem 0.75rem;
+		border-left: 3px solid var(--is-primary);
+		background: color-mix(in srgb, var(--is-primary), transparent 90%);
+		border-radius: 0 4px 4px 0;
 	}
 	.warnings {
 		display: flex;
