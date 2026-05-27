@@ -177,60 +177,83 @@ export async function buildBodyTK1429262(): Promise<string> {
 <div style="margin-top:0.5rem;">
 	<div><b>Entrada fija del asesor</b></div>
 	<div style="${INPUT_BOX}">"Liquidación de retención en la fuente por servicios técnicos para un proveedor declarante."</div>
-	<div style="margin-top:0.5rem;">El mismo input se procesa distinto según en qué fase esté el sistema:</div>
+
+	<div style="margin-top:0.75rem;"><b>Etapas del flujo (mismas en todas las fases)</b></div>
+	<div style="margin-top:0.25rem;color:#555;">Todo mensaje pasa por estas tres etapas; cada fase del plan solo cambia <i>cómo se decide</i> el modelo y <i>qué se registra</i>, no la secuencia.</div>
 	<table style="${TABLE_STYLE}">
 	<thead><tr>
-	<th style="${TH_STYLE}">Fase</th>
-	<th style="${TH_STYLE}">Clasificación</th>
-	<th style="${TH_STYLE}">Extracción</th>
-	<th style="${TH_STYLE}">Respuesta</th>
-	<th style="${TH_STYLE}">Trazabilidad guardada</th>
-	<th style="${TH_STYLE}">Para ajustar la regla…</th>
+	<th style="${TH_STYLE}">Etapa</th>
+	<th style="${TH_STYLE}">Qué hace con el input</th>
+	<th style="${TH_STYLE}">Salida intermedia</th>
 	</tr></thead>
 	<tbody>
 	<tr>
-	<td style="${TD_STYLE}"><b>Hoy</b><br>(antes de Fase 1)</td>
-	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(global)</small></td>
-	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(global)</small></td>
-	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(global)</small></td>
-	<td style="${TD_STYLE}">Solo <code>modelo_ia</code> final en la conversación.</td>
-	<td style="${TD_STYLE}">Editar <code>OPENAI_MODEL</code> en <code>local.settings.json</code> y redeploy.</td>
+	<td style="${TD_STYLE}"><code>clasificacion</code></td>
+	<td style="${TD_STYLE}">Encaja el mensaje en una categoría conocida.</td>
+	<td style="${TD_STYLE}"><code>tipo_consulta = "tributaria"</code></td>
 	</tr>
 	<tr>
-	<td style="${TD_STYLE}"><b>Fase 1</b><br>etapa → modelo</td>
-	<td style="${TD_STYLE}"><code>gpt-4o-mini</code><br><small>(etapa "clasificacion")</small></td>
-	<td style="${TD_STYLE}"><code>gpt-4o-mini</code><br><small>(etapa "extraccion")</small></td>
-	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(etapa "respuesta")</small></td>
-	<td style="${TD_STYLE}">Igual que hoy (solo modelo final).</td>
-	<td style="${TD_STYLE}">Editar el mapa <code>etapa → modelo</code> en configuración y redeploy.</td>
+	<td style="${TD_STYLE}"><code>extraccion</code></td>
+	<td style="${TD_STYLE}">Saca entidades estructuradas del texto.</td>
+	<td style="${TD_STYLE}"><code>{ tributo: "retencion_fuente", concepto: "servicios_tecnicos", proveedor: "declarante" }</code></td>
 	</tr>
 	<tr>
-	<td style="${TD_STYLE}"><b>Fase 2</b><br>+ tipo_consulta</td>
-	<td style="${TD_STYLE}"><code>gpt-4o-mini</code><br><small>devuelve <code>tipo = tributaria</code></small></td>
-	<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
-	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(respuesta + tributaria → modelo fuerte)</small></td>
-	<td style="${TD_STYLE}">Igual que Fase 1.</td>
-	<td style="${TD_STYLE}">Editar el mapa <code>etapa + tipo → modelo</code> y redeploy. Casos triviales bajan a <code>gpt-4o-mini</code> también en respuesta.</td>
-	</tr>
-	<tr>
-	<td style="${TD_STYLE}"><b>Fase 3</b><br>+ trazabilidad</td>
-	<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
-	<td style="${TD_STYLE}"><code>gpt-4o-mini</code></td>
-	<td style="${TD_STYLE}"><code>gpt-5</code></td>
-	<td style="${TD_STYLE}">Una fila en <code>MENSAJE_METRICAS</code> por etapa: <code>TOKENS_IN/OUT</code>, <code>MODELO</code>, <code>ETAPA</code>, <code>COSTO_APROX</code>. Permite ver dónde se concentra el gasto.</td>
-	<td style="${TD_STYLE}">Igual que Fase 2 (la regla no cambia, sí se mide su efecto real).</td>
-	</tr>
-	<tr>
-	<td style="${TD_STYLE}"><b>Fase 4</b><br>+ catálogo en SQL</td>
-	<td style="${TD_STYLE}"><code>gpt-4o-mini</code><br><small>(modelo leído de <code>RECURSO_OPENAI</code>)</small></td>
-	<td style="${TD_STYLE}"><code>gpt-4o-mini</code><br><small>(prompt + modelo desde BD)</small></td>
-	<td style="${TD_STYLE}"><code>gpt-5</code><br><small>(prompt + modelo desde BD)</small></td>
-	<td style="${TD_STYLE}">Igual que Fase 3 + queda registrado qué <code>IRECURSO</code> se usó por etapa.</td>
-	<td style="${TD_STYLE}"><b>Sin redeploy.</b> Cambiar la fila en <code>RECURSO_OPENAI</code> (modelo o prompt) y el próximo mensaje lo toma.</td>
+	<td style="${TD_STYLE}"><code>respuesta</code></td>
+	<td style="${TD_STYLE}">Genera la respuesta final al asesor con el contexto recolectado.</td>
+	<td style="${TD_STYLE}">Texto final + cálculos (ver al pie).</td>
 	</tr>
 	</tbody>
 	</table>
-	<div style="margin-top:0.5rem;"><b>Lo que el asesor recibe</b> (idéntico en todas las fases, salvo costo/latencia)</div>
+
+	<div style="margin-top:0.75rem;"><b>Qué aporta cada fase sobre el mismo input</b></div>
+	<table style="${TABLE_STYLE}">
+	<thead><tr>
+	<th style="${TH_STYLE}">Fase</th>
+	<th style="${TH_STYLE}">Qué introduce</th>
+	<th style="${TH_STYLE}">Modelos resultantes para este input</th>
+	<th style="${TH_STYLE}">Trazabilidad guardada</th>
+	<th style="${TH_STYLE}">Cómo se ajusta una regla</th>
+	</tr></thead>
+	<tbody>
+	<tr>
+	<td style="${TD_STYLE}"><b>Hoy</b><br>(antes del plan)</td>
+	<td style="${TD_STYLE}">Modelo único global para toda etapa de todo mensaje.</td>
+	<td style="${TD_STYLE}">Las tres etapas usan <code>gpt-5</code> (definido en <code>OPENAI_MODEL</code>).</td>
+	<td style="${TD_STYLE}">Solo el <code>modelo_ia</code> final en la conversación.</td>
+	<td style="${TD_STYLE}">Editar <code>OPENAI_MODEL</code> y redeploy.</td>
+	</tr>
+	<tr>
+	<td style="${TD_STYLE}"><b>Fase 1</b></td>
+	<td style="${TD_STYLE}">Mapa de modelo por <b>etapa</b> + fallback global.</td>
+	<td style="${TD_STYLE}"><code>clasificacion</code> y <code>extraccion</code> bajan a <code>gpt-4o-mini</code>; <code>respuesta</code> queda en <code>gpt-5</code>.</td>
+	<td style="${TD_STYLE}">Igual que hoy.</td>
+	<td style="${TD_STYLE}">Editar el mapa <code>etapa → modelo</code> y redeploy.</td>
+	</tr>
+	<tr>
+	<td style="${TD_STYLE}"><b>Fase 2</b></td>
+	<td style="${TD_STYLE}">Se suma <b><code>tipo_consulta</code></b> al mapa (reutiliza la salida de la etapa de clasificación).</td>
+	<td style="${TD_STYLE}">Para este input el resultado es el mismo (tipo <code>tributaria</code> sigue exigiendo modelo fuerte). Pero un saludo o un soporte_uso bajan también la <code>respuesta</code> a un modelo más barato.</td>
+	<td style="${TD_STYLE}">Igual que Fase 1.</td>
+	<td style="${TD_STYLE}">Editar el mapa <code>etapa + tipo → modelo</code> y redeploy.</td>
+	</tr>
+	<tr>
+	<td style="${TD_STYLE}"><b>Fase 3</b></td>
+	<td style="${TD_STYLE}">Se agrega <b>trazabilidad por etapa</b> (sin cambiar reglas).</td>
+	<td style="${TD_STYLE}">Iguales a Fase 2.</td>
+	<td style="${TD_STYLE}">Una fila en <code>MENSAJE_METRICAS</code> por etapa: <code>TOKENS_IN/OUT</code>, <code>MODELO</code>, <code>ETAPA</code>, <code>COSTO_APROX</code>. Permite ver dónde se concentra el gasto.</td>
+	<td style="${TD_STYLE}">Igual que Fase 2 (la regla no cambia, sí se mide su efecto).</td>
+	</tr>
+	<tr>
+	<td style="${TD_STYLE}"><b>Fase 4</b></td>
+	<td style="${TD_STYLE}">Catálogo de prompts y modelos en <b>SQL</b> (<code>RECURSO_OPENAI</code>).</td>
+	<td style="${TD_STYLE}">Iguales a Fase 3, pero el modelo y el prompt de cada etapa se leen de BD, no de <code>.env</code>.</td>
+	<td style="${TD_STYLE}">Igual que Fase 3 + queda registrado qué <code>IRECURSO</code> se usó por etapa.</td>
+	<td style="${TD_STYLE}"><b>Sin redeploy.</b> Cambiar la fila en <code>RECURSO_OPENAI</code> y el próximo mensaje lo toma.</td>
+	</tr>
+	</tbody>
+	</table>
+
+	<div style="margin-top:0.75rem;"><b>Lo que el asesor recibe</b> (idéntico en todas las fases, salvo costo y latencia)</div>
 	<div style="${OUTPUT_BOX}">Para liquidar la retención en la fuente por servicios técnicos a un proveedor declarante:
 
 1. Identificar la base gravable (valor del servicio antes de IVA) …
@@ -238,7 +261,7 @@ export async function buildBodyTK1429262(): Promise<string> {
 3. Descontar la retención del pago al proveedor y declararla en el formulario 350 …
 
 (respuesta generada por <b>gpt-5</b>)</div>
-	<div style="margin-top:0.5rem;font-style:italic;color:#555;">Lectura: la calidad percibida es la misma a partir de Fase 1; lo que mejora en cada fase es el <b>costo</b> (etapas 1-2 baratas), la <b>visibilidad</b> (Fase 3) y la <b>agilidad operativa</b> (Fase 4, sin redeploy).</div>
+	<div style="margin-top:0.5rem;font-style:italic;color:#555;">Lectura: la calidad percibida es la misma a partir de Fase 1; lo que mejora en cada fase es el <b>costo</b> (Fase 1-2), la <b>visibilidad</b> (Fase 3) y la <b>agilidad operativa</b> (Fase 4, sin redeploy).</div>
 </div>`;
 
 	const mejorCamino = noteList(
