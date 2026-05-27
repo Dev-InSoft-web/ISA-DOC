@@ -61,6 +61,15 @@ export default defineConfig({
 	adapter: node({ mode: "standalone" }),
 	vite: {
 		plugins: [wsPlugin(), inlineImagePlugin()],
+		server: {
+			watch: {
+				ignored: [
+					"**/data/openai-storage/files/**",
+					"**/data/openai-storage/backup-progress.json",
+					"**/data/openai-storage/duplicates.json",
+				],
+			},
+		},
 		resolve: {
 			alias: {
 				"$lib": path.resolve(__dirname, "./src/lib"),

@@ -77,7 +77,7 @@ function yaDescargado(fileId: string, filename: string): boolean {
 
 async function ejecutarBackup(apiKey: string, files: CachedFile[], estado: BackupProgress): Promise<void> {
 	const vsIds = await listarVS(apiKey);
-	const CONCURRENCY = 10;
+	const CONCURRENCY = 6;
 	let cursor = 0;
 
 	async function worker(): Promise<void> {

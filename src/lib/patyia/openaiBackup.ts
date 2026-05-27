@@ -84,13 +84,19 @@ export async function backupOne(
 	catch (err) { return { ok: false, file_id: fileId, error: `meta: ${msg(err)}` }; }
 
 	const dir = fileDir(fileId);
-	await ensureDir(dir);
-	await escribirJson(join(dir, "meta.json"), meta);
-
 	const filename = meta.filename ?? fileId;
 	const ext = safeExt(filename);
 	const destino = join(dir, `content.${ext}`);
 	const purpose = meta.purpose ?? "";
+
+	const guardar = async (contenido: Buffer | string, source: string): Promise<BackupOk> => {
+		await ensureDir(dir);
+		await escribirJson(join(dir, "meta.json"), meta);
+		await writeFile(destino, contenido);
+		const bytes = typeof contenido === "string" ? Buffer.byteLength(contenido, "utf8") : contenido.byteLength;
+
+		return { ok: true, file_id: fileId, path: destino, source, bytes };
+	};
 
 	try {
 		if (purpose === "assistants" || purpose === "assistants_output") {
@@ -101,8 +107,7 @@ export async function backupOne(
 			for (const vs of vsIds) {
 				try {
 					const texto = await descargarDesdeVS(vs, fileId, apiKey);
-					await writeFile(destino, texto, "utf8");
-					return { ok: true, file_id: fileId, path: destino, source: `vector_store:${vs}`, bytes: Buffer.byteLength(texto, "utf8") };
+					return await guardar(texto, `vector_store:${vs}`);
 				} catch (err) {
 					errores.push(`${vs}: ${msg(err)}`);
 				}
@@ -119,8 +124,8 @@ export async function backupOne(
 			return { ok: false, file_id: fileId, error: `HTTP ${r.status}: ${txt.slice(0, 200)}` };
 		}
 		const buf = Buffer.from(await r.arrayBuffer());
-		await writeFile(destino, buf);
-		return { ok: true, file_id: fileId, path: destino, source: "files", bytes: buf.byteLength };
+
+		return await guardar(buf, "files");
 	} catch (err) {
 		return { ok: false, file_id: fileId, error: msg(err) };
 	}
