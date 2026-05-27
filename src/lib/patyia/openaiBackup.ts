@@ -54,11 +54,18 @@ export async function descargarDesdeVS(vsId: string, fileId: string, apiKey: str
 			`https://api.openai.com/v1/vector_stores/${encodeURIComponent(vsId)}/files/${encodeURIComponent(fileId)}/content`,
 		);
 		if (after) u.searchParams.set("after", after);
-		const r = await fetch(u.toString(), {
-			method: "GET",
-			headers: { Authorization: `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" },
-		});
-		const text = await r.text();
+		let r: Response | null = null;
+		let text = "";
+		for (let intento = 0; intento < 3; intento++) {
+			r = await fetch(u.toString(), {
+				method: "GET",
+				headers: { Authorization: `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" },
+			});
+			text = await r.text();
+			if (r.status !== 429 && r.status < 500) break;
+			await new Promise((res) => setTimeout(res, 400 * (intento + 1) ** 2));
+		}
+		if (!r) throw new Error("sin respuesta");
 		let parsed: VectorContentPage;
 		try { parsed = JSON.parse(text) as VectorContentPage; }
 		catch { throw new Error(`HTTP ${r.status} no JSON: ${text.slice(0, 200)}`); }
@@ -69,6 +76,7 @@ export async function descargarDesdeVS(vsId: string, fileId: string, apiKey: str
 		if (!parsed.has_more || !parsed.next_page) break;
 		after = parsed.next_page;
 	}
+
 	return partes.join("\n\n");
 }
 
@@ -103,6 +111,14 @@ export async function backupOne(
 			if (!vsIds.length) {
 				return { ok: false, file_id: fileId, error: "purpose=assistants requiere vector stores" };
 			}
+			// Verificación rápida de existencia: si OpenAI ya purgó el archivo, ningún VS lo tendrá.
+			try { await pedirFileMeta(fileId, apiKey); }
+			catch (err) {
+				const m = msg(err).toLowerCase();
+				if (m.includes("not found") || m.includes("no such") || m.includes("404")) {
+					return { ok: false, file_id: fileId, error: `archivo no existe en OpenAI: ${msg(err)}` };
+				}
+			}
 			const errores: string[] = [];
 			for (const vs of vsIds) {
 				try {
@@ -115,12 +131,18 @@ export async function backupOne(
 			return { ok: false, file_id: fileId, error: `No descargable. ${errores.join(" | ")}` };
 		}
 
-		const r = await fetch(`https://api.openai.com/v1/files/${encodeURIComponent(fileId)}/content`, {
-			method: "GET",
-			headers: { Authorization: `Bearer ${apiKey}` },
-		});
+		const url = `https://api.openai.com/v1/files/${encodeURIComponent(fileId)}/content`;
+		const headers = { Authorization: `Bearer ${apiKey}` };
+		let r: Response | null = null;
+		for (let intento = 0; intento < 3; intento++) {
+			r = await fetch(url, { method: "GET", headers });
+			if (r.status !== 429 && r.status < 500) break;
+			await new Promise((res) => setTimeout(res, 400 * (intento + 1) ** 2));
+		}
+		if (!r) return { ok: false, file_id: fileId, error: "sin respuesta" };
 		if (!r.ok) {
 			const txt = await r.text();
+
 			return { ok: false, file_id: fileId, error: `HTTP ${r.status}: ${txt.slice(0, 200)}` };
 		}
 		const buf = Buffer.from(await r.arrayBuffer());
