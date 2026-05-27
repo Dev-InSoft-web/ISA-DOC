@@ -426,10 +426,10 @@
 				<SelectEnum bind:value={purposeFiltro} enumValue={PURPOSES} label="Purpose" />
 				<Input bind:value={busquedaFiles} label="Buscar por id o nombre" required={false} />
 				<FlexLayout items="center" justify="end" class="botones-fila">
-					<Button onClick={cargarFiles} disabled={filesCargando || filesRefrescando} loading={filesCargando}>Cargar cache</Button>
-					<Button onClick={refrescarCache} disabled={filesRefrescando} loading={filesRefrescando}>Refrescar</Button>
-					<Button onClick={descargarTodos} disabled={descargandoTodos || !filesTotal} loading={descargandoTodos}>Descargar todos</Button>
-					<Button onClick={() => (uploadAbierto = true)}>Subir archivo</Button>
+					<ButtonIconify icon="mdi:database-arrow-down-outline" onClick={cargarFiles} disabled={filesCargando || filesRefrescando} loading={filesCargando} title="Cargar cache" />
+					<ButtonIconify icon="mdi:cloud-sync-outline" onClick={refrescarCache} disabled={filesRefrescando} loading={filesRefrescando} title="Refrescar desde OpenAI" />
+					<ButtonIconify icon="mdi:download-multiple" onClick={descargarTodos} disabled={descargandoTodos || !filesTotal} loading={descargandoTodos} title="Descargar todos (backup local)" />
+					<ButtonIconify icon="mdi:cloud-upload-outline" onClick={() => (uploadAbierto = true)} title="Subir archivo" />
 				</FlexLayout>
 			</div>
 
