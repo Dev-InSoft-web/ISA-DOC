@@ -106,11 +106,21 @@ export async function backupOne(
 		return { ok: true, file_id: fileId, path: destino, source, bytes };
 	};
 
+	const descargarDirecto = async (): Promise<Buffer | null> => {
+		const url = `https://api.openai.com/v1/files/${encodeURIComponent(fileId)}/content`;
+		const headers = { Authorization: `Bearer ${apiKey}` };
+		let r: Response | null = null;
+		for (let intento = 0; intento < 3; intento++) {
+			r = await fetch(url, { method: "GET", headers });
+			if (r.status !== 429 && r.status < 500) break;
+			await new Promise((res) => setTimeout(res, 400 * (intento + 1) ** 2));
+		}
+		if (!r || !r.ok) return null;
+		return Buffer.from(await r.arrayBuffer());
+	};
+
 	try {
 		if (purpose === "assistants" || purpose === "assistants_output") {
-			if (!vsIds.length) {
-				return { ok: false, file_id: fileId, error: "purpose=assistants requiere vector stores" };
-			}
 			// Verificación rápida de existencia: si OpenAI ya purgó el archivo, ningún VS lo tendrá.
 			try { await pedirFileMeta(fileId, apiKey); }
 			catch (err) {
@@ -128,24 +138,15 @@ export async function backupOne(
 					errores.push(`${vs}: ${msg(err)}`);
 				}
 			}
-			return { ok: false, file_id: fileId, error: `No descargable. ${errores.join(" | ")}` };
+			// Fallback: intentar descarga directa (algunos purpose=assistants sí lo permiten).
+			const buf = await descargarDirecto();
+			if (buf) return await guardar(buf, "files");
+			const detalle = vsIds.length ? `No descargable. ${errores.join(" | ")}` : "purpose=assistants sin VS y descarga directa denegada";
+			return { ok: false, file_id: fileId, error: detalle };
 		}
 
-		const url = `https://api.openai.com/v1/files/${encodeURIComponent(fileId)}/content`;
-		const headers = { Authorization: `Bearer ${apiKey}` };
-		let r: Response | null = null;
-		for (let intento = 0; intento < 3; intento++) {
-			r = await fetch(url, { method: "GET", headers });
-			if (r.status !== 429 && r.status < 500) break;
-			await new Promise((res) => setTimeout(res, 400 * (intento + 1) ** 2));
-		}
-		if (!r) return { ok: false, file_id: fileId, error: "sin respuesta" };
-		if (!r.ok) {
-			const txt = await r.text();
-
-			return { ok: false, file_id: fileId, error: `HTTP ${r.status}: ${txt.slice(0, 200)}` };
-		}
-		const buf = Buffer.from(await r.arrayBuffer());
+		const buf = await descargarDirecto();
+		if (!buf) return { ok: false, file_id: fileId, error: "descarga directa falló" };
 
 		return await guardar(buf, "files");
 	} catch (err) {
