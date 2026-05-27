@@ -3,6 +3,7 @@
 	import {
 		Button,
 		ButtonIconify,
+		Card,
 		FlexLayout,
 		Input,
 		Modal,
@@ -566,17 +567,19 @@
 			</div>
 
 			{#if descargandoTodos || backupProgreso.hecho > 0}
-				<div class="backup-progreso" class:terminado={!descargandoTodos}>
-					<div class="barra"><div class="fill" style="width: {backupProgreso.total ? (backupProgreso.hecho / backupProgreso.total * 100) : 0}%"></div></div>
-					<div class="texto">
-						<strong>{backupProgreso.hecho}</strong> / {backupProgreso.total}
-						· ok {backupProgreso.exitos} · fallos {backupProgreso.fallos}
-						{#if backupProgreso.running && backupProgreso.currentFilename}
-							· <em>{backupProgreso.currentFilename}</em>
-						{/if}
-						{#if backupProgreso.cancelRequested && backupProgreso.running} · <span class="cancelando">cancelando…</span>{/if}
+				<Card class="backup-progreso-card">
+					<div class="backup-progreso" class:terminado={!descargandoTodos}>
+						<div class="barra"><div class="fill" style="width: {backupProgreso.total ? (backupProgreso.hecho / backupProgreso.total * 100) : 0}%"></div></div>
+						<div class="texto">
+							<strong>{backupProgreso.hecho}</strong> / {backupProgreso.total}
+							· ok {backupProgreso.exitos} · fallos {backupProgreso.fallos}
+							{#if backupProgreso.running && backupProgreso.currentFilename}
+								· <em>{backupProgreso.currentFilename}</em>
+							{/if}
+							{#if backupProgreso.cancelRequested && backupProgreso.running} · <span class="cancelando">cancelando…</span>{/if}
+						</div>
 					</div>
-				</div>
+				</Card>
 			{/if}
 
 			{#if filesError}
@@ -869,10 +872,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.35rem;
-		padding: 0.5rem 0.75rem;
-		border: 1px solid var(--isp-border, #c2d4e8);
-		border-radius: 0.4rem;
-		background: var(--isp-bg-alt, #f3f7fb);
 		font-size: 0.85rem;
 	}
 	.backup-progreso.terminado {
