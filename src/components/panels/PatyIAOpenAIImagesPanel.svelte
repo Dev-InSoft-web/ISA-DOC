@@ -45,13 +45,34 @@
 		costoUsd: number | null;
 	}
 
-	type AccionId = "imagenes" | "texto" | "chat";
+	type AccionId = "imagenes" | "texto" | "chat" | "conversacion";
 	const ACCIONES: Array<{ id: AccionId; label: string }> = [
 		{ id: "imagenes", label: "Imágenes" },
 		{ id: "texto", label: "Texto" },
 		{ id: "chat", label: "Conversaciones" },
+		{ id: "conversacion", label: "Conversación BD" },
 	];
+	const ACCIONES_VALIDAS: ReadonlySet<AccionId> = new Set(ACCIONES.map((a) => a.id));
+
+	const QUERY_TAB_KEY = "tab";
+
+	function leerTabDeUrl(): AccionId | null {
+		if (typeof window === "undefined") return null;
+		const raw = new URLSearchParams(window.location.search).get(QUERY_TAB_KEY);
+		if (!raw) return null;
+		return ACCIONES_VALIDAS.has(raw as AccionId) ? (raw as AccionId) : null;
+	}
+
+	function escribirTabEnUrl(tab: AccionId): void {
+		if (typeof window === "undefined") return;
+		const url = new URL(window.location.href);
+		if (url.searchParams.get(QUERY_TAB_KEY) === tab) return;
+		url.searchParams.set(QUERY_TAB_KEY, tab);
+		window.history.replaceState(null, "", url.toString());
+	}
+
 	let accionActiva: AccionId = "imagenes";
+	$: if (typeof window !== "undefined") escribirTabEnUrl(accionActiva);
 
 	interface InfoCampo {
 		campo: string;
@@ -85,6 +106,15 @@
 				{ campo: "Temperatura", tipo: "número (0–2)", significado: "Aleatoriedad del modelo. Igual que en Texto: bajo = preciso, alto = creativo." },
 				{ campo: "Tu mensaje", tipo: "texto", significado: "El nuevo turno del usuario. Se añade al historial y se envía completo al modelo para mantener el contexto de la conversación." },
 				{ campo: "Reiniciar", tipo: "acción", significado: "Borra el historial local. El siguiente mensaje arranca una conversación nueva." },
+			],
+		},
+		conversacion: {
+			titulo: "Conversación BD · significado de cada input",
+			campos: [
+				{ campo: "iconversacion", tipo: "número", significado: "Identificador de la conversación en la BD de PatyIA (AYUDASCP_IA). En prod corresponde al id de p.ej. /soporte/?seccion=conversacion&id=2864." },
+				{ campo: "SQL conversación", tipo: "texto", significado: "Consulta para recuperar la fila de la conversación. Usa el placeholder {id} que se reemplaza por el iconversacion ingresado." },
+				{ campo: "SQL mensajes", tipo: "texto", significado: "Consulta para listar los mensajes de la conversación. También soporta {id}. Se rendea como hilo: intenta detectar columnas tipo rol/contenido y, si no, muestra cada fila como JSON." },
+				{ campo: "Cargar", tipo: "acción", significado: "Ejecuta ambas consultas contra /api/patyia/db/exec y reconstruye la conversación. Útil para hacer experimentos sobre conversaciones reales." },
 			],
 		},
 	};
@@ -136,6 +166,17 @@ const r = await fetch("/api/patyia/openai/chat/send", {
 });
 const data = await r.json();
 // data => { ok, model, message: { role, content }, usage }`,
+		conversacion: `// POST /api/patyia/db/exec  (BD AYUDASCP_IA)
+const id = 2864;
+const r = await fetch("/api/patyia/db/exec", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({
+    sql: \`SELECT * FROM MENSAJESCALIFICADOS WHERE iconversacion = \${id} ORDER BY imensaje\`
+  }),
+});
+const data = await r.json();
+// data => { ok, rows: [ { IMENSAJE, ICONVERSACION, CONTENIDO, BUTIL, IREFERENCIA } ] }`,
 	};
 
 	const TModeloImagen = {
@@ -403,6 +444,89 @@ const data = await r.json();
 		chatHistorial = [];
 	}
 
+	// --- Conversación BD (reconstrucción por iconversacion) ---
+	type SqlRow = Record<string, unknown>;
+	const SQL_CONV_DEFAULT = "SELECT TOP (1) * FROM CONVERSACIONES WHERE iconversacion = {id}";
+	const SQL_MSGS_DEFAULT = "SELECT * FROM MENSAJESCALIFICADOS WHERE iconversacion = {id} ORDER BY imensaje";
+
+	let convId: number = 2864;
+	let convSql: string = SQL_CONV_DEFAULT;
+	let msgsSql: string = SQL_MSGS_DEFAULT;
+	let convLoading: boolean = false;
+	let convError: string = "";
+	let convRow: SqlRow | null = null;
+	let convMensajes: SqlRow[] = [];
+
+	const CONTENT_KEYS = ["contenido", "content", "mensaje", "texto", "respuesta", "prompt"] as const;
+	const ROLE_KEYS = ["rol", "role", "tdmensaje", "itdmensaje", "tipo", "origen", "remitente"] as const;
+	const ID_KEYS = ["iMensaje", "imensaje", "id"] as const;
+	const FECHA_KEYS = ["fhcreacion", "fecha", "fhmensaje", "fhinsercion"] as const;
+
+	function lowerKey(o: SqlRow, keys: readonly string[]): string | null {
+		for (const k of keys) {
+			if (k in o) return k;
+		}
+		const lower: Record<string, string> = {};
+		for (const k of Object.keys(o)) lower[k.toLowerCase()] = k;
+		for (const k of keys) {
+			const real = lower[k.toLowerCase()];
+			if (real) return real;
+		}
+		return null;
+	}
+
+	function pickStr(o: SqlRow, keys: readonly string[]): string {
+		const k = lowerKey(o, keys);
+		if (!k) return "";
+		const v = o[k];
+		return v == null ? "" : String(v);
+	}
+
+	function renderConvSql(template: string, id: number): string {
+		return template.replace(/\{id\}/g, String(id));
+	}
+
+	async function cargarConversacionBD() {
+		convError = "";
+		convRow = null;
+		convMensajes = [];
+		if (!Number.isFinite(convId) || convId <= 0) {
+			convError = "Ingresa un iconversacion válido.";
+			return;
+		}
+		convLoading = true;
+		try {
+			const ejecutar = async (sql: string): Promise<SqlRow[]> => {
+				const r = await fetch("/api/patyia/db/exec", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ sql: renderConvSql(sql, convId) }),
+				});
+				const data = (await r.json()) as { ok?: boolean; rows?: SqlRow[]; error?: string };
+				if (!r.ok || data.ok === false) {
+					throw new Error(errorToString(data.error) || `HTTP ${r.status}`);
+				}
+				return Array.isArray(data.rows) ? data.rows : [];
+			};
+			const [filaConv, filasMsgs] = await Promise.all([ejecutar(convSql), ejecutar(msgsSql)]);
+			convRow = filaConv[0] ?? null;
+			convMensajes = filasMsgs;
+			if (!convRow && !convMensajes.length) {
+				convError = `No se encontró información para iconversacion=${convId}.`;
+			}
+		} catch (e) {
+			convError = errorToString(e);
+		} finally {
+			convLoading = false;
+		}
+	}
+
+	function reiniciarConvBD() {
+		convRow = null;
+		convMensajes = [];
+		convError = "";
+	}
+
 	async function enviarChat() {
 		chatError = "";
 		const userText = htmlAPlano(chatInputHtml);
@@ -453,6 +577,9 @@ const data = await r.json();
 		imgHistorial = loadJson<ImagenRun[]>(STORAGE_KEYS.imgHistorial, []);
 		persistReady = true;
 		cargarGaleria();
+		const tabUrl = leerTabDeUrl();
+		if (tabUrl) accionActiva = tabUrl;
+		else escribirTabEnUrl(accionActiva);
 	});
 
 	$: if (persistReady) saveJson(STORAGE_KEYS.txtHistorial, txtHistorial);
@@ -721,6 +848,71 @@ const data = await r.json();
 						{/if}
 					</section>
 				</div>
+			{:else if accionActiva === "conversacion"}
+				<div class="seccion">
+					<header class="seccion-head">
+						<div>
+							<h2>Conversación BD (reconstrucción)</h2>
+							<p class="sub">Carga una conversación real de PatyIA desde <code>AYUDASCP_IA</code> por su <code>iconversacion</code> (ej.: <code>2864</code>, equivalente a <code>?seccion=conversacion&amp;id=2864</code> en prod) para experimentar sobre ella.</p>
+						</div>
+						<ButtonIconify icon="mdi:information-outline" onClick={() => (infoOpen = true)} title="¿Qué hace cada input?" />
+					</header>
+
+					<GridLayout cells={3} items="end">
+						<InputNumber bind:value={convId} label="iconversacion" required={true} />
+						<Button onClick={cargarConversacionBD} disabled={convLoading} loading={convLoading} style="width: fit-content;">Cargar</Button>
+						<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarConvBD} disabled={convLoading} title="Limpiar" />
+					</GridLayout>
+
+					<details>
+						<summary>Personalizar SQL (avanzado)</summary>
+						<FlexLayout direction="column">
+							<label class="sql-label">SQL conversación · usa <code>{"{id}"}</code> como placeholder
+								<textarea class="sql-textarea" bind:value={convSql} rows="2"></textarea>
+							</label>
+							<label class="sql-label">SQL mensajes · usa <code>{"{id}"}</code> como placeholder
+								<textarea class="sql-textarea" bind:value={msgsSql} rows="2"></textarea>
+							</label>
+						</FlexLayout>
+					</details>
+
+					{#if convError}
+						<div class="error">{convError}</div>
+					{/if}
+
+					{#if convRow}
+						<section>
+							<h3>Conversación #{convId}</h3>
+							<div class="metrics">
+								{#each Object.entries(convRow) as [k, v]}
+									<span><strong>{k}:</strong> <code>{v == null ? "—" : String(v).slice(0, 120)}</code></span>
+								{/each}
+							</div>
+						</section>
+					{/if}
+
+					{#if convMensajes.length}
+						<section>
+							<h3>Mensajes ({convMensajes.length})</h3>
+							<div class="chat-historial">
+								{#each convMensajes as m, i}
+									{@const rol = pickStr(m, ROLE_KEYS) || "?"}
+									{@const contenido = pickStr(m, CONTENT_KEYS)}
+									{@const idMsg = pickStr(m, ID_KEYS) || String(i + 1)}
+									{@const fecha = pickStr(m, FECHA_KEYS)}
+									<div class="msg msg-{rol.toLowerCase()}">
+										<strong>#{idMsg} · {rol}{fecha ? ` · ${fecha}` : ""}</strong>
+										{#if contenido}
+											<pre>{contenido}</pre>
+										{:else}
+											<pre>{JSON.stringify(m, null, 2)}</pre>
+										{/if}
+									</div>
+								{/each}
+							</div>
+						</section>
+					{/if}
+				</div>
 			{/if}
 		</div>
 	</FlexLayout>
@@ -947,6 +1139,23 @@ const data = await r.json();
 		padding: 0.5rem;
 		border: 1px solid rgba(255,255,255,0.1);
 		border-radius: 6px;
+	}
+	.sql-label {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		font-size: 0.82rem;
+		opacity: 0.9;
+	}
+	.sql-textarea {
+		font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+		font-size: 0.82rem;
+		padding: 0.4rem 0.5rem;
+		background: rgba(255,255,255,0.04);
+		color: var(--is-color, #e5e7eb);
+		border: 1px solid rgba(255,255,255,0.15);
+		border-radius: 4px;
+		resize: vertical;
 	}
 	.msg strong {
 		font-size: 0.75rem;
