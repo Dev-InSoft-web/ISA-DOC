@@ -642,6 +642,50 @@ const data = await r.json();
 	let convFuenteMensajes: "openai" | "calificados" | "vacio" = "vacio";
 	let convVectorStoreIds: string[] = [];
 
+	// --- Interacción staging ---
+	interface IdentidadStg { itercero: string; icontacto: string; qconv: number; ultFh: string | null }
+	let interIdentidades: IdentidadStg[] = [];
+	let interIdentidadesLoading: boolean = false;
+	let interIdentidadesLoaded: boolean = false;
+	let interIdentidadesError: string = "";
+	let interIdentidadValue: string = "";
+	let tInterIdentidades: Record<string, string> = { "— Selecciona terceroXcontacto —": "" };
+	let interConvId: number | null = null;
+	let interHilo: string = "";
+	let interMensajes: MsgVista[] = [];
+	let interInput: string = "";
+	let interLoading: boolean = false;
+	let interSendLoading: boolean = false;
+	let interError: string = "";
+	let interStreamBuffer: string = "";
+
+	async function cargarIdentidadesStg(): Promise<void> {
+		if (interIdentidadesLoading || interIdentidadesLoaded) return;
+		interIdentidadesLoading = true;
+		interIdentidadesError = "";
+		try {
+			const r = await fetch("/api/patyia/staging/identidades");
+			const data = (await r.json()) as { ok: boolean; items?: IdentidadStg[]; error?: string };
+			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
+			interIdentidades = data.items ?? [];
+			const mapa: Record<string, string> = { "— Selecciona terceroXcontacto —": "" };
+			for (const it of interIdentidades) {
+				const label = `Tercero ${it.itercero} · Contacto ${it.icontacto || "—"} · ${it.qconv} conv`;
+				mapa[label] = `${it.itercero}|${it.icontacto}`;
+			}
+			tInterIdentidades = mapa;
+			interIdentidadesLoaded = true;
+		} catch (err) {
+			interIdentidadesError = err instanceof Error ? err.message : String(err);
+		} finally {
+			interIdentidadesLoading = false;
+		}
+	}
+
+	$: if (subConv === "interaccion" && accionActiva === "conversacion" && !interIdentidadesLoaded && !interIdentidadesLoading) {
+		cargarIdentidadesStg();
+	}
+
 	const CONTENT_KEYS = ["contenido", "content", "mensaje", "texto", "respuesta", "prompt"] as const;
 	const ROLE_KEYS = ["autor", "rol", "role", "tdmensaje", "itdmensaje", "tipo", "origen", "remitente"] as const;
 	const ID_KEYS = ["iMensaje", "imensaje", "id"] as const;
@@ -1231,16 +1275,24 @@ const data = await r.json();
 							</section>
 						{/if}
 					{:else if subConv === "interaccion"}
-						<div class="placeholder">
+						<div class="interaccion-wrap">
 							<p class="sub">
-								Próximamente: crear conversaciones nuevas en <code>AYUDASCP_IA_STAGING</code>, simular cualquier
-								tercero/contacto y conversar con PatyIA en streaming.
+								Crea conversaciones nuevas en <code>AYUDASCP_IA_STAGING</code> simulando un (tercero, contacto)
+								real. PatyIA responde con su pipeline natural sobre el prompt principal. Nunca toca prod.
 							</p>
-							<ul class="sub">
-								<li>Selección de tercero y contacto vía <code>SelectEnum</code>.</li>
-								<li>Creación de thread OpenAI + inserción en <code>CONVERSACIONES</code> (solo staging).</li>
-								<li>Envío de mensajes y recepción en streaming.</li>
-							</ul>
+
+							<GridLayout cells={2} items="end">
+								<SelectEnum bind:value={interIdentidadValue} enumValue={tInterIdentidades} label="Tercero · Contacto (top 100 staging)" />
+								<ButtonIconify icon="mdi:refresh" onClick={() => { interIdentidadesLoaded = false; cargarIdentidadesStg(); }} disabled={interIdentidadesLoading} title="Recargar identidades" />
+							</GridLayout>
+
+							{#if interIdentidadesError}
+								<div class="error">No se pudieron cargar identidades: {interIdentidadesError}</div>
+							{/if}
+
+							<div class="placeholder">
+								<p class="sub"><strong>Próximo paso:</strong> botón <em>Iniciar conversación</em> para crear fila en CONVERSACIONES y enviar primer mensaje a PatyIA en streaming.</p>
+							</div>
 						</div>
 					{/if}
 				</div>
