@@ -14,6 +14,9 @@
 </script>
 
 <ProjectPanelLayout {title} {subtitle} bleed>
+	<svelte:fragment slot="actions">
+		{#if $$slots.actions}<slot name="actions" />{/if}
+	</svelte:fragment>
 	{#if showDbBanner}
 		<DbStatusBanner pingUrl={dbPingUrl} labelOk={dbLabelOk} />
 	{/if}

@@ -319,6 +319,22 @@ const data = await r.json();
 		"AYUDASCP_IA (prod)": "prod",
 		"AYUDASCP_IA_STAGING": "staging",
 	};
+	const TApiHost = {
+		"origin (mismo origen)": "origin",
+		"local (localhost:7071)": "local",
+	};
+	let apiHost: "origin" | "local" = loadJson<"origin" | "local">("patyia.actions.apiHost", "origin");
+	$: saveJson("patyia.actions.apiHost", apiHost);
+	function apiUrl(path: string): string {
+		if (apiHost !== "local") return path;
+		const LOCAL = "http://localhost:7071";
+		// Endpoints expuestos localmente por Azure Functions. El resto cae a origin.
+		const mConvs = path.match(/^\/api\/patyia\/conversaciones(\?.*)?$/);
+		if (mConvs) return `${LOCAL}/api/conversaciones${mConvs[1] ?? ""}`;
+		const mConv = path.match(/^\/api\/patyia\/conversacion\/([^/?]+)(\?.*)?$/);
+		if (mConv) return `${LOCAL}/api/conversacion/${mConv[1]}${mConv[2] ?? ""}`;
+		return path;
+	}
 	const TPrompts = {
 		"PROMPT_CLASIFICADOR_MODULO": "pmpt_6a03a285eb8c819694379c42ee1a6f130346f936d6203eca",
 		"PROMPT_EXTRACTOR_CONSULTAS": "pmpt_69f9fe11dc908195ac5a1642db4408a80b866761126003a4",
@@ -399,7 +415,7 @@ const data = await r.json();
 		galleryError = "";
 		galleryLoading = true;
 		try {
-			const r = await fetch("/api/patyia/openai/images/list");
+			const r = await fetch(apiUrl("/api/patyia/openai/images/list"));
 			const data = (await r.json()) as { ok?: boolean; images?: Array<{ url: string; file: string }>; error?: string };
 			if (!r.ok || data.ok === false) {
 				galleryError = errorToString(data.error) || `Error HTTP ${r.status}`;
@@ -426,7 +442,7 @@ const data = await r.json();
 		}
 		imgLoading = true;
 		try {
-			const r = await fetch("/api/patyia/openai/images/generate", {
+			const r = await fetch(apiUrl("/api/patyia/openai/images/generate"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ prompt: p, size: imgSize, n: imgN, model: imgModel }),
@@ -496,7 +512,7 @@ const data = await r.json();
 		const s = htmlAPlano(txtSystemHtml);
 		txtLoading = true;
 		try {
-			const r = await fetch("/api/patyia/openai/text/generate", {
+			const r = await fetch(apiUrl("/api/patyia/openai/text/generate"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ prompt: p, system: s, model: txtModel, temperature: txtTemperature }),
@@ -603,7 +619,7 @@ const data = await r.json();
 		try {
 			const qs = new URLSearchParams({ content: "1" });
 			if (convVectorStoreIds.length) qs.set("vs", convVectorStoreIds.join(","));
-			const r = await fetch(`/api/patyia/openai/file/${encodeURIComponent(detail.fileId)}?${qs.toString()}`);
+			const r = await fetch(apiUrl(`/api/patyia/openai/file/${encodeURIComponent(detail.fileId)}?${qs.toString()}`));
 			if (!r.ok) {
 				const txt = await r.text();
 				throw new Error(`HTTP ${r.status}: ${txt.slice(0, 200)}`);
@@ -733,7 +749,7 @@ const data = await r.json();
 				}
 			} catch { /* sin snapshot, intentar API */ }
 			if (!data) {
-				const r = await fetch("/api/patyia/staging/identidades");
+				const r = await fetch(apiUrl("/api/patyia/staging/identidades"));
 				data = (await r.json()) as { ok: boolean; items?: IdentidadStg[]; error?: string };
 				if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			}
@@ -787,7 +803,7 @@ const data = await r.json();
 		try {
 			const ident = interIdentidades.find((it) => it.itercero === par.itercero && it.icontacto === par.icontacto);
 			const nombre = (ident?.nombreTercero ?? "").trim();
-			const r = await fetch("/api/patyia/staging/conversacion/new", {
+			const r = await fetch(apiUrl("/api/patyia/staging/conversacion/new"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({
@@ -821,7 +837,7 @@ const data = await r.json();
 		interMensajes = [...interMensajes, asistente];
 		interInputHtml = "";
 		try {
-			const r = await fetch(`/api/patyia/staging/conversacion/${interConvId}/send-stream`, {
+			const r = await fetch(apiUrl(`/api/patyia/staging/conversacion/${interConvId}/send-stream`), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ mensaje: mensajeUser }),
@@ -897,7 +913,7 @@ const data = await r.json();
 		const nomCLocal = (item.nombreContacto ?? "").trim();
 		if (!nomTLocal || (icontacto && !nomCLocal)) {
 			try {
-				const r = await fetch(`/api/patyia/staging/identidad?itercero=${encodeURIComponent(itercero)}&icontacto=${encodeURIComponent(icontacto)}`);
+				const r = await fetch(apiUrl(`/api/patyia/staging/identidad?itercero=${encodeURIComponent(itercero)}&icontacto=${encodeURIComponent(icontacto)}`));
 				const j = await r.json() as { ok: boolean; nombreTercero?: string; nombreContacto?: string };
 				if (r.ok && j.ok) {
 					if (!nomTLocal && j.nombreTercero) item.nombreTercero = j.nombreTercero;
@@ -915,7 +931,7 @@ const data = await r.json();
 		if (!Number.isInteger(idNum) || idNum <= 0) { interError = "ID de conversación inválido."; return; }
 		interRecuperarLoading = true;
 		try {
-			const r = await fetch(`/api/patyia/conversacion/${idNum}?db=${encodeURIComponent(interDb)}`);
+			const r = await fetch(apiUrl(`/api/patyia/conversacion/${idNum}?db=${encodeURIComponent(interDb)}`));
 			const data = (await r.json()) as ConvRespStg & { conversacion?: Record<string, unknown> };
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			const conv = data.conversacion ?? {};
@@ -957,7 +973,7 @@ const data = await r.json();
 		try {
 			const qs = new URLSearchParams({ db: interDb, itercero, icontacto });
 			if (forzar) qs.set("refresh", "1");
-			const r = await fetch(`/api/patyia/conversaciones?${qs.toString()}`);
+			const r = await fetch(apiUrl(`/api/patyia/conversaciones?${qs.toString()}`));
 			const j = (await r.json()) as { ok: boolean; items?: ConvListaItem[]; error?: string; cached?: boolean; updatedAt?: string };
 			if (!r.ok || !j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
 			interConvsLista = j.items ?? [];
@@ -989,7 +1005,7 @@ const data = await r.json();
 		if (interHistorialCargado) return;
 		interHistorialCargado = true;
 		try {
-			const r = await fetch(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(interDb)}`);
+			const r = await fetch(apiUrl(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(interDb)}`));
 			const data = (await r.json()) as ConvRespStg;
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			interHilo = String(data.conversacion?.HILO ?? data.conversacion?.hilo ?? "");
@@ -1077,7 +1093,7 @@ const data = await r.json();
 		}
 		convLoading = true;
 		try {
-			const r = await fetch(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(convDb)}`);
+			const r = await fetch(apiUrl(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(convDb)}`));
 			const data = (await r.json()) as ConversacionResp;
 			if (!r.ok || data.ok === false) {
 				convError = errorToString(data.error) || `HTTP ${r.status}`;
@@ -1157,7 +1173,7 @@ const data = await r.json();
 
 		chatLoading = true;
 		try {
-			const r = await fetch("/api/patyia/openai/chat/send", {
+			const r = await fetch(apiUrl("/api/patyia/openai/chat/send"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ messages: payload, model: chatModel, temperature: chatTemperature }),
@@ -1228,7 +1244,7 @@ const data = await r.json();
 		mockupError = "";
 		mockupResult = "";
 		try {
-			const r = await fetch("/api/patyia/openai/prompt-run", {
+			const r = await fetch(apiUrl("/api/patyia/openai/prompt-run"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({
@@ -1253,6 +1269,9 @@ const data = await r.json();
 	subtitle="Ejecuciones y herramientas"
 	proyecto="PatyIA"
 >
+	<div slot="actions" class="api-host-switch">
+		<SelectEnum bind:value={apiHost} enumValue={TApiHost} label="API" />
+	</div>
 	<FlexLayout direction="row" items="stretch" style="width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden;">
 		<nav class="custom-scrollbar nav-acciones" aria-label="Acciones">
 			<h3>Acciones</h3>
@@ -2136,6 +2155,7 @@ const data = await r.json();
 	.conv-list-table th { font-weight: 600; opacity: 0.85; }
 	.conv-list-table .hilo-cell { font-size: 0.75rem; opacity: 0.75; word-break: break-all; }
 	.cache-stamp { font-size: 0.7rem; opacity: 0.6; font-weight: 400; margin-left: 0.5rem; }
+	.api-host-switch { min-width: 16rem; }
 	.tutorial-body {
 		padding: 1rem 1.25rem;
 		overflow: auto;
