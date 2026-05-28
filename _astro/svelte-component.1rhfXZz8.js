@@ -1,1 +1,0 @@
-import{G as o,H as v,J as y,U as l,V as T,W as f,X as p,K as m,Y as i,Z as A,_ as R}from"./branches.BQSfvJL3.js";function E(_,d,e){var s;o&&(s=R,v());var r=new m(_);y(()=>{var a=d()??null;if(o){var h=T(s),c=h===A,u=a!==null;if(c!==u){var t=f();p(t),r.anchor=t,i(!1),r.ensure(a,a&&(n=>e(n,a))),i(!0);return}}r.ensure(a,a&&(n=>e(n,a)))},l)}export{E as c};
