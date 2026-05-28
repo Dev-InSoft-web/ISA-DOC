@@ -249,24 +249,15 @@ async function snapshotPatyiaStagingIdentidades(): Promise<void> {
 			qconv: Number(r.QCONV ?? 0),
 			ultFh: r.ULT_FH ? new Date(r.ULT_FH).toISOString() : null,
 			nombreTercero: "",
+			nombreContacto: "",
 		}));
 
 		try {
-			const dbIs = await import("../src/lib/db.ts");
-			const issPool = await dbIs.getPool();
-			const ids = Array.from(new Set(items.map((it) => it.itercero).filter(Boolean)));
-			if (ids.length) {
-				const inList = ids.map((s) => `'${s.replace(/'/g, "''")}'`).join(",");
-				const tRes = await issPool.request().query(`SELECT ITERCERO, NTERCERO, NOMBRECOMERCIAL FROM TERCEROS WHERE ITERCERO IN (${inList})`);
-				const tMap = new Map<string, string>();
-				for (const r of tRes.recordset as Array<{ ITERCERO: string; NTERCERO: string | null; NOMBRECOMERCIAL: string | null }>) {
-					const name = (r.NTERCERO ?? "").toString().trim() || (r.NOMBRECOMERCIAL ?? "").toString().trim();
-					if (name) tMap.set(String(r.ITERCERO).trim(), name);
-				}
-				for (const it of items) {
-					const n = tMap.get(it.itercero);
-					if (n) it.nombreTercero = n;
-				}
+			const helper = await import("../src/lib/patyia/identidadesCache.ts");
+			const { terceros, contactos } = await helper.resolverIdentidades(items.map((it) => ({ itercero: it.itercero, icontacto: it.icontacto })));
+			for (const it of items) {
+				it.nombreTercero = terceros[it.itercero] ?? "";
+				it.nombreContacto = contactos[it.icontacto] ?? "";
 			}
 		} catch (e) {
 			console.warn(`[snap] identidades: enriquecer nombres fallo: ${(e as Error).message}`);

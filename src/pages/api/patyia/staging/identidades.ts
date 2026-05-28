@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { getPatyPool } from "../../../../lib/dbPaty.ts";
-import { getPool } from "../../../../lib/db.ts";
+import { resolverIdentidades } from "../../../../lib/patyia/identidadesCache.ts";
 import { jsonResponse } from "../../../../lib/patyia/openaiKey.ts";
 
 export const prerender = false;
@@ -13,6 +13,7 @@ interface FilaIdentidad {
 	qconv: number;
 	ultFh: string | null;
 	nombreTercero: string;
+	nombreContacto: string;
 }
 
 // GET → top 100 pares (itercero, icontacto) por número de conversaciones
@@ -38,23 +39,14 @@ export const GET: APIRoute = async () => {
 			qconv: Number(r.QCONV ?? 0),
 			ultFh: r.ULT_FH ? new Date(r.ULT_FH).toISOString() : null,
 			nombreTercero: "",
+			nombreContacto: "",
 		}));
 
 		try {
-			const issPool = await getPool();
-			const ids = Array.from(new Set(items.map((it) => it.itercero).filter(Boolean)));
-			if (ids.length) {
-				const inList = ids.map((s) => `'${s.replace(/'/g, "''")}'`).join(",");
-				const tRes = await issPool.request().query(`SELECT ITERCERO, NTERCERO, NOMBRECOMERCIAL FROM TERCEROS WHERE ITERCERO IN (${inList})`);
-				const tMap = new Map<string, string>();
-				for (const r of tRes.recordset as Array<{ ITERCERO: string; NTERCERO: string | null; NOMBRECOMERCIAL: string | null }>) {
-					const name = (r.NTERCERO ?? "").toString().trim() || (r.NOMBRECOMERCIAL ?? "").toString().trim();
-					if (name) tMap.set(String(r.ITERCERO).trim(), name);
-				}
-				for (const it of items) {
-					const n = tMap.get(it.itercero);
-					if (n) it.nombreTercero = n;
-				}
+			const { terceros, contactos } = await resolverIdentidades(items.map((it) => ({ itercero: it.itercero, icontacto: it.icontacto })));
+			for (const it of items) {
+				it.nombreTercero = terceros[it.itercero] ?? "";
+				it.nombreContacto = contactos[it.icontacto] ?? "";
 			}
 		} catch { /* sin nombres, devolver items igual */ }
 

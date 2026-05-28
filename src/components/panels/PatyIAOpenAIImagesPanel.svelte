@@ -653,7 +653,7 @@ const data = await r.json();
 	let convVectorStoreIds: string[] = [];
 
 	// --- Interacción staging ---
-	interface IdentidadStg { itercero: string; icontacto: string; qconv: number; ultFh: string | null; nombreTercero?: string }
+	interface IdentidadStg { itercero: string; icontacto: string; qconv: number; ultFh: string | null; nombreTercero?: string; nombreContacto?: string }
 	let interIdentidades: IdentidadStg[] = [];
 	let interIdentidadesLoading: boolean = false;
 	let interIdentidadesLoaded: boolean = false;
@@ -669,6 +669,25 @@ const data = await r.json();
 	let interError: string = "";
 	let interStreamBuffer: string = "";
 	let interHistorialCargado: boolean = false;
+	let interConvIdInput: string = interConvId ? String(interConvId) : "";
+	let interRecuperarLoading: boolean = false;
+
+	function etiquetaIdentidad(it: IdentidadStg): string {
+		const nomT = (it.nombreTercero ?? "").trim();
+		const nomC = (it.nombreContacto ?? "").trim();
+		const tercero = nomT ? `${nomT} (${it.itercero})` : `Tercero ${it.itercero}`;
+		const contacto = nomC ? `${nomC} (${it.icontacto || "—"})` : `Contacto ${it.icontacto || "—"}`;
+
+		return `${tercero} · ${contacto} · ${it.qconv} conv`;
+	}
+
+	function reconstruirMapaIdentidades(): void {
+		const mapa: Record<string, string> = { "— Selecciona terceroXcontacto —": "" };
+		for (const it of interIdentidades) {
+			mapa[etiquetaIdentidad(it)] = `${it.itercero}|${it.icontacto}`;
+		}
+		tInterIdentidades = mapa;
+	}
 
 	async function cargarIdentidadesStg(): Promise<void> {
 		if (interIdentidadesLoading || interIdentidadesLoaded) return;
@@ -679,7 +698,7 @@ const data = await r.json();
 			try {
 				const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "/";
 				const baseNoSlash = base.endsWith("/") ? base.slice(0, -1) : base;
-				const rStatic = await fetch(`${baseNoSlash}/static-api/patyia/staging/identidades.json`, { cache: "force-cache" });
+				const rStatic = await fetch(`${baseNoSlash}/static-api/patyia/staging/identidades.json`, { cache: "no-cache" });
 				if (rStatic.ok) {
 					const j = (await rStatic.json()) as { ok: boolean; items?: IdentidadStg[] };
 					if (j.ok && Array.isArray(j.items) && j.items.length) data = j;
@@ -691,14 +710,7 @@ const data = await r.json();
 				if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			}
 			interIdentidades = data.items ?? [];
-			const mapa: Record<string, string> = { "— Selecciona terceroXcontacto —": "" };
-			for (const it of interIdentidades) {
-				const nom = (it.nombreTercero ?? "").trim();
-				const tercero = nom ? `${nom} (${it.itercero})` : `Tercero ${it.itercero}`;
-				const label = `${tercero} · Contacto ${it.icontacto || "—"} · ${it.qconv} conv`;
-				mapa[label] = `${it.itercero}|${it.icontacto}`;
-			}
-			tInterIdentidades = mapa;
+			reconstruirMapaIdentidades();
 			interIdentidadesLoaded = true;
 			if (!interIdentidadValue && interIdentidades.length) {
 				const primera = interIdentidades[0];
@@ -833,6 +845,72 @@ const data = await r.json();
 		interError = "";
 		interStreamBuffer = "";
 		interHistorialCargado = false;
+		interConvIdInput = "";
+	}
+
+	async function ponerIdentidadAlTope(itercero: string, icontacto: string): Promise<void> {
+		const idx = interIdentidades.findIndex((it) => it.itercero === itercero && it.icontacto === icontacto);
+		let item: IdentidadStg;
+		if (idx >= 0) {
+			item = interIdentidades[idx];
+			interIdentidades = [item, ...interIdentidades.slice(0, idx), ...interIdentidades.slice(idx + 1)];
+		} else {
+			item = { itercero, icontacto, qconv: 0, ultFh: null, nombreTercero: "", nombreContacto: "" };
+			interIdentidades = [item, ...interIdentidades];
+		}
+		const nomTLocal = (item.nombreTercero ?? "").trim();
+		const nomCLocal = (item.nombreContacto ?? "").trim();
+		if (!nomTLocal || (icontacto && !nomCLocal)) {
+			try {
+				const r = await fetch(`/api/patyia/staging/identidad?itercero=${encodeURIComponent(itercero)}&icontacto=${encodeURIComponent(icontacto)}`);
+				const j = await r.json() as { ok: boolean; nombreTercero?: string; nombreContacto?: string };
+				if (r.ok && j.ok) {
+					if (!nomTLocal && j.nombreTercero) item.nombreTercero = j.nombreTercero;
+					if (!nomCLocal && j.nombreContacto) item.nombreContacto = j.nombreContacto;
+				}
+			} catch { /* sin nombres, label degradado */ }
+		}
+		reconstruirMapaIdentidades();
+		interIdentidadValue = `${itercero}|${icontacto}`;
+	}
+
+	async function recuperarConversacionStg(): Promise<void> {
+		interError = "";
+		const idNum = Number(String(interConvIdInput ?? "").trim());
+		if (!Number.isInteger(idNum) || idNum <= 0) { interError = "ID de conversación inválido."; return; }
+		interRecuperarLoading = true;
+		try {
+			const r = await fetch(`/api/patyia/conversacion/${idNum}?db=staging`);
+			const data = (await r.json()) as ConvRespStg & { conversacion?: Record<string, unknown> };
+			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
+			const conv = data.conversacion ?? {};
+			const itercero = String((conv as Record<string, unknown>).ITERCERO ?? (conv as Record<string, unknown>).itercero ?? "").trim();
+			const icontacto = String((conv as Record<string, unknown>).ICONTACTO ?? (conv as Record<string, unknown>).icontacto ?? "").trim();
+			interConvId = idNum;
+			interHilo = String(data.conversacion?.HILO ?? data.conversacion?.hilo ?? "");
+			interHistorialCargado = true;
+			const msgs = data.mensajesOpenAI ?? data.mensajesCalificados ?? [];
+			interMensajes = msgs.map((m, i) => {
+				const rol = pickStr(m, ROLE_KEYS) || "assistant";
+				const contenido = pickStr(m, CONTENT_KEYS);
+				const fecha = pickStr(m, FECHA_KEYS);
+				const esUsuario = /user|usuario|cliente/i.test(rol);
+
+				return {
+					idMsg: `hist-${i}-${pickStr(m, ID_KEYS) || i}`,
+					rol,
+					contenido,
+					fecha: fecha || new Date().toISOString(),
+					esUsuario,
+					archivos: [],
+				};
+			});
+			if (itercero) await ponerIdentidadAlTope(itercero, icontacto);
+		} catch (err) {
+			interError = err instanceof Error ? err.message : String(err);
+		} finally {
+			interRecuperarLoading = false;
+		}
 	}
 
 	interface ConvRespStg {
@@ -851,6 +929,9 @@ const data = await r.json();
 			const data = (await r.json()) as ConvRespStg;
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			interHilo = String(data.conversacion?.HILO ?? data.conversacion?.hilo ?? "");
+			const conv = data.conversacion ?? {};
+			const itercero = String((conv as Record<string, unknown>).ITERCERO ?? (conv as Record<string, unknown>).itercero ?? "").trim();
+			const icontacto = String((conv as Record<string, unknown>).ICONTACTO ?? (conv as Record<string, unknown>).icontacto ?? "").trim();
 			const msgs = data.mensajesOpenAI ?? data.mensajesCalificados ?? [];
 			interMensajes = msgs.map((m, i) => {
 				const rol = pickStr(m, ROLE_KEYS) || "assistant";
@@ -867,6 +948,7 @@ const data = await r.json();
 					archivos: [],
 				};
 			});
+			if (itercero) await ponerIdentidadAlTope(itercero, icontacto);
 		} catch (err) {
 			interError = err instanceof Error ? err.message : String(err);
 			interHistorialCargado = false;
@@ -876,6 +958,7 @@ const data = await r.json();
 	$: if (subConv === "interaccion" && accionActiva === "conversacion" && interConvId && !interHistorialCargado && !interMensajes.length) {
 		cargarHistorialInterStg(interConvId);
 	}
+	$: if (interConvId !== null && String(interConvId) !== interConvIdInput) interConvIdInput = String(interConvId);
 
 	const CONTENT_KEYS = ["contenido", "content", "mensaje", "texto", "respuesta", "prompt"] as const;
 	const ROLE_KEYS = ["autor", "rol", "role", "tdmensaje", "itdmensaje", "tipo", "origen", "remitente"] as const;
@@ -1473,16 +1556,29 @@ const data = await r.json();
 							</p>
 
 							<GridLayout cells={2} items="end">
-								{#key Object.keys(tInterIdentidades).length}
+								{#key Object.keys(tInterIdentidades).length + "|" + Object.values(tInterIdentidades).slice(0, 3).join(",")}
 									<SelectEnum bind:value={interIdentidadValue} enumValue={tInterIdentidades} label="Tercero · Contacto (top 100 staging)" />
 								{/key}
 								<FlexLayout items="center">
 									<ButtonIconify icon="mdi:refresh" onClick={() => { interIdentidadesLoaded = false; cargarIdentidadesStg(); }} disabled={interIdentidadesLoading} title="Recargar identidades" />
 									{#if interConvId !== null}
-										<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarInteraccionStg} title="Reiniciar conversación" />
+										<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarInteraccionStg} title="Nueva conversación" />
 									{/if}
 								</FlexLayout>
 							</GridLayout>
+
+							<div class="conv-id-row">
+								<input
+									type="number"
+									class="conv-id-input"
+									placeholder="ID conversación staging"
+									bind:value={interConvIdInput}
+									min="1"
+									disabled={interRecuperarLoading || interLoading || interSendLoading}
+								/>
+								<Button onClick={recuperarConversacionStg} disabled={interRecuperarLoading || !interConvIdInput} loading={interRecuperarLoading} variant="soft">Recuperar</Button>
+								<Button onClick={reiniciarInteraccionStg} disabled={interLoading || interSendLoading} variant="soft">Nueva</Button>
+							</div>
 
 							{#if interIdentidadesError}
 								<div class="error">No se pudieron cargar identidades: {interIdentidadesError}</div>
@@ -1926,6 +2022,22 @@ const data = await r.json();
 		flex-wrap: wrap;
 		gap: 0.75rem 1.5rem;
 		opacity: 0.8;
+	}
+	.conv-id-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+	.conv-id-input {
+		flex: 0 1 14rem;
+		background: rgba(0, 0, 0, 0.25);
+		color: inherit;
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 4px;
+		padding: 0.4rem 0.6rem;
+		font-family: inherit;
+		font-size: 0.9rem;
 	}
 	.inter-input textarea {
 		width: 100%;
