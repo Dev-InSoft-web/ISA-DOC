@@ -672,6 +672,11 @@ const data = await r.json();
 	let interConvIdInput: number | null = interConvId;
 	let interRecuperarLoading: boolean = false;
 	let interDb: "prod" | "staging" = "staging";
+	interface ConvListaItem { iconversacion: number; hilo: string; fhcre: string | null; }
+	let interConvsLista: ConvListaItem[] = [];
+	let interConvsModalOpen: boolean = false;
+	let interConvsLoading: boolean = false;
+	let interConvsError: string = "";
 
 	function capitalizarPalabra(p: string): string {
 		if (p.length <= 3) return p;
@@ -928,7 +933,7 @@ const data = await r.json();
 					idMsg: `hist-${i}-${pickStr(m, ID_KEYS) || i}`,
 					rol,
 					contenido,
-					fecha: fecha || new Date().toISOString(),
+					fecha: formatearFechaMsg(fecha) || new Date().toLocaleString(),
 					esUsuario,
 					archivos: [],
 				};
@@ -939,6 +944,32 @@ const data = await r.json();
 		} finally {
 			interRecuperarLoading = false;
 		}
+	}
+
+	async function listarConversacionesTercero(): Promise<void> {
+		interConvsError = "";
+		if (!interIdentidadValue) { interConvsError = "Selecciona un tercero primero."; interConvsModalOpen = true; return; }
+		const [itercero, icontacto] = interIdentidadValue.split("|");
+		interConvsLoading = true;
+		interConvsModalOpen = true;
+		try {
+			const qs = new URLSearchParams({ db: interDb, itercero, icontacto });
+			const r = await fetch(`/api/patyia/conversaciones?${qs.toString()}`);
+			const j = (await r.json()) as { ok: boolean; items?: ConvListaItem[]; error?: string };
+			if (!r.ok || !j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
+			interConvsLista = j.items ?? [];
+		} catch (err) {
+			interConvsError = err instanceof Error ? err.message : String(err);
+			interConvsLista = [];
+		} finally {
+			interConvsLoading = false;
+		}
+	}
+
+	function seleccionarConvDeLista(id: number): void {
+		interConvIdInput = id;
+		interConvsModalOpen = false;
+		recuperarConversacionStg();
 	}
 
 	interface ConvRespStg {
@@ -971,7 +1002,7 @@ const data = await r.json();
 					idMsg: `hist-${i}-${pickStr(m, ID_KEYS) || i}`,
 					rol,
 					contenido,
-					fecha: fecha || new Date().toISOString(),
+					fecha: formatearFechaMsg(fecha) || new Date().toLocaleString(),
 					esUsuario,
 					archivos: [],
 				};
@@ -1077,6 +1108,10 @@ const data = await r.json();
 		if (Number.isFinite(n) && n > 1_000_000_000) {
 			const ms = n < 1e12 ? n * 1000 : n;
 			try { return new Date(ms).toLocaleString(); } catch { return raw; }
+		}
+		if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(raw)) {
+			const d = new Date(raw);
+			if (!Number.isNaN(d.getTime())) return d.toLocaleString();
 		}
 		return raw;
 	}
@@ -1580,24 +1615,24 @@ const data = await r.json();
 						<div class="interaccion-wrap">
 							<GridLayout cells={2} items="end">
 								{#key Object.keys(tInterIdentidades).length + "|" + Object.values(tInterIdentidades).slice(0, 3).join(",")}
-									<SelectEnum bind:value={interIdentidadValue} enumValue={tInterIdentidades} label="Tercero · Contacto" />
+									<FlexLayout items="end">
+										<SelectEnum bind:value={interIdentidadValue} enumValue={tInterIdentidades} label="Tercero · Contacto" />
+										<ButtonIconify icon="mdi:refresh" onClick={() => { interIdentidadesLoaded = false; cargarIdentidadesStg(); }} disabled={interIdentidadesLoading} title="Recargar identidades" />
+										<ButtonIconify icon="mdi:format-list-bulleted" onClick={listarConversacionesTercero} disabled={!interIdentidadValue || interConvsLoading} loading={interConvsLoading} title="Listar conversaciones del tercero" />
+									</FlexLayout>
 								{/key}
-								<FlexLayout items="center">
+								<FlexLayout items="end">
 									<SelectEnum bind:value={interDb} enumValue={TBaseDatos} label="Base de datos" />
-									<ButtonIconify icon="mdi:refresh" onClick={() => { interIdentidadesLoaded = false; cargarIdentidadesStg(); }} disabled={interIdentidadesLoading} title="Recargar identidades" />
+									<InputNumber bind:value={interConvIdInput} label="iconversacion" required={false} />
+									<ButtonIconify
+										icon={interConvIdInput && interConvIdInput > 0 ? "mdi:cloud-download-outline" : "mdi:plus-circle-outline"}
+										onClick={recuperarONueva}
+										disabled={interRecuperarLoading || interLoading || interSendLoading}
+										loading={interRecuperarLoading}
+										title={interConvIdInput && interConvIdInput > 0 ? "Recuperar conversación" : "Nueva conversación"}
+									/>
 								</FlexLayout>
 							</GridLayout>
-
-							<FlexLayout items="end">
-								<InputNumber bind:value={interConvIdInput} label="iconversacion (vacío = nueva)" required={false} />
-								<ButtonIconify
-									icon={interConvIdInput && interConvIdInput > 0 ? "mdi:cloud-download-outline" : "mdi:plus-circle-outline"}
-									onClick={recuperarONueva}
-									disabled={interRecuperarLoading || interLoading || interSendLoading}
-									loading={interRecuperarLoading}
-									title={interConvIdInput && interConvIdInput > 0 ? "Recuperar conversación" : "Nueva conversación"}
-								/>
-							</FlexLayout>
 
 							{#if interIdentidadesError}
 								<div class="error">No se pudieron cargar identidades: {interIdentidadesError}</div>
@@ -1779,6 +1814,43 @@ const data = await r.json();
 				{:else if /\.pdf$/i.test(fileMeta?.filename ?? "")}
 					<iframe src={fileBlobUrl} title={fileMeta?.filename ?? "PDF"} class="file-iframe"></iframe>
 				{/if}
+			{/if}
+		</div>
+	</Modal>
+{/if}
+
+{#if interConvsModalOpen}
+	<Modal
+		bind:bshow={interConvsModalOpen}
+		onClose={() => (interConvsModalOpen = false)}
+		style="width: min(720px, 95vw); max-width: 95vw; max-height: 85vh;"
+	>
+		<h3 slot="title">Conversaciones del tercero ({interConvsLista.length})</h3>
+		<div class="conv-list-body custom-scrollbar">
+			{#if interConvsLoading}
+				<p>Cargando…</p>
+			{:else if interConvsError}
+				<div class="error">{interConvsError}</div>
+			{:else if !interConvsLista.length}
+				<p class="vacio">No se encontraron conversaciones para este tercero en {interDb}.</p>
+			{:else}
+				<table class="conv-list-table">
+					<thead>
+						<tr><th>iconversacion</th><th>Creado</th><th>HILO</th><th></th></tr>
+					</thead>
+					<tbody>
+						{#each interConvsLista as it (it.iconversacion)}
+							<tr>
+								<td><code>{it.iconversacion}</code></td>
+								<td>{formatearFechaMsg(it.fhcre ?? "")}</td>
+								<td><code class="hilo-cell">{it.hilo}</code></td>
+								<td>
+									<ButtonIconify icon="mdi:cloud-download-outline" onClick={() => seleccionarConvDeLista(it.iconversacion)} title="Recuperar esta conversación" />
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
 			{/if}
 		</div>
 	</Modal>
@@ -2042,6 +2114,12 @@ const data = await r.json();
 		overflow: hidden;
 		padding: 0.5rem;
 	}
+	.conv-list-body { padding: 0.5rem 0.75rem; overflow: auto; max-height: calc(85vh - 4rem); }
+	.conv-list-body .vacio { opacity: 0.7; }
+	.conv-list-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+	.conv-list-table th, .conv-list-table td { padding: 0.4rem 0.6rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+	.conv-list-table th { font-weight: 600; opacity: 0.85; }
+	.conv-list-table .hilo-cell { font-size: 0.75rem; opacity: 0.75; word-break: break-all; }
 	.tutorial-body {
 		padding: 1rem 1.25rem;
 		overflow: auto;
