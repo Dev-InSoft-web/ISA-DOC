@@ -9,7 +9,7 @@
 	import {
 		Card, Button, H2, H4, Text, Loading, Modal,
 		Toaster, toastError, toastSuccess,
-		FlexLayout, GridLayout, Iconify,
+		FlexLayout, GridLayout, Iconify, ButtonIconify,
 		Tabs, TabItem,
 	} from "@ingenieria_insoft/ispsveltecomponents";
 
@@ -91,14 +91,16 @@
 	let mdPreviewHtml = "";
 
 	// === Pestañas top-level sincronizadas con la URL en base64 (?state=<b64({tab:"…"})>). ===
-	const POSTMAN_TABS = ["editor", "resumen", "pruebas"] as const;
+	const POSTMAN_TABS = ["editor", "resumen", "pruebas", "estado"] as const;
 	const postmanTabs = createUrlB64Tabs("tab", POSTMAN_TABS);
 	let openEditor: boolean = postmanTabs.selected() === "editor";
 	let openResumen: boolean = postmanTabs.selected() === "resumen";
 	let openPruebas: boolean = postmanTabs.selected() === "pruebas";
+	let openEstado: boolean = postmanTabs.selected() === "estado";
 	$: if (openEditor) postmanTabs.onOpened("editor");
 	$: if (openResumen) postmanTabs.onOpened("resumen");
 	$: if (openPruebas) postmanTabs.onOpened("pruebas");
+	$: if (openEstado) postmanTabs.onOpened("estado");
 
 	// === Pruebas en secuencia (verify-api) ===
 	let verifyHost = proyecto === "patyia" ? "http://localhost:7071" : "http://localhost:20040";
@@ -106,7 +108,231 @@
 	let verifyOutput = "";
 	let showVerifyConsole = false;
 	let verifyOutputEl: HTMLDivElement | null = null;
+	let showLastLog = false;
+	let lastLogPath = "";
+	let lastLogContent = "";
+	let lastLogLoading = false;
+	let lastLogError = "";
 
+	type AppEndpoint = { method: string; path: string; stepKey?: string };
+	const TESTED_ENDPOINTS: Record<"patyia" | "clientesis", AppEndpoint[]> = {
+		patyia: [
+			{ method: "POST",   path: "/api/JWT",                                       stepKey: "AUTH" },
+			{ method: "POST",   path: "/api/conversacion",                              stepKey: "conversacion.create" },
+			{ method: "GET",    path: "/api/conversaciones",                            stepKey: "conversaciones.list" },
+			{ method: "GET",    path: "/api/conversacion/:iconversacion",               stepKey: "conversacion.get" },
+			{ method: "GET",    path: "/api/resumen_conversacion/:iconversacion",       stepKey: "resumen_conversacion" },
+			{ method: "POST",   path: "/api/mensaje",                                   stepKey: "mensaje.create" },
+			{ method: "POST",   path: "/api/tiquete",                                   stepKey: "tiquete.create" },
+			{ method: "GET",    path: "/api/tiquete/:itiquete",                         stepKey: "tiquete.get" },
+			{ method: "GET",    path: "/api/tiquete/por-conversacion/:iconversacion",   stepKey: "tiquete.porConversacion" },
+			{ method: "PATCH",  path: "/api/tiquete",                                   stepKey: "tiquete.patch" },
+			{ method: "GET",    path: "/api/timer_cerrarConversaciones",                stepKey: "timer_cerrarConversaciones" },
+			{ method: "DELETE", path: "/api/tiquete/:itiquete",                         stepKey: "tiquete.delete" },
+			{ method: "DELETE", path: "/api/conversacion/:iconversacion",               stepKey: "conversacion.delete" },
+		],
+		clientesis: [],
+	};
+
+	type ReceptionError = { status: number; mensaje: string; causa: string; fix?: string };
+	type ReceptionEntry = {
+		stepKey: string;
+		title: string;
+		method: string;
+		path: string;
+		successExample?: string;
+		knownErrors?: ReceptionError[];
+	};
+	const RECEPTION_INVENTORY: Record<"patyia" | "clientesis", ReceptionEntry[]> = {
+		patyia: [
+			{
+				stepKey: "AUTH",
+				title: "Autenticación",
+				method: "POST", path: "/api/JWT",
+				successExample: '{"encabezado":{"resultado":true,...},"respuesta":{"token":"<jwt 393 chars>"}}',
+			},
+			{
+				stepKey: "conversacion.create",
+				title: "Crear conversación (stream OpenAI)",
+				method: "POST", path: "/api/conversacion",
+				successExample: 'text/event-stream con tokens generados por OpenAI; al cerrar el stream se persiste la conversación.',
+			},
+			{
+				stepKey: "conversaciones.list",
+				title: "Listar conversaciones",
+				method: "GET", path: "/api/conversaciones",
+				successExample: '{"encabezado":{"resultado":true},"respuesta":{"conversaciones":[ ... ]}}',
+			},
+			{
+				stepKey: "conversacion.get",
+				title: "Obtener conversación por id",
+				method: "GET", path: "/api/conversacion/:iconversacion",
+				successExample: '{"encabezado":{"resultado":true},"respuesta":{ ...conversacion, mensajesOpenAI:[], mensajesCalificados:[], tiquete:[]}}',
+			},
+			{
+				stepKey: "resumen_conversacion",
+				title: "Resumen de conversación",
+				method: "GET", path: "/api/resumen_conversacion/:iconversacion",
+				successExample: '{"encabezado":{"resultado":true},"respuesta":{"resumen":"<texto>"}}',
+			},
+			{
+				stepKey: "mensaje.create",
+				title: "Calificar mensaje",
+				method: "POST", path: "/api/mensaje",
+				successExample: '{"encabezado":{"resultado":true},"respuesta":{"imensajecalif":<id>}}',
+			},
+			{
+				stepKey: "tiquete.create",
+				title: "Crear tiquete",
+				method: "POST", path: "/api/tiquete",
+				successExample: '{"encabezado":{"resultado":true},"respuesta":{"itiquete":<id>}}',
+			},
+			{
+				stepKey: "tiquete.get",
+				title: "Obtener tiquete",
+				method: "GET", path: "/api/tiquete/:itiquete",
+				successExample: '{"encabezado":{"resultado":true},"respuesta":{...tiquete}}',
+			},
+			{
+				stepKey: "tiquete.porConversacion",
+				title: "Tiquetes por conversación",
+				method: "GET", path: "/api/tiquete/por-conversacion/:iconversacion",
+				successExample: '{"encabezado":{"resultado":true},"respuesta":[]}',
+			},
+			{
+				stepKey: "tiquete.patch",
+				title: "Actualizar tiquete",
+				method: "PATCH", path: "/api/tiquete",
+				successExample: '{"encabezado":{"resultado":true},"respuesta":{...tiquete}}',
+			},
+			{
+				stepKey: "timer_cerrarConversaciones",
+				title: "Cierre por inactividad",
+				method: "GET", path: "/api/timer_cerrarConversaciones",
+				successExample: '{"encabezado":{"resultado":true},"respuesta":{"ok":true,"mensaje":"Se cerraron N conversaciones por inactividad","registrosActualizados":N}}',
+			},
+			{
+				stepKey: "tiquete.delete",
+				title: "Eliminar tiquete",
+				method: "DELETE", path: "/api/tiquete/:itiquete",
+				successExample: 'HTTP 200/204 sin body relevante',
+			},
+			{
+				stepKey: "conversacion.delete",
+				title: "Eliminar conversación",
+				method: "DELETE", path: "/api/conversacion/:iconversacion",
+				successExample: 'Marca itdestado=2 (no hace hard delete). HTTP 200.',
+			},
+		],
+		clientesis: [],
+	};
+	$: receptionList = RECEPTION_INVENTORY[proyecto] ?? [];
+	$: testedEndpoints = TESTED_ENDPOINTS[proyecto] ?? [];
+	$: appEndpoints = extractEndpoints(fullCollection);
+	$: appEndpointsCovered = countCovered(appEndpoints, testedEndpoints);
+
+	type StepStatus = "ok" | "fail" | "skipped";
+	function initLogStatuses(proj: string): Record<string, StepStatus> {
+		if (typeof window === "undefined") return {};
+		try {
+			const raw = window.localStorage.getItem(`isa-doc:logStatuses:${proj}`);
+			if (!raw) return {};
+			const parsed = JSON.parse(raw) as Record<string, StepStatus>;
+			return parsed && typeof parsed === "object" ? parsed : {};
+		} catch { return {}; }
+	}
+	let logStatuses: Record<string, StepStatus> = initLogStatuses(proyecto);
+	let logBuffer = "";
+	$: storageKey = `isa-doc:logStatuses:${proyecto}`;
+	$: persistLogStatuses(storageKey, logStatuses);
+	function persistLogStatuses(key: string, statuses: Record<string, StepStatus>): void {
+		if (typeof window === "undefined") return;
+		if (!statuses || Object.keys(statuses).length === 0) return;
+		try { window.localStorage.setItem(key, JSON.stringify(statuses)); } catch { /* quota / SSR */ }
+	}
+	function ingestLogChunk(chunk: string): void {
+		logBuffer += chunk;
+		const lines = logBuffer.split(/\r?\n/);
+		logBuffer = lines.pop() ?? "";
+		let changed = false;
+		for (const line of lines) {
+			const ok = /✅\s*\[([^\]]+)\]/.exec(line);
+			if (ok) { logStatuses[ok[1]] = "ok"; changed = true; continue; }
+			const fail = /❌\s*\[([^\]]+)\]/.exec(line);
+			if (fail) { logStatuses[fail[1]] = "fail"; changed = true; continue; }
+			const skip = /⏭\s*\[([^\]]+)\]/.exec(line);
+			if (skip) { logStatuses[skip[1]] = "skipped"; changed = true; continue; }
+			if (/\[AUTH\]\s+Token cargado/.test(line)) { logStatuses["AUTH"] = "ok"; changed = true; }
+			else if (/⛔\s+Sin token/.test(line)) { logStatuses["AUTH"] = "fail"; changed = true; }
+		}
+		if (changed) logStatuses = { ...logStatuses };
+	}
+	function resetLogStatuses(): void {
+		logStatuses = {};
+		logBuffer = "";
+		if (typeof window !== "undefined") {
+			try { window.localStorage.removeItem(`isa-doc:logStatuses:${proyecto}`); } catch { /* ignore */ }
+		}
+	}
+	function loadLastLogStatuses(): void {
+		if (!socket?.connected) return;
+		socket.emit(`${verifyPrefix}:lastLog`, (r: { ok: boolean; content?: string }) => {
+			if (!r?.ok || !r.content) return;
+			logBuffer = "";
+			ingestLogChunk(r.content + "\n");
+		});
+	}
+	function statusFor(ep: AppEndpoint, statuses: Record<string, StepStatus>): StepStatus | "none" {
+		if (!ep.stepKey) return "none";
+		return statuses[ep.stepKey] ?? "none";
+	}
+	function appStatusFor(ep: AppEndpoint, tested: AppEndpoint[], statuses: Record<string, StepStatus>): StepStatus | "untested" | "none" {
+		const match = tested.find(
+			(t) => t.method === ep.method && normPath(t.path) === normPath(ep.path),
+		);
+		if (!match) return "untested";
+		if (!match.stepKey) return "none";
+		return statuses[match.stepKey] ?? "none";
+	}
+
+	function extractEndpoints(col: unknown): AppEndpoint[] {
+		const out: AppEndpoint[] = [];
+		const walk = (arr: unknown[]): void => {
+			for (const raw of arr) {
+				const it = raw as { item?: unknown[]; request?: { method?: string; url?: unknown } };
+				if (Array.isArray(it.item)) { walk(it.item); continue; }
+				if (!it.request) continue;
+				const method = String(it.request.method ?? "GET").toUpperCase();
+				const url = it.request.url as { raw?: string; path?: string[] } | string | undefined;
+				let path = "";
+				if (typeof url === "string") path = url;
+				else if (url?.raw) path = url.raw;
+				else if (Array.isArray(url?.path)) path = "/" + url.path.join("/");
+				path = path
+					.replace(/^https?:\/\/[^/]+/, "")
+					.replace(/^\{\{[^}]+\}\}\/?/, "")
+					.replace(/\{\{[^}]+\}\}/g, "*")
+					.replace(/\?.*$/, "");
+				if (!path.startsWith("/")) path = "/" + path;
+				out.push({ method, path });
+			}
+		};
+		const root = (col as { item?: unknown[] } | null)?.item;
+		if (Array.isArray(root)) walk(root);
+		return out;
+	}
+	function normPath(p: string): string {
+		return p.replace(/\/(\d+|:[^/]+|\{[^}]+\}|\*)/g, "/*").replace(/\/+$/, "").toLowerCase();
+	}
+	function isTested(ep: AppEndpoint, tested: AppEndpoint[]): boolean {
+		const key = ep.method + " " + normPath(ep.path);
+		return tested.some((t) => t.method + " " + normPath(t.path) === key);
+	}
+	function countCovered(app: AppEndpoint[], tested: AppEndpoint[]): { covered: number; total: number } {
+		const total = app.length;
+		const covered = app.filter((e) => isTested(e, tested)).length;
+		return { covered, total };
+	}
 	// === Modal CodeMirror reutilizable ===
 	let codeModalShow = false;
 	let codeModalTitle = "";
@@ -127,6 +353,7 @@
 	function startVerify(): void {
 		if (verifyRunning) return;
 		verifyOutput = "";
+		resetLogStatuses();
 		showVerifyConsole = true;
 		socket?.emit(`${verifyPrefix}:run`, { host: verifyHost.trim() }, (r: { ok: boolean; error?: string }) => {
 			if (!r?.ok) {
@@ -137,6 +364,19 @@
 	}
 	function stopVerify(): void {
 		socket?.emit(`${verifyPrefix}:kill`, () => {});
+	}
+	function openLastLog(): void {
+		showLastLog = true;
+		lastLogLoading = true;
+		lastLogError = "";
+		lastLogContent = "";
+		lastLogPath = "";
+		socket?.emit(`${verifyPrefix}:lastLog`, (r: { ok: boolean; path?: string; content?: string; error?: string }) => {
+			lastLogLoading = false;
+			if (!r?.ok) { lastLogError = r?.error ?? "No se pudo cargar el log"; return; }
+			lastLogPath = r.path ?? "";
+			lastLogContent = r.content ?? "";
+		});
 	}
 
 	function openMdPreview(title: string, md: string | undefined): void {
@@ -370,7 +610,7 @@
 		const btn = t?.closest?.('button[role="tab"]') as HTMLElement | null;
 		if (!btn) return;
 		const label = (btn.textContent ?? "").trim().toLowerCase();
-		const key = label === "editor" ? "editor" : label === "resumen" ? "resumen" : label === "pruebas" ? "pruebas" : null;
+		const key = label === "editor" ? "editor" : label === "resumen" ? "resumen" : label === "pruebas" ? "pruebas" : label.startsWith("estado") ? "estado" : null;
 		if (key) postmanTabs.onOpened(key);
 	}
 
@@ -381,17 +621,19 @@
 			openEditor = sel === "editor";
 			openResumen = sel === "resumen";
 			openPruebas = sel === "pruebas";
+			openEstado = sel === "estado";
 		});
 		if (STATIC_MODE) { loadStaticPostman(); return; }
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });
-		socket.on("connect", () => { loadList(); loadEnvs(); loadFull(); });
-		socket.on(`${verifyPrefix}:started`, () => { verifyRunning = true; });
-		socket.on(`${verifyPrefix}:stdout`, (m: { data: string }) => appendVerifyChunk(m.data));
-		socket.on(`${verifyPrefix}:stderr`, (m: { data: string }) => appendVerifyChunk(m.data));
+		socket.on("connect", () => { loadList(); loadEnvs(); loadFull(); loadLastLogStatuses(); });
+		socket.on(`${verifyPrefix}:started`, () => { verifyRunning = true; resetLogStatuses(); });
+		socket.on(`${verifyPrefix}:stdout`, (m: { data: string }) => { appendVerifyChunk(m.data); ingestLogChunk(m.data); });
+		socket.on(`${verifyPrefix}:stderr`, (m: { data: string }) => { appendVerifyChunk(m.data); ingestLogChunk(m.data); });
 		socket.on(`${verifyPrefix}:exited`, (m: { code: number; error?: string }) => {
 			verifyRunning = false;
 			appendVerifyChunk(`\n--- proceso finalizado (code=${m.code}${m.error ? `, error=${m.error}` : ""}) ---\n`);
+			loadLastLogStatuses();
 		});
 	});
 	onDestroy(() => { socket?.disconnect(); unsubUrl(); });
@@ -687,6 +929,7 @@
 					<Button variant="ghost" onClick={() => (showVerifyConsole = true)} disabled={!verifyOutput && !verifyRunning}>
 						<Iconify icon="mdi:console-line" /> Consola
 					</Button>
+					<ButtonIconify icon="mdi:eye-outline" shape="pill" onClick={openLastLog} disabled={verifyRunning} title="Ver último log" />
 				</FlexLayout>
 			</FlexLayout>
 			<label class="field">
@@ -700,9 +943,113 @@
 				/>
 			</label>
 			<Text color="neutral"><small>
-				Por defecto <code>http://localhost:20040</code>. Token leído desde <code>doc/test/token.json</code> (o <code>VERIFY_API_TOKEN</code>).
-				Script: <code>scripts/verify-api/verify_api.ts</code>.
+				{#if proyecto === "patyia"}
+					Por defecto <code>http://localhost:7071</code>. Token leído desde <code>token.patyia.json</code> (o <code>PATYIA_TOKEN</code>).
+					Script: <code>scripts/verify-api-patyia/verify_api.ts</code>.
+				{:else}
+					Por defecto <code>http://localhost:20040</code>. Token leído desde <code>doc/test/token.json</code> (o <code>VERIFY_API_TOKEN</code>).
+					Script: <code>scripts/verify-api/verify_api.ts</code>.
+				{/if}
 			</small></Text>
+		</Card>
+
+		<Card>
+			<FlexLayout items="center" justify="between">
+				<H4>Endpoints — cobertura</H4>
+				<Text color="neutral"><small>
+					App: <strong>{appEndpoints.length}</strong> · Probados: <strong>{testedEndpoints.length}</strong> · Cubiertos: <strong>{appEndpointsCovered.covered}/{appEndpointsCovered.total}</strong>
+				</small></Text>
+			</FlexLayout>
+			<GridLayout columns="1fr 1fr" style="align-items: start;">
+				<div>
+					<Text><strong>Endpoints de la app</strong> <small style="color: gray;">(desde la colección Postman)</small></Text>
+					{#if !appEndpoints.length}
+						<Text color="neutral"><small>Cargando colección…</small></Text>
+					{:else}
+						<ul class="ep-list">
+							{#each appEndpoints as ep}
+								{@const st = appStatusFor(ep, testedEndpoints, logStatuses)}
+								<li class="st-{st}">
+									<span class="ep-mark" title={st}>{st === "ok" ? "✓" : st === "fail" ? "✗" : st === "skipped" ? "⏭" : st === "untested" ? "?" : "·"}</span>
+									<span class="ep-method ep-{ep.method.toLowerCase()}">{ep.method}</span>
+									<code class="ep-path">{ep.path}</code>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+				</div>
+				<div>
+					<Text><strong>Endpoints probados</strong> <small style="color: gray;">(secuencia ejecutada por el script)</small></Text>
+					{#if !testedEndpoints.length}
+						<Text color="neutral"><small>Sin lista declarada para este proyecto.</small></Text>
+					{:else}
+						<ol class="ep-list">
+							{#each testedEndpoints as ep}
+								{@const st = statusFor(ep, logStatuses)}
+								<li class="st-{st}">
+									<span class="ep-mark" title={st}>{st === "ok" ? "✓" : st === "fail" ? "✗" : st === "skipped" ? "⏭" : "·"}</span>
+									<span class="ep-method ep-{ep.method.toLowerCase()}">{ep.method}</span>
+									<code class="ep-path">{ep.path}</code>
+								</li>
+							{/each}
+						</ol>
+					{/if}
+				</div>
+			</GridLayout>
+		</Card>
+
+	</section>
+		</TabItem>
+		<TabItem title="Estado de recepción" bind:open={openEstado}>
+	<section class="estado">
+		<Card>
+			<H4>Resumen del estado</H4>
+			<Text><small style="color: gray;">
+				Inventario de comportamiento conocido por endpoint, basado en la última ejecución de <code>verify-api</code> y en la inspección del código de backend de PatyIA.
+			</small></Text>
+			<ul class="issues">
+				<li><strong>Estados persistentes</strong>: la columna de éxito/error se guarda en <code>localStorage</code> (<code>isa-doc:logStatuses:{proyecto}</code>) y se restaura instantáneamente al recargar; el último log físico la sobrescribe cuando llega vía socket.</li>
+				<li><strong>Diagnóstico OPENAI_API_KEY</strong>: el backend anexa <code>[OPENAI_API_KEY=...XXXX]</code> a los errores de OpenAI para identificar qué key está activa cuando se presente un 401 por organización.</li>
+			</ul>
+		</Card>
+
+		<Card>
+			<H4>Inventario por endpoint</H4>
+			{#if !receptionList.length}
+				<Text color="neutral"><small>Sin inventario declarado para este proyecto.</small></Text>
+			{:else}
+				<div class="reception-grid">
+					{#each receptionList as r}
+						{@const st = logStatuses[r.stepKey] ?? "none"}
+						<div class="rec-card st-{st}">
+							<div class="rec-head">
+								<span class="ep-mark" title={st}>{st === "ok" ? "✓" : st === "fail" ? "✗" : st === "skipped" ? "⏭" : "·"}</span>
+								<span class="ep-method ep-{r.method.toLowerCase()}">{r.method}</span>
+								<code class="ep-path">{r.path}</code>
+							</div>
+							<div class="rec-title"><strong>{r.title}</strong></div>
+							{#if r.successExample}
+								<div class="rec-section">
+									<small><strong style="color: var(--is-success);">Éxito esperado</strong></small>
+									<pre class="rec-sample">{r.successExample}</pre>
+								</div>
+							{/if}
+							{#if r.knownErrors?.length}
+								<div class="rec-section">
+									<small><strong style="color: var(--is-danger);">Errores conocidos</strong></small>
+									{#each r.knownErrors as e}
+										<div class="rec-error">
+											<div><code>HTTP {e.status || "—"}</code> <span class="rec-msg">{e.mensaje}</span></div>
+											<div><small><em>Causa:</em> {e.causa}</small></div>
+											{#if e.fix}<div><small><em>Corrección:</em> {e.fix}</small></div>{/if}
+										</div>
+									{/each}
+								</div>
+							{/if}
+						</div>
+					{/each}
+				</div>
+			{/if}
 		</Card>
 	</section>
 		</TabItem>
@@ -814,6 +1161,36 @@
 	<div class="verify-console" bind:this={verifyOutputEl}>{verifyOutput}</div>
 </Modal>
 
+<!-- Modal: Último log txt -->
+<Modal bind:bshow={showLastLog} onClose={() => { showLastLog = false; }} style="width: 90dvw; height: 80dvh;">
+	<svelte:fragment slot="title">
+		<FlexLayout items="center">
+			<Iconify icon="mdi:file-document-outline" />
+			<Text><strong>Último log</strong></Text>
+			{#if lastLogPath}<Text color="neutral"><small>· {lastLogPath}</small></Text>{/if}
+		</FlexLayout>
+	</svelte:fragment>
+	<FlexLayout items="center" justify="end">
+		<Button variant="ghost" onClick={openLastLog} disabled={lastLogLoading}>
+			<Iconify icon="mdi:refresh" /> Recargar
+		</Button>
+		<Button
+			variant="ghost"
+			onClick={() => { navigator.clipboard?.writeText(lastLogContent); }}
+			disabled={!lastLogContent}
+		>
+			<Iconify icon="mdi:content-copy" /> Copiar
+		</Button>
+	</FlexLayout>
+	{#if lastLogLoading}
+		<Text color="neutral"><small>Cargando…</small></Text>
+	{:else if lastLogError}
+		<Text color="danger"><small>{lastLogError}</small></Text>
+	{:else}
+		<div class="verify-console">{lastLogContent}</div>
+	{/if}
+</Modal>
+
 <CodeModal bind:bshow={codeModalShow} title={codeModalTitle} value={codeModalValue} language="json" />
 
 <style>
@@ -866,7 +1243,59 @@
 		flex-direction: column;
 		gap: 0.75rem;
 		margin-top: 0.75rem;
+		max-height: calc(100dvh - 220px);
+		overflow-y: auto;
+		padding-right: 0.4rem;
 	}
+	.estado {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin-top: 0.75rem;
+		max-height: calc(100dvh - 220px);
+		overflow-y: auto;
+		padding-right: 0.4rem;
+	}
+	.estado .issues { margin: 0.25rem 0 0 1rem; padding: 0; }
+	.estado .issues li { margin: 0.3rem 0; font-size: 0.82rem; line-height: 1.45; }
+	.reception-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+		gap: 0.6rem;
+		margin-top: 0.5rem;
+	}
+	.rec-card {
+		border: 1px solid color-mix(in srgb, currentColor, transparent 85%);
+		border-radius: 0.4rem;
+		padding: 0.5rem 0.6rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+	}
+	.rec-card.st-ok      { background: color-mix(in srgb, var(--is-success), transparent 90%); }
+	.rec-card.st-fail    { background: color-mix(in srgb, var(--is-danger),  transparent 88%); }
+	.rec-card.st-skipped { background: color-mix(in srgb, var(--is-warning), transparent 90%); }
+	.rec-head { display: flex; align-items: center; gap: 0.4rem; }
+	.rec-title { font-size: 0.85rem; }
+	.rec-section { display: flex; flex-direction: column; gap: 0.2rem; margin-top: 0.2rem; }
+	.rec-sample {
+		margin: 0;
+		padding: 0.3rem 0.4rem;
+		background: color-mix(in srgb, currentColor, transparent 92%);
+		border-radius: 0.25rem;
+		font-size: 0.72rem;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+	.rec-error {
+		padding: 0.3rem 0.4rem;
+		border-left: 2px solid var(--is-danger);
+		background: color-mix(in srgb, var(--is-danger), transparent 94%);
+		border-radius: 0.2rem;
+		margin-top: 0.2rem;
+		font-size: 0.75rem;
+	}
+	.rec-msg { font-family: monospace; font-size: 0.72rem; }
 	.verify-console {
 		flex: 1;
 		min-height: 60dvh;
@@ -883,6 +1312,54 @@
 		white-space: pre-wrap;
 		word-break: break-word;
 	}
+
+	.ep-list {
+		list-style: none;
+		padding: 0;
+		margin: 0.4rem 0 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+	}
+	ol.ep-list { list-style: decimal inside; }
+	.ep-list li {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.8rem;
+		padding: 0.15rem 0.3rem;
+		border-radius: 4px;
+	}
+	.ep-list li.st-ok      { background: color-mix(in srgb, var(--is-success), transparent 88%); }
+	.ep-list li.st-fail    { background: color-mix(in srgb, var(--is-danger),  transparent 85%); }
+	.ep-list li.st-skipped { background: color-mix(in srgb, var(--is-warning), transparent 88%); }
+	.ep-list li.st-untested{ opacity: 0.7; }
+	.ep-mark {
+		display: inline-block;
+		width: 1em;
+		text-align: center;
+		font-weight: bold;
+		color: gray;
+	}
+	.ep-list li.st-ok   .ep-mark { color: var(--is-success); }
+	.ep-list li.st-fail .ep-mark { color: var(--is-danger); }
+	.ep-list li.st-skipped .ep-mark { color: var(--is-warning); }
+	.ep-method {
+		display: inline-block;
+		min-width: 3.6rem;
+		font-size: 0.7rem;
+		font-weight: bold;
+		text-align: center;
+		padding: 0.05rem 0.3rem;
+		border-radius: 3px;
+		color: white;
+	}
+	.ep-get    { background: #1d6fdb; }
+	.ep-post   { background: #2e7d32; }
+	.ep-put    { background: #ed8b00; }
+	.ep-patch  { background: #8e44ad; }
+	.ep-delete { background: #c62828; }
+	.ep-path { font-size: 0.78rem; opacity: 0.92; }
 
 	.layout {
 		display: grid;

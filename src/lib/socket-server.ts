@@ -1,5 +1,7 @@
 import { Server, type Socket } from "socket.io";
 import { spawn, type ChildProcess } from "node:child_process";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { PROJECTS } from "./projects-registry.js";
 import {
 	loadCollectionMeta, loadEntity, saveEntity, saveCollectionVariables,
@@ -208,6 +210,21 @@ function handleConnection(socket: Socket): void {
 		if (!child) { cb?.({ ok: false, error: "No hay proceso" }); return; }
 		killProcessTree(child);
 		cb?.({ ok: true });
+	});
+	socket.on("verifyApi:lastLog", (cb: (r: { ok: boolean; path?: string; content?: string; error?: string }) => void) => {
+		try {
+			const logsDir = resolve(process.cwd(), "scripts/verify-api/logs");
+			const files = readdirSync(logsDir)
+				.filter((f) => /^out.*\.txt$/i.test(f))
+				.map((f) => ({ f, t: statSync(join(logsDir, f)).mtimeMs }))
+				.sort((a, b) => b.t - a.t);
+			if (!files.length) { cb({ ok: false, error: "Sin logs todavía" }); return; }
+			const path = join(logsDir, files[0].f);
+			const content = readFileSync(path, "utf8");
+			cb({ ok: true, path, content });
+		} catch (err) {
+			cb({ ok: false, error: (err as Error).message });
+		}
 	});
 }
 
@@ -430,6 +447,21 @@ function registerVerifyApiNamespace(socket: Socket, prefix: string, actionId: st
 		if (!child) { cb?.({ ok: false, error: "No hay proceso" }); return; }
 		killProcessTree(child);
 		cb?.({ ok: true });
+	});
+	socket.on(`${prefix}:lastLog`, (cb: (r: { ok: boolean; path?: string; content?: string; error?: string }) => void) => {
+		try {
+			const logsDir = resolve(process.cwd(), dirname(scriptPath), "logs");
+			const files = readdirSync(logsDir)
+				.filter((f) => /^out.*\.txt$/i.test(f))
+				.map((f) => ({ f, t: statSync(join(logsDir, f)).mtimeMs }))
+				.sort((a, b) => b.t - a.t);
+			if (!files.length) { cb({ ok: false, error: "Sin logs todavía" }); return; }
+			const path = join(logsDir, files[0].f);
+			const content = readFileSync(path, "utf8");
+			cb({ ok: true, path, content });
+		} catch (err) {
+			cb({ ok: false, error: (err as Error).message });
+		}
 	});
 }
 
