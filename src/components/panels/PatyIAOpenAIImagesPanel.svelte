@@ -7,6 +7,7 @@
 	import TsViewer from "../viewers/TsViewer.svelte";
 	import ImageViewer from "../viewers/ImageViewer.svelte";
 	import StorageActionsPanel from "./StorageActionsPanel.svelte";
+	import { PROMPT_MOCKUPS, type PromptMockup } from "../../lib/patyia/promptMockups";
 	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/patyia/openaiPricing";
 	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/patyia/patyiaPersist";
 	import { leerState, escribirState, migrarLegacy } from "../../lib/patyia/urlState";
@@ -52,7 +53,7 @@
 
 	type AccionId = "imagenes" | "texto" | "chat" | "conversacion" | "storage";
 	type NivelId = "pruebas" | "conversacion" | "storage";
-	type SubPruebaId = "imagenes" | "texto" | "chat";
+	type SubPruebaId = "imagenes" | "texto" | "chat" | "mockups";
 	const ACCIONES: Array<{ id: NivelId; label: string }> = [
 		{ id: "pruebas", label: "Pruebas" },
 		{ id: "conversacion", label: "Conversación BD" },
@@ -63,6 +64,7 @@
 		{ id: "imagenes", label: "Imágenes" },
 		{ id: "texto", label: "Texto" },
 		{ id: "chat", label: "Conversaciones" },
+		{ id: "mockups", label: "Mocks" },
 	];
 	const SUB_PRUEBAS_VALIDAS: ReadonlySet<SubPruebaId> = new Set(SUB_PRUEBAS.map((a) => a.id));
 
@@ -95,6 +97,7 @@
 		Imágenes: "imagenes",
 		Texto: "texto",
 		Conversaciones: "chat",
+		Mocks: "mockups",
 	};
 
 	function onSubTabClick(e: MouseEvent): void {
@@ -754,6 +757,41 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 	$: if (persistReady) saveJson(STORAGE_KEYS.txtHistorial, txtHistorial);
 	$: if (persistReady) saveJson(STORAGE_KEYS.chatHistorial, chatHistorial);
 	$: if (persistReady) saveJson(STORAGE_KEYS.imgHistorial, imgHistorial);
+
+	let mockupInput: string = "";
+	let mockupSystem: string = "";
+	let mockupModel: keyof typeof TModeloTexto = "gpt-4o-mini";
+	let mockupLoading: boolean = false;
+	let mockupError: string = "";
+	let mockupResult: string = "";
+	let mockupSelId: string = "";
+
+	function cargarMockup(m: PromptMockup): void {
+		mockupSelId = m.id;
+		mockupInput = m.text;
+	}
+
+	async function enviarMockup(): Promise<void> {
+		const prompt = mockupInput.trim();
+		if (!prompt) { mockupError = "Escribe o selecciona un mock."; return; }
+		mockupLoading = true;
+		mockupError = "";
+		mockupResult = "";
+		try {
+			const r = await fetch("/api/patyia/openai/text/generate", {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ prompt, system: mockupSystem.trim() || undefined, model: mockupModel }),
+			});
+			const j = await r.json();
+			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
+			mockupResult = String(j.text ?? "");
+		} catch (e) {
+			mockupError = e instanceof Error ? e.message : String(e);
+		} finally {
+			mockupLoading = false;
+		}
+	}
 </script>
 
 <ProjectSectionLayout
@@ -787,6 +825,7 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 						<TabItem title="Imágenes" open={subPrueba === "imagenes"} />
 						<TabItem title="Texto" open={subPrueba === "texto"} />
 						<TabItem title="Conversaciones" open={subPrueba === "chat"} />
+						<TabItem title="Mocks" open={subPrueba === "mockups"} />
 					</Tabs>
 				</div>
 			{/if}
@@ -1025,6 +1064,57 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 							</div>
 						{/if}
 					</section>
+				</div>
+			{:else if accionActiva === "pruebas" && subPrueba === "mockups"}
+				<div class="seccion">
+					<header class="seccion-head">
+						<div>
+							<h2>Mocks de prompts</h2>
+							<p class="sub">Catálogo de mensajes de prueba típicos del soporte ContaPyme. Selecciona uno, edítalo si quieres y envíalo a OpenAI.</p>
+						</div>
+					</header>
+
+					<section class="mocks-grid">
+						{#each PROMPT_MOCKUPS as m}
+							<button
+								type="button"
+								class="mock-card"
+								class:active={mockupSelId === m.id}
+								on:click={() => cargarMockup(m)}
+							>
+								<strong>{m.label}</strong>
+								<span class="sub">{m.text}</span>
+							</button>
+						{/each}
+					</section>
+
+					<GridLayout cells={2} items="start">
+						<div>
+							<label class="lbl" for="mock-sys">Mensaje de sistema (opcional)</label>
+							<textarea id="mock-sys" bind:value={mockupSystem} rows={4} class="ta"></textarea>
+						</div>
+						<div>
+							<label class="lbl" for="mock-in">Mensaje del usuario</label>
+							<textarea id="mock-in" bind:value={mockupInput} rows={4} class="ta"></textarea>
+						</div>
+					</GridLayout>
+
+					<GridLayout cells={2} items="end">
+						<SelectEnum bind:value={mockupModel} enumValue={TModeloTexto} label="Modelo" />
+						<FlexLayout direction="row" justify="end">
+							<Button onClick={enviarMockup} disabled={mockupLoading} loading={mockupLoading} style="width: fit-content;">Probar</Button>
+						</FlexLayout>
+					</GridLayout>
+
+					{#if mockupError}
+						<div class="error">{mockupError}</div>
+					{/if}
+					{#if mockupResult}
+						<div class="resultado">
+							<h3>Respuesta</h3>
+							<pre>{mockupResult}</pre>
+						</div>
+					{/if}
 				</div>
 			{:else if accionActiva === "conversacion"}
 				<div class="seccion">
@@ -1594,4 +1684,37 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 		min-height: 0;
 		overflow: auto;
 	}
-</style>
+
+	.mocks-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+		gap: 0.5rem;
+		margin: 0.5rem 0;
+	}
+	.mock-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		padding: 0.6rem;
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 6px;
+		text-align: left;
+		cursor: pointer;
+		color: inherit;
+	}
+	.mock-card:hover { background: rgba(255, 255, 255, 0.08); }
+	.mock-card.active { border-color: var(--color-primary, #4ea1ff); background: rgba(78, 161, 255, 0.12); }
+	.mock-card .sub { font-size: 0.8rem; opacity: 0.75; }
+	.lbl { display: block; font-size: 0.85rem; margin-bottom: 0.25rem; opacity: 0.85; }
+	.ta {
+		width: 100%;
+		background: rgba(0, 0, 0, 0.25);
+		color: inherit;
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 4px;
+		padding: 0.5rem;
+		font-family: inherit;
+		font-size: 0.9rem;
+		resize: vertical;
+	}
