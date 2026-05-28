@@ -248,7 +248,30 @@ async function snapshotPatyiaStagingIdentidades(): Promise<void> {
 			icontacto: String(r.ICONTACTO ?? "").trim(),
 			qconv: Number(r.QCONV ?? 0),
 			ultFh: r.ULT_FH ? new Date(r.ULT_FH).toISOString() : null,
+			nombreTercero: "",
 		}));
+
+		try {
+			const dbIs = await import("../src/lib/db.ts");
+			const issPool = await dbIs.getPool();
+			const ids = Array.from(new Set(items.map((it) => it.itercero).filter(Boolean)));
+			if (ids.length) {
+				const inList = ids.map((s) => `'${s.replace(/'/g, "''")}'`).join(",");
+				const tRes = await issPool.request().query(`SELECT ITERCERO, NTERCERO, NOMBRECOMERCIAL FROM TERCEROS WHERE ITERCERO IN (${inList})`);
+				const tMap = new Map<string, string>();
+				for (const r of tRes.recordset as Array<{ ITERCERO: string; NTERCERO: string | null; NOMBRECOMERCIAL: string | null }>) {
+					const name = (r.NTERCERO ?? "").toString().trim() || (r.NOMBRECOMERCIAL ?? "").toString().trim();
+					if (name) tMap.set(String(r.ITERCERO).trim(), name);
+				}
+				for (const it of items) {
+					const n = tMap.get(it.itercero);
+					if (n) it.nombreTercero = n;
+				}
+			}
+		} catch (e) {
+			console.warn(`[snap] identidades: enriquecer nombres fallo: ${(e as Error).message}`);
+		}
+
 		writeJson("patyia/staging/identidades.json", { ok: true, db: "AYUDASCP_IA_STAGING", items, snapshotAt: new Date().toISOString() });
 	} catch (e) {
 		console.warn(`[snap] patyia/staging/identidades fallo: ${(e as Error).message}`);

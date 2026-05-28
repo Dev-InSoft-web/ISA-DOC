@@ -653,7 +653,7 @@ const data = await r.json();
 	let convVectorStoreIds: string[] = [];
 
 	// --- Interacción staging ---
-	interface IdentidadStg { itercero: string; icontacto: string; qconv: number; ultFh: string | null }
+	interface IdentidadStg { itercero: string; icontacto: string; qconv: number; ultFh: string | null; nombreTercero?: string }
 	let interIdentidades: IdentidadStg[] = [];
 	let interIdentidadesLoading: boolean = false;
 	let interIdentidadesLoaded: boolean = false;
@@ -693,11 +693,17 @@ const data = await r.json();
 			interIdentidades = data.items ?? [];
 			const mapa: Record<string, string> = { "— Selecciona terceroXcontacto —": "" };
 			for (const it of interIdentidades) {
-				const label = `Tercero ${it.itercero} · Contacto ${it.icontacto || "—"} · ${it.qconv} conv`;
+				const nom = (it.nombreTercero ?? "").trim();
+				const tercero = nom ? `${nom} (${it.itercero})` : `Tercero ${it.itercero}`;
+				const label = `${tercero} · Contacto ${it.icontacto || "—"} · ${it.qconv} conv`;
 				mapa[label] = `${it.itercero}|${it.icontacto}`;
 			}
 			tInterIdentidades = mapa;
 			interIdentidadesLoaded = true;
+			if (!interIdentidadValue && interIdentidades.length) {
+				const primera = interIdentidades[0];
+				interIdentidadValue = `${primera.itercero}|${primera.icontacto}`;
+			}
 		} catch (err) {
 			interIdentidadesError = err instanceof Error ? err.message : String(err);
 		} finally {
@@ -738,6 +744,8 @@ const data = await r.json();
 		interMensajes = [...interMensajes, nuevoMsgVista("user", mensajeUser)];
 		interInput = "";
 		try {
+			const ident = interIdentidades.find((it) => it.itercero === par.itercero && it.icontacto === par.icontacto);
+			const nombre = (ident?.nombreTercero ?? "").trim();
 			const r = await fetch("/api/patyia/staging/conversacion/new", {
 				method: "POST",
 				headers: { "content-type": "application/json" },
@@ -745,6 +753,7 @@ const data = await r.json();
 					itercero: par.itercero,
 					icontacto: par.icontacto,
 					primerMensaje: mensajeUser,
+					nombre: nombre || undefined,
 				}),
 			});
 			const data = await r.json() as { ok: boolean; iconversacion?: number; hilo?: string; respuesta?: { texto?: string }; error?: string };
