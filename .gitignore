@@ -13,3 +13,8 @@ public/patyia/openai/images/
 
 # carpeta de backups (local.settings, npmrc, etc.)
 backups/
+
+# JWT tokens (NUNCA versionar — uno por aplicativo)
+token.json
+token.patyia.json
+token.clientesis.json
