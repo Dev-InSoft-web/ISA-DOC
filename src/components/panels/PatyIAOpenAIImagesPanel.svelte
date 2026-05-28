@@ -675,9 +675,21 @@ const data = await r.json();
 		interIdentidadesLoading = true;
 		interIdentidadesError = "";
 		try {
-			const r = await fetch("/api/patyia/staging/identidades");
-			const data = (await r.json()) as { ok: boolean; items?: IdentidadStg[]; error?: string };
-			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
+			let data: { ok: boolean; items?: IdentidadStg[]; error?: string } | null = null;
+			try {
+				const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "/";
+				const baseNoSlash = base.endsWith("/") ? base.slice(0, -1) : base;
+				const rStatic = await fetch(`${baseNoSlash}/static-api/patyia/staging/identidades.json`, { cache: "force-cache" });
+				if (rStatic.ok) {
+					const j = (await rStatic.json()) as { ok: boolean; items?: IdentidadStg[] };
+					if (j.ok && Array.isArray(j.items) && j.items.length) data = j;
+				}
+			} catch { /* sin snapshot, intentar API */ }
+			if (!data) {
+				const r = await fetch("/api/patyia/staging/identidades");
+				data = (await r.json()) as { ok: boolean; items?: IdentidadStg[]; error?: string };
+				if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
+			}
 			interIdentidades = data.items ?? [];
 			const mapa: Record<string, string> = { "— Selecciona terceroXcontacto —": "" };
 			for (const it of interIdentidades) {

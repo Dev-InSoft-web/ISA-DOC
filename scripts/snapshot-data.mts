@@ -232,6 +232,29 @@ function snapshotResolvedDocs(): void {
 	}
 }
 
+async function snapshotPatyiaStagingIdentidades(): Promise<void> {
+	try {
+		const mod = await import("../src/lib/dbPaty.ts");
+		const pool = await mod.getPatyPool();
+		const sql = `SELECT TOP 100 ITERCERO, ICONTACTO, COUNT(*) AS QCONV, MAX(FHCRE) AS ULT_FH
+			FROM [AYUDASCP_IA_STAGING].dbo.CONVERSACIONES
+			WHERE ITERCERO IS NOT NULL
+			GROUP BY ITERCERO, ICONTACTO
+			ORDER BY QCONV DESC, ULT_FH DESC`;
+		const result = await pool.request().query(sql);
+		const rows = (result.recordset ?? []) as Array<{ ITERCERO: string; ICONTACTO: string | null; QCONV: number; ULT_FH: Date | null }>;
+		const items = rows.map((r) => ({
+			itercero: String(r.ITERCERO ?? "").trim(),
+			icontacto: String(r.ICONTACTO ?? "").trim(),
+			qconv: Number(r.QCONV ?? 0),
+			ultFh: r.ULT_FH ? new Date(r.ULT_FH).toISOString() : null,
+		}));
+		writeJson("patyia/staging/identidades.json", { ok: true, db: "AYUDASCP_IA_STAGING", items, snapshotAt: new Date().toISOString() });
+	} catch (e) {
+		console.warn(`[snap] patyia/staging/identidades fallo: ${(e as Error).message}`);
+	}
+}
+
 async function main(): Promise<void> {
 	mkdirSync(OUT, { recursive: true });
 	copyJson("data/revisado.json", "revisado.json");
@@ -240,6 +263,7 @@ async function main(): Promise<void> {
 	await snapshotTsFragments();
 	await snapshotCodegenState();
 	await snapshotPostman();
+	await snapshotPatyiaStagingIdentidades();
 	snapshotResolvedDocs();
 }
 
