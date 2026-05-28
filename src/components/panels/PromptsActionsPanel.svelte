@@ -12,19 +12,17 @@
 	import ConfirmDialog from "$comps/overlays/ConfirmDialog.svelte";
 	import { PROMPT_MOCKUPS } from "../../lib/patyia/promptMockups.ts";
 
-	interface PromptEntry { id: string; version: string; label: string; description: string }
+	interface PromptEntry { label: string; description: string; model: string }
 	interface PromptsConfig { updated: string; prompts: Record<string, PromptEntry> }
 
 	let cfg: PromptsConfig = { updated: "", prompts: {} };
 	let cargando: boolean = false;
-	let guardando: Set<string> = new Set();
 
 	let nuevoOpen: boolean = false;
 	let nuevoKey: string = "";
-	let nuevoId: string = "";
-	let nuevoVersion: string = "";
 	let nuevoLabel: string = "";
 	let nuevoDesc: string = "";
+	let nuevoModel: string = "";
 
 	let confirmOpen: boolean = false;
 	let confirmTitle: string = "Confirmar";
@@ -33,29 +31,30 @@
 	let confirmKind: "info" | "warning" | "danger" = "warning";
 	let confirmCb: () => void | Promise<void> = () => {};
 
-	// Probar (modal por card)
 	let probarOpen: boolean = false;
 	let probarKey: string = "";
 	let probarInput: string = "";
 	let probarMockupId: string = "";
 	let probarLoading: boolean = false;
 	let probarResultado: string = "";
-	let probarMeta: { id: string; version: string; model: string } | null = null;
+	let probarMeta: { model: string } | null = null;
 
-	// Editor de contenido (markdown del prompt)
-	interface ContentSnapshot { id: string; version: string; model: string; fetched_at: string }
 	let editorOpen: boolean = false;
 	let editorKey: string = "";
+	let editorLabel: string = "";
+	let editorDesc: string = "";
+	let editorModel: string = "";
 	let editorMd: string = "";
 	let editorMdOriginal: string = "";
-	let editorSnapshot: ContentSnapshot | null = null;
+	let editorLabelOriginal: string = "";
+	let editorDescOriginal: string = "";
+	let editorModelOriginal: string = "";
 	let editorLoading: boolean = false;
 	let editorSaving: boolean = false;
-	let editorPublishing: boolean = false;
-	let editorCached: boolean = false;
-	let editorSource: "openai" | "empty" | "local" | "" = "";
-	let editorWarning: string = "";
-	$: editorDirty = editorMd !== editorMdOriginal;
+	$: editorDirty = editorMd !== editorMdOriginal
+		|| editorLabel !== editorLabelOriginal
+		|| editorDesc !== editorDescOriginal
+		|| editorModel !== editorModelOriginal;
 
 	function pedirConfirmacion(opts: {
 		title?: string;
@@ -86,28 +85,6 @@
 		}
 	}
 
-	async function guardar(key: string): Promise<void> {
-		const entry = cfg.prompts[key];
-		if (!entry) return;
-		guardando = new Set([...guardando, key]);
-		try {
-			const r = await fetch(`/api/patyia/prompts/${encodeURIComponent(key)}`, {
-				method: "PUT",
-				headers: { "content-type": "application/json" },
-				body: JSON.stringify(entry),
-			});
-			const j = await r.json();
-			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
-			toastSuccess(`Guardado · ${key}`);
-		} catch (err) {
-			toastError(err instanceof Error ? err.message : String(err));
-		} finally {
-			const next = new Set(guardando);
-			next.delete(key);
-			guardando = next;
-		}
-	}
-
 	function eliminar(key: string): void {
 		pedirConfirmacion({
 			title: "Eliminar prompt",
@@ -133,10 +110,9 @@
 
 	function abrirNuevo(): void {
 		nuevoKey = "";
-		nuevoId = "";
-		nuevoVersion = "";
 		nuevoLabel = "";
 		nuevoDesc = "";
+		nuevoModel = "";
 		nuevoOpen = true;
 	}
 
@@ -147,10 +123,9 @@
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({
 					key: nuevoKey.trim(),
-					id: nuevoId.trim(),
-					version: nuevoVersion.trim(),
 					label: nuevoLabel.trim(),
 					description: nuevoDesc.trim(),
+					model: nuevoModel.trim(),
 				}),
 			});
 			const j = await r.json();
@@ -182,7 +157,7 @@
 			const j = await r.json();
 			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
 			probarResultado = j.output_text ?? "";
-			probarMeta = { id: j.prompt?.id ?? "", version: j.prompt?.version ?? "", model: j.model ?? "" };
+			probarMeta = { model: j.model ?? "" };
 		} catch (err) {
 			toastError(err instanceof Error ? err.message : String(err));
 		} finally {
@@ -206,29 +181,14 @@
 
 	$: keys = Object.keys(cfg.prompts).sort();
 
-	async function cargarContenido(key: string, refresh: boolean): Promise<void> {
+	async function cargarContenido(key: string): Promise<void> {
 		editorLoading = true;
 		try {
-			const url = `/api/patyia/prompts/${encodeURIComponent(key)}/content${refresh ? "?refresh=1" : ""}`;
-			const r = await fetch(url);
+			const r = await fetch(`/api/patyia/prompts/${encodeURIComponent(key)}/content`);
 			const j = await r.json();
 			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
 			editorMd = j.markdown ?? "";
 			editorMdOriginal = editorMd;
-			editorCached = !!j.cached;
-			editorSource = (j.source as typeof editorSource) ?? (editorCached ? "local" : "");
-			editorWarning = j.warning ?? "";
-			editorSnapshot = j.snapshot
-				? {
-					id: j.snapshot.id,
-					version: j.snapshot.version,
-					model: j.snapshot.model ?? "",
-					fetched_at: j.snapshot.fetched_at ?? "",
-				}
-				: null;
-			if (editorSource === "empty") {
-				toastError("No se pudo descargar el contenido del prompt. Se generó una plantilla local editable.");
-			}
 		} catch (err) {
 			toastError(err instanceof Error ? err.message : String(err));
 		} finally {
@@ -237,68 +197,59 @@
 	}
 
 	async function abrirEditor(key: string): Promise<void> {
+		const entry = cfg.prompts[key];
 		editorKey = key;
+		editorLabel = entry?.label ?? "";
+		editorDesc = entry?.description ?? "";
+		editorModel = entry?.model ?? "";
+		editorLabelOriginal = editorLabel;
+		editorDescOriginal = editorDesc;
+		editorModelOriginal = editorModel;
 		editorMd = "";
 		editorMdOriginal = "";
-		editorSnapshot = null;
-		editorCached = false;
-		editorSource = "";
-		editorWarning = "";
 		editorOpen = true;
-		await cargarContenido(key, false);
+		await cargarContenido(key);
 	}
 
-	async function refrescarDeOpenAI(): Promise<void> {
-		if (!editorKey) return;
-		await cargarContenido(editorKey, true);
-		if (editorSource === "openai") toastSuccess("Contenido recargado desde OpenAI");
-	}
-
-	async function guardarContenidoLocal(): Promise<void> {
+	async function guardarEditor(): Promise<void> {
 		if (!editorKey) return;
 		editorSaving = true;
 		try {
-			const r = await fetch(`/api/patyia/prompts/${encodeURIComponent(editorKey)}/content`, {
-				method: "PUT",
-				headers: { "content-type": "application/json" },
-				body: JSON.stringify({ markdown: editorMd }),
-			});
-			const j = await r.json();
-			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
-			editorMdOriginal = editorMd;
-			toastSuccess(`Guardado local · ${j.messages} mensaje(s)`);
+			if (editorLabel !== editorLabelOriginal
+				|| editorDesc !== editorDescOriginal
+				|| editorModel !== editorModelOriginal) {
+				const rm = await fetch(`/api/patyia/prompts/${encodeURIComponent(editorKey)}`, {
+					method: "PUT",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({
+						label: editorLabel.trim(),
+						description: editorDesc.trim(),
+						model: editorModel.trim(),
+					}),
+				});
+				const jm = await rm.json();
+				if (!jm.ok) throw new Error(jm.error ?? `HTTP ${rm.status}`);
+				cfg.prompts[editorKey] = jm.entry;
+				cfg = { ...cfg };
+				editorLabelOriginal = editorLabel;
+				editorDescOriginal = editorDesc;
+				editorModelOriginal = editorModel;
+			}
+			if (editorMd !== editorMdOriginal) {
+				const rc = await fetch(`/api/patyia/prompts/${encodeURIComponent(editorKey)}/content`, {
+					method: "PUT",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({ markdown: editorMd }),
+				});
+				const jc = await rc.json();
+				if (!jc.ok) throw new Error(jc.error ?? `HTTP ${rc.status}`);
+				editorMdOriginal = editorMd;
+			}
+			toastSuccess(`Guardado · ${editorKey}`);
 		} catch (err) {
 			toastError(err instanceof Error ? err.message : String(err));
 		} finally {
 			editorSaving = false;
-		}
-	}
-
-	function publicarNuevaVersion(): void {
-		if (!editorKey) return;
-		pedirConfirmacion({
-			title: "Publicar nueva versión",
-			message: `Se enviará el contenido local a OpenAI como nueva versión de ${editorKey}. ¿Continuar?`,
-			confirmText: "Publicar",
-			kind: "warning",
-			onConfirm: ejecutarPublicar,
-		});
-	}
-
-	async function ejecutarPublicar(): Promise<void> {
-		if (!editorKey) return;
-		editorPublishing = true;
-		try {
-			if (editorDirty) await guardarContenidoLocal();
-			const r = await fetch(`/api/patyia/prompts/${encodeURIComponent(editorKey)}/content?publish=1`, { method: "POST" });
-			const j = await r.json();
-			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
-			toastSuccess(`Publicada versión ${j.version}`);
-			await cargarContenido(editorKey, true);
-		} catch (err) {
-			toastError(err instanceof Error ? err.message : String(err));
-		} finally {
-			editorPublishing = false;
 		}
 	}
 
@@ -325,20 +276,15 @@
 				<FlexLayout direction="column">
 					<FlexLayout items="center">
 						<strong style="font-family: ui-monospace, monospace;">{k}</strong>
+						<span class="meta">· {entry.label}{entry.model ? ` · ${entry.model}` : ""}</span>
 						<div style="flex:1;"></div>
 						<Button style="width: fit-content;" variant="soft" on:click={() => abrirProbar(k)}>Probar</Button>
 						<Button style="width: fit-content;" variant="soft" on:click={() => void abrirEditor(k)}>Contenido</Button>
-						<Button style="width: fit-content;" disabled={guardando.has(k)} on:click={() => void guardar(k)}>
-							{guardando.has(k) ? "Guardando…" : "Guardar"}
-						</Button>
 						<ButtonIconify icon="mdi:delete-outline" title="Eliminar" on:click={() => eliminar(k)} />
 					</FlexLayout>
-					<div class="grid-campos">
-						<Input bind:value={entry.label} label="Label" placeholder="Nombre legible" />
-						<Input bind:value={entry.id} label="Prompt ID" placeholder="pmpt_..." />
-						<Input bind:value={entry.version} label="Versión (opcional)" placeholder="ej: 2" />
-						<Input bind:value={entry.description} label="Descripción" placeholder="Qué hace este prompt" />
-					</div>
+					{#if entry.description}
+						<p class="desc">{entry.description}</p>
+					{/if}
 				</FlexLayout>
 			</Card>
 		{/each}
@@ -352,11 +298,14 @@
 	<div class="modal-overlay" on:click={() => (nuevoOpen = false)}>
 		<div class="modal-content" on:click|stopPropagation>
 			<h3 style="margin: 0;">Nuevo prompt</h3>
+			<p class="hint" style="margin: 0;">
+				Se crea solo localmente con una plantilla vacía. OpenAI no expone API pública
+				para crear prompts; el contenido se ejecuta inline contra <code>/v1/responses</code>.
+			</p>
 			<div class="grid-campos">
 				<Input bind:value={nuevoKey} label="Key (UPPER_SNAKE_CASE)" placeholder="PR_NUEVA_ETIQUETA" />
-				<Input bind:value={nuevoId} label="Prompt ID" placeholder="pmpt_..." />
-				<Input bind:value={nuevoVersion} label="Versión (opcional)" placeholder="ej: 2" />
 				<Input bind:value={nuevoLabel} label="Label" placeholder="Nombre legible" />
+				<Input bind:value={nuevoModel} label="Modelo (opcional)" placeholder="gpt-4o-mini" />
 				<Input bind:value={nuevoDesc} label="Descripción" placeholder="Qué hace" />
 			</div>
 			<FlexLayout justify="end" items="center">
@@ -402,10 +351,7 @@
 				</div>
 				<div class="probar-col">
 					<small class="meta">
-						Resultado
-						{#if probarMeta}
-							· id <code>{probarMeta.id}</code>{probarMeta.version ? ` · v${probarMeta.version}` : ""}{probarMeta.model ? ` · ${probarMeta.model}` : ""}
-						{/if}
+						Resultado{probarMeta?.model ? ` · ${probarMeta.model}` : ""}
 					</small>
 					<pre class="probar-area probar-out">{probarResultado || (probarLoading ? "Ejecutando…" : "")}</pre>
 				</div>
@@ -422,25 +368,14 @@
 				<div style="flex:1;"></div>
 				<ButtonIconify icon="mdi:close" title="Cerrar" on:click={() => (editorOpen = false)} />
 			</FlexLayout>
-			{#if editorSnapshot}
-				<small class="meta">
-					id: <code>{editorSnapshot.id}</code>
-					{editorSnapshot.version ? ` · v${editorSnapshot.version}` : ""}
-					{editorSnapshot.model ? ` · model ${editorSnapshot.model}` : ""}
-					{editorSnapshot.fetched_at ? ` · sync ${editorSnapshot.fetched_at.slice(0, 19).replace("T", " ")}` : ""}
-					{editorCached ? " · (cache local)" : ""}
-					{editorSource === "empty" ? " · (plantilla local)" : ""}
-				</small>
-			{/if}
-			{#if editorWarning}
-				<p class="warning">
-					⚠ No se pudo leer el contenido remoto: <code>{editorWarning}</code>.
-					OpenAI no expone <code>GET /v1/prompts/{`{id}`}</code> públicamente; edita el .md local y usa
-					<strong>Publicar nueva versión</strong> para subirlo.
-				</p>
-			{/if}
+			<div class="grid-campos">
+				<Input bind:value={editorLabel} label="Label" placeholder="Nombre legible" />
+				<Input bind:value={editorModel} label="Modelo (opcional)" placeholder="gpt-4o-mini" />
+				<Input bind:value={editorDesc} label="Descripción" placeholder="Qué hace" />
+			</div>
 			<p class="hint" style="margin: 0;">
 				Cada bloque del prompt va entre <code>&lt;!--role: system|developer|user|assistant--&gt;</code> y <code>&lt;!--/role--&gt;</code>.
+				Al ejecutar, estos bloques se envían inline a <code>/v1/responses</code> y el input del usuario se agrega como último <code>user</code>.
 			</p>
 			<textarea
 				bind:value={editorMd}
@@ -450,17 +385,11 @@
 				disabled={editorLoading}
 			></textarea>
 			<FlexLayout items="center">
-				<Button style="width: fit-content;" variant="soft" disabled={editorLoading} on:click={() => void refrescarDeOpenAI()}>
-					{editorLoading ? "Cargando…" : "Refrescar de OpenAI"}
-				</Button>
-				<Button style="width: fit-content;" disabled={editorSaving || !editorDirty} on:click={() => void guardarContenidoLocal()}>
-					{editorSaving ? "Guardando…" : (editorDirty ? "Guardar local" : "Sin cambios")}
-				</Button>
 				<div style="flex:1;"></div>
-				<Button style="width: fit-content;" variant="outlined" disabled={editorPublishing} on:click={publicarNuevaVersion}>
-					{editorPublishing ? "Publicando…" : "Publicar nueva versión"}
-				</Button>
 				<Button style="width: fit-content;" variant="soft" on:click={() => (editorOpen = false)}>Cerrar</Button>
+				<Button style="width: fit-content;" disabled={editorSaving || !editorDirty} on:click={() => void guardarEditor()}>
+					{editorSaving ? "Guardando…" : (editorDirty ? "Guardar" : "Sin cambios")}
+				</Button>
 			</FlexLayout>
 		</div>
 	</div>
@@ -549,36 +478,19 @@
 		color: var(--is-color);
 		resize: vertical;
 	}
-	.resultado {
-		margin-top: 0.5rem;
-		padding: 0.5rem;
-		border: 1px solid color-mix(in srgb, var(--is-primary) 35%, transparent);
-		border-radius: 4px;
-		background: color-mix(in srgb, var(--is-primary) 8%, transparent);
-	}
-	.resultado pre {
-		white-space: pre-wrap;
-		word-break: break-word;
-		font-size: 0.85rem;
-		margin: 0.25rem 0 0;
-	}
 	.meta {
 		color: color-mix(in srgb, var(--is-color) 65%, transparent);
 		font-size: 0.75rem;
+	}
+	.desc {
+		margin: 0.15rem 0 0;
+		font-size: 0.8rem;
+		color: color-mix(in srgb, var(--is-color) 75%, transparent);
 	}
 	.hint {
 		font-size: 0.85rem;
 		color: color-mix(in srgb, var(--is-color) 65%, transparent);
 		margin: 0.5rem 0;
-	}
-	.warning {
-		margin: 0;
-		padding: 0.4rem 0.6rem;
-		font-size: 0.78rem;
-		border: 1px solid color-mix(in srgb, orange 55%, transparent);
-		background: color-mix(in srgb, orange 12%, transparent);
-		border-radius: 4px;
-		color: color-mix(in srgb, var(--is-color) 90%, transparent);
 	}
 	select {
 		padding: 0.4rem;
