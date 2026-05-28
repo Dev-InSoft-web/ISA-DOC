@@ -1718,3 +1718,4 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 		font-size: 0.9rem;
 		resize: vertical;
 	}
+</style>
