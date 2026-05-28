@@ -1,0 +1,90 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log:  C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260528_124453.txt
+Host: http://localhost:7071
+IDs:  butil=true · ireferencia=999992 · codigotk=TKV999991
+
+═════════════════════════════════════
+  1) POST /api/JWT  (autenticación)
+═════════════════════════════════════
+[AUTH] Token cargado desde C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\token.patyia.json (393 chars). ✅
+
+═════════════════════════════
+  2) POST /api/conversacion
+═════════════════════════════
+✅ [conversacion.create] HTTP 200
+   payload: {"raw":"id: 1\nevent: begin\ndata: {\"itercero\":\"810000630\",\"icontacto\":\"702470\",\"imodulo\":\"nomina\",\"fhultact\":\"2026-05-28T17:44:55.133Z\",\"titulo\":\"Ping de prueba verify-api-patyia responde pong\",\"hilo\":\"\",\"modelo_ia\":\"\",\"version_ayuda\":\"1\",\"prompt\":\"[verify-api-patyia] ping de prueba — responde 'pong' y termina.\",\"qtokens\":0,\"qmensajes\":0,\"itdestado\":0,\"bautoriza_visualizacion\":false,\"iconversacion\":1802}\n\nid: 2\nevent: message\ndata: {\"itercero\":\"810000630\",\"icontacto\":\"702470\",\"imodulo\":\"nomina\",\"fhultact\":\"2026-05-28T17:44:55.13…
+   iconversacion=1802 (creada por el script → será eliminada en cleanup)
+
+══════════════════════════════
+  3) GET /api/conversaciones
+══════════════════════════════
+✅ [conversaciones.list] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":640,"fhentrada":"2026-05-28T17:45:11.011Z","fhsalida":"2026-05-28T17:45:11.651Z"},"respuesta":{"conversaciones":[{"itercero":"810000630","icontacto":"702470","imodulo":"nomina","fhcre":"2026-05-28T17:44:55.133Z","fhultact":"2026-05-28T17:44:55.133Z","titulo":"Ping de prueba verify-api-patyia responde pong","hilo":"","modelo_ia":"","version_ayuda":"1","prompt":"[verify-api-patyia] ping de prueba — responde 'pong' y termina.","qtokens":0,"qmensajes":0,"itdestado":0,"bautoriza_visualizacion":false,"iconversacion":1802},{"itercero":"810000630","icontacto":"…
+
+═════════════════════════════════
+  4) GET /api/conversacion/1802
+═════════════════════════════════
+✅ [conversacion.get] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":2127,"fhentrada":"2026-05-28T17:45:11.660Z","fhsalida":"2026-05-28T17:45:13.787Z"},"respuesta":{"itercero":"810000630","icontacto":"702470","imodulo":"nomina","fhcre":"2026-05-28T17:44:55.133Z","fhultact":"2026-05-28T17:45:11.000Z","titulo":"Ping de prueba verify-api-patyia responde pong","hilo":"conv_6a187f217ed48195b9c057d53d1b22a70919605d4112d8de","modelo_ia":"gpt-5.4","version_ayuda":"1","prompt":"[verify-api-patyia] ping de prueba — responde 'pong' y termina.","qtokens":768,"qmensajes":1,"itdestado":0,"bautoriza_visualizacion":false,"iconversacion"…
+
+═════════════════════════════════════════
+  5) GET /api/resumen_conversacion/1802
+═════════════════════════════════════════
+✅ [resumen_conversacion] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":2483,"fhentrada":"2026-05-28T17:45:13.793Z","fhsalida":"2026-05-28T17:45:16.276Z"},"respuesta":"Necesito verificar que el endpoint verify-api-patyia responde correctamente a un ping de prueba. Confirmé la respuesta esperada pong."}
+
+════════════════════════
+  6) POST /api/mensaje
+════════════════════════
+✅ [mensaje.create] HTTP 201
+   payload: {"encabezado":{"resultado":true,"tiempo":2356,"fhentrada":"2026-05-28T17:45:16.284Z","fhsalida":"2026-05-28T17:45:18.640Z"},"respuesta":{"imensaje":168,"ireferencia":999992,"butil":true,"contenido":"[verify-api-patyia] mensaje de prueba (id seguro 999991)","iconversacion":1802}}
+
+════════════════════════
+  7) POST /api/tiquete
+════════════════════════
+✅ [tiquete.create] HTTP 201
+   payload: {"encabezado":{"resultado":true,"tiempo":3035,"fhentrada":"2026-05-28T17:45:18.650Z","fhsalida":"2026-05-28T17:45:21.685Z"},"respuesta":{"itiquete":104,"codigotk":"TKV999991","tema":"","clasificador":"","bcerrar_conversacion":false,"bautoriza_visualizacion":false,"iconversacion":1802}}
+   itiquete=104 (creado por el script → será eliminado en cleanup)
+
+═══════════════════════════
+  8) GET /api/tiquete/104
+═══════════════════════════
+✅ [tiquete.get] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":758,"fhentrada":"2026-05-28T17:45:21.692Z","fhsalida":"2026-05-28T17:45:22.450Z"},"respuesta":{"itiquete":104,"codigotk":"TKV999991","tema":"","clasificador":"","iconversacion":1802}}
+
+═════════════════════════════════════════════
+  9) GET /api/tiquete/por-conversacion/1802
+═════════════════════════════════════════════
+✅ [tiquete.porConversacion] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":787,"fhentrada":"2026-05-28T17:45:22.458Z","fhsalida":"2026-05-28T17:45:23.245Z"},"respuesta":[{"itiquete":104,"codigotk":"TKV999991","tema":"","clasificador":"","iconversacion":1802}]}
+
+══════════════════════════
+  10) PATCH /api/tiquete
+══════════════════════════
+✅ [tiquete.patch] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":1912,"fhentrada":"2026-05-28T17:45:23.254Z","fhsalida":"2026-05-28T17:45:25.166Z"},"respuesta":{"itiquete":104,"codigotk":"TKV999991","tema":"","clasificador":"","bautoriza_visualizacion":true,"iconversacion":1802}}
+
+═══════════════════════════════════════════
+  11) GET /api/timer_cerrarConversaciones
+═══════════════════════════════════════════
+✅ [timer_cerrarConversaciones] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":377,"fhentrada":"2026-05-28T17:45:25.178Z","fhsalida":"2026-05-28T17:45:25.555Z"},"respuesta":{"ok":true,"mensaje":"Se cerraron 0 conversaciones por inactividad","registrosActualizados":0}}
+
+════════════════════
+  CLEANUP
+════════════════════
+→ DELETE /api/tiquete/104
+✅ [tiquete.delete] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":406,"fhentrada":"2026-05-28T17:45:25.564Z","fhsalida":"2026-05-28T17:45:25.970Z"},"respuesta":{"itiquete":104}}
+→ DELETE /api/conversacion/1802
+✅ [conversacion.delete] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":1727,"fhentrada":"2026-05-28T17:45:25.976Z","fhsalida":"2026-05-28T17:45:27.703Z"},"respuesta":{"itercero":"810000630","icontacto":"702470","imodulo":"nomina","fhcre":"2026-05-28T17:44:55.133Z","fhultact":"2026-05-28T17:45:26.370Z","titulo":"Ping de prueba verify-api-patyia responde pong","hilo":"conv_6a187f217ed48195b9c057d53d1b22a70919605d4112d8de","modelo_ia":"gpt-5.4","version_ayuda":"1","prompt":"[verify-api-patyia] ping de prueba — responde 'pong' y termina.","qtokens":768,"qmensajes":1,"itdestado":2,"bautoriza_visualizacion":false,"iconversacion"…
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   12
+FAIL: 0

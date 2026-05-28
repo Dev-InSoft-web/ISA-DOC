@@ -1,0 +1,41 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log:  C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260528_111549.txt
+Host: http://localhost:7071
+IDs:  butil=999991 · ireferencia=999992 · codigotk=TKVERIFY999991
+
+═════════════════════════════════════
+  1) POST /api/JWT  (autenticación)
+═════════════════════════════════════
+[AUTH] Token cargado desde C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\token.json (393 chars). ✅
+
+═════════════════════════════
+  2) POST /api/conversacion
+═════════════════════════════
+❌ [conversacion.create] HTTP 400
+   payload: {"encabezado":{"resultado":false,"tiempo":2,"fhentrada":"2026-05-28T16:15:49.989Z","fhsalida":"2026-05-28T16:15:49.991Z","imensaje":400040,"mensaje":"No se ha recibido el parámetro 'prompt' en el cuerpo de la petición, por lo cual no ha sido posible procesar su solicitud"}}
+⛔ Sin iconversacion; los pasos dependientes se saltarán.
+
+══════════════════════════════
+  3) GET /api/conversaciones
+══════════════════════════════
+✅ [conversaciones.list] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":451,"fhentrada":"2026-05-28T16:15:50.005Z","fhsalida":"2026-05-28T16:15:50.456Z"},"respuesta":{"conversaciones":[{"itercero":"810000630","icontacto":"702470","imodulo":"Nómina","fhcre":"2026-05-25T14:19:41.490Z","fhultact":"2026-05-25T14:20:30.273Z","titulo":"Crear pago de nómina para un empleado con imágenes y hasta 3 videos","hilo":"conv_6a145a81db9081959e9fd954f6a14bc306c97da080aada0c","modelo_ia":"gpt-5.4","version_ayuda":"1","prompt":"Usando la documentación de nómina, incluye imagenes y máximo 3 vídeos si están disponibles, responde: como puedo cr…
+
+═══════════════════════════════════════════
+  11) GET /api/timer_cerrarConversaciones
+═══════════════════════════════════════════
+✅ [timer_cerrarConversaciones] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":480,"fhentrada":"2026-05-28T16:15:50.463Z","fhsalida":"2026-05-28T16:15:50.943Z"},"respuesta":{"ok":true,"mensaje":"Se cerraron 0 conversaciones por inactividad","registrosActualizados":0}}
+
+════════════════════
+  CLEANUP
+════════════════════
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   2
+FAIL: 1

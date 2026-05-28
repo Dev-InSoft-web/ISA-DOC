@@ -1,0 +1,41 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log:  C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260528_112013.txt
+Host: http://localhost:7071
+IDs:  butil=true · ireferencia=999992 · codigotk=TKVERIFY999991
+
+═════════════════════════════════════
+  1) POST /api/JWT  (autenticación)
+═════════════════════════════════════
+[AUTH] Token cargado desde C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\token.patyia.json (393 chars). ✅
+
+═════════════════════════════
+  2) POST /api/conversacion
+═════════════════════════════
+❌ [conversacion.create] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":1102,"fhentrada":"2026-05-28T16:20:13.163Z","fhsalida":"2026-05-28T16:20:14.265Z","imensaje":500000,"mensaje":"401 You do not have access to the organization tied to the API key."}}
+⛔ Sin iconversacion; los pasos dependientes se saltarán.
+
+══════════════════════════════
+  3) GET /api/conversaciones
+══════════════════════════════
+✅ [conversaciones.list] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":614,"fhentrada":"2026-05-28T16:20:14.280Z","fhsalida":"2026-05-28T16:20:14.894Z"},"respuesta":{"conversaciones":[{"itercero":"810000630","icontacto":"702470","imodulo":"Nómina","fhcre":"2026-05-25T14:19:41.490Z","fhultact":"2026-05-25T14:20:30.273Z","titulo":"Crear pago de nómina para un empleado con imágenes y hasta 3 videos","hilo":"conv_6a145a81db9081959e9fd954f6a14bc306c97da080aada0c","modelo_ia":"gpt-5.4","version_ayuda":"1","prompt":"Usando la documentación de nómina, incluye imagenes y máximo 3 vídeos si están disponibles, responde: como puedo cr…
+
+═══════════════════════════════════════════
+  11) GET /api/timer_cerrarConversaciones
+═══════════════════════════════════════════
+✅ [timer_cerrarConversaciones] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":504,"fhentrada":"2026-05-28T16:20:14.904Z","fhsalida":"2026-05-28T16:20:15.408Z"},"respuesta":{"ok":true,"mensaje":"Se cerraron 0 conversaciones por inactividad","registrosActualizados":0}}
+
+════════════════════
+  CLEANUP
+════════════════════
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   2
+FAIL: 1

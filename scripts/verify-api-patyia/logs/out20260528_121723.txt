@@ -1,0 +1,69 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log:  C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260528_121723.txt
+Host: http://localhost:7071
+IDs:  butil=true · ireferencia=999992 · codigotk=TKVERIFY999991
+
+═════════════════════════════════════
+  1) POST /api/JWT  (autenticación)
+═════════════════════════════════════
+[AUTH] Token cargado desde C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\token.patyia.json (393 chars). ✅
+
+═════════════════════════════
+  2) POST /api/conversacion
+═════════════════════════════
+✅ [conversacion.create] HTTP 200
+   payload: {"raw":"id: 1\nevent: begin\ndata: {\"itercero\":\"810000630\",\"icontacto\":\"702470\",\"imodulo\":\"nomina\",\"fhultact\":\"2026-05-28T17:17:26.197Z\",\"titulo\":\"Ping de prueba verify-api-patyia responde pong\",\"hilo\":\"\",\"modelo_ia\":\"\",\"version_ayuda\":\"1\",\"prompt\":\"[verify-api-patyia] ping de prueba — responde 'pong' y termina.\",\"qtokens\":0,\"qmensajes\":0,\"itdestado\":0,\"bautoriza_visualizacion\":false,\"iconversacion\":1798}\n\nid: 2\nevent: message\ndata: {\"itercero\":\"810000630\",\"icontacto\":\"702470\",\"imodulo\":\"nomina\",\"fhultact\":\"2026-05-28T17:17:26.19…
+⛔ Sin iconversacion propia; se intentará tomar prestada una de /api/conversaciones para los GET.
+
+══════════════════════════════
+  3) GET /api/conversaciones
+══════════════════════════════
+✅ [conversaciones.list] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":467,"fhentrada":"2026-05-28T17:17:41.241Z","fhsalida":"2026-05-28T17:17:41.708Z"},"respuesta":{"conversaciones":[{"itercero":"810000630","icontacto":"702470","imodulo":"nomina","fhcre":"2026-05-28T17:17:26.197Z","fhultact":"2026-05-28T17:17:26.197Z","titulo":"Ping de prueba verify-api-patyia responde pong","hilo":"","modelo_ia":"","version_ayuda":"1","prompt":"[verify-api-patyia] ping de prueba — responde 'pong' y termina.","qtokens":0,"qmensajes":0,"itdestado":0,"bautoriza_visualizacion":false,"iconversacion":1798},{"itercero":"810000630","icontacto":"…
+   iconversacion=1798 (prestada del listado → solo lecturas, no se borra)
+
+═════════════════════════════════
+  4) GET /api/conversacion/1798
+═════════════════════════════════
+✅ [conversacion.get] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":2868,"fhentrada":"2026-05-28T17:17:41.724Z","fhsalida":"2026-05-28T17:17:44.592Z"},"respuesta":{"itercero":"810000630","icontacto":"702470","imodulo":"nomina","fhcre":"2026-05-28T17:17:26.197Z","fhultact":"2026-05-28T17:17:41.193Z","titulo":"Ping de prueba verify-api-patyia responde pong","hilo":"conv_6a1878b08c148193b3cb49b7aa662ec206e1e04698ea702f","modelo_ia":"gpt-5.4","version_ayuda":"1","prompt":"[verify-api-patyia] ping de prueba — responde 'pong' y termina.","qtokens":749,"qmensajes":1,"itdestado":0,"bautoriza_visualizacion":false,"iconversacion"…
+
+═════════════════════════════════════════
+  5) GET /api/resumen_conversacion/1798
+═════════════════════════════════════════
+✅ [resumen_conversacion] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":3158,"fhentrada":"2026-05-28T17:17:44.605Z","fhsalida":"2026-05-28T17:17:47.763Z"},"respuesta":"Necesito verificar que la API responde correctamente al comando de prueba. Envié un ping de prueba y recibí la respuesta pong."}
+⏭ [mensaje.create] omitido (iconversacion prestada, sin DELETE disponible para limpiar)
+
+════════════════════════
+  7) POST /api/tiquete
+════════════════════════
+   iconversacion=1798 prestada → se crea tiquete test (codigotk=TKVERIFY999991) y se elimina en cleanup
+❌ [tiquete.create] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":2523,"fhentrada":"2026-05-28T17:17:47.784Z","fhsalida":"2026-05-28T17:17:50.307Z","imensaje":500000,"mensaje":"String or binary data would be truncated in table 'AYUDASCP_IA_STAGING.dbo.TIQUETESCONVERSACION', column 'CODIGOTK'. Truncated value: 'TKVERIFY99'."}}
+
+═════════════════════════════════════════════
+  9) GET /api/tiquete/por-conversacion/1798
+═════════════════════════════════════════════
+✅ [tiquete.porConversacion] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":432,"fhentrada":"2026-05-28T17:17:50.315Z","fhsalida":"2026-05-28T17:17:50.747Z"},"respuesta":[]}
+
+═══════════════════════════════════════════
+  11) GET /api/timer_cerrarConversaciones
+═══════════════════════════════════════════
+✅ [timer_cerrarConversaciones] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":468,"fhentrada":"2026-05-28T17:17:50.755Z","fhsalida":"2026-05-28T17:17:51.223Z"},"respuesta":{"ok":true,"mensaje":"Se cerraron 0 conversaciones por inactividad","registrosActualizados":0}}
+
+════════════════════
+  CLEANUP
+════════════════════
+⏭ [conversacion.delete] omitido (iconversacion=1798 prestada, no se borra data real)
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   6
+FAIL: 1

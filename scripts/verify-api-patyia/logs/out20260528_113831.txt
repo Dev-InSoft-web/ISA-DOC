@@ -1,0 +1,63 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log:  C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260528_113831.txt
+Host: http://localhost:7071
+IDs:  butil=true · ireferencia=999992 · codigotk=TKVERIFY999991
+
+═════════════════════════════════════
+  1) POST /api/JWT  (autenticación)
+═════════════════════════════════════
+[AUTH] Token cargado desde C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\token.patyia.json (393 chars). ✅
+
+═════════════════════════════
+  2) POST /api/conversacion
+═════════════════════════════
+❌ [conversacion.create] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":786,"fhentrada":"2026-05-28T16:38:31.302Z","fhsalida":"2026-05-28T16:38:32.088Z","imensaje":500000,"mensaje":"401 You do not have access to the organization tied to the API key."}}
+⛔ Sin iconversacion propia; se intentará tomar prestada una de /api/conversaciones para los GET.
+
+══════════════════════════════
+  3) GET /api/conversaciones
+══════════════════════════════
+✅ [conversaciones.list] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":497,"fhentrada":"2026-05-28T16:38:32.102Z","fhsalida":"2026-05-28T16:38:32.599Z"},"respuesta":{"conversaciones":[{"itercero":"810000630","icontacto":"702470","imodulo":"Nómina","fhcre":"2026-05-25T14:19:41.490Z","fhultact":"2026-05-28T16:22:13.913Z","titulo":"Crear pago de nómina para un empleado con imágenes y hasta 3 videos","hilo":"conv_6a145a81db9081959e9fd954f6a14bc306c97da080aada0c","modelo_ia":"gpt-5.4","version_ayuda":"1","prompt":"Usando la documentación de nómina, incluye imagenes y máximo 3 vídeos si están disponibles, responde: como puedo cr…
+   iconversacion=1781 (prestada del listado → solo lecturas, no se borra)
+
+═════════════════════════════════
+  4) GET /api/conversacion/1781
+═════════════════════════════════
+❌ [conversacion.get] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":1339,"fhentrada":"2026-05-28T16:38:32.608Z","fhsalida":"2026-05-28T16:38:33.947Z","imensaje":500000,"mensaje":"Error obteniendo detalles de la conversación [object Object]"}}
+
+═════════════════════════════════════════
+  5) GET /api/resumen_conversacion/1781
+═════════════════════════════════════════
+❌ [resumen_conversacion] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":1105,"fhentrada":"2026-05-28T16:38:33.958Z","fhsalida":"2026-05-28T16:38:35.063Z","imensaje":500000,"mensaje":"Error generando resumen para ticket: Error: 401 You do not have access to the organization tied to the API key."}}
+⏭ POST /api/mensaje omitido (iconversacion prestada, no se escribe sobre datos reales)
+⏭ POST /api/tiquete omitido (iconversacion prestada)
+
+═════════════════════════════════════════════
+  9) GET /api/tiquete/por-conversacion/1781
+═════════════════════════════════════════════
+✅ [tiquete.porConversacion] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":527,"fhentrada":"2026-05-28T16:38:35.071Z","fhsalida":"2026-05-28T16:38:35.598Z"},"respuesta":[]}
+
+═══════════════════════════════════════════
+  11) GET /api/timer_cerrarConversaciones
+═══════════════════════════════════════════
+✅ [timer_cerrarConversaciones] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":378,"fhentrada":"2026-05-28T16:38:35.605Z","fhsalida":"2026-05-28T16:38:35.983Z"},"respuesta":{"ok":true,"mensaje":"Se cerraron 0 conversaciones por inactividad","registrosActualizados":0}}
+
+════════════════════
+  CLEANUP
+════════════════════
+⏭ DELETE /api/conversacion omitido (iconversacion=1781 prestada)
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   3
+FAIL: 3

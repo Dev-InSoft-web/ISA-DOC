@@ -1,0 +1,50 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log:  C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260528_120921.txt
+Host: http://localhost:7071
+IDs:  butil=true · ireferencia=999992 · codigotk=TKVERIFY999991
+
+═════════════════════════════════════
+  1) POST /api/JWT  (autenticación)
+═════════════════════════════════════
+[AUTH] Token cargado desde C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\token.patyia.json (393 chars). ✅
+
+═════════════════════════════
+  2) POST /api/conversacion
+═════════════════════════════
+   [request] reintento 1/3 (350ms) — POST /api/conversacion
+   [request] reintento 2/3 (700ms) — POST /api/conversacion
+   [request] reintento 3/3 (1050ms) — POST /api/conversacion
+❌ [conversacion.create] HTTP 0 · err=fetch failed
+   payload: {}
+⛔ Sin iconversacion propia; se intentará tomar prestada una de /api/conversaciones para los GET.
+
+══════════════════════════════
+  3) GET /api/conversaciones
+══════════════════════════════
+   [request] reintento 1/3 (350ms) — GET /api/conversaciones
+   [request] reintento 2/3 (700ms) — GET /api/conversaciones
+   [request] reintento 3/3 (1050ms) — GET /api/conversaciones
+❌ [conversaciones.list] HTTP 0 · err=fetch failed
+   payload: {}
+
+═══════════════════════════════════════════
+  11) GET /api/timer_cerrarConversaciones
+═══════════════════════════════════════════
+   [request] reintento 1/3 (350ms) — GET /api/timer_cerrarConversaciones
+   [request] reintento 2/3 (700ms) — GET /api/timer_cerrarConversaciones
+   [request] reintento 3/3 (1050ms) — GET /api/timer_cerrarConversaciones
+❌ [timer_cerrarConversaciones] HTTP 0 · err=fetch failed
+   payload: {}
+
+════════════════════
+  CLEANUP
+════════════════════
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   0
+FAIL: 3
