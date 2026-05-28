@@ -743,16 +743,49 @@ const data = await r.json();
 		interSendLoading = true;
 		const mensajeUser = interInput;
 		interMensajes = [...interMensajes, nuevoMsgVista("user", mensajeUser)];
+		const asistente = nuevoMsgVista("assistant", "");
+		interMensajes = [...interMensajes, asistente];
 		interInput = "";
 		try {
-			const r = await fetch(`/api/patyia/staging/conversacion/${interConvId}/send`, {
+			const r = await fetch(`/api/patyia/staging/conversacion/${interConvId}/send-stream`, {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ mensaje: mensajeUser }),
 			});
-			const data = await r.json() as { ok: boolean; respuesta?: { texto?: string }; error?: string };
-			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
-			interMensajes = [...interMensajes, nuevoMsgVista("assistant", data.respuesta?.texto ?? "(sin texto)")];
+			if (!r.ok || !r.body) throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`);
+			const reader = r.body.getReader();
+			const dec = new TextDecoder();
+			let buffer = "";
+			while (true) {
+				const { value, done } = await reader.read();
+				if (done) break;
+				buffer += dec.decode(value, { stream: true });
+				const blocks = buffer.split("\n\n");
+				buffer = blocks.pop() ?? "";
+				for (const block of blocks) {
+					let evento = "";
+					let datos = "";
+					for (const ln of block.split("\n")) {
+						if (ln.startsWith("event:")) evento = ln.slice(6).trim();
+						else if (ln.startsWith("data:")) datos += ln.slice(5).trim();
+					}
+					if (!datos) continue;
+					let parsed: Record<string, unknown>;
+					try { parsed = JSON.parse(datos) as Record<string, unknown>; }
+					catch { continue; }
+					if (evento === "delta") {
+						const t = String((parsed as { text?: string }).text ?? "");
+						asistente.contenido += t;
+						interMensajes = [...interMensajes];
+					} else if (evento === "done") {
+						const txt = String((parsed as { texto?: string }).texto ?? "");
+						if (txt && !asistente.contenido) asistente.contenido = txt;
+						interMensajes = [...interMensajes];
+					} else if (evento === "error") {
+						interError = String((parsed as { error?: string }).error ?? "error");
+					}
+				}
+			}
 		} catch (err) {
 			interError = err instanceof Error ? err.message : String(err);
 		} finally {
