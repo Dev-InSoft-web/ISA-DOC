@@ -1452,7 +1452,9 @@ const data = await r.json();
 							</p>
 
 							<GridLayout cells={2} items="end">
-								<SelectEnum bind:value={interIdentidadValue} enumValue={tInterIdentidades} label="Tercero · Contacto (top 100 staging)" />
+								{#key Object.keys(tInterIdentidades).length}
+									<SelectEnum bind:value={interIdentidadValue} enumValue={tInterIdentidades} label="Tercero · Contacto (top 100 staging)" />
+								{/key}
 								<FlexLayout items="center">
 									<ButtonIconify icon="mdi:refresh" onClick={() => { interIdentidadesLoaded = false; cargarIdentidadesStg(); }} disabled={interIdentidadesLoading} title="Recargar identidades" />
 									{#if interConvId !== null}
