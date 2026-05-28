@@ -11,19 +11,17 @@ export const baseUrl = process.env.VERIFY_API_BASE_URL || "http://localhost:7071
 export const envName = process.env.VERIFY_API_ENV || "local";
 
 /**
- * Token JWT para autorizar. Búsqueda en orden:
+ * Token JWT específico para PatyIA. NO se comparte con clientesis (cada app
+ * tiene su propio secreto de firma; un token de clientesis no es válido aquí).
+ *
+ * Búsqueda en orden:
  *   1. process.env.PATYIA_TOKEN
- *   2. process.env.VERIFY_API_TOKEN
- *   3. process.env.VERIFY_API_TOKEN_FILE (ruta absoluta a un JSON `{ "token": "…" }`)
- *   4. <isaRoot>/token.json
- *   5. <isaRoot>/../test/token.json   (hermano del repo, igual que clientesis)
- *   6. <isaRoot>/../../test/token.json
+ *   2. process.env.PATYIA_TOKEN_FILE (ruta absoluta a JSON `{ "token": "…" }`)
+ *   3. <isaRoot>/token.patyia.json
  */
 export const tokenFileCandidates: string[] = [
-	process.env.VERIFY_API_TOKEN_FILE || "",
-	path.join(isaRoot, "token.json"),
-	path.resolve(isaRoot, "..", "test", "token.json"),
-	path.resolve(isaRoot, "..", "..", "test", "token.json"),
+	process.env.PATYIA_TOKEN_FILE || "",
+	path.join(isaRoot, "token.patyia.json"),
 ].filter(Boolean);
 
 /** Credenciales para /api/JWT cuando no haya token pre-emitido. */
@@ -36,11 +34,14 @@ export const idMaquina = process.env.PATYIA_IDMAQUINA || "WebPortalTest";
  * para no chocar con datos reales (idéntico criterio que clientesis: IDRIVER_TEST=200,
  * ICURSO="CURSOTEST", iplanestudio="PE_APIVERIFY").
  */
-export const butilTest = Number.parseInt(process.env.PATYIA_BUTIL || "999991", 10);
+export const butilTest = (process.env.PATYIA_BUTIL ?? "true").toLowerCase() !== "false";
 export const ireferenciaTest = Number.parseInt(process.env.PATYIA_IREFERENCIA || "999992", 10);
-export const codigoTkTest = process.env.PATYIA_CODIGOTK || "TKVERIFY999991";
+export const codigoTkTest = process.env.PATYIA_CODIGOTK || "TKV999991";
 export const itiqueteOverride = process.env.PATYIA_ITIQUETE || "";
+export const iconversacionOverride = process.env.PATYIA_ICONVERSACION || "";
 export const contenidoTest = process.env.PATYIA_CONTENIDO || "[verify-api-patyia] mensaje de prueba (id seguro 999991)";
+export const promptTest = process.env.PATYIA_PROMPT || "[verify-api-patyia] ping de prueba — responde 'pong' y termina.";
+export const imoduloTest = process.env.PATYIA_IMODULO || "nomina";
 
 export const requestMaxRetries = Math.max(
 	0,

@@ -18,12 +18,12 @@ export function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/** Token loader: env → archivos JSON `{ "token": "…" }`. */
+/** Token loader específico para PatyIA (no acepta VERIFY_API_TOKEN: cada app firma con su propio secreto). */
 export function loadToken(): boolean {
-	const envToken = (process.env.PATYIA_TOKEN || process.env.VERIFY_API_TOKEN || "").trim();
+	const envToken = (process.env.PATYIA_TOKEN || "").trim();
 	if (envToken) {
 		setToken(envToken);
-		console.log(`[AUTH] Token cargado desde env (${envToken.length} chars). ✅`);
+		console.log(`[AUTH] Token cargado desde env PATYIA_TOKEN (${envToken.length} chars). ✅`);
 		return true;
 	}
 	for (const file of tokenFileCandidates) {
@@ -40,7 +40,7 @@ export function loadToken(): boolean {
 			console.error(`⛔ Error leyendo ${file}: ${(e as Error).message}`);
 		}
 	}
-	console.error("⛔ Sin token. Defina PATYIA_TOKEN o cree token.json con { \"token\": \"…\" }.");
+	console.error("⛔ Sin token PatyIA. Defina PATYIA_TOKEN o cree token.patyia.json con { \"token\": \"…\" } en la raíz del repo.");
 
 	return false;
 }

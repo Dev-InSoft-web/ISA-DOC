@@ -30,9 +30,12 @@ import {
 	controlKey,
 	envName,
 	iApp,
+	iconversacionOverride,
 	idMaquina,
+	imoduloTest,
 	ireferenciaTest,
 	itiqueteOverride,
+	promptTest,
 } from "./config.ts";
 import { extractRespuesta, loadToken, request, type HttpResult } from "./http.ts";
 import { state } from "./state.ts";
@@ -70,27 +73,60 @@ async function ensureToken(): Promise<boolean> {
 	console.error("⛔ No fue posible obtener un token. La cadena no puede continuar.");
 	console.error("   Tips:");
 	console.error("    · Defina PATYIA_TOKEN=<jwt-valido-para-patyia-local>");
-	console.error("    · O cree token.json en la raíz del proyecto");
+	console.error("    · O cree token.patyia.json en la raíz del proyecto");
 
 	return false;
 }
 
+function extractIconversacionFromSse(data: unknown): number | undefined {
+	if (!data || typeof data !== "object") return;
+	const raw = (data as { raw?: unknown }).raw;
+	if (typeof raw !== "string") return;
+	for (const line of raw.split(/\r?\n/)) {
+		if (!line.startsWith("data:")) continue;
+		const json = line.slice(5).trim();
+		if (!json) continue;
+		try {
+			const obj = JSON.parse(json) as { iconversacion?: unknown };
+			if (typeof obj.iconversacion === "number") return obj.iconversacion;
+		} catch { /* siguiente evento */ }
+	}
+}
+
 async function createConversacion(): Promise<void> {
 	header("2) POST /api/conversacion");
-	const r = await request("POST", "/api/conversacion", {});
+	const r = await request("POST", "/api/conversacion", {
+		prompt: promptTest,
+		imodulo: imoduloTest,
+	});
 	step("conversacion.create", r, [200, 201]);
 	const resp = extractRespuesta<{ iconversacion?: number }>(r.data);
-	if (resp?.iconversacion != null) {
-		state.iconversacion = resp.iconversacion;
-		console.log(`   iconversacion=${state.iconversacion}`);
+	const iconv = resp?.iconversacion ?? extractIconversacionFromSse(r.data);
+	if (iconv != null) {
+		state.iconversacion = iconv;
+		state.iconversacionOwned = true;
+		console.log(`   iconversacion=${state.iconversacion} (creada por el script → será eliminada en cleanup)`);
+	} else if (iconversacionOverride) {
+		state.iconversacion = Number.parseInt(iconversacionOverride, 10);
+		state.iconversacionOwned = false;
+		console.log(`   iconversacion=${state.iconversacion} (override env PATYIA_ICONVERSACION; prestada → solo lecturas)`);
 	} else {
-		console.error("⛔ Sin iconversacion; los pasos dependientes se saltarán.");
+		console.error("⛔ Sin iconversacion propia; se intentará tomar prestada una de /api/conversaciones para los GET.");
 	}
 }
 
 async function listConversaciones(): Promise<void> {
 	header("3) GET /api/conversaciones");
-	step("conversaciones.list", await request("GET", "/api/conversaciones"));
+	const r = await request("GET", "/api/conversaciones");
+	step("conversaciones.list", r);
+	if (state.iconversacion != null) return;
+	const resp = extractRespuesta<{ conversaciones?: Array<{ iconversacion?: number }> }>(r.data);
+	const first = resp?.conversaciones?.[0];
+	if (first?.iconversacion != null) {
+		state.iconversacion = first.iconversacion;
+		state.iconversacionOwned = false;
+		console.log(`   iconversacion=${state.iconversacion} (prestada del listado → solo lecturas, no se borra)`);
+	}
 }
 
 async function getConversacion(): Promise<void> {
@@ -107,31 +143,37 @@ async function getResumen(): Promise<void> {
 
 async function postMensaje(): Promise<void> {
 	if (state.iconversacion == null) return;
+	if (!state.iconversacionOwned) { console.log("⏭ [mensaje.create] omitido (iconversacion prestada, sin DELETE disponible para limpiar)"); return; }
 	header("6) POST /api/mensaje");
 	step("mensaje.create", await request("POST", "/api/mensaje", {
 		iconversacion: state.iconversacion,
 		butil: butilTest,
 		contenido: contenidoTest,
 		ireferencia: ireferenciaTest,
-	}));
+	}), [200, 201]);
 }
 
 async function createTiquete(): Promise<void> {
 	if (state.iconversacion == null) return;
 	header("7) POST /api/tiquete");
+	if (!state.iconversacionOwned) {
+		console.log(`   iconversacion=${state.iconversacion} prestada → se crea tiquete test (codigotk=${codigoTkTest}) y se elimina en cleanup`);
+	}
 	const r = await request("POST", "/api/tiquete", {
 		iconversacion: state.iconversacion,
 		codigotk: codigoTkTest,
-		bcerrar_conversacion: 0,
-		bautoriza_visualizacion: 1,
+		bcerrar_conversacion: false,
+		bautoriza_visualizacion: false,
 	});
 	step("tiquete.create", r, [200, 201]);
 	const resp = extractRespuesta<{ itiquete?: number }>(r.data);
 	if (resp?.itiquete != null) {
 		state.itiquete = resp.itiquete;
-		console.log(`   itiquete=${state.itiquete}`);
+		state.itiqueteOwned = true;
+		console.log(`   itiquete=${state.itiquete} (creado por el script → será eliminado en cleanup)`);
 	} else if (itiqueteOverride) {
 		state.itiquete = Number.parseInt(itiqueteOverride, 10);
+		state.itiqueteOwned = false;
 		console.log(`   itiquete (override env) = ${state.itiquete}`);
 	}
 }
@@ -150,10 +192,11 @@ async function getTiquetePorConversacion(): Promise<void> {
 
 async function patchTiquete(): Promise<void> {
 	if (state.itiquete == null) return;
+	if (!state.itiqueteOwned) { console.log("⏭ [tiquete.patch] omitido (itiquete prestado, no se modifican datos reales)"); return; }
 	header("10) PATCH /api/tiquete");
 	step("tiquete.patch", await request("PATCH", "/api/tiquete", {
 		itiquete: state.itiquete,
-		bautoriza_visualizacion: 0,
+		bautoriza_visualizacion: true,
 	}));
 }
 
@@ -164,13 +207,17 @@ async function timerCerrar(): Promise<void> {
 
 async function cleanup(): Promise<void> {
 	header("CLEANUP");
-	if (state.itiquete != null) {
+	if (state.itiquete != null && state.itiqueteOwned) {
 		console.log(`→ DELETE /api/tiquete/${state.itiquete}`);
 		step("tiquete.delete", await request("DELETE", `/api/tiquete/${state.itiquete}`), [200, 204]);
+	} else if (state.itiquete != null) {
+		console.log(`⏭ [tiquete.delete] omitido (itiquete=${state.itiquete} prestado)`);
 	}
-	if (state.iconversacion != null) {
+	if (state.iconversacion != null && state.iconversacionOwned) {
 		console.log(`→ DELETE /api/conversacion/${state.iconversacion}`);
 		step("conversacion.delete", await request("DELETE", `/api/conversacion/${state.iconversacion}`), [200, 204]);
+	} else if (state.iconversacion != null) {
+		console.log(`⏭ [conversacion.delete] omitido (iconversacion=${state.iconversacion} prestada, no se borra data real)`);
 	}
 }
 
