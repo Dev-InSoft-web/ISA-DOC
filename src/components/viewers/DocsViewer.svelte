@@ -267,8 +267,32 @@
       }
    }
 
+   function readStateFromUrl(): string {
+      try {
+         const raw = new URLSearchParams(window.location.search).get("state");
+         if (!raw) return "";
+         const decoded = JSON.parse(atob(raw));
+
+         return typeof decoded?.slug === "string" ? decoded.slug : "";
+      } catch {
+         return "";
+      }
+   }
+
+   function writeStateToUrl(slug: string): void {
+      try {
+         const encoded = btoa(JSON.stringify({ slug }));
+         const url = new URL(window.location.href);
+         url.searchParams.set("state", encoded);
+         window.history.replaceState({}, "", url.toString());
+      } catch {
+         /* ignore */
+      }
+   }
+
    async function loadSection(slug: string) {
       activeSlug = slug;
+      writeStateToUrl(slug);
       html = "";
       const section = manifest?.sections.find((s) => s.slug === slug);
       if (section?.kind === "prompts" || section?.kind === "modelos") {
@@ -492,7 +516,9 @@
          loading = false;
          await tick();
          if (manifest && manifest.sections.length > 0) {
-            await loadSection(manifest.sections[0].slug);
+            const wanted = readStateFromUrl();
+            const initial = manifest.sections.find((s) => s.slug === wanted)?.slug ?? manifest.sections[0].slug;
+            await loadSection(initial);
          }
       } catch (e: any) {
          error = e?.message ?? String(e);

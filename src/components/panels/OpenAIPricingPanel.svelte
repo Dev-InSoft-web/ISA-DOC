@@ -14,6 +14,50 @@
 
 	const models: ModelEntry[] = pricing;
 
+	const parseCost = (s: string): number => {
+		const m = s.match(/\$(\d+(?:\.\d+)?)/);
+		return m ? parseFloat(m[1]) : 0;
+	};
+
+	const maxEntrada = Math.max(...models.map((m) => parseCost(m.costoEntrada)));
+	const maxCache = Math.max(...models.map((m) => parseCost(m.cacheEntrada)));
+	const maxSalida = Math.max(...models.map((m) => parseCost(m.costoSalida)));
+
+	const COLOR_MAGENTA = "rgba(217, 70, 239, 0.28)";
+	const COLOR_GRIS = "rgba(160, 160, 160, 0.28)";
+
+	const COLUMNAS: Array<{ idx: number; max: number; color: string }> = [
+		{ idx: 1, max: maxEntrada, color: COLOR_MAGENTA },
+		{ idx: 2, max: maxCache, color: COLOR_GRIS },
+		{ idx: 3, max: maxSalida, color: COLOR_MAGENTA },
+	];
+
+	const pintarBg = (td: HTMLTableCellElement, max: number, color: string): void => {
+		const v = parseCost(td.textContent ?? "");
+		if (!v || !max) {
+			td.style.background = "";
+			return;
+		}
+		const pct = Math.min(100, (v / max) * 100);
+		td.style.background = `linear-gradient(to right, ${color} ${pct}%, transparent ${pct}%)`;
+	};
+
+	function progresoBg(node: HTMLElement) {
+		const aplicar = (): void => {
+			const filas = node.querySelectorAll<HTMLTableRowElement>("tbody > tr");
+			filas.forEach((fila) => {
+				const tds = fila.querySelectorAll<HTMLTableCellElement>("td");
+				for (const col of COLUMNAS) {
+					const td = tds[col.idx];
+					if (td) pintarBg(td, col.max, col.color);
+				}
+			});
+		};
+		aplicar();
+
+		return { update: aplicar };
+	}
+
 	let filterText = "";
 
 	$: filtered = filterText.trim()
@@ -66,7 +110,7 @@
 
 	{#each tablasHtml as t}
 		<h3 style="margin: 0.75rem 0 0.25rem; font-size: 1rem; color: var(--is-text-secondary, #555);">{t.familia}</h3>
-		<div class="md-table">{@html t.html}</div>
+		<div class="md-table" use:progresoBg={t.html}>{@html t.html}</div>
 	{/each}
 
 	{#if filtered.length === 0}
