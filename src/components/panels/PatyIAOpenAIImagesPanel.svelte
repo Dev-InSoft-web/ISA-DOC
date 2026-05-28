@@ -11,7 +11,7 @@
 	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/patyia/openaiPricing";
 	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/patyia/patyiaPersist";
 	import { leerState, escribirState, migrarLegacy } from "../../lib/patyia/urlState";
-	type AppStatePartial = { nivel?: unknown; subPruebas?: unknown; subStorage?: unknown; subConv?: unknown };
+	type AppStatePartial = { nivel?: unknown; subPruebas?: unknown; subStorage?: unknown; subConv?: unknown; interConvId?: unknown };
 
 	interface ImageItem {
 		src: string;
@@ -92,19 +92,29 @@
 		return { nivel, sub, conv };
 	}
 
-	function escribirTabEnUrl(nivel: NivelId, sub: SubPruebaId, conv: SubConvId): void {
+	function escribirTabEnUrl(nivel: NivelId, sub: SubPruebaId, conv: SubConvId, convId: number | null): void {
 		escribirState({
 			nivel,
 			subPruebas: nivel === "pruebas" ? sub : undefined,
 			subConv: nivel === "conversacion" ? conv : undefined,
+			interConvId: nivel === "conversacion" && conv === "interaccion" && convId ? convId : undefined,
 		});
 	}
 
+	function leerInterConvId(): number | null {
+		const st = leerState();
+		const merged = st as AppStatePartial;
+		const n = Number(merged.interConvId ?? 0);
+
+		return Number.isFinite(n) && n > 0 ? n : null;
+	}
+
 	const _initTab = typeof window !== "undefined" ? leerTabDeUrl() : { nivel: "pruebas" as NivelId, sub: "imagenes" as SubPruebaId, conv: "consulta" as SubConvId };
+	const _initInterConvId = typeof window !== "undefined" ? leerInterConvId() : null;
 	let accionActiva: NivelId = _initTab.nivel;
 	let subPrueba: SubPruebaId = _initTab.sub;
 	let subConv: SubConvId = _initTab.conv;
-	$: if (typeof window !== "undefined") escribirTabEnUrl(accionActiva, subPrueba, subConv);
+	$: if (typeof window !== "undefined") escribirTabEnUrl(accionActiva, subPrueba, subConv, interConvId);
 
 	const TITULO_A_SUB_CONV: Record<string, SubConvId> = {
 		Consulta: "consulta",
@@ -650,7 +660,7 @@ const data = await r.json();
 	let interIdentidadesError: string = "";
 	let interIdentidadValue: string = "";
 	let tInterIdentidades: Record<string, string> = { "— Selecciona terceroXcontacto —": "" };
-	let interConvId: number | null = null;
+	let interConvId: number | null = _initInterConvId;
 	let interHilo: string = "";
 	let interMensajes: MsgVista[] = [];
 	let interInput: string = "";
@@ -658,6 +668,7 @@ const data = await r.json();
 	let interSendLoading: boolean = false;
 	let interError: string = "";
 	let interStreamBuffer: string = "";
+	let interHistorialCargado: boolean = false;
 
 	async function cargarIdentidadesStg(): Promise<void> {
 		if (interIdentidadesLoading || interIdentidadesLoaded) return;
@@ -800,6 +811,49 @@ const data = await r.json();
 		interInput = "";
 		interError = "";
 		interStreamBuffer = "";
+		interHistorialCargado = false;
+	}
+
+	interface ConvRespStg {
+		ok: boolean;
+		error?: string;
+		conversacion?: SqlRow;
+		mensajesOpenAI?: SqlRow[];
+		mensajesCalificados?: SqlRow[];
+	}
+
+	async function cargarHistorialInterStg(convId: number): Promise<void> {
+		if (interHistorialCargado) return;
+		interHistorialCargado = true;
+		try {
+			const r = await fetch(`/api/patyia/conversacion/${convId}?db=staging`);
+			const data = (await r.json()) as ConvRespStg;
+			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
+			interHilo = String(data.conversacion?.HILO ?? data.conversacion?.hilo ?? "");
+			const msgs = data.mensajesOpenAI ?? data.mensajesCalificados ?? [];
+			interMensajes = msgs.map((m, i) => {
+				const rol = pickStr(m, ROLE_KEYS) || "assistant";
+				const contenido = pickStr(m, CONTENT_KEYS);
+				const fecha = pickStr(m, FECHA_KEYS);
+				const esUsuario = /user|usuario|cliente/i.test(rol);
+
+				return {
+					idMsg: `hist-${i}-${pickStr(m, ID_KEYS) || i}`,
+					rol,
+					contenido,
+					fecha: fecha || new Date().toISOString(),
+					esUsuario,
+					archivos: [],
+				};
+			});
+		} catch (err) {
+			interError = err instanceof Error ? err.message : String(err);
+			interHistorialCargado = false;
+		}
+	}
+
+	$: if (subConv === "interaccion" && accionActiva === "conversacion" && interConvId && !interHistorialCargado && !interMensajes.length) {
+		cargarHistorialInterStg(interConvId);
 	}
 
 	const CONTENT_KEYS = ["contenido", "content", "mensaje", "texto", "respuesta", "prompt"] as const;
