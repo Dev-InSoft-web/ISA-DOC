@@ -41,6 +41,19 @@
 	let probarResultado: string = "";
 	let probarMeta: { id: string; version: string; model: string } | null = null;
 
+	// Editor de contenido (markdown del prompt)
+	interface ContentSnapshot { id: string; version: string; model: string; fetched_at: string }
+	let editorOpen: boolean = false;
+	let editorKey: string = "";
+	let editorMd: string = "";
+	let editorMdOriginal: string = "";
+	let editorSnapshot: ContentSnapshot | null = null;
+	let editorLoading: boolean = false;
+	let editorSaving: boolean = false;
+	let editorPublishing: boolean = false;
+	let editorCached: boolean = false;
+	$: editorDirty = editorMd !== editorMdOriginal;
+
 	function pedirConfirmacion(opts: {
 		title?: string;
 		message: string;
@@ -180,6 +193,95 @@
 	$: keys = Object.keys(cfg.prompts).sort();
 	$: promptKeysList = keys.map((k) => ({ value: k, label: cfg.prompts[k]?.label || k }));
 
+	async function cargarContenido(key: string, refresh: boolean): Promise<void> {
+		editorLoading = true;
+		try {
+			const url = `/api/patyia/prompts/${encodeURIComponent(key)}/content${refresh ? "?refresh=1" : ""}`;
+			const r = await fetch(url);
+			const j = await r.json();
+			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
+			editorMd = j.markdown ?? "";
+			editorMdOriginal = editorMd;
+			editorCached = !!j.cached;
+			editorSnapshot = j.snapshot
+				? {
+					id: j.snapshot.id,
+					version: j.snapshot.version,
+					model: j.snapshot.model ?? "",
+					fetched_at: j.snapshot.fetched_at ?? "",
+				}
+				: null;
+		} catch (err) {
+			toastError(err instanceof Error ? err.message : String(err));
+		} finally {
+			editorLoading = false;
+		}
+	}
+
+	async function abrirEditor(key: string): Promise<void> {
+		editorKey = key;
+		editorMd = "";
+		editorMdOriginal = "";
+		editorSnapshot = null;
+		editorCached = false;
+		editorOpen = true;
+		await cargarContenido(key, false);
+	}
+
+	async function refrescarDeOpenAI(): Promise<void> {
+		if (!editorKey) return;
+		await cargarContenido(editorKey, true);
+		toastSuccess("Contenido recargado desde OpenAI");
+	}
+
+	async function guardarContenidoLocal(): Promise<void> {
+		if (!editorKey) return;
+		editorSaving = true;
+		try {
+			const r = await fetch(`/api/patyia/prompts/${encodeURIComponent(editorKey)}/content`, {
+				method: "PUT",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ markdown: editorMd }),
+			});
+			const j = await r.json();
+			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
+			editorMdOriginal = editorMd;
+			toastSuccess(`Guardado local · ${j.messages} mensaje(s)`);
+		} catch (err) {
+			toastError(err instanceof Error ? err.message : String(err));
+		} finally {
+			editorSaving = false;
+		}
+	}
+
+	function publicarNuevaVersion(): void {
+		if (!editorKey) return;
+		pedirConfirmacion({
+			title: "Publicar nueva versión",
+			message: `Se enviará el contenido local a OpenAI como nueva versión de ${editorKey}. ¿Continuar?`,
+			confirmText: "Publicar",
+			kind: "warning",
+			onConfirm: ejecutarPublicar,
+		});
+	}
+
+	async function ejecutarPublicar(): Promise<void> {
+		if (!editorKey) return;
+		editorPublishing = true;
+		try {
+			if (editorDirty) await guardarContenidoLocal();
+			const r = await fetch(`/api/patyia/prompts/${encodeURIComponent(editorKey)}/content?publish=1`, { method: "POST" });
+			const j = await r.json();
+			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
+			toastSuccess(`Publicada versión ${j.version}`);
+			await cargarContenido(editorKey, true);
+		} catch (err) {
+			toastError(err instanceof Error ? err.message : String(err));
+		} finally {
+			editorPublishing = false;
+		}
+	}
+
 	onMount(() => { void cargar(); });
 </script>
 
@@ -216,6 +318,7 @@
 						<FlexLayout items="center">
 							<strong style="font-family: ui-monospace, monospace;">{k}</strong>
 							<div style="flex:1;"></div>
+							<Button style="width: fit-content;" variant="soft" on:click={() => void abrirEditor(k)}>Contenido</Button>
 							<Button style="width: fit-content;" disabled={guardando.has(k)} on:click={() => void guardar(k)}>
 								{guardando.has(k) ? "Guardando…" : "Guardar"}
 							</Button>
@@ -310,6 +413,50 @@
 			<FlexLayout justify="end" items="center">
 				<Button style="width: fit-content;" on:click={() => (nuevoOpen = false)}>Cancelar</Button>
 				<Button style="width: fit-content;" on:click={() => void crearNuevo()}>Crear</Button>
+			</FlexLayout>
+		</div>
+	</div>
+{/if}
+
+{#if editorOpen}
+	<div class="modal-overlay" on:click={() => (editorOpen = false)}>
+		<div class="modal-content editor" on:click|stopPropagation>
+			<FlexLayout items="center">
+				<h3 style="margin: 0;">Contenido · <code>{editorKey}</code></h3>
+				<div style="flex:1;"></div>
+				<ButtonIconify icon="mdi:close" title="Cerrar" on:click={() => (editorOpen = false)} />
+			</FlexLayout>
+			{#if editorSnapshot}
+				<small class="meta">
+					id: <code>{editorSnapshot.id}</code>
+					{editorSnapshot.version ? ` · v${editorSnapshot.version}` : ""}
+					{editorSnapshot.model ? ` · model ${editorSnapshot.model}` : ""}
+					{editorSnapshot.fetched_at ? ` · sync ${editorSnapshot.fetched_at.slice(0, 19).replace("T", " ")}` : ""}
+					{editorCached ? " · (cache local)" : ""}
+				</small>
+			{/if}
+			<p class="hint" style="margin: 0;">
+				Cada bloque del prompt va entre <code>&lt;!--role: system|developer|user|assistant--&gt;</code> y <code>&lt;!--/role--&gt;</code>.
+			</p>
+			<textarea
+				bind:value={editorMd}
+				class="textarea editor-area"
+				rows="20"
+				placeholder={"<!--role: system-->\n...\n<!--/role-->"}
+				disabled={editorLoading}
+			></textarea>
+			<FlexLayout items="center">
+				<Button style="width: fit-content;" variant="soft" disabled={editorLoading} on:click={() => void refrescarDeOpenAI()}>
+					{editorLoading ? "Cargando…" : "Refrescar de OpenAI"}
+				</Button>
+				<Button style="width: fit-content;" disabled={editorSaving || !editorDirty} on:click={() => void guardarContenidoLocal()}>
+					{editorSaving ? "Guardando…" : (editorDirty ? "Guardar local" : "Sin cambios")}
+				</Button>
+				<div style="flex:1;"></div>
+				<Button style="width: fit-content;" variant="outlined" disabled={editorPublishing} on:click={publicarNuevaVersion}>
+					{editorPublishing ? "Publicando…" : "Publicar nueva versión"}
+				</Button>
+				<Button style="width: fit-content;" variant="soft" on:click={() => (editorOpen = false)}>Cerrar</Button>
 			</FlexLayout>
 		</div>
 	</div>
@@ -410,6 +557,14 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.4rem;
+	}
+	.modal-content.editor {
+		width: min(960px, 95vw);
+		max-height: 90vh;
+	}
+	.editor-area {
+		min-height: 50vh;
+		font-size: 0.8rem;
 	}
 	.modal-content h3 {
 		margin: 0 0 0.5rem;
