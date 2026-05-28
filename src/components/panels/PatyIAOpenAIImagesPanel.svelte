@@ -7,7 +7,6 @@
 	import TsViewer from "../viewers/TsViewer.svelte";
 	import ImageViewer from "../viewers/ImageViewer.svelte";
 	import StorageActionsPanel from "./StorageActionsPanel.svelte";
-	import PromptsActionsPanel from "./PromptsActionsPanel.svelte";
 	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/patyia/openaiPricing";
 	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/patyia/patyiaPersist";
 	import { leerState, escribirState, migrarLegacy } from "../../lib/patyia/urlState";
@@ -51,14 +50,13 @@
 		costoUsd: number | null;
 	}
 
-	type AccionId = "imagenes" | "texto" | "chat" | "conversacion" | "storage" | "prompts";
-	type NivelId = "pruebas" | "conversacion" | "storage" | "prompts";
+	type AccionId = "imagenes" | "texto" | "chat" | "conversacion" | "storage";
+	type NivelId = "pruebas" | "conversacion" | "storage";
 	type SubPruebaId = "imagenes" | "texto" | "chat";
 	const ACCIONES: Array<{ id: NivelId; label: string }> = [
 		{ id: "pruebas", label: "Pruebas" },
 		{ id: "conversacion", label: "Conversación BD" },
 		{ id: "storage", label: "Storage" },
-		{ id: "prompts", label: "Prompts" },
 	];
 	const ACCIONES_VALIDAS: ReadonlySet<NivelId> = new Set(ACCIONES.map((a) => a.id));
 	const SUB_PRUEBAS: Array<{ id: SubPruebaId; label: string }> = [
@@ -162,15 +160,6 @@
 				{ campo: "Backup local", tipo: "carpeta", significado: "Cada recurso descargado queda en data/openai-storage/{files,vector-stores,skills}/<id>/ con meta.json, local.json y content.<ext>. Los binarios están ignorados por git; los metadatos sí se versionan." },
 			],
 		},
-		prompts: {
-			titulo: "Prompts · CRUD de prompt-ids y ejecución",
-			campos: [
-				{ campo: "Key", tipo: "texto", significado: "Identificador interno (UPPER_SNAKE_CASE) con el que el backend referencia el prompt. Reemplaza las variables PR_* del local.settings.json." },
-				{ campo: "Prompt ID", tipo: "texto", significado: "El id pmpt_… emitido por OpenAI Prompts. Se guarda en data/openai-storage/prompts-config.json." },
-				{ campo: "Versión", tipo: "texto", significado: "Versión opcional del prompt. Si está vacía OpenAI usa la última publicada." },
-				{ campo: "Probar", tipo: "tab", significado: "Ejecuta el prompt seleccionado contra /v1/responses con un input dado y muestra el resultado. Útil para tools como el clasificador de etiquetas." },
-			],
-		},
 	};
 	let infoOpen: boolean = false;
 	$: infoActual = INFO_DOCS[accionActiva === "pruebas" ? subPrueba : (accionActiva as AccionId)];
@@ -247,25 +236,6 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 
 // PUT /api/patyia/openai/files/{id}/local-meta
 // Guarda categorías/tags/descripción/notas en local.json (NO va a OpenAI)`,
-		prompts: `// GET /api/patyia/prompts  → lista de prompts configurados
-const cfg = await (await fetch("/api/patyia/prompts")).json();
-// cfg => { ok, updated, prompts: { [KEY]: { id, version, label, description } } }
-
-// PUT /api/patyia/prompts/PR_CLASIFICADOR_MODULO  → actualizar
-await fetch("/api/patyia/prompts/PR_CLASIFICADOR_MODULO", {
-  method: "PUT",
-  headers: { "content-type": "application/json" },
-  body: JSON.stringify({ id: "pmpt_...", version: "2", label: "Clasificador", description: "..." })
-});
-
-// POST /api/patyia/prompts/run  → ejecutar prompt
-const r = await fetch("/api/patyia/prompts/run", {
-  method: "POST",
-  headers: { "content-type": "application/json" },
-  body: JSON.stringify({ key: "PR_CLASIFICADOR_MODULO", input: "texto a clasificar" })
-});
-const j = await r.json();
-// j => { ok, output_text, model, prompt: { id, version }, usage }`,
 	};
 
 	const TModeloImagen = {
@@ -1121,19 +1091,6 @@ const j = await r.json();
 						</FlexLayout>
 					</header>
 					<StorageActionsPanel />
-				</div>
-			{:else if accionActiva === "prompts"}
-				<div class="seccion">
-					<header class="seccion-head">
-						<div>
-							<h2>Prompts · CRUD y ejecución</h2>
-							<p class="seccion-sub">Reemplazo de las variables PR_* del local.settings.json. Editables desde aquí y consumidos por endpoints como /api/patyia/prompts/run.</p>
-						</div>
-						<FlexLayout items="center">
-							<ButtonIconify icon="mdi:information-outline" onClick={() => (infoOpen = true)} title="¿Qué hace cada campo?" />
-						</FlexLayout>
-					</header>
-					<PromptsActionsPanel />
 				</div>
 			{/if}
 		</div>

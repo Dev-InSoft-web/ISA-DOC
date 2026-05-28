@@ -48,7 +48,7 @@
 </script>
 
 {#if ticket}
-	<Modal bind:bshow variant="solid" style="width: min(960px, 95dvw); height: min(85dvh, 800px);">
+	<Modal bind:bshow variant="solid" style="width: 95dvw; height: 95dvh;">
 		<svelte:fragment slot="title">
 			<FlexLayout direction="column" style="gap: 0.15rem; min-width: 0;">
 				<strong style="font-size: 0.95rem; line-height: 1.25;">{ticket.id} — {ticket.titulo}</strong>
@@ -107,7 +107,7 @@
 	.ticket-body {
 		display: flex;
 		flex-direction: column;
-		flex: 1 1 auto;
+		height: 100%;
 		min-height: 0;
 		padding: 0.75rem;
 		gap: 0.5rem;
@@ -115,13 +115,10 @@
 	.ticket-viewer {
 		position: relative;
 		width: 100%;
-		flex: 1 1 auto;
+		flex: 1 1 0;
 		min-height: 0;
 		display: flex;
 		overflow: hidden;
-		/* fallback por si el Modal no es flex-column: descontar header,
-		   resumen, switches y paddings del alto disponible */
-		max-height: calc(min(85dvh, 800px) - 240px);
 	}
 	.ticket-iframe {
 		width: 100%;

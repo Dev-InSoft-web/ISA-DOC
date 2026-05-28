@@ -269,6 +269,7 @@ async function listarMensajesThread(threadId: string, apiKey: string): Promise<M
 	return data
 		.filter((m) => m.role === "user" || m.role === "assistant")
 		.map((m) => {
+			console.log(m)
 			const piezas = (m.content ?? []).filter((c) => c.type === "text");
 			const texto = piezas.map((c) => extraerTexto(c)).join("\n");
 			const archivos = piezas.flatMap((c) => extraerArchivos(c));

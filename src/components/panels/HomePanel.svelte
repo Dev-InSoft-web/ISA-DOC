@@ -46,6 +46,7 @@
 				{ label: "Postman", path: "/patyia/postman", icon: "mdi:email-fast-outline", desc: "Colecciones Postman de PatyIA." },
 				{ label: "Docs ContaPymeU", path: "/patyia/contapymeu", icon: "mdi:book-open-page-variant-outline", desc: "Documentacion enlazada desde PatyIA." },
 				{ label: "Actions / OpenAI", path: "/patyia/actions", icon: "mdi:robot-outline", desc: "Generacion de imagenes, texto y conversaciones con OpenAI; historial persistente y pricing." },
+				{ label: "Modelos OpenAI", path: "/patyia/modelos-openai", icon: "mdi:currency-usd", desc: "Catalogo de modelos OpenAI con pricing por 1M tokens." },
 				{ label: "Test", path: "/patyia/test", icon: "mdi:flask-outline", desc: "Pagina de pruebas de PatyIA." },
 			],
 		},

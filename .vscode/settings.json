@@ -4,5 +4,8 @@
 	},
 	"files.watcherExclude": {
 		"**/data/openai-storage/**": true
-	}
+	},
+	"python.analysis.extraPaths": [
+		"c:\\Users\\JAGUDELOE\\.vscode\\extensions\\ms-security.ms-sentinel-2.2.0\\python"
+	]
 }
