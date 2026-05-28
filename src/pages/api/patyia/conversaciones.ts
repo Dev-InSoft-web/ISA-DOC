@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getPatyPool } from "../../../lib/dbPaty.ts";
 import { jsonResponse } from "../../../lib/patyia/openaiKey.ts";
+import { leerConvsCache, guardarConvsCache, type ConvCacheItem } from "../../../lib/patyia/conversacionesCache.ts";
 
 export const prerender = false;
 
@@ -30,9 +31,11 @@ interface FilaConv {
 
 // Lista las conversaciones de un (itercero, icontacto) ordenadas por
 // FHCRE desc. `?db=` acepta alias `prod`/`staging` o nombre exacto.
+// Cache en JSON server-side; `?refresh=1` fuerza re-consulta a SQL.
 export const GET: APIRoute = async ({ url }) => {
 	const itercero = (url.searchParams.get("itercero") ?? "").trim();
 	const icontacto = (url.searchParams.get("icontacto") ?? "").trim();
+	const refresh = url.searchParams.get("refresh") === "1";
 	if (!ITERCERO_RE.test(itercero)) return jsonResponse({ ok: false, error: "itercero inválido" }, 400);
 	if (icontacto && !ITERCERO_RE.test(icontacto)) return jsonResponse({ ok: false, error: "icontacto inválido" }, 400);
 
@@ -42,6 +45,13 @@ export const GET: APIRoute = async ({ url }) => {
 	}
 	const dbName = (dbResolved as string | null) ?? "AYUDASCP_IA_STAGING";
 	const tabla = `[${dbName}].dbo.CONVERSACIONES`;
+
+	if (!refresh) {
+		const cached = await leerConvsCache(dbName, itercero, icontacto);
+		if (cached) {
+			return jsonResponse({ ok: true, db: dbName, itercero, icontacto, items: cached.items, cached: true, updatedAt: cached.updatedAt });
+		}
+	}
 
 	try {
 		const pool = await getPatyPool();
@@ -63,8 +73,10 @@ export const GET: APIRoute = async ({ url }) => {
 			hilo: String(r.HILO ?? "").trim(),
 			fhcre: r.FHCRE ? new Date(r.FHCRE).toISOString() : null,
 		}));
+		const cacheable: ConvCacheItem[] = items.map((it) => ({ iconversacion: it.iconversacion, hilo: it.hilo, fhcre: it.fhcre }));
+		await guardarConvsCache(dbName, itercero, icontacto, cacheable);
 
-		return jsonResponse({ ok: true, db: dbName, itercero, icontacto, items });
+		return jsonResponse({ ok: true, db: dbName, itercero, icontacto, items, cached: false });
 	} catch (err) {
 		const msg = err instanceof Error ? err.message : String(err);
 

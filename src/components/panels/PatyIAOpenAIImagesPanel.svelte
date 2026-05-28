@@ -677,6 +677,8 @@ const data = await r.json();
 	let interConvsModalOpen: boolean = false;
 	let interConvsLoading: boolean = false;
 	let interConvsError: string = "";
+	let interConvsCached: boolean = false;
+	let interConvsUpdatedAt: string = "";
 
 	function capitalizarPalabra(p: string): string {
 		if (p.length <= 3) return p;
@@ -946,7 +948,7 @@ const data = await r.json();
 		}
 	}
 
-	async function listarConversacionesTercero(): Promise<void> {
+	async function listarConversacionesTercero(forzar = false): Promise<void> {
 		interConvsError = "";
 		if (!interIdentidadValue) { interConvsError = "Selecciona un tercero primero."; interConvsModalOpen = true; return; }
 		const [itercero, icontacto] = interIdentidadValue.split("|");
@@ -954,10 +956,13 @@ const data = await r.json();
 		interConvsModalOpen = true;
 		try {
 			const qs = new URLSearchParams({ db: interDb, itercero, icontacto });
+			if (forzar) qs.set("refresh", "1");
 			const r = await fetch(`/api/patyia/conversaciones?${qs.toString()}`);
-			const j = (await r.json()) as { ok: boolean; items?: ConvListaItem[]; error?: string };
+			const j = (await r.json()) as { ok: boolean; items?: ConvListaItem[]; error?: string; cached?: boolean; updatedAt?: string };
 			if (!r.ok || !j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
 			interConvsLista = j.items ?? [];
+			interConvsCached = !!j.cached;
+			interConvsUpdatedAt = j.updatedAt ?? "";
 		} catch (err) {
 			interConvsError = err instanceof Error ? err.message : String(err);
 			interConvsLista = [];
@@ -1017,7 +1022,11 @@ const data = await r.json();
 	$: if (subConv === "interaccion" && accionActiva === "conversacion" && interConvId && !interHistorialCargado && !interMensajes.length) {
 		cargarHistorialInterStg(interConvId);
 	}
-	$: if (interConvId !== null && interConvId !== interConvIdInput) interConvIdInput = interConvId;
+	let _lastInterConvIdSynced: number | null = interConvId;
+	$: if (interConvId !== _lastInterConvIdSynced) {
+		_lastInterConvIdSynced = interConvId;
+		interConvIdInput = interConvId;
+	}
 
 	const CONTENT_KEYS = ["contenido", "content", "mensaje", "texto", "respuesta", "prompt"] as const;
 	const ROLE_KEYS = ["autor", "rol", "role", "tdmensaje", "itdmensaje", "tipo", "origen", "remitente"] as const;
@@ -1825,7 +1834,13 @@ const data = await r.json();
 		onClose={() => (interConvsModalOpen = false)}
 		style="width: min(720px, 95vw); max-width: 95vw; max-height: 85vh;"
 	>
-		<h3 slot="title">Conversaciones del tercero ({interConvsLista.length})</h3>
+		<h3 slot="title">
+			Conversaciones del tercero ({interConvsLista.length})
+			{#if interConvsCached && interConvsUpdatedAt}
+				<small class="cache-stamp">cache · {formatearFechaMsg(interConvsUpdatedAt)}</small>
+			{/if}
+			<ButtonIconify icon="mdi:refresh" onClick={() => listarConversacionesTercero(true)} disabled={interConvsLoading} loading={interConvsLoading} title="Forzar consulta a BD" />
+		</h3>
 		<div class="conv-list-body custom-scrollbar">
 			{#if interConvsLoading}
 				<p>Cargando…</p>
@@ -2120,6 +2135,7 @@ const data = await r.json();
 	.conv-list-table th, .conv-list-table td { padding: 0.4rem 0.6rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
 	.conv-list-table th { font-weight: 600; opacity: 0.85; }
 	.conv-list-table .hilo-cell { font-size: 0.75rem; opacity: 0.75; word-break: break-all; }
+	.cache-stamp { font-size: 0.7rem; opacity: 0.6; font-weight: 400; margin-left: 0.5rem; }
 	.tutorial-body {
 		padding: 1rem 1.25rem;
 		overflow: auto;
