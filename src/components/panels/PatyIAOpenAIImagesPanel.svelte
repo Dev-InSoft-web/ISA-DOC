@@ -663,22 +663,43 @@ const data = await r.json();
 	let interConvId: number | null = _initInterConvId;
 	let interHilo: string = "";
 	let interMensajes: MsgVista[] = [];
-	let interInput: string = "";
+	let interInputHtml: string = "";
 	let interLoading: boolean = false;
 	let interSendLoading: boolean = false;
 	let interError: string = "";
 	let interStreamBuffer: string = "";
 	let interHistorialCargado: boolean = false;
-	let interConvIdInput: string = interConvId ? String(interConvId) : "";
+	let interConvIdInput: number | null = interConvId;
 	let interRecuperarLoading: boolean = false;
+	let interDb: "prod" | "staging" = "staging";
+
+	function capitalizarPalabra(p: string): string {
+		if (p.length <= 3) return p;
+		if (p.includes(".")) return p;
+		if (/^[A-ZÁÉÍÓÚÜÑ]+$/.test(p)) return p[0] + p.slice(1).toLowerCase();
+		return p;
+	}
+	function formatearTercero(nombre: string): string {
+		const palabras = nombre.split(/\s+/).filter(Boolean).map(capitalizarPalabra);
+		if (!palabras.length) return "";
+		if (palabras.length > 3) return `${palabras[0]}...${palabras[palabras.length - 1]}`;
+
+		return palabras.join(" ");
+	}
+	function formatearContacto(nombre: string): string {
+		const primera = nombre.split(/\s+/).filter(Boolean)[0] ?? "";
+
+		return capitalizarPalabra(primera);
+	}
 
 	function etiquetaIdentidad(it: IdentidadStg): string {
 		const nomT = (it.nombreTercero ?? "").trim();
 		const nomC = (it.nombreContacto ?? "").trim();
-		const tercero = nomT ? `${nomT} (${it.itercero})` : `Tercero ${it.itercero}`;
-		const contacto = nomC ? `${nomC} (${it.icontacto || "—"})` : `Contacto ${it.icontacto || "—"}`;
+		const tercero = nomT ? formatearTercero(nomT) : `Tercero ${it.itercero}`;
+		const contacto = nomC ? formatearContacto(nomC) : (it.icontacto ? `Contacto ${it.icontacto}` : "—");
+		const par = `${it.itercero}-${it.icontacto || "—"}`;
 
-		return `${tercero} · ${contacto} · ${it.qconv} conv`;
+		return `${tercero} | ${contacto} (${par}) [${it.qconv}]`;
 	}
 
 	function reconstruirMapaIdentidades(): void {
@@ -748,13 +769,14 @@ const data = await r.json();
 
 	async function iniciarConversacionStg(): Promise<void> {
 		interError = "";
+		if (interDb !== "staging") { interError = "Solo se permite crear conversaciones en staging."; return; }
 		const par = parIdentidadActual();
 		if (!par) { interError = "Selecciona un tercero/contacto."; return; }
-		if (!interInput.trim()) { interError = "Escribe el primer mensaje."; return; }
+		const mensajeUser = htmlAPlano(interInputHtml).trim();
+		if (!mensajeUser) { interError = "Escribe el primer mensaje."; return; }
 		interLoading = true;
-		const mensajeUser = interInput;
 		interMensajes = [...interMensajes, nuevoMsgVista("user", mensajeUser)];
-		interInput = "";
+		interInputHtml = "";
 		try {
 			const ident = interIdentidades.find((it) => it.itercero === par.itercero && it.icontacto === par.icontacto);
 			const nombre = (ident?.nombreTercero ?? "").trim();
@@ -782,14 +804,15 @@ const data = await r.json();
 
 	async function enviarMensajeStg(): Promise<void> {
 		interError = "";
+		if (interDb !== "staging") { interError = "Solo se permite enviar mensajes en staging."; return; }
 		if (!interConvId) { interError = "No hay conversación activa."; return; }
-		if (!interInput.trim()) return;
+		const mensajeUser = htmlAPlano(interInputHtml).trim();
+		if (!mensajeUser) return;
 		interSendLoading = true;
-		const mensajeUser = interInput;
 		interMensajes = [...interMensajes, nuevoMsgVista("user", mensajeUser)];
 		const asistente = nuevoMsgVista("assistant", "");
 		interMensajes = [...interMensajes, asistente];
-		interInput = "";
+		interInputHtml = "";
 		try {
 			const r = await fetch(`/api/patyia/staging/conversacion/${interConvId}/send-stream`, {
 				method: "POST",
@@ -841,11 +864,16 @@ const data = await r.json();
 		interConvId = null;
 		interHilo = "";
 		interMensajes = [];
-		interInput = "";
+		interInputHtml = "";
 		interError = "";
 		interStreamBuffer = "";
 		interHistorialCargado = false;
-		interConvIdInput = "";
+		interConvIdInput = null;
+	}
+
+	async function recuperarONueva(): Promise<void> {
+		if (interConvIdInput && interConvIdInput > 0) await recuperarConversacionStg();
+		else reiniciarInteraccionStg();
 	}
 
 	async function ponerIdentidadAlTope(itercero: string, icontacto: string): Promise<void> {
@@ -876,11 +904,11 @@ const data = await r.json();
 
 	async function recuperarConversacionStg(): Promise<void> {
 		interError = "";
-		const idNum = Number(String(interConvIdInput ?? "").trim());
+		const idNum = Number(interConvIdInput ?? 0);
 		if (!Number.isInteger(idNum) || idNum <= 0) { interError = "ID de conversación inválido."; return; }
 		interRecuperarLoading = true;
 		try {
-			const r = await fetch(`/api/patyia/conversacion/${idNum}?db=staging`);
+			const r = await fetch(`/api/patyia/conversacion/${idNum}?db=${encodeURIComponent(interDb)}`);
 			const data = (await r.json()) as ConvRespStg & { conversacion?: Record<string, unknown> };
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			const conv = data.conversacion ?? {};
@@ -925,7 +953,7 @@ const data = await r.json();
 		if (interHistorialCargado) return;
 		interHistorialCargado = true;
 		try {
-			const r = await fetch(`/api/patyia/conversacion/${convId}?db=staging`);
+			const r = await fetch(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(interDb)}`);
 			const data = (await r.json()) as ConvRespStg;
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			interHilo = String(data.conversacion?.HILO ?? data.conversacion?.hilo ?? "");
@@ -958,7 +986,7 @@ const data = await r.json();
 	$: if (subConv === "interaccion" && accionActiva === "conversacion" && interConvId && !interHistorialCargado && !interMensajes.length) {
 		cargarHistorialInterStg(interConvId);
 	}
-	$: if (interConvId !== null && String(interConvId) !== interConvIdInput) interConvIdInput = String(interConvId);
+	$: if (interConvId !== null && interConvId !== interConvIdInput) interConvIdInput = interConvId;
 
 	const CONTENT_KEYS = ["contenido", "content", "mensaje", "texto", "respuesta", "prompt"] as const;
 	const ROLE_KEYS = ["autor", "rol", "role", "tdmensaje", "itdmensaje", "tipo", "origen", "remitente"] as const;
@@ -1550,35 +1578,26 @@ const data = await r.json();
 						{/if}
 					{:else if subConv === "interaccion"}
 						<div class="interaccion-wrap">
-							<p class="sub">
-								Crea conversaciones nuevas en <code>AYUDASCP_IA_STAGING</code> simulando un (tercero, contacto)
-								real. PatyIA responde con su pipeline natural sobre el prompt principal. Nunca toca prod.
-							</p>
-
 							<GridLayout cells={2} items="end">
 								{#key Object.keys(tInterIdentidades).length + "|" + Object.values(tInterIdentidades).slice(0, 3).join(",")}
-									<SelectEnum bind:value={interIdentidadValue} enumValue={tInterIdentidades} label="Tercero · Contacto (top 100 staging)" />
+									<SelectEnum bind:value={interIdentidadValue} enumValue={tInterIdentidades} label="Tercero · Contacto" />
 								{/key}
 								<FlexLayout items="center">
+									<SelectEnum bind:value={interDb} enumValue={TBaseDatos} label="Base de datos" />
 									<ButtonIconify icon="mdi:refresh" onClick={() => { interIdentidadesLoaded = false; cargarIdentidadesStg(); }} disabled={interIdentidadesLoading} title="Recargar identidades" />
-									{#if interConvId !== null}
-										<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarInteraccionStg} title="Nueva conversación" />
-									{/if}
 								</FlexLayout>
 							</GridLayout>
 
-							<div class="conv-id-row">
-								<input
-									type="number"
-									class="conv-id-input"
-									placeholder="ID conversación staging"
-									bind:value={interConvIdInput}
-									min="1"
+							<FlexLayout items="end">
+								<InputNumber bind:value={interConvIdInput} label="iconversacion (vacío = nueva)" required={false} />
+								<ButtonIconify
+									icon={interConvIdInput && interConvIdInput > 0 ? "mdi:cloud-download-outline" : "mdi:plus-circle-outline"}
+									onClick={recuperarONueva}
 									disabled={interRecuperarLoading || interLoading || interSendLoading}
+									loading={interRecuperarLoading}
+									title={interConvIdInput && interConvIdInput > 0 ? "Recuperar conversación" : "Nueva conversación"}
 								/>
-								<Button onClick={recuperarConversacionStg} disabled={interRecuperarLoading || !interConvIdInput} loading={interRecuperarLoading} variant="soft">Recuperar</Button>
-								<Button onClick={reiniciarInteraccionStg} disabled={interLoading || interSendLoading} variant="soft">Nueva</Button>
-							</div>
+							</FlexLayout>
 
 							{#if interIdentidadesError}
 								<div class="error">No se pudieron cargar identidades: {interIdentidadesError}</div>
@@ -1602,17 +1621,12 @@ const data = await r.json();
 							{/if}
 
 							<div class="inter-input">
-								<textarea
-									bind:value={interInput}
-									placeholder={interConvId === null ? "Primer mensaje del tercero…" : "Escribe el siguiente mensaje…"}
-									rows="3"
-									disabled={interLoading || interSendLoading}
-								></textarea>
+								<RichEditor bind:value={interInputHtml} label={interConvId === null ? "Primer mensaje del tercero" : "Escribe el siguiente mensaje"} />
 								<FlexLayout justify="end" items="center">
 									{#if interConvId === null}
-										<Button onClick={iniciarConversacionStg} disabled={interLoading || !interIdentidadValue || !interInput.trim()} loading={interLoading}>Iniciar conversación</Button>
+										<Button onClick={iniciarConversacionStg} disabled={interLoading || interDb !== "staging" || !interIdentidadValue || !htmlAPlano(interInputHtml).trim()} loading={interLoading}>Iniciar conversación</Button>
 									{:else}
-										<Button onClick={enviarMensajeStg} disabled={interSendLoading || !interInput.trim()} loading={interSendLoading}>Enviar mensaje</Button>
+										<Button onClick={enviarMensajeStg} disabled={interSendLoading || interDb !== "staging" || !htmlAPlano(interInputHtml).trim()} loading={interSendLoading}>Enviar mensaje</Button>
 									{/if}
 								</FlexLayout>
 							</div>
@@ -2022,34 +2036,6 @@ const data = await r.json();
 		flex-wrap: wrap;
 		gap: 0.75rem 1.5rem;
 		opacity: 0.8;
-	}
-	.conv-id-row {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-	}
-	.conv-id-input {
-		flex: 0 1 14rem;
-		background: rgba(0, 0, 0, 0.25);
-		color: inherit;
-		border: 1px solid rgba(255, 255, 255, 0.15);
-		border-radius: 4px;
-		padding: 0.4rem 0.6rem;
-		font-family: inherit;
-		font-size: 0.9rem;
-	}
-	.inter-input textarea {
-		width: 100%;
-		min-height: 4rem;
-		background: rgba(0, 0, 0, 0.25);
-		color: inherit;
-		border: 1px solid rgba(255, 255, 255, 0.15);
-		border-radius: 4px;
-		padding: 0.5rem;
-		font-family: inherit;
-		font-size: 0.9rem;
-		resize: vertical;
 	}
 	.conv-modal-body {
 		height: 100%;
