@@ -53,6 +53,8 @@
 	let editorSaving: boolean = false;
 	let editorPublishing: boolean = false;
 	let editorCached: boolean = false;
+	let editorSource: "openai" | "empty" | "local" | "" = "";
+	let editorWarning: string = "";
 	$: editorDirty = editorMd !== editorMdOriginal;
 
 	function pedirConfirmacion(opts: {
@@ -214,6 +216,8 @@
 			editorMd = j.markdown ?? "";
 			editorMdOriginal = editorMd;
 			editorCached = !!j.cached;
+			editorSource = (j.source as typeof editorSource) ?? (editorCached ? "local" : "");
+			editorWarning = j.warning ?? "";
 			editorSnapshot = j.snapshot
 				? {
 					id: j.snapshot.id,
@@ -222,6 +226,9 @@
 					fetched_at: j.snapshot.fetched_at ?? "",
 				}
 				: null;
+			if (editorSource === "empty") {
+				toastError("No se pudo descargar el contenido del prompt. Se generó una plantilla local editable.");
+			}
 		} catch (err) {
 			toastError(err instanceof Error ? err.message : String(err));
 		} finally {
@@ -235,6 +242,8 @@
 		editorMdOriginal = "";
 		editorSnapshot = null;
 		editorCached = false;
+		editorSource = "";
+		editorWarning = "";
 		editorOpen = true;
 		await cargarContenido(key, false);
 	}
@@ -242,7 +251,7 @@
 	async function refrescarDeOpenAI(): Promise<void> {
 		if (!editorKey) return;
 		await cargarContenido(editorKey, true);
-		toastSuccess("Contenido recargado desde OpenAI");
+		if (editorSource === "openai") toastSuccess("Contenido recargado desde OpenAI");
 	}
 
 	async function guardarContenidoLocal(): Promise<void> {
@@ -420,7 +429,15 @@
 					{editorSnapshot.model ? ` · model ${editorSnapshot.model}` : ""}
 					{editorSnapshot.fetched_at ? ` · sync ${editorSnapshot.fetched_at.slice(0, 19).replace("T", " ")}` : ""}
 					{editorCached ? " · (cache local)" : ""}
+					{editorSource === "empty" ? " · (plantilla local)" : ""}
 				</small>
+			{/if}
+			{#if editorWarning}
+				<p class="warning">
+					⚠ No se pudo leer el contenido remoto: <code>{editorWarning}</code>.
+					OpenAI no expone <code>GET /v1/prompts/{`{id}`}</code> públicamente; edita el .md local y usa
+					<strong>Publicar nueva versión</strong> para subirlo.
+				</p>
 			{/if}
 			<p class="hint" style="margin: 0;">
 				Cada bloque del prompt va entre <code>&lt;!--role: system|developer|user|assistant--&gt;</code> y <code>&lt;!--/role--&gt;</code>.
@@ -553,6 +570,15 @@
 		font-size: 0.85rem;
 		color: color-mix(in srgb, var(--is-color) 65%, transparent);
 		margin: 0.5rem 0;
+	}
+	.warning {
+		margin: 0;
+		padding: 0.4rem 0.6rem;
+		font-size: 0.78rem;
+		border: 1px solid color-mix(in srgb, orange 55%, transparent);
+		background: color-mix(in srgb, orange 12%, transparent);
+		border-radius: 4px;
+		color: color-mix(in srgb, var(--is-color) 90%, transparent);
 	}
 	select {
 		padding: 0.4rem;

@@ -43,9 +43,24 @@ export const GET: APIRoute = async ({ params, request }) => {
 			raw: res.raw,
 		};
 		await escribirContenidoLocal(key, markdown, snapshot);
-		return j({ ok: true, key, markdown, snapshot, cached: false });
+		return j({ ok: true, key, markdown, snapshot, cached: false, source: "openai" });
 	} catch (err) {
-		return j({ ok: false, error: err instanceof Error ? err.message : String(err) }, 502);
+		// OpenAI no expone públicamente GET /v1/prompts/{id}. Fallback: crear plantilla local editable.
+		const warning = err instanceof Error ? err.message : String(err);
+		const markdown = serializarMd([
+			{ role: "system", content: "" },
+			{ role: "user", content: "" },
+		]);
+		const snapshot: PromptContentSnapshot = {
+			id: entry.id,
+			version: entry.version,
+			messages: parsearMd(markdown),
+			model: "",
+			fetched_at: new Date().toISOString(),
+			raw: null,
+		};
+		await escribirContenidoLocal(key, markdown, snapshot);
+		return j({ ok: true, key, markdown, snapshot, cached: false, source: "empty", warning });
 	}
 };
 
