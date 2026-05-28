@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { resolveOpenAIKey } from "../../../../../lib/patyia/openaiKey.ts";
 import { BACKUP_PROGRESS, ensureDir, escribirJson, fileDir, FILES_CACHE, leerJson, safeExt, STORAGE_ROOT } from "../../../../../lib/patyia/storage.ts";
-import { backupOne, type OpenAIFileMetaLite } from "../../../../../lib/patyia/openaiBackup.ts";
+import { backupOne, listarArchivosVS, type OpenAIFileMetaLite } from "../../../../../lib/patyia/openaiBackup.ts";
 
 export const prerender = false;
 
@@ -77,6 +77,16 @@ function yaDescargado(fileId: string, filename: string, createdAt: number): bool
 
 async function ejecutarBackup(apiKey: string, files: CachedFile[], estado: BackupProgress): Promise<void> {
 	const vsIds = await listarVS(apiKey);
+	// Índice inverso fileId → vsIds[]. Evita iterar TODOS los VS por cada archivo.
+	const mapVS = new Map<string, string[]>();
+	for (const vs of vsIds) {
+		const ids = await listarArchivosVS(vs, apiKey);
+		for (const fid of ids) {
+			const prev = mapVS.get(fid);
+			if (prev) prev.push(vs);
+			else mapVS.set(fid, [vs]);
+		}
+	}
 	const CONCURRENCY = 6;
 	let cursor = 0;
 
@@ -98,7 +108,8 @@ async function ejecutarBackup(apiKey: string, files: CachedFile[], estado: Backu
 			const metaPrev: OpenAIFileMetaLite = {
 				id: f.id, filename: f.filename, bytes: f.bytes, created_at: f.created_at, purpose: f.purpose,
 			};
-			const res = await backupOne(f.id, apiKey, vsIds, metaPrev);
+			const vsParaFile = mapVS.get(f.id) ?? [];
+			const res = await backupOne(f.id, apiKey, vsParaFile, metaPrev);
 			estado.hecho += 1;
 			if (res.ok) estado.exitos += 1;
 			else {

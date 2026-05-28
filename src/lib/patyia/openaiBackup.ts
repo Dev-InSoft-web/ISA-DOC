@@ -85,6 +85,36 @@ export async function descargarDesdeVS(vsId: string, fileId: string, apiKey: str
 	return partes.join("\n\n");
 }
 
+export async function listarArchivosVS(vsId: string, apiKey: string): Promise<string[]> {
+	const ids: string[] = [];
+	let after: string | null = null;
+	for (let i = 0; i < 200; i++) {
+		const u = new URL(`https://api.openai.com/v1/vector_stores/${encodeURIComponent(vsId)}/files`);
+		u.searchParams.set("limit", "100");
+		if (after) u.searchParams.set("after", after);
+		let r: Response | null = null;
+		let text = "";
+		for (let intento = 0; intento < 3; intento++) {
+			r = await fetch(u.toString(), {
+				method: "GET",
+				headers: { Authorization: `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" },
+				signal: signalTO(),
+			});
+			text = await r.text();
+			if (r.status !== 429 && r.status < 500) break;
+			await new Promise((res) => setTimeout(res, 400 * (intento + 1) ** 2));
+		}
+		if (!r || !r.ok) break;
+		let parsed: { data?: { id?: string }[]; has_more?: boolean; last_id?: string | null };
+		try { parsed = JSON.parse(text); }
+		catch { break; }
+		for (const it of parsed.data ?? []) if (typeof it.id === "string") ids.push(it.id);
+		if (!parsed.has_more || !parsed.last_id) break;
+		after = parsed.last_id;
+	}
+	return ids;
+}
+
 export async function backupOne(
 	fileId: string,
 	apiKey: string,
@@ -129,14 +159,6 @@ export async function backupOne(
 
 	try {
 		if (purpose === "assistants" || purpose === "assistants_output") {
-			// Verificación rápida de existencia: si OpenAI ya purgó el archivo, ningún VS lo tendrá.
-			try { await pedirFileMeta(fileId, apiKey); }
-			catch (err) {
-				const m = msg(err).toLowerCase();
-				if (m.includes("not found") || m.includes("no such") || m.includes("404")) {
-					return { ok: false, file_id: fileId, error: `archivo no existe en OpenAI: ${msg(err)}` };
-				}
-			}
 			const errores: string[] = [];
 			for (const vs of vsIds) {
 				try {
@@ -149,8 +171,10 @@ export async function backupOne(
 			// Fallback: intentar descarga directa (algunos purpose=assistants sí lo permiten).
 			const buf = await descargarDirecto();
 			if (buf) return await guardar(buf, "files");
-			const detalle = vsIds.length ? `No descargable. ${errores.join(" | ")}` : "purpose=assistants sin VS y descarga directa denegada";
-			return { ok: false, file_id: fileId, error: detalle };
+			if (!vsIds.length) {
+				return { ok: false, file_id: fileId, error: "huérfano: no pertenece a ningún vector store y descarga directa denegada" };
+			}
+			return { ok: false, file_id: fileId, error: `No descargable. ${errores.join(" | ")}` };
 		}
 
 		const buf = await descargarDirecto();
