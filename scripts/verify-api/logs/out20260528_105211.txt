@@ -1,0 +1,11 @@
+--- STARTING COMPREHENSIVE API VERIFICATION ---
+--- Report File: C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api\logs\out20260528_105211.txt ---
+--- Base URL: http://localhost:20040 ---
+[AUTH] Token cargado desde token.json. ✅
+
+===============================================================
+EVALUATING DOMAIN: Driver
+===============================================================
+
+1. PROCESS: CREATE
+   Input: POST /api/driver Body (exacto): {"idriver":200,"ndriver":"Driver Prueba","qniveles":2,"descripcion":"Driver POST con atributos anidados","atributos":[{"idriver":200,"iatributo":901,"qnivel":1,"natributo":"Atributo test 901","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":902,"qnivel":1,"natributo":"Atributo test 902","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":903,"qnivel":1,"natributo":"Atributo test 903","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}},{"idriver":200,"iatributo":904,"qnivel":1,"natributo":"Atributo test 904","tdatributo":1,"brequerido":true,"jconfig":{"descripcion":"Prueba API","source":"","maxlength":0,"accept":"","multiple":false,"presentacion":0}}]}

@@ -1,0 +1,20 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log: C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260528_105201.txt
+Host: http://localhost:7071
+
+════════════════════
+  1) POST /api/JWT
+════════════════════
+❌ [JWT] HTTP 401
+   payload: {"encabezado":{"resultado":false,"tiempo":128,"fhentrada":"2026-05-28T15:52:01.100Z","fhsalida":"2026-05-28T15:52:01.228Z","imensaje":401020,"mensaje":"No se ha definido el parámetro de autenticación, por favor verifique que esté enviando el header, query o parámetro \"authorization\""}}
+⛔ Sin token en respuesta; aborto cadena.
+   Tip: define PATYIA_TOKEN=<jwt> para usar un token pre-emitido y continuar la cadena.
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   0
+FAIL: 1

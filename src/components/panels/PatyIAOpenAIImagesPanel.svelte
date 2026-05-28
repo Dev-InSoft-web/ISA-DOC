@@ -10,6 +10,7 @@
 	import { PROMPT_MOCKUPS, type PromptMockup } from "../../lib/patyia/promptMockups";
 	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/patyia/openaiPricing";
 	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/patyia/patyiaPersist";
+	import { resolveLocalEndpoint, type ApiMethod } from "../../lib/patyia/apiEndpoints";
 	import { leerState, escribirState, migrarLegacy } from "../../lib/patyia/urlState";
 	type AppStatePartial = { nivel?: unknown; subPruebas?: unknown; subStorage?: unknown; subConv?: unknown; interConvId?: unknown };
 
@@ -325,15 +326,34 @@ const data = await r.json();
 	};
 	let apiHost: "origin" | "local" = loadJson<"origin" | "local">("patyia.actions.apiHost", "origin");
 	$: saveJson("patyia.actions.apiHost", apiHost);
-	function apiUrl(path: string): string {
+	function apiUrl(path: string, method: ApiMethod = "GET"): string {
 		if (apiHost !== "local") return path;
-		const LOCAL = "http://localhost:7071";
-		// Endpoints expuestos localmente por Azure Functions. El resto cae a origin.
-		const mConvs = path.match(/^\/api\/patyia\/conversaciones(\?.*)?$/);
-		if (mConvs) return `${LOCAL}/api/conversaciones${mConvs[1] ?? ""}`;
-		const mConv = path.match(/^\/api\/patyia\/conversacion\/([^/?]+)(\?.*)?$/);
-		if (mConv) return `${LOCAL}/api/conversacion/${mConv[1]}${mConv[2] ?? ""}`;
-		return path;
+		const ep = resolveLocalEndpoint(path, method);
+		return ep ? ep.localUrl : path;
+	}
+	function localEndpointName(
+		host: "origin" | "local",
+		path: string,
+		method: ApiMethod,
+	): string | null {
+		if (host !== "local") return null;
+		return resolveLocalEndpoint(path, method)?.name ?? null;
+	}
+	function tituloLocal(
+		host: "origin" | "local",
+		path: string,
+		method: ApiMethod,
+		fallback: string,
+	): string {
+		const n = localEndpointName(host, path, method);
+		return n ? `${fallback} · LOCAL ${n}` : fallback;
+	}
+	function colorLocal(
+		host: "origin" | "local",
+		path: string,
+		method: ApiMethod,
+	): "danger" | undefined {
+		return localEndpointName(host, path, method) ? "danger" : undefined;
 	}
 	const TPrompts = {
 		"PROMPT_CLASIFICADOR_MODULO": "pmpt_6a03a285eb8c819694379c42ee1a6f130346f936d6203eca",
@@ -803,7 +823,7 @@ const data = await r.json();
 		try {
 			const ident = interIdentidades.find((it) => it.itercero === par.itercero && it.icontacto === par.icontacto);
 			const nombre = (ident?.nombreTercero ?? "").trim();
-			const r = await fetch(apiUrl("/api/patyia/staging/conversacion/new"), {
+			const r = await fetch(apiUrl("/api/patyia/staging/conversacion/new", "POST"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({
@@ -837,7 +857,7 @@ const data = await r.json();
 		interMensajes = [...interMensajes, asistente];
 		interInputHtml = "";
 		try {
-			const r = await fetch(apiUrl(`/api/patyia/staging/conversacion/${interConvId}/send-stream`), {
+			const r = await fetch(apiUrl(`/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify({ mensaje: mensajeUser }),
@@ -1598,7 +1618,7 @@ const data = await r.json();
 						<GridLayout cells={4} items="end">
 							<InputNumber bind:value={convId} label="iconversacion" required={true} />
 							<SelectEnum bind:value={convDb} enumValue={TBaseDatos} label="Base de datos" />
-							<Button onClick={cargarConversacionBD} disabled={convLoading} loading={convLoading} style="width: fit-content;">Cargar</Button>
+							<Button onClick={cargarConversacionBD} disabled={convLoading} loading={convLoading} style="width: fit-content;" title={tituloLocal(apiHost, `/api/patyia/conversacion/${convId ?? 0}`, "GET", "Cargar")} color={colorLocal(apiHost, `/api/patyia/conversacion/${convId ?? 0}`, "GET")}>Cargar</Button>
 							<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarConvBD} disabled={convLoading} title="Limpiar" />
 						</GridLayout>
 
@@ -1646,7 +1666,7 @@ const data = await r.json();
 									<FlexLayout items="end">
 										<SelectEnum bind:value={interIdentidadValue} enumValue={tInterIdentidades} label="Tercero · Contacto" />
 										<ButtonIconify icon="mdi:refresh" onClick={() => { interIdentidadesLoaded = false; cargarIdentidadesStg(); }} disabled={interIdentidadesLoading} title="Recargar identidades" />
-										<ButtonIconify icon="mdi:format-list-bulleted" onClick={listarConversacionesTercero} disabled={!interIdentidadValue || interConvsLoading} loading={interConvsLoading} title="Listar conversaciones del tercero" />
+										<ButtonIconify icon="mdi:format-list-bulleted" onClick={listarConversacionesTercero} disabled={!interIdentidadValue || interConvsLoading} loading={interConvsLoading} title={tituloLocal(apiHost, "/api/patyia/conversaciones", "GET", "Listar conversaciones del tercero")} color={colorLocal(apiHost, "/api/patyia/conversaciones", "GET")} />
 									</FlexLayout>
 								{/key}
 								<FlexLayout items="end">
@@ -1657,7 +1677,12 @@ const data = await r.json();
 										onClick={recuperarONueva}
 										disabled={interRecuperarLoading || interLoading || interSendLoading}
 										loading={interRecuperarLoading}
-										title={interConvIdInput && interConvIdInput > 0 ? "Recuperar conversación" : "Nueva conversación"}
+										title={interConvIdInput && interConvIdInput > 0
+											? tituloLocal(apiHost, `/api/patyia/conversacion/${interConvIdInput}`, "GET", "Recuperar conversación")
+											: tituloLocal(apiHost, "/api/patyia/staging/conversacion/new", "POST", "Nueva conversación")}
+										color={interConvIdInput && interConvIdInput > 0
+											? colorLocal(apiHost, `/api/patyia/conversacion/${interConvIdInput}`, "GET")
+											: colorLocal(apiHost, "/api/patyia/staging/conversacion/new", "POST")}
 									/>
 								</FlexLayout>
 							</GridLayout>
@@ -1687,9 +1712,9 @@ const data = await r.json();
 								<RichEditor bind:value={interInputHtml} label={interConvId === null ? "Primer mensaje del tercero" : "Escribe el siguiente mensaje"} />
 								<FlexLayout justify="end" items="center">
 									{#if interConvId === null}
-										<Button onClick={iniciarConversacionStg} disabled={interLoading || interDb !== "staging" || !interIdentidadValue || !htmlAPlano(interInputHtml).trim()} loading={interLoading}>Iniciar conversación</Button>
+										<Button onClick={iniciarConversacionStg} disabled={interLoading || interDb !== "staging" || !interIdentidadValue || !htmlAPlano(interInputHtml).trim()} loading={interLoading} title={tituloLocal(apiHost, "/api/patyia/staging/conversacion/new", "POST", "Iniciar conversación")} color={colorLocal(apiHost, "/api/patyia/staging/conversacion/new", "POST")}>Iniciar conversación</Button>
 									{:else}
-										<Button onClick={enviarMensajeStg} disabled={interSendLoading || interDb !== "staging" || !htmlAPlano(interInputHtml).trim()} loading={interSendLoading}>Enviar mensaje</Button>
+										<Button onClick={enviarMensajeStg} disabled={interSendLoading || interDb !== "staging" || !htmlAPlano(interInputHtml).trim()} loading={interSendLoading} title={tituloLocal(apiHost, `/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST", "Enviar mensaje")} color={colorLocal(apiHost, `/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST")}>Enviar mensaje</Button>
 									{/if}
 								</FlexLayout>
 							</div>

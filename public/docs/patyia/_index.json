@@ -11,6 +11,7 @@
 		{ "slug": "05-prompts", "title": "Prompts de Paty", "icon": "mdi:script-text-outline", "kind": "prompts" },
 		{ "slug": "06-modelos-openai", "title": "Modelos OpenAI", "icon": "mdi:currency-usd", "kind": "modelos" },
 		{ "slug": "07-interaccion-staging", "title": "Interacción staging", "icon": "mdi:flask-outline" },
+		{ "slug": "08-endpoints-local", "title": "Endpoints server local", "icon": "mdi:server-network", "kind": "endpoints-local" },
 		{ "slug": "99-recursos", "title": "Recursos", "icon": "mdi:folder-multiple-outline", "kind": "embeds" }
 	],
 	"embeds": [

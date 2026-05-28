@@ -1,0 +1,36 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log: C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260528_105906.txt
+Host: http://localhost:7071
+
+════════════════════
+  1) POST /api/JWT
+════════════════════
+✅ [JWT] usando PATYIA_TOKEN del entorno (1689 chars); se omite POST /api/JWT.
+
+═════════════════════════════
+  2) POST /api/conversacion
+═════════════════════════════
+❌ [conversacion.create] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":6,"fhentrada":"2026-05-28T15:59:06.121Z","fhsalida":"2026-05-28T15:59:06.127Z","imensaje":500000,"mensaje":"invalid signature"}}
+⛔ Sin iconversacion; salto pasos dependientes.
+
+══════════════════════════════
+  3) GET /api/conversaciones
+══════════════════════════════
+❌ [conversaciones.list] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":1,"fhentrada":"2026-05-28T15:59:06.143Z","fhsalida":"2026-05-28T15:59:06.144Z","imensaje":500000,"mensaje":"invalid signature"}}
+
+══════════════════════════════════════════
+  8) GET /api/timer_cerrarConversaciones
+══════════════════════════════════════════
+✅ [timer_cerrarConversaciones] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":1708,"fhentrada":"2026-05-28T15:59:06.152Z","fhsalida":"2026-05-28T15:59:07.860Z"},"respuesta":{"ok":true,"mensaje":"Se cerraron 0 conversaciones por inactividad","registrosActualizados":0}}
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   2
+FAIL: 2

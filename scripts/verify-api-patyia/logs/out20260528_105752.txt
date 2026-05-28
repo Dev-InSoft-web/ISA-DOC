@@ -1,0 +1,20 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log: C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260528_105752.txt
+Host: http://localhost:7071
+
+════════════════════
+  1) POST /api/JWT
+════════════════════
+❌ [JWT] HTTP 401
+   payload: {"encabezado":{"resultado":false,"tiempo":282,"fhentrada":"2026-05-28T15:57:52.282Z","fhsalida":"2026-05-28T15:57:52.564Z","imensaje":401999,"mensaje":"Usuario no logueado. (3)"}}
+⛔ Sin token en respuesta; aborto cadena.
+   Tip: define PATYIA_TOKEN=<jwt> para usar un token pre-emitido y continuar la cadena.
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   0
+FAIL: 1

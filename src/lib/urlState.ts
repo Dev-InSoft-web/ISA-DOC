@@ -75,3 +75,68 @@ export function createUrlTabs(paramName: string, keys: readonly string[]) {
 
 	return { selected, isOpen, onOpened };
 }
+
+/**
+ * Lee el objeto codificado en base64 dentro del query param `?state=<b64>`.
+ * Devuelve `{}` si no hay state, no es base64 válido o no es JSON.
+ */
+export function readStateB64<T extends Record<string, unknown> = Record<string, unknown>>(paramName: string = "state"): T {
+	if (typeof window === "undefined") return {} as T;
+	const raw = new URL(window.location.href).searchParams.get(paramName);
+	if (!raw) return {} as T;
+	try {
+		const decoded = JSON.parse(atob(raw));
+		if (decoded && typeof decoded === "object") return decoded as T;
+	} catch { /* ignore */ }
+	return {} as T;
+}
+
+/**
+ * Mezcla `patch` con el state existente y reescribe `?state=<b64>` (replaceState).
+ * Si tras la mezcla el objeto queda vacío, elimina el parámetro.
+ */
+export function patchStateB64(patch: Record<string, unknown>, paramName: string = "state"): void {
+	if (typeof window === "undefined") return;
+	const current = readStateB64(paramName);
+	const next: Record<string, unknown> = { ...current };
+	for (const [k, v] of Object.entries(patch)) {
+		if (v == null || v === "") delete next[k];
+		else next[k] = v;
+	}
+	const url = new URL(window.location.href);
+	if (Object.keys(next).length === 0) {
+		if (!url.searchParams.has(paramName)) return;
+		url.searchParams.delete(paramName);
+	} else {
+		const encoded = btoa(JSON.stringify(next));
+		if (url.searchParams.get(paramName) === encoded) return;
+		url.searchParams.set(paramName, encoded);
+	}
+	window.history.replaceState(window.history.state, "", url.toString());
+	window.dispatchEvent(new CustomEvent(PARAM_CHANGED, { detail: { name: paramName, value: url.searchParams.get(paramName) } }));
+}
+
+/**
+ * Igual que `createUrlTabs` pero persiste el tab dentro de `?state=<b64>`
+ * bajo la clave `key` (default `"tab"`), no como query param plano.
+ */
+export function createUrlB64Tabs(key: string, keys: readonly string[], paramName: string = "state") {
+	const fallback = keys[0] ?? "";
+
+	const selected = (): string => {
+		const st = readStateB64<Record<string, string>>(paramName);
+		const raw = st[key];
+		if (raw && keys.includes(raw)) return raw;
+		return fallback;
+	};
+
+	const isOpen = (current: string, k: string): boolean => current === k;
+
+	const onOpened = (k: string): string => {
+		if (!keys.includes(k)) return selected();
+		patchStateB64({ [key]: k === fallback ? null : k }, paramName);
+		return k;
+	};
+
+	return { selected, isOpen, onOpened };
+}

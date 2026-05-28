@@ -5,7 +5,7 @@
 	import { marked } from "marked";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
-	import { createUrlTabs, onUrlStateChange } from "../../lib/urlState";
+	import { createUrlB64Tabs, onUrlStateChange } from "../../lib/urlState";
 	import {
 		Card, Button, H2, H4, Text, Loading, Modal,
 		Toaster, toastError, toastSuccess,
@@ -90,9 +90,9 @@
 	let mdPreviewTitle = "";
 	let mdPreviewHtml = "";
 
-	// === Pestañas top-level sincronizadas con la URL (?tab=editor|resumen|pruebas). ===
+	// === Pestañas top-level sincronizadas con la URL en base64 (?state=<b64({tab:"…"})>). ===
 	const POSTMAN_TABS = ["editor", "resumen", "pruebas"] as const;
-	const postmanTabs = createUrlTabs("tab", POSTMAN_TABS);
+	const postmanTabs = createUrlB64Tabs("tab", POSTMAN_TABS);
 	let openEditor: boolean = postmanTabs.selected() === "editor";
 	let openResumen: boolean = postmanTabs.selected() === "resumen";
 	let openPruebas: boolean = postmanTabs.selected() === "pruebas";
@@ -364,6 +364,16 @@
 		} catch (e) { toastError((e as Error).message); }
 	}
 
+	// Delegated tab click → escribir state b64. (ISP TabItem no propaga `bind:open` desde flowbite.)
+	function onTabsClick(ev: MouseEvent): void {
+		const t = ev.target as HTMLElement | null;
+		const btn = t?.closest?.('button[role="tab"]') as HTMLElement | null;
+		if (!btn) return;
+		const label = (btn.textContent ?? "").trim().toLowerCase();
+		const key = label === "editor" ? "editor" : label === "resumen" ? "resumen" : label === "pruebas" ? "pruebas" : null;
+		if (key) postmanTabs.onOpened(key);
+	}
+
 	let unsubUrl: () => void = () => {};
 	onMount(() => {
 		unsubUrl = onUrlStateChange(() => {
@@ -432,6 +442,7 @@
 		</FlexLayout>
 	</Card>
 
+	<div on:click={onTabsClick} role="presentation">
 	<Tabs>
 		<TabItem title="Editor" bind:open={openEditor}>
 	<section class="layout">
@@ -696,6 +707,7 @@
 	</section>
 		</TabItem>
 	</Tabs>
+	</div>
 {/if}
 </div>
 

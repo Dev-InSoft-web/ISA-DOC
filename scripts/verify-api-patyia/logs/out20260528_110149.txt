@@ -1,0 +1,41 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log:  C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260528_110149.txt
+Host: http://localhost:7071
+IDs:  butil=999991 · ireferencia=999992 · codigotk=TKVERIFY999991
+
+═════════════════════════════════════
+  1) POST /api/JWT  (autenticación)
+═════════════════════════════════════
+[AUTH] Token cargado desde C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\token.json (1689 chars). ✅
+
+═════════════════════════════
+  2) POST /api/conversacion
+═════════════════════════════
+❌ [conversacion.create] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":2,"fhentrada":"2026-05-28T16:01:49.475Z","fhsalida":"2026-05-28T16:01:49.477Z","imensaje":500000,"mensaje":"invalid signature"}}
+⛔ Sin iconversacion; los pasos dependientes se saltarán.
+
+══════════════════════════════
+  3) GET /api/conversaciones
+══════════════════════════════
+❌ [conversaciones.list] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":2,"fhentrada":"2026-05-28T16:01:49.492Z","fhsalida":"2026-05-28T16:01:49.494Z","imensaje":500000,"mensaje":"invalid signature"}}
+
+═══════════════════════════════════════════
+  11) GET /api/timer_cerrarConversaciones
+═══════════════════════════════════════════
+✅ [timer_cerrarConversaciones] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":405,"fhentrada":"2026-05-28T16:01:49.500Z","fhsalida":"2026-05-28T16:01:49.905Z"},"respuesta":{"ok":true,"mensaje":"Se cerraron 0 conversaciones por inactividad","registrosActualizados":0}}
+
+════════════════════
+  CLEANUP
+════════════════════
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   1
+FAIL: 2
