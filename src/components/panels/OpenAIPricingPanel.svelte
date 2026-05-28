@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FlexLayout from "@ingenieria_insoft/ispsveltecomponents/containers/FlexLayout.svelte";
+	import { FlexLayout } from "@ingenieria_insoft/ispsveltecomponents";
 	import pricing from "../../lib/patyia/openai-models-pricing.json";
 
 	type ModelEntry = {
