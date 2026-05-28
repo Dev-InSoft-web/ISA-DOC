@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { FlexLayout } from "@ingenieria_insoft/ispsveltecomponents";
+	import { marked } from "marked";
 	import pricing from "../../lib/patyia/openai-models-pricing.json";
 
 	type ModelEntry = {
@@ -26,12 +27,22 @@
 
 	$: familias = [...new Set(filtered.map((m) => m.familia))];
 
-	function modelsByFamilia(familia: string): ModelEntry[] {
-		return filtered.filter((m) => m.familia === familia);
-	}
+	const escCell = (s: string): string => s.replace(/\|/g, "\\|").replace(/\n+/g, " ");
+
+	const tablaMd = (familia: string): string => {
+		const rows = filtered.filter((m) => m.familia === familia);
+		const head = "| Modelo (API ID) | Entrada | Caché | Salida | Detalle |\n| --- | --- | --- | --- | --- |";
+		const body = rows
+			.map((m) => `| \`${escCell(m.modelo)}\` | ${escCell(m.costoEntrada)} | ${escCell(m.cacheEntrada)} | ${escCell(m.costoSalida)} | ${escCell(m.detalle)} |`)
+			.join("\n");
+
+		return `${head}\n${body}`;
+	};
+
+	$: tablasHtml = familias.map((f) => ({ familia: f, html: marked.parse(tablaMd(f)) as string }));
 </script>
 
-<FlexLayout direction="column" style="padding: 1rem; height: 100%; min-height: 0; overflow: auto;">
+<FlexLayout direction="column" style="padding: 1rem;">
 	<h2 style="margin: 0 0 0.25rem;">Modelos OpenAI — Pricing</h2>
 	<p style="margin: 0 0 0.75rem; color: #888; font-size: 0.85rem;">
 		Costos por 1M tokens. Fuente: OpenAI API pricing (mayo 2026).
@@ -53,32 +64,9 @@
 		"
 	/>
 
-	{#each familias as familia}
-		<h3 style="margin: 0.75rem 0 0.25rem; font-size: 1rem; color: var(--is-text-secondary, #555);">{familia}</h3>
-		<div style="overflow-x: auto; margin-bottom: 0.5rem;">
-			<table class="pricing-table">
-				<thead>
-					<tr>
-						<th>Modelo (API ID)</th>
-						<th>Entrada</th>
-						<th>Caché</th>
-						<th>Salida</th>
-						<th>Detalle</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each modelsByFamilia(familia) as m}
-						<tr>
-							<td><code>{m.modelo}</code></td>
-							<td>{m.costoEntrada}</td>
-							<td>{m.cacheEntrada}</td>
-							<td>{m.costoSalida}</td>
-							<td class="detalle">{m.detalle}</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+	{#each tablasHtml as t}
+		<h3 style="margin: 0.75rem 0 0.25rem; font-size: 1rem; color: var(--is-text-secondary, #555);">{t.familia}</h3>
+		<div class="md-table">{@html t.html}</div>
 	{/each}
 
 	{#if filtered.length === 0}
@@ -91,32 +79,27 @@
 </FlexLayout>
 
 <style>
-	.pricing-table {
+	.md-table :global(table) {
 		width: 100%;
 		border-collapse: collapse;
 		font-size: 0.82rem;
+		margin: 0 0 0.5rem;
 	}
-	.pricing-table th,
-	.pricing-table td {
+	.md-table :global(th),
+	.md-table :global(td) {
 		padding: 0.35rem 0.6rem;
 		border: 1px solid var(--is-border-color, rgba(0, 0, 0, 0.12));
 		text-align: left;
-		white-space: nowrap;
+		vertical-align: top;
 	}
-	.pricing-table th {
+	.md-table :global(th) {
 		background: var(--is-bg-secondary, #f5f5f5);
 		font-weight: 600;
-		position: sticky;
-		top: 0;
 	}
-	.pricing-table td.detalle {
-		white-space: normal;
-		min-width: 200px;
-	}
-	.pricing-table tbody tr:hover {
+	.md-table :global(tbody tr:hover) {
 		background: var(--is-bg-hover, rgba(0, 0, 0, 0.04));
 	}
-	.pricing-table code {
+	.md-table :global(code) {
 		font-size: 0.8rem;
 		background: var(--is-bg-code, rgba(0, 0, 0, 0.06));
 		padding: 0.1rem 0.3rem;
