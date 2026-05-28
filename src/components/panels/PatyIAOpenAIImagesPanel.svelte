@@ -11,7 +11,7 @@
 	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/patyia/openaiPricing";
 	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/patyia/patyiaPersist";
 	import { leerState, escribirState, migrarLegacy } from "../../lib/patyia/urlState";
-	type AppStatePartial = { nivel?: unknown; subPruebas?: unknown; subStorage?: unknown };
+	type AppStatePartial = { nivel?: unknown; subPruebas?: unknown; subStorage?: unknown; subConv?: unknown };
 
 	interface ImageItem {
 		src: string;
@@ -54,6 +54,7 @@
 	type AccionId = "imagenes" | "texto" | "chat" | "conversacion" | "storage" | "prompts";
 	type NivelId = "pruebas" | "conversacion" | "storage";
 	type SubPruebaId = "imagenes" | "texto" | "chat" | "prompts";
+	type SubConvId = "consulta" | "interaccion";
 	const ACCIONES: Array<{ id: NivelId; label: string }> = [
 		{ id: "pruebas", label: "Pruebas" },
 		{ id: "conversacion", label: "Conversación BD" },
@@ -67,31 +68,55 @@
 		{ id: "prompts", label: "Prompts" },
 	];
 	const SUB_PRUEBAS_VALIDAS: ReadonlySet<SubPruebaId> = new Set(SUB_PRUEBAS.map((a) => a.id));
+	const SUB_CONV: Array<{ id: SubConvId; label: string }> = [
+		{ id: "consulta", label: "Consulta" },
+		{ id: "interaccion", label: "Interacción" },
+	];
+	const SUB_CONV_VALIDAS: ReadonlySet<SubConvId> = new Set(SUB_CONV.map((a) => a.id));
 
-	function leerTabDeUrl(): { nivel: NivelId; sub: SubPruebaId } {
-		const fallback: { nivel: NivelId; sub: SubPruebaId } = { nivel: "pruebas", sub: "imagenes" };
+	function leerTabDeUrl(): { nivel: NivelId; sub: SubPruebaId; conv: SubConvId } {
+		const fallback = { nivel: "pruebas" as NivelId, sub: "imagenes" as SubPruebaId, conv: "consulta" as SubConvId };
 		const st = leerState();
 		const legacy = migrarLegacy({ tab: "nivel", tab2: "subPruebas" });
 		const merged: AppStatePartial = { ...legacy, ...st };
 		const rawNivel = String(merged.nivel ?? "");
 		const rawSub = String(merged.subPruebas ?? "");
+		const rawConv = String(merged.subConv ?? "");
 		// Compat: ?tab=imagenes|texto|chat → nivel=pruebas, sub=<tab>
 		if (SUB_PRUEBAS_VALIDAS.has(rawNivel as SubPruebaId)) {
-			return { nivel: "pruebas", sub: rawNivel as SubPruebaId };
+			return { nivel: "pruebas", sub: rawNivel as SubPruebaId, conv: fallback.conv };
 		}
 		const nivel: NivelId = ACCIONES_VALIDAS.has(rawNivel as NivelId) ? (rawNivel as NivelId) : fallback.nivel;
 		const sub: SubPruebaId = SUB_PRUEBAS_VALIDAS.has(rawSub as SubPruebaId) ? (rawSub as SubPruebaId) : fallback.sub;
-		return { nivel, sub };
+		const conv: SubConvId = SUB_CONV_VALIDAS.has(rawConv as SubConvId) ? (rawConv as SubConvId) : fallback.conv;
+		return { nivel, sub, conv };
 	}
 
-	function escribirTabEnUrl(nivel: NivelId, sub: SubPruebaId): void {
-		escribirState({ nivel, subPruebas: nivel === "pruebas" ? sub : undefined });
+	function escribirTabEnUrl(nivel: NivelId, sub: SubPruebaId, conv: SubConvId): void {
+		escribirState({
+			nivel,
+			subPruebas: nivel === "pruebas" ? sub : undefined,
+			subConv: nivel === "conversacion" ? conv : undefined,
+		});
 	}
 
-	const _initTab = typeof window !== "undefined" ? leerTabDeUrl() : { nivel: "pruebas" as NivelId, sub: "imagenes" as SubPruebaId };
+	const _initTab = typeof window !== "undefined" ? leerTabDeUrl() : { nivel: "pruebas" as NivelId, sub: "imagenes" as SubPruebaId, conv: "consulta" as SubConvId };
 	let accionActiva: NivelId = _initTab.nivel;
 	let subPrueba: SubPruebaId = _initTab.sub;
-	$: if (typeof window !== "undefined") escribirTabEnUrl(accionActiva, subPrueba);
+	let subConv: SubConvId = _initTab.conv;
+	$: if (typeof window !== "undefined") escribirTabEnUrl(accionActiva, subPrueba, subConv);
+
+	const TITULO_A_SUB_CONV: Record<string, SubConvId> = {
+		Consulta: "consulta",
+		"Interacción": "interaccion",
+	};
+
+	function onSubConvTabClick(e: MouseEvent): void {
+		const btn = (e.target as HTMLElement | null)?.closest('button[role="tab"]') as HTMLButtonElement | null;
+		if (!btn) return;
+		const id = TITULO_A_SUB_CONV[(btn.textContent ?? "").trim()];
+		if (id) subConv = id;
+	}
 
 	const TITULO_A_SUB: Record<string, SubPruebaId> = {
 		Imágenes: "imagenes",
@@ -1147,55 +1172,76 @@ const data = await r.json();
 				<div class="seccion">
 					<header class="seccion-head">
 						<div>
-							<h2>Conversación BD (reconstrucción)</h2>
-							<p class="sub">Carga una conversación real de PatyIA desde <code>AYUDASCP_IA</code> por su <code>iconversacion</code> (ej.: <code>2864</code>, equivalente a <code>?seccion=conversacion&amp;id=2864</code> en prod) para experimentar sobre ella.</p>
+							<h2>Conversación BD</h2>
+							<p class="sub">Consulta y crea conversaciones reales de PatyIA. Toda escritura va contra <code>AYUDASCP_IA_STAGING</code>; nunca toca prod.</p>
 						</div>
 						<ButtonIconify icon="mdi:information-outline" onClick={() => (infoOpen = true)} title="¿Qué hace cada input?" />
 					</header>
 
-					<GridLayout cells={4} items="end">
-						<InputNumber bind:value={convId} label="iconversacion" required={true} />
-						<SelectEnum bind:value={convDb} enumValue={TBaseDatos} label="Base de datos" />
-						<Button onClick={cargarConversacionBD} disabled={convLoading} loading={convLoading} style="width: fit-content;">Cargar</Button>
-						<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarConvBD} disabled={convLoading} title="Limpiar" />
-					</GridLayout>
+					<div on:click={onSubConvTabClick} role="presentation">
+						<Tabs>
+							<TabItem title="Consulta" open={subConv === "consulta"} />
+							<TabItem title="Interacción" open={subConv === "interaccion"} />
+						</Tabs>
+					</div>
 
-					{#if convError}
-						<div class="error">{convError}</div>
-					{/if}
+					{#if subConv === "consulta"}
+						<GridLayout cells={4} items="end">
+							<InputNumber bind:value={convId} label="iconversacion" required={true} />
+							<SelectEnum bind:value={convDb} enumValue={TBaseDatos} label="Base de datos" />
+							<Button onClick={cargarConversacionBD} disabled={convLoading} loading={convLoading} style="width: fit-content;">Cargar</Button>
+							<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarConvBD} disabled={convLoading} title="Limpiar" />
+						</GridLayout>
 
-					{#if convWarnings.length}
-						<div class="warnings">
-							{#each convWarnings as w}<div>⚠ {w}</div>{/each}
-						</div>
-					{/if}
+						{#if convError}
+							<div class="error">{convError}</div>
+						{/if}
 
-					{#if convRow}
-						<section>
-							<h3>Conversación #{convId}</h3>
-							<small>
-								<div class="metrics">
-									{#each Object.entries(convRow) as [k, v]}
-										<span><strong>{k}:</strong> <code>{v == null ? "—" : String(v).slice(0, 120)}</code></span>
-									{/each}
-								</div>
-							</small>
-						</section>
-					{/if}
-
-					{#if vistaMensajes.length}
-						<section>
-							<FlexLayout justify="between" items="center">
-								<h3 style="margin: 0;">Mensajes ({vistaMensajes.length}) <span class="sub">· fuente: {convFuenteMensajes === "openai" ? "OpenAI threads" : "MENSAJESCALIFICADOS (fallback)"}</span></h3>
-								<FlexLayout items="center">
-									<ButtonIconify icon="mdi:help-circle-outline" onClick={() => (tutorialOpen = true)} title="¿Cómo se genera este hilo?" />
-									<ButtonIconify icon="mdi:arrow-expand" onClick={() => (convModalOpen = true)} title="Abrir conversación ampliada" />
-								</FlexLayout>
-							</FlexLayout>
-							<div class="chat-inline">
-								<ChatMensajesView mensajes={vistaMensajes} on:openFile={(e) => abrirArchivoOpenAI(e.detail)} />
+						{#if convWarnings.length}
+							<div class="warnings">
+								{#each convWarnings as w}<div>⚠ {w}</div>{/each}
 							</div>
-						</section>
+						{/if}
+
+						{#if convRow}
+							<section>
+								<h3>Conversación #{convId}</h3>
+								<small>
+									<div class="metrics">
+										{#each Object.entries(convRow) as [k, v]}
+											<span><strong>{k}:</strong> <code>{v == null ? "—" : String(v).slice(0, 120)}</code></span>
+										{/each}
+									</div>
+								</small>
+							</section>
+						{/if}
+
+						{#if vistaMensajes.length}
+							<section>
+								<FlexLayout justify="between" items="center">
+									<h3 style="margin: 0;">Mensajes ({vistaMensajes.length}) <span class="sub">· fuente: {convFuenteMensajes === "openai" ? "OpenAI threads" : "MENSAJESCALIFICADOS (fallback)"}</span></h3>
+									<FlexLayout items="center">
+										<ButtonIconify icon="mdi:help-circle-outline" onClick={() => (tutorialOpen = true)} title="¿Cómo se genera este hilo?" />
+										<ButtonIconify icon="mdi:arrow-expand" onClick={() => (convModalOpen = true)} title="Abrir conversación ampliada" />
+									</FlexLayout>
+								</FlexLayout>
+								<div class="chat-inline">
+									<ChatMensajesView mensajes={vistaMensajes} on:openFile={(e) => abrirArchivoOpenAI(e.detail)} />
+								</div>
+							</section>
+						{/if}
+					{:else if subConv === "interaccion"}
+						<div class="placeholder">
+							<p class="sub">
+								Próximamente: crear conversaciones nuevas en <code>AYUDASCP_IA_STAGING</code>, simular cualquier
+								tercero/contacto y conversar con PatyIA en streaming.
+							</p>
+							<ul class="sub">
+								<li>Selección de tercero y contacto vía <code>SelectEnum</code>.</li>
+								<li>Creación de thread OpenAI + inserción en <code>CONVERSACIONES</code> (solo staging).</li>
+								<li>Envío de mensajes y recepción en streaming.</li>
+							</ul>
+						</div>
 					{/if}
 				</div>
 			{:else if accionActiva === "storage"}
