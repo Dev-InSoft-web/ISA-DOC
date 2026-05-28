@@ -4,7 +4,7 @@ Viviana compartió la configuración de los 13 prompts específicos que arman la
 
 ## Origen del contenido en este seed
 
-Los 13 `.md` que se insertan **son exactamente los mismos** que ya están versionados en este repo bajo [`src/lib/patyia/prompts/`](../../../prompts/) y que se renderizan en la sección **Docs · 05 Prompts de Paty** ([/patyia/contapymeu](/patyia/contapymeu) → *05 Prompts de Paty*), cada uno dentro de su acordeón.
+Los 13 `.md` que se insertan **son exactamente los mismos** que ya están versionados en este repo bajo [`src/lib/patyia/prompts/`](../../../prompts/) y que se renderizan en la sección **Docs · 05 Prompts de Paty** ([/patyia/docs](/patyia/docs) → *05 Prompts de Paty*), cada uno dentro de su acordeón.
 
 > Es la misma fuente, sin divergencias: lo que el usuario lee en la documentación es lo que queda cargado en la BD.
 

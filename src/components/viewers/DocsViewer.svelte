@@ -4,10 +4,11 @@
    import { STATIC_MODE, withBase } from "../../lib/runtime/staticMode";
    import { renderMermaidBlocks } from "../../lib/mermaid/render";
    import PatyIAPrompts from "../panels/PatyIAPrompts.svelte";
+   import OpenAIPricingPanel from "../panels/OpenAIPricingPanel.svelte";
 
    export let project: string = "contapymeu";
 
-   type Section = { slug: string; title: string; icon?: string; kind?: "md" | "embeds" | "prompts" };
+   type Section = { slug: string; title: string; icon?: string; kind?: "md" | "embeds" | "prompts" | "modelos" };
    type Embed = { type: "image" | "pdf"; src: string; title?: string };
    type Manifest = {
       project: string;
@@ -270,7 +271,7 @@
       activeSlug = slug;
       html = "";
       const section = manifest?.sections.find((s) => s.slug === slug);
-      if (section?.kind === "prompts") {
+      if (section?.kind === "prompts" || section?.kind === "modelos") {
          // Renderizado por componente Svelte (ver bloque del template). No hay HTML que generar.
          return;
       }
@@ -406,7 +407,7 @@
       const header = `# ${manifest.title}\n\n${manifest.description ?? ""}`.trim();
       parts.push(header);
       for (const s of manifest.sections) {
-         if (s.kind === "embeds") continue;
+         if (s.kind === "embeds" || s.kind === "prompts" || s.kind === "modelos") continue;
          const res = await fetch(`${baseDir}/${s.slug}.md`, { cache: "no-cache" });
          if (!res.ok) continue;
          let md = await res.text();
@@ -539,6 +540,10 @@
       {#if manifest.sections.find((s) => s.slug === activeSlug)?.kind === "prompts"}
          <article class="docs-panel" bind:this={contentEl}>
             <PatyIAPrompts />
+         </article>
+      {:else if manifest.sections.find((s) => s.slug === activeSlug)?.kind === "modelos"}
+         <article class="docs-panel" bind:this={contentEl}>
+            <OpenAIPricingPanel />
          </article>
       {:else}
          <article class="docs-content" bind:this={contentEl}>
