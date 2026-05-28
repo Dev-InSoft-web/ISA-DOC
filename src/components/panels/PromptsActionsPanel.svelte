@@ -185,12 +185,20 @@
 
 <div class="prompts-panel">
 	<FlexLayout items="center" class="tabs-bar">
-		<button class:active={tab === "crud"} on:click={() => (tab = "crud")}>CRUD</button>
-		<button class:active={tab === "probar"} on:click={() => (tab = "probar")}>Probar</button>
+		<Button
+			style="width: fit-content;"
+			variant={tab === "crud" ? "solid" : "soft"}
+			on:click={() => (tab = "crud")}
+		>CRUD</Button>
+		<Button
+			style="width: fit-content;"
+			variant={tab === "probar" ? "solid" : "soft"}
+			on:click={() => (tab = "probar")}
+		>Probar</Button>
 		<div style="flex: 1;"></div>
 		{#if tab === "crud"}
 			<ButtonIconify icon="mdi:refresh" title="Recargar" on:click={() => void cargar()} />
-			<Button on:click={abrirNuevo}>Nuevo prompt</Button>
+			<Button style="width: fit-content;" on:click={abrirNuevo}>Nuevo prompt</Button>
 		{/if}
 	</FlexLayout>
 
@@ -208,7 +216,7 @@
 						<FlexLayout items="center">
 							<strong style="font-family: ui-monospace, monospace;">{k}</strong>
 							<div style="flex:1;"></div>
-							<Button disabled={guardando.has(k)} on:click={() => void guardar(k)}>
+							<Button style="width: fit-content;" disabled={guardando.has(k)} on:click={() => void guardar(k)}>
 								{guardando.has(k) ? "Guardando…" : "Guardar"}
 							</Button>
 							<ButtonIconify icon="mdi:delete-outline" title="Eliminar" on:click={() => eliminar(k)} />
@@ -257,7 +265,7 @@
 					></textarea>
 				</label>
 				<FlexLayout items="center">
-					<Button disabled={probarLoading} on:click={() => void probarPrompt()}>
+					<Button style="width: fit-content;" disabled={probarLoading} on:click={() => void probarPrompt()}>
 						{probarLoading ? "Ejecutando…" : "Ejecutar prompt"}
 					</Button>
 					{#if probarMeta}
@@ -300,8 +308,8 @@
 				<Input bind:value={nuevoDesc} placeholder="Qué hace" />
 			</label>
 			<FlexLayout justify="end" items="center">
-				<Button on:click={() => (nuevoOpen = false)}>Cancelar</Button>
-				<Button on:click={() => void crearNuevo()}>Crear</Button>
+				<Button style="width: fit-content;" on:click={() => (nuevoOpen = false)}>Cancelar</Button>
+				<Button style="width: fit-content;" on:click={() => void crearNuevo()}>Crear</Button>
 			</FlexLayout>
 		</div>
 	</div>
@@ -324,18 +332,6 @@
 	}
 	.prompts-panel :global(.tabs-bar) {
 		gap: 0.4rem;
-	}
-	.prompts-panel :global(.tabs-bar button) {
-		padding: 0.3rem 0.8rem;
-		background: transparent;
-		color: var(--is-color);
-		border: 1px solid color-mix(in srgb, var(--is-primary) 35%, transparent);
-		border-radius: 4px;
-		cursor: pointer;
-	}
-	.prompts-panel :global(.tabs-bar button.active) {
-		background: color-mix(in srgb, var(--is-primary) 25%, transparent);
-		border-color: var(--is-primary);
 	}
 	.lista {
 		display: flex;
