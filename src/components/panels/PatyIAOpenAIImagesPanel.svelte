@@ -51,9 +51,9 @@
 		costoUsd: number | null;
 	}
 
-	type AccionId = "imagenes" | "texto" | "chat" | "conversacion" | "storage";
+	type AccionId = "imagenes" | "texto" | "chat" | "conversacion" | "storage" | "prompts";
 	type NivelId = "pruebas" | "conversacion" | "storage";
-	type SubPruebaId = "imagenes" | "texto" | "chat" | "mockups";
+	type SubPruebaId = "imagenes" | "texto" | "chat" | "prompts";
 	const ACCIONES: Array<{ id: NivelId; label: string }> = [
 		{ id: "pruebas", label: "Pruebas" },
 		{ id: "conversacion", label: "Conversación BD" },
@@ -64,7 +64,7 @@
 		{ id: "imagenes", label: "Imágenes" },
 		{ id: "texto", label: "Texto" },
 		{ id: "chat", label: "Conversaciones" },
-		{ id: "mockups", label: "Mocks" },
+		{ id: "prompts", label: "Prompts" },
 	];
 	const SUB_PRUEBAS_VALIDAS: ReadonlySet<SubPruebaId> = new Set(SUB_PRUEBAS.map((a) => a.id));
 
@@ -97,7 +97,7 @@
 		Imágenes: "imagenes",
 		Texto: "texto",
 		Conversaciones: "chat",
-		Mocks: "mockups",
+		Prompts: "prompts",
 	};
 
 	function onSubTabClick(e: MouseEvent): void {
@@ -161,6 +161,15 @@
 				{ campo: "Vector Stores", tipo: "tab", significado: "Lista los vector stores con su status, número de archivos y tamaño. Próxima fase: ver archivos adjuntos y ejecutar update-complex (edit local → reupload → relink → unlink → delete)." },
 				{ campo: "Skills", tipo: "tab", significado: "Lista las skills configuradas (API en rollout). Próxima fase: CRUD con backup local en data/openai-storage/skills/." },
 				{ campo: "Backup local", tipo: "carpeta", significado: "Cada recurso descargado queda en data/openai-storage/{files,vector-stores,skills}/<id>/ con meta.json, local.json y content.<ext>. Los binarios están ignorados por git; los metadatos sí se versionan." },
+			],
+		},
+		prompts: {
+			titulo: "Pruebas de prompts",
+			campos: [
+				{ campo: "Prompt ID", tipo: "texto", significado: "Id pmpt_… emitido por OpenAI Prompts. Se envía como prompt.id a /v1/responses." },
+				{ campo: "Versión", tipo: "texto", significado: "Versión opcional del prompt. Si está vacía OpenAI usa la última publicada." },
+				{ campo: "Mensaje del usuario", tipo: "texto", significado: "Input que se inyecta al prompt como mensaje del usuario." },
+				{ campo: "Elegir mock", tipo: "botón", significado: "Abre un modal con un catálogo de mensajes típicos de soporte para rellenar rápidamente el input." },
 			],
 		},
 	};
@@ -239,6 +248,18 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 
 // PUT /api/patyia/openai/files/{id}/local-meta
 // Guarda categorías/tags/descripción/notas en local.json (NO va a OpenAI)`,
+		prompts: `// POST /api/patyia/openai/prompt-run
+const r = await fetch("/api/patyia/openai/prompt-run", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({
+    promptId: "pmpt_xxxxxxxxxxxxxxxxxxxxxxxx",
+    promptVersion: "2",            // opcional
+    input: "texto del usuario"
+  }),
+});
+const data = await r.json();
+// data => { ok, id, model, output_text, usage }`,
 	};
 
 	const TModeloImagen = {
@@ -759,33 +780,43 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 	$: if (persistReady) saveJson(STORAGE_KEYS.imgHistorial, imgHistorial);
 
 	let mockupInput: string = "";
-	let mockupSystem: string = "";
-	let mockupModel: keyof typeof TModeloTexto = "gpt-4o-mini";
+	let pmtPromptId: string = "";
+	let pmtPromptVersion: string = "";
 	let mockupLoading: boolean = false;
 	let mockupError: string = "";
 	let mockupResult: string = "";
 	let mockupSelId: string = "";
+	let pmtMockOpen: boolean = false;
 
-	function cargarMockup(m: PromptMockup): void {
+	function elegirMockup(m: PromptMockup): void {
 		mockupSelId = m.id;
 		mockupInput = m.text;
+		pmtMockOpen = false;
 	}
 
 	async function enviarMockup(): Promise<void> {
-		const prompt = mockupInput.trim();
-		if (!prompt) { mockupError = "Escribe o selecciona un mock."; return; }
+		const input = mockupInput.trim();
+		if (!input) { mockupError = "Escribe o selecciona un mock."; return; }
+		if (!/^pmpt_[A-Za-z0-9]+$/.test(pmtPromptId.trim())) {
+			mockupError = "Prompt ID inválido (esperado pmpt_…).";
+			return;
+		}
 		mockupLoading = true;
 		mockupError = "";
 		mockupResult = "";
 		try {
-			const r = await fetch("/api/patyia/openai/text/generate", {
+			const r = await fetch("/api/patyia/openai/prompt-run", {
 				method: "POST",
 				headers: { "content-type": "application/json" },
-				body: JSON.stringify({ prompt, system: mockupSystem.trim() || undefined, model: mockupModel }),
+				body: JSON.stringify({
+					promptId: pmtPromptId.trim(),
+					promptVersion: pmtPromptVersion.trim() || undefined,
+					input,
+				}),
 			});
 			const j = await r.json();
 			if (!j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
-			mockupResult = String(j.text ?? "");
+			mockupResult = String(j.output_text ?? "");
 		} catch (e) {
 			mockupError = e instanceof Error ? e.message : String(e);
 		} finally {
@@ -825,7 +856,7 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 						<TabItem title="Imágenes" open={subPrueba === "imagenes"} />
 						<TabItem title="Texto" open={subPrueba === "texto"} />
 						<TabItem title="Conversaciones" open={subPrueba === "chat"} />
-						<TabItem title="Mocks" open={subPrueba === "mockups"} />
+						<TabItem title="Prompts" open={subPrueba === "prompts"} />
 					</Tabs>
 				</div>
 			{/if}
@@ -1065,46 +1096,37 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 						{/if}
 					</section>
 				</div>
-			{:else if accionActiva === "pruebas" && subPrueba === "mockups"}
+			{:else if accionActiva === "pruebas" && subPrueba === "prompts"}
 				<div class="seccion">
 					<header class="seccion-head">
 						<div>
-							<h2>Mocks de prompts</h2>
-							<p class="sub">Catálogo de mensajes de prueba típicos del soporte ContaPyme. Selecciona uno, edítalo si quieres y envíalo a OpenAI.</p>
+							<h2>Pruebas de prompts</h2>
+							<p class="sub">Ejecuta un prompt registrado en OpenAI (<code>pmpt_…</code>) contra <code>/v1/responses</code>. Usa los mocks como input rápido.</p>
 						</div>
 					</header>
 
-					<section class="mocks-grid">
-						{#each PROMPT_MOCKUPS as m}
-							<button
-								type="button"
-								class="mock-card"
-								class:active={mockupSelId === m.id}
-								on:click={() => cargarMockup(m)}
-							>
-								<strong>{m.label}</strong>
-								<span class="sub">{m.text}</span>
-							</button>
-						{/each}
-					</section>
-
 					<GridLayout cells={2} items="start">
 						<div>
-							<label class="lbl" for="mock-sys">Mensaje de sistema (opcional)</label>
-							<textarea id="mock-sys" bind:value={mockupSystem} rows={4} class="ta"></textarea>
+							<label class="lbl" for="pmt-id">Prompt ID (pmpt_…)</label>
+							<input id="pmt-id" type="text" bind:value={pmtPromptId} class="ta" placeholder="pmpt_xxxxxxxxxxxxxxxxxxxxxxxx" />
 						</div>
 						<div>
-							<label class="lbl" for="mock-in">Mensaje del usuario</label>
-							<textarea id="mock-in" bind:value={mockupInput} rows={4} class="ta"></textarea>
+							<label class="lbl" for="pmt-ver">Versión (opcional)</label>
+							<input id="pmt-ver" type="text" bind:value={pmtPromptVersion} class="ta" placeholder="latest" />
 						</div>
 					</GridLayout>
 
-					<GridLayout cells={2} items="end">
-						<SelectEnum bind:value={mockupModel} enumValue={TModeloTexto} label="Modelo" />
-						<FlexLayout direction="row" justify="end">
-							<Button onClick={enviarMockup} disabled={mockupLoading} loading={mockupLoading} style="width: fit-content;">Probar</Button>
+					<div>
+						<FlexLayout direction="row" justify="space-between" items="center">
+							<label class="lbl" for="mock-in">Mensaje del usuario</label>
+							<Button onClick={() => (pmtMockOpen = true)} style="width: fit-content;">Elegir mock</Button>
 						</FlexLayout>
-					</GridLayout>
+						<textarea id="mock-in" bind:value={mockupInput} rows={6} class="ta"></textarea>
+					</div>
+
+					<FlexLayout direction="row" justify="end">
+						<Button onClick={enviarMockup} disabled={mockupLoading} loading={mockupLoading} style="width: fit-content;">Probar</Button>
+					</FlexLayout>
 
 					{#if mockupError}
 						<div class="error">{mockupError}</div>
@@ -1352,6 +1374,31 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 {/if}
 
 <ImageViewer bind:bshow={viewerOpen} src={viewerSrc} alt={viewerAlt} metadata={viewerMeta} />
+
+{#if pmtMockOpen}
+	<Modal
+		bind:bshow={pmtMockOpen}
+		onClose={() => (pmtMockOpen = false)}
+		style="width: min(900px, 95vw); max-width: 95vw; max-height: 85vh;"
+	>
+		<h3 slot="title">Elegir mock</h3>
+		<div class="mocks-modal-body custom-scrollbar">
+			<section class="mocks-grid">
+				{#each PROMPT_MOCKUPS as m}
+					<button
+						type="button"
+						class="mock-card"
+						class:active={mockupSelId === m.id}
+						on:click={() => elegirMockup(m)}
+					>
+						<strong>{m.label}</strong>
+						<span class="sub">{m.text}</span>
+					</button>
+				{/each}
+			</section>
+		</div>
+	</Modal>
+{/if}
 
 <Toaster />
 
@@ -1691,6 +1738,7 @@ await fetch("/api/patyia/openai/files", { method: "POST", body: fd });
 		gap: 0.5rem;
 		margin: 0.5rem 0;
 	}
+	.mocks-modal-body { padding: 0.25rem 0.5rem; max-height: 70vh; overflow: auto; }
 	.mock-card {
 		display: flex;
 		flex-direction: column;
