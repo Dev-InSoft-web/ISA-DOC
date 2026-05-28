@@ -1173,11 +1173,13 @@ const data = await r.json();
 					{#if convRow}
 						<section>
 							<h3>Conversación #{convId}</h3>
-							<div class="metrics">
-								{#each Object.entries(convRow) as [k, v]}
-									<span><strong>{k}:</strong> <code>{v == null ? "—" : String(v).slice(0, 120)}</code></span>
-								{/each}
-							</div>
+							<small>
+								<div class="metrics">
+									{#each Object.entries(convRow) as [k, v]}
+										<span><strong>{k}:</strong> <code>{v == null ? "—" : String(v).slice(0, 120)}</code></span>
+									{/each}
+								</div>
+							</small>
 						</section>
 					{/if}
 
