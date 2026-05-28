@@ -284,6 +284,14 @@ const data = await r.json();
 		"AYUDASCP_IA (prod)": "prod",
 		"AYUDASCP_IA_STAGING": "staging",
 	};
+	const TPrompts = {
+		"PROMPT_CLASIFICADOR_MODULO": "pmpt_6a03a285eb8c819694379c42ee1a6f130346f936d6203eca",
+		"PROMPT_EXTRACTOR_CONSULTAS": "pmpt_69f9fe11dc908195ac5a1642db4408a80b866761126003a4",
+		"PROMPT_GENERAL": "pmpt_69f9f701508c81978d82393f74030eac0fc02a771228ab14",
+		"PR_GENERAL_PRUEBAS": "pmpt_69f29ac4fe648196a8b594716d3aded201676f2080db1b3c",
+		"PR_REQUIERE_CONTEXTO": "pmpt_69dfbb2cd1f88196840871b23a0d09990ca45d67972a451c",
+		"PROMPT_TDCONSULTA": "pmpt_69d8183f4b6c819090dca9d58280a6080f84a082bf409a6c",
+	};
 
 	function errorToString(e: unknown): string {
 		if (!e) return "";
@@ -780,7 +788,7 @@ const data = await r.json();
 	$: if (persistReady) saveJson(STORAGE_KEYS.imgHistorial, imgHistorial);
 
 	let mockupInput: string = "";
-	let pmtPromptId: string = "";
+	let pmtPromptId: string = TPrompts.PROMPT_CLASIFICADOR_MODULO;
 	let pmtPromptVersion: string = "";
 	let mockupLoading: boolean = false;
 	let mockupError: string = "";
@@ -1106,10 +1114,7 @@ const data = await r.json();
 					</header>
 
 					<GridLayout cells={2} items="start">
-						<div>
-							<label class="lbl" for="pmt-id">Prompt ID (pmpt_…)</label>
-							<input id="pmt-id" type="text" bind:value={pmtPromptId} class="ta" placeholder="pmpt_xxxxxxxxxxxxxxxxxxxxxxxx" />
-						</div>
+						<SelectEnum bind:value={pmtPromptId} enumValue={TPrompts} label="Prompt" />
 						<div>
 							<label class="lbl" for="pmt-ver">Versión (opcional)</label>
 							<input id="pmt-ver" type="text" bind:value={pmtPromptVersion} class="ta" placeholder="latest" />
