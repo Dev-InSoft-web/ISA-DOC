@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { escribirPromptsConfig, leerPromptsConfig, validarKey, validarPmptId, type PromptEntry } from "../../../../lib/patyia/promptsConfig.ts";
+import { escribirPromptsConfig, leerPromptsConfig, validarKey, type PromptEntry } from "../../../../lib/patyia/promptsConfig.ts";
 
 export const prerender = false;
 
@@ -12,8 +12,7 @@ export const GET: APIRoute = async ({ params }) => {
 	return j({ ok: true, key, entry });
 };
 
-// PUT → actualiza una entrada existente. Cualquier campo enviado se reemplaza.
-// body: Partial<PromptEntry>
+// PUT → actualiza metadata existente. body: Partial<PromptEntry>
 export const PUT: APIRoute = async ({ params, request }) => {
 	const key = (params.key ?? "").trim();
 	if (!validarKey(key)) return j({ ok: false, error: "key inválida" }, 400);
@@ -27,12 +26,10 @@ export const PUT: APIRoute = async ({ params, request }) => {
 	if (!prev) return j({ ok: false, error: "no encontrada" }, 404);
 
 	const next: PromptEntry = {
-		id: typeof body.id === "string" ? body.id.trim() : prev.id,
-		version: typeof body.version === "string" ? body.version.trim() : prev.version,
 		label: typeof body.label === "string" ? body.label.trim() : prev.label,
 		description: typeof body.description === "string" ? body.description.trim() : prev.description,
+		model: typeof body.model === "string" ? body.model.trim() : prev.model,
 	};
-	if (!validarPmptId(next.id)) return j({ ok: false, error: "id inválido (pmpt_...)" }, 400);
 
 	cfg.prompts[key] = next;
 	await escribirPromptsConfig(cfg);
