@@ -686,6 +686,89 @@ const data = await r.json();
 		cargarIdentidadesStg();
 	}
 
+	function nuevoMsgVista(rol: "user" | "assistant", contenido: string): MsgVista {
+		return {
+			idMsg: `${rol}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+			rol,
+			contenido,
+			fecha: new Date().toISOString(),
+			esUsuario: rol === "user",
+			archivos: [],
+		};
+	}
+
+	function parIdentidadActual(): { itercero: string; icontacto: string } | null {
+		if (!interIdentidadValue) return null;
+		const [it, ic] = interIdentidadValue.split("|");
+		if (!it) return null;
+
+		return { itercero: it, icontacto: ic ?? "" };
+	}
+
+	async function iniciarConversacionStg(): Promise<void> {
+		interError = "";
+		const par = parIdentidadActual();
+		if (!par) { interError = "Selecciona un tercero/contacto."; return; }
+		if (!interInput.trim()) { interError = "Escribe el primer mensaje."; return; }
+		interLoading = true;
+		const mensajeUser = interInput;
+		interMensajes = [...interMensajes, nuevoMsgVista("user", mensajeUser)];
+		interInput = "";
+		try {
+			const r = await fetch("/api/patyia/staging/conversacion/new", {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({
+					itercero: par.itercero,
+					icontacto: par.icontacto,
+					primerMensaje: mensajeUser,
+				}),
+			});
+			const data = await r.json() as { ok: boolean; iconversacion?: number; hilo?: string; respuesta?: { texto?: string }; error?: string };
+			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
+			interConvId = data.iconversacion ?? null;
+			interHilo = data.hilo ?? "";
+			interMensajes = [...interMensajes, nuevoMsgVista("assistant", data.respuesta?.texto ?? "(sin texto)")];
+		} catch (err) {
+			interError = err instanceof Error ? err.message : String(err);
+		} finally {
+			interLoading = false;
+		}
+	}
+
+	async function enviarMensajeStg(): Promise<void> {
+		interError = "";
+		if (!interConvId) { interError = "No hay conversación activa."; return; }
+		if (!interInput.trim()) return;
+		interSendLoading = true;
+		const mensajeUser = interInput;
+		interMensajes = [...interMensajes, nuevoMsgVista("user", mensajeUser)];
+		interInput = "";
+		try {
+			const r = await fetch(`/api/patyia/staging/conversacion/${interConvId}/send`, {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ mensaje: mensajeUser }),
+			});
+			const data = await r.json() as { ok: boolean; respuesta?: { texto?: string }; error?: string };
+			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
+			interMensajes = [...interMensajes, nuevoMsgVista("assistant", data.respuesta?.texto ?? "(sin texto)")];
+		} catch (err) {
+			interError = err instanceof Error ? err.message : String(err);
+		} finally {
+			interSendLoading = false;
+		}
+	}
+
+	function reiniciarInteraccionStg(): void {
+		interConvId = null;
+		interHilo = "";
+		interMensajes = [];
+		interInput = "";
+		interError = "";
+		interStreamBuffer = "";
+	}
+
 	const CONTENT_KEYS = ["contenido", "content", "mensaje", "texto", "respuesta", "prompt"] as const;
 	const ROLE_KEYS = ["autor", "rol", "role", "tdmensaje", "itdmensaje", "tipo", "origen", "remitente"] as const;
 	const ID_KEYS = ["iMensaje", "imensaje", "id"] as const;
@@ -1283,15 +1366,49 @@ const data = await r.json();
 
 							<GridLayout cells={2} items="end">
 								<SelectEnum bind:value={interIdentidadValue} enumValue={tInterIdentidades} label="Tercero · Contacto (top 100 staging)" />
-								<ButtonIconify icon="mdi:refresh" onClick={() => { interIdentidadesLoaded = false; cargarIdentidadesStg(); }} disabled={interIdentidadesLoading} title="Recargar identidades" />
+								<FlexLayout items="center">
+									<ButtonIconify icon="mdi:refresh" onClick={() => { interIdentidadesLoaded = false; cargarIdentidadesStg(); }} disabled={interIdentidadesLoading} title="Recargar identidades" />
+									{#if interConvId !== null}
+										<ButtonIconify icon="mdi:close-circle-outline" onClick={reiniciarInteraccionStg} title="Reiniciar conversación" />
+									{/if}
+								</FlexLayout>
 							</GridLayout>
 
 							{#if interIdentidadesError}
 								<div class="error">No se pudieron cargar identidades: {interIdentidadesError}</div>
 							{/if}
 
-							<div class="placeholder">
-								<p class="sub"><strong>Próximo paso:</strong> botón <em>Iniciar conversación</em> para crear fila en CONVERSACIONES y enviar primer mensaje a PatyIA en streaming.</p>
+							{#if interConvId !== null}
+								<div class="inter-meta sub">
+									<span><strong>iconversacion:</strong> <code>{interConvId}</code></span>
+									<span><strong>HILO:</strong> <code>{interHilo}</code></span>
+								</div>
+							{/if}
+
+							{#if interMensajes.length}
+								<div class="chat-inline">
+									<ChatMensajesView mensajes={interMensajes} />
+								</div>
+							{/if}
+
+							{#if interError}
+								<div class="error">{interError}</div>
+							{/if}
+
+							<div class="inter-input">
+								<textarea
+									bind:value={interInput}
+									placeholder={interConvId === null ? "Primer mensaje del tercero…" : "Escribe el siguiente mensaje…"}
+									rows="3"
+									disabled={interLoading || interSendLoading}
+								></textarea>
+								<FlexLayout justify="end" items="center">
+									{#if interConvId === null}
+										<Button onClick={iniciarConversacionStg} disabled={interLoading || !interIdentidadValue || !interInput.trim()} loading={interLoading}>Iniciar conversación</Button>
+									{:else}
+										<Button onClick={enviarMensajeStg} disabled={interSendLoading || !interInput.trim()} loading={interSendLoading}>Enviar mensaje</Button>
+									{/if}
+								</FlexLayout>
 							</div>
 						</div>
 					{/if}
@@ -1687,6 +1804,30 @@ const data = await r.json();
 		max-height: 520px;
 		overflow: auto;
 		margin-top: 0.5rem;
+	}
+	.interaccion-wrap {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin-top: 0.5rem;
+	}
+	.inter-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem 1.5rem;
+		opacity: 0.8;
+	}
+	.inter-input textarea {
+		width: 100%;
+		min-height: 4rem;
+		background: rgba(0, 0, 0, 0.25);
+		color: inherit;
+		border: 1px solid rgba(255, 255, 255, 0.15);
+		border-radius: 4px;
+		padding: 0.5rem;
+		font-family: inherit;
+		font-size: 0.9rem;
+		resize: vertical;
 	}
 	.conv-modal-body {
 		height: 100%;
