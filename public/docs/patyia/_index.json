@@ -10,6 +10,7 @@
 		{ "slug": "04-endpoints", "title": "Endpoints HTTP", "icon": "mdi:api" },
 		{ "slug": "05-prompts", "title": "Prompts de Paty", "icon": "mdi:script-text-outline", "kind": "prompts" },
 		{ "slug": "06-modelos-openai", "title": "Modelos OpenAI", "icon": "mdi:currency-usd", "kind": "modelos" },
+		{ "slug": "07-interaccion-staging", "title": "Interacción staging", "icon": "mdi:flask-outline" },
 		{ "slug": "99-recursos", "title": "Recursos", "icon": "mdi:folder-multiple-outline", "kind": "embeds" }
 	],
 	"embeds": [
