@@ -132,3 +132,23 @@ button[data-variant] > span:not([data-element]) {
 	text-overflow: ellipsis;
 	min-width: 0;
 }
+
+html.isa-nonav .isa-header,
+html.isa-nonav .docs-side {
+	display: none !important;
+}
+
+html.isa-nonav .isa-main {
+	padding: 0;
+}
+
+html.isa-nonav .docs-shell {
+	grid-template-columns: minmax(0, 1fr) !important;
+	gap: 0 !important;
+}
+
+html.isa-nonav .docs-content,
+html.isa-nonav .docs-panel {
+	border: 0 !important;
+	border-radius: 0 !important;
+}

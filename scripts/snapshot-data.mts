@@ -12,10 +12,12 @@
  *   - postman/envs.json
  *   - postman/full.json
  *   - postman/entity-<slug>.json (uno por slug)
+ *   - patyia/prompts/comparativa.json
  */
 import { mkdirSync, writeFileSync, copyFileSync, existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, resolve, join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildPatyPromptsJson } from "./build-paty-prompts-json.mts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -278,6 +280,7 @@ async function main(): Promise<void> {
 	await snapshotCodegenState();
 	await snapshotPostman();
 	await snapshotPatyiaStagingIdentidades();
+	buildPatyPromptsJson();
 	snapshotResolvedDocs();
 }
 

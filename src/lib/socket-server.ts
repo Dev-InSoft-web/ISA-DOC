@@ -58,10 +58,12 @@ interface StdinPayload {
 export function initSocketServer(port = 4401): Server | null {
 	const previous = state.io.current;
 	if (previous) {
-		// HMR / re-init: cerrar el viejo para registrar handlers actualizados.
-		try { previous.close(); } catch { /* noop */ }
-		state.io.current = null;
-		io = null;
+		// HMR / re-init: conservar el puerto vivo y refrescar handlers.
+		previous.removeAllListeners("connection");
+		previous.on("connection", handleConnection);
+		io = previous;
+		console.log(`[Socket.IO] Handlers actualizados en puerto ${port}`);
+		return previous;
 	}
 	try {
 		const next = new Server(port, {

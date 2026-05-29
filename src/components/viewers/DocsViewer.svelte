@@ -1,6 +1,7 @@
 <script lang="ts">
    import { onMount, tick } from "svelte";
    import { ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
+   import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
    import { STATIC_MODE, withBase } from "../../lib/runtime/staticMode";
    import { renderMermaidBlocks } from "../../lib/mermaid/render";
    import PatyIAPrompts from "../panels/PatyIAPrompts.svelte";
@@ -431,7 +432,6 @@
    let fullMd = "";
    let cmHostEl: HTMLDivElement | null = null;
    let cmFullInstance: { setValue(v: string): void; refresh(): void } | null = null;
-   let copyFlash = false;
 
    async function buildJoinedMd(): Promise<string> {
       if (!manifest) return "";
@@ -489,16 +489,6 @@
       cmFullInstance = null;
    }
 
-   async function copyFullMd() {
-      try {
-         await navigator.clipboard.writeText(fullMd);
-         copyFlash = true;
-         setTimeout(() => { copyFlash = false; }, 1500);
-      } catch {
-         /* clipboard puede fallar en contextos inseguros */
-      }
-   }
-
    function downloadFullMd() {
       const blob = new Blob([fullMd], { type: "text/markdown;charset=utf-8" });
       const url = URL.createObjectURL(blob);
@@ -545,18 +535,20 @@
       <aside class="docs-side">
          <div class="docs-side-head">
             <h2 class="docs-title">{manifest.title}</h2>
-            {#if manifest.description}
+            {#if project !== "patyia" && manifest.description}
                <p class="docs-desc">{manifest.description}</p>
             {/if}
-            <button
-               type="button"
-               class="docs-dl-all"
-               on:click={openFullMdModal}
-               disabled={buildingAll}
-               title="Ver el .md completo (todas las secciones unidas) en un visor"
-            >
-               {buildingAll ? "Generando…" : "📄 Ver MD completo"}
-            </button>
+            {#if project !== "patyia"}
+               <button
+                  type="button"
+                  class="docs-dl-all"
+                  on:click={openFullMdModal}
+                  disabled={buildingAll}
+                  title="Ver el .md completo (todas las secciones unidas) en un visor"
+               >
+                  {buildingAll ? "Generando…" : "📄 Ver MD completo"}
+               </button>
+            {/if}
          </div>
          <nav class="docs-nav">
             {#each manifest.sections as s}
@@ -598,12 +590,7 @@
          <header class="md-modal-head">
             <h3>📄 Documentación completa — {project}</h3>
             <div class="md-modal-actions">
-               <ButtonIconify
-                  icon={copyFlash ? "mdi:check" : "mdi:content-copy"}
-                  color={copyFlash ? "success" : "primary"}
-                  title={copyFlash ? "Copiado" : "Copiar al portapapeles"}
-                  on:click={copyFullMd}
-               />
+               <CopyButtonIconify text={fullMd} title="Copiar al portapapeles" />
                <ButtonIconify
                   icon="mdi:download"
                   color="primary"

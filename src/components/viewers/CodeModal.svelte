@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Modal, FlexLayout, Iconify, Text, Button } from "@ingenieria_insoft/ispsveltecomponents";
+	import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
 	import CodeViewer from "./CodeViewer.svelte";
 
 	export let bshow: boolean = false;
@@ -7,9 +8,6 @@
 	export let value: string = "";
 	export let language: "json" | "sql" | "ts" = "json";
 
-	function copy(): void {
-		navigator.clipboard?.writeText(value ?? "");
-	}
 	function close(): void {
 		bshow = false;
 	}
@@ -29,9 +27,7 @@
 
 	<div class="cm-footer">
 		<FlexLayout justify="end">
-			<Button variant="outlined" onClick={copy}>
-				<Iconify icon="mdi:content-copy" /> Copiar
-			</Button>
+			<CopyButtonIconify text={value ?? ""} title="Copiar" />
 			<Button onClick={close}>
 				<Iconify icon="mdi:close" /> Cerrar
 			</Button>

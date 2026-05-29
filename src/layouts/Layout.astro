@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import ShareViewButton from "../components/navigation/ShareViewButton.svelte";
 
 interface Props {
    title: string;
@@ -57,17 +58,39 @@ function isSubActive(t: SubTab): boolean {
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>{title}</title>
-      <script is:inline define:vars={{ rawBase }}>
-         // @ts-nocheck
+      <script is:inline>
+         (function () {
+            function readState() {
+               var raw = new URLSearchParams(window.location.search).get("state");
+               if (!raw) return {};
+               try {
+                  var decoded = JSON.parse(decodeURIComponent(escape(atob(raw))));
+                  return decoded && typeof decoded === "object" ? decoded : {};
+               } catch (_) {
+                  return {};
+               }
+            }
+            function applyNoNav() {
+               document.documentElement.classList.toggle("isa-nonav", readState().nonav === true);
+            }
+            applyNoNav();
+            window.addEventListener("popstate", applyNoNav);
+            window.addEventListener("isa-doc:url-state-changed", applyNoNav);
+         })();
+      </script>
+      <script is:inline data-raw-base={rawBase}>
          // Shim de fetch para gh-pages estatico, instalado SINCRONICAMENTE antes de cualquier
          // hidratacion de componentes Svelte. Reescribe assets absolutos al base path,
          // intercepta /api/* devolviendo snapshots o defaults razonables, y absorbe escrituras
          // para que la UI mantenga el estado local sin enviar nada al servidor.
          (function () {
-            if (!rawBase || rawBase === "/") return;
-            var BASE_NO_SLASH = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
+            var script = document.currentScript;
+            var RAW_BASE = script instanceof HTMLScriptElement ? script.dataset.rawBase || "/" : "/";
+            if (!RAW_BASE || RAW_BASE === "/") return;
+            var BASE_NO_SLASH = RAW_BASE.endsWith("/") ? RAW_BASE.slice(0, -1) : RAW_BASE;
             var origFetch = window.fetch.bind(window);
             var ASSET_PREFIXES = ["/icons/", "/imgs/", "/docs/", "/bd/", "/db/", "/static-api/"];
+            /** @param {string} p */
             function defaultForPath(p) {
                if (p === "tables") return { ok: true, version: 1, tables: [] };
                if (p === "revisado") return {};
@@ -76,8 +99,9 @@ function isSubActive(t: SubTab): boolean {
                if (p === "source") return "";
                return { ok: true, static: true };
             }
+            /** @param {RequestInfo | URL} input @param {RequestInit | undefined} init */
             window.fetch = function (input, init) {
-               var url = typeof input === "string" ? input : input instanceof URL ? input.href : (input && input.url) || "";
+               var url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
                for (var i = 0; i < ASSET_PREFIXES.length; i++) {
                   if (url.indexOf(ASSET_PREFIXES[i]) === 0) {
                      return origFetch(BASE_NO_SLASH + url, init);
@@ -86,7 +110,8 @@ function isSubActive(t: SubTab): boolean {
                var isApi = url.indexOf("/api/") === 0 || url.indexOf(BASE_NO_SLASH + "/api/") === 0;
                if (!isApi) return origFetch(input, init);
 
-               var method = ((init && init.method) || (input && input.method) || "GET").toUpperCase();
+               var requestMethod = input instanceof Request ? input.method : "";
+               var method = String((init && init.method) || requestMethod || "GET").toUpperCase();
                var apiIdx = url.indexOf("/api/");
                var apiPath = url
                   .slice(apiIdx + 5)
@@ -118,6 +143,7 @@ function isSubActive(t: SubTab): boolean {
             // Necesario porque el shim de fetch no intercepta requests originados
             // por atributos HTML (navegador los hace directamente).
             var ATTR_PREFIXES = ["/icons/", "/imgs/", "/docs/", "/bd/", "/db/", "/static-api/"];
+            /** @param {string | null} v */
             function matchesPrefix(v) {
                if (!v || typeof v !== "string") return false;
                for (var i = 0; i < ATTR_PREFIXES.length; i++) {
@@ -125,30 +151,35 @@ function isSubActive(t: SubTab): boolean {
                }
                return false;
             }
+            /** @param {Element} el @param {string} attr */
             function rewriteAttr(el, attr) {
                var v = el.getAttribute(attr);
                if (matchesPrefix(v)) el.setAttribute(attr, BASE_NO_SLASH + v);
             }
+            /** @param {Element} el */
             function rewriteSrcset(el) {
                var v = el.getAttribute("srcset");
                if (!v) return;
-               var parts = v.split(",").map(function (p) {
-                  var s = p.trim();
-                  var sp = s.split(/\s+/);
-                  if (matchesPrefix(sp[0])) sp[0] = BASE_NO_SLASH + sp[0];
-                  return sp.join(" ");
-               });
+               var parts = v.split(",").map(
+                  /** @param {string} p */ function (p) {
+                     var s = p.trim();
+                     var sp = s.split(/\s+/);
+                     if (matchesPrefix(sp[0])) sp[0] = BASE_NO_SLASH + sp[0];
+                     return sp.join(" ");
+                  },
+               );
                el.setAttribute("srcset", parts.join(", "));
             }
+            /** @param {Element} el */
             function rewriteEl(el) {
-               if (!el || el.nodeType !== 1) return;
                if (el.hasAttribute("src")) rewriteAttr(el, "src");
                if (el.hasAttribute("href")) rewriteAttr(el, "href");
                if (el.hasAttribute("srcset")) rewriteSrcset(el);
                if (el.hasAttribute("poster")) rewriteAttr(el, "poster");
             }
+            /** @param {Node} root */
             function rewriteSubtree(root) {
-               if (!root || root.nodeType !== 1) return;
+               if (!(root instanceof Element)) return;
                rewriteEl(root);
                var nodes = root.querySelectorAll("[src],[href],[srcset],[poster]");
                for (var i = 0; i < nodes.length; i++) rewriteEl(nodes[i]);
@@ -161,7 +192,7 @@ function isSubActive(t: SubTab): boolean {
                      if (m.type === "childList") {
                         for (var j = 0; j < m.addedNodes.length; j++) rewriteSubtree(m.addedNodes[j]);
                      } else if (m.type === "attributes" && m.target) {
-                        rewriteEl(m.target);
+                        if (m.target instanceof Element) rewriteEl(m.target);
                      }
                   }
                });
@@ -195,6 +226,9 @@ function isSubActive(t: SubTab): boolean {
                   ))
                }
             </nav>
+            <div class="isa-header-actions">
+               <ShareViewButton client:load />
+            </div>
          </div>
          {
             project !== "home" && (
@@ -245,6 +279,7 @@ function isSubActive(t: SubTab): boolean {
       display: flex;
       align-items: center;
       gap: 1rem;
+      width: 100%;
    }
 
    .isa-logo {
@@ -281,8 +316,16 @@ function isSubActive(t: SubTab): boolean {
    }
 
    .isa-nav-projects {
+      flex: 1 1 auto;
       font-size: 0.95rem;
       font-weight: 600;
+   }
+
+   .isa-header-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
    }
 
    .isa-nav-project {

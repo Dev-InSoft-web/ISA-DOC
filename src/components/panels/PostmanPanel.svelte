@@ -5,6 +5,7 @@
 	import { marked } from "marked";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
+	import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
 	import { createUrlB64Tabs, onUrlStateChange } from "../../lib/urlState";
 	import {
 		Card, Button, H2, H4, Text, Loading, Modal,
@@ -470,11 +471,8 @@
 		socket?.emit(`${socketPrefix}:full`, (data: unknown) => { fullCollection = data; });
 	}
 
-	function copyFullCollection(): void {
-		if (!fullCollection) return;
-		navigator.clipboard.writeText(JSON.stringify(fullCollection, null, 2))
-			.then(() => toastSuccess("Colección copiada al portapapeles"))
-			.catch(() => toastError("No se pudo copiar"));
+	function getFullCollectionText(): string {
+		return fullCollection ? JSON.stringify(fullCollection, null, 2) : "";
 	}
 
 	function downloadFullCollection(): void {
@@ -674,9 +672,13 @@
 				<Button variant="outlined" onClick={mergeAll}>
 					<Iconify icon="mdi:refresh" /> Recargar
 				</Button>
-				<Button variant="outlined" onClick={copyFullCollection} disabled={!fullCollection}>
-					<Iconify icon="mdi:content-copy" /> Copiar
-				</Button>
+				<CopyButtonIconify
+					getText={getFullCollectionText}
+					title="Copiar colección"
+					disabled={!fullCollection}
+					on:copied={() => toastSuccess("Colección copiada al portapapeles")}
+					on:error={() => toastError("No se pudo copiar")}
+				/>
 				<Button color="success" onClick={downloadFullCollection} disabled={!fullCollection}>
 					<Iconify icon="mdi:download" /> Descargar JSON
 				</Button>
@@ -1174,13 +1176,12 @@
 		<Button variant="ghost" onClick={openLastLog} disabled={lastLogLoading}>
 			<Iconify icon="mdi:refresh" /> Recargar
 		</Button>
-		<Button
-			variant="ghost"
-			onClick={() => { navigator.clipboard?.writeText(lastLogContent); }}
+		<CopyButtonIconify
+			text={lastLogContent}
+			title="Copiar log"
 			disabled={!lastLogContent}
-		>
-			<Iconify icon="mdi:content-copy" /> Copiar
-		</Button>
+			on:copied={() => toastSuccess("Log copiado")}
+		/>
 	</FlexLayout>
 	{#if lastLogLoading}
 		<Text color="neutral"><small>Cargando…</small></Text>

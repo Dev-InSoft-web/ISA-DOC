@@ -6,6 +6,7 @@
 	import { onDestroy } from "svelte";
 	import SqlViewer from "../../../../src/components/viewers/SqlViewer.svelte";
 	import CodeModal from "../../../../src/components/viewers/CodeModal.svelte";
+	import CopyButtonIconify from "./CopyButtonIconify.svelte";
 	import RunButton from "./RunButton.svelte";
 	import RevisadoCheck from "./RevisadoCheck.svelte";
 	import ConfirmDialog from "../overlays/ConfirmDialog.svelte";
@@ -64,11 +65,6 @@
 
 	onDestroy(() => stopTicker());
 
-	function copySql(): void {
-		navigator.clipboard?.writeText(sql);
-		toastSuccess("SQL copiado");
-	}
-
 	function openInModal(): void {
 		modalShow = true;
 	}
@@ -107,7 +103,7 @@
 				{#if checkKey}
 					<RevisadoCheck key={checkKey} />
 				{/if}
-				<ButtonIconify icon="mdi:content-copy" title="Copiar SQL" on:click={copySql} />
+				<CopyButtonIconify text={sql} title="Copiar SQL" on:copied={() => toastSuccess("SQL copiado")} />
 				<ButtonIconify icon="mdi:eye-outline" title="Abrir SQL" on:click={openInModal} />
 				<RunButton
 					bind:unlocked={approved}

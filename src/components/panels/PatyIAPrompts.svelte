@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount, tick } from "svelte";
-	import { FlexLayout, TabItem, Tabs } from "@ingenieria_insoft/ispsveltecomponents";
+	import { FlexLayout } from "@ingenieria_insoft/ispsveltecomponents";
 	import { encode } from "gpt-tokenizer/model/gpt-5";
 	import Accordion from "$comps/containers/Accordion.svelte";
-	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
+	import PatyIAPromptAccordion from "./PatyIAPromptAccordion.svelte";
 	import md01 from "../../lib/patyia/prompts/01-saludo-otro.md?raw";
 	import md02 from "../../lib/patyia/prompts/02-fuera-de-alcance-tecnico.md?raw";
 	import md03 from "../../lib/patyia/prompts/03-solicitud-no-permitida.md?raw";
@@ -18,6 +18,7 @@
 	import md12 from "../../lib/patyia/prompts/12-error-dian.md?raw";
 	import md13 from "../../lib/patyia/prompts/13-comercial.md?raw";
 	import md90 from "../../lib/patyia/prompts/90-general.md?raw";
+	import md91 from "../../lib/patyia/prompts/91-consolidacion.md?raw";
 	import md01u from "../../lib/patyia/prompts/ultra/01-saludo-otro.md?raw";
 	import md02u from "../../lib/patyia/prompts/ultra/02-fuera-de-alcance-tecnico.md?raw";
 	import md03u from "../../lib/patyia/prompts/ultra/03-solicitud-no-permitida.md?raw";
@@ -32,6 +33,7 @@
 	import md12u from "../../lib/patyia/prompts/ultra/12-error-dian.md?raw";
 	import md13u from "../../lib/patyia/prompts/ultra/13-comercial.md?raw";
 	import md90u from "../../lib/patyia/prompts/ultra/90-general.md?raw";
+	import md91u from "../../lib/patyia/prompts/ultra/91-consolidacion.md?raw";
 	import md01w from "../../lib/patyia/prompts/wenyan-ultra/01-saludo-otro.md?raw";
 	import md02w from "../../lib/patyia/prompts/wenyan-ultra/02-fuera-de-alcance-tecnico.md?raw";
 	import md03w from "../../lib/patyia/prompts/wenyan-ultra/03-solicitud-no-permitida.md?raw";
@@ -46,6 +48,7 @@
 	import md12w from "../../lib/patyia/prompts/wenyan-ultra/12-error-dian.md?raw";
 	import md13w from "../../lib/patyia/prompts/wenyan-ultra/13-comercial.md?raw";
 	import md90w from "../../lib/patyia/prompts/wenyan-ultra/90-general.md?raw";
+	import md91w from "../../lib/patyia/prompts/wenyan-ultra/91-consolidacion.md?raw";
 
 	type Version = "original" | "ultra" | "wenyan" | "comparativa";
 
@@ -72,15 +75,13 @@
 		{ title: "12. ERROR_DIAN",                  icon: "mdi:file-document-alert-outline",     md: md12, mdUltra: md12u, mdWenyan: md12w },
 		{ title: "13. COMERCIAL",                   icon: "mdi:cash-multiple",                   md: md13, mdUltra: md13u, mdWenyan: md13w },
 		{ title: "90. GENERAL",                     icon: "mdi:shield-account-outline",          md: md90, mdUltra: md90u, mdWenyan: md90w },
+		{ title: "91. CONSOLIDACION",               icon: "mdi:merge",                           md: md91, mdUltra: md91u, mdWenyan: md91w },
 	];
 
 	let versiones: Version[] = prompts.map(() => "comparativa");
 
 	// Conteo exacto con el tokenizer de la familia GPT-5 (encoding o200k_base).
 	const countTokens = (s: string): number => encode(s).length;
-
-	const sourceFor = (p: Prompt, v: Version): string =>
-		v === "ultra" ? p.mdUltra : v === "wenyan" ? p.mdWenyan : p.md;
 
 	const fmt = (n: number) => n.toLocaleString("es-CO");
 	const pct = (a: number, base: number) =>
@@ -101,125 +102,197 @@
 		wenTok: countTokens(p.mdWenyan),
 	}));
 
-	const totals: Row = rows.reduce<Row>(
-		(acc, r) => ({
-			origChars: acc.origChars + r.origChars,
-			origTok: acc.origTok + r.origTok,
-			ultraChars: acc.ultraChars + r.ultraChars,
-			ultraTok: acc.ultraTok + r.ultraTok,
-			wenChars: acc.wenChars + r.wenChars,
-			wenTok: acc.wenTok + r.wenTok,
+	const resumenEntries = prompts
+		.map((prompt, index) => ({ prompt, row: rows[index] }))
+		.filter(({ prompt }) => !prompt.title.startsWith("91."));
+
+	const resumenTotals: Row = resumenEntries.reduce<Row>(
+		(acc, { row }) => ({
+			origChars: acc.origChars + row.origChars,
+			origTok: acc.origTok + row.origTok,
+			ultraChars: acc.ultraChars + row.ultraChars,
+			ultraTok: acc.ultraTok + row.ultraTok,
+			wenChars: acc.wenChars + row.wenChars,
+			wenTok: acc.wenTok + row.wenTok,
 		}),
 		{ origChars: 0, origTok: 0, ultraChars: 0, ultraTok: 0, wenChars: 0, wenTok: 0 },
 	);
 
 	let resumenOpen = false;
 	let prevResumenOpen = false;
-
-	// --- Estado del acordeón + tab interno en la URL (?state= base64) ---
-	// El DocsViewer guarda { slug }; aquí extendemos con sub.prompt = índice
-	// y sub.tab = "original|ultra|wenyan|comparativa".
 	let opens: boolean[] = prompts.map(() => false);
 	let prevOpens: boolean[] = [...opens];
 	let prevVersiones: Version[] = [...versiones];
+	let stateLoaded = false;
 
-	type SubState = { prompt?: number; tab?: Version };
+	type SubState = { prompt?: number; tab?: Version; openPrompts?: number[]; resumen?: boolean; tabs?: Record<string, Version> };
+	type PromptUrlState = Record<string, unknown> & { sub?: SubState };
 
-	function readSubFromUrl(): SubState {
+	const PARAM_CHANGED = "isa-doc:url-state-changed";
+	const isVersion = (value: unknown): value is Version => value === "original" || value === "ultra" || value === "wenyan" || value === "comparativa";
+
+	function readStateFromUrl(): PromptUrlState {
 		try {
 			const raw = new URLSearchParams(window.location.search).get("state");
 			if (!raw) return {};
-			const dec = JSON.parse(atob(raw)) as { sub?: SubState };
-			return dec?.sub ?? {};
+			const value: unknown = JSON.parse(atob(raw));
+			return value && typeof value === "object" ? value as PromptUrlState : {};
 		} catch {
 			return {};
 		}
 	}
 
-	function writeSubToUrl(patch: SubState): void {
+	function normalizePromptIndexes(value: unknown): number[] {
+		if (!Array.isArray(value)) return [];
+		return [...new Set(value.filter((idx): idx is number => Number.isInteger(idx) && idx >= 0 && idx < prompts.length))];
+	}
+
+	function currentOpenPrompts(): number[] {
+		return opens.reduce<number[]>((acc, open, idx) => {
+			if (open) acc.push(idx);
+			return acc;
+		}, []);
+	}
+
+	function currentOpenTabs(openPrompts: number[]): Record<string, Version> {
+		return openPrompts.reduce<Record<string, Version>>((acc, idx) => {
+			acc[String(idx)] = versiones[idx];
+			return acc;
+		}, {});
+	}
+
+	function selectedPrompt(changedPrompt?: number): number | undefined {
+		if (changedPrompt === -1 && resumenOpen) return -1;
+		if (typeof changedPrompt === "number" && changedPrompt >= 0 && opens[changedPrompt]) return changedPrompt;
+		const openPrompts = currentOpenPrompts();
+		if (openPrompts.length) return openPrompts[openPrompts.length - 1];
+		return resumenOpen ? -1 : undefined;
+	}
+
+	function buildSubState(changedPrompt?: number): SubState {
+		const openPrompts = currentOpenPrompts();
+		const tabs = currentOpenTabs(openPrompts);
+		const prompt = selectedPrompt(changedPrompt);
+		const sub: SubState = {};
+		if (openPrompts.length) sub.openPrompts = openPrompts;
+		if (resumenOpen) sub.resumen = true;
+		if (Object.keys(tabs).length) sub.tabs = tabs;
+		if (typeof prompt === "number") {
+			sub.prompt = prompt;
+			if (prompt >= 0) sub.tab = versiones[prompt];
+		}
+		return sub;
+	}
+
+	function writeSubToUrl(nextSub: SubState): void {
 		try {
 			const url = new URL(window.location.href);
-			const raw = url.searchParams.get("state");
-			let st: { slug?: string; sub?: SubState } = {};
-			if (raw) {
-				try { st = JSON.parse(atob(raw)); } catch { st = {}; }
-			}
-			st.sub = { ...(st.sub ?? {}), ...patch };
-			url.searchParams.set("state", btoa(JSON.stringify(st)));
+			const st = readStateFromUrl();
+			if (Object.keys(nextSub).length) st.sub = nextSub;
+			else delete st.sub;
+			if (Object.keys(st).length) url.searchParams.set("state", btoa(JSON.stringify(st)));
+			else url.searchParams.delete("state");
 			window.history.replaceState({}, "", url.toString());
+			window.dispatchEvent(new CustomEvent(PARAM_CHANGED, { detail: { name: "state", value: url.searchParams.get("state") } }));
 		} catch {
-			/* ignore */
 		}
+	}
+
+	function writeCurrentSubToUrl(changedPrompt?: number): void {
+		writeSubToUrl(buildSubState(changedPrompt));
 	}
 
 	const promptElId = (i: number) => `patyia-prompt-${i}`;
 
+	function firstOpenAccordionId(): string | null {
+		if (resumenOpen) return "patyia-prompt-resumen";
+		const idx = opens.findIndex(Boolean);
+		return idx >= 0 ? promptElId(idx) : null;
+	}
+
+	function getScrollContainer(target: HTMLElement): HTMLElement {
+		const docsPanel = target.closest(".docs-panel, .docs-content");
+		if (docsPanel instanceof HTMLElement) return docsPanel;
+		let parent = target.parentElement;
+		while (parent) {
+			const { overflowY } = getComputedStyle(parent);
+			if ((overflowY === "auto" || overflowY === "scroll") && parent.scrollHeight > parent.clientHeight) return parent;
+			parent = parent.parentElement;
+		}
+		return document.scrollingElement instanceof HTMLElement ? document.scrollingElement : document.documentElement;
+	}
+
+	function scrollToAccordionInContainer(targetId: string): void {
+		const target = document.getElementById(targetId);
+		if (!target) return;
+		const container = getScrollContainer(target);
+		const targetRect = target.getBoundingClientRect();
+		const containerRect = container.getBoundingClientRect();
+		container.scrollTo({ top: container.scrollTop + targetRect.top - containerRect.top, behavior: "smooth" });
+	}
+
 	onMount(async () => {
-		const sub = readSubFromUrl();
+		const sub = readStateFromUrl().sub ?? {};
 		const idx = typeof sub.prompt === "number" ? sub.prompt : null;
-		if (sub.tab && typeof idx === "number" && idx >= 0 && idx < prompts.length) {
+		const openPrompts = normalizePromptIndexes(sub.openPrompts);
+		if (typeof idx === "number" && idx >= 0 && idx < prompts.length && !openPrompts.includes(idx)) openPrompts.push(idx);
+		for (const [key, value] of Object.entries(sub.tabs ?? {})) {
+			const promptIdx = Number(key);
+			if (Number.isInteger(promptIdx) && promptIdx >= 0 && promptIdx < prompts.length && isVersion(value)) versiones[promptIdx] = value;
+		}
+		if (isVersion(sub.tab) && typeof idx === "number" && idx >= 0 && idx < prompts.length) {
 			versiones[idx] = sub.tab;
 			versiones = versiones;
 		}
-		let targetId: string | null = null;
-		if (idx === -1) {
+		if (sub.resumen === true || idx === -1) {
 			resumenOpen = true;
-			prevResumenOpen = true;
-			targetId = "patyia-prompt-resumen";
+		}
+		for (const openIdx of openPrompts) opens[openIdx] = true;
+		if (openPrompts.length) {
+			opens = opens;
 		} else if (typeof idx === "number" && idx >= 0 && idx < prompts.length) {
 			opens[idx] = true;
 			opens = opens;
-			prevOpens = [...opens];
-			targetId = promptElId(idx);
 		}
+		prevResumenOpen = resumenOpen;
+		prevOpens = [...opens];
 		prevVersiones = [...versiones];
+		stateLoaded = true;
+		const targetId = firstOpenAccordionId();
 		if (!targetId) return;
 		await tick();
-		setTimeout(() => {
-			document.getElementById(targetId!)?.scrollIntoView({ behavior: "smooth", block: "start" });
-		}, 80);
+		setTimeout(() => scrollToAccordionInContainer(targetId), 80);
 	});
 
-	$: {
+	$: if (stateLoaded) {
+		let changedPrompt: number | undefined;
+		let changed = false;
 		for (let i = 0; i < opens.length; i++) {
-			if (opens[i] && !prevOpens[i]) writeSubToUrl({ prompt: i, tab: versiones[i] });
+			if (opens[i] !== prevOpens[i]) {
+				changedPrompt = i;
+				changed = true;
+			}
 		}
+		if (changed) writeCurrentSubToUrl(changedPrompt);
 		prevOpens = [...opens];
 	}
 
-	$: if (resumenOpen && !prevResumenOpen) {
-		writeSubToUrl({ prompt: -1 });
-		prevResumenOpen = true;
-	} else if (!resumenOpen && prevResumenOpen) {
-		prevResumenOpen = false;
+	$: if (stateLoaded && resumenOpen !== prevResumenOpen) {
+		writeCurrentSubToUrl(resumenOpen ? -1 : undefined);
+		prevResumenOpen = resumenOpen;
 	}
 
-	$: {
+	$: if (stateLoaded) {
+		let changedPrompt: number | undefined;
 		for (let i = 0; i < versiones.length; i++) {
 			if (versiones[i] !== prevVersiones[i] && opens[i]) {
-				writeSubToUrl({ prompt: i, tab: versiones[i] });
+				changedPrompt = i;
 			}
 		}
+		if (typeof changedPrompt === "number") writeCurrentSubToUrl(changedPrompt);
 		prevVersiones = [...versiones];
 	}
 
-	const onTabClick = (idx: number) => (e: MouseEvent) => {
-		const btn = (e.target as HTMLElement | null)?.closest('button[role="tab"]') as HTMLButtonElement | null;
-		if (!btn) return;
-		const txt = (btn.textContent ?? "").trim().toLowerCase();
-		const v: Version | null = txt.startsWith("wenyan")
-			? "wenyan"
-			: txt.startsWith("comp")
-				? "comparativa"
-				: txt === "ultra"
-					? "ultra"
-					: txt === "original"
-						? "original"
-						: null;
-		if (!v) return;
-		versiones[idx] = v;
-		versiones = versiones;
-	};
 </script>
 
 <div class="patyia-prompts">
@@ -246,10 +319,10 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each prompts as p, i}
-								{@const r = rows[i]}
+							{#each resumenEntries as entry}
+								{@const r = entry.row}
 								<tr>
-									<td class="sticky-col">{p.title}</td>
+									<td class="sticky-col">{entry.prompt.title}</td>
 									<td class="num">{fmt(r.origChars)}</td>
 									<td class="num">{fmt(r.origTok)}</td>
 									<td class="num pct">100%</td>
@@ -263,15 +336,15 @@
 							{/each}
 							<tr class="total-row">
 								<td class="sticky-col"><strong>TOTAL</strong></td>
-								<td class="num"><strong>{fmt(totals.origChars)}</strong></td>
-								<td class="num"><strong>{fmt(totals.origTok)}</strong></td>
+								<td class="num"><strong>{fmt(resumenTotals.origChars)}</strong></td>
+								<td class="num"><strong>{fmt(resumenTotals.origTok)}</strong></td>
 								<td class="num pct"><strong>100%</strong></td>
-								<td class="num"><strong>{fmt(totals.ultraChars)}</strong></td>
-								<td class="num"><strong>{fmt(totals.ultraTok)}</strong></td>
-								<td class="num pct"><strong>{pct(totals.ultraTok, totals.origTok)}</strong></td>
-								<td class="num"><strong>{fmt(totals.wenChars)}</strong></td>
-								<td class="num"><strong>{fmt(totals.wenTok)}</strong></td>
-								<td class="num pct"><strong>{pct(totals.wenTok, totals.origTok)}</strong></td>
+								<td class="num"><strong>{fmt(resumenTotals.ultraChars)}</strong></td>
+								<td class="num"><strong>{fmt(resumenTotals.ultraTok)}</strong></td>
+								<td class="num pct"><strong>{pct(resumenTotals.ultraTok, resumenTotals.origTok)}</strong></td>
+								<td class="num"><strong>{fmt(resumenTotals.wenChars)}</strong></td>
+								<td class="num"><strong>{fmt(resumenTotals.wenTok)}</strong></td>
+								<td class="num pct"><strong>{pct(resumenTotals.wenTok, resumenTotals.origTok)}</strong></td>
 							</tr>
 						</tbody>
 					</table>
@@ -279,67 +352,7 @@
 			</div>
 		</Accordion>
 		{#each prompts as p, i}
-			<Accordion title={p.title} titleIcon={p.icon} bind:open={opens[i]} id={promptElId(i)}>
-					<FlexLayout direction="column">
-						<div on:click={onTabClick(i)} role="presentation">
-							<Tabs>
-								<TabItem title="Comparativa" open={versiones[i] === "comparativa"} />
-								<TabItem title="Original" open={versiones[i] === "original"} />
-								<TabItem title="Ultra" open={versiones[i] === "ultra"} />
-								<TabItem title="Wenyan ultra" open={versiones[i] === "wenyan"} />
-							</Tabs>
-						</div>
-						{#if versiones[i] === "comparativa"}
-							{@const r = rows[i]}
-							<div class="cmp-wrap">
-								<p class="cmp-note">
-									Conteo exacto con <code>gpt-tokenizer</code> · modelo <code>gpt-5</code>
-									(familia GPT-5, encoding <code>o200k_base</code>). Porcentajes calculados sobre <strong>Original</strong>.
-								</p>
-								<div class="cmp-table-scroll">
-									<table class="cmp-table">
-										<thead>
-											<tr>
-												<th>Versión</th>
-												<th>chars</th>
-												<th>tokens</th>
-												<th>% tok</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr>
-												<td>Original</td>
-												<td class="num">{fmt(r.origChars)}</td>
-												<td class="num">{fmt(r.origTok)}</td>
-												<td class="num pct">100%</td>
-											</tr>
-											<tr>
-												<td>Ultra</td>
-												<td class="num">{fmt(r.ultraChars)}</td>
-												<td class="num">{fmt(r.ultraTok)}</td>
-												<td class="num pct">{pct(r.ultraTok, r.origTok)}</td>
-											</tr>
-											<tr>
-												<td>Wenyan ultra</td>
-												<td class="num">{fmt(r.wenChars)}</td>
-												<td class="num">{fmt(r.wenTok)}</td>
-												<td class="num pct">{pct(r.wenTok, r.origTok)}</td>
-											</tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
-						{:else}
-							{@const src = sourceFor(p, versiones[i])}
-							<div class="meta">
-								<span>{fmt(src.length)} chars</span>
-								<span>·</span>
-								<span>{fmt(countTokens(src))} tokens (gpt-5)</span>
-							</div>
-							<BitacoraNote flat mdSource={src} />
-						{/if}
-					</FlexLayout>
-				</Accordion>
+			<PatyIAPromptAccordion prompt={p} row={rows[i]} bind:open={opens[i]} bind:version={versiones[i]} accordionId={promptElId(i)} />
 		{/each}
 	</FlexLayout>
 </div>
@@ -348,13 +361,6 @@
 	.patyia-prompts {
 		display: flex;
 		flex-direction: column;
-	}
-	.meta {
-		display: flex;
-		gap: 0.5rem;
-		font-size: 0.8rem;
-		opacity: 0.7;
-		padding: 0.25rem 0.5rem 0;
 	}
 	.cmp-wrap {
 		padding: 0.75rem 0.5rem;

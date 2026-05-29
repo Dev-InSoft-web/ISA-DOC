@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Modal, Switch, FlexLayout, GridLayout, ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Modal, Switch, FlexLayout, GridLayout } from "@ingenieria_insoft/ispsveltecomponents";
+	import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
 	import { getTicketHtml, getTicketTotalEstimadoMin, type TicketRegistro } from "../../lib/tickets";
 	import { formatHtml } from "../../lib/format-html";
 	import HtmlViewer from "../viewers/HtmlViewer.svelte";
@@ -9,7 +10,6 @@
 
 	let whiteBg: boolean = true;
 	let showCode: boolean = false;
-	let copyState: "idle" | "ok" | "err" = "idle";
 
 	// El cuerpo del ticket ahora se construye de forma asíncrona (los iconos
 	// se inlinean como SVG vía `loadIcon`). Resolvemos la promesa cuando
@@ -34,16 +34,8 @@
 		totalEstimadoMin = 0;
 	}
 
-	async function copyHtml(): Promise<void> {
-		const value = showCode ? prettyHtml : srcdoc;
-		if (!value) return;
-		try {
-			await navigator.clipboard.writeText(value);
-			copyState = "ok";
-		} catch {
-			copyState = "err";
-		}
-		setTimeout(() => (copyState = "idle"), 1500);
+	function getHtmlToCopy(): string {
+		return showCode ? prettyHtml : srcdoc;
 	}
 </script>
 
@@ -83,11 +75,7 @@
 			{#if showCode}
 				<HtmlViewer value={prettyHtml} height="100%" />
 				<div class="copy-card" role="group" aria-label="Acciones del contenido">
-					<ButtonIconify
-						icon={copyState === "ok" ? "mdi:check" : copyState === "err" ? "mdi:alert" : "mdi:content-copy"}
-						title={copyState === "ok" ? "Copiado" : copyState === "err" ? "Error al copiar" : "Copiar HTML"}
-						onClick={copyHtml}
-					/>
+					<CopyButtonIconify title="Copiar HTML" getText={getHtmlToCopy} />
 				</div>
 			{:else}
 				<iframe

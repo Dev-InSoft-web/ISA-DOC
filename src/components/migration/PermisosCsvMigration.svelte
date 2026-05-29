@@ -4,6 +4,7 @@
 		FlexLayout,
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import AccordionActions from "$comps/containers/AccordionActions.svelte";
+	import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
 	import SqlViewer from "../viewers/SqlViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
 	import RunButton from "$comps/actions/RunButton.svelte";
@@ -113,11 +114,6 @@
 		modalShow = true;
 	}
 
-	function copySql(): void {
-		navigator.clipboard?.writeText(generatedSql);
-		toastSuccess("SQL copiado");
-	}
-
 	async function runSequence(): Promise<void> {
 		if (!approved) { toastError("Aprueba la ejecución antes de continuar"); return; }
 		if (!executeSql) { toastError("Ejecutor SQL no disponible"); return; }
@@ -214,7 +210,7 @@
 				<FlexLayout items="center" justify="between">
 					<H4>SQL generado</H4>
 					<FlexLayout items="center">
-						<ButtonIconify icon="mdi:content-copy" title="Copiar SQL" on:click={copySql} />
+						<CopyButtonIconify text={generatedSql} title="Copiar SQL" on:copied={() => toastSuccess("SQL copiado")} />
 						<ButtonIconify icon="mdi:eye-outline" title="Abrir SQL" on:click={openInModal} />
 						<RunButton
 							bind:unlocked={approved}
