@@ -25,6 +25,8 @@ import { bodyTK1429342 } from "./TK-1429342";
 import { bodyTK1429346 } from "./TK-1429346";
 import { bodyTK1429349 } from "./TK-1429349";
 import { bodyTK1429373 } from "./TK-1429373";
+import { bodyTK1430974 } from "./TK-1430974";
+import { bodyTK1430975 } from "./TK-1430975";
 
 export interface TicketNormativa {
 	medioAtencion: string;
@@ -84,6 +86,26 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 };
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1430975",
+		titulo: "Novedad al registrar cursos en pestaña contenido curso nuevo",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "28/may./2026 11:05:08 am",
+		noMaquillarFechas: true,
+		resumen: "Durante la creación de un curso, al agregar un recurso desde la pestaña Contenido, el ojo de editar abre el formulario vacío y el doble clic abre la vista de relación sin los atributos del driver. El comportamiento sólo ocurre en el flujo de creación: sobre un curso ya creado ambas acciones funcionan correctamente. Diagnóstico tentativo: diferencia entre vistas edit y create del recurso.",
+		body: bodyTK1430975,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Error del sistema" },
+	},
+	{
+		id: "TK-1430974",
+		titulo: "Novedad al agregar cursos en \"cursos integrados\" del plan de curso",
+		solicitante: "Ingeniero Camilo Rámirez",
+		fechaSolicitud: "28/may./2026 11:02:34 am",
+		noMaquillarFechas: true,
+		resumen: "Al crear un plan de estudio desde la vista grande (formulario completo), la pestaña Cursos integrados no agrega el registro al pulsar Aceptar. Desde el formulario rápido el alta sí se realiza. Diagnóstico tentativo: condición específica del flujo de la vista grande que bloquea la inserción.",
+		body: bodyTK1430974,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Error del sistema" },
+	},
 	{
 		id: "TK-1429373",
 		titulo: "Se requiere insertar en la base de datos de Paty V3 las instrucciones correspondientes",

@@ -282,9 +282,17 @@
 
    function writeStateToUrl(slug: string): void {
       try {
-         const encoded = btoa(JSON.stringify({ slug }));
          const url = new URL(window.location.href);
-         url.searchParams.set("state", encoded);
+         const raw = url.searchParams.get("state");
+         let st: Record<string, unknown> = {};
+         if (raw) {
+            try { st = JSON.parse(atob(raw)); } catch { st = {}; }
+         }
+         const prevSlug = typeof st.slug === "string" ? st.slug : "";
+         st.slug = slug;
+         // Si cambia el slug, descartar el sub-estado del panel anterior.
+         if (prevSlug && prevSlug !== slug) delete st.sub;
+         url.searchParams.set("state", btoa(JSON.stringify(st)));
          window.history.replaceState({}, "", url.toString());
       } catch {
          /* ignore */
@@ -817,12 +825,15 @@
       background: var(--is-bg-secondary);
       border: 1px solid var(--is-b-color);
       border-radius: 8px;
-      padding: 1rem;
+      padding: 0 1rem 1rem 1rem;
       color: var(--is-color);
       height: 100%;
       min-height: 0;
       min-width: 0;
       overflow: auto;
+   }
+   .docs-panel > :global(*:first-child) {
+      margin-top: 1rem;
    }
 
    /* Markdown — alineado con la paleta global (--is-*) */

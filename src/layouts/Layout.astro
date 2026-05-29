@@ -114,7 +114,7 @@ function isSubActive(t: SubTab): boolean {
             };
 
             // Reescritura de atributos src/href/srcset absolutos para que
-            // <img>, <a>, <link>, <script>, <source> apunten al base path estatico.
+            // los tags img, a, link, script y source apunten al base path estatico.
             // Necesario porque el shim de fetch no intercepta requests originados
             // por atributos HTML (navegador los hace directamente).
             var ATTR_PREFIXES = ["/icons/", "/imgs/", "/docs/", "/bd/", "/db/", "/static-api/"];

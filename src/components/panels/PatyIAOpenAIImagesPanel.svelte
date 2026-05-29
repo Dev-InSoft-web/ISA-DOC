@@ -7,6 +7,7 @@
 	import TsViewer from "../viewers/TsViewer.svelte";
 	import ImageViewer from "../viewers/ImageViewer.svelte";
 	import StorageActionsPanel from "./StorageActionsPanel.svelte";
+	import PatyIATestEnginesPanel from "./PatyIATestEnginesPanel.svelte";
 	import { PROMPT_MOCKUPS, type PromptMockup } from "../../lib/patyia/promptMockups";
 	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/patyia/openaiPricing";
 	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/patyia/patyiaPersist";
@@ -52,14 +53,15 @@
 		costoUsd: number | null;
 	}
 
-	type AccionId = "imagenes" | "texto" | "chat" | "conversacion" | "storage" | "prompts";
-	type NivelId = "pruebas" | "conversacion" | "storage";
+	type AccionId = "imagenes" | "texto" | "chat" | "conversacion" | "storage" | "prompts" | "tests";
+	type NivelId = "pruebas" | "conversacion" | "storage" | "tests";
 	type SubPruebaId = "imagenes" | "texto" | "chat" | "prompts";
 	type SubConvId = "consulta" | "interaccion";
 	const ACCIONES: Array<{ id: NivelId; label: string }> = [
 		{ id: "pruebas", label: "Pruebas" },
 		{ id: "conversacion", label: "Conversación BD" },
 		{ id: "storage", label: "Storage" },
+		{ id: "tests", label: "Tests de Engines" },
 	];
 	const ACCIONES_VALIDAS: ReadonlySet<NivelId> = new Set(ACCIONES.map((a) => a.id));
 	const SUB_PRUEBAS: Array<{ id: SubPruebaId; label: string }> = [
@@ -153,6 +155,15 @@
 		significado: string;
 	}
 	const INFO_DOCS: Record<AccionId, { titulo: string; campos: InfoCampo[] }> = {
+		tests: {
+			titulo: "Tests de Engines · Ejecución de pruebas por engine",
+			campos: [
+				{ campo: "Test Responses", tipo: "botón", significado: "Ejecuta 10 turnos de conversación con el engine Responses usando gpt-5-mini. Se mostrará una advertencia con detalles antes de ejecutar." },
+				{ campo: "Test Agents PoC", tipo: "botón", significado: "Ejecuta 10 turnos de conversación con el engine Agents PoC usando gpt-5-mini. Se mostrará una advertencia con detalles antes de ejecutar." },
+				{ campo: "Costo estimado", tipo: "info", significado: "Responses: $0.05–$0.07. Agents PoC: $0.04–$0.06 (varía según tokens efectivos)." },
+				{ campo: "Duración estimada", tipo: "info", significado: "Ambos: 3–5 minutos. Los resultados se acumulan en ISA-DOC/src/lib/patyia/daily/." },
+			],
+		},
 		imagenes: {
 			titulo: "Imágenes · significado de cada input",
 			campos: [
@@ -213,6 +224,12 @@
 	$: infoActual = INFO_DOCS[accionActiva === "pruebas" ? subPrueba : (accionActiva as AccionId)];
 
 	const SNIPPETS: Record<AccionId, string> = {
+		tests: `// Tests de Engines · PatyIA
+// Responde botones con modales de confirmación
+// POST /api/patyia/test/run-engine (backend: ejecuta compare-engines.mjs)
+// Resultado: nueva conversación, métricas y logs
+REsponses test: 10 turnos
+Agents PoC test: 10 turnos`,
 		imagenes: `// POST /api/patyia/openai/images/generate
 const r = await fetch("/api/patyia/openai/images/generate", {
   method: "POST",
@@ -326,10 +343,48 @@ const data = await r.json();
 	};
 	let apiHost: "origin" | "local" = loadJson<"origin" | "local">("patyia.actions.apiHost", "origin");
 	$: saveJson("patyia.actions.apiHost", apiHost);
+	const LOCAL_DEFAULT_IDENT = { itercero: "810000630", icontacto: "702470" };
+	let _localIdentApplied = false;
+	$: if (apiHost === "local" && interIdentidadesLoaded && !_localIdentApplied) {
+		_localIdentApplied = true;
+		ponerIdentidadAlTope(LOCAL_DEFAULT_IDENT.itercero, LOCAL_DEFAULT_IDENT.icontacto);
+	}
+	$: if (apiHost !== "local") _localIdentApplied = false;
 	function apiUrl(path: string, method: ApiMethod = "GET"): string {
 		if (apiHost !== "local") return path;
 		const ep = resolveLocalEndpoint(path, method);
 		return ep ? ep.localUrl : path;
+	}
+	let patyiaToken: string = "";
+	let patyiaTokenError: string = "";
+	async function ensurePatyiaToken(): Promise<string> {
+		if (apiHost !== "local") return "";
+		if (patyiaToken) return patyiaToken;
+		try {
+			const r = await fetch("/api/patyia/local-token");
+			const j = (await r.json()) as { ok: boolean; token?: string; error?: string };
+			if (!r.ok || !j.ok || !j.token) throw new Error(j.error ?? `HTTP ${r.status}`);
+			patyiaToken = j.token;
+			patyiaTokenError = "";
+			return patyiaToken;
+		} catch (err) {
+			patyiaTokenError = err instanceof Error ? err.message : String(err);
+			return "";
+		}
+	}
+	async function apiHeaders(extra?: Record<string, string>): Promise<Record<string, string>> {
+		const h: Record<string, string> = { ...(extra ?? {}) };
+		if (apiHost === "local") {
+			const t = await ensurePatyiaToken();
+			if (t) h["Authorization"] = `Bearer ${t}`;
+		}
+		return h;
+	}
+	async function apiFetch(path: string, method: ApiMethod = "GET", init?: RequestInit): Promise<Response> {
+		const url = apiUrl(path, method);
+		const baseHeaders = (init?.headers as Record<string, string> | undefined) ?? {};
+		const headers = await apiHeaders(baseHeaders);
+		return fetch(url, { ...(init ?? {}), method, headers });
 	}
 	function localEndpointName(
 		host: "origin" | "local",
@@ -823,25 +878,96 @@ const data = await r.json();
 		try {
 			const ident = interIdentidades.find((it) => it.itercero === par.itercero && it.icontacto === par.icontacto);
 			const nombre = (ident?.nombreTercero ?? "").trim();
-			const r = await fetch(apiUrl("/api/patyia/staging/conversacion/new", "POST"), {
-				method: "POST",
-				headers: { "content-type": "application/json" },
-				body: JSON.stringify({
-					itercero: par.itercero,
-					icontacto: par.icontacto,
-					primerMensaje: mensajeUser,
-					nombre: nombre || undefined,
-				}),
-			});
-			const data = await r.json() as { ok: boolean; iconversacion?: number; hilo?: string; respuesta?: { texto?: string }; error?: string };
-			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
-			interConvId = data.iconversacion ?? null;
-			interHilo = data.hilo ?? "";
-			interMensajes = [...interMensajes, nuevoMsgVista("assistant", data.respuesta?.texto ?? "(sin texto)")];
+			if (apiHost === "local") {
+				await iniciarConversacionLocalSSE(par, mensajeUser);
+			} else {
+				const r = await fetch(apiUrl("/api/patyia/staging/conversacion/new", "POST"), {
+					method: "POST",
+					headers: { "content-type": "application/json" },
+					body: JSON.stringify({
+						itercero: par.itercero,
+						icontacto: par.icontacto,
+						primerMensaje: mensajeUser,
+						nombre: nombre || undefined,
+					}),
+				});
+				const data = await r.json() as { ok: boolean; iconversacion?: number; hilo?: string; respuesta?: { texto?: string }; error?: string };
+				if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
+				interConvId = data.iconversacion ?? null;
+				interHilo = data.hilo ?? "";
+				interMensajes = [...interMensajes, nuevoMsgVista("assistant", data.respuesta?.texto ?? "(sin texto)")];
+			}
 		} catch (err) {
 			interError = err instanceof Error ? err.message : String(err);
 		} finally {
 			interLoading = false;
+		}
+	}
+
+	async function iniciarConversacionLocalSSE(par: { itercero: string; icontacto: string }, prompt: string): Promise<void> {
+		const titulo = prompt.slice(0, 80);
+		const body = {
+			itercero: par.itercero,
+			icontacto: par.icontacto,
+			imodulo: "isa-doc",
+			titulo,
+			prompt,
+		};
+		const headers = await apiHeaders({ "content-type": "application/json" });
+		const url = apiUrl("/api/patyia/staging/conversacion/new", "POST");
+		const r = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+		if (!r.ok || !r.body) throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`);
+		const asistente = nuevoMsgVista("assistant", "");
+		interMensajes = [...interMensajes, asistente];
+		const reader = r.body.getReader();
+		const dec = new TextDecoder();
+		let buffer = "";
+		let ultimaRespuesta = "";
+		while (true) {
+			const { value, done } = await reader.read();
+			if (done) break;
+			buffer += dec.decode(value, { stream: true });
+			const blocks = buffer.split("\n\n");
+			buffer = blocks.pop() ?? "";
+			for (const block of blocks) {
+				let evento = "";
+				let datos = "";
+				for (const ln of block.split("\n")) {
+					if (ln.startsWith("event:")) evento = ln.slice(6).trim();
+					else if (ln.startsWith("data:")) datos += ln.slice(5).trim();
+				}
+				if (!datos) continue;
+				let parsed: Record<string, unknown>;
+				try { parsed = JSON.parse(datos) as Record<string, unknown>; }
+				catch { continue; }
+				if (evento === "begin") {
+					const icon = Number(parsed.iconversacion ?? 0);
+					if (icon > 0) interConvId = icon;
+					interHilo = String(parsed.hilo ?? "");
+				} else if (evento === "message" || evento === "end") {
+					const resp = String(parsed.respuesta ?? "");
+					if (resp && resp !== ultimaRespuesta) {
+						ultimaRespuesta = resp;
+						asistente.contenido = resp;
+						interMensajes = [...interMensajes];
+					}
+					const icon = Number(parsed.iconversacion ?? 0);
+					if (icon > 0) interConvId = icon;
+					const hilo = String(parsed.hilo ?? "");
+					if (hilo) interHilo = hilo;
+					if (evento === "end" && parsed.meta && typeof parsed.meta === "object") {
+						const meta = parsed.meta as MsgVista["meta"];
+						asistente.meta = meta;
+						const idxUser = interMensajes.length - 2;
+						if (idxUser >= 0 && interMensajes[idxUser].esUsuario) {
+							interMensajes[idxUser].meta = meta;
+						}
+						interMensajes = [...interMensajes];
+					}
+				} else if (evento === "error") {
+					interError = String(parsed.error ?? parsed.mensaje ?? "error");
+				}
+			}
 		}
 	}
 
@@ -951,8 +1077,9 @@ const data = await r.json();
 		if (!Number.isInteger(idNum) || idNum <= 0) { interError = "ID de conversación inválido."; return; }
 		interRecuperarLoading = true;
 		try {
-			const r = await fetch(apiUrl(`/api/patyia/conversacion/${idNum}?db=${encodeURIComponent(interDb)}`));
-			const data = (await r.json()) as ConvRespStg & { conversacion?: Record<string, unknown> };
+			const r = await fetch(apiUrl(`/api/patyia/conversacion/${idNum}?db=${encodeURIComponent(interDb)}`), { headers: await apiHeaders() });
+			const raw = (await r.json()) as unknown;
+			const data = normalizeConvResp(raw, r.ok) as ConvRespStg & { conversacion?: Record<string, unknown> };
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			const conv = data.conversacion ?? {};
 			const itercero = String((conv as Record<string, unknown>).ITERCERO ?? (conv as Record<string, unknown>).itercero ?? "").trim();
@@ -966,6 +1093,7 @@ const data = await r.json();
 				const contenido = pickStr(m, CONTENT_KEYS);
 				const fecha = pickStr(m, FECHA_KEYS);
 				const esUsuario = /user|usuario|cliente/i.test(rol);
+				const meta = (m as Record<string, unknown>).meta ?? null;
 
 				return {
 					idMsg: `hist-${i}-${pickStr(m, ID_KEYS) || i}`,
@@ -974,6 +1102,7 @@ const data = await r.json();
 					fecha: formatearFechaMsg(fecha) || new Date().toLocaleString(),
 					esUsuario,
 					archivos: [],
+					meta: meta as MsgVista["meta"],
 				};
 			});
 			if (itercero) await ponerIdentidadAlTope(itercero, icontacto);
@@ -993,7 +1122,7 @@ const data = await r.json();
 		try {
 			const qs = new URLSearchParams({ db: interDb, itercero, icontacto });
 			if (forzar) qs.set("refresh", "1");
-			const r = await fetch(apiUrl(`/api/patyia/conversaciones?${qs.toString()}`));
+			const r = await fetch(apiUrl(`/api/patyia/conversaciones?${qs.toString()}`), { headers: await apiHeaders() });
 			const j = (await r.json()) as { ok: boolean; items?: ConvListaItem[]; error?: string; cached?: boolean; updatedAt?: string };
 			if (!r.ok || !j.ok) throw new Error(j.error ?? `HTTP ${r.status}`);
 			interConvsLista = j.items ?? [];
@@ -1021,12 +1150,30 @@ const data = await r.json();
 		mensajesCalificados?: SqlRow[];
 	}
 
+	// Functions (host LOCAL) responde con el wrapper ISP { encabezado: { resultado }, respuesta: { ... , mensajesOpenAI } }.
+	// Staging proxy responde con { ok, conversacion, mensajesOpenAI }. Normalizamos a esta última.
+	function normalizeConvResp(raw: unknown, httpOk: boolean): ConvRespStg {
+		if (raw && typeof raw === "object" && "encabezado" in (raw as Record<string, unknown>)) {
+			const r = raw as { encabezado?: { resultado?: boolean; mensaje?: string }; respuesta?: SqlRow & { mensajesOpenAI?: SqlRow[]; mensajesCalificados?: SqlRow[] } };
+			const respuesta = r.respuesta ?? {};
+			return {
+				ok: Boolean(r.encabezado?.resultado) && httpOk,
+				error: r.encabezado?.mensaje,
+				conversacion: respuesta as SqlRow,
+				mensajesOpenAI: respuesta.mensajesOpenAI,
+				mensajesCalificados: respuesta.mensajesCalificados,
+			};
+		}
+		return raw as ConvRespStg;
+	}
+
 	async function cargarHistorialInterStg(convId: number): Promise<void> {
 		if (interHistorialCargado) return;
 		interHistorialCargado = true;
 		try {
-			const r = await fetch(apiUrl(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(interDb)}`));
-			const data = (await r.json()) as ConvRespStg;
+			const r = await fetch(apiUrl(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(interDb)}`), { headers: await apiHeaders() });
+			const raw = (await r.json()) as unknown;
+			const data = normalizeConvResp(raw, r.ok);
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			interHilo = String(data.conversacion?.HILO ?? data.conversacion?.hilo ?? "");
 			const conv = data.conversacion ?? {};
@@ -1038,6 +1185,7 @@ const data = await r.json();
 				const contenido = pickStr(m, CONTENT_KEYS);
 				const fecha = pickStr(m, FECHA_KEYS);
 				const esUsuario = /user|usuario|cliente/i.test(rol);
+				const meta = (m as Record<string, unknown>).meta ?? null;
 
 				return {
 					idMsg: `hist-${i}-${pickStr(m, ID_KEYS) || i}`,
@@ -1046,6 +1194,7 @@ const data = await r.json();
 					fecha: formatearFechaMsg(fecha) || new Date().toLocaleString(),
 					esUsuario,
 					archivos: [],
+					meta: meta as MsgVista["meta"],
 				};
 			});
 			if (itercero) await ponerIdentidadAlTope(itercero, icontacto);
@@ -1113,7 +1262,7 @@ const data = await r.json();
 		}
 		convLoading = true;
 		try {
-			const r = await fetch(apiUrl(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(convDb)}`));
+			const r = await fetch(apiUrl(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(convDb)}`), { headers: await apiHeaders() });
 			const data = (await r.json()) as ConversacionResp;
 			if (!r.ok || data.ok === false) {
 				convError = errorToString(data.error) || `HTTP ${r.status}`;
@@ -1671,7 +1820,18 @@ const data = await r.json();
 								{/key}
 								<FlexLayout items="end">
 									<SelectEnum bind:value={interDb} enumValue={TBaseDatos} label="Base de datos" />
-									<InputNumber bind:value={interConvIdInput} label="iconversacion" required={false} />
+									<div
+										style="flex: 1 1 auto; min-width: 0;"
+										on:keydown={(e) => {
+											if (e.key !== "Enter") return;
+											if (interRecuperarLoading || interLoading || interSendLoading) return;
+											e.preventDefault();
+											recuperarONueva();
+										}}
+										role="presentation"
+									>
+										<InputNumber bind:value={interConvIdInput} label="iconversacion" required={false} />
+									</div>
 									<ButtonIconify
 										icon={interConvIdInput && interConvIdInput > 0 ? "mdi:cloud-download-outline" : "mdi:plus-circle-outline"}
 										onClick={recuperarONueva}
@@ -1711,6 +1871,7 @@ const data = await r.json();
 							<div class="inter-input">
 								<RichEditor bind:value={interInputHtml} label={interConvId === null ? "Primer mensaje del tercero" : "Escribe el siguiente mensaje"} />
 								<FlexLayout justify="end" items="center">
+									<Button variant="soft" style="width: fit-content;" onClick={() => (interInputHtml = "¿Cómo actualizar ContaPyme a la última versión disponible?")} title="Inserta el prompt fijo de prueba de saludo">Plantilla prueba</Button>
 									{#if interConvId === null}
 										<Button onClick={iniciarConversacionStg} disabled={interLoading || interDb !== "staging" || !interIdentidadValue || !htmlAPlano(interInputHtml).trim()} loading={interLoading} title={tituloLocal(apiHost, "/api/patyia/staging/conversacion/new", "POST", "Iniciar conversación")} color={colorLocal(apiHost, "/api/patyia/staging/conversacion/new", "POST")}>Iniciar conversación</Button>
 									{:else}
@@ -1733,6 +1894,19 @@ const data = await r.json();
 						</FlexLayout>
 					</header>
 					<StorageActionsPanel />
+				</div>
+			{:else if accionActiva === "tests"}
+				<div class="seccion">
+					<header class="seccion-head">
+						<div>
+							<h2>Tests de Engines</h2>
+							<p class="seccion-sub">Ejecución de pruebas separadas para Responses y Agents PoC con modales de confirmación.</p>
+						</div>
+						<FlexLayout items="center">
+							<ButtonIconify icon="mdi:information-outline" onClick={() => (infoOpen = true)} title="¿Qué hace cada test?" />
+						</FlexLayout>
+					</header>
+					<PatyIATestEnginesPanel />
 				</div>
 			{/if}
 		</div>
