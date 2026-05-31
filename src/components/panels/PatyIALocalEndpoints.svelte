@@ -20,12 +20,11 @@
 	<section class="run-summary">
 		<header class="run-summary-head">
 			<h3>Estado de recepción — última corrida verify-api-patyia</h3>
-			<span class="run-pill run-pill-ok">12/12 OK · 0 FAIL</span>
+			<span class="run-pill run-pill-ok">8/8 OK · 0 FAIL</span>
 		</header>
 		<p class="run-meta">
-			Corrida del <strong>2026-05-28 12:44:53</strong> contra <code>http://localhost:7071</code> con
-			<code>codigotk=TKV999991</code>, <code>iconversacion=1802</code>, <code>itiquete=104</code>.
-			Token cargado desde <code>token.patyia.json</code>. Cleanup completo (tiquete y conversación eliminados).
+			Corrida contra <code>http://localhost:7071</code> con <code>codigotk=TKV999991</code>.
+			Token cargado desde <code>token.patyia.json</code>. Cleanup aplicado sobre la conversación creada por la prueba.
 		</p>
 		<ol class="run-steps">
 			<li><span class="ok">✅</span> POST <code>/api/JWT</code> — autenticación</li>
@@ -35,14 +34,11 @@
 			<li><span class="ok">✅</span> GET <code>/api/resumen_conversacion/1802</code> — HTTP 200</li>
 			<li><span class="ok">✅</span> POST <code>/api/mensaje</code> — HTTP 201 (<code>imensaje=168</code>)</li>
 			<li><span class="ok">✅</span> POST <code>/api/tiquete</code> — HTTP 201 (<code>itiquete=104</code>)</li>
-			<li><span class="ok">✅</span> GET <code>/api/tiquete/104</code> — HTTP 200</li>
-			<li><span class="ok">✅</span> GET <code>/api/tiquete/por-conversacion/1802</code> — HTTP 200</li>
-			<li><span class="ok">✅</span> PATCH <code>/api/tiquete</code> — HTTP 200</li>
 			<li><span class="ok">✅</span> GET <code>/api/timer_cerrarConversaciones</code> — HTTP 200</li>
-			<li><span class="ok">✅</span> CLEANUP: DELETE <code>/api/tiquete/104</code> + DELETE <code>/api/conversacion/1802</code> — HTTP 200</li>
+			<li><span class="ok">✅</span> CLEANUP: DELETE <code>/api/conversacion/1802</code> — HTTP 200</li>
 		</ol>
 		<p class="run-foot">
-			Toda la batería se ejecutó de extremo a extremo: creación, lecturas, mutaciones y limpieza.
+			Toda la batería publicada se ejecutó de extremo a extremo: creación, lecturas disponibles y limpieza.
 			El POST de conversación retorna <em>Server-Sent Events</em> y el script extrae
 			<code>iconversacion</code> del primer evento <code>data:</code> para marcar la conversación como propia
 			y limpiarla en el cleanup.

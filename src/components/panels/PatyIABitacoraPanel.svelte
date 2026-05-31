@@ -5,6 +5,7 @@
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import md_2026_05_29_instrucciones_cleanup from "../../lib/patyia/daily/2026-05/29/01-instrucciones-listado-y-limpieza.md?raw";
+	import md_2026_05_29_reunion_mejoras from "../../lib/patyia/daily/2026-05/29/02-reunion-propuesta-mejora-patyia.md?raw";
 	import md_2026_05_28_saludo_diag from "../../lib/patyia/daily/2026-05/28/01-saludo-perdido-diagnostico.md?raw";
 	import md_2026_05_28_compare_engines from "../../lib/patyia/daily/2026-05/28/02-comparativa-engines-responses-vs-agents.md?raw";
 	import md_2026_05_25_prompts_intro from "../../lib/patyia/daily/2026-05/25/01-prompts-tdconsulta-intro.md?raw";
@@ -43,7 +44,7 @@
 	dbLabelOk="BD conectada · AYUDASCP_IA"
 >
 	<Accordion
-		title="2026-05-29 — PatyIA: listado de INSTRUCCION y limpieza de premisas residuales"
+		title="2026-05-29 — PatyIA: reunión de mejoras, listado de INSTRUCCION y limpieza"
 		titleIcon="mdi:calendar"
 		open={true}
 		checkKeys={[
@@ -51,6 +52,14 @@
 			"2026-05-29.patyia.instrucciones.cleanup",
 		]}
 	>
+		<Accordion
+			title="Análisis reunión · propuesta de mejora PatyIA"
+			titleIcon="mdi:file-document-outline"
+			inner
+		>
+			<BitacoraNote flat mdSource={md_2026_05_29_reunion_mejoras} />
+		</Accordion>
+
 		<Accordion
 			title="Contexto · premisas dejan de persistirse en BD"
 			titleIcon="mdi:note-text-outline"

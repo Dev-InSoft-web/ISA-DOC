@@ -10,13 +10,9 @@
  *   4. GET    /api/conversacion/:iconversacion
  *   5. GET    /api/resumen_conversacion/:iconversacion
  *   6. POST   /api/mensaje
- *   7. POST   /api/tiquete                            (captura itiquete)
- *   8. GET    /api/tiquete/:itiquete
- *   9. GET    /api/tiquete/por-conversacion/:iconversacion
- *  10. PATCH  /api/tiquete
- *  11. GET    /api/timer_cerrarConversaciones
- *  12. DELETE /api/tiquete/:itiquete                  (cleanup)
- *  13. DELETE /api/conversacion/:iconversacion        (cleanup)
+ *   7. POST   /api/tiquete
+ *   8. GET    /api/timer_cerrarConversaciones
+ *   9. DELETE /api/conversacion/:iconversacion        (cleanup)
  *
  * Datos de prueba seguros: usan IDs y códigos artificiales muy altos / con prefijo
  * verify para no chocar con datos reales (mismo criterio que clientesis con
@@ -34,7 +30,6 @@ import {
 	idMaquina,
 	imoduloTest,
 	ireferenciaTest,
-	itiqueteOverride,
 	promptTest,
 } from "./config.ts";
 import { extractRespuesta, loadToken, request, type HttpResult } from "./http.ts";
@@ -157,7 +152,8 @@ async function createTiquete(): Promise<void> {
 	if (state.iconversacion == null) return;
 	header("7) POST /api/tiquete");
 	if (!state.iconversacionOwned) {
-		console.log(`   iconversacion=${state.iconversacion} prestada → se crea tiquete test (codigotk=${codigoTkTest}) y se elimina en cleanup`);
+		console.log("⏭ [tiquete.create] omitido (iconversacion prestada, no se modifican datos reales)");
+		return;
 	}
 	const r = await request("POST", "/api/tiquete", {
 		iconversacion: state.iconversacion,
@@ -170,49 +166,17 @@ async function createTiquete(): Promise<void> {
 	if (resp?.itiquete != null) {
 		state.itiquete = resp.itiquete;
 		state.itiqueteOwned = true;
-		console.log(`   itiquete=${state.itiquete} (creado por el script → será eliminado en cleanup)`);
-	} else if (itiqueteOverride) {
-		state.itiquete = Number.parseInt(itiqueteOverride, 10);
-		state.itiqueteOwned = false;
-		console.log(`   itiquete (override env) = ${state.itiquete}`);
+		console.log(`   itiquete=${state.itiquete} (creado por el script)`);
 	}
 }
 
-async function getTiquete(): Promise<void> {
-	if (state.itiquete == null) return;
-	header(`8) GET /api/tiquete/${state.itiquete}`);
-	step("tiquete.get", await request("GET", `/api/tiquete/${state.itiquete}`));
-}
-
-async function getTiquetePorConversacion(): Promise<void> {
-	if (state.iconversacion == null) return;
-	header(`9) GET /api/tiquete/por-conversacion/${state.iconversacion}`);
-	step("tiquete.porConversacion", await request("GET", `/api/tiquete/por-conversacion/${state.iconversacion}`));
-}
-
-async function patchTiquete(): Promise<void> {
-	if (state.itiquete == null) return;
-	if (!state.itiqueteOwned) { console.log("⏭ [tiquete.patch] omitido (itiquete prestado, no se modifican datos reales)"); return; }
-	header("10) PATCH /api/tiquete");
-	step("tiquete.patch", await request("PATCH", "/api/tiquete", {
-		itiquete: state.itiquete,
-		bautoriza_visualizacion: true,
-	}));
-}
-
 async function timerCerrar(): Promise<void> {
-	header("11) GET /api/timer_cerrarConversaciones");
+	header("8) GET /api/timer_cerrarConversaciones");
 	step("timer_cerrarConversaciones", await request("GET", "/api/timer_cerrarConversaciones"));
 }
 
 async function cleanup(): Promise<void> {
 	header("CLEANUP");
-	if (state.itiquete != null && state.itiqueteOwned) {
-		console.log(`→ DELETE /api/tiquete/${state.itiquete}`);
-		step("tiquete.delete", await request("DELETE", `/api/tiquete/${state.itiquete}`), [200, 204]);
-	} else if (state.itiquete != null) {
-		console.log(`⏭ [tiquete.delete] omitido (itiquete=${state.itiquete} prestado)`);
-	}
 	if (state.iconversacion != null && state.iconversacionOwned) {
 		console.log(`→ DELETE /api/conversacion/${state.iconversacion}`);
 		step("conversacion.delete", await request("DELETE", `/api/conversacion/${state.iconversacion}`), [200, 204]);
@@ -241,9 +205,6 @@ export async function runTests(logFile: string): Promise<void> {
 	await getResumen();
 	await postMensaje();
 	await createTiquete();
-	await getTiquete();
-	await getTiquetePorConversacion();
-	await patchTiquete();
 	await timerCerrar();
 	await cleanup();
 	summary();

@@ -21,6 +21,7 @@
 	import sqlReplaceDriverRecursoCodes from "../../lib/migration/sql/replace-driver-recurso-codes.sql?raw";
 	import sqlSeedAccionesCursosPlanDeEstudio from "../../lib/migration/sql/seed-acciones-cursos-plandeestudio.sql?raw";
 	import sqlUpdateNombresInstruccion from "../../lib/patyia/sql/update-nombres-instruccion.sql?raw";
+	import md_2026_05_29_qa_camilo_itdform_create from "../../lib/bitacora/daily/2026-05/29/01-qa-camilo-itdform-create.md?raw";
 	import md_2026_05_26_patyia_ninstruccion from "../../lib/bitacora/daily/2026-05/26/01-patyia-ninstruccion.md?raw";
 	import md_2026_05_14_driver_jconfig_v2 from "../../lib/bitacora/daily/2026-05/14/driver-atributos-jconfig-v2-intro.md?raw";
 	import md_2026_05_21_cierre_tk from "../../lib/bitacora/daily/2026-05/21/01-cierre-tk1426681.md?raw";
@@ -126,6 +127,17 @@
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-05-29 -->
+			<Accordion
+				title="2026-05-29 — QA Camilo: errores en itdform=create para Contenido de curso y Cursos integrados"
+				titleIcon="mdi:calendar"
+				open={true}
+			>
+				<Accordion title="Video dmlU60yHNEc · Contexto para TK-1430975 y TK-1430974" titleIcon="mdi:video-outline" inner>
+					<BitacoraNote flat mdSource={md_2026_05_29_qa_camilo_itdform_create} />
+				</Accordion>
+			</Accordion>
+
 			<!-- 2026-05-26 -->
 			<Accordion
 				title="2026-05-26 — PatyIA: actualización de NINSTRUCCION con nombres semánticos en español"

@@ -1,5 +1,6 @@
 import { Server, type Socket } from "socket.io";
 import { spawn, type ChildProcess } from "node:child_process";
+import { createServer } from "node:http";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { PROJECTS } from "./projects-registry.js";
@@ -66,14 +67,25 @@ export function initSocketServer(port = 4401): Server | null {
 		return previous;
 	}
 	try {
-		const next = new Server(port, {
+		const httpServer = createServer();
+		const next = new Server(httpServer, {
 			cors: { origin: "*" },
 			path: "/socket.io",
 		});
 		next.on("connection", handleConnection);
+		httpServer.once("error", (err: NodeJS.ErrnoException) => {
+			const msg = err instanceof Error ? err.message : String(err);
+			if (err.code === "EADDRINUSE") console.warn(`[Socket.IO] Puerto ${port} ocupado; se omite en este proceso.`);
+			else console.error(`[Socket.IO] No se pudo iniciar en puerto ${port}: ${msg}`);
+			if (state.io.current === next) state.io.current = null;
+			if (io === next) io = null;
+			next.close();
+		});
+		httpServer.listen(port, () => {
+			console.log(`[Socket.IO] Servidor en puerto ${port}`);
+		});
 		state.io.current = next;
 		io = next;
-		console.log(`[Socket.IO] Servidor en puerto ${port}`);
 	} catch (err: unknown) {
 		const msg = err instanceof Error ? err.message : String(err);
 		console.error(`[Socket.IO] No se pudo iniciar en puerto ${port}: ${msg}`);

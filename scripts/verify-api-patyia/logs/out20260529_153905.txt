@@ -1,0 +1,29 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log:  C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260529_153905.txt
+Host: http://localhost:7071
+IDs:  butil=true · ireferencia=999992 · codigotk=TKV999991
+
+═════════════════════════════════════
+  1) POST /api/JWT  (autenticación)
+═════════════════════════════════════
+[AUTH] Token cargado desde C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\token.patyia.json (393 chars). ✅
+
+═════════════════════════════
+  2) POST /api/conversacion
+═════════════════════════════
+❌ [conversacion.create] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":101,"fhentrada":"2026-05-29T20:39:05.690Z","fhsalida":"2026-05-29T20:39:05.791Z","imensaje":500000,"mensaje":"GetConnection: No se pudo conectar a la base de datos"}}
+⛔ Sin iconversacion propia; se intentará tomar prestada una de /api/conversaciones para los GET.
+
+══════════════════════════════
+  3) GET /api/conversaciones
+══════════════════════════════
+❌ [conversaciones.list] HTTP 500
+   payload: {"encabezado":{"resultado":false,"tiempo":81,"fhentrada":"2026-05-29T20:39:05.806Z","fhsalida":"2026-05-29T20:39:05.887Z","imensaje":500000,"mensaje":"GetConnection: No se pudo conectar a la base de datos"}}
+
+═══════════════════════════════════════════
+  11) GET /api/timer_cerrarConversaciones
+═══════════════════════════════════════════

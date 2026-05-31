@@ -27,6 +27,9 @@ import { bodyTK1429349 } from "./TK-1429349";
 import { bodyTK1429373 } from "./TK-1429373";
 import { bodyTK1430974 } from "./TK-1430974";
 import { bodyTK1430975 } from "./TK-1430975";
+import { bodyTK1431163 } from "./TK-1431163";
+import { bodyTK1431662 } from "./TK-1431662";
+import { bodyTK1431666 } from "./TK-1431666";
 
 export interface TicketNormativa {
 	medioAtencion: string;
@@ -86,6 +89,39 @@ const NORMATIVA_DEFAULT: TicketNormativa = {
 };
 
 export const TICKETS: TicketRegistro[] = [
+	{
+		id: "TK-1431666",
+		titulo: "Actualización de instrucciones comprimidas en base de datos para Paty IA",
+		solicitante: "Área funcional",
+		fechaSolicitud: "29/may./2026 08:42:16 am",
+		noMaquillarFechas: true,
+		resumen: "Se solicita actualizar en AYUDASCP_IA las instrucciones compactadas por tipo de consulta, usando como fuente la carpeta Ultra de prompts específicos y el análisis de la reunión de mejora PatyIA del 29-may. El objetivo es reducir tokens sin perder trazabilidad ni mantenibilidad.",
+		body: bodyTK1431666,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema" },
+		proyecto: "PatyIA",
+	},
+	{
+		id: "TK-1431662",
+		titulo: "Implementación de selección de modelo IA por tipo de consulta en Paty IA",
+		solicitante: "Área funcional",
+		fechaSolicitud: "29/may./2026 08:42:16 am",
+		noMaquillarFechas: true,
+		resumen: "Se requiere que Paty IA elija el modelo de OpenAI según la etapa y el tipo de consulta: modelos económicos para tareas operativas y modelo configurable desde BD para respuestas de conocimiento. La decisión debe quedar trazable en logs y métricas.",
+		body: bodyTK1431662,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Ajuste del sistema", coberturaEstimada: "Error puntual (1%)" },
+		proyecto: "PatyIA",
+	},
+	{
+		id: "TK-1431163",
+		titulo: "Ajuste en integración OpenAI para conservar prompt general e instrucciones por tipo de consulta",
+		solicitante: "Área funcional",
+		fechaSolicitud: "29/may./2026 08:42:16 am",
+		noMaquillarFechas: true,
+		resumen: "Se solicita corregir la composición del request a OpenAI para que el prompt general de Paty IA no sea reemplazado al aplicar instrucciones específicas por tipo de consulta. El request debe combinar prompt general, instrucciones específicas, variables y vector stores asociados.",
+		body: bodyTK1431163,
+		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Error del sistema" },
+		proyecto: "PatyIA",
+	},
 	{
 		id: "TK-1430975",
 		titulo: "Novedad al registrar cursos en pestaña contenido curso nuevo",

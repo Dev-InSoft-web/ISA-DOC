@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
-	import { createEventDispatcher } from "svelte";
+	import { createEventDispatcher, onDestroy, onMount } from "svelte";
 
 	type MaybePromise<T> = T | Promise<T>;
 	type ButtonVariant = "solid" | "soft" | "ghost" | "outlined" | "text";
@@ -19,6 +19,7 @@
 
 	let copied = false;
 	let busy = false;
+	let mounted = false;
 	let timer: number | undefined;
 
 	const dispatch = createEventDispatcher<{ copied: string; error: unknown }>();
@@ -63,13 +64,23 @@
 			busy = false;
 		}
 	}
+
+	onMount(() => {
+		mounted = true;
+	});
+
+	onDestroy(() => {
+		if (timer && typeof window !== "undefined") window.clearTimeout(timer);
+	});
 </script>
 
-<ButtonIconify
-	icon={copied ? successIcon : icon}
-	color={copied ? "success" : undefined}
-	variant={copied && successVariant ? successVariant : variant}
-	title={copied ? successTitle : title}
-	disabled={disabled || busy}
-	on:click={copy}
-/>
+{#if mounted}
+	<ButtonIconify
+		icon={copied ? successIcon : icon}
+		color={copied ? "success" : undefined}
+		variant={copied && successVariant ? successVariant : variant}
+		title={copied ? successTitle : title}
+		disabled={disabled || busy}
+		on:click={copy}
+	/>
+{/if}

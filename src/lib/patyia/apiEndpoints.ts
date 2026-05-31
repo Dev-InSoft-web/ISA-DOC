@@ -51,14 +51,10 @@ export interface LocalEndpointDoc {
 
 export const ALL_LOCAL_ENDPOINTS: LocalEndpointDoc[] = [
 	{ name: "API_DELETE_ObtenerConversacion", method: "DELETE", path: "/api/conversacion/{iconversacion}" },
-	{ name: "API_DELETE_Tiquete", method: "DELETE", path: "/api/tiquete/{itiquete}" },
 	{ name: "API_GET_ConversacionesTercero", method: "GET", path: "/api/conversaciones" },
 	{ name: "API_GET_ObtenerConversacion", method: "GET", path: "/api/conversacion/{iconversacion}" },
 	{ name: "API_GET_ObtenerResumenConversacion", method: "GET", path: "/api/resumen_conversacion/{iconversacion}" },
-	{ name: "API_GET_Tiquete", method: "GET", path: "/api/tiquete/{itiquete}" },
-	{ name: "API_GET_TiquetePorConversacion", method: "GET", path: "/api/tiquete/por-conversacion/{iconversacion}" },
 	{ name: "API_HTTP_Timer_CerrarConversaciones", method: "GET", path: "/api/timer_cerrarConversaciones" },
-	{ name: "API_PATCH_Tiquete", method: "PATCH", path: "/api/tiquete" },
 	{ name: "API_POST_Authorization", method: "POST", path: "/api/jwt" },
 	{ name: "API_POST_InsertarConversacion", method: "POST", path: "/api/conversacion" },
 	{ name: "API_POST_InsertarMensajeCalificado", method: "POST", path: "/api/mensaje" },

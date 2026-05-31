@@ -60,6 +60,22 @@ export default defineConfig({
 	output: "server",
 	adapter: node({ mode: "standalone" }),
 	vite: {
+		optimizeDeps: {
+			include: [
+				"@ingenieria_insoft/ispgen",
+				"@codemirror/autocomplete",
+				"@codemirror/commands",
+				"@codemirror/lang-html",
+				"@codemirror/lang-javascript",
+				"@codemirror/lang-json",
+				"@codemirror/lang-sql",
+				"@codemirror/language",
+				"@codemirror/state",
+				"@codemirror/theme-one-dark",
+				"@codemirror/view",
+				"@lezer/highlight",
+			],
+		},
 		plugins: [wsPlugin(), inlineImagePlugin()],
 		server: {
 			watch: {
