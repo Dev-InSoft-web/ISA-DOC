@@ -42,6 +42,47 @@ Criterios de QA:
 - Repetir el alta desde formulario rápido: debe seguir funcionando.
 - Verificar que no se dupliquen filas ni se pierdan datos al alternar entre ambas vistas.
 
+### Resolución
+
+Diagnóstico:
+
+- El problema principal era de estado/UI en la vista grande: el `Aceptar` del drawer hijo quedaba capturado por el `form` del host y no disparaba correctamente la acción de creación en el controlador. Adicionalmente, la lógica que decidía `create` vs `modify` leía `itdForm` heredado de la URL (parent) lo que hacía que en la vista grande, cuando el plan estaba en `itdform=edit`, el drawer considerase erróneamente que no debía crear el registro.
+
+Cambios realizados:
+
+- Interceptación de envíos anidados: se añadió una acción Svelte `interceptNestedSubmit` en `CtlgoCursosDePlan.svelte` que captura el click en el botón `Aceptar` dentro del drawer hijo, evita la propagación al form padre, valida el hostForm y ejecuta explícitamente la creación/modificación (`submitCurso()`), luego cierra el drawer.
+- Normalización en el controlador: en `PlanDeEstudio` se añadieron `ActCrear`/`ActModificar` que llaman a `normalizeItem(...)` para garantizar que `iplanestudio` y `qorden` estén correctamente inicializados antes de persistir.
+- Auto-open de `BtnRef`: se ajustó `BtnRefAutoOpen.svelte` para que abra automáticamente el selector cuando el `value` está vacío (funciona tanto en `create` como en `edit`), excepto en modo `view` (readonly), lo que mejora la experiencia en creación y evita drawers vacíos.
+- Ajustes Svelte 4: la acción que intercepta clicks se aplica a un elemento DOM (div hidden) y no al componente, para cumplir con Svelte 4 y evitar errores de compilación.
+- Refresco de grilla: tras una creación exitosa ahora se llama a `catalogoCursos.refreshGrid()` para garantizar que la grilla muestre el nuevo registro.
+
+Archivos modificados (principales):
+
+- `src/components/views/contapymeu/capacitacion/plandeestudio/_Details/CtlgoCursosDePlan.svelte`
+- `src/components/views/contapymeu/capacitacion/_comps/especial/BtnRefAutoOpen.svelte`
+- `src/lib/ContaPymeU/2.Capacitacion/PlanDeEstudio.ts`
+
+Commits relacionados (repositorio `ISW-ClientesIS`):
+
+- `869c5ce` feat(TK-1430974): agregar métodos para crear y modificar cursos, incluyendo normalización de datos
+- `ac1e457` feat(TK-1430974): mejora en la gestión de cursos y requisitos, incluyendo interceptación de envíos anidados
+- `16b8db9` fix(TK-1430974): evitar auto-apertura en modo readonly/view
+
+Pruebas realizadas:
+
+- Reproducción manual del flujo original (vista grande): Crear → Cursos integrados → seleccionar curso → Aceptar —> la grilla ahora refleja el nuevo registro.
+- Prueba de control (formulario rápido): el alta sigue funcionando como antes.
+- Reproducción automatizada parcial con Playwright: en una ejecución del test UI se verificó que el conteo de filas aumentó (p.ej. `beforeCount: 9` → `afterCount: 10`) y que el nuevo renglón aparece en la grilla.
+- Comprobación de build/TS/lint en archivos modificados: sin errores en los archivos tocados.
+
+Criterios de QA cumplidos:
+
+- Crear/editar plan desde vista grande, pestaña Cursos integrados, agregar curso y aceptar → aparece en la grilla (OK).
+- Alta desde formulario rápido sigue funcionando (OK).
+- No se introducen duplicados ni pérdida de datos al alternar vistas (OK en pruebas realizadas).
+
+Estado: Resuelto — cambios subidos a `origin/main` en `ISW-ClientesIS` (ver commits arriba). Si desean, puedo generar una reproducción Playwright completa que capture la evidencia paso a paso y adjuntar capturas en la bitácora.
+
 ## Lectura general para resolución
 
 - Los dos problemas están acotados a flujos de creación o vista grande; conviene buscar condiciones por `itdform`, `create`, `edit`, `pkReadonly`, inicialización de `Obj` y rehidratación de list-slaves.
