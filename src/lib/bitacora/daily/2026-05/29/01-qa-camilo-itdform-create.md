@@ -88,3 +88,59 @@ Estado: Resuelto — cambios subidos a `origin/main` en `ISW-ClientesIS` (ver co
 - Los dos problemas están acotados a flujos de creación o vista grande; conviene buscar condiciones por `itdform`, `create`, `edit`, `pkReadonly`, inicialización de `Obj` y rehidratación de list-slaves.
 - El video no evidencia error de backend ni respuesta HTTP fallida; el síntoma es de estado/UI: vistas vacías, atributos no hidratados y alta que no impacta la grilla.
 - Para cerrar los TK, la evidencia debe capturarse con navegador en los dos caminos: caso que fallaba y caso control que ya funcionaba.
+
+---
+
+## HTML del reporte (versión visual)
+
+<div style="font-family:Tahoma;color:#777;font-size:12pt;max-width:100%;">
+<img src="https://i.ibb.co/99cnjWGK/01.png" style="max-height:300px;max-width:100%;display:block;margin-bottom:15px;">
+<div style="margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid #e0e0e0;"><h1 style="margin:0;font-family:Tahoma;font-size:16pt;color:#1e90ff;font-weight:bold;line-height:1.3;"><strong style="font-weight:bold;">Novedad al agregar cursos en "cursos integrados" del plan de curso</strong></h1></div>
+<div>Se reporta que al <b>crear un plan de estudio</b> y agregar un  
+	registro en la pestaña <b>Cursos integrados</b> desde la  
+	<b>vista grande</b> (formulario completo), al pulsar <b>Aceptar</b>  
+	el registro <b>no se agrega</b> a la grilla. Desde el  
+	<b>formulario rápido</b> el alta sí se realiza correctamente.</div>
+<h3 style="color:#1e90ff;margin-top:1.25rem;font-weight:bold;"><img src="https://api.iconify.design/mdi/bug-outline.svg?color=%231e90ff" alt="" width="18" height="18" style="width:18px;height:18px;min-width:18px;max-width:18px;min-height:18px;max-height:18px;vertical-align:middle;display:inline-block;">&nbsp;&nbsp;<strong style="vertical-align:middle;font-weight:bold;">Reporte</strong></h3>
+<ul style="list-style:none;padding-left:0;margin:0.5rem 0 0;"><li style="border:1px solid #80808030;border-radius:4px;padding:0.5rem;margin-bottom:0.5rem;list-style:none;color:#777;"><img src="https://api.iconify.design/mdi/form-select.svg?color=%23777" alt="" width="16" height="16" style="width:16px;height:16px;min-width:16px;max-width:16px;min-height:16px;max-height:16px;vertical-align:middle;display:inline-block;">&nbsp;&nbsp;<span style="vertical-align:middle;">Plan de estudio → pestaña <code>Cursos integrados</code>  
+		desde la <b>vista grande</b> (formulario completo): se selecciona  
+		el curso, se pulsa <b>Aceptar</b> y el registro <b>no aparece</b>  
+		en la grilla.</span></li><li style="border:1px solid #80808030;border-radius:4px;padding:0.5rem;margin-bottom:0.5rem;list-style:none;color:#777;"><img src="https://api.iconify.design/mdi/check-circle-outline.svg?color=%23777" alt="" width="16" height="16" style="width:16px;height:16px;min-width:16px;max-width:16px;min-height:16px;max-height:16px;vertical-align:middle;display:inline-block;">&nbsp;&nbsp;<span style="vertical-align:middle;">Mismo flujo desde el <b>formulario rápido</b>: el alta sí se  
+		realiza y el registro queda visible en la grilla.</span></li></ul>
+
+<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">
+<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Resumen general de tiempos</div>
+<table style="border-collapse:collapse;width:100%;">
+<tbody>
+<tr><td style="padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#555;border-bottom:1px solid #f0f0f0;">Diligencia del ticket</td><td style="padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#444;text-align:right;white-space:nowrap;border-bottom:1px solid #f0f0f0;">29min</td></tr>
+<tr><td style="padding:0.4rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#333;font-weight:600;border-top:1px solid #999;">Total estimado</td><td style="padding:0.4rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#222;text-align:right;white-space:nowrap;font-weight:600;border-top:1px solid #999;">29min</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+## Evidencia (capturas)
+
+- Captura 1: diálogo del drawer tras pulsar `Crear` / `Aceptar` (vista grande)
+
+![tk1430974-dialog](https://i.ibb.co/99cnjWGK/01.png)
+
+> Nota: las capturas se generaron desde el navegador; si se desea, puedo descargar y subirlas a `src/lib/tickets/assets/TK-1430974/` y ejecutar `npm run assets:upload` para incorporar las imágenes en imgbb y mapearlas localmente.
+
+## Commits relacionados (repo: ISW-ClientesIS)
+
+| Commit | Mensaje | Repo |
+|---|---|---|
+| `869c5ce` | feat(TK-1430974): agregar métodos para crear y modificar cursos, incluyendo normalización de datos | ISW-ClientesIS |
+| `ac1e457` | feat(TK-1430974): mejora en la gestión de cursos y requisitos, incluyendo interceptación de envíos anidados | ISW-ClientesIS |
+| `16b8db9` | fix(TK-1430974): evitar auto-apertura en modo readonly/view | ISW-ClientesIS |
+
+## Resumen de tiempos (desglose)
+
+| Actividad | Minutos |
+|---|---:|
+| Implementación / patch (interceptores, normalizeItem, BtnRefAutoOpen) | 18 |
+| Pruebas manuales y ajustes (grilla, refresh, Svelte4 action) | 6 |
+| Documentación, bitácora y commits | 5 |
+| **Total** | **29** |
+

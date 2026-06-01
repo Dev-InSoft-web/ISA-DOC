@@ -127,16 +127,18 @@
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
-			<!-- 2026-05-29 -->
-			<Accordion
-				title="2026-05-29 — QA Camilo: errores en itdform=create para Contenido de curso y Cursos integrados"
-				titleIcon="mdi:calendar"
-				open={true}
-			>
-				<Accordion title="Video dmlU60yHNEc · Contexto para TK-1430975 y TK-1430974" titleIcon="mdi:video-outline" inner>
-					<BitacoraNote flat mdSource={md_2026_05_29_qa_camilo_itdform_create} />
+			<!-- Agrupación mensual: Mayo 2026 -->
+			<Accordion title="Mayo 2026 — Entradas diarias" titleIcon="mdi:calendar-month" open={false} inner>
+				<!-- 2026-05-29 -->
+				<Accordion
+					title="2026-05-29 — QA Camilo: errores en itdform=create para Contenido de curso y Cursos integrados"
+					titleIcon="mdi:calendar"
+					open={true}
+				>
+					<Accordion title="Video dmlU60yHNEc · Contexto para TK-1430975 y TK-1430974" titleIcon="mdi:video-outline" inner>
+						<BitacoraNote flat mdSource={md_2026_05_29_qa_camilo_itdform_create} />
+					</Accordion>
 				</Accordion>
-			</Accordion>
 
 			<!-- 2026-05-26 -->
 			<Accordion
@@ -514,17 +516,18 @@
 				</AccordionActions>
 			</Accordion>
 
-			<!-- 2026-05-03 -->
-			<Accordion
-				title="2026-05-03 — Curso GET/UPDATE devuelve 500 tras npm i"
-				titleIcon="mdi:calendar"
-				open={true}
-			>
-				<BitacoraNote
-					title="Curso GET/UPDATE devuelve 500 tras npm i"
-					mdSource={md_2026_05_03_curso_500}
-					inner
-				/>
+				<!-- 2026-05-03 -->
+				<Accordion
+					title="2026-05-03 — Curso GET/UPDATE devuelve 500 tras npm i"
+					titleIcon="mdi:calendar"
+					open={true}
+				>
+					<BitacoraNote
+						title="Curso GET/UPDATE devuelve 500 tras npm i"
+						mdSource={md_2026_05_03_curso_500}
+						inner
+					/>
+				</Accordion>
 			</Accordion>
 </ProjectSectionLayout>
 
