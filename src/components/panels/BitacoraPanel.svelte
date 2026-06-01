@@ -63,6 +63,7 @@
 		{ iatributo: 6, natributo: "Documento", jconfig: '{"type":"InputText","descripcion":"URL pública del documento adjunto al plan.","inputProps":{"placeholder":"https://...","maxlength":500}}' },
 	];
 	import md_2026_05_03_curso_500 from "../../lib/bitacora/daily/2026-05/03/curso-get-update-500.md?raw";
+import md_2026_06_01_resumen from "../../lib/bitacora/daily/2026-06/01/01-resumen-2026-06-01.md?raw";
 	import md_cursos_isw_reglas from "../../lib/bitacora/topics/cursos/cursos-isw-reglas.md?raw";
 	import md_2026_05_04_isa from "../../lib/bitacora/daily/2026-05/04/resumen-isa.md?raw";
 	import md_2026_05_04_isw_isp from "../../lib/bitacora/daily/2026-05/04/resumen-isw-isp.md?raw";
@@ -529,7 +530,15 @@
 					/>
 				</Accordion>
 			</Accordion>
-</ProjectSectionLayout>
+
+		<!-- 2026-06-01 (hoy) — entrada diaria (mes actual no agrupado) -->
+		<DailySummaryAccordion
+			title="2026-06-01 — Resumen: TK-1430974 (correcciones, documentación y evidencia pendiente)"
+			open
+			mdIsa={md_2026_06_01_resumen}
+		/>
+
+		</ProjectSectionLayout>
 
 <style>
 	.jconfig-matrix-wrap {
