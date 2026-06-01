@@ -4,6 +4,7 @@
 	import ChatMensajesView, { type MsgVista, type ArchivoCita, type OpenFileDetail } from "./ChatMensajesView.svelte";
 	import { marked } from "marked";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
+	import Accordion from "$comps/containers/Accordion.svelte";
 	import TsViewer from "../viewers/TsViewer.svelte";
 	import ImageViewer from "../viewers/ImageViewer.svelte";
 	import StorageActionsPanel from "./StorageActionsPanel.svelte";
@@ -1172,13 +1173,19 @@ const data = await r.json();
 		conversacion?: SqlRow;
 		mensajesOpenAI?: SqlRow[];
 		mensajesCalificados?: SqlRow[];
+		tiquete?: SqlRow[];
+		warnings?: string[];
+		vectorStoreIds?: string[];
 	}
 
 	// Functions (host LOCAL) responde con el wrapper ISP { encabezado: { resultado }, respuesta: { ... , mensajesOpenAI } }.
 	// Staging proxy responde con { ok, conversacion, mensajesOpenAI }. Normalizamos a esta última.
 	function normalizeConvResp(raw: unknown, httpOk: boolean): ConvRespStg {
 		if (raw && typeof raw === "object" && "encabezado" in (raw as Record<string, unknown>)) {
-			const r = raw as { encabezado?: { resultado?: boolean; mensaje?: string }; respuesta?: SqlRow & { mensajesOpenAI?: SqlRow[]; mensajesCalificados?: SqlRow[] } };
+			const r = raw as {
+				encabezado?: { resultado?: boolean; mensaje?: string };
+				respuesta?: SqlRow & { mensajesOpenAI?: SqlRow[]; mensajesCalificados?: SqlRow[]; tiquete?: SqlRow[] };
+			};
 			const respuesta = r.respuesta ?? {};
 			return {
 				ok: Boolean(r.encabezado?.resultado) && httpOk,
@@ -1186,6 +1193,7 @@ const data = await r.json();
 				conversacion: respuesta as SqlRow,
 				mensajesOpenAI: respuesta.mensajesOpenAI,
 				mensajesCalificados: respuesta.mensajesCalificados,
+				tiquete: Array.isArray(respuesta.tiquete) ? respuesta.tiquete : undefined,
 			};
 		}
 		return raw as ConvRespStg;
@@ -1287,8 +1295,9 @@ const data = await r.json();
 		convLoading = true;
 		try {
 			const r = await fetch(apiUrl(`/api/patyia/conversacion/${convId}?db=${encodeURIComponent(convDb)}`), { headers: await apiHeaders() });
-			const data = (await r.json()) as ConversacionResp;
-			if (!r.ok || data.ok === false) {
+			const raw = (await r.json()) as unknown;
+			const data = normalizeConvResp(raw, r.ok) as ConversacionResp;
+			if (!r.ok || !data.ok) {
 				convError = errorToString(data.error) || `HTTP ${r.status}`;
 				return;
 			}
@@ -1577,7 +1586,7 @@ const data = await r.json();
 	<div slot="actions" class="api-host-switch">
 		<SelectEnum bind:value={apiHost} enumValue={TApiHost} label="API" />
 	</div>
-	<FlexLayout direction="row" items="stretch" style="width: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden;">
+	<FlexLayout direction="row" items="stretch" style="width: 100%; height: 100%; flex: 1 1 auto; min-height: 0; overflow: hidden;">
 		<nav class="custom-scrollbar nav-acciones" aria-label="Acciones">
 			<h3>Acciones</h3>
 			<ul>
@@ -1596,7 +1605,7 @@ const data = await r.json();
 			</ul>
 		</nav>
 
-		<div class="custom-scrollbar panel-ejecucion">
+		<div class="custom-scrollbar panel-ejecucion" class:panel-ejecucion-fill={accionActiva === "conversacion"}>
 			{#if accionActiva === "pruebas"}
 				<div on:click={onSubTabClick} role="presentation">
 					<Tabs>
@@ -1883,7 +1892,7 @@ const data = await r.json();
 					{/if}
 				</div>
 			{:else if accionActiva === "conversacion"}
-				<div class="seccion">
+				<div class="seccion seccion-fill">
 					<header class="seccion-head">
 						<div>
 							<h2>Conversación BD</h2>
@@ -1900,6 +1909,7 @@ const data = await r.json();
 					</div>
 
 					{#if subConv === "consulta"}
+						<div class="conv-consulta-body">
 						<GridLayout cells={4} items="end">
 							<InputNumber bind:value={convId} label="iconversacion" required={true} />
 							<SelectEnum bind:value={convDb} enumValue={TBaseDatos} label="Base de datos" />
@@ -1918,20 +1928,23 @@ const data = await r.json();
 						{/if}
 
 						{#if convRow}
-							<section>
-								<h3>Conversación #{convId}</h3>
-								<small>
-									<div class="metrics">
-										{#each Object.entries(convRow) as [k, v]}
-											<span><strong>{k}:</strong> <code>{v == null ? "—" : String(v).slice(0, 120)}</code></span>
-										{/each}
-									</div>
-								</small>
-							</section>
+							{@const convTitulo = pickStr(convRow, ["titulo", "TITULO"])}
+							<Accordion
+								title={`Conversación #${convId}${convTitulo ? ` · ${convTitulo.slice(0, 80)}${convTitulo.length > 80 ? "…" : ""}` : ""}`}
+								titleIcon="mdi:database-outline"
+								open={false}
+								inner
+							>
+								<div class="metrics metrics-flat">
+									{#each Object.entries(convRow) as [k, v]}
+										<span><strong>{k}:</strong> <code>{v == null ? "—" : String(v).slice(0, 120)}</code></span>
+									{/each}
+								</div>
+							</Accordion>
 						{/if}
 
 						{#if vistaMensajes.length}
-							<section>
+							<section class="chat-section">
 								<FlexLayout justify="between" items="center">
 									<h3 style="margin: 0;">Mensajes ({vistaMensajes.length}) <span class="sub">· fuente: {convFuenteMensajes === "log" ? "conv-*.json (log local)" : convFuenteMensajes === "openai" ? "OpenAI threads" : convFuenteMensajes === "calificados" ? "MENSAJESCALIFICADOS (fallback)" : "—"}</span></h3>
 									<FlexLayout items="center">
@@ -1944,6 +1957,7 @@ const data = await r.json();
 								</div>
 							</section>
 						{/if}
+						</div>
 					{:else if subConv === "interaccion"}
 						<div class="interaccion-wrap">
 							<GridLayout cells={2} items="end">
@@ -2293,6 +2307,33 @@ const data = await r.json();
 		padding: 1rem;
 		color: var(--is-color, #e5e7eb);
 	}
+	.seccion-fill {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: hidden;
+	}
+	.seccion-head,
+	.seccion > :global([data-element="tabs"]),
+	.conv-consulta-body > :not(.chat-section) {
+		flex-shrink: 0;
+	}
+	.conv-consulta-body {
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-height: 0;
+		gap: 1rem;
+	}
+	.chat-section {
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: hidden;
+	}
+	.chat-section > :global([data-element="flex-layout"]:first-child) {
+		flex-shrink: 0;
+	}
 	header h2 { margin: 0; font-size: 1.1rem; }
 	.seccion-head {
 		display: flex;
@@ -2352,6 +2393,11 @@ const data = await r.json();
 		border: 1px solid rgba(255,255,255,0.1);
 		border-radius: 4px;
 		font-size: 0.82rem;
+	}
+	.metrics-flat {
+		padding: 0;
+		background: transparent;
+		border: none;
 	}
 	.metrics code {
 		font-size: 0.78rem;
@@ -2462,8 +2508,11 @@ const data = await r.json();
 		font-size: 0.9rem;
 	}
 	.chat-inline {
-		max-height: 520px;
-		overflow: auto;
+		flex: 1 1 auto;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 		margin-top: 0.5rem;
 	}
 	.interaccion-wrap {
@@ -2471,6 +2520,15 @@ const data = await r.json();
 		flex-direction: column;
 		gap: 0.75rem;
 		margin-top: 0.5rem;
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: hidden;
+	}
+	.interaccion-wrap > :not(.chat-inline) {
+		flex-shrink: 0;
+	}
+	.inter-input {
+		flex-shrink: 0;
 	}
 	.inter-meta {
 		display: flex;
@@ -2482,6 +2540,9 @@ const data = await r.json();
 		height: 100%;
 		overflow: hidden;
 		padding: 0.5rem;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
 	}
 	.conv-list-body { padding: 0.5rem 0.75rem; overflow: auto; max-height: calc(85vh - 4rem); }
 	.conv-list-body .vacio { opacity: 0.7; }
@@ -2633,6 +2694,11 @@ const data = await r.json();
 		min-width: 0;
 		min-height: 0;
 		overflow: auto;
+	}
+	.panel-ejecucion-fill {
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 	}
 
 	.mocks-grid {

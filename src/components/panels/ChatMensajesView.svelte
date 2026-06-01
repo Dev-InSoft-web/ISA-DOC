@@ -260,7 +260,8 @@
 		padding: 0.75rem;
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 6px;
-		height: 100%;
+		flex: 1 1 auto;
+		min-height: 0;
 	}
 	.msg-wrap {
 		max-width: 80%;

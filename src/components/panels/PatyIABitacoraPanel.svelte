@@ -15,7 +15,7 @@
 	import sqlSeedPromptsTdConsulta from "../../lib/patyia/sql/seed-prompts-tdconsulta.sql?raw";
 	import sqlUpdateDescripcionesInstruccion from "../../lib/patyia/sql/update-descripciones-instruccion.sql?raw";
 	import sqlUpdateNombresInstruccion from "../../lib/patyia/sql/update-nombres-instruccion.sql?raw";
-	import sqlAddModeloInstruccion from "../../lib/patyia/sql/add-modelo-instruccion.sql?raw";
+	import sqlAddModeloInstruccion from "../../lib/patyia/sql/add-modelo-instruccion-ssms.sql?raw";
 	import sqlResyncSeqConversaciones from "../../lib/patyia/sql/resync-seq-conversaciones.sql?raw";
 	import md_2026_06_01_tk1431662 from "../../lib/patyia/daily/2026-06/01/02-tk1431662-modelo-por-instruccion.md?raw";
 
@@ -70,9 +70,9 @@
 		>
 			<BitacoraNote flat mdSource={md_2026_06_01_tk1431662} />
 			<SqlExecCard
-				title="AYUDASCP_IA · ADD MODELO en INSTRUCCION (default gpt-5-mini)"
+				title="AYUDASCP_IA · ADD MODELO en INSTRUCCION (SSMS 21)"
 				sql={sqlAddModeloInstruccion}
-				desc="Idempotente: agrega MODELO a INSTRUCCION (13 tipos) con default gpt-5-mini. Resuelve AYUDASCP_IA_STAGING / AYUDASCP_IA automáticamente. Requiere paty_* en ISA-DOC/.env (copiar de PatyIA/local.settings.json) si el banner muestra CLIENTES u otra BD sin INSTRUCCION."
+				desc="Script para SQL Server Management Studio 21: GRANT ALTER, ALTER TABLE ADD MODELO (gpt-5-mini), UPDATE y SELECT de verificación. Conéctese a insoft-patyia → AYUDASCP_IA_STAGING y ejecute con F5. (No usar el botón Ejecutar de la bitácora: contiene GO.)"
 				{executeSql}
 				checkKey="2026-06-01.patyia.instruccion.modelo"
 				confirmKind="warning"
