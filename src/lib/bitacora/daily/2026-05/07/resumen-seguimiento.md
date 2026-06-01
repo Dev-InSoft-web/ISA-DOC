@@ -57,7 +57,7 @@ encontrados durante su revisión:
 
 - **Robustez del catálogo de columnas**. Se introdujo en los controladores
    del módulo un esquema que protege la configuración de las columnas frente
-   a una limitación del componente de grilla compartido: cuando el usuario
+   a una limitación del componente de grid compartido: cuando el usuario
    ocultaba una columna desde el selector visual, el componente reescribía
    toda la configuración y "olvidaba" las demás columnas. Con el ajuste en
    los controladores del módulo, las columnas se mantienen estables sin

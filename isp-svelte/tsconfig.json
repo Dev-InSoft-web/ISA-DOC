@@ -11,7 +11,6 @@
 		"allowSyntheticDefaultImports": true,
 		"forceConsistentCasingInFileNames": true,
 		"types": ["svelte"],
-		"baseUrl": ".",
 		"paths": {
 			"$lib": ["../../ISP-SvelteComponents/src/lib"],
 			"$lib/*": ["../../ISP-SvelteComponents/src/lib/*"],

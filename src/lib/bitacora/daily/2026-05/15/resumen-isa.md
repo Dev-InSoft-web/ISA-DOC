@@ -44,7 +44,7 @@ para compatibilidad con clientes de correo.
 - Fila resumen reordenada y renombrada a **"cambios extra y diligencia"**.
 - Cuerpo de los tickets reescrito en **lenguaje natural**, en pasado
    impersonal, sin nombres internos ni jerga técnica.
-- Título principal sin identificador, negrilla forzada en título y
+- Título principal sin identificador, negrid forzada en título y
    subtítulos para clientes de correo, color azul homogéneo en subtítulos.
 - Tablas con título que incluye el `id` del ticket.
 - Imágenes con `min-width/max-width/min-height/max-height` para evitar
@@ -153,7 +153,7 @@ un desarrollador. Reglas de redacción aplicadas:
 - Pasado impersonal ("se ajusta…", "se corrige…").
 - Sin nombres de archivo, clases ni rutas.
 - Sin jerga técnica salvo cuando es indispensable (nombre del módulo).
-- Negrilla en términos clave; cursiva para nombres internos cuando no
+- Negrid en términos clave; cursiva para nombres internos cuando no
    se pueden evitar (p. ej. `iplanpadre`).
 
 ### Imágenes en correo · dimensiones blindadas

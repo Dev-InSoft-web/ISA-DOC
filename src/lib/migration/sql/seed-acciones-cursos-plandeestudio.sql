@@ -7,7 +7,7 @@
 --   Consolidar, Duplicar, Eliminar, Recodificar
 --
 -- Sin estas filas el JWT del usuario no incluye `bAllowed.{accion}=true` para
--- esos recursos, por lo que la grilla del catálogo deshabilita los botones
+-- esos recursos, por lo que el grid del catálogo deshabilita los botones
 -- Verificar / Duplicar / Recodificar / Consolidar (Eliminar también queda
 -- bloqueado por la misma razón).
 --

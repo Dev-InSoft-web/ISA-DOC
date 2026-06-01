@@ -225,7 +225,7 @@ import md_2026_06_01_resumen from "../../lib/bitacora/daily/2026-06/01/01-resume
 						title="Seguridad · Alta de Consolidar, Duplicar, Eliminar y Recodificar en Cursos y PlanDeEstudio (INGCP / INGSENIOR)"
 						checkKey="2026-05-15.seguridad.acciones.cursos.plandeestudio"
 						sql={sqlSeedAccionesCursosPlanDeEstudio}
-						desc="Inserta en SEG_ACCIONESXROL las cuatro acciones extendidas (Consolidar, Duplicar, Eliminar, Recodificar) para los recursos `Cursos` y `PlanDeEstudio` bajo el rol INGSENIOR del grupo INGCP del tercero 810000630 con VALOR='true'. Hasta ahora estos catálogos solo tenían Compartir/Crear/Exportar/Listar/Modificar/Verificar/Visualizar, por lo que el JWT no incluía las extendidas y la grilla deshabilitaba los botones correspondientes. Idempotente (NOT EXISTS por clave) y cierra con SELECT de verificación."
+						desc="Inserta en SEG_ACCIONESXROL las cuatro acciones extendidas (Consolidar, Duplicar, Eliminar, Recodificar) para los recursos `Cursos` y `PlanDeEstudio` bajo el rol INGSENIOR del grupo INGCP del tercero 810000630 con VALOR='true'. Hasta ahora estos catálogos solo tenían Compartir/Crear/Exportar/Listar/Modificar/Verificar/Visualizar, por lo que el JWT no incluía las extendidas y el grid deshabilitaba los botones correspondientes. Idempotente (NOT EXISTS por clave) y cierra con SELECT de verificación."
 						confirmKind="warning"
 						confirmMessage={`Se insertarán hasta 8 filas (4 acciones × 2 recursos) en SEG_ACCIONESXROL para el rol INGCP/INGSENIOR del tercero 810000630.\n\n¿Continuar?`}
 						{executeSql}

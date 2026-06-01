@@ -24,7 +24,7 @@ export async function buildBodyTK1428161(): Promise<string> {
 		await note(
 			"mdi:view-column-outline",
 			`En los catálogos de ContaPyme U (cursos, planes, recursos, etc.)  
-			cada grilla expone un selector de columnas para mostrar u ocultar  
+			cada grid expone un selector de columnas para mostrar u ocultar  
 			campos. La configuración elegida por el usuario se pierde en cada  
 			recarga porque sólo vive en memoria del componente.`,
 		),
@@ -49,15 +49,15 @@ export async function buildBodyTK1428161(): Promise<string> {
 			`Se opta por una capa de persistencia local en el navegador  
 			(no requiere servicios nuevos, es por navegador y por usuario).  
 			La clave de almacenamiento debe identificar de forma única la  
-			grilla a la que pertenece la configuración, evitando  
+			grid a la que pertenece la configuración, evitando  
 			colisiones entre catálogos que tienen columnas con el mismo  
 			nombre.`,
 		),
 		await note(
 			"mdi:sync-alert",
 			`La rehidratación debe ocurrir <b>antes</b> del primer render  
-			de la grilla. Si se aplica después de montar el componente, la  
-			grilla se pinta primero con la configuración por defecto y  
+			del grid. Si se aplica después de montar el componente, la  
+			grid se pinta primero con la configuración por defecto y  
 			luego salta a la guardada; por eso la carga del estado se hace  
 			en la inicialización del controlador.`,
 		),
@@ -67,8 +67,8 @@ export async function buildBodyTK1428161(): Promise<string> {
 		await note(
 			"mdi:check-decagram-outline",
 			`Se introduce un <b>helper único de persistencia de columnas</b>  
-			que guarda, para cada grilla, qué columnas son visibles y en  
-			qué orden están, identificando la grilla por el catálogo y la  
+			que guarda, para cada grid, qué columnas son visibles y en  
+			qué orden están, identificando el grid por el catálogo y la  
 			vista activa.`,
 		),
 		await note(
@@ -83,7 +83,7 @@ export async function buildBodyTK1428161(): Promise<string> {
 			wrapper de lista para que todos los catálogos hereden la  
 			persistencia sin duplicidad. La rehidratación se hace de  
 			forma síncrona durante la inicialización del controlador para  
-			que la grilla pinte ya con los valores guardados.` +
+			que el grid pinte ya con los valores guardados.` +
 			img("tk1428161-selector-columnas.png"),
 		),
 	);

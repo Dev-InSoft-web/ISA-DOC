@@ -138,8 +138,15 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Ingeniero Camilo Rámirez",
 		fechaSolicitud: "28/may./2026 11:02:34 am",
 		noMaquillarFechas: true,
+		estimacionMinutos: 29,
+		diligenciaMinutos: 29,
 		resumen: "Al crear un plan de estudio desde la vista grande (formulario completo), la pestaña Cursos integrados no agrega el registro al pulsar Aceptar. Desde el formulario rápido el alta sí se realiza. Diagnóstico tentativo: condición específica del flujo de la vista grande que bloquea la inserción.",
 		body: bodyTK1430974,
+		commits: [
+			{ hash: "869c5ce", descripcion: "feat(TK-1430974): agregar métodos para crear y modificar cursos, incluyendo normalización de datos", repo: "ISW-ClientesIS" },
+			{ hash: "ac1e457", descripcion: "feat(TK-1430974): mejora en la gestión de cursos y requisitos, incluyendo interceptación de envíos anidados", repo: "ISW-ClientesIS" },
+			{ hash: "16b8db9", descripcion: "fix(TK-1430974): evitar auto-apertura en modo readonly/view", repo: "ISW-ClientesIS" },
+		],
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Error del sistema" },
 	},
 	{
@@ -375,7 +382,7 @@ export const TICKETS: TicketRegistro[] = [
 			{ hash: "67ccd5d", descripcion: "feat(contapymeu): se persisten visible y orderby de columnas por controlador en localStorage para todos los catalogos", repo: "ISW-ClientesIS", ins: 36, del: 1, fecha: "2026-05-13T11:41:57-05:00" },
 			{ hash: "c021141", descripcion: "refactor(contapymeu): se anidan tipos de persistencia de columnas dentro del helper", repo: "ISW-ClientesIS", ins: 2, del: 3, fecha: "2026-05-13T11:43:31-05:00" },
 			{ hash: "8e397c2", descripcion: "fix(contapymeu): se aplica persistencia de columnas de forma sincrona en el constructor para que el grid lea los valores ya rehidratados", repo: "ISW-ClientesIS", ins: 27, del: 17, fecha: "2026-05-13T11:47:23-05:00" },
-			{ hash: "18fe88f", descripcion: "fix(contapymeu): se rehidrata el localStorage de columnas dentro del field initializer para que la grilla aplique persistencia desde el primer render", repo: "ISW-ClientesIS", ins: 29, del: 34, fecha: "2026-05-13T12:13:17-05:00" },
+			{ hash: "18fe88f", descripcion: "fix(contapymeu): se rehidrata el localStorage de columnas dentro del field initializer para que el grid aplique persistencia desde el primer render", repo: "ISW-ClientesIS", ins: 29, del: 34, fecha: "2026-05-13T12:13:17-05:00" },
 			{ hash: "22cda2c", descripcion: "refactor(contapymeu): se centraliza la definicion de columnas y se unifica el wrapper de lista para catalogos", repo: "ISW-ClientesIS", ins: 63, del: 71, fecha: "2026-05-13T12:28:25-05:00" },
 			{ hash: "755a768", descripcion: "refactor(contapymeu): se incluye entrie en la clave de persistencia de columnas para reducir colisiones", repo: "ISW-ClientesIS", ins: 3, del: 2, fecha: "2026-05-13T12:33:26-05:00" },
 			{ hash: "aca8048", descripcion: "feat(contapymeu): se registran las claves de columnas en un indice global y se expone una utilidad para reiniciar el estado almacenado", repo: "ISW-ClientesIS", ins: 24, del: 0, fecha: "2026-05-13T13:36:51-05:00" },
@@ -565,7 +572,7 @@ export const TICKETS: TicketRegistro[] = [
 			{
 				tabla: "SEG_ACCIONESXROL",
 				registro: "Alta de acciones extendidas para Cursos y PlanDeEstudio (INGCP / INGSENIOR)",
-				intencion: "Se insertan en SEG_ACCIONESXROL las cuatro acciones extendidas (Consolidar, Duplicar, Eliminar, Recodificar) para los recursos Cursos y PlanDeEstudio bajo el rol INGSENIOR del grupo INGCP del tercero 810000630 con VALOR='true'. Sin estas filas el JWT del usuario no incluía bAllowed.{accion}=true para esos recursos y la grilla deshabilitaba los botones Verificar/Duplicar/Recodificar/Consolidar requeridos para operar sobre los planes y, en particular, para asociar el recurso básico al recurso medio o avanzado mediante iplanpadre. La migración es idempotente (NOT EXISTS por clave) y cierra con SELECT de verificación.",
+				intencion: "Se insertan en SEG_ACCIONESXROL las cuatro acciones extendidas (Consolidar, Duplicar, Eliminar, Recodificar) para los recursos Cursos y PlanDeEstudio bajo el rol INGSENIOR del grupo INGCP del tercero 810000630 con VALOR='true'. Sin estas filas el JWT del usuario no incluía bAllowed.{accion}=true para esos recursos y el grid deshabilitaba los botones Verificar/Duplicar/Recodificar/Consolidar requeridos para operar sobre los planes y, en particular, para asociar el recurso básico al recurso medio o avanzado mediante iplanpadre. La migración es idempotente (NOT EXISTS por clave) y cierra con SELECT de verificación.",
 				sql: "SET NOCOUNT ON;\n\nDECLARE @ITERCERO   VARCHAR(50) = '810000630';\nDECLARE @IGRUPO     VARCHAR(50) = 'INGCP';\nDECLARE @IROL       VARCHAR(50) = 'INGSENIOR';\nDECLARE @VALOR      VARCHAR(50) = 'true';\n\n;WITH NUEVAS AS (\n    SELECT ISYSRECURSO, IACCION\n    FROM (VALUES\n        ('Cursos',        'Consolidar'),\n        ('Cursos',        'Duplicar'),\n        ('Cursos',        'Eliminar'),\n        ('Cursos',        'Recodificar'),\n        ('PlanDeEstudio', 'Consolidar'),\n        ('PlanDeEstudio', 'Duplicar'),\n        ('PlanDeEstudio', 'Eliminar'),\n        ('PlanDeEstudio', 'Recodificar')\n    ) AS V(ISYSRECURSO, IACCION)\n)\nINSERT INTO SEG_ACCIONESXROL (ITERCERO, ISYSRECURSO, IACCION, IGRUPO, IROL, VALOR)\nSELECT @ITERCERO, N.ISYSRECURSO, N.IACCION, @IGRUPO, @IROL, @VALOR\nFROM NUEVAS N\nWHERE NOT EXISTS (\n    SELECT 1\n    FROM SEG_ACCIONESXROL A\n    WHERE A.ITERCERO    = @ITERCERO\n      AND A.ISYSRECURSO = N.ISYSRECURSO\n      AND A.IACCION     = N.IACCION\n      AND A.IGRUPO      = @IGRUPO\n      AND A.IROL        = @IROL\n);\n\nSELECT ITERCERO, ISYSRECURSO, IACCION, IGRUPO, IROL, VALOR\nFROM SEG_ACCIONESXROL\nWHERE ITERCERO = @ITERCERO\n  AND IGRUPO   = @IGRUPO\n  AND IROL     = @IROL\n  AND ISYSRECURSO IN ('Cursos', 'PlanDeEstudio')\nORDER BY ISYSRECURSO, IACCION;",
 			},
 		],
@@ -932,7 +939,7 @@ export const TICKETS: TicketRegistro[] = [
 			{
 				tabla: "JCONFIG",
 				registro: "ICONFIG = 'CAPACITACION/CATALOGOS/TEMA'",
-				intencion: "Se registra la definición del catálogo de temas dentro del módulo de capacitación: clase de controlador, columnas visibles en grilla, columnas para el BtnRef y acciones permitidas (crear, modificar, eliminar, refrescar, visualizar).",
+				intencion: "Se registra la definición del catálogo de temas dentro del módulo de capacitación: clase de controlador, columnas visibles en grid, columnas para el BtnRef y acciones permitidas (crear, modificar, eliminar, refrescar, visualizar).",
 				sql: "INSERT INTO JCONFIG (ICONFIG, JDATA, FULTEDI, UULTEDI) VALUES (\n    'CAPACITACION/CATALOGOS/TEMA',\n    :json,\n    SYSTIMESTAMP,\n    'INSTALADOR'\n);",
 				jsonAntes: "",
 				jsonDespues: "{\n  \"controller\": \"TTemaController\",\n  \"server\": \"TTemaServer\",\n  \"titulo\": \"Temas\",\n  \"icon\": \"mdi:tag-text-outline\",\n  \"columns\": [\n    { \"key\": \"codigo\",      \"label\": \"Código\",      \"width\": 100 },\n    { \"key\": \"nombre\",      \"label\": \"Nombre\",      \"width\": 240 },\n    { \"key\": \"descripcion\", \"label\": \"Descripción\", \"width\": 360 },\n    { \"key\": \"estado\",      \"label\": \"Estado\",      \"width\": 80 }\n  ],\n  \"columnsBtnRef\": [\n    { \"key\": \"nombre\", \"label\": \"Tema\", \"width\": 240 }\n  ],\n  \"acciones\": [\"crear\",\"modificar\",\"eliminar\",\"refrescar\",\"visualizar\"]\n}",
