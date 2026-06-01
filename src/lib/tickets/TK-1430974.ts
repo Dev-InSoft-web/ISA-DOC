@@ -46,28 +46,38 @@ export async function buildBodyTK1430974(): Promise<string> {
 	const solucion = noteList(
 		await note(
 			"mdi:source-branch",
-			`Cambios aplicados en repositorios internos:<ul style="margin:0.25rem 0 0 0;padding-left:1rem;">
-			<li><code>ISW-ClientesIS</code>: interceptNestedSubmit + submitCurso (commit <b>869c5ce</b>)</li>
-			<li><code>ISW-ClientesIS</code>: PlanDeEstudio.normalizeItem y ActCrear/ActModificar (commit <b>ac1e457</b>)</li>
-			<li><code>ISW-ClientesIS</code>: BtnRefAutoOpen auto-open cuando value vacío (commit <b>16b8db9</b>)</li>
+			`Resumen de cambios aplicados y estado:<ul style="margin:0.25rem 0 0 0;padding-left:1rem;">
+			<li><code>ISW-ClientesIS</code>: cambios en UI/controller (interceptNestedSubmit, submitCurso, normalizeItem, BtnRefAutoOpen). Estos cambios fueron probados localmente y están listos para push/PR; los hashes del repositorio remoto están pendientes de confirmación.</li>
+			<li><code>ISA-DOC</code>: actualizaciones de bitácora y evidencia (commits: <b>12e0d4e</b>, <b>e286214</b>, <b>7a90391</b>).</li>
 			</ul>`
 		),
 		await note(
-			"mdi:image",
-			`Evidencia: capturas subidas a imgbb y referenciadas en la bitácora.`,
+			"mdi:information-outline",
+			`Observación: si quieres que haga el push y abra el PR en <code>ISW-ClientesIS</code>, doy el siguiente paso.`,
 		),
 	);
 
 	const evidenciaHtml = `
 	<div style="margin-top:0.75rem;">
-	  <img src="https://i.ibb.co/fzzkh2Ms/tk1430974-01.png" style="max-width:100%;height:auto;margin-bottom:0.5rem;" alt="tk1430974-dialog">
-	  <div style="display:flex;gap:0.5rem;">
-	    <img src="https://i.ibb.co/fzzkh2Ms/tk1430974-01.png" style="width:32%;height:auto;" alt="picker">
-	    <img src="https://i.ibb.co/fzzkh2Ms/tk1430974-01.png" style="width:32%;height:auto;" alt="after-grid">
-	    <div style="flex:1;font-size:10pt;color:#444;">
-	      <strong>Estado:</strong> Corregido en entorno local; cambios commiteados en repositorio.<br>
-	      <strong>Commits:</strong> 869c5ce, ac1e457, 16b8db9<br>
-	      <strong>Nota:</strong> Si deseas que haga push y PR, indícalo y procedo.
+	  <div style="display:flex;flex-direction:column;gap:0.5rem;">
+	    <figure style="margin:0;">
+	      <img src="https://i.ibb.co/27P3QWXV/plan-Estudio-Cursos-Integrados.jpg" style="max-width:100%;height:auto;" alt="Plan de estudio - Cursos integrados">
+	      <figcaption style="font-size:10pt;color:#555;margin-top:0.25rem;">Vista grande: pestaña <strong>Cursos integrados</strong> (antes del alta).</figcaption>
+	    </figure>
+	    <div style="display:flex;gap:0.5rem;align-items:flex-start;">
+	      <figure style="flex:1;margin:0;">
+	        <img src="https://i.ibb.co/BSMFcYr/selector-Recurso-Auto-Open.jpg" style="width:100%;height:auto;" alt="Selector auto-open">
+	        <figcaption style="font-size:10pt;color:#555;margin-top:0.25rem;">Selector de recurso (comportamiento auto-open tras corrección).</figcaption>
+	      </figure>
+	      <figure style="flex:1;margin:0;">
+	        <img src="https://i.ibb.co/zHPz18CR/contenido-Persistido.jpg" style="width:100%;height:auto;" alt="Contenido persistido en grilla">
+	        <figcaption style="font-size:10pt;color:#555;margin-top:0.25rem;">Grilla mostrando el registro persistido tras el alta.</figcaption>
+	      </figure>
+	    </div>
+	    <div style="font-size:10pt;color:#444;margin-top:0.5rem;">
+	      <strong>Estado:</strong> Corrección probada localmente; evidencia subida a imgbb y referenciada en la bitácora.<br>
+	      <strong>Commits ISA-DOC:</strong> 12e0d4e, e286214, 7a90391<br>
+	      <strong>Siguiente paso:</strong> autorizame para hacer push/PR en <code>ISW-ClientesIS</code> y agrego los hashes reales del repo.
 	    </div>
 	  </div>
 	</div>`;
