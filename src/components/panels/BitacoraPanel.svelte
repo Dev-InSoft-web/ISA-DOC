@@ -128,6 +128,13 @@ import md_2026_06_01_resumen from "../../lib/bitacora/daily/2026-06/01/01-resume
 			<hr style="margin: 1.25rem 0; border: 0; border-top: 1px solid var(--is-outline, #ccc); opacity: 0.4;" />
 
 			<!-- =================== Secciones por FECHA (DESC) =================== -->
+			<!-- 2026-06-01 (hoy) — entrada diaria (mes actual no agrupado) -->
+			<DailySummaryAccordion
+				title="2026-06-01 — Resumen: TK-1430974 (correcciones, documentación y evidencia pendiente)"
+				open
+				mdIsa={md_2026_06_01_resumen}
+			/>
+
 			<!-- Agrupación mensual: Mayo 2026 -->
 			<Accordion title="Mayo 2026 — Entradas diarias" titleIcon="mdi:calendar-month" open={false} inner>
 				<!-- 2026-05-29 -->
@@ -350,7 +357,6 @@ import md_2026_06_01_resumen from "../../lib/bitacora/daily/2026-06/01/01-resume
 			<DailySummaryAccordion
 				title="2026-05-06 — Capacitación: tracking temporal de índices"
 				open
-				resumenOpen={false}
 				mdIsa={md_2026_05_06_isa}
 				mdIswIsp={md_2026_05_06_isw_isp}
 				mdIss={md_2026_05_06_iss}
@@ -530,13 +536,6 @@ import md_2026_06_01_resumen from "../../lib/bitacora/daily/2026-06/01/01-resume
 					/>
 				</Accordion>
 			</Accordion>
-
-		<!-- 2026-06-01 (hoy) — entrada diaria (mes actual no agrupado) -->
-		<DailySummaryAccordion
-			title="2026-06-01 — Resumen: TK-1430974 (correcciones, documentación y evidencia pendiente)"
-			open
-			mdIsa={md_2026_06_01_resumen}
-		/>
 
 		</ProjectSectionLayout>
 

@@ -47,7 +47,7 @@
 	// Permite alterar el título del accordion interno "Resumen del día".
 	export let resumenTitle: string = "Resumen del día";
 	export let resumenIcon: string = "mdi:notebook-edit-outline";
-	export let resumenOpen: boolean = true;
+	export let resumenOpen: boolean = false;
 </script>
 
 <Accordion {title} {titleIcon} bind:open>

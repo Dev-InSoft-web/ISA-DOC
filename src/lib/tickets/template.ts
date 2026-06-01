@@ -18,13 +18,27 @@ export const TICKET_HTML_PREFIX = `<div style="font-family:Tahoma;color:#777;fon
 export const TICKET_HTML_SUFFIX = `</div>`;
 
 const REPO_DEFAULT = "ISW-ClientesIS";
+const REPO_GITHUB_SLUG: Partial<Record<string, string>> = {
+	PatyIA: "ISS-AyudasCPIA",
+};
 const REPOS_VALIDOS = new Set([
 	"ISW-ClientesIS",
 	"ISP-SvelteComponents",
 	"ISP-ClientesIS",
 	"ISP-CLientesISServer",
 	"ISS-ClientesIS-ContaPymeU",
+	"ISS-AyudasCPIA",
+	"PatyIA",
 ]);
+
+function resolveCommitRepo(c: TicketCommit): string {
+	if (c.repo && REPOS_VALIDOS.has(c.repo)) return c.repo;
+	return REPO_DEFAULT;
+}
+
+function githubRepoSlug(repo: string): string {
+	return REPO_GITHUB_SLUG[repo] ?? repo;
+}
 
 // Repos internos del flujo de bitácora/documentación. Se mantienen en
 // `index.ts` como referencia local pero NUNCA deben aparecer en los
@@ -289,7 +303,7 @@ export function cotaMaximaMinutos(commits: TicketCommit[]): number {
 	const peso = ins + del * 0.5;
 	const baseMin = peso / 2;
 	const reposUnicos = new Set(
-		commits.map((c) => (c.repo && REPOS_VALIDOS.has(c.repo) ? c.repo : REPO_DEFAULT)),
+		commits.map((c) => resolveCommitRepo(c)),
 	).size;
 	const overhead = commits.length * 5 + Math.max(0, reposUnicos - 1) * 15;
 	const complejidad = 1.4;
@@ -353,8 +367,8 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	const tdBase = "padding:0.15rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;";
 	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;text-align:left;";
 	const filas = ordenados.map((c, idx) => {
-		const repo = c.repo && REPOS_VALIDOS.has(c.repo) ? c.repo : REPO_DEFAULT;
-		const url = `https://github.com/Dev-InSoft/${repo}/commit/${c.hash}`;
+		const repo = resolveCommitRepo(c);
+		const url = `https://github.com/Dev-InSoft/${githubRepoSlug(repo)}/commit/${c.hash}`;
 		const hash = escapeHtml(c.hash);
 		const desc = escapeHtml(c.descripcion);
 		const ins = c.ins ?? 0;
@@ -383,7 +397,7 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	const totalIns = ordenados.reduce((a, c) => a + (c.ins ?? 0), 0);
 	const totalDel = ordenados.reduce((a, c) => a + (c.del ?? 0), 0);
 	const reposAfectados = Array.from(
-		new Set(ordenados.map((c) => (c.repo && REPOS_VALIDOS.has(c.repo) ? c.repo : REPO_DEFAULT))),
+		new Set(ordenados.map((c) => resolveCommitRepo(c))),
 	);
 	const fechas = ordenados.map((c) => c.fecha ?? "").filter((s) => s !== "");
 	const tMin = fechas.length ? new Date(fechas[fechas.length - 1]).getTime() : 0;
