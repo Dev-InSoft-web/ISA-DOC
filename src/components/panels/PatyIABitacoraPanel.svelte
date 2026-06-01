@@ -15,6 +15,9 @@
 	import sqlSeedPromptsTdConsulta from "../../lib/patyia/sql/seed-prompts-tdconsulta.sql?raw";
 	import sqlUpdateDescripcionesInstruccion from "../../lib/patyia/sql/update-descripciones-instruccion.sql?raw";
 	import sqlUpdateNombresInstruccion from "../../lib/patyia/sql/update-nombres-instruccion.sql?raw";
+	import sqlAddModeloInstruccion from "../../lib/patyia/sql/add-modelo-instruccion.sql?raw";
+	import sqlResyncSeqConversaciones from "../../lib/patyia/sql/resync-seq-conversaciones.sql?raw";
+	import md_2026_06_01_tk1431662 from "../../lib/patyia/daily/2026-06/01/02-tk1431662-modelo-por-instruccion.md?raw";
 
 	// PatyIA tiene su propia BD (AYUDASCP_IA) — los endpoints de ejecución y
 	// ping están bifurcados respecto a los de ClientesIS para que el banner
@@ -42,13 +45,14 @@
 	withTickets
 	showDbBanner
 	dbPingUrl="/api/patyia/db/ping"
-	dbLabelOk="BD conectada · AYUDASCP_IA"
+	dbLabelOk="BD PatyIA conectada"
 >
 	<!-- 2026-06-01 (hoy) — entrada diaria (mes actual no agrupado) -->
 	<Accordion
-		title="2026-06-01 — PatyIA: TK-1431163, fix deploy UlMetrics y limpieza Groq"
+		title="2026-06-01 — PatyIA: TK-1431163, TK-1431662 (modelo por instrucción) y limpieza Groq"
 		titleIcon="mdi:calendar"
 		open={true}
+		checkKeys={["2026-06-01.patyia.instruccion.modelo"]}
 	>
 		<Accordion
 			title="Resumen del día"
@@ -56,6 +60,35 @@
 			inner
 		>
 			<BitacoraNote flat mdSource={md_2026_06_01_resumen} />
+		</Accordion>
+
+		<Accordion
+			title="TK-1431662 · MODELO en INSTRUCCION (modelo OpenAI por fila)"
+			titleIcon="mdi:brain"
+			inner
+			checkKey="2026-06-01.patyia.instruccion.modelo"
+		>
+			<BitacoraNote flat mdSource={md_2026_06_01_tk1431662} />
+			<SqlExecCard
+				title="AYUDASCP_IA · ADD MODELO en INSTRUCCION (default gpt-5-mini)"
+				sql={sqlAddModeloInstruccion}
+				desc="Idempotente: agrega MODELO a INSTRUCCION (13 tipos) con default gpt-5-mini. Resuelve AYUDASCP_IA_STAGING / AYUDASCP_IA automáticamente. Requiere paty_* en ISA-DOC/.env (copiar de PatyIA/local.settings.json) si el banner muestra CLIENTES u otra BD sin INSTRUCCION."
+				{executeSql}
+				checkKey="2026-06-01.patyia.instruccion.modelo"
+				confirmKind="warning"
+				confirmMessage={`Se agregará la columna MODELO (si no existe) y se normalizarán filas existentes con valor vacío a gpt-5-mini.\n\n¿Continuar?`}
+				height="360px"
+			/>
+			<SqlExecCard
+				title="AYUDASCP_IA · Resync SEQ_IDCONVERSACIONES"
+				sql={sqlResyncSeqConversaciones}
+				desc="Corrige error 400999 «El recurso a insertar ya existe» al crear conversación (secuencia desincronizada vs MAX(ICONVERSACION)). Ejecutar en staging si falla Iniciar conversación con API local."
+				{executeSql}
+				checkKey="2026-06-01.patyia.seq.conversaciones"
+				confirmKind="warning"
+				confirmMessage="Se ajustará SEQ_IDCONVERSACIONES al siguiente id libre (MAX+1).\n\n¿Continuar?"
+				height="280px"
+			/>
 		</Accordion>
 	</Accordion>
 

@@ -10,7 +10,7 @@ export const GET: APIRoute = async () => {
 	const body = {
 		server: true,
 		db: result.ok,
-		reason: result.ok ? "Conexión OK · AYUDASCP_IA" : (result.reason ?? "Sin razón"),
+		reason: result.reason ?? (result.ok ? "Conexión OK" : "Sin razón"),
 		ts: new Date().toISOString(),
 	};
 	return new Response(JSON.stringify(body), {

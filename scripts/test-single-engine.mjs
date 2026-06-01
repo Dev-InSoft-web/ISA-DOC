@@ -12,17 +12,17 @@
 //   ITERCERO      (id tercero existente, REQUERIDO)
 //   ICONTACTO     (id contacto, REQUERIDO)
 //   OUT_MD        (path destino del MD, auto-generado si no se indica)
-//   METRICS_LOG   (path al jsonl, default ../PatyIA/logs/metricas/turnos.jsonl)
+//   CONV_LOG_DIR  (directorio conv-*.json, default ../PatyIA/logs/conversaciones)
 
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 
 // ── Precios ────────────────────────────────────────────────────────────────
-const PRICING_PATH = resolve(
-  import.meta.dirname, "..", "..", "PatyIA", "src", "020 Controller", "tools", "storage", "openai-pricing.json"
+const INFOMAP_PATH = resolve(
+  import.meta.dirname, "..", "..", "PatyIA", "src", "020 Controller", "tools", "storage", "openai-infomap.json"
 );
-const PRICING = JSON.parse(readFileSync(PRICING_PATH, "utf8"));
+const PRICING = JSON.parse(readFileSync(INFOMAP_PATH, "utf8")).pricing ?? {};
 
 function tarifa(model) {
   if (!model) return null;
@@ -70,8 +70,8 @@ const BASE_URL = process.env.BASE_URL || "http://localhost:7071/api";
 const JWT = process.env.JWT || "";
 const ITERCERO = Number(process.env.ITERCERO || 0);
 const ICONTACTO = Number(process.env.ICONTACTO || 0);
-const METRICS_LOG = resolve(
-  process.env.METRICS_LOG || resolve(import.meta.dirname, "..", "..", "PatyIA", "logs", "metricas", "turnos.jsonl")
+const CONV_LOG_DIR = resolve(
+  process.env.CONV_LOG_DIR || resolve(import.meta.dirname, "..", "..", "PatyIA", "logs", "conversaciones"),
 );
 
 // Fecha dinámica para el path de salida
@@ -154,22 +154,34 @@ async function runEngine() {
 }
 
 // ── Métricas ───────────────────────────────────────────────────────────────
-async function readMetricas(iconv) {
-  if (!existsSync(METRICS_LOG)) {
-    console.warn(`AVISO: no existe ${METRICS_LOG}. Métricas no disponibles.`);
-    return [];
-  }
-  const txt = await readFile(METRICS_LOG, "utf8");
-  const out = [];
-  for (const ln of txt.split(/\r?\n/)) {
-    if (!ln.trim()) continue;
-    try { const r = JSON.parse(ln); if (r.iconversacion === iconv) out.push(r); } catch {}
-  }
-  return out;
+function leerConvLog(iconv) {
+  const p = resolve(CONV_LOG_DIR, `conv-${iconv}.json`);
+  if (!existsSync(p)) return null;
+  try { return JSON.parse(readFileSync(p, "utf8")); } catch { return null; }
+}
+
+function readMetricasDesdeConvLog(iconv, defaultEngine) {
+  const log = leerConvLog(iconv);
+  if (!log?.mensajes) return [];
+  return log.mensajes
+    .filter((m) => m.role === "assistant")
+    .map((m) => ({
+      ts: m.ts,
+      engine: m.engine || defaultEngine,
+      iconversacion: iconv,
+      itdconsulta: m.itdconsulta,
+      model: m.model,
+      usage: m.usage,
+      cost: m.cost || costoDesdeUsage(m.model, m.usage),
+      latency_ms: m.latency_ms,
+      prompt_chars: m.prompt_chars,
+      response_chars: m.response_chars,
+      response_id: m.response_id,
+    }));
 }
 
 function agregar(rows) {
-  const enriched = rows.map((r) => ({ ...r, _calc: costoDesdeUsage(r.model, r.usage) }));
+  const enriched = rows.map((r) => ({ ...r, _calc: r.cost || costoDesdeUsage(r.model, r.usage) }));
   const total = enriched.reduce((a, r) => a + r._calc.total_usd, 0);
   const lats = enriched.map((r) => r.latency_ms || 0).sort((a, b) => a - b);
   return {
@@ -251,7 +263,7 @@ function buildSection({ run, rows, ts }) {
 function buildHeader() {
   return `# PatyIA · Test engine: ${ENGINE}\n\n` +
     `**Mensajes por corrida:** ${PROMPTS.length} · mismo orden siempre.\n\n` +
-    `Tarifas: \`PatyIA/src/020 Controller/tools/storage/openai-pricing.json\`.\n\n` +
+    `Tarifas: \`PatyIA/src/020 Controller/tools/storage/openai-infomap.json\` (sección \`pricing\`).\n\n` +
     `---\n\n<!-- corridas:start -->\n`;
 }
 
@@ -259,8 +271,8 @@ function buildHeader() {
 (async () => {
   const run = await runEngine();
 
-  console.log(`\nLeyendo métricas desde ${METRICS_LOG}...`);
-  const rows = await readMetricas(run.iconversacion);
+  console.log(`\nLeyendo métricas desde ${CONV_LOG_DIR}/conv-${run.iconversacion}.json...`);
+  const rows = readMetricasDesdeConvLog(run.iconversacion, ENGINE);
   console.log(`Métricas recolectadas: ${rows.length}.`);
 
   const ts = new Date().toISOString().replace("T", " ").slice(0, 16);

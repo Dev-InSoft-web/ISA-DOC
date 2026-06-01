@@ -137,7 +137,7 @@ export const POST: APIRoute = async ({ request }) => {
 		reqDb.input("prompt", primerMensaje);
 		reqDb.input("qtokens", qtokens);
 		const sql = `
-			DECLARE @nuevo BIGINT = (SELECT ISNULL(MAX(ICONVERSACION), 0) + 1 FROM [${DB}].dbo.CONVERSACIONES);
+			DECLARE @nuevo BIGINT = NEXT VALUE FOR [${DB}].dbo.SEQ_IDCONVERSACIONES;
 			INSERT INTO [${DB}].dbo.CONVERSACIONES (
 				ICONVERSACION, ITERCERO, ICONTACTO, HILO, TITULO, FHCRE, IMODULO,
 				MODELO_IA, VERSION_AYUDA, QMENSAJES, QTOKENS, PROMPT, ITDESTADO,

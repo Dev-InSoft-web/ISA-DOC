@@ -1,6 +1,6 @@
 import sql from "mssql";
 import { config as loadDotenv } from "dotenv";
-import { getPool as getMainPool, pingDb as pingMainDb } from "./db.ts";
+import { getPool as getMainPool } from "./db.ts";
 
 // Carga `.env` por si el módulo se importa antes que `db.ts`.
 loadDotenv();
@@ -88,13 +88,39 @@ export async function getPatyPool(): Promise<sql.ConnectionPool> {
 	return connecting;
 }
 
+const PATY_INSTRUCCION_PROBE = `
+SELECT
+	DB_NAME() AS currentDb,
+	CASE
+		WHEN OBJECT_ID(N'dbo.INSTRUCCION', N'U') IS NOT NULL THEN DB_NAME()
+		WHEN OBJECT_ID(N'AYUDASCP_IA_STAGING.dbo.INSTRUCCION', N'U') IS NOT NULL THEN N'AYUDASCP_IA_STAGING'
+		WHEN OBJECT_ID(N'AYUDASCP_IA.dbo.INSTRUCCION', N'U') IS NOT NULL THEN N'AYUDASCP_IA'
+	END AS instruccionDb;
+`;
+
 export async function pingPatyDb(): Promise<{ ok: boolean; reason?: string }> {
 	const cfg = readPatyConfig();
-	if ("reuseMain" in cfg) return pingMainDb();
+	const reuseHint =
+		"reuseMain" in cfg
+			? " Define paty_hostdb/paty_userdb/paty_passdb/paty_namedb en ISA-DOC/.env (copia de PatyIA/local.settings.json)."
+			: "";
 	try {
 		const p = await getPatyPool();
-		await p.request().query("SELECT 1 AS ok");
-		return { ok: true };
+		const result = await p.request().query(PATY_INSTRUCCION_PROBE);
+		const row = result.recordset[0] as { currentDb?: string; instruccionDb?: string | null };
+		const currentDb = row?.currentDb ?? "?";
+		const instruccionDb = row?.instruccionDb ?? null;
+		if (instruccionDb) {
+			const target =
+				instruccionDb === currentDb
+					? currentDb
+					: `${currentDb} · INSTRUCCION en ${instruccionDb}`;
+			return { ok: true, reason: `Conexión OK · ${target}` };
+		}
+		return {
+			ok: false,
+			reason: `Conectado a «${currentDb}» pero dbo.INSTRUCCION no existe ahí ni en AYUDASCP_IA / AYUDASCP_IA_STAGING.${reuseHint}`,
+		};
 	} catch (err) {
 		const msg = err instanceof Error ? err.message : String(err);
 		return { ok: false, reason: msg };

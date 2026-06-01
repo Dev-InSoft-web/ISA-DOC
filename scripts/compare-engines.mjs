@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Comparativa empírica de costos: engine "responses" vs engine "agents-poc".
-// Envía 10 mensajes a cada endpoint, recolecta métricas desde logs/metricas/turnos.jsonl
+// Envía 10 mensajes a cada endpoint, recolecta métricas desde logs/conversaciones/conv-*.json
 // y genera un MD comparativo en ISA-DOC.
 //
 // Uso (PowerShell):
@@ -13,14 +13,14 @@
 //   ITERCERO      (id tercero existente, REQUERIDO)
 //   ICONTACTO     (id contacto, REQUERIDO)
 //   OUT_MD        (path destino del MD, default ISA-DOC/.../02-comparativa-engines-responses-vs-agents.md)
-//   METRICS_LOG   (path al jsonl, default ../logs/metricas/turnos.jsonl)
+//   CONV_LOG_DIR  (directorio conv-*.json, default ../PatyIA/logs/conversaciones)
 
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 
-const PRICING_PATH = resolve(import.meta.dirname, "..", "..", "PatyIA", "src", "020 Controller", "tools", "storage", "openai-pricing.json");
-const PRICING = JSON.parse(readFileSync(PRICING_PATH, "utf8"));
+const INFOMAP_PATH = resolve(import.meta.dirname, "..", "..", "PatyIA", "src", "020 Controller", "tools", "storage", "openai-infomap.json");
+const PRICING = JSON.parse(readFileSync(INFOMAP_PATH, "utf8")).pricing ?? {};
 
 function tarifa(model) {
   if (!model) return null;
@@ -50,8 +50,8 @@ const BASE_URL = process.env.BASE_URL || "http://localhost:7071/api";
 const JWT = process.env.JWT || "";
 const ITERCERO = Number(process.env.ITERCERO || 0);
 const ICONTACTO = Number(process.env.ICONTACTO || 0);
-const METRICS_LOG = resolve(
-  process.env.METRICS_LOG || resolve(import.meta.dirname, "..", "..", "PatyIA", "logs", "metricas", "turnos.jsonl"),
+const CONV_LOG_DIR = resolve(
+  process.env.CONV_LOG_DIR || resolve(import.meta.dirname, "..", "..", "PatyIA", "logs", "conversaciones"),
 );
 const OUT_MD = resolve(
   process.env.OUT_MD ||
@@ -139,25 +139,28 @@ async function runEngine(label, route) {
   return { label, route, iconversacion: iconv, turnos };
 }
 
-async function readMetricas(iconvA, iconvB) {
-  if (!existsSync(METRICS_LOG)) {
-    console.warn(`AVISO: no existe ${METRICS_LOG}. Las métricas detalladas no se incluirán.`);
-    return [];
-  }
-  const txt = await readFile(METRICS_LOG, "utf8");
-  const out = [];
-  for (const ln of txt.split(/\r?\n/)) {
-    if (!ln.trim()) continue;
-    try {
-      const r = JSON.parse(ln);
-      if (r.iconversacion === iconvA || r.iconversacion === iconvB) out.push(r);
-    } catch {}
-  }
-  return out;
+async function readMetricasDesdeConvLog(iconv, defaultEngine) {
+  const log = leerConvLog(iconv);
+  if (!log?.mensajes) return [];
+  return log.mensajes
+    .filter((m) => m.role === "assistant")
+    .map((m) => ({
+      ts: m.ts,
+      engine: m.engine || defaultEngine,
+      iconversacion: iconv,
+      itdconsulta: m.itdconsulta,
+      model: m.model,
+      usage: m.usage,
+      cost: m.cost || costoDesdeUsage(m.model, m.usage),
+      latency_ms: m.latency_ms,
+      prompt_chars: m.prompt_chars,
+      response_chars: m.response_chars,
+      response_id: m.response_id,
+    }));
 }
 
 function agregar(rows) {
-  const enriched = rows.map((r) => ({ ...r, _calc: costoDesdeUsage(r.model, r.usage) }));
+  const enriched = rows.map((r) => ({ ...r, _calc: r.cost || costoDesdeUsage(r.model, r.usage) }));
   const total_in = enriched.reduce((a, r) => a + r._calc.input_usd, 0);
   const total_cached = enriched.reduce((a, r) => a + r._calc.cached_usd, 0);
   const total_out = enriched.reduce((a, r) => a + r._calc.output_usd, 0);
@@ -188,8 +191,6 @@ function agregar(rows) {
 
 function fmtUsd(n) { return `$${n.toFixed(6)}`; }
 function fmtPct(a, b) { if (!b) return "—"; return `${(((a - b) / b) * 100).toFixed(1)}%`; }
-
-const CONV_LOG_DIR = resolve(import.meta.dirname, "..", "..", "PatyIA", "logs", "conversaciones");
 
 function loadOpenAIKey() {
   if (process.env.OPENAI_API_KEY) return process.env.OPENAI_API_KEY;
@@ -272,7 +273,7 @@ function buildHeader() {
   md += `**Mensajes enviados por corrida:** ${PROMPTS.length} por engine, mismos prompts en el mismo orden.\n\n`;
   md += `**Modelo bajo prueba:** se determina por corrida (ver tabla de Totales). Ambos engines usan el modelo configurado en \`OPENAI_MODEL\` (PatyIA \`local.settings.json\`).\n\n`;
   md += `**Fórmula (regla de tres):** \`USD = (tokens × tarifa_por_1M) ÷ 1 000 000\`. El input cobrado descuenta los tokens cacheados: \`input_billable = input_tokens − cached_tokens\`.\n\n`;
-  md += `Tarifas: ver \`PatyIA/src/020 Controller/tools/storage/openai-pricing.json\`.\n\n`;
+  md += `Tarifas: ver \`PatyIA/src/020 Controller/tools/storage/openai-infomap.json\` (sección \`pricing\`).\n\n`;
   md += `---\n\n`;
   md += `<!-- corridas:start -->\n`;
   return md;
@@ -366,10 +367,9 @@ function mergeMD(headerBlock, prevContent, newSection) {
     runA = await runEngine("responses", "conversacion");
     runB = await runEngine("agents-poc", "conversacion-agents");
   }
-  console.log(`\nLeyendo métricas desde ${METRICS_LOG}...`);
-  const all = await readMetricas(runA.iconversacion, runB.iconversacion);
-  const rowsA = all.filter((r) => r.iconversacion === runA.iconversacion && r.engine === "responses");
-  const rowsB = all.filter((r) => r.iconversacion === runB.iconversacion && r.engine === "agents-poc");
+  console.log(`\nLeyendo métricas desde ${CONV_LOG_DIR}/conv-*.json...`);
+  const rowsA = readMetricasDesdeConvLog(runA.iconversacion, "responses");
+  const rowsB = readMetricasDesdeConvLog(runB.iconversacion, "agents-poc");
   console.log(`Métricas recolectadas: responses=${rowsA.length}, agents=${rowsB.length}.`);
 
   const logA = leerConvLog(runA.iconversacion);

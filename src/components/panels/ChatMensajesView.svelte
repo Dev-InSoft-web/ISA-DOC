@@ -17,11 +17,14 @@
 		ts?: string;
 		response_id?: string;
 		model?: string;
+		modelo_configurado?: string;
 		usage?: Record<string, unknown>;
 		tokens?: MsgTokens;
 		prompt_id?: string;
 		prompt_version?: string;
 		prompt_variables?: Record<string, unknown>;
+		nombre_usuario?: string;
+		nombre_usado_en_respuesta?: boolean;
 		itdconsulta?: string;
 		instrucciones?: string[];
 		vectorStoreIds?: string[];
@@ -37,6 +40,7 @@
 		contenido: string;
 		fecha: string;
 		esUsuario: boolean;
+		esOperativa?: boolean;
 		archivos: ArchivoCita[];
 		meta?: MsgMeta | null;
 	}
@@ -49,7 +53,7 @@
 
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import { Card, FlexLayout, Modal, Button } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Card, FlexLayout, Modal } from "@ingenieria_insoft/ispsveltecomponents";
 	import { marked } from "marked";
 
 	export let mensajes: MsgVista[] = [];
@@ -60,8 +64,35 @@
 	let metaModalData: MsgMeta | null = null;
 	let metaModalTitle = "";
 
+	function tokensFromUsage(usage: unknown): MsgTokens | undefined {
+		if (!usage || typeof usage !== "object") return undefined;
+		const u = usage as Record<string, unknown>;
+		const input = Number(u.input_tokens ?? u.prompt_tokens ?? 0) || 0;
+		const cached = Number(
+			(u.input_tokens_details as Record<string, unknown> | undefined)?.cached_tokens
+			?? (u.prompt_tokens_details as Record<string, unknown> | undefined)?.cached_tokens
+			?? 0,
+		) || 0;
+		const output = Number(u.output_tokens ?? u.completion_tokens ?? 0) || 0;
+		const reasoning = Number(
+			(u.output_tokens_details as Record<string, unknown> | undefined)?.reasoning_tokens
+			?? (u.completion_tokens_details as Record<string, unknown> | undefined)?.reasoning_tokens
+			?? 0,
+		) || 0;
+		const total = Number(u.total_tokens ?? 0) || input + output;
+		if (!total && !input && !output) return undefined;
+		return { input, cached, output, reasoning, total };
+	}
+
+	function metaConTokens(meta: MsgMeta | null | undefined): MsgMeta | null {
+		if (!meta) return null;
+		if (meta.tokens?.total) return meta;
+		const fromUsage = tokensFromUsage(meta.usage);
+		return fromUsage ? { ...meta, tokens: fromUsage } : meta;
+	}
+
 	function abrirMetaModal(m: MsgVista): void {
-		metaModalData = m.meta ?? null;
+		metaModalData = metaConTokens(m.meta);
 		metaModalTitle = `Trazabilidad · #${m.idMsg}`;
 		metaModalOpen = true;
 	}
@@ -69,6 +100,17 @@
 	function shortId(s: string | undefined, head = 10, tail = 4): string {
 		if (!s) return "";
 		return s.length <= head + tail + 1 ? s : `${s.slice(0, head)}…${s.slice(-tail)}`;
+	}
+
+	function mostrarFecha(raw: string): string {
+		if (!raw) return "";
+		if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(raw)) {
+			const d = new Date(raw);
+			if (!Number.isNaN(d.getTime())) {
+				return d.toLocaleString("es-CO", { dateStyle: "short", timeStyle: "medium" });
+			}
+		}
+		return raw;
 	}
 
 	marked.setOptions({ gfm: true, breaks: true });
@@ -121,16 +163,32 @@
 
 <div class="chat-historial custom-scrollbar" on:click={onChatClick} role="presentation">
 	{#each mensajes as m}
-		<FlexLayout justify={m.esUsuario ? "end" : "start"} items="start" style="width: 100%;">
-			<div class="msg-wrap">
+		<FlexLayout justify={m.esOperativa ? "start" : m.esUsuario ? "end" : "start"} items="start" style="width: 100%;">
+			<div class="msg-wrap" class:msg-wrap-operativa={m.esOperativa}>
 				<Card
 					variant="solid"
-					style={m.esUsuario ? "background-color: color-mix(in srgb, var(--is-paper) 60%, var(--is-primary)); color: #fff;" : ""}
+					style={m.esOperativa
+						? "background: color-mix(in srgb, #64748b 22%, var(--is-paper)); border: 1px solid rgba(148, 163, 184, 0.35); font-size: 0.82rem;"
+						: m.esUsuario
+							? "background-color: #0b3360; color: #ffffff;"
+							: ""}
 				>
-					<div class="msg-head">
-						<span>#{m.idMsg} · {m.rol}{m.fecha ? ` · ${m.fecha}` : ""}</span>
+					<div class="msg-head" class:msg-head-operativa={m.esOperativa}>
+						<span>#{m.idMsg} · {m.rol}{m.fecha ? ` · ${mostrarFecha(m.fecha)}` : ""}</span>
 						{#if m.meta}
 							<span class="meta-badges">
+								{#if m.meta.extra?.operativa_key}
+									<span class="badge badge-operativa" title="consulta operativa">{m.meta.extra.operativa_key}</span>
+								{/if}
+								{#if m.meta.nombre_usuario}
+									<span class="badge badge-nombre" title="nombre_usuario enviado a OpenAI">@{m.meta.nombre_usuario}</span>
+								{/if}
+								{#if m.meta.nombre_usuario && m.meta.nombre_usado_en_respuesta === false}
+									<span class="badge badge-warn" title="El nombre fue enviado pero no aparece en la respuesta">sin nombre</span>
+								{/if}
+								{#if m.meta.nombre_usado_en_respuesta === true}
+									<span class="badge badge-ok" title="Nombre usado en la respuesta">✓ nombre</span>
+								{/if}
 								{#if m.meta.itdconsulta}
 									<span class="badge badge-itd" title="itdconsulta">{m.meta.itdconsulta}</span>
 								{/if}
@@ -140,8 +198,9 @@
 								{#if m.meta.model}
 									<span class="badge badge-model" title={`model: ${m.meta.model}`}>{m.meta.model}</span>
 								{/if}
-								{#if m.meta.tokens?.total}
-									<span class="badge badge-tokens" title={`in:${m.meta.tokens.input ?? 0} (cached:${m.meta.tokens.cached ?? 0}) · out:${m.meta.tokens.output ?? 0} (reason:${m.meta.tokens.reasoning ?? 0}) · total:${m.meta.tokens.total}`}>{m.meta.tokens.total}t</span>
+								{#if (m.meta.tokens?.total ?? tokensFromUsage(m.meta.usage)?.total)}
+									{@const tk = m.meta.tokens?.total ? m.meta.tokens : tokensFromUsage(m.meta.usage)}
+									<span class="badge badge-tokens" title={`in:${tk?.input ?? 0} (cached:${tk?.cached ?? 0}) · out:${tk?.output ?? 0} (reason:${tk?.reasoning ?? 0}) · total:${tk?.total ?? 0}`}>{tk?.total ?? 0}t</span>
 								{/if}
 								{#if m.meta.premisas?.length}
 									{#each m.meta.premisas as p}
@@ -152,7 +211,7 @@
 							</span>
 						{/if}
 					</div>
-					<div class="msg-body prose">{@html insertarCitas(mdToHtml(m.contenido), m.archivos)}</div>
+					<div class="msg-body prose" class:msg-body-operativa={m.esOperativa}>{@html insertarCitas(mdToHtml(m.contenido), m.archivos)}</div>
 				</Card>
 			</div>
 		</FlexLayout>
@@ -161,14 +220,12 @@
 
 <Modal bind:bshow={metaModalOpen} onClose={() => (metaModalOpen = false)} style="width: 80dvw; max-width: 880px;">
 	<svelte:fragment slot="title">
-		<div style="display:flex; align-items:center; justify-content:space-between; gap:0.5rem; width:100%;">
-			<strong>{metaModalTitle}</strong>
-			<Button variant="outlined" onClick={() => (metaModalOpen = false)} style="width: fit-content;">Cerrar</Button>
-		</div>
+		<strong>{metaModalTitle}</strong>
 	</svelte:fragment>
 	{#if metaModalData}
 		<div class="meta-grid">
 			{#if metaModalData.ts}<div class="meta-row"><span class="meta-k">ts</span><span class="meta-v">{metaModalData.ts}</span></div>{/if}
+			{#if metaModalData.nombre_usuario}<div class="meta-row"><span class="meta-k">nombre_usuario</span><span class="meta-v"><strong>{metaModalData.nombre_usuario}</strong> <small>(variable PR_GENERAL → OpenAI)</small></span></div>{/if}
 			{#if metaModalData.itdconsulta}<div class="meta-row"><span class="meta-k">itdconsulta</span><span class="meta-v"><span class="badge badge-itd">{metaModalData.itdconsulta}</span></span></div>{/if}
 			{#if metaModalData.prompt_id}<div class="meta-row"><span class="meta-k">prompt_id</span><span class="meta-v"><code>{metaModalData.prompt_id}</code></span></div>{/if}
 			{#if metaModalData.prompt_version}<div class="meta-row"><span class="meta-k">prompt_version</span><span class="meta-v"><code>{metaModalData.prompt_version}</code></span></div>{/if}
@@ -208,6 +265,20 @@
 	.msg-wrap {
 		max-width: 80%;
 	}
+	.msg-wrap-operativa {
+		max-width: 300px;
+		opacity: 0.95;
+	}
+	.msg-head-operativa {
+		font-size: 0.65rem;
+		opacity: 0.7;
+		margin-bottom: 0.25rem;
+	}
+	.msg-body-operativa {
+		font-size: 0.78rem;
+		line-height: 1.4;
+		opacity: 0.88;
+	}
 	.msg-head {
 		font-size: 0.72rem;
 		text-transform: uppercase;
@@ -242,6 +313,11 @@
 		border-color: rgba(168, 85, 247, 0.5);
 		color: #d8b4fe;
 	}
+	.badge-nombre {
+		background: rgba(20, 184, 166, 0.2);
+		border-color: rgba(20, 184, 166, 0.55);
+		color: #5eead4;
+	}
 	.badge-pmpt {
 		background: rgba(34, 197, 94, 0.18);
 		border-color: rgba(34, 197, 94, 0.5);
@@ -265,6 +341,22 @@
 		border-color: rgba(244, 114, 182, 0.5);
 		color: #fbcfe8;
 		font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+	}
+	.badge-operativa {
+		background: rgba(148, 163, 184, 0.22);
+		border-color: rgba(148, 163, 184, 0.55);
+		color: #cbd5e1;
+		font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
+	}
+	.badge-warn {
+		background: rgba(251, 146, 60, 0.2);
+		border-color: rgba(251, 146, 60, 0.55);
+		color: #fdba74;
+	}
+	.badge-ok {
+		background: rgba(34, 197, 94, 0.18);
+		border-color: rgba(34, 197, 94, 0.45);
+		color: #86efac;
 	}
 	.meta-info-btn {
 		background: rgba(255, 255, 255, 0.08);

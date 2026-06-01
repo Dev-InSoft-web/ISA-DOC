@@ -740,7 +740,7 @@ const data = await r.json();
 	let convWarnings: string[] = [];
 	let convRow: SqlRow | null = null;
 	let convMensajes: SqlRow[] = [];
-	let convFuenteMensajes: "openai" | "calificados" | "vacio" = "vacio";
+	let convFuenteMensajes: "openai" | "calificados" | "log" | "vacio" = "vacio";
 	let convVectorStoreIds: string[] = [];
 
 	// --- Interacción staging ---
@@ -851,7 +851,7 @@ const data = await r.json();
 			idMsg: `${rol}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
 			rol,
 			contenido,
-			fecha: new Date().toISOString(),
+			fecha: formatearFechaMsg(new Date().toISOString()),
 			esUsuario: rol === "user",
 			archivos: [],
 		};
@@ -955,14 +955,29 @@ const data = await r.json();
 					if (icon > 0) interConvId = icon;
 					const hilo = String(parsed.hilo ?? "");
 					if (hilo) interHilo = hilo;
-					if (evento === "end" && parsed.meta && typeof parsed.meta === "object") {
-						const meta = parsed.meta as MsgVista["meta"];
+					const meta = normalizeMeta(parsed.meta);
+					if (evento === "end" && meta) {
 						asistente.meta = meta;
 						const idxUser = interMensajes.length - 2;
 						if (idxUser >= 0 && interMensajes[idxUser].esUsuario) {
-							interMensajes[idxUser].meta = meta;
+							interMensajes[idxUser].meta = {
+								ts: meta.ts,
+								nombre_usuario: meta.nombre_usuario,
+								itdconsulta: meta.itdconsulta,
+								premisas: meta.premisas,
+								prompt_id: meta.prompt_id,
+								tokens: meta.tokens
+									? { input: meta.tokens.input, cached: meta.tokens.cached, total: meta.tokens.input ?? meta.tokens.total }
+									: undefined,
+							};
 						}
 						interMensajes = [...interMensajes];
+					}
+					const iconFin = Number(parsed.iconversacion ?? 0);
+					if (evento === "end" && iconFin > 0) {
+						interConvId = iconFin;
+						const desdeLog = await cargarMensajesDesdeLog(iconFin);
+						if (desdeLog?.length) interMensajes = desdeLog;
 					}
 				} else if (evento === "error") {
 					interError = String(parsed.error ?? parsed.mensaje ?? "error");
@@ -1017,6 +1032,10 @@ const data = await r.json();
 						const txt = String((parsed as { texto?: string }).texto ?? "");
 						if (txt && !asistente.contenido) asistente.contenido = txt;
 						interMensajes = [...interMensajes];
+						if (interConvId) {
+							const desdeLog = await cargarMensajesDesdeLog(interConvId);
+							if (desdeLog?.length) interMensajes = desdeLog;
+						}
 					} else if (evento === "error") {
 						interError = String((parsed as { error?: string }).error ?? "error");
 					}
@@ -1087,24 +1106,29 @@ const data = await r.json();
 			interConvId = idNum;
 			interHilo = String(data.conversacion?.HILO ?? data.conversacion?.hilo ?? "");
 			interHistorialCargado = true;
-			const msgs = data.mensajesOpenAI ?? data.mensajesCalificados ?? [];
-			interMensajes = msgs.map((m, i) => {
-				const rol = pickStr(m, ROLE_KEYS) || "assistant";
-				const contenido = pickStr(m, CONTENT_KEYS);
-				const fecha = pickStr(m, FECHA_KEYS);
-				const esUsuario = /user|usuario|cliente/i.test(rol);
-				const meta = (m as Record<string, unknown>).meta ?? null;
+			const desdeLog = await cargarMensajesDesdeLog(idNum);
+			if (desdeLog?.length) {
+				interMensajes = desdeLog;
+			} else {
+				const msgs = data.mensajesOpenAI ?? data.mensajesCalificados ?? [];
+				interMensajes = msgs.map((m, i) => {
+					const rol = pickStr(m, ROLE_KEYS) || "assistant";
+					const contenido = pickStr(m, CONTENT_KEYS);
+					const fecha = pickStr(m, FECHA_KEYS);
+					const esUsuario = /user|usuario|cliente/i.test(rol);
+					const meta = normalizeMeta((m as Record<string, unknown>).meta);
 
-				return {
-					idMsg: `hist-${i}-${pickStr(m, ID_KEYS) || i}`,
-					rol,
-					contenido,
-					fecha: formatearFechaMsg(fecha) || new Date().toLocaleString(),
-					esUsuario,
-					archivos: [],
-					meta: meta as MsgVista["meta"],
-				};
-			});
+					return {
+						idMsg: `hist-${i}-${pickStr(m, ID_KEYS) || i}`,
+						rol,
+						contenido,
+						fecha: formatearFechaMsg(fecha) || new Date().toLocaleString("es-CO", { dateStyle: "short", timeStyle: "medium" }),
+						esUsuario,
+						archivos: [],
+						meta: meta ?? undefined,
+					};
+				});
+			}
 			if (itercero) await ponerIdentidadAlTope(itercero, icontacto);
 		} catch (err) {
 			interError = err instanceof Error ? err.message : String(err);
@@ -1270,14 +1294,25 @@ const data = await r.json();
 			}
 			convRow = data.conversacion ?? null;
 			convVectorStoreIds = Array.isArray(data.vectorStoreIds) ? data.vectorStoreIds : [];
-			const openai = Array.isArray(data.mensajesOpenAI) ? data.mensajesOpenAI : [];
-			const calif = Array.isArray(data.mensajesCalificados) ? data.mensajesCalificados : [];
-			if (openai.length) {
-				convMensajes = openai;
-				convFuenteMensajes = "openai";
-			} else if (calif.length) {
-				convMensajes = calif;
-				convFuenteMensajes = "calificados";
+			const desdeLog = await cargarMensajesDesdeLog(convId);
+			if (desdeLog?.length) {
+				convMensajes = desdeLog.map((m) => ({
+					autor: m.esUsuario ? "Usuario" : m.rol.startsWith("OP") ? "Operativa" : "Asistente",
+					mensaje: m.contenido,
+					fecha_hora: m.fecha,
+					meta: m.meta,
+				})) as SqlRow[];
+				convFuenteMensajes = "log";
+			} else {
+				const openai = Array.isArray(data.mensajesOpenAI) ? data.mensajesOpenAI : [];
+				const calif = Array.isArray(data.mensajesCalificados) ? data.mensajesCalificados : [];
+				if (openai.length) {
+					convMensajes = openai;
+					convFuenteMensajes = "openai";
+				} else if (calif.length) {
+					convMensajes = calif;
+					convFuenteMensajes = "calificados";
+				}
 			}
 			convWarnings = Array.isArray(data.warnings) ? data.warnings : [];
 		} catch (e) {
@@ -1301,13 +1336,106 @@ const data = await r.json();
 		const n = Number(raw);
 		if (Number.isFinite(n) && n > 1_000_000_000) {
 			const ms = n < 1e12 ? n * 1000 : n;
-			try { return new Date(ms).toLocaleString(); } catch { return raw; }
+			try {
+				return new Date(ms).toLocaleString("es-CO", { dateStyle: "short", timeStyle: "medium" });
+			} catch { return raw; }
 		}
 		if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(raw)) {
 			const d = new Date(raw);
-			if (!Number.isNaN(d.getTime())) return d.toLocaleString();
+			if (!Number.isNaN(d.getTime())) {
+				return d.toLocaleString("es-CO", { dateStyle: "short", timeStyle: "medium" });
+			}
 		}
 		return raw;
+	}
+
+	function tokensFromUsageLog(usage: unknown): MsgVista["meta"] extends { tokens?: infer T } ? T : undefined {
+		if (!usage || typeof usage !== "object") return undefined;
+		const u = usage as Record<string, unknown>;
+		const input = Number(u.input_tokens ?? u.prompt_tokens ?? 0) || 0;
+		const cached = Number(
+			(u.input_tokens_details as Record<string, unknown> | undefined)?.cached_tokens
+			?? (u.prompt_tokens_details as Record<string, unknown> | undefined)?.cached_tokens
+			?? 0,
+		) || 0;
+		const output = Number(u.output_tokens ?? u.completion_tokens ?? 0) || 0;
+		const reasoning = Number(
+			(u.output_tokens_details as Record<string, unknown> | undefined)?.reasoning_tokens
+			?? (u.completion_tokens_details as Record<string, unknown> | undefined)?.reasoning_tokens
+			?? 0,
+		) || 0;
+		const total = Number(u.total_tokens ?? 0) || input + output;
+		if (!total && !input && !output) return undefined;
+		return { input, cached, output, reasoning, total } as MsgVista["meta"] extends { tokens?: infer T } ? T : undefined;
+	}
+
+	function normalizeMeta(raw: unknown): MsgVista["meta"] {
+		if (!raw || typeof raw !== "object") return null;
+		const o = raw as Record<string, unknown>;
+		const usage = o.usage as Record<string, unknown> | undefined;
+		const tokensRaw = o.tokens as MsgVista["meta"] extends { tokens?: infer T } ? T : undefined;
+		const tokens = (tokensRaw as { total?: number } | undefined)?.total
+			? tokensRaw
+			: tokensFromUsageLog(usage) ?? tokensRaw;
+		return {
+			ts: typeof o.ts === "string" ? o.ts : undefined,
+			nombre_usuario: typeof o.nombre_usuario === "string" ? o.nombre_usuario : undefined,
+			nombre_usado_en_respuesta: typeof o.nombre_usado_en_respuesta === "boolean" ? o.nombre_usado_en_respuesta : undefined,
+			itdconsulta: typeof o.itdconsulta === "string" ? o.itdconsulta : undefined,
+			model: typeof o.model === "string" ? o.model : undefined,
+			modelo_configurado: typeof o.modelo_configurado === "string" ? o.modelo_configurado : undefined,
+			prompt_id: typeof o.prompt_id === "string" ? o.prompt_id : undefined,
+			prompt_version: o.prompt_version as string | number | undefined,
+			premisas: Array.isArray(o.premisas) ? o.premisas.map(String) : undefined,
+			tokens,
+			usage,
+			response_id: typeof o.response_id === "string" ? o.response_id : undefined,
+			prompt_variables: o.prompt_variables as Record<string, unknown> | undefined,
+			instrucciones: Array.isArray(o.instrucciones) ? o.instrucciones.map(String) : undefined,
+			vectorStoreIds: Array.isArray(o.vectorStoreIds) ? o.vectorStoreIds.map(String) : undefined,
+		};
+	}
+
+	function metaDesdeLogMensaje(m: Record<string, unknown>): MsgVista["meta"] {
+		const base = normalizeMeta(m);
+		if (String(m.role ?? "") === "operativa" && m.operativa_key) {
+			return {
+				...base,
+				extra: {
+					operativa_key: String(m.operativa_key),
+					operativa_engine: m.operativa_engine != null ? String(m.operativa_engine) : undefined,
+				},
+			};
+		}
+		return base;
+	}
+
+	function convLogToMsgVista(m: Record<string, unknown>, i: number): MsgVista {
+		const role = String(m.role ?? "assistant");
+		const esOperativa = role === "operativa";
+		const esUsuario = role === "user";
+		return {
+			idMsg: `${role}-${String(m.seq ?? i)}-${String(m.turno ?? 0)}`,
+			rol: esOperativa ? `OP · ${String(m.operativa_key ?? "operativa")}` : esUsuario ? "user" : "assistant",
+			contenido: String(m.text ?? ""),
+			fecha: formatearFechaMsg(String(m.ts ?? "")),
+			esUsuario,
+			esOperativa,
+			archivos: [],
+			meta: metaDesdeLogMensaje(m),
+		};
+	}
+
+	async function cargarMensajesDesdeLog(iconversacion: number): Promise<MsgVista[] | null> {
+		try {
+			const r = await fetch(`/api/patyia/conversacion/${iconversacion}/log`);
+			if (!r.ok) return null;
+			const data = (await r.json()) as { ok?: boolean; log?: { mensajes?: Record<string, unknown>[] } };
+			if (!data.ok || !Array.isArray(data.log?.mensajes) || !data.log.mensajes.length) return null;
+			return data.log.mensajes.map(convLogToMsgVista);
+		} catch {
+			return null;
+		}
 	}
 
 	function aMsgVista(m: SqlRow, i: number): MsgVista {
@@ -1322,7 +1450,15 @@ const data = await r.json();
 			? (rawArchivos as ArchivoCita[]).filter((a) => a && typeof a.file_id === "string" && typeof a.marcador === "string")
 			: [];
 
-		return { idMsg, rol, contenido, fecha, esUsuario, archivos };
+		return {
+			idMsg,
+			rol,
+			contenido,
+			fecha,
+			esUsuario,
+			archivos,
+			meta: normalizeMeta((m as { meta?: unknown }).meta) ?? undefined,
+		};
 	}
 
 	$: vistaMensajes = convMensajes.map(aMsgVista);
@@ -1797,7 +1933,7 @@ const data = await r.json();
 						{#if vistaMensajes.length}
 							<section>
 								<FlexLayout justify="between" items="center">
-									<h3 style="margin: 0;">Mensajes ({vistaMensajes.length}) <span class="sub">· fuente: {convFuenteMensajes === "openai" ? "OpenAI threads" : "MENSAJESCALIFICADOS (fallback)"}</span></h3>
+									<h3 style="margin: 0;">Mensajes ({vistaMensajes.length}) <span class="sub">· fuente: {convFuenteMensajes === "log" ? "conv-*.json (log local)" : convFuenteMensajes === "openai" ? "OpenAI threads" : convFuenteMensajes === "calificados" ? "MENSAJESCALIFICADOS (fallback)" : "—"}</span></h3>
 									<FlexLayout items="center">
 										<ButtonIconify icon="mdi:help-circle-outline" onClick={() => (tutorialOpen = true)} title="¿Cómo se genera este hilo?" />
 										<ButtonIconify icon="mdi:arrow-expand" onClick={() => (convModalOpen = true)} title="Abrir conversación ampliada" />
@@ -2005,7 +2141,7 @@ const data = await r.json();
 
 			<p class="nota">
 				En este hilo la fuente activa es:
-				<strong>{convFuenteMensajes === "openai" ? "API OpenAI" : convFuenteMensajes === "calificados" ? "BD (MENSAJESCALIFICADOS)" : "vacío"}</strong>.
+				<strong>{convFuenteMensajes === "log" ? "Log local PatyIA (conv-*.json)" : convFuenteMensajes === "openai" ? "API OpenAI" : convFuenteMensajes === "calificados" ? "BD (MENSAJESCALIFICADOS)" : "vacío"}</strong>.
 			</p>
 		</div>
 	</Modal>
