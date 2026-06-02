@@ -15,12 +15,12 @@
 	import sqlSeedPromptsTdConsulta from "../../lib/patyia/sql/seed-prompts-tdconsulta.sql?raw";
 	import sqlUpdateDescripcionesInstruccion from "../../lib/patyia/sql/update-descripciones-instruccion.sql?raw";
 	import sqlUpdateNombresInstruccion from "../../lib/patyia/sql/update-nombres-instruccion.sql?raw";
-	import sqlAddModeloInstruccion from "../../lib/patyia/sql/add-modelo-instruccion-ssms.sql?raw";
-	import sqlResyncSeqConversaciones from "../../lib/patyia/sql/resync-seq-conversaciones.sql?raw";
 	import sqlSeedPromptsUltraTdConsulta from "../../lib/patyia/sql/seed-prompts-ultra-tdconsulta.sql?raw";
 	import sqlUpdateInstruccionModeloGpt5Nano from "../../lib/patyia/sql/update-instruccion-modelo-gpt5-nano.sql?raw";
+	import sqlCreateConversacionLog from "../../lib/patyia/sql/create-conversacion-log.sql?raw";
 	import md_2026_06_01_tk1431662 from "../../lib/patyia/daily/2026-06/01/02-tk1431662-modelo-por-instruccion.md?raw";
 	import md_2026_06_01_prompts_ultra from "../../lib/patyia/daily/2026-06/01/03-prompts-ultra-tdconsulta.md?raw";
+	import md_2026_06_01_conversacion_log from "../../lib/patyia/daily/2026-06/01/04-conversacion-log-tabla.md?raw";
 
 	// PatyIA tiene su propia BD (AYUDASCP_IA) — los endpoints de ejecución y
 	// ping están bifurcados respecto a los de ClientesIS para que el banner
@@ -55,7 +55,7 @@
 		title="2026-06-01 — PatyIA: TK-1431163, TK-1431662 (modelo por instrucción), prompts Ultra y limpieza Groq"
 		titleIcon="mdi:calendar"
 		open={true}
-		checkKeys={["2026-06-01.patyia.instruccion.modelo", "2026-06-01.patyia.seed-prompts-ultra"]}
+		checkKeys={["2026-06-01.patyia.instruccion.modelo-nano", "2026-06-01.patyia.seed-prompts-ultra"]}
 	>
 		<Accordion
 			title="Resumen del día"
@@ -69,38 +69,37 @@
 			title="TK-1431662 · MODELO en INSTRUCCION (modelo OpenAI por fila)"
 			titleIcon="mdi:brain"
 			inner
-			checkKey="2026-06-01.patyia.instruccion.modelo"
+			checkKey="2026-06-01.patyia.instruccion.modelo-nano"
 		>
 			<BitacoraNote flat mdSource={md_2026_06_01_tk1431662} />
 			<SqlExecCard
-				title="AYUDASCP_IA · ADD MODELO en INSTRUCCION (SSMS 21)"
-				sql={sqlAddModeloInstruccion}
-				desc="Script para SQL Server Management Studio 21: GRANT ALTER, ALTER TABLE ADD MODELO (default gpt-5-nano), UPDATE de filas vacías y SELECT de verificación. Conéctese a insoft-patyia → AYUDASCP_IA_STAGING y ejecute con F5. (No usar el botón Ejecutar de la bitácora: contiene GO.)"
-				{executeSql}
-				checkKey="2026-06-01.patyia.instruccion.modelo"
-				confirmKind="warning"
-				confirmMessage={`Se agregará la columna MODELO (si no existe) y se normalizarán filas existentes con valor vacío a gpt-5-nano.\n\n¿Continuar?`}
-				height="360px"
-			/>
-			<SqlExecCard
-				title="AYUDASCP_IA · Calibrar MODELO = gpt-5-nano (13 tipos)"
+				title="AYUDASCP_IA · UPDATE MODELO = gpt-5-nano (todas las filas)"
 				sql={sqlUpdateInstruccionModeloGpt5Nano}
-				desc="UPDATE en las 13 filas del catálogo PROMPT_&lt;TIPO&gt; (SALUDO_OTRO … COMERCIAL). Usar tras migrar columna MODELO o si quedaron en gpt-5-mini. Cierra con SELECT iinstruccion, modelo, version."
+				desc="UPDATE en dbo.INSTRUCCION: todas las filas quedan con MODELO = gpt-5-nano. Cierra con SELECT de verificación (iinstruccion, modelo, version)."
 				{executeSql}
 				checkKey="2026-06-01.patyia.instruccion.modelo-nano"
 				confirmKind="warning"
-				confirmMessage={`Se pondrá MODELO = gpt-5-nano en las 13 instrucciones del catálogo por tipo.\n\n¿Continuar en la BD PatyIA conectada?`}
+				confirmMessage={`Se actualizará MODELO = gpt-5-nano en todas las filas de INSTRUCCION.\n\n¿Continuar en la BD PatyIA conectada?`}
 				height="320px"
 			/>
+		</Accordion>
+
+		<Accordion
+			title="CONVERSACION_LOG · tabla JSON (métricas por conversación)"
+			titleIcon="mdi:database-plus-outline"
+			inner
+			checkKey="2026-06-01.patyia.conversacion-log.ddl"
+		>
+			<BitacoraNote flat mdSource={md_2026_06_01_conversacion_log} />
 			<SqlExecCard
-				title="AYUDASCP_IA · Resync SEQ_IDCONVERSACIONES"
-				sql={sqlResyncSeqConversaciones}
-				desc="Corrige error 400999 «El recurso a insertar ya existe» al crear conversación (secuencia desincronizada vs MAX(ICONVERSACION)). Ejecutar en staging si falla Iniciar conversación con API local."
+				title="AYUDASCP_IA_STAGING · CREATE TABLE CONVERSACION_LOG (solo DDL)"
+				sql={sqlCreateConversacionLog}
+				desc="Crea dbo.CONVERSACION_LOG si no existe (ICONVERSACION BIGINT + CONTENT NVARCHAR(MAX)). Sin constraints ni datos. Conexión PatyIA en AYUDASCP_IA_STAGING (banner de ping)."
 				{executeSql}
-				checkKey="2026-06-01.patyia.seq.conversaciones"
+				checkKey="2026-06-01.patyia.conversacion-log.ddl"
 				confirmKind="warning"
-				confirmMessage="Se ajustará SEQ_IDCONVERSACIONES al siguiente id libre (MAX+1).\n\n¿Continuar?"
-				height="280px"
+				confirmMessage={`Se creará dbo.CONVERSACION_LOG en AYUDASCP_IA_STAGING (solo DDL, sin relleno).\n\n¿Continuar?`}
+				height="360px"
 			/>
 		</Accordion>
 

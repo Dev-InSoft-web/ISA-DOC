@@ -7,7 +7,7 @@
   - Normaliza filas con valor vacío a `gpt-5-nano`.
   - Cierra con `SELECT` de verificación.
 
-- **Calibración actual (13 tipos):** `update-instruccion-modelo-gpt5-nano.sql` pone **`gpt-5-nano`** en todas las filas del catálogo (sustituye calibración previa con `gpt-5-mini`).
+- **Calibración actual:** `update-instruccion-modelo-gpt5-nano.sql` pone **`gpt-5-nano`** en **todas** las filas de `INSTRUCCION` (ejecutable desde la bitácora vía SqlExecCard).
 
 - **Backend (PatyIA):**
   - `TInstruccion.GetModelo` lee `INSTRUCCION.MODELO` vía `TDCONSULTAXINSTRUCCION`.

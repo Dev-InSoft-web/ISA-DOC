@@ -80,5 +80,7 @@
   "tickets.TK-1429349": true,
   "tickets.TK-1429262": true,
   "2026-05-29.patyia.instrucciones.cleanup": true,
-  "2026-05-29.patyia.instrucciones.select": true
+  "2026-05-29.patyia.instrucciones.select": true,
+  "2026-06-01.patyia.seed-prompts-ultra": true,
+  "2026-06-01.patyia.instruccion.modelo-nano": true
 }

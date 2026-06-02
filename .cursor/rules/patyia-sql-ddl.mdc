@@ -1,0 +1,28 @@
+---
+description: DDL y scripts SqlExec PatyIA (AYUDASCP_IA_STAGING) — sin constraints
+globs: src/lib/patyia/sql/**,src/components/panels/PatyIABitacoraPanel.svelte
+alwaysApply: false
+---
+
+# SQL PatyIA en ISA-DOC
+
+## DDL de tablas nuevas (agentes)
+
+**No agregar constraints** en tablas nuevas de PatyIA (ni `FOREIGN KEY`, ni `CHECK`, ni `UNIQUE`, ni `DEFAULT` obligatorio en DDL de creación).
+
+- La relación con otras tablas (p. ej. `CONVERSACIONES`) es **lógica en aplicación**, no en BD.
+- Evita errores de tipos (`INT` vs `BIGINT`), permisos de `ALTER` y mensajes opacos (*Could not create constraint or index*).
+- Solo columnas + tipos; creación idempotente con `IF OBJECT_ID(...) IS NULL`.
+
+Ejemplo vigente: `CONVERSACION_LOG` → `ICONVERSACION BIGINT`, `CONTENT NVARCHAR(MAX)`.
+
+## SqlExec (`/api/patyia/db/exec`)
+
+- Scripts en `src/lib/patyia/sql/*.sql`: sin `GO`, sin `USE`; una sola tanda ejecutable.
+- Staging: la conexión la define `paty_*` en `.env` (`paty_namedb=AYUDASCP_IA_STAGING`); no validar con `DB_NAME()` en el script.
+- **Solo DDL/DML pedido**: no rellenar datos salvo que el ticket lo pida explícitamente.
+- Cabecera breve (2–3 líneas); sin líneas en blanco entre cada línea de SQL.
+
+## SSMS
+
+- Variante `*-ssms.sql` con `USE [AYUDASCP_IA_STAGING]` y `GO` cuando haga falta F5 manual.

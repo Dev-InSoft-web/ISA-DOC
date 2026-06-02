@@ -1,5 +1,8 @@
-flowchart LR
-  A[Clasificar tipo_consulta] -->|gpt-4.1-nano| B[Resolver INSTRUCCION]
-  B --> C[Leer MODELO en BD]
-  C --> D[responses.create modelo final]
-  E[Resumen / métricas] -->|tokens y costo| F[GET-ResumenConversacion]
+flowchart TB
+  U[Mensaje del usuario] --> CL[Clasificación · PR_TIPO_CONSULTAS<br/>gpt-4.1-nano · local.settings.json]
+  CL --> REL[TDCONSULTAXINSTRUCCION · tipo → iinstruccion]
+  REL --> MOD[INSTRUCCION.MODELO · gpt-5-nano en BD]
+  MOD --> REQ[responses.create<br/>model = MODELO de la fila]
+  REQ --> LOG[Log del turno · modelo_configurado + tokens + costo]
+
+  FALL[Fallback · system-prompts modeloConversacion] -.->|columna vacía o sin enlace| REQ

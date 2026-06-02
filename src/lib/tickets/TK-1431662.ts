@@ -5,42 +5,44 @@ import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const SYSTEM_PROMPTS_MODELOS = `{
 	"modeloOperativo": "gpt-4.1-nano",
-	"modeloConversacion": "gpt-5-mini"
+	"modeloConversacion": "gpt-5-nano"
 }`;
 
 const OPENAI_INFOMAP_SIN_TEMP =
 	`{"modelosSinTemperatura":["gpt-5","gpt-5-2025-08-07","gpt-5-mini","gpt-5-mini-2025-08-07","gpt-5-nano","gpt-5-nano-2025-08-07","gpt-5-pro","gpt-5-pro-2025-10-06","gpt-5-codex","gpt-5.5","gpt-5.5-2026-04-23","gpt-5.5-pro","gpt-5.5-pro-2026-04-23","gpt-5.4-pro","gpt-5.4-pro-2026-03-05","gpt-5.3-codex","gpt-5.2-pro","gpt-5.2-pro-2025-12-11","gpt-5.2-codex","gpt-5.1-codex","gpt-5.1-codex-max","gpt-5.1-codex-mini"]}`;
 
-const SQL_MODELO = `IF COL_LENGTH(N'dbo.INSTRUCCION', N'MODELO') IS NULL
+const SQL_ADD_MODELO = `IF COL_LENGTH(N'dbo.INSTRUCCION', N'MODELO') IS NULL
 BEGIN
 	ALTER TABLE dbo.INSTRUCCION
 		ADD [MODELO] NVARCHAR(40) NOT NULL
-		CONSTRAINT [DF_INSTRUCCION_MODELO] DEFAULT (N'gpt-5-mini');
-END;
+		CONSTRAINT [DF_INSTRUCCION_MODELO] DEFAULT (N'gpt-5-nano');
+END;`;
 
-UPDATE dbo.INSTRUCCION
-SET [MODELO] = N'gpt-5-mini'
-WHERE [MODELO] IS NULL OR LTRIM(RTRIM([MODELO])) = N'';`;
+const SQL_CALIBRATION_NANO = `UPDATE dbo.INSTRUCCION
+SET [MODELO] = N'gpt-5-nano';
+
+SELECT [IINSTRUCCION], [NINSTRUCCION], [MODELO], [VERSION], [BACTIVO]
+FROM dbo.INSTRUCCION
+ORDER BY [IINSTRUCCION];`;
 
 const MODEL_RULES: Array<{ flujo: string; uso: string; modelo: string }> = [
-	{ flujo: "Operativo", uso: "Clasificaban tipo, módulo, títulos, resúmenes, sí/no y extracción corta.", modelo: "gpt-4.1-nano (configuración operativa)" },
-	{ flujo: "Conocimiento", uso: "Respondían con documentación, instrucciones por tipo y vector stores.", modelo: "Valor en columna MODELO de INSTRUCCION" },
-	{ flujo: "Fallback", uso: "Columna MODELO vacía, sin instrucción enlazada al tipo o error al leer BD.", modelo: "gpt-5-mini (modelo de conversación en system-prompts.json)" },
+	{ flujo: "Operativo", uso: "Clasificaban tipo, módulo, títulos, resúmenes y premisas.", modelo: "gpt-4.1-nano (`system-prompts.json`)" },
+	{ flujo: "Conocimiento", uso: "Respondían con instrucción por tipo, vector stores y PR_GENERAL.", modelo: "`INSTRUCCION.MODELO` (p. ej. gpt-5-nano)" },
+	{ flujo: "Fallback", uso: "Columna vacía, sin instrucción enlazada o error al leer BD.", modelo: "gpt-5-nano (`modeloConversacion`)" },
 ];
 
 const intro =
-	`<div>Se implementó la <b>selección de modelo IA por tipo de consulta</b> en Paty IA: ` +
-	`tareas operativas con modelo económico fijo y respuesta final con el valor persistido en ` +
-	`la columna MODELO de INSTRUCCION, con trazabilidad en logs y métricas. ` +
-	`También se cerró el incidente de la semana anterior (~40 min de indisponibilidad por enviar ` +
-	`temperatura a modelos GPT-5 sin soporte, en particular gpt-5-mini).</div>`;
+	`<div>Se implementó la <b>selección de modelo IA por tipo de consulta</b> en Paty IA: tareas operativas con ` +
+	`<code>gpt-4.1-nano</code> fijo y respuesta final con el valor en <code>INSTRUCCION.MODELO</code> ` +
+	`(calibrado a <code>gpt-5-nano</code> en las 13 filas activas de <code>AYUDASCP_IA_STAGING</code>), ` +
+	`con trazabilidad en logs y métricas. Se cerró el incidente previo por <code>temperature</code> en modelos GPT-5 sin soporte.</div>`;
 
 export async function buildBodyTK1431662(): Promise<string> {
 	const [h3Objetivo, h3Incidente, h3Reglas, h3Datos, h3Solucion, h3Validacion] = await Promise.all([
 		h3Iconized("mdi:brain", "Objetivo"),
 		h3Iconized("mdi:alert-circle-outline", "Antecedente: temperatura y GPT-5"),
 		h3Iconized("mdi:map-marker-path", "Reglas de selección"),
-		h3Iconized("mdi:database-cog-outline", "Modelo de datos"),
+		h3Iconized("mdi:database-cog-outline", "Modelo de datos y calibración"),
 		h3Iconized("mdi:check-circle-outline", "Solución aplicada"),
 		h3Iconized("mdi:check-decagram", "Validación"),
 	]);
@@ -48,17 +50,16 @@ export async function buildBodyTK1431662(): Promise<string> {
 	const objetivo = noteList(
 		await note(
 			"mdi:speedometer",
-			"Se separaron tareas operativas (bajo costo y latencia) de la respuesta final con contexto documental, configurando el modelo de respuesta por fila de instrucción en base de datos.",
+			"Se separaron tareas operativas (bajo costo y latencia) de la respuesta final con contexto documental; el modelo de respuesta quedó definido por fila en <code>INSTRUCCION</code> según el tipo clasificado.",
 		),
 	);
 
 	const incidente = noteList(
 		await note(
 			"mdi:thermometer-alert",
-			"La semana anterior el servicio estuvo caído ~40 min por enviar temperatura a gpt-5-mini y otros GPT-5 sin soporte. " +
-				"Se corrigió con un catálogo central de modelos sin temperatura en openai-infomap.json y validación en UlPrompts " +
-				"antes de cada llamada, omitiendo el parámetro en conversación y métricas; al calibrar MODELO en BD con un id de esa lista " +
-				"(familia GPT-5 completa, incluidas variantes con fecha), tampoco se envió aunque existiera temperatura de conversación en system-prompts.json. Catálogo:" +
+			"La semana anterior el servicio estuvo caído ~40 min por enviar <code>temperature</code> a modelos GPT-5 sin soporte (p. ej. gpt-5-mini). " +
+				"Se corrigió con catálogo <code>modelosSinTemperatura</code> en <code>openai-infomap.json</code> y validación en <code>UlPrompts</code> antes de cada llamada; " +
+				"con <code>gpt-5-nano</code> en <code>MODELO</code> no se envió el parámetro. Catálogo:" +
 				(await codeBlock(OPENAI_INFOMAP_SIN_TEMP, "json")),
 		),
 	);
@@ -71,10 +72,8 @@ export async function buildBodyTK1431662(): Promise<string> {
 		),
 		await note(
 			"mdi:file-cog-outline",
-			"En system-prompts.json se dejaron los modelos acordados en reunión: gpt-4.1-nano para operativo y gpt-5-mini como modelo de conversación. " +
-				"Este último <b>sólo aplicó como fallback</b>: no sustituyó un valor ya guardado en MODELO; se usó cuando la columna quedó vacía, " +
-				"no había instrucción enlazada al tipo clasificado o falló la lectura en BD. El default SQL gpt-5-mini en la columna quedó independiente " +
-				"(rellenó filas en migración); la calibración manual en MODELO prevaleció sobre el JSON. Valores acordados en reunión:" +
+			"En <code>system-prompts.json</code> quedó <code>modeloOperativo</code> = gpt-4.1-nano y <code>modeloConversacion</code> = gpt-5-nano. " +
+				"El fallback del JSON <b>sólo aplicó</b> si <code>MODELO</code> estaba vacío o no había instrucción enlazada; con valor en BD prevaleció la columna. Configuración:" +
 				(await codeBlock(SYSTEM_PROMPTS_MODELOS, "json")),
 		),
 	);
@@ -85,8 +84,8 @@ export async function buildBodyTK1431662(): Promise<string> {
 			[
 				"MODELO",
 				"NVARCHAR(40) NOT NULL",
-				"gpt-5-mini",
-				"Modelo OpenAI por tipo de consulta; con valor definido, reemplazaba al fallback del JSON.",
+				"gpt-5-nano",
+				"Id OpenAI de respuesta por tipo; sustituye al fallback del JSON cuando tiene valor.",
 			],
 		],
 		{ widths: ["18%", "22%", "18%", "42%"] },
@@ -95,46 +94,44 @@ export async function buildBodyTK1431662(): Promise<string> {
 	const datos = noteList(
 		await note(
 			"mdi:chart-tree",
-			"Se diseñó la columna MODELO en AYUDASCP_IA_STAGING.INSTRUCCION (SSMS):" +
+			"Se diseñó la columna <code>MODELO</code> en <code>AYUDASCP_IA_STAGING.INSTRUCCION</code> (SSMS):" +
 				ticketImg("tk1431662-instruccion-columna-mode.png"),
 		),
-		await note(
-			"mdi:table-eye",
-			"Tras el script, las 13 instrucciones activas quedaron calibradas con gpt-5-mini en MODELO:" +
-				ticketImg("tk1431662-instruccion-modelo-calibracion.png"),
-		),
-		await note("mdi:table-column-plus-after", "Definición aplicada de la columna nueva:" + columnaMode),
+		await note("mdi:table-column-plus-after", "Definición de la columna:" + columnaMode),
 		await note(
 			"mdi:code-braces",
-			"Script idempotente aplicado en AYUDASCP_IA (resumen; el lote completo está en Cambios en base de datos al pie):" +
-				(await codeBlock(SQL_MODELO, "sql")),
+			"Migración inicial — solo DDL de la columna (detalle en <i>Cambios en base de datos</i>; el relleno de filas va en calibración):" +
+				(await codeBlock(SQL_ADD_MODELO, "sql")),
+		),
+		await note(
+			"mdi:database-sync",
+			"Calibración en <code>AYUDASCP_IA_STAGING</code> (<code>update-instruccion-modelo-gpt5-nano.sql</code>, bitácora): un único <code>UPDATE</code> sobre todas las filas y <code>SELECT</code> de verificación. Las 13 instrucciones activas (<code>version = 2.0-ultra</code>, <code>bactivo = 1</code>) quedaron con el mismo valor en <code>MODELO</code>:" +
+				(await codeBlock(SQL_CALIBRATION_NANO, "sql")) +
+				ticketImg("tk1431662-instruccion-modelo-calibracion.png"),
 		),
 		await note(
 			"mdi:account-clock-outline",
-			"Parte de la ejecución en BD la realizó el <b>ing. Álvaro</b> el <b>01/jun./2026 02:50 p. m.</b>, " +
-				"por falta de permisos de alteración en ese entorno. " +
-				"Eso retrasó el desarrollo unas <b>6 horas</b>: en la mañana hubo reunión con la <b>ing. Andrea</b> " +
-				"y fue necesario esperar a que el ing. Álvaro regresara del almuerzo para aplicar los ajustes en BD.",
+			"La migración de columna la aplicó el <b>ing. Álvaro</b> el <b>01/jun./2026 02:50 p. m.</b> (permisos de alteración). " +
+				"Eso retrasó el desarrollo unas <b>6 horas</b> respecto a la reunión con la <b>ing. Andrea</b>.",
 		),
 	);
 
 	const solucion = noteList(
 		await note(
 			"mdi:source-branch-sync",
-			"Se implementaron las fases de selección de modelo en el backend:" + ticketImg("tk1431662-fases-modelo.jpg"),
+			"Se documentó la resolución del modelo por turno:" + ticketImg("tk1431662-fases-modelo.jpg"),
 		),
 		await note(
 			"mdi:database-cog-outline",
-			"Se expusieron lectura de modelo por instrucción y por tipo de consulta (tipo → relación → MODELO) antes de crear la respuesta en OpenAI.",
+			"Se expuso lectura de <code>MODELO</code> por instrucción y por tipo (<code>TDCONSULTAXINSTRUCCION</code>) antes de <code>responses.create</code>.",
 		),
 		await note(
 			"mdi:code-braces",
-			"La respuesta final quedó ligada al modelo de la instrucción clasificada; las tareas operativas quedaron con el modelo operativo fijo. " +
-				"Se retiró la variable de entorno OPENAI_MODEL de la configuración local.",
+			"La respuesta final usó <code>model</code> de la fila clasificada; las operativas permanecieron en gpt-4.1-nano. Se retiró <code>OPENAI_MODEL</code> de la configuración local.",
 		),
 		await note(
 			"mdi:thermometer",
-			"La temperatura se envió solo si el modelo efectivo la admitía, evitando repetir el incidente al calibrar tipos con GPT-5 en BD.",
+			"La temperatura se omitió automáticamente en modelos del catálogo sin soporte (incluido gpt-5-nano en <code>MODELO</code>).",
 		),
 		await note(
 			"mdi:chart-bar",
@@ -145,19 +142,23 @@ export async function buildBodyTK1431662(): Promise<string> {
 	const validacion = noteList(
 		await note(
 			"mdi:check-bold",
-			"La clasificación y extracción operativa se ejecutó con gpt-4.1-nano independiente del modelo de respuesta.",
+			"La clasificación y premisas se ejecutaron con gpt-4.1-nano, independiente del modelo de respuesta.",
 		),
 		await note(
 			"mdi:check-bold",
-			"La respuesta de conocimiento usó MODELO de la fila INSTRUCCION ligada al tipo clasificado, con registro de modelo y tokens en el turno.",
+			"La respuesta de conocimiento usó <code>MODELO</code> de la fila enlazada al tipo, con registro en el log del turno.",
 		),
 		await note(
 			"mdi:check-bold",
-			"gpt-5-mini del JSON se usó únicamente como fallback (columna vacía, sin instrucción o error de lectura); con MODELO definido en la fila, prevaleció ese id.",
+			"Tras el UPDATE, la grilla SSMS en staging mostró las 13 filas con <code>MODELO</code> unificado (captura en sección Modelo de datos).",
 		),
 		await note(
 			"mdi:check-bold",
-			"Con gpt-5-mini u otro modelo del catálogo sin temperatura en MODELO, las llamadas a OpenAI se ejecutaron sin temperature (sin error 400 por parámetro no soportado).",
+			"<code>modeloConversacion</code> del JSON sólo aplicó como fallback; con <code>MODELO</code> definido prevaleció ese id.",
+		),
+		await note(
+			"mdi:check-bold",
+			"No se reprodujo error 400 por <code>temperature</code> con gpt-5-nano en <code>MODELO</code>.",
 		),
 	);
 

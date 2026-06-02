@@ -1,0 +1,69 @@
+
+═══════════════════════════════════
+  PATYIA · VERIFY API · env=local
+═══════════════════════════════════
+Log:  C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\scripts\verify-api-patyia\logs\out20260602_121937.txt
+Host: http://localhost:7071
+IDs:  butil=true · ireferencia=999992 · codigotk=TKV999991
+
+═════════════════════════════════════
+  1) POST /api/JWT  (autenticación)
+═════════════════════════════════════
+[AUTH] Token cargado desde C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\token.patyia.json (393 chars). ✅
+
+═════════════════════════════
+  2) POST /api/conversacion
+═════════════════════════════
+✅ [conversacion.create] HTTP 200
+   payload: {"raw":"id: 1\nevent: begin\ndata: {\"itercero\":\"810000630\",\"icontacto\":\"702470\",\"imodulo\":\"nomina\",\"fhcre\":\"2026-06-02T17:19:41.670Z\",\"fhultact\":\"2026-06-02T17:19:41.670Z\",\"titulo\":\"Verificación de API Patyia con ping de prueba\",\"hilo\":\"\",\"modelo\":\"gpt-5-nano\",\"version_ayuda\":\"1\",\"prompt\":\"[verify-api-patyia] ping de prueba — responde 'pong' y termina.\",\"qtokens\":0,\"qmensajes\":0,\"itdestado\":0,\"bautoriza_visualizacion\":false,\"modelo_ia\":\"gpt-5-nano\",\"iconversacion\":1848}\n\nid: 2\nevent: message\ndata: {\"itercero\":\"810000630\",\"icontacto…
+   iconversacion=1848 (creada por el script → será eliminada en cleanup)
+
+══════════════════════════════
+  3) GET /api/conversaciones
+══════════════════════════════
+✅ [conversaciones.list] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":320,"fhentrada":"2026-06-02T17:19:58.215Z","fhsalida":"2026-06-02T17:19:58.535Z"},"respuesta":{"conversaciones":[{"itercero":"810000630","icontacto":"702470","imodulo":"nomina","fhcre":"2026-06-02T17:19:41.670Z","fhultact":"2026-06-02T17:19:41.670Z","titulo":"Verificación de API Patyia con ping de prueba","hilo":"","modelo":"gpt-5-nano","version_ayuda":"1","prompt":"[verify-api-patyia] ping de prueba — responde 'pong' y termina.","qtokens":0,"qmensajes":0,"itdestado":0,"bautoriza_visualizacion":false,"modelo_ia":"gpt-5-nano","iconversacion":1848},{"iter…
+
+═════════════════════════════════
+  4) GET /api/conversacion/1848
+═════════════════════════════════
+✅ [conversacion.get] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":1539,"fhentrada":"2026-06-02T17:19:58.550Z","fhsalida":"2026-06-02T17:20:00.089Z"},"respuesta":{"itercero":"810000630","icontacto":"702470","imodulo":"nomina","fhcre":"2026-06-02T17:19:41.670Z","fhultact":"2026-06-02T17:19:58.173Z","titulo":"Verificación de API Patyia con ping de prueba","hilo":"conv_6a1f10b653448197b4a1b75a50225e160d164bcac0f63bd8","modelo":"gpt-5-nano-2025-08-0","version_ayuda":"1","prompt":"[verify-api-patyia] ping de prueba — responde 'pong' y termina.","qtokens":6465,"qmensajes":1,"itdestado":0,"bautoriza_visualizacion":false,"mode…
+
+═════════════════════════════════════════
+  5) GET /api/resumen_conversacion/1848
+═════════════════════════════════════════
+✅ [resumen_conversacion] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":1532,"fhentrada":"2026-06-02T17:20:00.108Z","fhsalida":"2026-06-02T17:20:01.640Z"},"respuesta":"Necesito confirmar que la API de verificación responde correctamente a un ping de prueba y termina con un pong.","details":{"prompt_key":"generarResumenTicket","engine":"chat_completions","model":"gpt-4.1-nano-2025-04-14","messages":[{"role":"system","content":"Asistente resúmenes concisos tickets soporte.\nLee conversación completa usuario y asistente.\nGenera resumen breve claro. Máximo 2-3 oraciones.\nEscribe primera persona. Como si usuario lo redactó.\nD…
+
+════════════════════════
+  6) POST /api/mensaje
+════════════════════════
+✅ [mensaje.create] HTTP 201
+   payload: {"encabezado":{"resultado":true,"tiempo":1431,"fhentrada":"2026-06-02T17:20:01.654Z","fhsalida":"2026-06-02T17:20:03.085Z"},"respuesta":{"imensaje":173,"ireferencia":999992,"butil":true,"contenido":"[verify-api-patyia] mensaje de prueba (id seguro 999991)","iconversacion":1848}}
+
+════════════════════════
+  7) POST /api/tiquete
+════════════════════════
+✅ [tiquete.create] HTTP 201
+   payload: {"encabezado":{"resultado":true,"tiempo":1745,"fhentrada":"2026-06-02T17:20:03.100Z","fhsalida":"2026-06-02T17:20:04.845Z"},"respuesta":{"itiquete":109,"codigotk":"TKV999991","tema":"","clasificador":"","bcerrar_conversacion":false,"bautoriza_visualizacion":false,"iconversacion":1848}}
+   itiquete=109 (creado por el script)
+
+══════════════════════════════════════════
+  8) GET /api/timer_cerrarConversaciones
+══════════════════════════════════════════
+✅ [timer_cerrarConversaciones] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":324,"fhentrada":"2026-06-02T17:20:04.865Z","fhsalida":"2026-06-02T17:20:05.189Z"},"respuesta":{"ok":true,"mensaje":"Se cerraron 0 conversaciones por inactividad","registrosActualizados":0}}
+
+════════════════════
+  CLEANUP
+════════════════════
+→ DELETE /api/conversacion/1848
+✅ [conversacion.delete] HTTP 200
+   payload: {"encabezado":{"resultado":true,"tiempo":1321,"fhentrada":"2026-06-02T17:20:05.204Z","fhsalida":"2026-06-02T17:20:06.525Z"},"respuesta":{"itercero":"810000630","icontacto":"702470","imodulo":"nomina","fhcre":"2026-06-02T17:19:41.670Z","fhultact":"2026-06-02T17:20:05.527Z","titulo":"Verificación de API Patyia con ping de prueba","hilo":"conv_6a1f10b653448197b4a1b75a50225e160d164bcac0f63bd8","modelo":"gpt-5-nano-2025-08-0","version_ayuda":"1","prompt":"[verify-api-patyia] ping de prueba — responde 'pong' y termina.","qtokens":6465,"qmensajes":1,"itdestado":2,"bautoriza_visualizacion":false,"mode…
+
+════════════════════
+  RESUMEN
+════════════════════
+OK:   8
+FAIL: 0

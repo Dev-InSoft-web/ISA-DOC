@@ -4,25 +4,27 @@ import { codeBlock, simpleTable, ticketImg } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const SNIPPET_VARIABLES = `prompt: {
-  id: promptId,
+  id: promptId, // PR_GENERAL
   variables: {
-    nombre_usuario: nombreResuelto,
-    instrucion_tipo: textoPorTipoResuelto
+    nombre_usuario: nombreSesion,
+    instrucion_tipo: textoInstruccionBdResuelto
   }
-}`;
+}
+// Sin campo instructions en el body`;
 
 const COMPOSITION_ROWS: Array<{ pieza: string; responsabilidad: string }> = [
-	{ pieza: "Prompt general", responsabilidad: "Definían identidad, tono, seguridad y límites funcionales (plantilla PR_GENERAL)." },
-	{ pieza: "Tipo de consulta", responsabilidad: "Registraban la intención clasificada del turno en conversación y mensaje." },
-	{ pieza: "Instrucciones específicas", responsabilidad: "Aplicaban reglas del tipo sin sustituir el prompt general." },
-	{ pieza: "Variables", responsabilidad: "Inyectaban módulo, contexto, consulta normalizada y nombre de usuario." },
-	{ pieza: "Vector stores", responsabilidad: "Aportaban fuentes documentales por tipo; la búsqueda en archivos se limitó a cuando el flujo lo exigió." },
+	{ pieza: "PR_GENERAL", responsabilidad: "Plantilla en OpenAI; el id se resolvió con <code>varEnv('PR_GENERAL')</code> desde <code>local.settings.json</code>. Definía saludo, tono y límites; anexaba el tipo al final vía slot." },
+	{ pieza: "Clasificación (operativa)", responsabilidad: "Resolvió el código de tipo (`PASO_A_PASO`, `SALUDO_OTRO`, …) antes de la respuesta." },
+	{ pieza: "INSTRUCCION (BD)", responsabilidad: "Aportó el texto por tipo (`PROMPT_<TIPO>`); se inyectó solo en `instrucion_tipo`." },
+	{ pieza: "Variables del prompt", responsabilidad: "`nombre_usuario` en la plantilla base; `instrucion_tipo` con el texto de BD (sin prefijos helper)." },
+	{ pieza: "Vector stores", responsabilidad: "Se enlazaron por tipo; `file_search` se activó cuando el flujo lo exigió." },
+	{ pieza: "Conversación", responsabilidad: "Se persistió el hilo en `conv_*`; el input del turno fue solo el mensaje nuevo." },
 ];
 
 const intro =
-	`<div>Se ajustó la integración de <b>OpenAI Responses</b> en Paty IA para que el flujo ` +
-	`conservara el <b>prompt general</b> y sumara instrucciones por tipo de consulta, variables y ` +
-	`vector stores como capas, sin reemplazar la plantilla PR_GENERAL.</div>`;
+	`<div>Se corrigió la integración de <b>OpenAI Responses</b> en Paty IA: el <b>prompt general</b> (` +
+	`PR_GENERAL) dejó de ser sustituido por instrucciones en el body y las reglas por tipo pasaron a ` +
+	`<code>prompt.variables.instrucion_tipo</code>, con el nombre en <code>nombre_usuario</code>.</div>`;
 
 export async function buildBodyTK1431163(): Promise<string> {
 	const [h3Problema, h3Diag, h3Arq, h3Solucion, h3Validacion] = await Promise.all([
@@ -36,18 +38,18 @@ export async function buildBodyTK1431163(): Promise<string> {
 	const problema = noteList(
 		await note(
 			"mdi:alert-circle-outline",
-			"Tras cargar instrucciones por tipo de consulta en base de datos, dejó de aplicarse el saludo y el uso del nombre del usuario en el primer mensaje cuando existía instrucción resuelta para el <code>itdconsulta</code> clasificado.",
+			"Tras cargar instrucciones por tipo en base de datos, dejó de aplicarse el saludo y el uso del nombre en el primer mensaje cuando existía instrucción para el <code>itdconsulta</code> clasificado.",
 		),
 		await note(
 			"mdi:file-document-outline",
-			"En Responses API, enviar el id del prompt junto con instructions en el body hizo que instructions <b>reemplazara</b> la plantilla PR_GENERAL en lugar de complementarla.",
+			"En Responses API, enviar <code>prompt.id</code> junto con <code>instructions</code> en el body hizo que <code>instructions</code> <b>reemplazara</b> la plantilla PR_GENERAL en lugar de complementarla.",
 		),
 	);
 
 	const diag = noteList(
 		await note(
 			"mdi:layers-off-outline",
-			"Previamente no se enviaba <code>instructions</code> en el body y el template aplicaba completo (saludo y <code>{{nombre_usuario}}</code>). Al resolver texto por tipo y enviarlo como <code>instructions</code>, se opacaron las reglas globales.",
+			"Sin <code>instructions</code> en el body, el template aplicaba completo (saludo y <code>{{nombre_usuario}}</code>). Al enviar el texto por tipo como <code>instructions</code>, se opacaron las reglas globales.",
 		),
 		await note(
 			"mdi:tag-text-outline",
@@ -58,13 +60,13 @@ export async function buildBodyTK1431163(): Promise<string> {
 	const composicion = simpleTable(
 		["Pieza", "Responsabilidad"],
 		COMPOSITION_ROWS.map((row) => [row.pieza, row.responsabilidad]),
-		{ widths: ["24%", "76%"] },
+		{ widths: ["28%", "72%"] },
 	);
 
 	const arq = noteList(
 		await note(
 			"mdi:chart-tree",
-			"Se documentó la composición de capas en el request a OpenAI:" +
+			"Se documentó el flujo por turno: clasificación → BD → variables del prompt → request sin <code>instructions</code>:" +
 				ticketImg("tk1431163-capas-openai.jpg"),
 		),
 	);
@@ -72,21 +74,25 @@ export async function buildBodyTK1431163(): Promise<string> {
 	const solucion = noteList(
 		await note(
 			"mdi:format-vertical-align-bottom",
-			"Se anexaron las reglas del tipo de consulta al final del mensaje de sistema, mediante la variable <code>{{instrucion_tipo}}</code> (después del separador <code>---</code>), sin sustituir el comportamiento base de Paty." +
+			"Se anexaron las reglas del tipo al final del mensaje de sistema mediante <code>{{instrucion_tipo}}</code> (tras <code>---</code> en PR_GENERAL v13), sin sustituir el comportamiento base de Paty." +
 				ticketImg("tk1431163-pr-general-slot-final.jpg"),
 		),
 		await note(
 			"mdi:code-braces",
-			"Se eliminó <code>instructions</code> del body en Paty IA; el texto por tipo y el nombre del usuario quedaron solo en <code>prompt.variables</code>. Contrato aplicado:" +
+			"Se eliminó <code>instructions</code> del body; nombre e instrucción por tipo quedaron únicamente en <code>prompt.variables</code>:" +
 				(await codeBlock(SNIPPET_VARIABLES, "typescript")),
 		),
 		await note(
 			"mdi:account-outline",
-			"Se sustituyó el placeholder de nombre de usuario en el texto de instrucciones antes de enviarlo como variable del prompt.",
+			"Se resolvió <code>{{nombre_usuario}}</code> dentro del texto de BD (<code>resolveUserNameInText</code>) antes de armar <code>instrucion_tipo</code>; el saludo y la apertura con nombre quedaron a cargo de PR_GENERAL, no de prefijos en código.",
+		),
+		await note(
+			"mdi:broom",
+			"Se retiraron los <code>helpers</code> de <code>system-prompts.json</code> (<code>personalizacionNombre</code>, <code>saludoOtroExtra</code>, <code>separadorInstrucciones</code>): eran redundantes tras v13 y duplicaban tokens en cada turno.",
 		),
 		await note(
 			"mdi:database-search-outline",
-			"El contexto por tipo siguió resolviéndose desde BD (instrucciones y vector stores); la búsqueda en archivos se activó solo cuando el flujo lo requirió.",
+			"El contexto por tipo siguió resolviéndose desde BD (instrucciones, MODELO y vector stores); la búsqueda en archivos se activó solo cuando el flujo lo requirió.",
 		),
 		await note(
 			"mdi:chart-line",
@@ -97,15 +103,19 @@ export async function buildBodyTK1431163(): Promise<string> {
 	const validacion = noteList(
 		await note(
 			"mdi:check-bold",
-			"En conversación de prueba <code>1806</code> el body dejó de incluir <code>instructions</code>; la respuesta recuperó saludo y nombre conservando la guía del tipo <code>PASO_A_PASO</code>.",
+			"En la conversación de prueba <code>1806</code> el body dejó de incluir <code>instructions</code>; la respuesta recuperó saludo y nombre con la guía <code>PASO_A_PASO</code>.",
 		),
 		await note(
 			"mdi:check-bold",
-			"En consultas documentales se mantuvieron reglas globales y vector stores asociados al tipo clasificado.",
+			"En consultas documentales se mantuvieron reglas globales y vector stores del tipo clasificado.",
 		),
 		await note(
 			"mdi:check-bold",
-			"Ante ausencia de tarifas en el entorno, el flujo de respuesta continuó operando con costos en cero hasta disponer del JSON local.",
+			"Tras quitar helpers, conviene revalidar un saludo (<code>SALUDO_OTRO</code>) y una consulta larga para confirmar tono y ausencia de listados funcionales en saludos puros.",
+		),
+		await note(
+			"mdi:check-bold",
+			"Ante ausencia de tarifas en el entorno, el flujo continuó con costos en cero hasta disponer del JSON local.",
 		),
 	);
 
