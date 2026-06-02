@@ -13,13 +13,17 @@
 					13693
 				],
 				"backgroundColor": [
-					"#4472C4",
-					"#70AD47"
+					"#9E9E9E",
+					"#1E90FF"
 				]
 			}
 		]
 	},
 	"options": {
+		"backgroundColor": "transparent",
+		"layout": {
+			"padding": 16
+		},
 		"plugins": {
 			"title": {
 				"display": true,

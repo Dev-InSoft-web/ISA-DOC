@@ -171,8 +171,8 @@ export const TICKETS: TicketRegistro[] = [
 			return buildBodyTK1431662();
 		},
 		commits: [
-			{ hash: "ed7e17e", descripcion: "refactor(TK-1431662): Se simplifica el registro de métricas por mensaje en conversación", repo: "PatyIA", ins: 1, del: 12, fecha: "2026-06-02T12:21:33-05:00" },
-			{ hash: "0e81bf3", descripcion: "refactor(TK-1431662): Se alinea el modelo de conversación por defecto con la calibración en base de datos", repo: "PatyIA", ins: 4, del: 32, fecha: "2026-06-02T11:54:57-05:00" },
+			{ hash: "fb2aa7e", descripcion: "refactor(TK-1431662): Se simplifica el registro de métricas por mensaje en conversación", repo: "PatyIA", ins: 1, del: 12, fecha: "2026-06-02T12:21:33-05:00" },
+			{ hash: "f3c1232", descripcion: "refactor(TK-1431662): Se alinea el modelo de conversación por defecto con la calibración en base de datos", repo: "PatyIA", ins: 4, del: 32, fecha: "2026-06-02T11:54:57-05:00" },
 			{ hash: "309511f", repo: "ISA-DOC", descripcion: "feat(TK-1431662): Se actualiza evidencia de calibración del modelo y lectura de logs de conversación", ins: 552, del: 177, fecha: "2026-06-02T10:50:04-05:00" },
 			{ hash: "40995ce", repo: "ISA-DOC", descripcion: "feat(TK-1431662): Se actualiza cuerpo del ticket, diagramas y visor asíncrono de diligencia", ins: 1330, del: 308, fecha: "2026-06-02T08:02:56-05:00" },
 			{ hash: "22db565", descripcion: "feat(TK-1431662): Se incorporan métricas de uso y costo estimado en el resumen de conversación", repo: "PatyIA", ins: 63, del: 144, fecha: "2026-06-01T15:21:16-05:00" },
@@ -210,7 +210,6 @@ export const TICKETS: TicketRegistro[] = [
 					"BEGIN TRAN;",
 					"UPDATE dbo.INSTRUCCION SET [MODELO] = N'gpt-5-nano';",
 					"COMMIT;",
-					"SELECT [IINSTRUCCION], [NINSTRUCCION], [MODELO], [VERSION], [BACTIVO] FROM dbo.INSTRUCCION ORDER BY [IINSTRUCCION];",
 				].join("\n"),
 			},
 		],
@@ -230,11 +229,11 @@ export const TICKETS: TicketRegistro[] = [
 			return buildBodyTK1431163();
 		},
 		commits: [
-			{ hash: "0e81bf3", descripcion: "refactor(TK-1431163): Se depura la configuración de prompts del asistente", repo: "PatyIA", ins: 4, del: 32, fecha: "2026-06-02T11:54:57-05:00" },
-			{ hash: "658958b", descripcion: "refactor(TK-1431163): Se simplifica el armado de instrucciones en la respuesta al usuario", repo: "PatyIA", ins: 5, del: 5, fecha: "2026-06-02T11:54:47-05:00" },
-			{ hash: "5aca8bc", descripcion: "feat(TK-1431163): Se registra petición y respuesta en clasificación de consultas y generación de título", repo: "PatyIA", ins: 26, del: 16, fecha: "2026-06-02T10:52:38-05:00" },
-			{ hash: "d60f9a1", descripcion: "feat(TK-1431163): Se registra petición y respuesta en tareas operativas y en el historial de conversación", repo: "PatyIA", ins: 161, del: 26, fecha: "2026-06-02T10:52:22-05:00" },
-			{ hash: "b6d714e", descripcion: "refactor(TK-1431163): Se compacta la configuración de arranque para el despliegue", repo: "PatyIA", ins: 1, del: 3, fecha: "2026-06-02T07:22:39-05:00" },
+			{ hash: "f3c1232", descripcion: "refactor(TK-1431163): Se depura la configuración de prompts del asistente", repo: "PatyIA", ins: 4, del: 32, fecha: "2026-06-02T11:54:57-05:00" },
+			{ hash: "12541df", descripcion: "refactor(TK-1431163): Se simplifica el armado de instrucciones en la respuesta al usuario", repo: "PatyIA", ins: 5, del: 5, fecha: "2026-06-02T11:54:47-05:00" },
+			{ hash: "535b636", descripcion: "feat(TK-1431163): Se registra petición y respuesta en clasificación de consultas y generación de título", repo: "PatyIA", ins: 26, del: 16, fecha: "2026-06-02T10:52:38-05:00" },
+			{ hash: "6327c2c", descripcion: "feat(TK-1431163): Se registra petición y respuesta en tareas operativas y en el historial de conversación", repo: "PatyIA", ins: 161, del: 26, fecha: "2026-06-02T10:52:22-05:00" },
+			{ hash: "7028397", descripcion: "refactor(TK-1431163): Se compacta la configuración de arranque para el despliegue", repo: "PatyIA", ins: 1, del: 3, fecha: "2026-06-02T07:22:39-05:00" },
 			{ hash: "40995ce", repo: "ISA-DOC", descripcion: "feat(TK-1431163): Se actualiza cuerpo del ticket, diagrama de capas y visor asíncrono de diligencia", ins: 1330, del: 308, fecha: "2026-06-02T08:02:56-05:00" },
 			{ hash: "97cbb95", descripcion: "feat(TK-1431163): Se simplifica la integración con el proveedor de inteligencia artificial", repo: "PatyIA", ins: 79, del: 353, fecha: "2026-06-01T15:14:53-05:00" },
 			{ hash: "59f05df", descripcion: "feat(TK-1431163): Se mejora el manejo de hilos, mensajes y clasificación de consultas", repo: "PatyIA", ins: 165, del: 196, fecha: "2026-06-01T14:04:52-05:00" },

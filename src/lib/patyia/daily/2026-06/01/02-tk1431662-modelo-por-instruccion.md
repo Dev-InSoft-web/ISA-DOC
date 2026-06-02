@@ -4,8 +4,7 @@
 
 - **Migración SQL (`add-modelo-instruccion.sql` / SSMS):**
   - Agrega columna `MODELO NVARCHAR(40)` si no existe (default `gpt-5-nano`).
-  - Normaliza filas con valor vacío a `gpt-5-nano`.
-  - Cierra con `SELECT` de verificación.
+  - Normaliza filas con valor vacío a `gpt-5-nano` (sin `SELECT` final; evidencia en SSMS).
 
 - **Calibración actual:** `update-instruccion-modelo-gpt5-nano.sql` pone **`gpt-5-nano`** en **todas** las filas de `INSTRUCCION` (ejecutable desde la bitácora vía SqlExecCard).
 

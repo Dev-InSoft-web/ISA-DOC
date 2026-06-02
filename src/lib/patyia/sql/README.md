@@ -6,6 +6,8 @@ Ejecutables desde la bitácora (`SqlExecCard` → `/api/patyia/db/exec`) o SSMS 
 
 **No usar constraints** al crear tablas nuevas: sin `FOREIGN KEY`, `CHECK`, `UNIQUE` ni defaults en el `CREATE TABLE`. Solo columnas y tipos; relaciones débiles vía código.
 
+**Sin `SELECT` de verificación al final** de scripts `UPDATE` / `DELETE` / `MERGE` en tickets y SqlExec: el lote termina en `COMMIT` (o en el DML pedido). La evidencia va en capturas SSMS o en `select-all-instrucciones.sql` si hace falta consultar el catálogo.
+
 Detalle: `.cursor/rules/patyia-sql-ddl.mdc`.
 
 ## Staging

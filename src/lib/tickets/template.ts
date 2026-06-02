@@ -11,6 +11,7 @@
 import type { TicketCommit, TicketDbChange } from "./index";
 import { filtrarCommitsJeff } from "./commitAuthors";
 import { codeBlock, compareTable } from "./snippets";
+import { TICKET_BORDER_ROW, TICKET_BORDER_ROW_STRONG, TICKET_TEXT_BODY } from "./ticketColors";
 
 export const TICKET_HTML_PREFIX = `<div style="font-family:Tahoma;color:#777;font-size:12pt;max-width:100%;">
 <img src="https://i.ibb.co/99cnjWGK/01.png" style="max-height:300px;max-width:100%;display:block;margin-bottom:15px;">
@@ -370,7 +371,7 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	);
 	const mismoDia = diasUnicos.size === 1;
 	const minutosPorCommit = distribuirMinutos(ordenados, estimacionMin ?? 0);
-	const tdBase = "padding:0.15rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;";
+	const tdBase = `padding:0.15rem 0.5rem;vertical-align:top;border-bottom:1px solid ${TICKET_BORDER_ROW};`;
 	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;text-align:left;";
 	const filas = ordenados.map((c, idx) => {
 		const repo = resolveCommitRepo(c);
@@ -395,7 +396,7 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 			`<td style="${tdBase}white-space:nowrap;"><a href="${url}" target="_blank" rel="noopener" style="font-family:Consolas,Menlo,monospace;font-size:10.5pt;background:rgba(3,102,214,0.18);color:#0366d6;padding:0 0.3rem;border-radius:0.2rem;text-decoration:none;">${hash}</a></td>`,
 			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${insCell}</td>`,
 			`<td style="${tdBase}font-family:Consolas,Menlo,monospace;font-size:9pt;text-align:right;white-space:nowrap;">${delCell}</td>`,
-			`<td style="${tdBase}font-size:10pt;color:#555;">${desc}</td>`,
+			`<td style="${tdBase}font-size:10pt;color:${TICKET_TEXT_BODY};">${desc}</td>`,
 			`<td style="${tdBase}font-size:9pt;color:#999;white-space:nowrap;text-align:right;">[${escapeHtml(repo)}]</td>`,
 			`</tr>`,
 		].join("");
@@ -415,14 +416,14 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 	// una incoherencia (el trabajo arrancó mucho antes del primer commit).
 	const mostrarDuracion = !(invertidoMin > 0 && invertidoMin > elapsedMin + 10);
 	const duracion = fechas.length && mostrarDuracion ? fmtDuracion(tMax - tMin) : "";
-	const tdSummary = "padding:0.3rem 0.5rem;vertical-align:top;border-top:1px solid #ddd;font-weight:600;color:#444;";
+	const tdSummary = `padding:0.3rem 0.5rem;vertical-align:top;border-top:1px solid ${TICKET_BORDER_ROW_STRONG};font-weight:600;color:#444;`;
 	const insSummary = totalIns > 0
 		? `<span style="background:rgba(34,134,58,0.18);color:#22863a;padding:0 0.3rem;border-radius:0.2rem;">+${totalIns}</span>`
 		: "";
 	const delSummary = totalDel > 0
 		? `<span style="background:rgba(179,29,40,0.18);color:#b31d28;padding:0 0.3rem;border-radius:0.2rem;">-${totalDel}</span>`
 		: "";
-	const filaSeparador = `<tr><td colspan="7" style="padding:0.5rem 0;border:none;"><hr style="border:none;border-top:1px solid #999;opacity:0.5;margin:0;"></td></tr>`;
+	const filaSeparador = `<tr><td colspan="7" style="padding:0.5rem 0;border:none;"><hr style="border:none;border-top:1px solid ${TICKET_BORDER_ROW_STRONG};margin:0;"></td></tr>`;
 	const totalEstimado = estimacionMin && estimacionMin > 0 ? fmtMin(estimacionMin) : "";
 	const filaResumen = [
 		`<tr>`,
@@ -450,7 +451,7 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 		``,
 		`<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">`,
 		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Commits relacionados${ticketId ? ` a ${escapeHtml(ticketId)}` : ""} (${commits.length}):</div>`,
-		`<table style="border-collapse:collapse;width:100%;font-family:Tahoma;">`,
+		`<table class="ticket-table" style="border-collapse:collapse;width:100%;font-family:Tahoma;">`,
 		`<thead>${filaCabecera}</thead>`,
 		`<tbody>`,
 		filas.join("\n"),
@@ -530,10 +531,10 @@ function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligenci
 	const minBdVisible = cambiosExtraMinutosVisible(nCambiosBd, minBd, minExtra, cambiosExtraMin);
 	const total = minCommitsVisibles + minBdVisible + minDiligencia;
 	if (total <= 0) return "";
-	const tdLabel = "padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#555;border-bottom:1px solid #f0f0f0;";
-	const tdValor = "padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#444;text-align:right;white-space:nowrap;border-bottom:1px solid #f0f0f0;";
-	const tdLabelTot = "padding:0.4rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#333;font-weight:600;border-top:1px solid #999;";
-	const tdValorTot = "padding:0.4rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#222;text-align:right;white-space:nowrap;font-weight:600;border-top:1px solid #999;";
+	const tdLabel = `padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#555;border-bottom:1px solid ${TICKET_BORDER_ROW};`;
+	const tdValor = `padding:0.3rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#444;text-align:right;white-space:nowrap;border-bottom:1px solid ${TICKET_BORDER_ROW};`;
+	const tdLabelTot = `padding:0.4rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#333;font-weight:600;border-top:1px solid ${TICKET_BORDER_ROW_STRONG};`;
+	const tdValorTot = `padding:0.4rem 0.5rem;vertical-align:top;font-family:Tahoma;font-size:10pt;color:#222;text-align:right;white-space:nowrap;font-weight:600;border-top:1px solid ${TICKET_BORDER_ROW_STRONG};`;
 	const filas: string[] = [];
 	if (nCommits > 0) filas.push(`<tr><td style="${tdLabel}">Trabajo en commits <span style="color:#999;">(${nCommits} commits)</span></td><td style="${tdValor}">${fmtMin(minCommitsVisibles)}</td></tr>`);
 	if (minBdVisible > 0) {
@@ -546,7 +547,7 @@ function buildResumenTiemposHtml(minCommits: number, minBd: number, minDiligenci
 		``,
 		`<div style="margin-top:1.5rem;padding-top:0.75rem;border-top:1px dashed #cfcfcf;">`,
 		`<div style="font-weight:bold;color:#555;font-size:11pt;margin-bottom:0.5rem;">Resumen general de tiempos</div>`,
-		`<table style="border-collapse:collapse;width:100%;">`,
+		`<table class="ticket-table" style="border-collapse:collapse;width:100%;">`,
 		`<tbody>`,
 		...filas,
 		`</tbody>`,

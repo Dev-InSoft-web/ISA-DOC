@@ -23,5 +23,6 @@ export function imgUrl(filename: string): string {
 export function imgInfo(filename: string): { url: string; width: number; height: number } {
 	const entry = m[filename];
 	if (!entry) throw new Error(`imgbb-map.json sin entrada para ${filename}`);
-	return { url: entry.url, width: entry.width, height: entry.height };
+	const url = entry.sha1 ? `${entry.url}?v=${entry.sha1.slice(0, 12)}` : entry.url;
+	return { url, width: entry.width, height: entry.height };
 }

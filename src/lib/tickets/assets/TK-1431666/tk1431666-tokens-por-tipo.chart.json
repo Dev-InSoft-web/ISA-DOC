@@ -34,7 +34,7 @@
 					2081,
 					2218
 				],
-				"backgroundColor": "#4472C4"
+				"backgroundColor": "#9E9E9E"
 			},
 			{
 				"label": "Ultra (tokens)",
@@ -53,11 +53,15 @@
 					1236,
 					1098
 				],
-				"backgroundColor": "#70AD47"
+				"backgroundColor": "#1E90FF"
 			}
 		]
 	},
 	"options": {
+		"backgroundColor": "transparent",
+		"layout": {
+			"padding": 12
+		},
 		"plugins": {
 			"title": {
 				"display": true,

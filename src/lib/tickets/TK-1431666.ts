@@ -1,6 +1,7 @@
 // TK-1431666 — Instrucciones compactas Ultra en BD (MERGE idempotente).
 
 import { codeBlock, simpleTable, ticketImg } from "./snippets";
+import { chartTokensPorTipo, chartTokensTotales } from "./ticketDiagramAssets";
 import {
 	PROMPT_LEN_METRICS,
 	ULTRA_WARN_ROW_BG,
@@ -28,9 +29,9 @@ WHEN MATCHED THEN UPDATE SET
 	t.bactivo = s.bactivo;`;
 
 const intro =
-	`<div>Se actualizaron en <b>AYUDASCP_IA</b> las instrucciones por tipo de consulta con la versión compacta ` +
-	`<b>Ultra</b> (<code>version = 2.0-ultra</code>), reduciendo el volumen de texto reinyectado por turno. ` +
-	`La versión extendida se conservó en el repositorio de análisis como referencia de mantenimiento.</div>`;
+	`<div>En el motor <b>Paty IA</b> se actualizaron en <b>AYUDASCP_IA</b> las instrucciones por tipo de consulta con la versión compacta ` +
+	`<b>Ultra</b> (<code>version = 2.0-ultra</code>), reduciendo el texto reinyectado en cada turno vía ` +
+	`<code>prompt.variables.instrucion_tipo</code>. La versión Base ampliada se conservó como referencia de mantenimiento.</div>`;
 
 export async function buildBodyTK1431666(): Promise<string> {
 	const totals = promptMetricsTotals();
@@ -44,7 +45,7 @@ export async function buildBodyTK1431666(): Promise<string> {
 	const solicitud = noteList(
 		await note(
 			"mdi:folder-text-outline",
-			"Se reemplazó el contenido de <code>INSTRUCCION.instruccion</code> para los 13 tipos activos, tomando como fuente <code>prompts/Ultra/PROMPT_&lt;TIPO&gt;.md</code> (par con <code>prompts/PROMPT_&lt;TIPO&gt;.md</code> Base).",
+			"Se reemplazó el contenido de <code>INSTRUCCION.instruccion</code> en Paty IA para los 13 tipos activos, con textos <code>Ultra/PROMPT_&lt;TIPO&gt;.md</code> (par con la variante Base por tipo).",
 		),
 		await note(
 			"mdi:database-edit-outline",
@@ -93,11 +94,11 @@ export async function buildBodyTK1431666(): Promise<string> {
 		),
 		await note(
 			"mdi:chart-bar",
-			"Se registró la comparativa total de tokens de instrucción (Base vs Ultra):" + ticketImg("tk1431666-tokens-totales.png"),
+			"Se registró la comparativa total de tokens de instrucción (Base vs Ultra):" + chartTokensTotales(),
 		),
 		await note(
 			"mdi:chart-bar",
-			"Se registró la comparativa por tipo de consulta:" + ticketImg("tk1431666-tokens-por-tipo.png"),
+			"Se registró la comparativa por tipo de consulta:" + chartTokensPorTipo(),
 		),
 		await note("mdi:table", "Detalle por tipo (filas en rosado: reducción inferior al 15%):" + tablaMetricas + totalesRow),
 		...(bajas.length
@@ -115,7 +116,8 @@ export async function buildBodyTK1431666(): Promise<string> {
 	const solucion = noteList(
 		await note(
 			"mdi:merge",
-			"Se generó el lote desde prompts/Ultra y se ejecutó en staging; patrón MERGE por tipo (actualizaba texto y versión sin duplicar filas):" +
+			"Se desplegó en la BD del motor Paty IA (staging) el lote MERGE por tipo — texto Ultra y <code>version = 2.0-ultra</code> sin duplicar filas:" +
+				ticketImg("tk1431666-carga-ultra.png") +
 				(await codeBlock(SQL_MERGE_PATRON, "sql")),
 		),
 		await note(
@@ -127,7 +129,7 @@ export async function buildBodyTK1431666(): Promise<string> {
 	const validacion = noteList(
 		await note(
 			"mdi:check-bold",
-			"Tras la ejecución, el <code>SELECT</code> de verificación devolvió 13 filas con <code>version = 2.0-ultra</code> y <code>LEN(instruccion)</code> inferior al de la carga inicial.",
+			"Tras el despliegue en staging quedaron 13 filas con <code>version = 2.0-ultra</code> y texto compacto (<code>LEN(instruccion)</code> inferior a la carga Base), verificado en la BD del motor.",
 		),
 		await note(
 			"mdi:check-bold",

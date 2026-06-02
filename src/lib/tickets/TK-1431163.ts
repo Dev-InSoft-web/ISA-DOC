@@ -1,6 +1,7 @@
 // TK-1431163 — Integración OpenAI: conservar prompt general + instrucciones por tipo.
 
 import { codeBlock, simpleTable, ticketImg } from "./snippets";
+import { diagramCapasOpenai } from "./ticketDiagramAssets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const SNIPPET_VARIABLES = `prompt: {
@@ -66,8 +67,8 @@ export async function buildBodyTK1431163(): Promise<string> {
 	const arq = noteList(
 		await note(
 			"mdi:chart-tree",
-			"Se documentó el flujo por turno: clasificación → BD → variables del prompt → request sin <code>instructions</code>:" +
-				ticketImg("tk1431163-capas-openai.jpg"),
+			"Se documentó el flujo por turno (diagrama de secuencia): clasificación → BD → variables del prompt → request sin <code>instructions</code>:" +
+				diagramCapasOpenai(),
 		),
 	);
 
@@ -75,7 +76,7 @@ export async function buildBodyTK1431163(): Promise<string> {
 		await note(
 			"mdi:format-vertical-align-bottom",
 			"Se anexaron las reglas del tipo al final del mensaje de sistema mediante <code>{{instrucion_tipo}}</code> (tras <code>---</code> en PR_GENERAL v13), sin sustituir el comportamiento base de Paty." +
-				ticketImg("tk1431163-pr-general-slot-final.jpg"),
+				ticketImg("tk1431163-pr-general-slot-final.png"),
 		),
 		await note(
 			"mdi:code-braces",

@@ -65,9 +65,3 @@ SET instruccion = REPLACE(
 	N'Hasta luego, {{nombre_usuario}}, que tengas un excelente día.'
 )
 WHERE iinstruccion = N'SALUDO_OTRO';
-
-SELECT iinstruccion,
-	LEN(instruccion) AS len_instruccion,
-	CASE WHEN instruccion LIKE N'%{{nombre_usuario}}%' THEN 1 ELSE 0 END AS incluye_nombre_usuario
-FROM dbo.INSTRUCCION
-WHERE iinstruccion = N'SALUDO_OTRO';

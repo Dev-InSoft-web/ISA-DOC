@@ -1,3 +1,5 @@
+import { TICKET_BORDER_CARD } from "./ticketColors";
+
 /**
  * Dimensiones email-safe para imágenes de tickets (imgbb u otras).
  * - Panorámicas (p. ej. flowchart LR ancho): encajar por ancho máximo, sin inflar altura.
@@ -52,16 +54,24 @@ export function computeTicketImgDims(natW: number, natH: number): { w: number; h
 	return capAncho(w, h, natW, natH);
 }
 
+export type TicketImgHtmlOpts = {
+	/** Sin fondo blanco en el `<img>` (diagramas con canal alpha). */
+	transparentBg?: boolean;
+};
+
 /** Envoltorio centrado; la imagen nunca desborda (max-width:100%, sin min-width fijo). */
-export function ticketImgHtml(url: string, natW: number, natH: number): string {
+export function ticketImgHtml(url: string, natW: number, natH: number, opts?: TicketImgHtmlOpts): string {
 	const { w, h } = computeTicketImgDims(natW, natH);
+	const imgBg = opts?.transparentBg ? "transparent" : "#fff";
+	const alphaAttr = opts?.transparentBg ? ' data-ticket-alpha="1"' : "";
+	const border = opts?.transparentBg ? `1px solid ${TICKET_BORDER_CARD}` : "1px solid #ddd";
 	return (
 		`<div style="text-align:center;margin:0.75rem auto;padding:0 5%;max-width:100%;box-sizing:border-box;overflow:hidden;">` +
 		`<a href="${url}" target="_blank" rel="noopener noreferrer" ` +
-		`style="display:inline-block;max-width:100%;text-decoration:none;">` +
-		`<img src="${url}" alt="" width="${w}" height="${h}" ` +
+		`style="display:inline-block;max-width:100%;text-decoration:none;border-radius:4px;">` +
+		`<img src="${url}" alt="" width="${w}" height="${h}"${alphaAttr} ` +
 		`style="display:block;width:100%;max-width:${w}px;height:auto;margin:0 auto;` +
-		`border:1px solid #ddd;border-radius:4px;background:#fff;cursor:zoom-in;">` +
+		`border:${border};border-radius:4px;background:${imgBg};cursor:zoom-in;">` +
 		`</a></div>`
 	);
 }

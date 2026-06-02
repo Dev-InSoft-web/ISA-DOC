@@ -21,6 +21,7 @@ Ejemplo vigente: `CONVERSACION_LOG` → `ICONVERSACION BIGINT`, `CONTENT NVARCHA
 - Scripts en `src/lib/patyia/sql/*.sql`: sin `GO`, sin `USE`; una sola tanda ejecutable.
 - Staging: la conexión la define `paty_*` en `.env` (`paty_namedb=AYUDASCP_IA_STAGING`); no validar con `DB_NAME()` en el script.
 - **Solo DDL/DML pedido**: no rellenar datos salvo que el ticket lo pida explícitamente.
+- Tras `UPDATE`, `DELETE` o `MERGE`: **no** cerrar con `SELECT` de verificación; terminar en `COMMIT` o en el DML. Consultas aparte en `select-all-instrucciones.sql`.
 - Cabecera breve (2–3 líneas); sin líneas en blanco entre cada línea de SQL.
 
 ## SSMS

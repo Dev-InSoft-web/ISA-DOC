@@ -6,10 +6,17 @@
  *   IMGBB_API_KEY=… (opcional; hay clave por defecto como upload-assets-imgbb.mjs)
  */
 
+import { existsSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
+import { spawn } from "node:child_process";
+import os from "node:os";
 import { fileURLToPath } from "node:url";
+import { barChartJsonToDot } from "./chart-json-to-dot.mjs";
+import { chartFrameDot, dotImagePath } from "./chart-graphviz.mjs";
+import sharp from "sharp";
+import { removeBackgroundFromBuffer } from "./huggingface-remove-bg.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(__dirname, "..", "..");
@@ -18,7 +25,7 @@ export const MAP_FILE = path.join(ASSETS_ROOT, "imgbb-map.json");
 export const API_KEY = process.env.IMGBB_API_KEY ?? "bd446e4f6fb2260ac3111574c4e7412e";
 
 const MERMAID_FLOWCHART_INIT =
-	'%%{init: {"flowchart": {"curve": "stepAfter", "htmlLabels": true}}}%%';
+	'%%{init: {"flowchart": {"curve": "stepAfter", "htmlLabels": true, "nodeSpacing": 44, "rankSpacing": 52, "padding": 18}}}%%';
 
 export function prepareMermaidDiagram(diagram) {
 	const trimmed = diagram.trim();
@@ -34,8 +41,9 @@ export function utf8ToBase64(text) {
 		.replace(/\//g, "_");
 }
 
-export function mermaidInkUrl(diagram) {
-	return `https://mermaid.ink/img/${utf8ToBase64(prepareMermaidDiagram(diagram))}`;
+export function mermaidInkUrl(diagram, format = "img") {
+	const encoded = utf8ToBase64(prepareMermaidDiagram(diagram));
+	return `https://mermaid.ink/${format}/${encoded}`;
 }
 
 export function chartConfigToJson(chartConfig) {
@@ -90,8 +98,115 @@ export async function fetchBuffer(url, label) {
 	return Buffer.from(await res.arrayBuffer());
 }
 
+/**
+ * Mermaid → PNG vía mermaid.ink/img (Chromium en servidor: respeta htmlLabels y texto).
+ * No usar `/svg` + sharp: las etiquetas HTML (foreignObject) no se rasterizan y el diagrama queda sin letras.
+ * Post-proceso remove-bg: rmbg ONNX (briaai/RMBG-1.4) u otros motores en huggingface-remove-bg.mjs.
+ */
 export async function renderMermaidToBuffer(mmdText) {
-	return fetchBuffer(mermaidInkUrl(mmdText), "mermaid.ink");
+	return fetchBuffer(mermaidInkUrl(mmdText, "img"), "mermaid.ink/img");
+}
+
+/** Ruta a `dot` (PATH o instalación típica en Windows). */
+export function resolveDotExecutable() {
+	if (process.env.GRAPHVIZ_DOT) return process.env.GRAPHVIZ_DOT;
+	const winCandidates = [
+		"C:\\Program Files\\Graphviz\\bin\\dot.exe",
+		"C:\\Program Files (x86)\\Graphviz\\bin\\dot.exe",
+	];
+	for (const p of winCandidates) {
+		if (existsSync(p)) return p;
+	}
+	return "dot";
+}
+
+let vizInstancePromise;
+
+async function getVizInstance() {
+	if (!vizInstancePromise) {
+		const { instance } = await import("@viz-js/viz");
+		vizInstancePromise = instance();
+	}
+	return vizInstancePromise;
+}
+
+/** DOT → SVG (@viz-js/viz) → PNG (sharp). No requiere `dot` en PATH. */
+export async function renderGraphvizWasmToBuffer(dotText, vizOptions = {}) {
+	const viz = await getVizInstance();
+	const result = viz.render(dotText, {
+		format: "svg",
+		graphAttributes: { bgcolor: "transparent", dpi: "144" },
+		...vizOptions,
+	});
+	if (result.status !== "success") {
+		const msg = result.errors?.map((e) => e.message).join("; ") || "Graphviz WASM";
+		throw new Error(msg);
+	}
+	const sharp = (await import("sharp")).default;
+	return sharp(Buffer.from(result.output, "utf8")).png().toBuffer();
+}
+
+/** Renderiza DOT con el binario `dot` de Graphviz. PNG fondo transparente. */
+export async function renderGraphvizCliToBuffer(dotText, dotBin = resolveDotExecutable()) {
+	const tmpDir = os.tmpdir();
+	const id = `gv-${Date.now()}-${crypto.randomBytes(4).toString("hex")}`;
+	const dotPath = path.join(tmpDir, `${id}.dot`);
+	const pngPath = path.join(tmpDir, `${id}.png`);
+	await fs.writeFile(dotPath, dotText, "utf8");
+
+	await new Promise((resolve, reject) => {
+		const args = ["-Tpng", "-Gdpi=144", "-Gbgcolor=transparent", dotPath, "-o", pngPath];
+		const proc = spawn(dotBin, args, { stdio: ["ignore", "pipe", "pipe"] });
+		let err = "";
+		proc.stderr?.on("data", (c) => {
+			err += c.toString();
+		});
+		proc.on("error", (e) => {
+			if (e.code === "ENOENT") {
+				reject(
+					new Error(
+						"Graphviz no está en PATH. Instale Graphviz y verifique `dot -V` (https://graphviz.org/download/).",
+					),
+				);
+			} else {
+				reject(e);
+			}
+		});
+		proc.on("close", (code) => {
+			if (code === 0) resolve();
+			else reject(new Error(`dot salió ${code}: ${err.trim() || "sin stderr"}`));
+		});
+	});
+
+	const buf = await fs.readFile(pngPath);
+	await fs.unlink(dotPath).catch(() => {});
+	await fs.unlink(pngPath).catch(() => {});
+	return buf;
+}
+
+/** Preferencia: WASM (portable); si hay `dot` instalado, se usa el binario. */
+export async function renderGraphvizToBuffer(dotText) {
+	const dotBin = resolveDotExecutable();
+	const hasLocalDot = dotBin !== "dot" && existsSync(dotBin);
+	if (hasLocalDot) {
+		try {
+			return await renderGraphvizCliToBuffer(dotText, dotBin);
+		} catch {
+			/* fallback WASM */
+		}
+	}
+	try {
+		return await renderGraphvizWasmToBuffer(dotText);
+	} catch (wasmErr) {
+		if (!hasLocalDot) {
+			try {
+				return await renderGraphvizCliToBuffer(dotText, dotBin);
+			} catch {
+				/* sigue con wasmErr */
+			}
+		}
+		throw wasmErr;
+	}
 }
 
 export async function renderQuickChartToBuffer(chartConfig, render = {}) {
@@ -102,6 +217,29 @@ export async function renderQuickChartToBuffer(chartConfig, render = {}) {
 		render.plugins ?? "datalabels",
 	);
 	return fetchBuffer(url, "quickchart.io");
+}
+
+/**
+ * Chart.js (QuickChart) incrustado en marco Graphviz transparente.
+ * @param {object} chartConfig Chart.js JSON
+ * @param {object} render width/height/plugins
+ * @param {{ ticketDir: string, graphId: string }} ctx
+ */
+export async function renderChartGraphvizToBuffer(chartConfig, render, ctx) {
+	const chartBuf = await renderQuickChartToBuffer(chartConfig, render);
+	const { width, height } = imageDimensions(chartBuf);
+	const tmpName = `.tmp-${ctx.graphId}-chart.png`;
+	const tmpPng = path.join(ctx.ticketDir, tmpName);
+	await fs.writeFile(tmpPng, chartBuf);
+	const dot = chartFrameDot(ctx.graphId, tmpPng);
+	const imgRef = dotImagePath(tmpPng);
+	try {
+		return await renderGraphvizWasmToBuffer(dot, {
+			images: [{ name: imgRef, width, height }],
+		});
+	} finally {
+		await fs.unlink(tmpPng).catch(() => {});
+	}
 }
 
 export async function uploadImgbb(pngName, buf) {
@@ -127,7 +265,7 @@ export async function uploadImgbb(pngName, buf) {
 
 /**
  * @param {string} ticketId ej. TK-1431163
- * @param {Array<{ id: string, kind: 'mermaid'|'quickchart', source: string, png: string, render?: object }>} assets
+ * @param {Array<{ id: string, kind: 'mermaid'|'graphviz'|'quickchart'|'chart-graphviz'|'capture', source: string, png: string, removeBg?: boolean|'canvas', render?: object, mermaidFallback?: string, chartFallback?: string, graphvizFallback?: string }>} assets
  */
 export async function buildTicketAssets(ticketId, assets) {
 	const ticketDir = path.join(ASSETS_ROOT, ticketId);
@@ -140,15 +278,76 @@ export async function buildTicketAssets(ticketId, assets) {
 		if (!baseOut) throw new Error(`asset sin png/file: ${asset.id}`);
 
 		let buf;
+		let graphvizRendered = false;
 		if (asset.kind === "mermaid") {
 			const mmd = await fs.readFile(srcPath, "utf8");
-			console.log(`◇ ${ticketId} · mermaid.ink ← ${asset.source}`);
-			buf = await renderMermaidToBuffer(mmd);
+			console.log(`◇ ${ticketId} · mermaid.ink/img ← ${asset.source}`);
+			try {
+				buf = await renderMermaidToBuffer(mmd);
+			} catch (e) {
+				const gv = asset.graphvizFallback;
+				if (gv) {
+					console.warn(`  ⚠ mermaid falló (${e.message}); NO usar .dot simplificado si existe .mmd detallado`);
+					const dot = await fs.readFile(path.join(ticketDir, gv), "utf8");
+					if (/DEPRECADO/i.test(dot)) throw e;
+					buf = await renderGraphvizToBuffer(dot);
+					graphvizRendered = true;
+				} else {
+					throw e;
+				}
+			}
+		} else if (asset.kind === "graphviz") {
+			let dot;
+			let dotLabel = asset.source;
+			try {
+				dot = await fs.readFile(srcPath, "utf8");
+			} catch (readErr) {
+				const cf = asset.chartFallback;
+				if (!cf?.endsWith(".chart.json")) throw readErr;
+				const chart = JSON.parse(await fs.readFile(path.join(ticketDir, cf), "utf8"));
+				const graphId = asset.id.replace(/-/g, "_");
+				dot = barChartJsonToDot(chart, graphId);
+				dotLabel = `${cf} → DOT`;
+			}
+			console.log(`◇ ${ticketId} · graphviz ← ${dotLabel}`);
+			try {
+				buf = await renderGraphvizToBuffer(dot);
+				graphvizRendered = true;
+			} catch (e) {
+				const fb = asset.mermaidFallback;
+				if (fb) {
+					const mmdPath = path.join(ticketDir, fb);
+					console.warn(`  ⚠ graphviz falló (${e.message}); fallback mermaid ← ${fb}`);
+					const mmd = await fs.readFile(mmdPath, "utf8");
+					buf = await renderMermaidToBuffer(mmd);
+				} else if (asset.chartFallback) {
+					console.warn(`  ⚠ graphviz falló (${e.message}); fallback quickchart ← ${asset.chartFallback}`);
+					const raw = await fs.readFile(path.join(ticketDir, asset.chartFallback), "utf8");
+					buf = await renderQuickChartToBuffer(JSON.parse(raw), asset.render ?? {});
+				} else {
+					throw e;
+				}
+			}
 		} else if (asset.kind === "quickchart") {
 			const raw = await fs.readFile(srcPath, "utf8");
 			const config = JSON.parse(raw);
 			console.log(`◇ ${ticketId} · quickchart.io ← ${asset.source}`);
 			buf = await renderQuickChartToBuffer(config, asset.render ?? {});
+		} else if (asset.kind === "chart-graphviz") {
+			const raw = await fs.readFile(srcPath, "utf8");
+			const config = JSON.parse(raw);
+			const graphId = asset.id.replace(/-/g, "_");
+			console.log(`◇ ${ticketId} · chart.js + graphviz ← ${asset.source}`);
+			try {
+				buf = await renderChartGraphvizToBuffer(config, asset.render ?? {}, {
+					ticketDir,
+					graphId,
+				});
+				graphvizRendered = true;
+			} catch (e) {
+				console.warn(`  ⚠ chart-graphviz falló (${e.message}); solo QuickChart`);
+				buf = await renderQuickChartToBuffer(config, asset.render ?? {});
+			}
 		} else if (asset.kind === "capture") {
 			console.log(`◇ ${ticketId} · captura local ← ${asset.source}`);
 			buf = await fs.readFile(srcPath);
@@ -156,9 +355,22 @@ export async function buildTicketAssets(ticketId, assets) {
 			throw new Error(`kind no soportado: ${asset.kind}`);
 		}
 
-		const { ext, width: localW, height: localH } = imageDimensions(buf);
+		if (asset.removeBg === true || asset.removeBg === "rmbg" || asset.removeBg === "canvas") {
+			const engine = asset.removeBg === "canvas" ? "canvas" : "rmbg";
+			console.log(`◇ ${ticketId} · remove-bg (${engine}) ← ${asset.id}`);
+			buf = await removeBackgroundFromBuffer(buf, { engine });
+		}
+
+		let { ext, width: localW, height: localH } = imageDimensions(buf);
 		const stem = baseOut.replace(/\.(png|jpe?g|webp|gif)$/i, "");
-		const fileName = `${stem}${ext}`;
+		const wantPng = /\.png$/i.test(baseOut);
+		if (wantPng && ext !== ".png") {
+			const sharp = (await import("sharp")).default;
+			buf = await sharp(buf).png().toBuffer();
+			ext = ".png";
+			({ width: localW, height: localH } = imageDimensions(buf));
+		}
+		const fileName = wantPng || graphvizRendered ? `${stem}.png` : `${stem}${ext}`;
 		const outPath = path.join(ticketDir, fileName);
 
 		await fs.writeFile(outPath, buf);

@@ -490,6 +490,7 @@ export async function compareTable(pair: ComparePair): Promise<string> {
 
 import { imgInfo } from "./assetsRemote";
 import { computeTicketImgDims, ticketImgHtml } from "./imgDims";
+import { TICKET_BORDER_ROW, TICKET_TEXT_BODY, TICKET_TEXT_MUTED, TICKET_TEXT_STEP_BG } from "./ticketColors";
 
 /** Base64 UTF-8 compatible con navegador y Node (sin depender de `Buffer`). */
 export function utf8ToBase64(text: string): string {
@@ -516,11 +517,16 @@ export function mermaidInkUrl(diagram: string): string {
 	return `https://mermaid.ink/img/${utf8ToBase64(prepareMermaidDiagram(diagram))}`;
 }
 
-/** Imagen remota email-safe (Mermaid, QuickChart, imgbb, etc.). */
+/** Imagen remota (Mermaid/QuickChart en vivo). Respeta `computeTicketImgDims` si se pasan dimensiones nativas. */
 export function remoteDiagramImg(
 	src: string,
-	opts?: { width?: number; height?: number; fullWidth?: boolean },
+	opts?: { width?: number; height?: number; fullWidth?: boolean; nativeW?: number; nativeH?: number },
 ): string {
+	const natW = opts?.nativeW ?? opts?.width ?? 820;
+	const natH = opts?.nativeH ?? opts?.height ?? 440;
+	if (opts?.nativeW != null && opts?.nativeH != null) {
+		return ticketImgHtml(src, natW, natH);
+	}
 	const width = opts?.width ?? 820;
 	const height = opts?.height ?? 440;
 	const full = opts?.fullWidth ?? false;
@@ -537,15 +543,20 @@ export function remoteDiagramImg(
 }
 
 /**
- * Imagen de ticket vía imgbb (`imgbb-map.json`). Fuente: `.mmd` / `.chart.json` + script `build-TK-*-assets.mjs`.
- * Dimensiones según `imgDims.ts` (mín. 400×500 o 80% centrado).
+ * Imagen de ticket vía imgbb (`imgbb-map.json`). Usar para capturas SSMS u offline/email.
+ * Diagramas editables: `ticketDiagramAssets.ts` → `mermaidImg` / `chartImg`.
  */
-export function ticketImg(filename: string): string {
+export function ticketImg(filename: string, opts?: import("./imgDims").TicketImgHtmlOpts): string {
 	const info = imgInfo(filename);
-	return ticketImgHtml(info.url, info.width, info.height);
+	return ticketImgHtml(info.url, info.width, info.height, opts);
 }
 
-/** @deprecated Usar `ticketImg` tras generar PNG y subir con el script del TK. */
+/** Diagrama publicado en imgbb con transparencia (PNG alpha). */
+export function ticketImgTransparent(filename: string): string {
+	return ticketImg(filename, { transparentBg: true });
+}
+
+/** Diagrama Mermaid en vivo (mermaid.ink). Fuente: `.mmd` importado con `?raw`. */
 export function mermaidImg(
 	diagram: string,
 	opts?: { width?: number; height?: number; fullWidth?: boolean },
@@ -569,7 +580,7 @@ export function chartImg(
 	return remoteDiagramImg(src, { width, height, fullWidth: false });
 }
 
-/** @deprecated Usar `ticketImg` tras `build-TK-*-assets.mjs`. */
+/** Chart.js ancho completo vía QuickChart. */
 export function chartImgFull(
 	chartConfig: Record<string, unknown>,
 	width = 900,
@@ -619,8 +630,8 @@ export function simpleTable(
 	const widths = opts?.widths ?? [];
 	const rowBackgrounds = opts?.rowBackgrounds ?? [];
 	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;";
-	const tdBase = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Tahoma;font-size:10pt;color:#555;";
-	const tdStep = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;text-align:center;background:#fafafa;width:36px;";
+	const tdBase = `padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid ${TICKET_BORDER_ROW};font-family:Tahoma;font-size:10pt;color:${TICKET_TEXT_BODY};`;
+	const tdStep = `padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid ${TICKET_BORDER_ROW};font-family:Consolas,Menlo,monospace;font-size:9pt;color:${TICKET_TEXT_MUTED};text-align:center;background:${TICKET_TEXT_STEP_BG};width:36px;`;
 	const alignOf = (i: number): string => `text-align:${aligns[i] ?? "left"};`;
 	const widthOf = (i: number): string => (widths[i] ? `width:${widths[i]};` : "");
 
@@ -642,7 +653,7 @@ export function simpleTable(
 			+ `</tr>`;
 	}).join("");
 
-	return `<table style="border-collapse:collapse;width:100%;font-family:Tahoma;margin:8px 0;${widths.length ? "table-layout:fixed;" : ""}">`
+	return `<table class="ticket-table" style="border-collapse:collapse;width:100%;font-family:Tahoma;margin:8px 0;${widths.length ? "table-layout:fixed;" : ""}">`
 		+ colgroup
 		+ `<thead>${head}</thead>`
 		+ `<tbody>${body}</tbody>`

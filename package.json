@@ -24,7 +24,8 @@
 		"tickets:assets:1431163": "node scripts/tickets/build-TK-1431163-assets.mjs",
 		"tickets:assets:1431662": "node scripts/tickets/build-TK-1431662-assets.mjs",
 		"tickets:assets:1431666": "node scripts/tickets/build-TK-1431666-assets.mjs",
-		"tickets:assets:patyia": "npm run tickets:assets:1431163 && npm run tickets:assets:1431662 && npm run tickets:assets:1431666"
+		"tickets:assets:patyia": "npm run tickets:assets:1431163 && npm run tickets:assets:1431662 && npm run tickets:assets:1431666",
+		"huggingface:remove-bg": "node scripts/huggingface/remove-bg.mjs"
 	},
 	"dependencies": {
 		"@astrojs/node": "^9.x",
@@ -37,6 +38,8 @@
 		"@codemirror/state": "^6.6.0",
 		"@codemirror/theme-one-dark": "^6.1.3",
 		"@codemirror/view": "^6.41.1",
+		"@gradio/client": "^2.2.1",
+		"@huggingface/inference": "^4.13.18",
 		"@ingenieria_insoft/ispgen": "^1.0.x",
 		"@ingenieria_insoft/ispsveltecomponents": "^x",
 		"codemirror": "^6.0.2",
@@ -45,6 +48,7 @@
 		"gpt-tokenizer": "^3.4.0",
 		"marked": "^18.0.2",
 		"mssql": "^11.0.1",
+		"rmbg": "^0.1.0",
 		"socket.io": "^4.8.3",
 		"socket.io-client": "^4.8.3",
 		"svelte": "^5.x"
@@ -52,7 +56,9 @@
 	"devDependencies": {
 		"@astrojs/ts-plugin": "^1.x",
 		"@types/mssql": "^12.3.0",
+		"@viz-js/viz": "^3.27.0",
 		"astro": "^5.x",
+		"sharp": "^0.34.5",
 		"tsx": "^4.21.0"
 	}
 }

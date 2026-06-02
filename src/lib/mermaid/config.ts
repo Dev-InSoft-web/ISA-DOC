@@ -7,7 +7,7 @@
 export const MERMAID_FLOWCHART_CURVE = "stepAfter" as const;
 
 const FLOWCHART_INIT_DIRECTIVE =
-	`%%{init: {"flowchart": {"curve": "${MERMAID_FLOWCHART_CURVE}", "htmlLabels": true}}}%%`;
+	`%%{init: {"flowchart": {"curve": "${MERMAID_FLOWCHART_CURVE}", "htmlLabels": true, "nodeSpacing": 44, "rankSpacing": 52, "padding": 18}}}%%`;
 
 /** Opciones para `mermaid.initialize({ flowchart: … })`. */
 export const MERMAID_INITIALIZE_FLOWCHART = {

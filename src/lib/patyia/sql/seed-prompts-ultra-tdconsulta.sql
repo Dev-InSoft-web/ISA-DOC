@@ -1635,10 +1635,3 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 	VALUES (s.itdconsulta, s.iinstruccion, s.orden);
 
 COMMIT;
-
-SELECT i.iinstruccion, i.ninstruccion, i.version, LEN(i.instruccion) AS chars, x.itdconsulta, c.nconsulta, x.orden
-FROM INSTRUCCION i
-LEFT JOIN TDCONSULTAXINSTRUCCION x ON x.iinstruccion = i.iinstruccion
-LEFT JOIN TDCONSULTA c             ON c.itdconsulta  = x.itdconsulta
-WHERE i.ninstruccion LIKE 'PROMPT[_]%'
-ORDER BY i.iinstruccion;

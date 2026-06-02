@@ -1,6 +1,7 @@
 // TK-1431662 — Selección de modelo IA por tipo de consulta.
 
 import { codeBlock, simpleTable, ticketImg } from "./snippets";
+import { diagramFasesModelo } from "./ticketDiagramAssets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const SYSTEM_PROMPTS_MODELOS = `{
@@ -19,11 +20,7 @@ BEGIN
 END;`;
 
 const SQL_CALIBRATION_NANO = `UPDATE dbo.INSTRUCCION
-SET [MODELO] = N'gpt-5-nano';
-
-SELECT [IINSTRUCCION], [NINSTRUCCION], [MODELO], [VERSION], [BACTIVO]
-FROM dbo.INSTRUCCION
-ORDER BY [IINSTRUCCION];`;
+SET [MODELO] = N'gpt-5-nano';`;
 
 const MODEL_RULES: Array<{ flujo: string; uso: string; modelo: string }> = [
 	{ flujo: "Operativo", uso: "Clasificaban tipo, módulo, títulos, resúmenes y premisas.", modelo: "gpt-4.1-nano (`system-prompts.json`)" },
@@ -105,21 +102,28 @@ export async function buildBodyTK1431662(): Promise<string> {
 		),
 		await note(
 			"mdi:database-sync",
-			"Calibración en <code>AYUDASCP_IA_STAGING</code> (<code>update-instruccion-modelo-gpt5-nano.sql</code>, bitácora): un único <code>UPDATE</code> sobre todas las filas y <code>SELECT</code> de verificación. Las 13 instrucciones activas (<code>version = 2.0-ultra</code>, <code>bactivo = 1</code>) quedaron con el mismo valor en <code>MODELO</code>:" +
+			"Calibración en <code>AYUDASCP_IA_STAGING</code> (<code>update-instruccion-modelo-gpt5-nano.sql</code>, bitácora): un único <code>UPDATE</code> sobre todas las filas. Las 13 instrucciones activas (<code>version = 2.0-ultra</code>, <code>bactivo = 1</code>) quedaron con <code>MODELO = gpt-5-nano</code> en todas las filas (captura SSMS):" +
 				(await codeBlock(SQL_CALIBRATION_NANO, "sql")) +
-				ticketImg("tk1431662-instruccion-modelo-calibracion.png"),
+				ticketImg("tk1431662-instruccion-modelo-calibracion-gpt5-nano.png"),
 		),
 		await note(
 			"mdi:account-clock-outline",
 			"La migración de columna la aplicó el <b>ing. Álvaro</b> el <b>01/jun./2026 02:50 p. m.</b> (permisos de alteración). " +
 				"Eso retrasó el desarrollo unas <b>6 horas</b> respecto a la reunión con la <b>ing. Andrea</b>.",
 		),
+		await note(
+			"mdi:account-key-outline",
+			"Posteriormente se solicitó al ingeniero de base de datos un perfil con permisos de <code>ALTER</code>; " +
+				"se asignó el usuario correspondiente y, con ello, las migraciones y ajustes de esquema en staging " +
+				"pueden ejecutarse de forma más ágil sin depender del <b>ing. Álvaro</b> para cada cambio.",
+		),
 	);
 
 	const solucion = noteList(
 		await note(
 			"mdi:source-branch-sync",
-			"Se documentó la resolución del modelo por turno:" + ticketImg("tk1431662-fases-modelo.jpg"),
+			"Se documentó la resolución del modelo por turno (diagrama de secuencia):" +
+				diagramFasesModelo(),
 		),
 		await note(
 			"mdi:database-cog-outline",

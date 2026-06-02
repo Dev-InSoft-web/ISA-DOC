@@ -8,7 +8,7 @@
 -- Idempotente:
 --   1) GRANT ALTER a SERVER-AYUDASCP-IA (SqlExec bitácora)
 --   2) ALTER TABLE ADD MODELO (default gpt-5-nano)
---   3) Normaliza filas vacías y lista catálogo
+--   3) Normaliza filas con MODELO vacío
 -- =============================================================
 
 USE [AYUDASCP_IA_STAGING];
@@ -60,13 +60,4 @@ WHERE [MODELO] IS NULL OR LTRIM(RTRIM([MODELO])) = N'';
 GO
 
 PRINT CONCAT(N'Filas normalizadas: ', @@ROWCOUNT);
-GO
-
-SELECT
-	[IINSTRUCCION],
-	[NINSTRUCCION],
-	[MODELO],
-	[BACTIVO]
-FROM dbo.[INSTRUCCION]
-ORDER BY [IINSTRUCCION] ASC;
 GO

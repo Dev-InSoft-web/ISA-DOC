@@ -8,3 +8,7 @@ declare module "*.png?inline" {
 	const dataUri: string;
 	export default dataUri;
 }
+declare module "*.mmd?raw" {
+	const content: string;
+	export default content;
+}

@@ -4,9 +4,15 @@ Norma ISA-DOC para diagramas y gráficos en tickets:
 
 | Tipo | Fuente editable | HTML en ticket |
 |------|-----------------|----------------|
-| Mermaid | `.mmd` en `src/lib/tickets/assets/<TK-ID>/` | PNG en **imgbb** vía `ticketImg()` |
-| QuickChart / API con datos | `.chart.json` | PNG en imgbb |
+| **Mermaid** (flujos detallados, ER) | `.mmd` en `assets/<TK-ID>/` | PNG en **imgbb** vía `ticketImg()` |
+| **Graphviz** (flujos simples) | `.dot` | PNG en imgbb (WASM `dot` o binario local) |
+| **chart-graphviz** (barras Chart.js + marco GV) | `.chart.json` + `kind: chart-graphviz` | QuickChart → nodo `image` en DOT → PNG |
+| **QuickChart** (solo chart, sin marco) | `.chart.json` + `kind: quickchart` | PNG en imgbb |
+| Mermaid / Graphviz (respaldo) | `mermaidFallback` / `graphvizFallback` | si falla el motor principal |
+| Chart.js → DOT barras falsas | `chart-json-to-dot.mjs` | **no publicar** (sustituido por chart-graphviz) |
 | Generado por código TS | `.md` con instrucciones de regeneración + `.chart.json` | PNG en imgbb |
+
+**Graphviz:** instalar [Graphviz](https://graphviz.org/download/) y verificar `dot -V`. Estilo INSOFT: fondo transparente, texto/bordes `#808080`, aristas y títulos `#1E90FF`, `splines=ortho`. Ver `scripts/lib/graphviz-style.mjs`.
 
 ## Dimensiones en HTML
 
@@ -28,7 +34,7 @@ node scripts/tickets/build-TK-1431666-assets.mjs
 Cada script:
 
 1. Lee `assets/<TK-ID>/manifest.json`
-2. Genera PNG (mermaid.ink o quickchart.io)
+2. Genera PNG según `kind` del manifest (mermaid.ink, Graphviz, quickchart.io)
 3. Sube a imgbb si el archivo cambió
 4. Actualiza `assets/imgbb-map.json`
 

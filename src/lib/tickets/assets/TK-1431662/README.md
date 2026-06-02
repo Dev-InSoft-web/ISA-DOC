@@ -1,10 +1,10 @@
 # TK-1431662 — assets
 
-| Fuente | Archivo | Subir |
-|--------|---------|-------|
-| `tk1431662-instruccion-modelo.mmd` | `tk1431662-instruccion-modelo.jpg` | `node scripts/tickets/build-TK-1431662-assets.mjs` |
-| `tk1431662-fases-modelo.mmd` | `tk1431662-fases-modelo.jpg` | mismo script |
+| Fuente | Salida | Build |
+|--------|--------|-------|
+| `tk1431662-instruccion-modelo.dot` (fallback `.mmd`) | `tk1431662-instruccion-modelo.png` | `node scripts/tickets/build-TK-1431662-assets.mjs` |
+| `tk1431662-fases-modelo.mmd` (serpenteante LR + RL) | `tk1431662-fases-modelo.png` | mismo script |
 | Captura SSMS columna MODELO | `tk1431662-instruccion-columna-mode.png` | `node scripts/upload-assets-imgbb.mjs` |
-| Captura SSMS 13 filas calibradas | `tk1431662-instruccion-modelo-calibracion.png` | mismo |
+| Captura SSMS 13 filas · `MODELO` = gpt-5-nano | `tk1431662-instruccion-modelo-calibracion-gpt5-nano.png` | mismo (no reutilizar `…-calibracion.png` sin sufijo: imgbb asoció la captura **gpt-5-mini**) |
 
-En el ticket HTML: `ticketImg("…")`.
+Graphviz en PATH. Los `.mmd` se conservan como respaldo.

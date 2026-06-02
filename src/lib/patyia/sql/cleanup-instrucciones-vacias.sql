@@ -30,6 +30,3 @@ WHERE (INSTRUCCION IS NULL OR LTRIM(RTRIM(INSTRUCCION)) = N'')
 PRINT CONCAT('Filas eliminadas: ', @@ROWCOUNT);
 
 COMMIT;
-
--- Verificación final
-SELECT COUNT(*) AS instrucciones_restantes FROM [dbo].[INSTRUCCION];

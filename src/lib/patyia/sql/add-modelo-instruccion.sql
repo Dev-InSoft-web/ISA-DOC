@@ -2,8 +2,8 @@
 -- INSTRUCCION · columna MODELO (modelo OpenAI por instrucción)
 -- TK-1431662 · Selección de modelo IA por tipo de consulta
 --
--- Idempotente: agrega MODELO si no existe (default gpt-5-nano),
--- normaliza filas vacías y lista el catálogo.
+-- Idempotente: agrega MODELO si no existe (default gpt-5-nano)
+-- y normaliza filas con MODELO vacío.
 -- Compatible con /api/patyia/db/exec (sin USE / sin GO).
 -- =============================================================
 
@@ -49,14 +49,6 @@ END CATCH;
 SET @sql = N'
 	UPDATE ' + QUOTENAME(@db) + N'.[dbo].[INSTRUCCION]
 	SET [MODELO] = N''gpt-5-nano''
-	WHERE [MODELO] IS NULL OR LTRIM(RTRIM([MODELO])) = N'''';
-
-	SELECT
-		[IINSTRUCCION],
-		[NINSTRUCCION],
-		[MODELO],
-		[BACTIVO]
-	FROM ' + QUOTENAME(@db) + N'.[dbo].[INSTRUCCION]
-	ORDER BY [IINSTRUCCION] ASC;';
+	WHERE [MODELO] IS NULL OR LTRIM(RTRIM([MODELO])) = N'''';';
 
 EXEC sp_executesql @sql;
