@@ -610,14 +610,14 @@
 		"size": 24954
 	},
 	"tk1431163-capas-openai.jpg": {
-		"sha1": "6e7d4b91e61961f6a8208e58cb436372c665a87c",
-		"url": "https://i.ibb.co/8g2nn6Sy/tk1431163-capas-openai.jpg",
-		"display_url": "https://i.ibb.co/8g2nn6Sy/tk1431163-capas-openai.jpg",
-		"thumb": "https://i.ibb.co/Sw0DDR9k/tk1431163-capas-openai.jpg",
-		"delete_url": "https://ibb.co/Sw0DDR9k/c0eaceac95be7efb4758decdd95d066f",
+		"sha1": "a8ced96d8efcafb4d3a65033885593d0adff311a",
+		"url": "https://i.ibb.co/twPqq9cY/tk1431163-capas-openai.jpg",
+		"display_url": "https://i.ibb.co/twPqq9cY/tk1431163-capas-openai.jpg",
+		"thumb": "https://i.ibb.co/bjRsskLN/tk1431163-capas-openai.jpg",
+		"delete_url": "https://ibb.co/bjRsskLN/11fff6ed62a6d0821ac3805b7ba07ccc",
 		"width": 633,
 		"height": 506,
-		"size": 31055
+		"size": 30869
 	},
 	"tk1431662-instruccion-modelo.jpg": {
 		"sha1": "d3721b8c5611deeb8a49a060eb57b89679c4b537",
@@ -640,24 +640,24 @@
 		"size": 24959
 	},
 	"tk1431666-tokens-totales.png": {
-		"sha1": "f507bc033206bec241a8920d165abb19e2df5f75",
-		"url": "https://i.ibb.co/TBbc2TKV/tk1431666-tokens-totales.png",
-		"display_url": "https://i.ibb.co/pvR2wPWt/tk1431666-tokens-totales.png",
-		"thumb": "https://i.ibb.co/99VngvwF/tk1431666-tokens-totales.png",
-		"delete_url": "https://ibb.co/99VngvwF/63cb78edb592223e37d79797674a5f93",
+		"sha1": "7d067afe2b667008a6926383b007cbf5258f50f7",
+		"url": "https://i.ibb.co/ZpffqX6J/tk1431666-tokens-totales.png",
+		"display_url": "https://i.ibb.co/5g11b4W9/tk1431666-tokens-totales.png",
+		"thumb": "https://i.ibb.co/Kp55ThjG/tk1431666-tokens-totales.png",
+		"delete_url": "https://ibb.co/Kp55ThjG/ed64e8e192a04de3ecc4ab13e1eca223",
 		"width": 1600,
 		"height": 800,
-		"size": 31988
+		"size": 30277
 	},
 	"tk1431666-tokens-por-tipo.png": {
-		"sha1": "e30ee4a34f6e3eabd181ecfe1108d84e0647b07b",
-		"url": "https://i.ibb.co/j9V545MT/tk1431666-tokens-por-tipo.png",
-		"display_url": "https://i.ibb.co/9mwvYvTN/tk1431666-tokens-por-tipo.png",
-		"thumb": "https://i.ibb.co/vCsBzBPH/tk1431666-tokens-por-tipo.png",
-		"delete_url": "https://ibb.co/vCsBzBPH/adac9b1299b2b55c845096367cf9364b",
+		"sha1": "c54d2d5755071111c5e2b8e197b4476aa4d1eec0",
+		"url": "https://i.ibb.co/YBFmGpyP/tk1431666-tokens-por-tipo.png",
+		"display_url": "https://i.ibb.co/KxpdHFLb/tk1431666-tokens-por-tipo.png",
+		"thumb": "https://i.ibb.co/nMN9Szn6/tk1431666-tokens-por-tipo.png",
+		"delete_url": "https://ibb.co/nMN9Szn6/a985603dccb2ec1c9773bec9a4a41d8f",
 		"width": 1800,
 		"height": 960,
-		"size": 85194
+		"size": 89521
 	},
 	"tk1431662-instruccion-columna-mode.png": {
 		"sha1": "33e57796b78dd864fdaf723420d88c4c0e58fefc",
@@ -678,5 +678,15 @@
 		"width": 1024,
 		"height": 343,
 		"size": 126997
+	},
+	"tk1431163-pr-general-slot-final.jpg": {
+		"sha1": "8b5ea12a7b07b962776fc8567bd2c626251b5070",
+		"url": "https://i.ibb.co/KjbXJ21M/tk1431163-pr-general-slot-final.jpg",
+		"display_url": "https://i.ibb.co/JRmK9vhf/tk1431163-pr-general-slot-final.jpg",
+		"thumb": "https://i.ibb.co/4ZK7H8Q6/tk1431163-pr-general-slot-final.jpg",
+		"delete_url": "https://ibb.co/4ZK7H8Q6/a39304e76188fcebb87040a41ab88217",
+		"width": 1024,
+		"height": 344,
+		"size": 36486
 	}
 }

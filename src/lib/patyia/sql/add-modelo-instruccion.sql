@@ -2,7 +2,7 @@
 -- INSTRUCCION · columna MODELO (modelo OpenAI por instrucción)
 -- TK-1431662 · Selección de modelo IA por tipo de consulta
 --
--- Idempotente: agrega MODELO si no existe (default gpt-5-mini),
+-- Idempotente: agrega MODELO si no existe (default gpt-5-nano),
 -- normaliza filas vacías y lista el catálogo.
 -- Compatible con /api/patyia/db/exec (sin USE / sin GO).
 -- =============================================================
@@ -32,7 +32,7 @@ IF COL_LENGTH(N''dbo.INSTRUCCION'', N''MODELO'') IS NULL
 BEGIN
 	ALTER TABLE ' + QUOTENAME(@db) + N'.[dbo].[INSTRUCCION]
 		ADD [MODELO] NVARCHAR(40) NOT NULL
-			CONSTRAINT [DF_INSTRUCCION_MODELO] DEFAULT (N''gpt-5-mini'');
+			CONSTRAINT [DF_INSTRUCCION_MODELO] DEFAULT (N''gpt-5-nano'');
 END;';
 
 BEGIN TRY
@@ -48,7 +48,7 @@ END CATCH;
 
 SET @sql = N'
 	UPDATE ' + QUOTENAME(@db) + N'.[dbo].[INSTRUCCION]
-	SET [MODELO] = N''gpt-5-mini''
+	SET [MODELO] = N''gpt-5-nano''
 	WHERE [MODELO] IS NULL OR LTRIM(RTRIM([MODELO])) = N'''';
 
 	SELECT

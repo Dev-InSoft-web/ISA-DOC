@@ -18,6 +18,7 @@
 	import sqlAddModeloInstruccion from "../../lib/patyia/sql/add-modelo-instruccion-ssms.sql?raw";
 	import sqlResyncSeqConversaciones from "../../lib/patyia/sql/resync-seq-conversaciones.sql?raw";
 	import sqlSeedPromptsUltraTdConsulta from "../../lib/patyia/sql/seed-prompts-ultra-tdconsulta.sql?raw";
+	import sqlUpdateInstruccionModeloGpt5Nano from "../../lib/patyia/sql/update-instruccion-modelo-gpt5-nano.sql?raw";
 	import md_2026_06_01_tk1431662 from "../../lib/patyia/daily/2026-06/01/02-tk1431662-modelo-por-instruccion.md?raw";
 	import md_2026_06_01_prompts_ultra from "../../lib/patyia/daily/2026-06/01/03-prompts-ultra-tdconsulta.md?raw";
 
@@ -74,12 +75,22 @@
 			<SqlExecCard
 				title="AYUDASCP_IA · ADD MODELO en INSTRUCCION (SSMS 21)"
 				sql={sqlAddModeloInstruccion}
-				desc="Script para SQL Server Management Studio 21: GRANT ALTER, ALTER TABLE ADD MODELO (gpt-5-mini), UPDATE y SELECT de verificación. Conéctese a insoft-patyia → AYUDASCP_IA_STAGING y ejecute con F5. (No usar el botón Ejecutar de la bitácora: contiene GO.)"
+				desc="Script para SQL Server Management Studio 21: GRANT ALTER, ALTER TABLE ADD MODELO (default gpt-5-nano), UPDATE de filas vacías y SELECT de verificación. Conéctese a insoft-patyia → AYUDASCP_IA_STAGING y ejecute con F5. (No usar el botón Ejecutar de la bitácora: contiene GO.)"
 				{executeSql}
 				checkKey="2026-06-01.patyia.instruccion.modelo"
 				confirmKind="warning"
-				confirmMessage={`Se agregará la columna MODELO (si no existe) y se normalizarán filas existentes con valor vacío a gpt-5-mini.\n\n¿Continuar?`}
+				confirmMessage={`Se agregará la columna MODELO (si no existe) y se normalizarán filas existentes con valor vacío a gpt-5-nano.\n\n¿Continuar?`}
 				height="360px"
+			/>
+			<SqlExecCard
+				title="AYUDASCP_IA · Calibrar MODELO = gpt-5-nano (13 tipos)"
+				sql={sqlUpdateInstruccionModeloGpt5Nano}
+				desc="UPDATE en las 13 filas del catálogo PROMPT_&lt;TIPO&gt; (SALUDO_OTRO … COMERCIAL). Usar tras migrar columna MODELO o si quedaron en gpt-5-mini. Cierra con SELECT iinstruccion, modelo, version."
+				{executeSql}
+				checkKey="2026-06-01.patyia.instruccion.modelo-nano"
+				confirmKind="warning"
+				confirmMessage={`Se pondrá MODELO = gpt-5-nano en las 13 instrucciones del catálogo por tipo.\n\n¿Continuar en la BD PatyIA conectada?`}
+				height="320px"
 			/>
 			<SqlExecCard
 				title="AYUDASCP_IA · Resync SEQ_IDCONVERSACIONES"
@@ -94,20 +105,20 @@
 		</Accordion>
 
 		<Accordion
-			title="Prompts Ultra · reemplazo compacto en INSTRUCCION (13 tipos)"
+			title="Prompts Ultra · MERGE PROMPT_&lt;TIPO&gt; en INSTRUCCION (13 tipos)"
 			titleIcon="mdi:text-box-check-outline"
 			inner
-			checkKey="2026-06-01.patyia.seed-prompts-ultra"
+			checkKeys={["2026-06-01.patyia.seed-prompts-ultra", "2026-06-01.patyia.instruccion.modelo-nano"]}
 		>
 			<BitacoraNote flat mdSource={md_2026_06_01_prompts_ultra} />
 			<SqlExecCard
 				title="AYUDASCP_IA · MERGE prompts Ultra (INSTRUCCION + TDCONSULTAXINSTRUCCION)"
 				sql={sqlSeedPromptsUltraTdConsulta}
-				desc="MERGE idempotente: sustituye instruccion por la versión Ultra compacta de cada PROMPT_&lt;TIPO&gt;.md (version 2.0-ultra). Conserva iinstruccion y enlaces TDCONSULTAXINSTRUCCION. Cierra con SELECT de verificación (13 filas)."
+				desc="MERGE idempotente desde prompts/Ultra/PROMPT_&lt;TIPO&gt;.md: ninstruccion, instruccion (texto compacto), version 2.0-ultra y enlace TDCONSULTAXINSTRUCCION. Regenerar con node scripts/build-paty-prompts-ultra-sql.mjs tras editar los .md. Cierra con SELECT (13 filas, LEN(instruccion))."
 				{executeSql}
 				checkKey="2026-06-01.patyia.seed-prompts-ultra"
 				confirmKind="warning"
-				confirmMessage={`Se actualizarán los 13 textos de INSTRUCCION con la versión Ultra compacta.\n\n¿Continuar en la BD PatyIA conectada?`}
+				confirmMessage={`Se actualizarán los 13 textos de INSTRUCCION con la versión Ultra (PROMPT_&lt;TIPO&gt;.md, 2.0-ultra).\n\n¿Continuar en la BD PatyIA conectada?`}
 				height="360px"
 			/>
 		</Accordion>

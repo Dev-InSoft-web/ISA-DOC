@@ -1,35 +1,35 @@
 # Prompts Ultra · MERGE en INSTRUCCION
 
-Actualización de los **13 prompts específicos por tipo de consulta** con la versión compacta **Ultra** (`src/lib/patyia/prompts/Ultra/01-*.md` … `13-*.md`).
+Actualización de los **13 prompts por tipo de consulta** con la versión compacta **Ultra** (`src/lib/patyia/prompts/Ultra/PROMPT_<TIPO>.md`), alineada con Base en `src/lib/patyia/prompts/PROMPT_<TIPO>.md`.
 
 ## Qué hace el SQL
 
-1. **MERGE** en `INSTRUCCION`: `iinstruccion = <TIPO>`, `ninstruccion = PROMPT_<TIPO>`, texto = contenido literal del `.md`, `version = 2.0-ultra`.
-2. **MERGE** en `TDCONSULTAXINSTRUCCION`: enlace `itdconsulta = <TIPO>` → `iinstruccion`, `orden = 1`.
+1. **MERGE** en `INSTRUCCION`: `iinstruccion = <TIPO>`, `ninstruccion = PROMPT_<TIPO>`, `instruccion` = texto del `.md` Ultra, `version = 2.0-ultra`.
+2. **MERGE** en `TDCONSULTAXINSTRUCCION`: `itdconsulta = <TIPO>` → `iinstruccion`, `orden = 1`.
 
-Idempotente: re-ejecutar **sobrescribe** `instruccion` sin duplicar filas ni romper relaciones.
+Idempotente: re-ejecutar **sobrescribe** `instruccion` sin duplicar filas.
 
 ## Archivos fuente (13)
 
-| Archivo | TIPO |
-|---------|------|
-| `Ultra/01-saludo-otro.md` | SALUDO_OTRO |
-| `Ultra/02-fuera-de-alcance-tecnico.md` | FUERA_DE_ALCANCE_TECNICO |
-| `Ultra/03-solicitud-no-permitida.md` | SOLICITUD_NO_PERMITIDA |
-| `Ultra/04-requiere-contexto.md` | REQUIERE_CONTEXTO |
-| `Ultra/05-paso-a-paso.md` | PASO_A_PASO |
-| `Ultra/06-interpretacion-resultado.md` | INTERPRETACION_RESULTADO |
-| `Ultra/07-consulta-normativa-negocio.md` | CONSULTA_NORMATIVA_NEGOCIO |
-| `Ultra/08-asesoria-personalizada.md` | ASESORIA_PERSONALIZADA |
-| `Ultra/09-error-tecnico.md` | ERROR_TECNICO |
-| `Ultra/10-error-configuracion.md` | ERROR_CONFIGURACION |
-| `Ultra/11-error-acceso.md` | ERROR_ACCESO |
-| `Ultra/12-error-dian.md` | ERROR_DIAN |
-| `Ultra/13-comercial.md` | COMERCIAL |
+| Archivo Ultra | TIPO (`IINSTRUCCION`) |
+|---------------|------------------------|
+| `Ultra/PROMPT_SALUDO_OTRO.md` | SALUDO_OTRO |
+| `Ultra/PROMPT_FUERA_DE_ALCANCE_TECNICO.md` | FUERA_DE_ALCANCE_TECNICO |
+| `Ultra/PROMPT_SOLICITUD_NO_PERMITIDA.md` | SOLICITUD_NO_PERMITIDA |
+| `Ultra/PROMPT_REQUIERE_CONTEXTO.md` | REQUIERE_CONTEXTO |
+| `Ultra/PROMPT_PASO_A_PASO.md` | PASO_A_PASO |
+| `Ultra/PROMPT_INTERPRETACION_RESULTADO.md` | INTERPRETACION_RESULTADO |
+| `Ultra/PROMPT_CONSULTA_NORMATIVA_NEGOCIO.md` | CONSULTA_NORMATIVA_NEGOCIO |
+| `Ultra/PROMPT_ASESORIA_PERSONALIZADA.md` | ASESORIA_PERSONALIZADA |
+| `Ultra/PROMPT_ERROR_TECNICO.md` | ERROR_TECNICO |
+| `Ultra/PROMPT_ERROR_CONFIGURACION.md` | ERROR_CONFIGURACION |
+| `Ultra/PROMPT_ERROR_ACCESO.md` | ERROR_ACCESO |
+| `Ultra/PROMPT_ERROR_DIAN.md` | ERROR_DIAN |
+| `Ultra/PROMPT_COMERCIAL.md` | COMERCIAL |
 
 ## Regenerar el SQL
 
-Si se editan los `.md` en `prompts/Ultra/`:
+Tras editar los `.md`:
 
 ```bash
 node scripts/build-paty-prompts-ultra-sql.mjs
@@ -39,8 +39,14 @@ Salida: `src/lib/patyia/sql/seed-prompts-ultra-tdconsulta.sql`
 
 ## Verificación post-ejecución
 
-El script cierra con un `SELECT` de `iinstruccion`, `version`, `LEN(instruccion)` y enlace a `TDCONSULTA`. Esperado: **13 filas** con `version = 2.0-ultra` y longitudes menores que la carga inicial de 2026-05-25.
+El script cierra con `SELECT` de `iinstruccion`, `version`, `LEN(instruccion)` y enlace a `TDCONSULTA`. Esperado: **13 filas** con `version = 2.0-ultra`.
+
+Métricas de tokens (Base vs Ultra): `npm run patyia:prompts:metrics` → ver `patyia-prompt-metrics.ts` y TK-1431666.
+
+## MODELO por tipo (respuesta final)
+
+Tras cargar Ultra, calibrar las 13 filas a **`gpt-5-nano`** con `update-instruccion-modelo-gpt5-nano.sql` (acordeón TK-1431662 en esta bitácora). Fallback en `system-prompts.json` (`modeloConversacion`) solo aplica si `MODELO` viene vacío.
 
 ## BD objetivo
 
-Ejecutar primero en **AYUDASCP_IA_STAGING**; validar en conversación real; luego producción si aplica.
+**AYUDASCP_IA_STAGING** primero; validar conversación; luego producción si aplica.

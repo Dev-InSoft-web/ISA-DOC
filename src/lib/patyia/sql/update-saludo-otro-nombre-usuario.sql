@@ -1,7 +1,7 @@
 -- =====================================================================
 -- SALUDO_OTRO: instruir uso de {{nombre_usuario}} en saludos
 -- BD: AYUDASCP_IA / AYUDASCP_IA_STAGING
--- Fuente canónica: src/lib/patyia/prompts/01-saludo-otro.md
+-- Fuente canónica: src/lib/patyia/prompts/PROMPT_SALUDO_OTRO.md
 -- =====================================================================
 SET NOCOUNT ON;
 

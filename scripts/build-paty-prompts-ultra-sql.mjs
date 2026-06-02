@@ -1,5 +1,4 @@
-// Genera src/lib/patyia/sql/seed-prompts-ultra-tdconsulta.sql desde prompts/0N-*.md (13 tipos).
-// MERGE idempotente: actualiza INSTRUCCION.instruccion y conserva TDCONSULTAXINSTRUCCION.
+// Genera seed-prompts-ultra-tdconsulta.sql desde prompts/Ultra/PROMPT_<TIPO>.md
 
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -9,18 +8,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const promptsDir = resolve(__dirname, "..", "src", "lib", "patyia", "prompts", "Ultra");
 const outFile = resolve(__dirname, "..", "src", "lib", "patyia", "sql", "seed-prompts-ultra-tdconsulta.sql");
 
-const SKIP = new Set(["90-general.md", "91-consolidacion.md"]);
-
-const fileToTipo = (name) =>
-	name
-		.replace(/^\d+-/, "")
-		.replace(/\.md$/, "")
-		.toUpperCase()
-		.replaceAll("-", "_");
+const fileToTipo = (name) => name.replace(/^PROMPT_/, "").replace(/\.md$/, "");
 
 const files = readdirSync(promptsDir)
-	.filter((f) => /^\d{2}-.+\.md$/.test(f) && !SKIP.has(f))
-	.sort();
+	.filter((f) => /^PROMPT_[A-Z0-9_]+\.md$/.test(f))
+	.sort((a, b) => fileToTipo(a).localeCompare(fileToTipo(b)));
 
 const rows = files.map((f) => {
 	const tipo = fileToTipo(f);
@@ -34,15 +26,11 @@ const rows = files.map((f) => {
 const head = `-- =====================================================================
 -- Carga de prompts Ultra por tipo de consulta (reemplazo compacto)
 -- BD: AYUDASCP_IA / AYUDASCP_IA_STAGING  (PatyIA)
--- Fecha: 2026-06-01
--- Fuente: src/lib/patyia/prompts/Ultra/0N-<tipo>.md
+-- Fuente: src/lib/patyia/prompts/Ultra/PROMPT_<TIPO>.md
 --
 -- Estrategia (idempotente):
 --   1) MERGE en INSTRUCCION (iinstruccion = '<TIPO>', ninstruccion = 'PROMPT_<TIPO>')
---      con el contenido del .md como instruccion (NVARCHAR(MAX)).
 --   2) MERGE en TDCONSULTAXINSTRUCCION (itdconsulta = '<TIPO>', orden = 1).
---
--- Re-ejecutar actualiza el texto sin duplicar filas.
 -- Generado por: node scripts/build-paty-prompts-ultra-sql.mjs
 -- =====================================================================
 SET NOCOUNT ON;
@@ -81,12 +69,11 @@ ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
 WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 	VALUES (s.itdconsulta, s.iinstruccion, s.orden);
-`).join("");
+`).join("\n");
 
 const tail = `
 COMMIT;
 
--- Verificacion final
 SELECT i.iinstruccion, i.ninstruccion, i.version, LEN(i.instruccion) AS chars, x.itdconsulta, c.nconsulta, x.orden
 FROM INSTRUCCION i
 LEFT JOIN TDCONSULTAXINSTRUCCION x ON x.iinstruccion = i.iinstruccion
@@ -96,4 +83,4 @@ ORDER BY i.iinstruccion;
 `;
 
 writeFileSync(outFile, head + stmts + tail, "utf8");
-console.log(`OK: ${outFile} (${rows.length} prompts)`);
+console.log(`[build-paty-prompts-ultra-sql] ${rows.length} prompts → ${outFile}`);

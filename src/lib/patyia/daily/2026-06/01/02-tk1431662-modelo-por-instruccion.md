@@ -1,22 +1,17 @@
 ## TK-1431662 — Modelo IA por instrucción (MODELO)
 
-- **Objetivo:** dejar de depender de `OPENAI_MODEL` en variables de entorno. Cada fila del catálogo real (`SALUDO_OTRO`, `PASO_A_PASO`, etc.) define el modelo de **respuesta final** vía `MODELO`.
+- **Objetivo:** cada tipo de consulta (`SALUDO_OTRO`, `PASO_A_PASO`, …) define el modelo de **respuesta final** vía columna `MODELO` en `INSTRUCCION`.
 
-- **Migración SQL (`add-modelo-instruccion.sql`):**
-  - Agrega columna `MODELO NVARCHAR(40) NOT NULL DEFAULT 'gpt-5-mini'`.
-  - Renombra `NMODELOIA` → `MODELO` si ya se ejecutó una versión anterior del script.
-  - Normaliza filas con valor vacío a `gpt-5-mini`.
-  - **No inserta filas nuevas** — solo las 13 que ya existen en `INSTRUCCION`.
+- **Migración SQL (`add-modelo-instruccion.sql` / SSMS):**
+  - Agrega columna `MODELO NVARCHAR(40)` si no existe (default `gpt-5-nano`).
+  - Normaliza filas con valor vacío a `gpt-5-nano`.
   - Cierra con `SELECT` de verificación.
 
-- **Backend (ISS-AyudasCPIA / PatyIA):**
-  - `TInstruccion.modelo` + `TInstruccionController.GetModelo`.
-  - **Respuesta final:** modelo de la instrucción ligada al `tipo_consulta` clasificado (`TDCONSULTAXINSTRUCCION` → `INSTRUCCION.MODELO`).
-  - **Flujos operativos** (clasificador, extractor, módulo, título, resumen): `modeloOperativo` en `system-prompts.json` (`gpt-4.1-nano`).
-  - **Premisas:** modelo en `system-prompts.json` → `generarPremisasInput.modelo`.
-  - Fallback respuesta: `DEFAULT_MODELO_IA = 'gpt-5-mini'`.
-  - Se elimina `OPENAI_MODEL` de `local.settings.json`.
+- **Calibración actual (13 tipos):** `update-instruccion-modelo-gpt5-nano.sql` pone **`gpt-5-nano`** en todas las filas del catálogo (sustituye calibración previa con `gpt-5-mini`).
 
-- **Calibración manual:** ajustar `MODELO` en las 13 filas de tipo de consulta sin redeploy.
+- **Backend (PatyIA):**
+  - `TInstruccion.GetModelo` lee `INSTRUCCION.MODELO` vía `TDCONSULTAXINSTRUCCION`.
+  - Operativos (clasificador, premisas, título): `gpt-4.1-nano` en `system-prompts.json`.
+  - Fallback respuesta si no hay modelo: `modeloConversacion` en `system-prompts.json` (`gpt-5-nano`).
 
 ---

@@ -6,6 +6,12 @@
 			"kind": "mermaid",
 			"source": "tk1431163-capas-openai.mmd",
 			"png": "tk1431163-capas-openai.jpg"
+		},
+		{
+			"id": "tk1431163-pr-general-slot-final",
+			"kind": "capture",
+			"source": "tk1431163-pr-general-slot-final.png",
+			"png": "tk1431163-pr-general-slot-final.png"
 		}
 	]
 }

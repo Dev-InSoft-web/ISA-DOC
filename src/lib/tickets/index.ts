@@ -70,6 +70,8 @@ export interface TicketRegistro {
 	resumen?: string;
 	estimacionMinutos?: number;
 	diligenciaMinutos?: number;
+	/** Minutos fijos para la fila «Cambios extra» (si se omite: 10 min × cambios BD + extraMinutos). */
+	cambiosExtraMinutos?: number;
 	extraMinutos?: number;
 	extraDescripcion?: string;
 	commits?: TicketCommit[];
@@ -98,8 +100,9 @@ export const TICKETS: TicketRegistro[] = [
 		fechaSolicitud: "29/may./2026 08:42:16 am",
 		noMaquillarFechas: true,
 		estimacionMinutos: 75,
-		diligenciaMinutos: 75,
-		resumen: "Se actualizaron en AYUDASCP_IA los 13 prompts con versión Ultra (2.0-ultra) mediante MERGE idempotente desde prompts/Ultra. Se redujo aprox. 25% los tokens de instrucción reinyectados por turno sin alterar TDCONSULTAXINSTRUCCION.",
+		diligenciaMinutos: 50,
+		cambiosExtraMinutos: 40,
+		resumen: "Se actualizaron en AYUDASCP_IA los 13 prompts con versión Ultra (2.0-ultra) desde prompts/Ultra/PROMPT_<TIPO>.md (par con PROMPT_<TIPO>.md Base). Reducción ~42% en tokens (gpt-tokenizer/gpt-5): 23 520 → 13 693 por turno.",
 		get body(): Promise<string> {
 			return buildBodyTK1431666();
 		},
@@ -114,7 +117,7 @@ export const TICKETS: TicketRegistro[] = [
 			{
 				tabla: "INSTRUCCION + TDCONSULTAXINSTRUCCION (AYUDASCP_IA)",
 				registro: "13 prompts PROMPT_<TIPO> — versión 2.0-ultra",
-				intencion: "Se reemplaza el texto de instrucción de los 13 tipos de consulta con el contenido compacto Ultra (archivos 01-13 en prompts/Ultra), marcando version = 2.0-ultra. MERGE en INSTRUCCION por iinstruccion; MERGE en TDCONSULTAXINSTRUCCION mantiene itdconsulta → iinstruccion con orden = 1. Script idempotente seed-prompts-ultra-tdconsulta.sql, ejecutable en staging antes de producción.",
+				intencion: "Se reemplaza el texto de instrucción de los 13 tipos con Ultra (prompts/Ultra/PROMPT_<TIPO>.md), version = 2.0-ultra. MERGE en INSTRUCCION por iinstruccion; TDCONSULTAXINSTRUCCION sin cambios de enlace. Script seed-prompts-ultra-tdconsulta.sql.",
 				sql: [
 					"SET NOCOUNT ON;",
 					"SET XACT_ABORT ON;",
@@ -161,7 +164,7 @@ export const TICKETS: TicketRegistro[] = [
 		diligenciaMinutos: 35,
 		extraMinutos: 20,
 		resumen:
-			"Se agregó INSTRUCCION.MODELO y resolución por tipo de consulta (gpt-4.1-nano operativo; respuesta final por valor en columna MODELO; modeloConversacion gpt-5-mini en system-prompts.json sólo como fallback si MODELO no está definido, valores acordados en reunión), métricas de tokens/costo. Se cerró el incidente previo (~40 min por temperature en gpt-5-mini) con catálogo modelosSinTemperatura y omisión automática al calibrar MODELO en BD.",
+			"Se agregó INSTRUCCION.MODELO y resolución por tipo de consulta (gpt-4.1-nano operativo; respuesta final por valor en columna MODELO; modeloConversacion gpt-5-mini en system-prompts.json sólo como fallback si MODELO no estaba definido, valores acordados en reunión), métricas de tokens/costo. Se cerró el incidente previo (~40 min por temperature en gpt-5-mini) con catálogo modelosSinTemperatura y omisión automática al calibrar MODELO en BD.",
 		get body(): Promise<string> {
 			return buildBodyTK1431662();
 		},
@@ -178,7 +181,7 @@ export const TICKETS: TicketRegistro[] = [
 			{
 				tabla: "INSTRUCCION (AYUDASCP_IA)",
 				registro: "Columna MODELO + default gpt-5-mini en 13 filas",
-				intencion: "Se agrega la columna MODELO NVARCHAR(40) NOT NULL con default gpt-5-mini si no existe, se normalizan filas con valor vacío y se listan las 13 instrucciones activas para calibración manual sin redeploy. Script add-modelo-instruccion.sql, idempotente y compatible con ejecución vía proxy ISA-DOC.",
+				intencion: "Se agregó la columna MODELO NVARCHAR(40) NOT NULL con default gpt-5-mini si no existía, se normalizaron filas con valor vacío y se listaron las 13 instrucciones activas para calibración manual sin redeploy. Script add-modelo-instruccion.sql, idempotente y compatible con ejecución vía proxy ISA-DOC.",
 				sql: [
 					"SET NOCOUNT ON;",
 					"SET XACT_ABORT ON;",
@@ -211,7 +214,7 @@ export const TICKETS: TicketRegistro[] = [
 		noMaquillarFechas: true,
 		estimacionMinutos: 120,
 		diligenciaMinutos: 30,
-		resumen: "Se corrigió la composición OpenAI para conservar PR_GENERAL: instrucciones por tipo en prompt.variables.instrucciones_tipo sin instructions en el body que reemplazaran el template. Se mantuvieron vector stores, resolución de nombre de usuario y carga de precios UlMetrics en runtime con fallback.",
+		resumen: "Se corrigió la composición OpenAI para conservar PR_GENERAL: las instrucciones por tipo quedaron en prompt.variables.instrucion_tipo (slot al final del template v13), sin instructions en el body que reemplazaran el template. Se mantuvieron vector stores, resolución de nombre de usuario y carga de precios UlMetrics en runtime con fallback.",
 		get body(): Promise<string> {
 			return buildBodyTK1431163();
 		},
@@ -1163,10 +1166,10 @@ async function resolveTicketBody(t: TicketRegistro): Promise<string> {
 
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
 	const bodyHtml = await resolveTicketBody(t);
-	return buildTicketHtml(bodyHtml, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.noMaquillarFechas ? undefined : t.fechaSolicitud, t.id, t.festivos, t.titulo, t.diligenciaMinutos, t.extraMinutos, t.extraDescripcion);
+	return buildTicketHtml(bodyHtml, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.noMaquillarFechas ? undefined : t.fechaSolicitud, t.id, t.festivos, t.titulo, t.diligenciaMinutos, t.extraMinutos, t.extraDescripcion, t.cambiosExtraMinutos);
 }
 
 export async function getTicketTotalEstimadoMin(t: TicketRegistro): Promise<number> {
 	const bodyHtml = await resolveTicketBody(t);
-	return tiempoTotalEstimadoMin(bodyHtml, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.diligenciaMinutos, t.extraMinutos);
+	return tiempoTotalEstimadoMin(bodyHtml, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.diligenciaMinutos, t.extraMinutos, t.cambiosExtraMinutos);
 }

@@ -99,7 +99,7 @@ Las tres causas (override, fallback de nombre, persistencia de `itdconsulta`) si
 
 Decisión técnica que recogió la conversación con Diego: *"no se pueden enviar varios `prompt.id`, pero sí varias instrucciones"*. La intención original era **acumular** PR_GENERAL + instrucción por tipo, pero la API no lo hace así. Opciones que se discutirán antes de implementar:
 
-- **A — Limpia (recomendada)**. Añadir una variable `{{instrucciones_tipo}}` al template `PR_GENERAL` en platform.openai.com, mover la(s) instrucción(es) por tipo a esa variable y **eliminar el `instructions` del body**. Mantiene un único prompt gestionado en OpenAI y respeta el saludo.
+- **A — Limpia (recomendada)**. Añadir una variable `{{instrucion_tipo}}` al template `PR_GENERAL` en platform.openai.com, mover la(s) instrucción(es) por tipo a esa variable y **eliminar el `instructions` del body**. Mantiene un único prompt gestionado en OpenAI y respeta el saludo.
 - **B — Pragmática**. Anteponer las instrucciones del tipo al `input` (no como `instructions`). Más fácil, pero ensucia el mensaje del usuario y altera la conversación persistida.
 - **C — Inversa**. Dejar de usar `prompt.id` y mover el contenido completo del `PR_GENERAL` a `instructions` del body, concatenado con la instrucción por tipo. Pierde la gestión central de prompts en OpenAI.
 
@@ -107,15 +107,15 @@ Decisión técnica que recogió la conversación con Diego: *"no se pueden envia
 
 Se eligió la **opción A** y se validó empíricamente en `conv 1806` (2026-05-28). Pasos ejecutados:
 
-1. **Edición del template `PR_GENERAL` en platform.openai.com.** Se añadió la variable `{{instrucciones_tipo}}` dentro del cuerpo del template, en el punto donde Paty inserta las directivas por tipo de consulta. El saludo y `{{nombre_usuario}}` quedaron intactos.
+1. **Edición del template `PR_GENERAL` en platform.openai.com (v13).** Variables `nombre_usuario` e `instrucion_tipo`; el slot `{{instrucion_tipo}}` se concatena al final del developer message (tras `---`). El saludo y `{{nombre_usuario}}` al inicio quedaron intactos.
 2. **Refactor del body en `executeRunWithStream`** (`PatyIA/src/020 Controller/005 - OpenIAServer.ts`):
    - Se eliminó el campo `instructions` del request a `POST /v1/responses`.
-   - Las instrucciones por tipo (resultado de `obtenerContextoConsulta → textosInstruccion.join("\n\n")`) se inyectan ahora como `prompt.variables.instrucciones_tipo`.
+   - Las instrucciones por tipo (resultado de `obtenerContextoConsulta → textosInstruccion.join("\n\n")`) se inyectan ahora como `prompt.variables.instrucion_tipo`.
    - `prompt.variables` se construye en un único `Record<string, string>` que reúne ambas variables y solo se adjunta al body si tiene alguna llave.
    ```ts
    const promptVariables: Record<string, string> = {};
    if (this.nombres) promptVariables.nombre_usuario = this.nombres;
-   if (instructionsText) promptVariables.instrucciones_tipo = instructionsText;
+   if (instructionsText) promptVariables.instrucion_tipo = instructionsText;
 
    const body = {
      model: varEnv("OPENAI_MODEL") || "gpt-4o",
@@ -136,8 +136,8 @@ Se eligió la **opción A** y se validó empíricamente en `conv 1806` (2026-05-
 4. **QA UI con identidad Integraciones (`810000630 / 702470`).** Desde `http://localhost:4400/patyia/actions` se creó la conversación `1806` con el prompt *"Hola, ¿cómo actualizo ContaPyme a la última versión?"*.
 5. **Verificación en la traza** `ISA-DOC/debug-logs/patyia/2026-05-28/145039-405_respuestaIA_conv1806.json`:
    - `openai:body` ya **no** contiene la llave `instructions`.
-   - `prompt.variables` contiene ambas: `nombre_usuario: "Integraciones"` y `instrucciones_tipo` (10 144 caracteres del prompt `PASO_A_PASO`).
-   - La respuesta del modelo empieza con **"Claro, Integraciones. Esta es la guía documentada para actualizar ContaPyme…"** y a continuación entrega la guía estructurada del tipo `PASO_A_PASO` con sus secciones, emojis y recursos adicionales — confirma que **ambas** sustituciones (`{{nombre_usuario}}` y `{{instrucciones_tipo}}`) están operando dentro del template.
+   - `prompt.variables` contiene ambas: `nombre_usuario: "Integraciones"` y `instrucion_tipo` (10 144 caracteres del prompt `PASO_A_PASO`).
+   - La respuesta del modelo empieza con **"Claro, Integraciones. Esta es la guía documentada para actualizar ContaPyme…"** y a continuación entrega la guía estructurada del tipo `PASO_A_PASO` con sus secciones, emojis y recursos adicionales — confirma que **ambas** sustituciones (`{{nombre_usuario}}` y `{{instrucion_tipo}}`) están operando dentro del template.
 
 ### Resultado
 

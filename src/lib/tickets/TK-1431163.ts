@@ -7,16 +7,16 @@ const SNIPPET_VARIABLES = `prompt: {
   id: promptId,
   variables: {
     nombre_usuario: nombreResuelto,
-    instrucciones_tipo: textoPorTipoResuelto
+    instrucion_tipo: textoPorTipoResuelto
   }
 }`;
 
 const COMPOSITION_ROWS: Array<{ pieza: string; responsabilidad: string }> = [
-	{ pieza: "Prompt general", responsabilidad: "Reglas globales de identidad, tono, seguridad y límites funcionales (plantilla PR_GENERAL)." },
-	{ pieza: "Tipo de consulta", responsabilidad: "Intención clasificada del turno; trazabilidad en conversación y mensaje." },
-	{ pieza: "Instrucciones específicas", responsabilidad: "Reglas del tipo de consulta sin sustituir el prompt general." },
-	{ pieza: "Variables", responsabilidad: "Datos dinámicos: módulo, contexto, consulta normalizada y nombre del usuario." },
-	{ pieza: "Vector stores", responsabilidad: "Fuentes documentales por tipo; búsqueda en archivos sólo cuando el flujo lo exige." },
+	{ pieza: "Prompt general", responsabilidad: "Definían identidad, tono, seguridad y límites funcionales (plantilla PR_GENERAL)." },
+	{ pieza: "Tipo de consulta", responsabilidad: "Registraban la intención clasificada del turno en conversación y mensaje." },
+	{ pieza: "Instrucciones específicas", responsabilidad: "Aplicaban reglas del tipo sin sustituir el prompt general." },
+	{ pieza: "Variables", responsabilidad: "Inyectaban módulo, contexto, consulta normalizada y nombre de usuario." },
+	{ pieza: "Vector stores", responsabilidad: "Aportaban fuentes documentales por tipo; la búsqueda en archivos se limitó a cuando el flujo lo exigió." },
 ];
 
 const intro =
@@ -64,29 +64,33 @@ export async function buildBodyTK1431163(): Promise<string> {
 	const arq = noteList(
 		await note(
 			"mdi:chart-tree",
-			"Flujo de composición de capas en el request a OpenAI:" +
+			"Se documentó la composición de capas en el request a OpenAI:" +
 				ticketImg("tk1431163-capas-openai.jpg"),
 		),
 	);
 
 	const solucion = noteList(
 		await note(
+			"mdi:format-vertical-align-bottom",
+			"Se anexaron las reglas del tipo de consulta al final del mensaje de sistema, mediante la variable <code>{{instrucion_tipo}}</code> (después del separador <code>---</code>), sin sustituir el comportamiento base de Paty." +
+				ticketImg("tk1431163-pr-general-slot-final.jpg"),
+		),
+		await note(
 			"mdi:code-braces",
-			"Se añadió el marcador de instrucciones por tipo en la plantilla general y se eliminó instructions del body: " +
-				"el texto por tipo y el nombre del usuario pasan solo en variables del prompt. Contrato aplicado:" +
+			"Se eliminó <code>instructions</code> del body en Paty IA; el texto por tipo y el nombre del usuario quedaron solo en <code>prompt.variables</code>. Contrato aplicado:" +
 				(await codeBlock(SNIPPET_VARIABLES, "typescript")),
 		),
 		await note(
 			"mdi:account-outline",
-			"El placeholder de nombre de usuario se sustituye en el texto de instrucciones antes de enviarlo como variable del prompt.",
+			"Se sustituyó el placeholder de nombre de usuario en el texto de instrucciones antes de enviarlo como variable del prompt.",
 		),
 		await note(
 			"mdi:database-search-outline",
-			"El contexto por tipo siguió resolviendo instrucciones y vector stores desde BD; la búsqueda en archivos se activa solo cuando el flujo lo requiere.",
+			"El contexto por tipo siguió resolviéndose desde BD (instrucciones y vector stores); la búsqueda en archivos se activó solo cuando el flujo lo requirió.",
 		),
 		await note(
 			"mdi:chart-line",
-			"Las métricas cargan tarifas OpenAI en runtime con fallback a costo cero si el archivo no está en el entorno, para no bloquear build ni deploy.",
+			"Se configuró la carga de tarifas OpenAI en runtime, con fallback a costo cero si el archivo no estaba en el entorno, para no bloquear build ni deploy.",
 		),
 	);
 

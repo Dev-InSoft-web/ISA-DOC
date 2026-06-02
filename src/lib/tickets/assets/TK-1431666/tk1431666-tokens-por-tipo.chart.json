@@ -3,28 +3,56 @@
 	"data": {
 		"labels": [
 			"SALUDO OTRO",
-			"FUERA DE AL",
-			"SOLICITUD N",
-			"REQUIERE CO",
+			"FUERA DE ALC",
+			"SOLICITUD NO",
+			"REQUIERE CON",
 			"PASO A PASO",
-			"INTERPRETAC",
-			"CONSULTA NO",
-			"ASESORIA PE",
-			"ERROR TECNI",
-			"ERROR CONFI",
-			"ERROR ACCES",
+			"INTERPRETACI",
+			"CONSULTA NOR",
+			"ASESORIA PER",
+			"ERROR TECNIC",
+			"ERROR CONFIG",
+			"ERROR ACCESO",
 			"ERROR DIAN",
 			"COMERCIAL"
 		],
 		"datasets": [
 			{
-				"label": "Base (tokens aprox.)",
-				"data": [1002, 1123, 1053, 1498, 2583, 1990, 1396, 2273, 891, 2382, 2082, 2017, 1804],
+				"label": "Base (tokens)",
+				"data": [
+					873,
+					1243,
+					1215,
+					1580,
+					2564,
+					2157,
+					1528,
+					2133,
+					1420,
+					2286,
+					2222,
+					2081,
+					2218
+				],
 				"backgroundColor": "#4472C4"
 			},
 			{
-				"label": "Ultra (tokens aprox.)",
-				"data": [503, 1015, 688, 1202, 1848, 1589, 1114, 1461, 902, 1590, 1340, 1404, 1255],
+				"label": "Ultra (tokens)",
+				"data": [
+					435,
+					817,
+					599,
+					1041,
+					1701,
+					1330,
+					933,
+					1208,
+					803,
+					1288,
+					1204,
+					1236,
+					1098
+				],
 				"backgroundColor": "#70AD47"
 			}
 		]
@@ -33,16 +61,31 @@
 		"plugins": {
 			"title": {
 				"display": true,
-				"text": "Tokens de instrucción por tipo de consulta",
-				"font": { "size": 14 }
+				"text": "Tokens de instrucción por tipo (PROMPT_<TIPO>.md)",
+				"font": {
+					"size": 14
+				}
 			},
-			"legend": { "position": "top" }
+			"legend": {
+				"position": "top"
+			}
 		},
 		"scales": {
-			"x": { "ticks": { "maxRotation": 45, "minRotation": 45, "font": { "size": 9 } } },
+			"x": {
+				"ticks": {
+					"maxRotation": 45,
+					"minRotation": 45,
+					"font": {
+						"size": 9
+					}
+				}
+			},
 			"y": {
 				"beginAtZero": true,
-				"title": { "display": true, "text": "Tokens aprox." }
+				"title": {
+					"display": true,
+					"text": "Tokens"
+				}
 			}
 		}
 	}

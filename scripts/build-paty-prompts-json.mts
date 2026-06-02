@@ -1,16 +1,19 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { encode } from "gpt-tokenizer/model/gpt-5";
+import {
+	PATY_PROMPT_TIPOS,
+	WENYAN_LEGACY_BY_TIPO,
+	promptMdFilename,
+	type PatyPromptTipo,
+} from "../src/lib/patyia/prompt-files.ts";
 
 type VersionKey = "original" | "ultra" | "wenyan";
 type Count = { chars: number; tokens: number };
 type CountWithPct = Count & { tokenPctOfOriginal: number };
 type PromptStats = {
 	index: number;
-	number: number;
-	numberText: string;
-	slug: string;
 	code: string;
 	title: string;
 	files: Record<VersionKey, string>;
@@ -35,24 +38,22 @@ function unixRel(path: string): string {
 	return relative(root, path).replaceAll("\\", "/");
 }
 
-function parsePromptFile(file: string): { number: number; numberText: string; slug: string; code: string; title: string } {
-	const match = /^(\d+)-(.+)\.md$/.exec(file);
-	if (!match) throw new Error(`Nombre de prompt invalido: ${file}`);
-	const [, numberText, slug] = match;
-	const code = slug.toUpperCase().replaceAll("-", "_");
-	return { number: Number(numberText), numberText, slug, code, title: `${numberText}. ${code}` };
+function versionPath(version: VersionKey, tipo: PatyPromptTipo): string {
+	if (version === "original") return resolve(promptsRoot, promptMdFilename(tipo));
+	if (version === "ultra") return resolve(promptsRoot, "Ultra", promptMdFilename(tipo));
+	return resolve(promptsRoot, "wenyan-ultra", WENYAN_LEGACY_BY_TIPO[tipo]);
 }
 
-function versionPath(version: VersionKey, file: string): string {
-	if (version === "original") return resolve(promptsRoot, file);
-	if (version === "ultra") return resolve(promptsRoot, "ultra", file);
-	return resolve(promptsRoot, "wenyan-ultra", file);
-}
-
-function readVersion(version: VersionKey, file: string): { path: string; text: string } {
-	const path = versionPath(version, file);
-	if (!existsSync(path)) throw new Error(`No existe ${unixRel(path)}`);
-	return { path, text: readFileSync(path, "utf8") };
+function readVersion(version: VersionKey, tipo: PatyPromptTipo): { path: string; text: string } {
+	const p = versionPath(version, tipo);
+	if (!existsSync(p)) {
+		if (version === "wenyan") {
+			const ultra = readVersion("ultra", tipo);
+			return { path: ultra.path, text: ultra.text };
+		}
+		throw new Error(`No existe ${unixRel(p)}`);
+	}
+	return { path: p, text: readFileSync(p, "utf8") };
 }
 
 function count(text: string): Count {
@@ -66,18 +67,18 @@ function withPct(value: Count, originalTokens: number): CountWithPct {
 	};
 }
 
-function promptStats(file: string, index: number): PromptStats {
-	const meta = parsePromptFile(file);
-	const original = readVersion("original", file);
-	const ultra = readVersion("ultra", file);
-	const wenyan = readVersion("wenyan", file);
+function promptStats(tipo: PatyPromptTipo, index: number): PromptStats {
+	const original = readVersion("original", tipo);
+	const ultra = readVersion("ultra", tipo);
+	const wenyan = readVersion("wenyan", tipo);
 	const originalCount = count(original.text);
 	const ultraCount = count(ultra.text);
 	const wenyanCount = count(wenyan.text);
 
 	return {
 		index,
-		...meta,
+		code: tipo,
+		title: tipo.replaceAll("_", " "),
 		files: {
 			original: unixRel(original.path),
 			ultra: unixRel(ultra.path),
@@ -92,18 +93,27 @@ function promptStats(file: string, index: number): PromptStats {
 }
 
 function sumTotals(prompts: PromptStats[]): Totals {
-	const original = prompts.reduce<Count>((acc, prompt) => ({
-		chars: acc.chars + prompt.versions.original.chars,
-		tokens: acc.tokens + prompt.versions.original.tokens,
-	}), { chars: 0, tokens: 0 });
-	const ultra = prompts.reduce<Count>((acc, prompt) => ({
-		chars: acc.chars + prompt.versions.ultra.chars,
-		tokens: acc.tokens + prompt.versions.ultra.tokens,
-	}), { chars: 0, tokens: 0 });
-	const wenyan = prompts.reduce<Count>((acc, prompt) => ({
-		chars: acc.chars + prompt.versions.wenyan.chars,
-		tokens: acc.tokens + prompt.versions.wenyan.tokens,
-	}), { chars: 0, tokens: 0 });
+	const original = prompts.reduce<Count>(
+		(acc, prompt) => ({
+			chars: acc.chars + prompt.versions.original.chars,
+			tokens: acc.tokens + prompt.versions.original.tokens,
+		}),
+		{ chars: 0, tokens: 0 },
+	);
+	const ultra = prompts.reduce<Count>(
+		(acc, prompt) => ({
+			chars: acc.chars + prompt.versions.ultra.chars,
+			tokens: acc.tokens + prompt.versions.ultra.tokens,
+		}),
+		{ chars: 0, tokens: 0 },
+	);
+	const wenyan = prompts.reduce<Count>(
+		(acc, prompt) => ({
+			chars: acc.chars + prompt.versions.wenyan.chars,
+			tokens: acc.tokens + prompt.versions.wenyan.tokens,
+		}),
+		{ chars: 0, tokens: 0 },
+	);
 
 	return {
 		original: withPct(original, original.tokens),
@@ -113,33 +123,27 @@ function sumTotals(prompts: PromptStats[]): Totals {
 }
 
 export function buildPatyPromptsJson(): void {
-	const files = readdirSync(promptsRoot)
-		.filter((file) => /^(\d+)-.+\.md$/.test(file))
-		.sort((a, b) => parsePromptFile(a).number - parsePromptFile(b).number);
-	const prompts = files.map(promptStats);
-	const resumenPrompts = prompts.filter((prompt) => prompt.number !== 91);
+	const prompts = PATY_PROMPT_TIPOS.map((tipo, index) => promptStats(tipo, index));
 	const data = {
 		ok: true,
-		schemaVersion: 1,
+		schemaVersion: 2,
 		generatedAt: new Date().toISOString(),
 		tokenizer: { model: "gpt-5", encoding: "o200k_base" },
 		source: {
 			directory: unixRel(promptsRoot),
 			versions: {
 				original: unixRel(promptsRoot),
-				ultra: unixRel(resolve(promptsRoot, "ultra")),
+				ultra: unixRel(resolve(promptsRoot, "Ultra")),
 				wenyan: unixRel(resolve(promptsRoot, "wenyan-ultra")),
 			},
+			naming: "PROMPT_<TIPO>.md (Base/Ultra); wenyan-ultra conserva 0N-*.md",
 		},
 		prompts,
-		comparativa: {
-			totals: sumTotals(prompts),
-		},
+		comparativa: { totals: sumTotals(prompts) },
 		resumenComparativo: {
-			excludedNumbers: [91],
-			promptNumbers: resumenPrompts.map((prompt) => prompt.number),
-			rows: resumenPrompts,
-			totals: sumTotals(resumenPrompts),
+			promptCodes: [...PATY_PROMPT_TIPOS],
+			rows: prompts,
+			totals: sumTotals(prompts),
 		},
 	};
 

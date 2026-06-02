@@ -1,29 +1,15 @@
-// Métricas LEN(instrucción) prompts Base (raíz) vs Ultra — junio 2026.
-// Tokens aproximados = caracteres / 4 (referencia para costo de entrada por turno).
+// Métricas prompts Base (PROMPT_<TIPO>.md) vs Ultra — tokenizer gpt-5 (o200k_base).
+// Regenerar: npm run patyia:prompts:metrics
+
+import { promptUltraRel } from "../patyia/prompt-files";
 
 export const ULTRA_LOW_REDUCTION_PCT = 15;
 export const ULTRA_WARN_ROW_BG = "#fde2e8";
 
-export type PromptLenRow = { tipo: string; orig: number; ultra: number };
-
-const ULTRA_MD_BY_TIPO: Record<string, string> = {
-	SALUDO_OTRO: "01-saludo-otro.md",
-	FUERA_DE_ALCANCE_TECNICO: "02-fuera-de-alcance-tecnico.md",
-	SOLICITUD_NO_PERMITIDA: "03-solicitud-no-permitida.md",
-	REQUIERE_CONTEXTO: "04-requiere-contexto.md",
-	PASO_A_PASO: "05-paso-a-paso.md",
-	INTERPRETACION_RESULTADO: "06-interpretacion-resultado.md",
-	CONSULTA_NORMATIVA_NEGOCIO: "07-consulta-normativa-negocio.md",
-	ASESORIA_PERSONALIZADA: "08-asesoria-personalizada.md",
-	ERROR_TECNICO: "09-error-tecnico.md",
-	ERROR_CONFIGURACION: "10-error-configuracion.md",
-	ERROR_ACCESO: "11-error-acceso.md",
-	ERROR_DIAN: "12-error-dian.md",
-	COMERCIAL: "13-comercial.md",
-};
+export type PromptLenRow = { tipo: string; orig: number; ultra: number; origTok: number; ultraTok: number };
 
 export function ultraMdPath(tipo: string): string {
-	return `prompts/Ultra/${ULTRA_MD_BY_TIPO[tipo] ?? "?"}`;
+	return promptUltraRel(tipo);
 }
 
 export function reductionPct(orig: number, ultra: number): number {
@@ -32,7 +18,7 @@ export function reductionPct(orig: number, ultra: number): number {
 }
 
 export function isLowUltraReduction(row: PromptLenRow): boolean {
-	return reductionPct(row.orig, row.ultra) < ULTRA_LOW_REDUCTION_PCT;
+	return reductionPct(row.origTok, row.ultraTok) < ULTRA_LOW_REDUCTION_PCT;
 }
 
 export function lowUltraReductionRows(): PromptLenRow[] {
@@ -40,35 +26,44 @@ export function lowUltraReductionRows(): PromptLenRow[] {
 }
 
 export const PROMPT_LEN_METRICS: PromptLenRow[] = [
-	{ tipo: "SALUDO_OTRO", orig: 4007, ultra: 2011 },
-	{ tipo: "FUERA_DE_ALCANCE_TECNICO", orig: 4492, ultra: 4058 },
-	{ tipo: "SOLICITUD_NO_PERMITIDA", orig: 4213, ultra: 2750 },
-	{ tipo: "REQUIERE_CONTEXTO", orig: 5990, ultra: 4806 },
-	{ tipo: "PASO_A_PASO", orig: 10330, ultra: 7390 },
-	{ tipo: "INTERPRETACION_RESULTADO", orig: 7958, ultra: 6357 },
-	{ tipo: "CONSULTA_NORMATIVA_NEGOCIO", orig: 5582, ultra: 4456 },
-	{ tipo: "ASESORIA_PERSONALIZADA", orig: 9090, ultra: 5842 },
-	{ tipo: "ERROR_TECNICO", orig: 3562, ultra: 3607 },
-	{ tipo: "ERROR_CONFIGURACION", orig: 9526, ultra: 6361 },
-	{ tipo: "ERROR_ACCESO", orig: 8328, ultra: 5359 },
-	{ tipo: "ERROR_DIAN", orig: 8067, ultra: 5614 },
-	{ tipo: "COMERCIAL", orig: 7217, ultra: 5020 },
+	{ tipo: "SALUDO_OTRO", orig: 4116, origTok: 873, ultra: 1939, ultraTok: 435 },
+	{ tipo: "FUERA_DE_ALCANCE_TECNICO", orig: 6209, origTok: 1243, ultra: 3890, ultraTok: 817 },
+	{ tipo: "SOLICITUD_NO_PERMITIDA", orig: 5732, origTok: 1215, ultra: 2665, ultraTok: 599 },
+	{ tipo: "REQUIERE_CONTEXTO", orig: 7495, origTok: 1580, ultra: 4625, ultraTok: 1041 },
+	{ tipo: "PASO_A_PASO", orig: 11999, origTok: 2564, ultra: 7159, ultraTok: 1701 },
+	{ tipo: "INTERPRETACION_RESULTADO", orig: 10646, origTok: 2157, ultra: 6140, ultraTok: 1330 },
+	{ tipo: "CONSULTA_NORMATIVA_NEGOCIO", orig: 7467, origTok: 1528, ultra: 4309, ultraTok: 933 },
+	{ tipo: "ASESORIA_PERSONALIZADA", orig: 10640, origTok: 2133, ultra: 5669, ultraTok: 1208 },
+	{ tipo: "ERROR_TECNICO", orig: 6713, origTok: 1420, ultra: 3494, ultraTok: 803 },
+	{ tipo: "ERROR_CONFIGURACION", orig: 11393, origTok: 2286, ultra: 6133, ultraTok: 1288 },
+	{ tipo: "ERROR_ACCESO", orig: 10201, origTok: 2222, ultra: 5160, ultraTok: 1204 },
+	{ tipo: "ERROR_DIAN", orig: 9911, origTok: 2081, ultra: 5427, ultraTok: 1236 },
+	{ tipo: "COMERCIAL", orig: 10690, origTok: 2218, ultra: 4839, ultraTok: 1098 },
 ];
 
+/** @deprecated Usar origTok/ultraTok de PROMPT_LEN_METRICS. */
 export function approxTokens(chars: number): number {
 	return Math.round(chars / 4);
 }
 
-export function promptMetricsTotals(): { origChars: number; ultraChars: number; origTok: number; ultraTok: number; pct: number } {
+export function promptMetricsTotals(): {
+	origChars: number;
+	ultraChars: number;
+	origTok: number;
+	ultraTok: number;
+	pctChars: number;
+	pctTok: number;
+} {
 	const origChars = PROMPT_LEN_METRICS.reduce((s, r) => s + r.orig, 0);
 	const ultraChars = PROMPT_LEN_METRICS.reduce((s, r) => s + r.ultra, 0);
-	const origTok = approxTokens(origChars);
-	const ultraTok = approxTokens(ultraChars);
-	const pct = origChars > 0 ? Math.round((1000 * (1 - ultraChars / origChars)) / 10) : 0;
-	return { origChars, ultraChars, origTok, ultraTok, pct };
+	const origTok = PROMPT_LEN_METRICS.reduce((s, r) => s + r.origTok, 0);
+	const ultraTok = PROMPT_LEN_METRICS.reduce((s, r) => s + r.ultraTok, 0);
+	const pctChars = origChars > 0 ? Math.round((1000 * (1 - ultraChars / origChars)) / 10) : 0;
+	const pctTok = origTok > 0 ? Math.round((1000 * (1 - ultraTok / origTok)) / 10) : 0;
+	return { origChars, ultraChars, origTok, ultraTok, pctChars, pctTok };
 }
 
-/** Gráfico de barras: totales v1.0 vs Ultra (QuickChart). */
+/** Gráfico de barras: totales Base vs Ultra (QuickChart). */
 export function ultraTotalsBarChartConfig(): Record<string, unknown> {
 	const t = promptMetricsTotals();
 	return {
@@ -76,7 +71,7 @@ export function ultraTotalsBarChartConfig(): Record<string, unknown> {
 		data: {
 			labels: ["Instrucciones Base (13 tipos)", "Ultra"],
 			datasets: [{
-				label: "Tokens de entrada aprox.",
+				label: "Tokens (gpt-5 tokenizer)",
 				data: [t.origTok, t.ultraTok],
 				backgroundColor: ["#4472C4", "#70AD47"],
 			}],
@@ -85,25 +80,16 @@ export function ultraTotalsBarChartConfig(): Record<string, unknown> {
 			plugins: {
 				title: {
 					display: true,
-					text: `Reducción ${t.pct}% en tokens de instrucción reinyectada por turno`,
+					text: `Reducción ${t.pctTok}% en tokens de instrucción reinyectada por turno`,
 					font: { size: 14 },
 				},
 				subtitle: {
 					display: true,
-					text: `Estimación tokens ≈ LEN(texto)/4 · ${t.origChars.toLocaleString()} → ${t.ultraChars.toLocaleString()} caracteres`,
+					text: `gpt-tokenizer/gpt-5 · ${t.origTok.toLocaleString()} → ${t.ultraTok.toLocaleString()} tokens · ${t.origChars.toLocaleString()} → ${t.ultraChars.toLocaleString()} caracteres`,
 				},
-				datalabels: {
-					display: true,
-					anchor: "end",
-					align: "top",
-				},
+				datalabels: { display: true, anchor: "end", align: "top" },
 			},
-			scales: {
-				y: {
-					beginAtZero: true,
-					title: { display: true, text: "Tokens aprox." },
-				},
-			},
+			scales: { y: { beginAtZero: true, title: { display: true, text: "Tokens" } } },
 		},
 	};
 }
@@ -117,25 +103,25 @@ export function ultraByTypeBarChartConfig(): Record<string, unknown> {
 			labels,
 			datasets: [
 				{
-					label: "Base (tokens aprox.)",
-					data: PROMPT_LEN_METRICS.map((r) => approxTokens(r.orig)),
+					label: "Base (tokens)",
+					data: PROMPT_LEN_METRICS.map((r) => r.origTok),
 					backgroundColor: "#4472C4",
 				},
 				{
-					label: "Ultra (tokens aprox.)",
-					data: PROMPT_LEN_METRICS.map((r) => approxTokens(r.ultra)),
+					label: "Ultra (tokens)",
+					data: PROMPT_LEN_METRICS.map((r) => r.ultraTok),
 					backgroundColor: "#70AD47",
 				},
 			],
 		},
 		options: {
 			plugins: {
-				title: { display: true, text: "Tokens de instrucción por tipo de consulta", font: { size: 14 } },
+				title: { display: true, text: "Tokens de instrucción por tipo (PROMPT_<TIPO>.md)", font: { size: 14 } },
 				legend: { position: "top" },
 			},
 			scales: {
 				x: { ticks: { maxRotation: 45, minRotation: 45, font: { size: 9 } } },
-				y: { beginAtZero: true, title: { display: true, text: "Tokens aprox." } },
+				y: { beginAtZero: true, title: { display: true, text: "Tokens" } },
 			},
 		},
 	};

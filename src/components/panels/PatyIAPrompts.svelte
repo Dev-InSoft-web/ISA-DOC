@@ -4,51 +4,55 @@
 	import { encode } from "gpt-tokenizer/model/gpt-5";
 	import Accordion from "$comps/containers/Accordion.svelte";
 	import PatyIAPromptAccordion from "./PatyIAPromptAccordion.svelte";
-	import md01 from "../../lib/patyia/prompts/01-saludo-otro.md?raw";
-	import md02 from "../../lib/patyia/prompts/02-fuera-de-alcance-tecnico.md?raw";
-	import md03 from "../../lib/patyia/prompts/03-solicitud-no-permitida.md?raw";
-	import md04 from "../../lib/patyia/prompts/04-requiere-contexto.md?raw";
-	import md05 from "../../lib/patyia/prompts/05-paso-a-paso.md?raw";
-	import md06 from "../../lib/patyia/prompts/06-interpretacion-resultado.md?raw";
-	import md07 from "../../lib/patyia/prompts/07-consulta-normativa-negocio.md?raw";
-	import md08 from "../../lib/patyia/prompts/08-asesoria-personalizada.md?raw";
-	import md09 from "../../lib/patyia/prompts/09-error-tecnico.md?raw";
-	import md10 from "../../lib/patyia/prompts/10-error-configuracion.md?raw";
-	import md11 from "../../lib/patyia/prompts/11-error-acceso.md?raw";
-	import md12 from "../../lib/patyia/prompts/12-error-dian.md?raw";
-	import md13 from "../../lib/patyia/prompts/13-comercial.md?raw";
+	import {
+		PATY_PROMPT_TIPOS,
+		WENYAN_LEGACY_BY_TIPO,
+		promptMdFilename,
+		type PatyPromptTipo,
+	} from "../../lib/patyia/prompt-files";
 	import md90 from "../../lib/patyia/prompts/90-general.md?raw";
 	import md91 from "../../lib/patyia/prompts/91-consolidacion.md?raw";
-	import md01u from "../../lib/patyia/prompts/ultra/01-saludo-otro.md?raw";
-	import md02u from "../../lib/patyia/prompts/ultra/02-fuera-de-alcance-tecnico.md?raw";
-	import md03u from "../../lib/patyia/prompts/ultra/03-solicitud-no-permitida.md?raw";
-	import md04u from "../../lib/patyia/prompts/ultra/04-requiere-contexto.md?raw";
-	import md05u from "../../lib/patyia/prompts/ultra/05-paso-a-paso.md?raw";
-	import md06u from "../../lib/patyia/prompts/ultra/06-interpretacion-resultado.md?raw";
-	import md07u from "../../lib/patyia/prompts/ultra/07-consulta-normativa-negocio.md?raw";
-	import md08u from "../../lib/patyia/prompts/ultra/08-asesoria-personalizada.md?raw";
-	import md09u from "../../lib/patyia/prompts/ultra/09-error-tecnico.md?raw";
-	import md10u from "../../lib/patyia/prompts/ultra/10-error-configuracion.md?raw";
-	import md11u from "../../lib/patyia/prompts/ultra/11-error-acceso.md?raw";
-	import md12u from "../../lib/patyia/prompts/ultra/12-error-dian.md?raw";
-	import md13u from "../../lib/patyia/prompts/ultra/13-comercial.md?raw";
 	import md90u from "../../lib/patyia/prompts/ultra/90-general.md?raw";
 	import md91u from "../../lib/patyia/prompts/ultra/91-consolidacion.md?raw";
-	import md01w from "../../lib/patyia/prompts/wenyan-ultra/01-saludo-otro.md?raw";
-	import md02w from "../../lib/patyia/prompts/wenyan-ultra/02-fuera-de-alcance-tecnico.md?raw";
-	import md03w from "../../lib/patyia/prompts/wenyan-ultra/03-solicitud-no-permitida.md?raw";
-	import md04w from "../../lib/patyia/prompts/wenyan-ultra/04-requiere-contexto.md?raw";
-	import md05w from "../../lib/patyia/prompts/wenyan-ultra/05-paso-a-paso.md?raw";
-	import md06w from "../../lib/patyia/prompts/wenyan-ultra/06-interpretacion-resultado.md?raw";
-	import md07w from "../../lib/patyia/prompts/wenyan-ultra/07-consulta-normativa-negocio.md?raw";
-	import md08w from "../../lib/patyia/prompts/wenyan-ultra/08-asesoria-personalizada.md?raw";
-	import md09w from "../../lib/patyia/prompts/wenyan-ultra/09-error-tecnico.md?raw";
-	import md10w from "../../lib/patyia/prompts/wenyan-ultra/10-error-configuracion.md?raw";
-	import md11w from "../../lib/patyia/prompts/wenyan-ultra/11-error-acceso.md?raw";
-	import md12w from "../../lib/patyia/prompts/wenyan-ultra/12-error-dian.md?raw";
-	import md13w from "../../lib/patyia/prompts/wenyan-ultra/13-comercial.md?raw";
-	import md90w from "../../lib/patyia/prompts/wenyan-ultra/90-general.md?raw";
-	import md91w from "../../lib/patyia/prompts/wenyan-ultra/91-consolidacion.md?raw";
+
+	const baseGlob = import.meta.glob("../../lib/patyia/prompts/PROMPT_*.md", {
+		query: "?raw",
+		import: "default",
+		eager: true,
+	}) as Record<string, string>;
+	const ultraGlob = import.meta.glob("../../lib/patyia/prompts/Ultra/PROMPT_*.md", {
+		query: "?raw",
+		import: "default",
+		eager: true,
+	}) as Record<string, string>;
+	const wenyanGlob = import.meta.glob("../../lib/patyia/prompts/wenyan-ultra/*.md", {
+		query: "?raw",
+		import: "default",
+		eager: true,
+	}) as Record<string, string>;
+
+	function pickGlob(glob: Record<string, string>, file: string, fallback?: string): string {
+		const key = Object.keys(glob).find((k) => k.replace(/\\/g, "/").endsWith(`/${file}`));
+		if (key) return glob[key];
+		if (fallback !== undefined) return fallback;
+		throw new Error(`Falta ${file} en glob de prompts`);
+	}
+
+	const ICON_BY_TIPO: Record<PatyPromptTipo, string> = {
+		SALUDO_OTRO: "mdi:hand-wave",
+		FUERA_DE_ALCANCE_TECNICO: "mdi:alert-circle-outline",
+		SOLICITUD_NO_PERMITIDA: "mdi:cancel",
+		REQUIERE_CONTEXTO: "mdi:help-circle-outline",
+		PASO_A_PASO: "mdi:format-list-numbered",
+		INTERPRETACION_RESULTADO: "mdi:chart-box-outline",
+		CONSULTA_NORMATIVA_NEGOCIO: "mdi:gavel",
+		ASESORIA_PERSONALIZADA: "mdi:account-tie",
+		ERROR_TECNICO: "mdi:bug-outline",
+		ERROR_CONFIGURACION: "mdi:cog-outline",
+		ERROR_ACCESO: "mdi:lock-alert-outline",
+		ERROR_DIAN: "mdi:file-document-alert-outline",
+		COMERCIAL: "mdi:cash-multiple",
+	};
 
 	type Version = "original" | "ultra" | "wenyan" | "comparativa";
 
@@ -60,22 +64,24 @@
 		mdWenyan: string;
 	};
 
+	const tipoPrompts: ReadonlyArray<Prompt> = PATY_PROMPT_TIPOS.map((tipo, i) => {
+		const n = String(i + 1).padStart(2, "0");
+		const file = promptMdFilename(tipo);
+		const md = pickGlob(baseGlob, file);
+		const mdUltra = pickGlob(ultraGlob, file);
+		return {
+			title: `${n}. ${tipo}`,
+			icon: ICON_BY_TIPO[tipo],
+			md,
+			mdUltra,
+			mdWenyan: pickGlob(wenyanGlob, WENYAN_LEGACY_BY_TIPO[tipo], mdUltra),
+		};
+	});
+
 	const prompts: ReadonlyArray<Prompt> = [
-		{ title: "01. SALUDO_OTRO",                 icon: "mdi:hand-wave",                       md: md01, mdUltra: md01u, mdWenyan: md01w },
-		{ title: "02. FUERA_DE_ALCANCE_TECNICO",    icon: "mdi:alert-circle-outline",            md: md02, mdUltra: md02u, mdWenyan: md02w },
-		{ title: "03. SOLICITUD_NO_PERMITIDA",      icon: "mdi:cancel",                          md: md03, mdUltra: md03u, mdWenyan: md03w },
-		{ title: "04. REQUIERE_CONTEXTO",           icon: "mdi:help-circle-outline",             md: md04, mdUltra: md04u, mdWenyan: md04w },
-		{ title: "05. PASO_A_PASO",                 icon: "mdi:format-list-numbered",            md: md05, mdUltra: md05u, mdWenyan: md05w },
-		{ title: "06. INTERPRETACION_RESULTADO",    icon: "mdi:chart-box-outline",               md: md06, mdUltra: md06u, mdWenyan: md06w },
-		{ title: "07. CONSULTA_NORMATIVA_NEGOCIO",  icon: "mdi:gavel",                           md: md07, mdUltra: md07u, mdWenyan: md07w },
-		{ title: "08. ASESORIA_PERSONALIZADA",      icon: "mdi:account-tie",                     md: md08, mdUltra: md08u, mdWenyan: md08w },
-		{ title: "09. ERROR_TECNICO",               icon: "mdi:bug-outline",                     md: md09, mdUltra: md09u, mdWenyan: md09w },
-		{ title: "10. ERROR_CONFIGURACION",         icon: "mdi:cog-outline",                     md: md10, mdUltra: md10u, mdWenyan: md10w },
-		{ title: "11. ERROR_ACCESO",                icon: "mdi:lock-alert-outline",              md: md11, mdUltra: md11u, mdWenyan: md11w },
-		{ title: "12. ERROR_DIAN",                  icon: "mdi:file-document-alert-outline",     md: md12, mdUltra: md12u, mdWenyan: md12w },
-		{ title: "13. COMERCIAL",                   icon: "mdi:cash-multiple",                   md: md13, mdUltra: md13u, mdWenyan: md13w },
-		{ title: "90. GENERAL",                     icon: "mdi:shield-account-outline",          md: md90, mdUltra: md90u, mdWenyan: md90w },
-		{ title: "91. CONSOLIDACION",               icon: "mdi:merge",                           md: md91, mdUltra: md91u, mdWenyan: md91w },
+		...tipoPrompts,
+		{ title: "90. GENERAL", icon: "mdi:shield-account-outline", md: md90, mdUltra: md90u, mdWenyan: md90u },
+		{ title: "91. CONSOLIDACION", icon: "mdi:merge", md: md91, mdUltra: md91u, mdWenyan: md91u },
 	];
 
 	let versiones: Version[] = prompts.map(() => "comparativa");

@@ -149,6 +149,9 @@ export async function buildTicketAssets(ticketId, assets) {
 			const config = JSON.parse(raw);
 			console.log(`◇ ${ticketId} · quickchart.io ← ${asset.source}`);
 			buf = await renderQuickChartToBuffer(config, asset.render ?? {});
+		} else if (asset.kind === "capture") {
+			console.log(`◇ ${ticketId} · captura local ← ${asset.source}`);
+			buf = await fs.readFile(srcPath);
 		} else {
 			throw new Error(`kind no soportado: ${asset.kind}`);
 		}

@@ -1,6 +1,4 @@
-// Genera src/lib/patyia/sql/seed-prompts-tdconsulta.sql a partir de los 13 .md
-// en src/lib/patyia/prompts/. MERGE idempotente sobre INSTRUCCION y
-// TDCONSULTAXINSTRUCCION. iinstruccion = ninstruccion = 'PROMPT_<TIPO>'.
+// Genera src/lib/patyia/sql/seed-prompts-tdconsulta.sql desde prompts/PROMPT_<TIPO>.md
 
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -10,20 +8,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const promptsDir = resolve(__dirname, "..", "src", "lib", "patyia", "prompts");
 const outFile = resolve(__dirname, "..", "src", "lib", "patyia", "sql", "seed-prompts-tdconsulta.sql");
 
-const SKIP = new Set(["90-general.md", "91-consolidacion.md"]);
+const fileToTipo = (name) => name.replace(/^PROMPT_/, "").replace(/\.md$/, "");
 
-const fileToTipo = (name) =>
-	name
-		.replace(/^\d+-/, "")
-		.replace(/\.md$/, "")
-		.toUpperCase()
-		.replaceAll("-", "_");
-
-const files = readdirSync(promptsDir).filter((f) => /^\d{2}-.+\.md$/.test(f) && !SKIP.has(f)).sort();
+const files = readdirSync(promptsDir)
+	.filter((f) => /^PROMPT_[A-Z0-9_]+\.md$/.test(f))
+	.sort((a, b) => fileToTipo(a).localeCompare(fileToTipo(b)));
 
 const rows = files.map((f) => {
 	const tipo = fileToTipo(f);
-	// iinstruccion = TIPO (varchar(32) en INSTRUCCION). ninstruccion = display.
 	const iinst = tipo;
 	const ninst = `PROMPT_${tipo}`;
 	const raw = readFileSync(resolve(promptsDir, f), "utf8");
@@ -34,16 +26,13 @@ const rows = files.map((f) => {
 const head = `-- =====================================================================
 -- Carga de prompts especificos por tipo de consulta
 -- BD: AYUDASCP_IA  (microservicio AYUDASCP-IA / PatyIA)
--- Fecha: 2026-05-25  (Viviana Restrepo)
+-- Fuente: src/lib/patyia/prompts/PROMPT_<TIPO>.md
 --
 -- Estrategia (idempotente):
---   1) MERGE en INSTRUCCION (clave iinstruccion = 'PROMPT_<TIPO>') con el
+--   1) MERGE en INSTRUCCION (clave iinstruccion = '<TIPO>') con el
 --      contenido del .md como instruccion (NVARCHAR(MAX)).
 --   2) MERGE en TDCONSULTAXINSTRUCCION enlazando (itdconsulta, iinstruccion)
---      con orden = 1.  El itdconsulta se resuelve por nconsulta = '<TIPO>'.
---
--- Si se vuelven a ejecutar las MERGE actualizan el texto y conservan la
--- relacion sin duplicar filas.
+--      con orden = 1.
 -- =====================================================================
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
@@ -81,19 +70,16 @@ ON t.itdconsulta = s.itdconsulta AND t.iinstruccion = s.iinstruccion
 WHEN MATCHED THEN UPDATE SET t.orden = s.orden
 WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 	VALUES (s.itdconsulta, s.iinstruccion, s.orden);
-`).join("");
+`).join("\n");
 
 const tail = `
 COMMIT;
 
--- Verificacion final
-SELECT i.iinstruccion, i.ninstruccion, LEN(i.instruccion) AS chars, x.itdconsulta, c.nconsulta, x.orden
+SELECT i.iinstruccion, i.ninstruccion, i.version, LEN(i.instruccion) AS len_instruccion
 FROM INSTRUCCION i
-LEFT JOIN TDCONSULTAXINSTRUCCION x ON x.iinstruccion = i.iinstruccion
-LEFT JOIN TDCONSULTA c             ON c.itdconsulta  = x.itdconsulta
-WHERE i.ninstruccion LIKE 'PROMPT[_]%'
+WHERE i.iinstruccion IN (${rows.map((r) => `N'${r.iinst}'`).join(", ")})
 ORDER BY i.iinstruccion;
 `;
 
 writeFileSync(outFile, head + stmts + tail, "utf8");
-console.log(`OK: ${outFile} (${rows.length} prompts)`);
+console.log(`[build-paty-prompts-sql] ${rows.length} prompts → ${outFile}`);
