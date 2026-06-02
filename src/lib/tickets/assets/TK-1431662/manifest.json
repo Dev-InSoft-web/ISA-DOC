@@ -1,0 +1,17 @@
+{
+	"ticketId": "TK-1431662",
+	"assets": [
+		{
+			"id": "tk1431662-instruccion-modelo",
+			"kind": "mermaid",
+			"source": "tk1431662-instruccion-modelo.mmd",
+			"png": "tk1431662-instruccion-modelo.jpg"
+		},
+		{
+			"id": "tk1431662-fases-modelo",
+			"kind": "mermaid",
+			"source": "tk1431662-fases-modelo.mmd",
+			"png": "tk1431662-fases-modelo.jpg"
+		}
+	]
+}

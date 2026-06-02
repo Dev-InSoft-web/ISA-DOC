@@ -19,7 +19,11 @@
 		"verify:plan-order": "tsx scripts/verify-api/runs/run_plan_order.ts",
 		"postman:gen": "tsx scripts/verify-api/postman/generate_postman_items.ts",
 		"assets:upload": "node scripts/upload-assets-imgbb.mjs",
-		"code-images:build": "tsx scripts/build-code-images.mjs"
+		"code-images:build": "tsx scripts/build-code-images.mjs",
+		"tickets:assets:1431163": "node scripts/tickets/build-TK-1431163-assets.mjs",
+		"tickets:assets:1431662": "node scripts/tickets/build-TK-1431662-assets.mjs",
+		"tickets:assets:1431666": "node scripts/tickets/build-TK-1431666-assets.mjs",
+		"tickets:assets:patyia": "npm run tickets:assets:1431163 && npm run tickets:assets:1431662 && npm run tickets:assets:1431666"
 	},
 	"dependencies": {
 		"@astrojs/node": "^9.x",

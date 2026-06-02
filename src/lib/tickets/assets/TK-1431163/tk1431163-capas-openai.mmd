@@ -1,0 +1,14 @@
+flowchart TB
+  subgraph template["Template PR_GENERAL"]
+    PG[Reglas globales Paty]
+    SLOT[Variable instrucciones_tipo]
+    PG --> SLOT
+  end
+  subgraph vars["prompt.variables"]
+    IT[Texto instruccion por tipo BD]
+    NU[nombre_usuario resuelto]
+  end
+  SLOT --> IT
+  SLOT --> NU
+  REQ[responses.create] --> template
+  REQ --> vars

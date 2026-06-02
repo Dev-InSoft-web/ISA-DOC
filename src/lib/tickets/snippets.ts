@@ -84,8 +84,6 @@ export function icon(name: string, opts: IconOpts = {}): string {
 // (`color:` en el `<span>` envolvente). Esto evita el truco del `?color=…`
 // y deja que el visor renderice la pieza de forma nativa.
 // ─────────────────────────────────────────────────────────────────────────
-import { loadIcon } from "@ingenieria_insoft/ispsveltecomponents";
-
 function injectSvgAttrs(svg: string, size: number, altText: string, extraStyle: string, hardColor?: string): string {
 	// 1) Quitar width/height/style fijos del SVG raíz para no chocar con los nuestros.
 	// 2) Inyectar width/height + style con tamaño/alineación y aria.
@@ -110,7 +108,9 @@ function injectSvgAttrs(svg: string, size: number, altText: string, extraStyle: 
 const ICON_FALLBACK_CACHE = new Map<string, Promise<string>>();
 async function fetchIconSvgRaw(name: string): Promise<string> {
 	if (ICON_FALLBACK_CACHE.has(name)) return ICON_FALLBACK_CACHE.get(name)!;
-	const p = loadIcon(name).catch(() => "");
+	const p = import("@ingenieria_insoft/ispsveltecomponents")
+		.then((m) => m.loadIcon(name))
+		.catch(() => "");
 	ICON_FALLBACK_CACHE.set(name, p);
 	return p;
 }
@@ -367,6 +367,7 @@ function renderCodeInner(src: string, lang?: CodeLang): string {
 		.join("<br>");
 }
 
+import { prepareMermaidDiagram } from "../mermaid/config";
 import { lookupCodeImage, type CodeImageInfo } from "./codeImage";
 
 const CODE_BLOCK_DEFAULT_W = 720;
@@ -483,72 +484,112 @@ export async function compareTable(pair: ComparePair): Promise<string> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// img(filename, targetW?) — renderiza un <img> con dimensiones ya calculadas
-// a partir del width/height nativo guardado en `imgbb-map.json`.
-//
-// Algoritmo (determinístico, sin CSS):
-//   1. Por defecto se intenta `w = 360` (configurable por `targetW`).
-//   2. Se proyecta `h = round(w * natH / natW)`.
-//   3. Si `h < 300`, se fuerza `h = 300` y se recalcula `w = round(300 * natW / natH)`.
-//   4. Para imágenes muy verticales: si `h > 600`, se baja a `h = 600` y se
-//      recalcula `w = round(600 * natW / natH)`.
-//
-// Las medidas finales se emiten como atributos HTML `width` y `height` y
-// también en el `style` (sin `max-width`/`min-height`), para que clientes
-// de email respeten el tamaño exacto.
+// ticketImg / img / imgFull — imgbb + dimensiones en `imgbb-map.json`.
+// Reglas en `imgDims.ts`: si natW<400 o natH<500 escalar arriba; si no, 80% centrado.
 // ─────────────────────────────────────────────────────────────────────────
 
 import { imgInfo } from "./assetsRemote";
+import { computeTicketImgDims, ticketImgHtml } from "./imgDims";
 
-const IMG_DEFAULT_W = 360;
-const IMG_MIN_H = 300;
-const IMG_MAX_H = 600;
-
-function computeImgDims(natW: number, natH: number, targetW: number): { w: number; h: number } {
-	if (!natW || !natH) return { w: targetW, h: targetW };
-	let w = targetW;
-	let h = Math.round((w * natH) / natW);
-	if (h < IMG_MIN_H) {
-		h = IMG_MIN_H;
-		w = Math.round((h * natW) / natH);
+/** Base64 UTF-8 compatible con navegador y Node (sin depender de `Buffer`). */
+export function utf8ToBase64(text: string): string {
+	const bytes = new TextEncoder().encode(text);
+	let b64: string;
+	if (typeof Buffer !== "undefined") {
+		b64 = Buffer.from(bytes).toString("base64");
+	} else {
+		let bin = "";
+		for (const b of bytes) bin += String.fromCharCode(b);
+		b64 = btoa(bin);
 	}
-	if (h > IMG_MAX_H) {
-		h = IMG_MAX_H;
-		w = Math.round((h * natW) / natH);
-	}
-	return { w, h };
+	// mermaid.ink espera base64 en ruta URL (caracteres + / rompen la URL).
+	return b64.replace(/\+/g, "-").replace(/\//g, "_");
 }
 
-export function img(filename: string, targetW: number = IMG_DEFAULT_W): string {
-	const info = imgInfo(filename);
-	const { w, h } = computeImgDims(info.width, info.height, targetW);
+/** Serializa config Chart.js omitiendo funciones (p. ej. formatter de plugins). */
+export function chartConfigToJson(chartConfig: Record<string, unknown>): string {
+	return JSON.stringify(chartConfig, (_k, v) => (typeof v === "function" ? undefined : v));
+}
+
+/** URL mermaid.ink (diagrama → PNG/JPEG embebible). */
+export function mermaidInkUrl(diagram: string): string {
+	return `https://mermaid.ink/img/${utf8ToBase64(prepareMermaidDiagram(diagram))}`;
+}
+
+/** Imagen remota email-safe (Mermaid, QuickChart, imgbb, etc.). */
+export function remoteDiagramImg(
+	src: string,
+	opts?: { width?: number; height?: number; fullWidth?: boolean },
+): string {
+	const width = opts?.width ?? 820;
+	const height = opts?.height ?? 440;
+	const full = opts?.fullWidth ?? false;
+	const imgStyle = full
+		? `display:block;width:100%;max-width:100%;height:auto;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:zoom-in;`
+		: `display:block;width:${width}px;height:auto;max-width:100%;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:zoom-in;`;
+	const dimAttrs = full ? `width="${width}" height="${height}"` : `width="${width}"`;
 	return (
-		`<a href="${info.url}" target="_blank" rel="noopener noreferrer" ` +
+		`<a href="${src}" target="_blank" rel="noopener noreferrer" ` +
 		`style="display:block;margin:0.75rem 0;text-decoration:none;">` +
-		`<img src="${info.url}" alt="" width="${w}" height="${h}" ` +
-		`style="display:block;width:${w}px;height:${h}px;` +
-		`min-width:${w}px;max-width:${w}px;min-height:${h}px;max-height:${h}px;` +
-		`border:1px solid #ddd;border-radius:4px;cursor:zoom-in;">` +
+		`<img src="${src}" alt="" ${dimAttrs} style="${imgStyle}">` +
 		`</a>`
 	);
 }
 
-// imgFull — variante de `img` para diagramas (mermaid, esquemas) donde queremos
-// que la imagen ocupe el 100% del ancho disponible del documento y conserve la
-// proporción nativa. Email-safe: no usa `vw`; usa `width:100%` + `max-width` en
-// px equivalente al ancho nativo para no escalarla más allá de su resolución.
+/**
+ * Imagen de ticket vía imgbb (`imgbb-map.json`). Fuente: `.mmd` / `.chart.json` + script `build-TK-*-assets.mjs`.
+ * Dimensiones según `imgDims.ts` (mín. 400×500 o 80% centrado).
+ */
+export function ticketImg(filename: string): string {
+	const info = imgInfo(filename);
+	return ticketImgHtml(info.url, info.width, info.height);
+}
+
+/** @deprecated Usar `ticketImg` tras generar PNG y subir con el script del TK. */
+export function mermaidImg(
+	diagram: string,
+	opts?: { width?: number; height?: number; fullWidth?: boolean },
+): string {
+	return remoteDiagramImg(mermaidInkUrl(diagram), {
+		width: opts?.width ?? 900,
+		height: opts?.height ?? 520,
+		fullWidth: opts?.fullWidth ?? true,
+	});
+}
+
+/** Gráfico Chart.js vía QuickChart (imagen, no código). */
+export function chartImg(
+	chartConfig: Record<string, unknown>,
+	width = 820,
+	height = 440,
+	plugins = "datalabels",
+): string {
+	const plug = plugins ? `&plugins=${encodeURIComponent(plugins)}` : "";
+	const src = `https://quickchart.io/chart?w=${width}&h=${height}${plug}&c=${encodeURIComponent(chartConfigToJson(chartConfig))}`;
+	return remoteDiagramImg(src, { width, height, fullWidth: false });
+}
+
+/** @deprecated Usar `ticketImg` tras `build-TK-*-assets.mjs`. */
+export function chartImgFull(
+	chartConfig: Record<string, unknown>,
+	width = 900,
+	height = 480,
+	plugins = "datalabels",
+): string {
+	const plug = plugins ? `&plugins=${encodeURIComponent(plugins)}` : "";
+	const src = `https://quickchart.io/chart?w=${width}&h=${height}${plug}&c=${encodeURIComponent(chartConfigToJson(chartConfig))}`;
+	return remoteDiagramImg(src, { width, height, fullWidth: true });
+}
+
+/** Captura o diagrama en imgbb (misma norma de tamaño que `ticketImg`). */
+export function img(filename: string, _legacyTargetW?: number): string {
+	void _legacyTargetW;
+	return ticketImg(filename);
+}
+
+/** Alias de `ticketImg` (diagramas Mermaid/QuickChart publicados en imgbb). */
 export function imgFull(filename: string): string {
-	const info = imgInfo(filename);
-	const natW = info.width || 1200;
-	const natH = info.height || 600;
-	return (
-		`<a href="${info.url}" target="_blank" rel="noopener noreferrer" ` +
-		`style="display:block;margin:0.75rem 0;text-decoration:none;">` +
-		`<img src="${info.url}" alt="" width="${natW}" height="${natH}" ` +
-		`style="display:block;width:100%;max-width:100%;height:auto;` +
-		`border:1px solid #ddd;border-radius:4px;background:#fff;cursor:zoom-in;">` +
-		`</a>`
-	);
+	return ticketImg(filename);
 }
 
 // simpleTable — tabla email-safe homogénea con el mismo estilo que la tabla

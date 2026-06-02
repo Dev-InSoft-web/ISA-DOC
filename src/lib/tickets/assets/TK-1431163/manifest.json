@@ -1,0 +1,11 @@
+{
+	"ticketId": "TK-1431163",
+	"assets": [
+		{
+			"id": "tk1431163-capas-openai",
+			"kind": "mermaid",
+			"source": "tk1431163-capas-openai.mmd",
+			"png": "tk1431163-capas-openai.jpg"
+		}
+	]
+}

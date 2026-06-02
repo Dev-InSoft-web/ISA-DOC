@@ -608,5 +608,55 @@
 		"width": 1030,
 		"height": 118,
 		"size": 24954
+	},
+	"tk1431163-capas-openai.jpg": {
+		"sha1": "6e7d4b91e61961f6a8208e58cb436372c665a87c",
+		"url": "https://i.ibb.co/8g2nn6Sy/tk1431163-capas-openai.jpg",
+		"display_url": "https://i.ibb.co/8g2nn6Sy/tk1431163-capas-openai.jpg",
+		"thumb": "https://i.ibb.co/Sw0DDR9k/tk1431163-capas-openai.jpg",
+		"delete_url": "https://ibb.co/Sw0DDR9k/c0eaceac95be7efb4758decdd95d066f",
+		"width": 633,
+		"height": 506,
+		"size": 31055
+	},
+	"tk1431662-instruccion-modelo.jpg": {
+		"sha1": "1a128e0aa9faf2ffc8c9dc19506f73630c246fce",
+		"url": "https://i.ibb.co/Rpw2V1fv/tk1431662-instruccion-modelo.jpg",
+		"display_url": "https://i.ibb.co/Rpw2V1fv/tk1431662-instruccion-modelo.jpg",
+		"thumb": "https://i.ibb.co/4ZrW5czm/tk1431662-instruccion-modelo.jpg",
+		"delete_url": "https://ibb.co/4ZrW5czm/047916afdd5b545d6be32cbf15f3411a",
+		"width": 616,
+		"height": 500,
+		"size": 36785
+	},
+	"tk1431662-fases-modelo.jpg": {
+		"sha1": "8383c7a57fafcac470ac60ccb722142fda15b2c6",
+		"url": "https://i.ibb.co/hJXvCDn8/tk1431662-fases-modelo.jpg",
+		"display_url": "https://i.ibb.co/8LzVX6R8/tk1431662-fases-modelo.jpg",
+		"thumb": "https://i.ibb.co/tTZ538NC/tk1431662-fases-modelo.jpg",
+		"delete_url": "https://ibb.co/tTZ538NC/72c9e4f37fcf0656964b7f66a0d98ecb",
+		"width": 1228,
+		"height": 210,
+		"size": 24959
+	},
+	"tk1431666-tokens-totales.png": {
+		"sha1": "a8048365d8e3e1988f1c5f45a31d763b7e4a8039",
+		"url": "https://i.ibb.co/4v2GwsS/tk1431666-tokens-totales.png",
+		"display_url": "https://i.ibb.co/8vbpnzx/tk1431666-tokens-totales.png",
+		"thumb": "https://i.ibb.co/2VSQ08M/tk1431666-tokens-totales.png",
+		"delete_url": "https://ibb.co/2VSQ08M/16df5fca482fd84b6e0e47f184038c7d",
+		"width": 1600,
+		"height": 800,
+		"size": 33142
+	},
+	"tk1431666-tokens-por-tipo.png": {
+		"sha1": "19531d3cbd684af77141db7cb62d55bb30f91bbd",
+		"url": "https://i.ibb.co/WpH27QtL/tk1431666-tokens-por-tipo.png",
+		"display_url": "https://i.ibb.co/93prBJt7/tk1431666-tokens-por-tipo.png",
+		"thumb": "https://i.ibb.co/QjJKhZd4/tk1431666-tokens-por-tipo.png",
+		"delete_url": "https://ibb.co/QjJKhZd4/bf6b4295b7214d92d41c58fa930aebad",
+		"width": 1800,
+		"height": 960,
+		"size": 85939
 	}
 }

@@ -1,0 +1,5 @@
+flowchart LR
+  A[Clasificar tipo_consulta] -->|gpt-4.1-nano| B[Resolver INSTRUCCION]
+  B --> C[Leer MODELO en BD]
+  C --> D[responses.create modelo final]
+  E[Resumen / métricas] -->|tokens y costo| F[GET-ResumenConversacion]

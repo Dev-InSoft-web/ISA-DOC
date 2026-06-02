@@ -1,3 +1,5 @@
+import { MERMAID_INITIALIZE_FLOWCHART, prepareMermaidDiagram } from "./config";
+
 /**
  * Loader y render de Mermaid unificado para toda la app (ISA-DOC).
  *
@@ -93,7 +95,7 @@ export async function ensureMermaid(): Promise<MermaidAPI> {
 				startOnLoad: false,
 				securityLevel: "loose",
 				themeVariables: buildThemeVariables(),
-				flowchart: { curve: "step", htmlLabels: true, useMaxWidth: true },
+				flowchart: { ...MERMAID_INITIALIZE_FLOWCHART },
 			});
 		} catch {
 			// si initialize falla con el tema, mermaid sigue usable con defaults
@@ -113,7 +115,7 @@ let mermaidCounter = 0;
 export async function renderMermaidSvg(source: string): Promise<string> {
 	const mm = await ensureMermaid();
 	const id = `isa-mmd-${Date.now()}-${++mermaidCounter}`;
-	const out = await mm.render(id, source);
+	const out = await mm.render(id, prepareMermaidDiagram(source));
 
 	return typeof out === "string" ? out : (out?.svg ?? "");
 }
@@ -138,7 +140,7 @@ export async function renderMermaidBlocks(container: HTMLElement): Promise<void>
 	for (const codeEl of blocks) {
 		const pre = codeEl.parentElement;
 		if (!pre) continue;
-		const source = codeEl.textContent ?? "";
+		const source = prepareMermaidDiagram(codeEl.textContent ?? "");
 		const host = document.createElement("div");
 		host.className = "is-mermaid";
 		try {

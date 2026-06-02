@@ -27,9 +27,9 @@ import { bodyTK1429349 } from "./TK-1429349";
 import { bodyTK1429373 } from "./TK-1429373";
 import { bodyTK1430974 } from "./TK-1430974";
 import { bodyTK1430975 } from "./TK-1430975";
-import { bodyTK1431163 } from "./TK-1431163";
-import { bodyTK1431662 } from "./TK-1431662";
-import { bodyTK1431666 } from "./TK-1431666";
+import { buildBodyTK1431163 } from "./TK-1431163";
+import { buildBodyTK1431662 } from "./TK-1431662";
+import { buildBodyTK1431666 } from "./TK-1431666";
 
 export interface TicketNormativa {
 	medioAtencion: string;
@@ -47,6 +47,8 @@ export interface TicketCommit {
 	ins?: number;
 	del?: number;
 	fecha?: string;
+	/** Autor git; si se omite, se asume Jeff-Aporta salvo exclusión en commitAuthors.ts */
+	autor?: string;
 }
 
 export interface TicketDbChange {
@@ -96,9 +98,18 @@ export const TICKETS: TicketRegistro[] = [
 		fechaSolicitud: "29/may./2026 08:42:16 am",
 		noMaquillarFechas: true,
 		estimacionMinutos: 75,
-		diligenciaMinutos: 60,
-		resumen: "Se actualizaron en AYUDASCP_IA los 13 prompts por tipo de consulta con la versión Ultra (version 2.0-ultra), mediante MERGE idempotente generado desde src/lib/patyia/prompts/Ultra. Se reduce LEN(instruccion)/tokens de entrada sin alterar el enlace TDCONSULTAXINSTRUCCION ni las reglas funcionales por tipo.",
-		body: bodyTK1431666,
+		diligenciaMinutos: 75,
+		resumen: "Se actualizaron en AYUDASCP_IA los 13 prompts con versión Ultra (2.0-ultra) mediante MERGE idempotente desde prompts/Ultra. Se redujo aprox. 25% los tokens de instrucción reinyectados por turno sin alterar TDCONSULTAXINSTRUCCION.",
+		get body(): Promise<string> {
+			return buildBodyTK1431666();
+		},
+		commits: [
+			{ hash: "ce07c0d", repo: "ISA-DOC", descripcion: "feat(prompts): refina prompts Ultra e integra script seed-prompts-ultra-tdconsulta.sql", ins: 3991, del: 1971, fecha: "2026-06-02T07:20:36-05:00" },
+			{ hash: "5701057", repo: "ISA-DOC", descripcion: "refactor(sql): elimina scripts obsoletos y actualiza referencias SQL en bitácora PatyIA", ins: 224, del: 121, fecha: "2026-06-01T15:21:34-05:00" },
+			{ hash: "26617c7", repo: "ISA-DOC", descripcion: "docs(prompts): lineamientos PATY en variantes wenyan-ultra (referencia de compactación)", ins: 1049, del: 28, fecha: "2026-05-29T12:41:55-05:00" },
+			{ hash: "9adce9d", repo: "ISA-DOC", descripcion: "docs(prompts): agrega borradores de prompts de asistencia ContaPyme previos a Ultra", ins: 0, del: 0, fecha: "2026-05-29T12:34:21-05:00" },
+			{ hash: "e714ffd", repo: "ISA-DOC", descripcion: "feat(patyia): scripts SQL de instrucciones (limpieza/selección) y APIs locales de prueba de motores", ins: 6509, del: 91, fecha: "2026-05-29T12:20:50-05:00" },
+		],
 		cambiosBd: [
 			{
 				tabla: "INSTRUCCION + TDCONSULTAXINSTRUCCION (AYUDASCP_IA)",
@@ -147,12 +158,19 @@ export const TICKETS: TicketRegistro[] = [
 		fechaSolicitud: "29/may./2026 08:42:16 am",
 		noMaquillarFechas: true,
 		estimacionMinutos: 90,
-		diligenciaMinutos: 90,
-		resumen: "Se agregó INSTRUCCION.MODELO y resolución tipo_consulta → modelo en backend Paty IA: gpt-4.1-nano para flujos operativos y modelo por fila de instrucción para la respuesta final (default gpt-5-mini). Se eliminó OPENAI_MODEL del entorno local; temperatura sólo se envía si el modelo lo permite.",
-		body: bodyTK1431662,
+		diligenciaMinutos: 120,
+		resumen: "Se agregó INSTRUCCION.MODELO y resolución por tipo de consulta: gpt-4.1-nano en flujos operativos y modelo por fila de instrucción en respuesta final (default gpt-5-mini), con métricas de tokens/costo y sin OPENAI_MODEL en configuración local.",
+		get body(): Promise<string> {
+			return buildBodyTK1431662();
+		},
 		commits: [
+			{ hash: "e429052", descripcion: "feat: optimiza GET-ResumenConversacion con métricas de uso y costos por summarizeUsage", repo: "PatyIA", ins: 63, del: 144, fecha: "2026-06-01T15:21:16-05:00" },
+			{ hash: "cce56bc", descripcion: "feat: estandariza nomenclatura en controladores; TInstruccionServer y openai-infomap (modelos sin temperatura)", repo: "PatyIA", ins: 216, del: 254, fecha: "2026-06-01T12:49:57-05:00" },
+			{ hash: "72ce45e", descripcion: "refactor(sql): compacta consultas en ConversacionesServer y catálogos TDCONSULTA/INSTRUCCION", repo: "PatyIA", ins: 9, del: 37, fecha: "2026-06-01T12:44:54-05:00" },
 			{ hash: "34f8d65", descripcion: "refactor(openia): consolida propiedad modelo y simplifica flujo de conversación", repo: "PatyIA", ins: 105, del: 170, fecha: "2026-06-01T12:42:47-05:00" },
 			{ hash: "ab1e9c0", descripcion: "feat(TK-1431662): agrega MODELO en TInstruccion y selección de modelo por tipo en OpenIAServer", repo: "PatyIA", ins: 179, del: 176, fecha: "2026-06-01T11:57:14-05:00" },
+			{ hash: "d113366", descripcion: "feat: añade controlador de peticiones operativas (prototipo Groq, sustituido luego por modeloOperativo)", repo: "PatyIA", ins: 94, del: 0, fecha: "2026-05-29T15:38:15-05:00" },
+			{ hash: "9eb1917", repo: "ISA-DOC", descripcion: "feat(conversaciones): logging y métricas en motores del laboratorio ISA-DOC", ins: 804, del: 113, fecha: "2026-06-01T12:08:28-05:00" },
 		],
 		cambiosBd: [
 			{
@@ -190,14 +208,27 @@ export const TICKETS: TicketRegistro[] = [
 		fechaSolicitud: "29/may./2026 08:42:16 am",
 		noMaquillarFechas: true,
 		estimacionMinutos: 120,
-		diligenciaMinutos: 120,
-		resumen: "Se corrige la composición del request a OpenAI para que PR_GENERAL no sea reemplazado al aplicar instrucciones por tipo de consulta. Las instrucciones van a prompt.variables.instrucciones_tipo; vector stores y trazabilidad se mantienen. UlMetrics carga tarifas en runtime con fallback para no bloquear el deploy.",
-		body: bodyTK1431163,
+		diligenciaMinutos: 150,
+		resumen: "Se corrigió la composición OpenAI para conservar PR_GENERAL: instrucciones por tipo en prompt.variables.instrucciones_tipo sin instructions en el body que reemplazaran el template. Se mantuvieron vector stores, resolución de nombre de usuario y carga de precios UlMetrics en runtime con fallback.",
+		get body(): Promise<string> {
+			return buildBodyTK1431163();
+		},
 		commits: [
+			{ hash: "7d387a9", descripcion: "refactor(index): compacta app.setup tras habilitar despliegue del backend", repo: "PatyIA", ins: 1, del: 3, fecha: "2026-06-02T07:22:39-05:00" },
+			{ hash: "c3da628", descripcion: "feat: simplifica OpenIAServer y AyudaIACPServer; optimiza validación de tokens y respuestas", repo: "PatyIA", ins: 79, del: 353, fecha: "2026-06-01T15:14:53-05:00" },
+			{ hash: "90f579c", descripcion: "feat: mejora hilos/mensajes, clasificación y reasoning_effort en prompts de conversación", repo: "PatyIA", ins: 165, del: 196, fecha: "2026-06-01T14:04:52-05:00" },
+			{ hash: "2397158", descripcion: "feat: UlPrompts con variables dinámicas, resolución de nombre_usuario en instrucciones_tipo", repo: "PatyIA", ins: 183, del: 105, fecha: "2026-06-01T12:55:09-05:00" },
 			{ hash: "d8bf73b", descripcion: "refactor(TK-1431163): elimina controlador TGroqController y ajusta carga de precios en UlMetrics", repo: "PatyIA", ins: 19, del: 97, fecha: "2026-06-01T10:19:35-05:00" },
+			{ hash: "dd46d98", descripcion: "refactor: elimina comentarios en ConversacionesServer, TTiquetesConversacionServer y PropietarioXTercero", repo: "PatyIA", ins: 9, del: 18, fecha: "2026-05-29T12:40:51-05:00" },
 			{ hash: "a9808b7", descripcion: "feat: optimiza gestión de conversaciones y prompts IA; instrucciones por tipo vía prompt.variables.instrucciones_tipo", repo: "PatyIA", ins: 630, del: 101, fecha: "2026-05-29T12:24:36-05:00" },
 			{ hash: "d4e3f75", descripcion: "refactor: elimina comentarios innecesarios en UlMetrics", repo: "PatyIA", ins: 0, del: 21, fecha: "2026-05-29T12:40:04-05:00" },
 			{ hash: "8a5bee3", descripcion: "refactor: elimina comentario innecesario en el bloque try-catch de OpenIAServer", repo: "PatyIA", ins: 1, del: 1, fecha: "2026-05-29T12:40:26-05:00" },
+			{ hash: "979faa9", descripcion: "refactor: elimina comentarios innecesarios en TraceNoop", repo: "PatyIA", ins: 3, del: 3, fecha: "2026-05-29T12:38:33-05:00" },
+			{ hash: "218341e", descripcion: "refactor: elimina comentario innecesario en TTiquete", repo: "PatyIA", ins: 0, del: 1, fecha: "2026-05-29T12:38:06-05:00" },
+			{ hash: "2a92bb4", descripcion: "refactor: elimina comentarios innecesarios en TAyudaIAController", repo: "PatyIA", ins: 4, del: 39, fecha: "2026-05-29T12:37:31-05:00" },
+			{ hash: "7c81e1a", descripcion: "refactor: elimina comentarios en cerrarConversacionesInactivas", repo: "PatyIA", ins: 1, del: 7, fecha: "2026-05-29T12:37:16-05:00" },
+			{ hash: "832d431", descripcion: "refactor: elimina comentarios en http_info_server", repo: "PatyIA", ins: 0, del: 2, fecha: "2026-05-29T12:36:53-05:00" },
+			{ hash: "1097a76", repo: "ISA-DOC", descripcion: "docs(bitacora): entrada 2026-06-01 y referencias de diligencia TK-1431163", ins: 230, del: 148, fecha: "2026-06-01T10:26:34-05:00" },
 		],
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR Error del sistema" },
 		proyecto: "PatyIA",
@@ -1120,10 +1151,20 @@ export const TICKETS: TicketRegistro[] = [
 	},
 ];
 
+async function resolveTicketBody(t: TicketRegistro): Promise<string> {
+	const body = t.body;
+	if (!body || typeof (body as Promise<string>).then !== "function") {
+		throw new Error(`El ticket ${t.id} no expone body (Promise) válido`);
+	}
+	return body;
+}
+
 export async function getTicketHtml(t: TicketRegistro): Promise<string> {
-	return buildTicketHtml(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.noMaquillarFechas ? undefined : t.fechaSolicitud, t.id, t.festivos, t.titulo, t.diligenciaMinutos, t.extraMinutos, t.extraDescripcion);
+	const bodyHtml = await resolveTicketBody(t);
+	return buildTicketHtml(bodyHtml, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.noMaquillarFechas ? undefined : t.fechaSolicitud, t.id, t.festivos, t.titulo, t.diligenciaMinutos, t.extraMinutos, t.extraDescripcion);
 }
 
 export async function getTicketTotalEstimadoMin(t: TicketRegistro): Promise<number> {
-	return tiempoTotalEstimadoMin(await t.body, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.diligenciaMinutos, t.extraMinutos);
+	const bodyHtml = await resolveTicketBody(t);
+	return tiempoTotalEstimadoMin(bodyHtml, t.commits ?? [], t.estimacionMinutos, t.cambiosBd ?? [], t.diligenciaMinutos, t.extraMinutos);
 }

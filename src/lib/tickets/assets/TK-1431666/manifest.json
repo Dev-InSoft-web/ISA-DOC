@@ -1,0 +1,19 @@
+{
+	"ticketId": "TK-1431666",
+	"assets": [
+		{
+			"id": "tk1431666-tokens-totales",
+			"kind": "quickchart",
+			"source": "tk1431666-tokens-totales.chart.json",
+			"png": "tk1431666-tokens-totales.png",
+			"render": { "width": 800, "height": 400, "plugins": "datalabels" }
+		},
+		{
+			"id": "tk1431666-tokens-por-tipo",
+			"kind": "quickchart",
+			"source": "tk1431666-tokens-por-tipo.chart.json",
+			"png": "tk1431666-tokens-por-tipo.png",
+			"render": { "width": 900, "height": 480, "plugins": "datalabels" }
+		}
+	]
+}

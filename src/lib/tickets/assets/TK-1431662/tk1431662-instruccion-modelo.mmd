@@ -1,0 +1,11 @@
+erDiagram
+  TDCONSULTA ||--o{ TDCONSULTAXINSTRUCCION : enlaza
+  INSTRUCCION ||--o{ TDCONSULTAXINSTRUCCION : orden_1
+  INSTRUCCION {
+    string IINSTRUCCION PK
+    string NINSTRUCCION
+    string MODELO
+    string INSTRUCCION_TEXT
+    string VERSION
+    boolean BACTIVO
+  }

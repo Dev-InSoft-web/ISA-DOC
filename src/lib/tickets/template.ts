@@ -9,6 +9,7 @@
 // contenido, incluyendo imágenes). Todo el estilo va inline en cada nodo.
 
 import type { TicketCommit, TicketDbChange } from "./index";
+import { filtrarCommitsJeff } from "./commitAuthors";
 import { codeBlock, compareTable } from "./snippets";
 
 export const TICKET_HTML_PREFIX = `<div style="font-family:Tahoma;color:#777;font-size:12pt;max-width:100%;">
@@ -49,6 +50,11 @@ const REPOS_INTERNOS = new Set([
 
 function filtrarCommitsExternos(commits: TicketCommit[]): TicketCommit[] {
 	return commits.filter((c) => !c.repo || !REPOS_INTERNOS.has(c.repo));
+}
+
+/** Repos visibles + solo commits de Jeff-Aporta (jeff-aporta). */
+function filtrarCommitsVisibles(commits: TicketCommit[]): TicketCommit[] {
+	return filtrarCommitsJeff(filtrarCommitsExternos(commits));
 }
 
 function escapeHtml(s: string): string {
@@ -458,7 +464,7 @@ function buildCommitsHtml(commits: TicketCommit[], estimacionMin?: number, fecha
 }
 
 export async function buildTicketHtml(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], fechaSolicitud?: string, ticketId?: string, festivos?: string[], titulo?: string, diligenciaMin?: number, extraMin?: number, extraDesc?: string): Promise<string> {
-	const commitsExternos = filtrarCommitsExternos(commits);
+	const commitsExternos = filtrarCommitsVisibles(commits);
 	const cota = cotaMaximaMinutos(commitsExternos);
 	const estimacionCommits = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : 0;
 	const minutosBd = tiempoCambiosBdMin(cambiosBd);
@@ -503,7 +509,7 @@ export function tiempoCambiosBdMin(cambios: TicketDbChange[]): number {
 // fuera de commits + diligencia. Refleja exactamente la fila "Total estimado"
 // del resumen renderizado en el HTML.
 export function tiempoTotalEstimadoMin(body: string, commits: TicketCommit[] = [], estimacionMin?: number, cambiosBd: TicketDbChange[] = [], diligenciaMin?: number, extraMin?: number): number {
-	const commitsExternos = filtrarCommitsExternos(commits);
+	const commitsExternos = filtrarCommitsVisibles(commits);
 	const cota = cotaMaximaMinutos(commitsExternos);
 	const minCommits = estimacionMin && estimacionMin > 0 ? Math.min(estimacionMin, cota) : 0;
 	const minCommitsVisibles = commitsExternos.length > 0 ? minCommits : 0;
