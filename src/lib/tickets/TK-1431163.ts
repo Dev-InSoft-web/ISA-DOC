@@ -3,14 +3,6 @@
 import { codeBlock, simpleTable, ticketImg } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
-const COMPOSITION_ROWS: Array<{ pieza: string; responsabilidad: string }> = [
-	{ pieza: "Prompt general", responsabilidad: "Reglas globales de identidad, tono, seguridad y límites funcionales (<code>PR_GENERAL</code>)." },
-	{ pieza: "Tipo de consulta", responsabilidad: "Intención clasificada del turno; trazabilidad en conversación y mensaje." },
-	{ pieza: "Instrucciones específicas", responsabilidad: "Reglas del <code>tipo_consulta</code> sin sustituir el prompt general." },
-	{ pieza: "Variables", responsabilidad: "Datos dinámicos: módulo, contexto, consulta normalizada, <code>nombre_usuario</code>." },
-	{ pieza: "Vector stores", responsabilidad: "Fuentes documentales por tipo; <code>file_search</code> sólo cuando el flujo lo exige." },
-];
-
 const SNIPPET_VARIABLES = `prompt: {
   id: promptId,
   variables: {
@@ -19,10 +11,18 @@ const SNIPPET_VARIABLES = `prompt: {
   }
 }`;
 
+const COMPOSITION_ROWS: Array<{ pieza: string; responsabilidad: string }> = [
+	{ pieza: "Prompt general", responsabilidad: "Reglas globales de identidad, tono, seguridad y límites funcionales (plantilla PR_GENERAL)." },
+	{ pieza: "Tipo de consulta", responsabilidad: "Intención clasificada del turno; trazabilidad en conversación y mensaje." },
+	{ pieza: "Instrucciones específicas", responsabilidad: "Reglas del tipo de consulta sin sustituir el prompt general." },
+	{ pieza: "Variables", responsabilidad: "Datos dinámicos: módulo, contexto, consulta normalizada y nombre del usuario." },
+	{ pieza: "Vector stores", responsabilidad: "Fuentes documentales por tipo; búsqueda en archivos sólo cuando el flujo lo exige." },
+];
+
 const intro =
 	`<div>Se ajustó la integración de <b>OpenAI Responses</b> en Paty IA para que el flujo ` +
 	`conservara el <b>prompt general</b> y sumara instrucciones por tipo de consulta, variables y ` +
-	`vector stores como capas, sin reemplazar el template <code>PR_GENERAL</code>.</div>`;
+	`vector stores como capas, sin reemplazar la plantilla PR_GENERAL.</div>`;
 
 export async function buildBodyTK1431163(): Promise<string> {
 	const [h3Problema, h3Diag, h3Arq, h3Solucion, h3Validacion] = await Promise.all([
@@ -40,7 +40,7 @@ export async function buildBodyTK1431163(): Promise<string> {
 		),
 		await note(
 			"mdi:file-document-outline",
-			"En Responses API, enviar <code>prompt.id</code> junto con <code>instructions</code> en el body hizo que <code>instructions</code> <b>reemplazara</b> el template <code>PR_GENERAL</code> en lugar de complementarlo.",
+			"En Responses API, enviar el id del prompt junto con instructions en el body hizo que instructions <b>reemplazara</b> la plantilla PR_GENERAL en lugar de complementarla.",
 		),
 	);
 
@@ -72,20 +72,21 @@ export async function buildBodyTK1431163(): Promise<string> {
 	const solucion = noteList(
 		await note(
 			"mdi:code-braces",
-			"Se añadió <code>{{instrucciones_tipo}}</code> al template <code>PR_GENERAL</code> en OpenAI y se eliminó <code>instructions</code> del body en <code>executeRunWithStream</code>. Fragmento del contrato aplicado:" +
-			(await codeBlock(SNIPPET_VARIABLES, "typescript")),
+			"Se añadió el marcador de instrucciones por tipo en la plantilla general y se eliminó instructions del body: " +
+				"el texto por tipo y el nombre del usuario pasan solo en variables del prompt. Contrato aplicado:" +
+				(await codeBlock(SNIPPET_VARIABLES, "typescript")),
 		),
 		await note(
 			"mdi:account-outline",
-			"Se resolvió <code>{{nombre_usuario}}</code> en el texto de instrucciones antes de inyectarlo en <code>prompt.variables</code> (<code>buildQueryTypeInstructions</code> / <code>resolveUserNameInText</code>).",
+			"El placeholder de nombre de usuario se sustituye en el texto de instrucciones antes de enviarlo como variable del prompt.",
 		),
 		await note(
 			"mdi:database-search-outline",
-			"<code>obtenerContextoConsulta</code> siguió resolviendo instrucciones y vector stores desde BD por <code>tipo_consulta</code>; <code>tools.file_search</code> sólo cuando el flujo lo requería.",
+			"El contexto por tipo siguió resolviendo instrucciones y vector stores desde BD; la búsqueda en archivos se activa solo cuando el flujo lo requiere.",
 		),
 		await note(
 			"mdi:chart-line",
-			"En <code>UlMetrics</code> se cargó <code>openai-pricing.json</code> en runtime con fallback a costo cero si el archivo no existía, para no bloquear build ni deploy.",
+			"Las métricas cargan tarifas OpenAI en runtime con fallback a costo cero si el archivo no está en el entorno, para no bloquear build ni deploy.",
 		),
 	);
 

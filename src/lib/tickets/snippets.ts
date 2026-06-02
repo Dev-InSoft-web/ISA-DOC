@@ -607,10 +607,17 @@ export function imgFull(filename: string): string {
 export function simpleTable(
 	headers: string[],
 	rows: string[][],
-	opts?: { aligns?: Array<"left" | "right" | "center">; firstColIsStep?: boolean; widths?: Array<string | undefined> },
+	opts?: {
+		aligns?: Array<"left" | "right" | "center">;
+		firstColIsStep?: boolean;
+		widths?: Array<string | undefined>;
+		/** Fondo por fila (p. ej. #fde2e8 para resaltar advertencias). Misma longitud que `rows`. */
+		rowBackgrounds?: string[];
+	},
 ): string {
 	const aligns = opts?.aligns ?? [];
 	const widths = opts?.widths ?? [];
+	const rowBackgrounds = opts?.rowBackgrounds ?? [];
 	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;";
 	const tdBase = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Tahoma;font-size:10pt;color:#555;";
 	const tdStep = "padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid #f0f0f0;font-family:Consolas,Menlo,monospace;font-size:9pt;color:#888;text-align:center;background:#fafafa;width:36px;";
@@ -625,14 +632,15 @@ export function simpleTable(
 		+ headers.map((h, i) => `<th style="${thBase}${alignOf(i)}${widthOf(i)}">${h}</th>`).join("")
 		+ `</tr>`;
 
-	const body = rows.map((row) =>
-		`<tr>`
-		+ row.map((cell, i) => {
-			if (i === 0 && opts?.firstColIsStep) return `<td style="${tdStep}">${cell}</td>`;
-			return `<td style="${tdBase}${alignOf(i)}${widthOf(i)}">${cell}</td>`;
-		}).join("")
-		+ `</tr>`,
-	).join("");
+	const body = rows.map((row, rowIdx) => {
+		const rowBg = rowBackgrounds[rowIdx] ? `background:${rowBackgrounds[rowIdx]};` : "";
+		return `<tr>`
+			+ row.map((cell, i) => {
+				if (i === 0 && opts?.firstColIsStep) return `<td style="${tdStep}${rowBg}">${cell}</td>`;
+				return `<td style="${tdBase}${rowBg}${alignOf(i)}${widthOf(i)}">${cell}</td>`;
+			}).join("")
+			+ `</tr>`;
+	}).join("");
 
 	return `<table style="border-collapse:collapse;width:100%;font-family:Tahoma;margin:8px 0;${widths.length ? "table-layout:fixed;" : ""}">`
 		+ colgroup

@@ -1,7 +1,16 @@
 // TK-1431666 — Instrucciones compactas Ultra en BD (MERGE idempotente).
 
 import { codeBlock, simpleTable, ticketImg } from "./snippets";
-import { PROMPT_LEN_METRICS, approxTokens, promptMetricsTotals } from "./patyia-prompt-metrics";
+import {
+	PROMPT_LEN_METRICS,
+	ULTRA_WARN_ROW_BG,
+	approxTokens,
+	isLowUltraReduction,
+	lowUltraReductionRows,
+	promptMetricsTotals,
+	reductionPct,
+	ultraMdPath,
+} from "./patyia-prompt-metrics";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const SQL_MERGE_PATRON = `MERGE INSTRUCCION AS t
@@ -45,20 +54,28 @@ export async function buildBodyTK1431666(): Promise<string> {
 	);
 
 	const metricasFilas = PROMPT_LEN_METRICS.map((r) => {
-		const pct = r.orig > 0 ? Math.round((1000 * (1 - r.ultra / r.orig)) / 10) : 0;
+		const pct = reductionPct(r.orig, r.ultra);
+		const pctLabel = pct < 0 ? `<span style="color:#b71c1c;">${pct}%</span>` : `${pct}%`;
 		return [
 			`<code>${r.tipo}</code>`,
 			String(approxTokens(r.orig)),
 			String(approxTokens(r.ultra)),
-			`${pct}%`,
+			pctLabel,
 		];
 	});
 
+	const metricasRowBg = PROMPT_LEN_METRICS.map((r) => (isLowUltraReduction(r) ? ULTRA_WARN_ROW_BG : ""));
+
 	const tablaMetricas = simpleTable(
-		["IINSTRUCCION", "Tokens aprox. v1.0", "Tokens aprox. Ultra", "Reducción"],
+		["IINSTRUCCION", "Tokens aprox. Base", "Tokens aprox. Ultra", "Reducción"],
 		metricasFilas,
-		{ widths: ["34%", "18%", "18%", "12%"] },
+		{ widths: ["34%", "18%", "18%", "12%"], rowBackgrounds: metricasRowBg },
 	);
+
+	const bajas = lowUltraReductionRows();
+	const listaMdBajas = bajas
+		.map((r) => `<code>${ultraMdPath(r.tipo)}</code> (${reductionPct(r.orig, r.ultra)}%)`)
+		.join(", ");
 
 	const totalesRow = simpleTable(
 		["Agregado (13 tipos)", "Caracteres", "Tokens aprox.", "Reducción"],
@@ -73,24 +90,34 @@ export async function buildBodyTK1431666(): Promise<string> {
 	const metricas = noteList(
 		await note(
 			"mdi:information-outline",
-			`Se estimaron tokens de entrada como <code>LEN(instruccion)/4</code> por tipo. La reducción agregada fue del <b>${totals.pct}%</b> respecto a la carga v1.0.`,
+			`Se estimaron tokens de entrada como <code>LEN(instruccion)/4</code> por tipo. La reducción agregada fue del <b>${totals.pct}%</b> respecto a la carga Base.`,
 		),
 		await note(
 			"mdi:chart-bar",
-			"Comparativa total de tokens de instrucción (v1.0 vs Ultra):" + ticketImg("tk1431666-tokens-totales.png"),
+			"Comparativa total de tokens de instrucción (Base vs Ultra):" + ticketImg("tk1431666-tokens-totales.png"),
 		),
 		await note(
 			"mdi:chart-bar",
 			"Comparativa por tipo de consulta:" + ticketImg("tk1431666-tokens-por-tipo.png"),
 		),
-		await note("mdi:table", "Detalle por tipo:" + tablaMetricas + totalesRow),
+		await note("mdi:table", "Detalle por tipo (filas en rosado: reducción &lt; 15%):" + tablaMetricas + totalesRow),
+		...(bajas.length
+			? [
+					await note(
+						"mdi:alert-outline",
+						`Los tipos con reducción menor al 15% quedaron resaltados en la tabla. En esos casos parece que el texto Ultra no se compactó bien ` +
+							`y conviene revisar la aplicación del enfoque <b>caveman</b> o la instalación correcta de la skill de compresión, porque dejó los textos casi iguales a Base. ` +
+							`Archivos a revisar: ${listaMdBajas}.`,
+					),
+				]
+			: []),
 	);
 
 	const solucion = noteList(
 		await note(
 			"mdi:merge",
-			"Se generó <code>seed-prompts-ultra-tdconsulta.sql</code> con <code>build-paty-prompts-ultra-sql.mjs</code> y se ejecutó en staging. Patrón MERGE por tipo:" +
-			(await codeBlock(SQL_MERGE_PATRON, "sql")),
+			"Se generó el lote desde prompts/Ultra y se ejecutó en staging; patrón MERGE por tipo (actualiza texto y versión sin duplicar filas):" +
+				(await codeBlock(SQL_MERGE_PATRON, "sql")),
 		),
 		await note(
 			"mdi:shield-check-outline",

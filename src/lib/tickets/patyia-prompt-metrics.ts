@@ -1,7 +1,43 @@
-// Métricas LEN(instrucción) prompts v1.0 (raíz) vs Ultra 2.0-ultra — junio 2026.
+// Métricas LEN(instrucción) prompts Base (raíz) vs Ultra — junio 2026.
 // Tokens aproximados = caracteres / 4 (referencia para costo de entrada por turno).
 
+export const ULTRA_LOW_REDUCTION_PCT = 15;
+export const ULTRA_WARN_ROW_BG = "#fde2e8";
+
 export type PromptLenRow = { tipo: string; orig: number; ultra: number };
+
+const ULTRA_MD_BY_TIPO: Record<string, string> = {
+	SALUDO_OTRO: "01-saludo-otro.md",
+	FUERA_DE_ALCANCE_TECNICO: "02-fuera-de-alcance-tecnico.md",
+	SOLICITUD_NO_PERMITIDA: "03-solicitud-no-permitida.md",
+	REQUIERE_CONTEXTO: "04-requiere-contexto.md",
+	PASO_A_PASO: "05-paso-a-paso.md",
+	INTERPRETACION_RESULTADO: "06-interpretacion-resultado.md",
+	CONSULTA_NORMATIVA_NEGOCIO: "07-consulta-normativa-negocio.md",
+	ASESORIA_PERSONALIZADA: "08-asesoria-personalizada.md",
+	ERROR_TECNICO: "09-error-tecnico.md",
+	ERROR_CONFIGURACION: "10-error-configuracion.md",
+	ERROR_ACCESO: "11-error-acceso.md",
+	ERROR_DIAN: "12-error-dian.md",
+	COMERCIAL: "13-comercial.md",
+};
+
+export function ultraMdPath(tipo: string): string {
+	return `prompts/Ultra/${ULTRA_MD_BY_TIPO[tipo] ?? "?"}`;
+}
+
+export function reductionPct(orig: number, ultra: number): number {
+	if (orig <= 0) return 0;
+	return Math.round((1000 * (1 - ultra / orig)) / 10);
+}
+
+export function isLowUltraReduction(row: PromptLenRow): boolean {
+	return reductionPct(row.orig, row.ultra) < ULTRA_LOW_REDUCTION_PCT;
+}
+
+export function lowUltraReductionRows(): PromptLenRow[] {
+	return PROMPT_LEN_METRICS.filter(isLowUltraReduction);
+}
 
 export const PROMPT_LEN_METRICS: PromptLenRow[] = [
 	{ tipo: "SALUDO_OTRO", orig: 4007, ultra: 2011 },
@@ -38,7 +74,7 @@ export function ultraTotalsBarChartConfig(): Record<string, unknown> {
 	return {
 		type: "bar",
 		data: {
-			labels: ["Instrucciones v1.0 (13 tipos)", "Ultra 2.0-ultra"],
+			labels: ["Instrucciones Base (13 tipos)", "Ultra"],
 			datasets: [{
 				label: "Tokens de entrada aprox.",
 				data: [t.origTok, t.ultraTok],
@@ -81,12 +117,12 @@ export function ultraByTypeBarChartConfig(): Record<string, unknown> {
 			labels,
 			datasets: [
 				{
-					label: "v1.0 (tokens aprox.)",
+					label: "Base (tokens aprox.)",
 					data: PROMPT_LEN_METRICS.map((r) => approxTokens(r.orig)),
 					backgroundColor: "#4472C4",
 				},
 				{
-					label: "Ultra 2.0 (tokens aprox.)",
+					label: "Ultra (tokens aprox.)",
 					data: PROMPT_LEN_METRICS.map((r) => approxTokens(r.ultra)),
 					backgroundColor: "#70AD47",
 				},

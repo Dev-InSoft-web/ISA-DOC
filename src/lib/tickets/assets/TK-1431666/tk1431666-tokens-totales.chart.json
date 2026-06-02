@@ -1,7 +1,7 @@
 {
 	"type": "bar",
 	"data": {
-		"labels": ["Instrucciones v1.0 (13 tipos)", "Ultra 2.0-ultra"],
+		"labels": ["Instrucciones Base (13 tipos)", "Ultra"],
 		"datasets": [
 			{
 				"label": "Tokens de entrada aprox.",

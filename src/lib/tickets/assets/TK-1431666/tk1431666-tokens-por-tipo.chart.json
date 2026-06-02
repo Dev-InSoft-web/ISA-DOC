@@ -18,12 +18,12 @@
 		],
 		"datasets": [
 			{
-				"label": "v1.0 (tokens aprox.)",
+				"label": "Base (tokens aprox.)",
 				"data": [1002, 1123, 1053, 1498, 2583, 1990, 1396, 2273, 891, 2382, 2082, 2017, 1804],
 				"backgroundColor": "#4472C4"
 			},
 			{
-				"label": "Ultra 2.0 (tokens aprox.)",
+				"label": "Ultra (tokens aprox.)",
 				"data": [503, 1015, 688, 1202, 1848, 1589, 1114, 1461, 902, 1590, 1340, 1404, 1255],
 				"backgroundColor": "#70AD47"
 			}

@@ -6,7 +6,7 @@ import { codeBlock, img, imgFull } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const intro =
-	`<div>Se diligencia el análisis técnico de viabilidad para la <b>selección dinámica de modelo OpenAI</b> en Paty IA, sobre el código actual del proyecto <code>C:\\Users\\JAGUDELOE\\Documents\\Contapyme\\PatyIA</code>. Es una propuesta técnica; no incluye implementación ni cambios productivos.</div>`;
+	`<div>Se diligencia el análisis técnico de viabilidad para la <b>selección dinámica de modelo OpenAI</b> en Paty IA, sobre el código actual del proyecto PatyIA. Es una propuesta técnica; no incluye implementación ni cambios productivos.</div>`;
 
 const SNIPPET_FLUJO_ENTRADA = `export async function http_insertar_conversacion(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
   let controller = new TConversacionesController(request, context);
@@ -105,23 +105,23 @@ export async function buildBodyTK1429262(): Promise<string> {
 	const evidencia = noteList(
 		await note(
 			"mdi:code-braces",
-			`<b>Archivo:</b> <code>PatyIA/src/functions/POST-Conversacion.ts</code><br><b>Fragmento (entrada del flujo):</b><br>${codeFlujoEntrada}`,
+			"Entrada HTTP de conversación (stream SSE):" + codeFlujoEntrada,
 		),
 		await note(
 			"mdi:code-braces-box",
-			`<b>Archivo:</b> <code>PatyIA/src/020 Controller/005 - OpenIAServer.ts</code><br><b>Fragmento (modelo global en clasificación):</b><br>${codeModeloUnicoResponses}`,
+			"Clasificación con modelo global único:" + codeModeloUnicoResponses,
 		),
 		await note(
 			"mdi:code-braces-box",
-			`<b>Archivo:</b> <code>PatyIA/src/020 Controller/005 - OpenIAServer.ts</code><br><b>Fragmento (modelo global en respuesta final):</b><br>${codeModeloUnicoRespuesta}`,
+			"Respuesta final con el mismo modelo y plantilla general:" + codeModeloUnicoRespuesta,
 		),
 		await note(
 			"mdi:file-cog-outline",
-			`<b>Archivo:</b> <code>PatyIA/local.settings.json</code><br><b>Configuración actual:</b><br>${codeConfigActual}`,
+			"Configuración local actual de prompts y modelo:" + codeConfigActual,
 		),
 		await note(
 			"mdi:database-edit-outline",
-			`<b>Observación clave:</b> los valores <code>PR_TIPO_CONSULTAS</code>, <code>PR_GENERAL</code>, <code>PR_EXTRACTOR_CONSULTAS</code>, <code>PR_CLASIFICADOR_MODULO</code> y <code>OPENAI_MODEL</code> <b>no deberían ser variables de entorno</b>, sino <b>valores dinámicos</b>. Puede resolverse vía <i>hardcode</i> o, preferiblemente, desde <b>SQL</b>: por temas de <b>persistencia y mantenimiento</b>, la información es más simple de trabajar como dato dinámico que como valor quemado en <code>env</code>, evitando redeploy ante cualquier ajuste de prompt o modelo.`,
+			"<b>Observación clave:</b> esos ids y el modelo global <b>no deberían depender de variables de entorno</b> a largo plazo, sino de <b>datos dinámicos</b> (preferiblemente en SQL) para evitar redeploy ante cada ajuste de prompt o modelo.",
 		),
 	);
 

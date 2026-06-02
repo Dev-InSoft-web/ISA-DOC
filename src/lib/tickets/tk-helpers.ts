@@ -1,6 +1,13 @@
 // Helpers compartidos entre cuerpos de tickets para mantener un estilo
 // homogéneo (h3 con ícono, notas con borde, lista de notas, etc.).
 //
+// Redacción narrativa del body: español semántico (sin bloques de código sueltos
+// en el texto). Sí usar codeBlock (resaltado CodeMirror) para JSON, SQL o TS
+// cuando aporten evidencia; el SQL completo de ejecución también va en cambiosBd.
+//
+// Commits (mensaje y tabla del ticket): español descriptivo, sin identificadores
+// técnicos; puede usarse feat(TK-…):.
+//
 // Los íconos se renderizan como <img> hacia api.iconify.design con el color
 // como query string (`?color=%23hex`). El tamaño se fija con `width`/`height`
 // + min/max en el style inline para que ningún cliente de correo distorsione

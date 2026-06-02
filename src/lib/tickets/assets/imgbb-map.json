@@ -620,14 +620,14 @@
 		"size": 31055
 	},
 	"tk1431662-instruccion-modelo.jpg": {
-		"sha1": "1a128e0aa9faf2ffc8c9dc19506f73630c246fce",
-		"url": "https://i.ibb.co/Rpw2V1fv/tk1431662-instruccion-modelo.jpg",
-		"display_url": "https://i.ibb.co/Rpw2V1fv/tk1431662-instruccion-modelo.jpg",
-		"thumb": "https://i.ibb.co/4ZrW5czm/tk1431662-instruccion-modelo.jpg",
-		"delete_url": "https://ibb.co/4ZrW5czm/047916afdd5b545d6be32cbf15f3411a",
-		"width": 616,
-		"height": 500,
-		"size": 36785
+		"sha1": "d3721b8c5611deeb8a49a060eb57b89679c4b537",
+		"url": "https://i.ibb.co/Y7nSzpWf/tk1431662-instruccion-modelo.jpg",
+		"display_url": "https://i.ibb.co/Y7nSzpWf/tk1431662-instruccion-modelo.jpg",
+		"thumb": "https://i.ibb.co/6R9S3gZD/tk1431662-instruccion-modelo.jpg",
+		"delete_url": "https://ibb.co/6R9S3gZD/e8bf30b8f93b66a26f2f3e2997a1aa14",
+		"width": 451,
+		"height": 102,
+		"size": 10552
 	},
 	"tk1431662-fases-modelo.jpg": {
 		"sha1": "8383c7a57fafcac470ac60ccb722142fda15b2c6",
@@ -640,23 +640,43 @@
 		"size": 24959
 	},
 	"tk1431666-tokens-totales.png": {
-		"sha1": "a8048365d8e3e1988f1c5f45a31d763b7e4a8039",
-		"url": "https://i.ibb.co/4v2GwsS/tk1431666-tokens-totales.png",
-		"display_url": "https://i.ibb.co/8vbpnzx/tk1431666-tokens-totales.png",
-		"thumb": "https://i.ibb.co/2VSQ08M/tk1431666-tokens-totales.png",
-		"delete_url": "https://ibb.co/2VSQ08M/16df5fca482fd84b6e0e47f184038c7d",
+		"sha1": "f507bc033206bec241a8920d165abb19e2df5f75",
+		"url": "https://i.ibb.co/TBbc2TKV/tk1431666-tokens-totales.png",
+		"display_url": "https://i.ibb.co/pvR2wPWt/tk1431666-tokens-totales.png",
+		"thumb": "https://i.ibb.co/99VngvwF/tk1431666-tokens-totales.png",
+		"delete_url": "https://ibb.co/99VngvwF/63cb78edb592223e37d79797674a5f93",
 		"width": 1600,
 		"height": 800,
-		"size": 33142
+		"size": 31988
 	},
 	"tk1431666-tokens-por-tipo.png": {
-		"sha1": "19531d3cbd684af77141db7cb62d55bb30f91bbd",
-		"url": "https://i.ibb.co/WpH27QtL/tk1431666-tokens-por-tipo.png",
-		"display_url": "https://i.ibb.co/93prBJt7/tk1431666-tokens-por-tipo.png",
-		"thumb": "https://i.ibb.co/QjJKhZd4/tk1431666-tokens-por-tipo.png",
-		"delete_url": "https://ibb.co/QjJKhZd4/bf6b4295b7214d92d41c58fa930aebad",
+		"sha1": "e30ee4a34f6e3eabd181ecfe1108d84e0647b07b",
+		"url": "https://i.ibb.co/j9V545MT/tk1431666-tokens-por-tipo.png",
+		"display_url": "https://i.ibb.co/9mwvYvTN/tk1431666-tokens-por-tipo.png",
+		"thumb": "https://i.ibb.co/vCsBzBPH/tk1431666-tokens-por-tipo.png",
+		"delete_url": "https://ibb.co/vCsBzBPH/adac9b1299b2b55c845096367cf9364b",
 		"width": 1800,
 		"height": 960,
-		"size": 85939
+		"size": 85194
+	},
+	"tk1431662-instruccion-columna-mode.png": {
+		"sha1": "33e57796b78dd864fdaf723420d88c4c0e58fefc",
+		"url": "https://i.ibb.co/3YPjKxDX/tk1431662-instruccion-columna-mode.jpg",
+		"display_url": "https://i.ibb.co/tP1vR07f/tk1431662-instruccion-columna-mode.jpg",
+		"thumb": "https://i.ibb.co/YTV1g5z9/tk1431662-instruccion-columna-mode.jpg",
+		"delete_url": "https://ibb.co/YTV1g5z9/06bfa27f60d4985a7babacea7596b978",
+		"width": 1024,
+		"height": 347,
+		"size": 69699
+	},
+	"tk1431662-instruccion-modelo-calibracion.png": {
+		"sha1": "b7a5bafd0ead78edd6a40860787f5f640a3213b3",
+		"url": "https://i.ibb.co/JwLhgN6t/tk1431662-instruccion-modelo-calibracion.jpg",
+		"display_url": "https://i.ibb.co/212bHwVh/tk1431662-instruccion-modelo-calibracion.jpg",
+		"thumb": "https://i.ibb.co/FLvPC9Z3/tk1431662-instruccion-modelo-calibracion.jpg",
+		"delete_url": "https://ibb.co/FLvPC9Z3/1b631e3dc67993a7766db23c8a6e506a",
+		"width": 1024,
+		"height": 343,
+		"size": 126997
 	}
 }

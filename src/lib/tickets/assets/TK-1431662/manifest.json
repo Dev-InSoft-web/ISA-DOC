@@ -12,6 +12,18 @@
 			"kind": "mermaid",
 			"source": "tk1431662-fases-modelo.mmd",
 			"png": "tk1431662-fases-modelo.jpg"
+		},
+		{
+			"id": "tk1431662-instruccion-columna-mode",
+			"kind": "capture",
+			"source": "tk1431662-instruccion-columna-mode.png",
+			"png": "tk1431662-instruccion-columna-mode.png"
+		},
+		{
+			"id": "tk1431662-instruccion-modelo-calibracion",
+			"kind": "capture",
+			"source": "tk1431662-instruccion-modelo-calibracion.png",
+			"png": "tk1431662-instruccion-modelo-calibracion.png"
 		}
 	]
 }

@@ -1405,33 +1405,98 @@ const data = await r.json();
 		};
 	}
 
-	function metaDesdeLogMensaje(m: Record<string, unknown>): MsgVista["meta"] {
-		const base = normalizeMeta(m);
-		if (String(m.role ?? "") === "operativa" && m.operativa_key) {
+	function metaDesdeLogMensajeFlat(flat: Record<string, unknown>): MsgVista["meta"] {
+		const base = normalizeMeta(flat);
+		if (flat.operativa_key) {
 			return {
 				...base,
 				extra: {
-					operativa_key: String(m.operativa_key),
-					operativa_engine: m.operativa_engine != null ? String(m.operativa_engine) : undefined,
+					operativa_key: String(flat.operativa_key),
+					operativa_engine: flat.operativa_engine != null ? String(flat.operativa_engine) : undefined,
 				},
 			};
 		}
 		return base;
 	}
 
+	function textoDesdeReceive(rec: Record<string, unknown> | undefined): string {
+		if (!rec) return "";
+		const output = rec.output;
+		if (Array.isArray(output)) {
+			return output
+				.filter((o): o is Record<string, unknown> => !!o && typeof o === "object" && (o as { type?: string }).type === "message")
+				.flatMap((o) => {
+					const content = (o as { content?: unknown }).content;
+					if (!Array.isArray(content)) return [];
+					return content
+						.filter((c): c is Record<string, unknown> => !!c && typeof c === "object" && (c as { type?: string }).type === "output_text")
+						.map((c) => String((c as { text?: string }).text ?? ""));
+				})
+				.join("");
+		}
+		const choices = rec.choices;
+		if (Array.isArray(choices)) {
+			return choices.map((c) => String((c as { message?: { content?: string } }).message?.content ?? "")).join("");
+		}
+		return typeof rec.text === "string" ? rec.text : "";
+	}
+
 	function convLogToMsgVista(m: Record<string, unknown>, i: number): MsgVista {
 		const role = String(m.role ?? "assistant");
 		const esOperativa = role === "operativa";
 		const esUsuario = role === "user";
+		const send = m.send as Record<string, unknown> | undefined;
+		const receive = m.receive as Record<string, unknown> | undefined;
+		const others = (m.others ?? {}) as Record<string, unknown>;
+		const contenido =
+			role === "user"
+				? String(typeof send?.input === "string" ? send.input : (send?.text ?? m.text ?? ""))
+				: String(others.response_text ?? textoDesdeReceive(receive) ?? m.text ?? "");
+		const opKey = others.operativa_key ?? send?.key ?? m.operativa_key;
+		const flat =
+			m.send != null || m.receive != null
+				? (() => {
+					const s = send ?? {};
+					const r = receive ?? {};
+					const o = others;
+					const out: Record<string, unknown> = { ts: m.ts, tokens: m.tokens, usage: r.usage, latency_ms: m.latency_ms, send: m.send, receive: m.receive, others: m.others };
+					if (role === "user") {
+						if (typeof s.input === "string") out.text = out.prompt_text = s.input;
+						const prompt = s.prompt as { id?: string; variables?: Record<string, unknown> } | undefined;
+						if (prompt?.id) out.prompt_id = prompt.id;
+						if (prompt?.variables) out.prompt_variables = prompt.variables;
+						if (o.vector_store_ids) out.vectorStoreIds = o.vector_store_ids;
+					} else if (role === "operativa") {
+						if (o.operativa_key) out.operativa_key = o.operativa_key;
+						if (o.operativa_engine) out.operativa_engine = o.operativa_engine;
+						const txt = textoDesdeReceive(r);
+						if (txt) out.text = txt;
+						if (typeof r.model === "string") out.model = r.model;
+					} else {
+						const txt = o.response_text ?? textoDesdeReceive(r);
+						if (txt) out.text = out.response_text = txt;
+						if (typeof r.model === "string") out.model = r.model;
+						if (r.usage) out.usage = r.usage;
+						if (o.engine) out.engine = o.engine;
+					}
+					if (o.itdconsulta) out.itdconsulta = o.itdconsulta;
+					if (o.premisas) out.premisas = o.premisas;
+					if (o.nombre_usuario) out.nombre_usuario = o.nombre_usuario;
+					if (o.nombre_usado_en_respuesta !== undefined) out.nombre_usado_en_respuesta = o.nombre_usado_en_respuesta;
+					if (o.modelo_configurado) out.modelo_configurado = o.modelo_configurado;
+					if (o.prompt_id && !out.prompt_id) out.prompt_id = o.prompt_id;
+					return out;
+				})()
+				: m;
 		return {
 			idMsg: `${role}-${String(m.seq ?? i)}-${String(m.turno ?? 0)}`,
-			rol: esOperativa ? `OP · ${String(m.operativa_key ?? "operativa")}` : esUsuario ? "user" : "assistant",
-			contenido: String(m.text ?? ""),
+			rol: esOperativa ? `OP · ${String(opKey ?? "operativa")}` : esUsuario ? "user" : "assistant",
+			contenido,
 			fecha: formatearFechaMsg(String(m.ts ?? "")),
 			esUsuario,
 			esOperativa,
 			archivos: [],
-			meta: metaDesdeLogMensaje(m),
+			meta: metaDesdeLogMensajeFlat(flat),
 		};
 	}
 

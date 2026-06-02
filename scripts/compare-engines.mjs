@@ -139,24 +139,41 @@ async function runEngine(label, route) {
   return { label, route, iconversacion: iconv, turnos };
 }
 
+function assistantFields(m) {
+  const r = m.receive ?? {};
+  const o = m.others ?? {};
+  return {
+    engine: o.engine ?? r.engine ?? m.engine,
+    itdconsulta: o.itdconsulta ?? m.itdconsulta,
+    model: r.model ?? m.model,
+    usage: r.usage ?? m.usage,
+    response_id: r.id ?? r.response_id ?? m.response_id,
+    prompt_chars: o.prompt_chars ?? m.prompt_chars,
+    response_chars: o.response_chars ?? m.response_chars,
+  };
+}
+
 async function readMetricasDesdeConvLog(iconv, defaultEngine) {
   const log = leerConvLog(iconv);
   if (!log?.mensajes) return [];
   return log.mensajes
     .filter((m) => m.role === "assistant")
-    .map((m) => ({
-      ts: m.ts,
-      engine: m.engine || defaultEngine,
-      iconversacion: iconv,
-      itdconsulta: m.itdconsulta,
-      model: m.model,
-      usage: m.usage,
-      cost: m.cost || costoDesdeUsage(m.model, m.usage),
-      latency_ms: m.latency_ms,
-      prompt_chars: m.prompt_chars,
-      response_chars: m.response_chars,
-      response_id: m.response_id,
-    }));
+    .map((m) => {
+      const f = assistantFields(m);
+      return {
+        ts: m.ts,
+        engine: f.engine || defaultEngine,
+        iconversacion: iconv,
+        itdconsulta: f.itdconsulta,
+        model: f.model,
+        usage: f.usage,
+        cost: m.cost || costoDesdeUsage(f.model, f.usage),
+        latency_ms: m.latency_ms,
+        prompt_chars: f.prompt_chars,
+        response_chars: f.response_chars,
+        response_id: f.response_id,
+      };
+    });
 }
 
 function agregar(rows) {
@@ -212,7 +229,12 @@ function pairsDesdeConvLog(log) {
   const pairs = [];
   for (let i = 0; i < log.mensajes.length - 1; i++) {
     const u = log.mensajes[i], a = log.mensajes[i + 1];
-    if (u.role === "user" && a.role === "assistant") { pairs.push({ prompt: u.text || "", response: a.text || "" }); i++; }
+    if (u.role === "user" && a.role === "assistant") {
+      const prompt = typeof u.send?.input === "string" ? u.send.input : (u.send?.text ?? u.text ?? "");
+      const response = a.others?.response_text ?? a.receive?.text ?? a.text ?? "";
+      pairs.push({ prompt, response });
+      i++;
+    }
   }
   return pairs;
 }
