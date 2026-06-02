@@ -17,7 +17,9 @@
 	import sqlUpdateNombresInstruccion from "../../lib/patyia/sql/update-nombres-instruccion.sql?raw";
 	import sqlAddModeloInstruccion from "../../lib/patyia/sql/add-modelo-instruccion-ssms.sql?raw";
 	import sqlResyncSeqConversaciones from "../../lib/patyia/sql/resync-seq-conversaciones.sql?raw";
+	import sqlSeedPromptsUltraTdConsulta from "../../lib/patyia/sql/seed-prompts-ultra-tdconsulta.sql?raw";
 	import md_2026_06_01_tk1431662 from "../../lib/patyia/daily/2026-06/01/02-tk1431662-modelo-por-instruccion.md?raw";
+	import md_2026_06_01_prompts_ultra from "../../lib/patyia/daily/2026-06/01/03-prompts-ultra-tdconsulta.md?raw";
 
 	// PatyIA tiene su propia BD (AYUDASCP_IA) — los endpoints de ejecución y
 	// ping están bifurcados respecto a los de ClientesIS para que el banner
@@ -49,10 +51,10 @@
 >
 	<!-- 2026-06-01 (hoy) — entrada diaria (mes actual no agrupado) -->
 	<Accordion
-		title="2026-06-01 — PatyIA: TK-1431163, TK-1431662 (modelo por instrucción) y limpieza Groq"
+		title="2026-06-01 — PatyIA: TK-1431163, TK-1431662 (modelo por instrucción), prompts Ultra y limpieza Groq"
 		titleIcon="mdi:calendar"
 		open={true}
-		checkKeys={["2026-06-01.patyia.instruccion.modelo"]}
+		checkKeys={["2026-06-01.patyia.instruccion.modelo", "2026-06-01.patyia.seed-prompts-ultra"]}
 	>
 		<Accordion
 			title="Resumen del día"
@@ -88,6 +90,25 @@
 				confirmKind="warning"
 				confirmMessage="Se ajustará SEQ_IDCONVERSACIONES al siguiente id libre (MAX+1).\n\n¿Continuar?"
 				height="280px"
+			/>
+		</Accordion>
+
+		<Accordion
+			title="Prompts Ultra · reemplazo compacto en INSTRUCCION (13 tipos)"
+			titleIcon="mdi:text-box-check-outline"
+			inner
+			checkKey="2026-06-01.patyia.seed-prompts-ultra"
+		>
+			<BitacoraNote flat mdSource={md_2026_06_01_prompts_ultra} />
+			<SqlExecCard
+				title="AYUDASCP_IA · MERGE prompts Ultra (INSTRUCCION + TDCONSULTAXINSTRUCCION)"
+				sql={sqlSeedPromptsUltraTdConsulta}
+				desc="MERGE idempotente: sustituye instruccion por la versión Ultra compacta de cada PROMPT_&lt;TIPO&gt;.md (version 2.0-ultra). Conserva iinstruccion y enlaces TDCONSULTAXINSTRUCCION. Cierra con SELECT de verificación (13 filas)."
+				{executeSql}
+				checkKey="2026-06-01.patyia.seed-prompts-ultra"
+				confirmKind="warning"
+				confirmMessage={`Se actualizarán los 13 textos de INSTRUCCION con la versión Ultra compacta.\n\n¿Continuar en la BD PatyIA conectada?`}
+				height="360px"
 			/>
 		</Accordion>
 	</Accordion>

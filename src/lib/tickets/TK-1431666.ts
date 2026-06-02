@@ -1,24 +1,34 @@
+// TK-1431666 — Actualización de instrucciones comprimidas (Ultra) en BD.
+// MERGE idempotente sobre los 13 tipos de consulta, version 2.0-ultra.
+
 import { simpleTable } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
-const SOURCE_PATH = String.raw`P:\ING-05 Sistema de servicio al cliente web\ING-05-50 Ayudas Contapyme IA\Doc\PATY V3\Análisis y diseño\prompt\Prompts Específicos (Instrucciones)\Ultra`;
-const PROMPT_ID = "pmpt_69f9f701508c81978d82393f74030eac0fc02a771228ab14";
-
-const UPDATE_SCOPE: Array<{ foco: string; detalle: string }> = [
-	{ foco: "Fuente", detalle: `Tomar las instrucciones compactadas desde <code>${SOURCE_PATH}</code>, manteniendo la versión humana original como referencia de diseño.` },
-	{ foco: "Destino", detalle: "Actualizar en <code>AYUDASCP_IA</code> los registros de <code>INSTRUCCION</code> asociados a los tipos de consulta de Paty IA." },
-	{ foco: "Prompt base", detalle: `Usar como referencia el prompt configurado en OpenAI <code>${PROMPT_ID}</code> para conservar alineación con la propuesta de mejora.` },
-	{ foco: "Trazabilidad", detalle: "Registrar qué instrucción compactada queda activa por cada <code>tipo_consulta</code> y validar que el contenido no vuelva a crecer por copias intermedias." },
+const PROMPTS: Array<{ tipo: string; archivo: string }> = [
+	{ tipo: "SALUDO_OTRO", archivo: "Ultra/01-saludo-otro.md" },
+	{ tipo: "FUERA_DE_ALCANCE_TECNICO", archivo: "Ultra/02-fuera-de-alcance-tecnico.md" },
+	{ tipo: "SOLICITUD_NO_PERMITIDA", archivo: "Ultra/03-solicitud-no-permitida.md" },
+	{ tipo: "REQUIERE_CONTEXTO", archivo: "Ultra/04-requiere-contexto.md" },
+	{ tipo: "PASO_A_PASO", archivo: "Ultra/05-paso-a-paso.md" },
+	{ tipo: "INTERPRETACION_RESULTADO", archivo: "Ultra/06-interpretacion-resultado.md" },
+	{ tipo: "CONSULTA_NORMATIVA_NEGOCIO", archivo: "Ultra/07-consulta-normativa-negocio.md" },
+	{ tipo: "ASESORIA_PERSONALIZADA", archivo: "Ultra/08-asesoria-personalizada.md" },
+	{ tipo: "ERROR_TECNICO", archivo: "Ultra/09-error-tecnico.md" },
+	{ tipo: "ERROR_CONFIGURACION", archivo: "Ultra/10-error-configuracion.md" },
+	{ tipo: "ERROR_ACCESO", archivo: "Ultra/11-error-acceso.md" },
+	{ tipo: "ERROR_DIAN", archivo: "Ultra/12-error-dian.md" },
+	{ tipo: "COMERCIAL", archivo: "Ultra/13-comercial.md" },
 ];
 
 const intro =
-	`<div>Se requiere actualizar en la base de datos de <b>Paty IA</b> las instrucciones específicas por tipo de consulta usando la versión compactada definida en la reunión de mejora del 29-may. La motivación principal es reducir tokens de entrada sin perder las reglas funcionales que gobiernan cada respuesta.</div>`;
+	`<div>Se actualizaron en <b>AYUDASCP_IA</b> las instrucciones específicas por tipo de consulta con la versión compacta <b>Ultra</b>, reduciendo tokens de entrada sin perder las reglas funcionales por <code>tipo_consulta</code>. La versión legible completa permanece en el repositorio de análisis como referencia de diseño.</div>`;
 
 export async function buildBodyTK1431666(): Promise<string> {
-	const [h3Contexto, h3Solicitud, h3Criterios] = await Promise.all([
+	const [h3Contexto, h3Solicitud, h3Solucion, h3Validacion] = await Promise.all([
 		h3Iconized("mdi:file-document-outline", "Contexto de reunión"),
 		h3Iconized("mdi:database-cog-outline", "Solicitud"),
-		h3Iconized("mdi:check-circle-outline", "Criterios de aceptación"),
+		h3Iconized("mdi:check-circle-outline", "Solución aplicada"),
+		h3Iconized("mdi:check-decagram", "Validación"),
 	]);
 
 	const contexto = noteList(
@@ -28,47 +38,54 @@ export async function buildBodyTK1431666(): Promise<string> {
 		),
 		await note(
 			"mdi:package-variant-closed",
-			"La decisión técnica es conservar prompts legibles para mantenimiento, pero enviar al runtime versiones compactadas tipo <b>caveman</b>, <b>ultra</b> o <b>wenyan-ultra</b> cuando el contenido sea estable.",
-		),
-		await note(
-			"mdi:database-search-outline",
-			"Las instrucciones por tipo de consulta ya viven como datos en <code>INSTRUCCION</code>; por eso la actualización debe resolverse como dato versionado, no como cambio rígido de código.",
+			"La decisión técnica es conservar prompts legibles para mantenimiento, pero enviar al runtime versiones compactadas <b>Ultra</b> cuando el contenido es estable.",
 		),
 	);
 
 	const solicitud = noteList(
 		await note(
 			"mdi:folder-text-outline",
-			`<b>Ruta de entrada:</b> <code>${SOURCE_PATH}</code>.`,
-		),
-		await note(
-			"mdi:key-variant",
-			`<b>Prompt de referencia:</b> <code>${PROMPT_ID}</code>.`,
+			`<b>Fuente en repo:</b> <code>src/lib/patyia/prompts/Ultra/01-*.md</code> … <code>13-*.md</code> (13 archivos por tipo de consulta).`,
 		),
 		await note(
 			"mdi:database-edit-outline",
-			"Actualizar los registros activos de <code>INSTRUCCION</code> para que cada <code>PROMPT_&lt;TIPO&gt;</code> use la versión compactada correspondiente, manteniendo nombre, descripción, estado activo y relación con <code>TDCONSULTA</code>.",
+			"Actualizar los registros activos de <code>INSTRUCCION</code> (<code>PROMPT_&lt;TIPO&gt;</code>) y conservar el enlace en <code>TDCONSULTAXINSTRUCCION</code> con <code>orden = 1</code>.",
 		),
 	);
 
 	const tabla = simpleTable(
-		["Foco", "Detalle"],
-		UPDATE_SCOPE.map((row) => [row.foco, row.detalle]),
-		{ widths: ["22%", "78%"] },
+		["Código (IINSTRUCCION)", "Archivo fuente"],
+		PROMPTS.map((p) => [`<code>${p.tipo}</code>`, `<code>${p.archivo}</code>`]),
+		{ widths: ["42%", "58%"] },
 	);
 
-	const criterios = noteList(
+	const solucion = noteList(
+		await note(
+			"mdi:merge",
+			`Se genera y ejecuta <code>seed-prompts-ultra-tdconsulta.sql</code> (script <code>build-paty-prompts-ultra-sql.mjs</code>): <b>MERGE</b> en <code>INSTRUCCION</code> con <code>version = 2.0-ultra</code> y texto literal de cada <code>.md</code>; <b>MERGE</b> en <code>TDCONSULTAXINSTRUCCION</code> sin duplicar relaciones.`,
+		),
 		await note(
 			"mdi:shield-check-outline",
-			"La actualización debe ser idempotente y verificable por consulta SQL antes/después; si un tipo de consulta no tiene archivo compactado, no debe sobrescribirse con contenido vacío.",
+			`El lote es idempotente (<code>SET XACT_ABORT ON</code>, <code>BEGIN TRAN</code> / <code>COMMIT</code>): re-ejecutar actualiza <code>instruccion</code> y <code>version</code> sin insertar filas duplicadas.`,
 		),
 		await note(
-			"mdi:chart-bar",
-			"La validación debe comparar reducción de longitud/tokens aproximados contra la instrucción anterior y conservar evidencia en la bitácora de Paty IA.",
+			"mdi:file-document-outline",
+			"Evidencia y pasos de verificación documentados en bitácora Paty IA (<code>03-prompts-ultra-tdconsulta.md</code>, 2026-06-01).",
 		),
 	);
 
-	return intro + h3Contexto + contexto + h3Solicitud + solicitud + tabla + h3Criterios + criterios;
+	const validacion = noteList(
+		await note(
+			"mdi:check-bold",
+			"Post-ejecución: <code>SELECT</code> de verificación con 13 filas, <code>version = 2.0-ultra</code> y <code>LEN(instruccion)</code> menor que la carga inicial de 2026-05-25.",
+		),
+		await note(
+			"mdi:check-bold",
+			"Tipos sin archivo Ultra no se sobrescriben; el runtime sigue recibiendo instrucciones vía <code>prompt.variables.instrucciones_tipo</code> (TK-1431163).",
+		),
+	);
+
+	return intro + h3Contexto + contexto + h3Solicitud + solicitud + tabla + h3Solucion + solucion + h3Validacion + validacion;
 }
 
 export const bodyTK1431666: Promise<string> = buildBodyTK1431666();

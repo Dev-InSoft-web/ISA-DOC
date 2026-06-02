@@ -1,21 +1,25 @@
+// TK-1431662 — Selección de modelo IA por tipo de consulta en Paty IA.
+// Modelo operativo fijo para clasificación/extracción; modelo de respuesta
+// final desde INSTRUCCION.MODELO por tipo clasificado.
+
 import { simpleTable } from "./snippets";
 import { h3Iconized, note, noteList } from "./tk-helpers";
 
 const MODEL_RULES: Array<{ flujo: string; uso: string; modelo: string }> = [
-	{ flujo: "Operativo", uso: "Clasificación de tipo de consulta, clasificación de módulo, títulos, resúmenes, respuestas sí/no y extracción estructurada corta.", modelo: "gpt-4.1-nano" },
-	{ flujo: "Conocimiento", uso: "Respuesta final con contexto documental, instrucciones por tipo de consulta y vector stores asociados.", modelo: "Modelo configurado en BD por tipo; valor inicial sugerido: gpt-5-nano" },
-	{ flujo: "Fallback", uso: "Ausencia de configuración activa, error de lectura de BD o tipo de consulta no reconocido.", modelo: "Modelo global seguro definido por configuración" },
+	{ flujo: "Operativo", uso: "Clasificación de tipo de consulta, clasificación de módulo, títulos, resúmenes, respuestas sí/no y extracción estructurada corta.", modelo: "gpt-4.1-nano (system-prompts.json → modeloOperativo)" },
+	{ flujo: "Conocimiento", uso: "Respuesta final con contexto documental, instrucciones por tipo y vector stores asociados.", modelo: "INSTRUCCION.MODELO por tipo clasificado (default gpt-5-mini)" },
+	{ flujo: "Fallback", uso: "Sin instrucción activa, error de lectura de BD o tipo no reconocido.", modelo: "modeloConversacion en system-prompts.json (gpt-5-mini)" },
 ];
 
 const intro =
-	`<div>Se requiere implementar en Paty IA la <b>selección de modelo IA por tipo de consulta</b>, de forma que las tareas operativas usen modelos económicos y las respuestas de conocimiento usen el modelo configurado para el tipo clasificado.</div>`;
+	`<div>Se implementó en Paty IA la <b>selección de modelo IA por tipo de consulta</b>: tareas operativas con modelo económico fijo y respuesta final con el modelo configurado en <code>INSTRUCCION.MODELO</code>, trazable en logs y métricas del turno.</div>`;
 
 export async function buildBodyTK1431662(): Promise<string> {
-	const [h3Objetivo, h3Reglas, h3Datos, h3Aceptacion] = await Promise.all([
+	const [h3Objetivo, h3Reglas, h3Solucion, h3Validacion] = await Promise.all([
 		h3Iconized("mdi:brain", "Objetivo"),
 		h3Iconized("mdi:map-marker-path", "Reglas de selección"),
-		h3Iconized("mdi:database-cog-outline", "Modelo de datos y trazabilidad"),
-		h3Iconized("mdi:check-circle-outline", "Criterios de aceptación"),
+		h3Iconized("mdi:check-circle-outline", "Solución aplicada"),
+		h3Iconized("mdi:check-decagram", "Validación"),
 	]);
 
 	const objetivo = noteList(
@@ -25,11 +29,7 @@ export async function buildBodyTK1431662(): Promise<string> {
 		),
 		await note(
 			"mdi:database-search-outline",
-			"La decisión de modelo debe venir de configuración persistida por tipo de consulta/instrucción, no sólo de <code>OPENAI_MODEL</code> en variables de entorno.",
-		),
-		await note(
-			"mdi:chart-bar",
-			"La selección debe habilitar medición posterior de costo, latencia y calidad por etapa, modelo y <code>tipo_consulta</code>.",
+			"La decisión de modelo de respuesta debe venir de configuración persistida por instrucción/tipo de consulta, no sólo de variables de entorno.",
 		),
 	);
 
@@ -39,37 +39,41 @@ export async function buildBodyTK1431662(): Promise<string> {
 		{ widths: ["18%", "54%", "28%"] },
 	);
 
-	const datos = noteList(
+	const solucion = noteList(
 		await note(
 			"mdi:table-column-plus-after",
-			"Agregar un campo de modelo IA al catálogo de instrucciones o a la relación de tipo de consulta, de modo que el backend pueda resolver <code>tipo_consulta → instrucción → modelo</code> antes de llamar a OpenAI.",
+			`Se agrega la columna <code>MODELO NVARCHAR(40)</code> en <code>INSTRUCCION</code> (script idempotente <code>add-modelo-instruccion.sql</code>, default <code>gpt-5-mini</code>). Las 13 filas existentes quedan calibrables sin redeploy.`,
 		),
 		await note(
-			"mdi:source-branch-sync",
-			"El backend debe enviar el modelo elegido en cada request de OpenAI Responses y conservar fallback explícito para tipos sin configuración.",
+			"mdi:database-cog-outline",
+			`En backend: <code>TInstruccion.modelo</code>, <code>TInstruccionController.GetModelo</code> y <code>GetModeloPorTdConsulta</code> resuelven <code>tipo_consulta → TDCONSULTAXINSTRUCCION → INSTRUCCION.MODELO</code> antes de <code>responses.create</code>.`,
 		),
 		await note(
-			"mdi:chart-bar",
-			"El log de conversación debe permitir reconstruir qué modelo se usó en clasificación, extracción y respuesta final, junto con tokens y latencia cuando estén disponibles.",
+			"mdi:code-braces",
+			`En <code>OpenIAServer.obtenerContextoConsulta</code> el modelo de respuesta final sale de la instrucción clasificada; los flujos operativos usan <code>getOperativeModel()</code> (<code>gpt-4.1-nano</code>). Se eliminó la dependencia de <code>OPENAI_MODEL</code> en configuración local.`,
+		),
+		await note(
+			"mdi:thermometer",
+			`Sólo se envía <code>temperature</code> cuando el modelo lo permite (<code>modelAllowsTemperature</code> + lista <code>modelosSinTemperatura</code> en <code>openai-infomap.json</code>), evitando errores con familias <code>gpt-5-*</code>.`,
 		),
 	);
 
-	const aceptacion = noteList(
+	const validacion = noteList(
 		await note(
 			"mdi:check-bold",
-			"Una consulta operativa corta debe ejecutarse con <code>gpt-4.1-nano</code> sin depender del modelo de respuesta final.",
+			"Clasificación y extracción operativa ejecutan con <code>gpt-4.1-nano</code> independiente del modelo de respuesta.",
 		),
 		await note(
 			"mdi:check-bold",
-			"Una consulta de conocimiento debe resolver el modelo desde BD/configuración del tipo clasificado, inicialmente <code>gpt-5-nano</code> salvo que el registro indique otro valor.",
+			"Una consulta de conocimiento usa el <code>MODELO</code> de la fila <code>INSTRUCCION</code> ligada al <code>tipo_consulta</code> clasificado; el log del turno registra modelo, tokens y latencia cuando están disponibles.",
 		),
 		await note(
 			"mdi:check-bold",
-			"Si no hay modelo configurado, el sistema debe aplicar fallback seguro y dejar evidencia en métricas/logs.",
+			"Sin configuración o ante error de lectura, aplica fallback <code>gpt-5-mini</code> desde <code>system-prompts.json</code>.",
 		),
 	);
 
-	return intro + h3Objetivo + objetivo + h3Reglas + reglas + h3Datos + datos + h3Aceptacion + aceptacion;
+	return intro + h3Objetivo + objetivo + h3Reglas + reglas + h3Solucion + solucion + h3Validacion + validacion;
 }
 
 export const bodyTK1431662: Promise<string> = buildBodyTK1431662();

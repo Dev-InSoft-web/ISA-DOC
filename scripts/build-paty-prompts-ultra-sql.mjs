@@ -1,14 +1,13 @@
-// Genera src/lib/patyia/sql/seed-prompts-tdconsulta.sql a partir de los 13 .md
-// en src/lib/patyia/prompts/. MERGE idempotente sobre INSTRUCCION y
-// TDCONSULTAXINSTRUCCION. iinstruccion = ninstruccion = 'PROMPT_<TIPO>'.
+// Genera src/lib/patyia/sql/seed-prompts-ultra-tdconsulta.sql desde prompts/0N-*.md (13 tipos).
+// MERGE idempotente: actualiza INSTRUCCION.instruccion y conserva TDCONSULTAXINSTRUCCION.
 
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const promptsDir = resolve(__dirname, "..", "src", "lib", "patyia", "prompts");
-const outFile = resolve(__dirname, "..", "src", "lib", "patyia", "sql", "seed-prompts-tdconsulta.sql");
+const promptsDir = resolve(__dirname, "..", "src", "lib", "patyia", "prompts", "Ultra");
+const outFile = resolve(__dirname, "..", "src", "lib", "patyia", "sql", "seed-prompts-ultra-tdconsulta.sql");
 
 const SKIP = new Set(["90-general.md", "91-consolidacion.md"]);
 
@@ -19,11 +18,12 @@ const fileToTipo = (name) =>
 		.toUpperCase()
 		.replaceAll("-", "_");
 
-const files = readdirSync(promptsDir).filter((f) => /^\d{2}-.+\.md$/.test(f) && !SKIP.has(f)).sort();
+const files = readdirSync(promptsDir)
+	.filter((f) => /^\d{2}-.+\.md$/.test(f) && !SKIP.has(f))
+	.sort();
 
 const rows = files.map((f) => {
 	const tipo = fileToTipo(f);
-	// iinstruccion = TIPO (varchar(32) en INSTRUCCION). ninstruccion = display.
 	const iinst = tipo;
 	const ninst = `PROMPT_${tipo}`;
 	const raw = readFileSync(resolve(promptsDir, f), "utf8");
@@ -32,18 +32,18 @@ const rows = files.map((f) => {
 });
 
 const head = `-- =====================================================================
--- Carga de prompts especificos por tipo de consulta
--- BD: AYUDASCP_IA  (microservicio AYUDASCP-IA / PatyIA)
--- Fecha: 2026-05-25  (Viviana Restrepo)
+-- Carga de prompts Ultra por tipo de consulta (reemplazo compacto)
+-- BD: AYUDASCP_IA / AYUDASCP_IA_STAGING  (PatyIA)
+-- Fecha: 2026-06-01
+-- Fuente: src/lib/patyia/prompts/Ultra/0N-<tipo>.md
 --
 -- Estrategia (idempotente):
---   1) MERGE en INSTRUCCION (clave iinstruccion = 'PROMPT_<TIPO>') con el
---      contenido del .md como instruccion (NVARCHAR(MAX)).
---   2) MERGE en TDCONSULTAXINSTRUCCION enlazando (itdconsulta, iinstruccion)
---      con orden = 1.  El itdconsulta se resuelve por nconsulta = '<TIPO>'.
+--   1) MERGE en INSTRUCCION (iinstruccion = '<TIPO>', ninstruccion = 'PROMPT_<TIPO>')
+--      con el contenido del .md como instruccion (NVARCHAR(MAX)).
+--   2) MERGE en TDCONSULTAXINSTRUCCION (itdconsulta = '<TIPO>', orden = 1).
 --
--- Si se vuelven a ejecutar las MERGE actualizan el texto y conservan la
--- relacion sin duplicar filas.
+-- Re-ejecutar actualiza el texto sin duplicar filas.
+-- Generado por: node scripts/build-paty-prompts-ultra-sql.mjs
 -- =====================================================================
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
@@ -57,8 +57,8 @@ USING (VALUES (
 	N'${r.iinst}',
 	N'${r.ninst}',
 	${r.sqlLit},
-	N'Prompt especifico para tipo de consulta ${r.tipo}',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta ${r.tipo}',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -87,7 +87,7 @@ const tail = `
 COMMIT;
 
 -- Verificacion final
-SELECT i.iinstruccion, i.ninstruccion, LEN(i.instruccion) AS chars, x.itdconsulta, c.nconsulta, x.orden
+SELECT i.iinstruccion, i.ninstruccion, i.version, LEN(i.instruccion) AS chars, x.itdconsulta, c.nconsulta, x.orden
 FROM INSTRUCCION i
 LEFT JOIN TDCONSULTAXINSTRUCCION x ON x.iinstruccion = i.iinstruccion
 LEFT JOIN TDCONSULTA c             ON c.itdconsulta  = x.itdconsulta

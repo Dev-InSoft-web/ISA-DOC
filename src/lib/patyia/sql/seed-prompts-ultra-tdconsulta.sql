@@ -1,16 +1,16 @@
 -- =====================================================================
--- Carga de prompts especificos por tipo de consulta
--- BD: AYUDASCP_IA  (microservicio AYUDASCP-IA / PatyIA)
--- Fecha: 2026-05-25  (Viviana Restrepo)
+-- Carga de prompts Ultra por tipo de consulta (reemplazo compacto)
+-- BD: AYUDASCP_IA / AYUDASCP_IA_STAGING  (PatyIA)
+-- Fecha: 2026-06-01
+-- Fuente: src/lib/patyia/prompts/Ultra/0N-<tipo>.md
 --
 -- Estrategia (idempotente):
---   1) MERGE en INSTRUCCION (clave iinstruccion = 'PROMPT_<TIPO>') con el
---      contenido del .md como instruccion (NVARCHAR(MAX)).
---   2) MERGE en TDCONSULTAXINSTRUCCION enlazando (itdconsulta, iinstruccion)
---      con orden = 1.  El itdconsulta se resuelve por nconsulta = '<TIPO>'.
+--   1) MERGE en INSTRUCCION (iinstruccion = '<TIPO>', ninstruccion = 'PROMPT_<TIPO>')
+--      con el contenido del .md como instruccion (NVARCHAR(MAX)).
+--   2) MERGE en TDCONSULTAXINSTRUCCION (itdconsulta = '<TIPO>', orden = 1).
 --
--- Si se vuelven a ejecutar las MERGE actualizan el texto y conservan la
--- relacion sin duplicar filas.
+-- Re-ejecutar actualiza el texto sin duplicar filas.
+-- Generado por: node scripts/build-paty-prompts-ultra-sql.mjs
 -- =====================================================================
 SET NOCOUNT ON;
 SET XACT_ABORT ON;
@@ -76,8 +76,8 @@ Lenguaje sencillo y humano · adaptar al mensaje · variar ligeramente para evit
 ## Resultado esperado
 Usuario: se siente atendido de forma cercana y natural · percibe fluidez · mantiene experiencia agradable y coherente con la personalidad de Paty.
 ',
-	N'Prompt especifico para tipo de consulta SALUDO_OTRO',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta SALUDO_OTRO',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -188,8 +188,8 @@ Si incluye parte funcional válida → responder esa parte después de marcar el
 ## Resultado esperado
 Usuario: entiende que la solicitud técnica no puede atenderse desde este asistente · no se siente rechazado · sabe en qué sí puede recibir ayuda · continúa la conversación dentro del alcance funcional permitido.
 ',
-	N'Prompt especifico para tipo de consulta FUERA_DE_ALCANCE_TECNICO',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta FUERA_DE_ALCANCE_TECNICO',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -284,8 +284,8 @@ Si incluye parte válida → responder esa parte después de marcar el límite.
 ## Resultado esperado
 Usuario: entiende que la solicitud indebida no puede atenderse · no se siente atacado ni juzgado · comprende el límite del sistema · continúa en uso correcto cuando aplique.
 ',
-	N'Prompt especifico para tipo de consulta SOLICITUD_NO_PERMITIDA',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta SOLICITUD_NO_PERMITIDA',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -414,8 +414,8 @@ Interpretaciones posibles: liquidación de impuestos (contabilidad) · liquidaci
 ## Resultado esperado
 Usuario: entiende con claridad qué info falta · puede responder con el dato mínimo necesario para que el sistema continúe con la clasificación y resp. correcta en el siguiente turno.
 ',
-	N'Prompt especifico para tipo de consulta REQUIERE_CONTEXTO',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta REQUIERE_CONTEXTO',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -587,8 +587,8 @@ Claro · práctico · pasos completos y bien redactados · variantes doc separad
 ## Resultado esperado
 Usuario puede ejecutar el proceso en ContaPyme® con claridad, siguiendo resp. práctica, ordenada y fiel a doc oficial — sin invención ni interpretación libre.
 ',
-	N'Prompt especifico para tipo de consulta PASO_A_PASO',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta PASO_A_PASO',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -722,8 +722,8 @@ Claro · explicativo · sin tecnicismos innec. · organizar de forma lógica · 
 ## Resultado esperado
 Usuario: entiende con claridad por qué obtuvo ese resultado · conoce los factores doc que influyen · no tiene que interpretar por su cuenta la lógica de ContaPyme®.
 ',
-	N'Prompt especifico para tipo de consulta INTERPRETACION_RESULTADO',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta INTERPRETACION_RESULTADO',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -842,8 +842,8 @@ Si además pregunta cómo configurar/registrar → responder esa parte funcional
 ## Resultado esperado
 Usuario: entiende cuándo su consulta requiere validación externa · sabe a qué entidad/profesional acudir · recibe ayuda en parte funcional cuando aplique · orientación clara, prudente y útil sin info normativa incorrecta.
 ',
-	N'Prompt especifico para tipo de consulta CONSULTA_NORMATIVA_NEGOCIO',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta CONSULTA_NORMATIVA_NEGOCIO',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -972,8 +972,8 @@ Tono: acompañamiento, no rechazo · sin tecnicismos innec. · seguridad + apoyo
 ## Resultado esperado
 Usuario: entiende que su caso requiere revisión personalizada · sabe que debe crear tiquete · se siente acompañado · recibió orientación general cuando aún era posible.
 ',
-	N'Prompt especifico para tipo de consulta ASESORIA_PERSONALIZADA',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta ASESORIA_PERSONALIZADA',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -1080,8 +1080,8 @@ Usuario: *"El sistema se cierra cada vez que intento abrir una operación."*
 ## Resultado esperado
 Usuario: entiende que su caso requiere revisión técnica especializada · se siente acompañado · sabe que debe crear tiquete · no recibe diagnósticos incorrectos ni soluciones no sustentadas.
 ',
-	N'Prompt especifico para tipo de consulta ERROR_TECNICO',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta ERROR_TECNICO',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -1214,8 +1214,8 @@ Claro · explicativo · sin exceso técnico · acompañamiento · sin diagnósti
 ## Resultado esperado
 Usuario: recibe orientación funcional clara cuando doc lo permite · entiende causa probable si existe evidencia · sabe qué validaciones generales realizar · redirigido a soporte cuando info ya no es suficiente o caso requiere revisión específica.
 ',
-	N'Prompt especifico para tipo de consulta ERROR_CONFIGURACION',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta ERROR_CONFIGURACION',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -1345,8 +1345,8 @@ Claro · sencillo · sin tecnicismos innec. · acompañamiento · no alarmista �
 ## Resultado esperado
 Usuario: recibe orientación básica si el caso puede resolverse con info doc · entiende la posible causa si existe evidencia · o es redirigido correctamente a soporte.
 ',
-	N'Prompt especifico para tipo de consulta ERROR_ACCESO',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta ERROR_ACCESO',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -1472,8 +1472,8 @@ Claro · preciso · sin exceso técnico · sin sonar normativo/tributario · cen
 ## Resultado esperado
 Usuario: entiende motivo del rechazo cuando está doc · sabe cómo corregirlo en el sistema si aplica · orientado a soporte cuando no existe info suficiente o caso requiere revisión específica.
 ',
-	N'Prompt especifico para tipo de consulta ERROR_DIAN',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta ERROR_DIAN',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -1601,8 +1601,8 @@ Inventar precios/planes/licencias/condiciones · recomendar cuál opción se aju
 ## Resultado esperado
 Usuario: entiende info comercial disponible · sabe qué recurso/canal usar · percibe valor en la solución · queda orientado hacia precios / demo / plataforma / apoyo según su caso.
 ',
-	N'Prompt especifico para tipo de consulta COMERCIAL',
-	N'1.0',
+	N'Prompt Ultra · tipo de consulta COMERCIAL',
+	N'2.0-ultra',
 	1
 )) AS s (iinstruccion, ninstruccion, instruccion, descripcion, version, bactivo)
 ON t.iinstruccion = s.iinstruccion
@@ -1629,7 +1629,7 @@ WHEN NOT MATCHED THEN INSERT (itdconsulta, iinstruccion, orden)
 COMMIT;
 
 -- Verificacion final
-SELECT i.iinstruccion, i.ninstruccion, LEN(i.instruccion) AS chars, x.itdconsulta, c.nconsulta, x.orden
+SELECT i.iinstruccion, i.ninstruccion, i.version, LEN(i.instruccion) AS chars, x.itdconsulta, c.nconsulta, x.orden
 FROM INSTRUCCION i
 LEFT JOIN TDCONSULTAXINSTRUCCION x ON x.iinstruccion = i.iinstruccion
 LEFT JOIN TDCONSULTA c             ON c.itdconsulta  = x.itdconsulta
