@@ -9,6 +9,7 @@
 		"build": "npm run iconify && astro build --config config/astro.config.ts",
 		"snapshot:gh-pages": "tsx ./scripts/snapshot-data.mts",
 		"patyia:prompts:json": "tsx scripts/build-paty-prompts-json.mts",
+		"patyia:bitacora:share-html": "node scripts/build-gpt5-adjuntos-share-html.mjs",
 		"patyia:prompts:metrics": "node scripts/measure-paty-prompt-metrics.mjs --write && tsx scripts/sync-tk1431666-charts.mts",
 		"build:gh-pages": "npm run patyia:prompts:json && npm run iconify && astro build --config config/astro.config.gh-pages.ts",
 		"pub:gh-pages": "powershell -ExecutionPolicy Bypass -File ./scripts/PS1/pub-isa-doc/publish-gh-pages.ps1",
@@ -25,7 +26,16 @@
 		"tickets:assets:1431662": "node scripts/tickets/build-TK-1431662-assets.mjs",
 		"tickets:assets:1431666": "node scripts/tickets/build-TK-1431666-assets.mjs",
 		"tickets:assets:patyia": "npm run tickets:assets:1431163 && npm run tickets:assets:1431662 && npm run tickets:assets:1431666",
-		"huggingface:remove-bg": "node scripts/huggingface/remove-bg.mjs"
+		"huggingface:remove-bg": "node scripts/huggingface/remove-bg.mjs",
+		"lab:yt:transcripts": "tsx scripts/lab-langgraph/fetch-contapyme-channel-transcripts.mts",
+		"lab:yt:strip-followers": "tsx scripts/lab-langgraph/strip-channel-followers.mts",
+		"lab:yt:enrich-descriptions": "tsx scripts/lab-langgraph/enrich-descriptions.mts",
+		"lab:yt:rededupe": "tsx scripts/lab-langgraph/rededupe-transcripts.mts",
+		"lab:yt:index-rag": "npm run index:youtube --prefix ../lab-langgraph",
+		"lab:yt:proofread-test": "tsx scripts/lab-langgraph/youtube-proofread-openai.mts",
+		"lab:yt:proofread": "npm run proofread:youtube --prefix ../lab-langgraph",
+		"lab:yt:proofread:promote": "npm run proofread:promote --prefix ../lab-langgraph",
+		"lab:yt:batch-punctuation": "npm run batch:yt:punctuation --prefix ../lab-langgraph"
 	},
 	"dependencies": {
 		"@astrojs/node": "^9.x",

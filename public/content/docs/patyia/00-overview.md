@@ -32,3 +32,7 @@ Esta primera versión cubre, a nivel de ingeniería:
 4. **Endpoints HTTP** — contrato funcional de cada Azure Function expuesta.
 
 > Esta documentación se irá ampliando con detalles de implementación (DTOs, contratos REST, contratos del asistente y de la base de conocimiento) a medida que se estabilicen.
+
+## Experimento Lab LangGraph (separado)
+
+En el menú lateral, el bloque **«Lab LangGraph»** documenta **FitDocs RAG** (`Contapyme/lab-langgraph`): otro Azure Functions + PGVector en PostgreSQL Render. **No** es PatyIA ni comparte `AYUDASCP_IA` ni el Vector Storage de OpenAI de Paty. Empieza en **Lab · Visión FitDocs RAG**.

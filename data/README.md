@@ -10,6 +10,7 @@ No confundir con `public/data/` (árbol SQL ClientesIS servido por HTTP).
 | `postman/patyia/` | Entidades fragmentadas + `collection.json` join |
 | `patyia/` | Caches locales (`conversaciones-cache.json`, etc.) |
 | `openai-storage/` | Mirror de archivos vector store (grande — gitignored) |
+| `lab-langgraph/vectorize/` | Corpus para FitDocs RAG (transcripciones YouTube ContaPyme, etc.) |
 | `revisado.json` | Estado bitácora “revisado” → copiado a `static-api/revisado.json` |
 
 ## Postman

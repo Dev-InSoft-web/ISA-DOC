@@ -1,5 +1,5 @@
 export type ActionType = "dev" | "build" | "start" | "pub" | "sync" | "func" | "custom";
-export type ProjectGroup = "clientesis" | "contapymeu" | "shared";
+export type ProjectGroup = "clientesis" | "contapymeu" | "shared" | "patyia";
 
 export interface ProjectAction {
 	id: string;
@@ -97,6 +97,39 @@ export const PROJECTS: ProjectEntry[] = [
 		group: "clientesis",
 		actions: [
 			{ id: "isa-iconify", label: "Descargar iconos", type: "build", command: "npm run iconify", cwd: `${base}/ClientesIS/doc/ISA-DOC`, description: "Iconify dl → public/assets/icons/iconify" },
+		],
+	},
+
+	// === PatyIA · Lab (NO producción AYUDASCP-IA) ===
+	{
+		id: "lab-langgraph",
+		name: "Lab LangGraph · FitDocs",
+		description: "Experimento RAG PDF — Azure Fn + PGVector (Render). No es PatyIA producción.",
+		icon: "mdi:flask-outline",
+		cwd: `${base}/lab-langgraph`,
+		group: "patyia",
+		actions: [
+			{
+				id: "lab-fn",
+				label: "func start (API)",
+				type: "func",
+				command: 'npm run build && func start --port 5500 --cors "*"',
+				cwd: `${base}/lab-langgraph`,
+				description: "Build TS + Azure Functions :5500/api (evita 7071 PatyIA/ISA)",
+				longRunning: true,
+				hostPattern: "http://localhost:5500/api/health",
+				swaggerUrl: "http://localhost:5500/api/health",
+			},
+			{
+				id: "lab-front",
+				label: "serve frontend",
+				type: "start",
+				command: "npx --yes serve frontend -p 5173",
+				cwd: `${base}/lab-langgraph`,
+				description: "UI HTML de prueba :5173",
+				longRunning: true,
+				hostPattern: URL_PATTERN,
+			},
 		],
 	},
 

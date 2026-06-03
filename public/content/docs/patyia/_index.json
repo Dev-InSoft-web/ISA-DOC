@@ -12,7 +12,11 @@
 		{ "slug": "06-modelos-openai", "title": "Modelos OpenAI", "icon": "mdi:currency-usd", "kind": "modelos" },
 		{ "slug": "07-interaccion-staging", "title": "Interacción staging", "icon": "mdi:flask-outline" },
 		{ "slug": "08-endpoints-local", "title": "Endpoints server local", "icon": "mdi:server-network", "kind": "endpoints-local" },
-		{ "slug": "99-recursos", "title": "Recursos", "icon": "mdi:folder-multiple-outline", "kind": "embeds" }
+		{ "slug": "99-recursos", "title": "Recursos", "icon": "mdi:folder-multiple-outline", "kind": "embeds" },
+		{ "slug": "lab-00-overview", "title": "Lab · Visión FitDocs RAG", "icon": "mdi:flask", "group": "Lab LangGraph" },
+		{ "slug": "lab-01-fitdocs-rag", "title": "Lab · API y operación", "icon": "mdi:api", "group": "Lab LangGraph" },
+		{ "slug": "lab-02-volatilidad-azure", "title": "Lab · Volatilidad Azure Fn", "icon": "mdi:alert-decagram-outline", "group": "Lab LangGraph" },
+		{ "slug": "lab-03-youtube-corpus", "title": "Lab · Corpus YouTube", "icon": "mdi:youtube", "group": "Lab LangGraph" }
 	],
 	"embeds": [
 		{ "type": "pdf",   "src": "/assets/imgs/patyia/notebooklm/PatyIA_Architectural_Blueprint.pdf", "title": "PatyIA — Architectural Blueprint" },

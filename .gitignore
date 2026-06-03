@@ -18,11 +18,19 @@ public/generated/patyia/openai/images/*.jpg
 # secretos (NUNCA versionar)
 .agent/
 secrets/api-keys.env
+secrets/patyia/lab-langgraph.env
 secrets/tokens/
 *.npmrc
 
 # datos voluminosos o locales
 data/openai-storage/
+# Corpus YouTube FitDocs (~1000+ videos; generar con npm run lab:yt:transcripts)
+data/lab-langgraph/vectorize/youtube/**/videos/
+data/lab-langgraph/vectorize/youtube/**/fetch-cache/
+data/lab-langgraph/vectorize/youtube/**/corpus.md
+data/lab-langgraph/vectorize/youtube/**/manifest.json
+data/lab-langgraph/vectorize/youtube/**/run.log
+tmp/yt-sub-test/
 debug-logs/
 
 # logs de scripts de verificación

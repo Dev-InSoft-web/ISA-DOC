@@ -11,7 +11,14 @@
 
    export let project: string = "contapymeu";
 
-   type Section = { slug: string; title: string; icon?: string; kind?: "md" | "embeds" | "prompts" | "modelos" | "endpoints-local" };
+   type Section = {
+      slug: string;
+      title: string;
+      icon?: string;
+      kind?: "md" | "embeds" | "prompts" | "modelos" | "endpoints-local";
+      /** Agrupa entradas del menú (ej. "Lab LangGraph" vs documentación PatyIA producción). */
+      group?: string;
+   };
    type Embed = { type: "image" | "pdf"; src: string; title?: string };
    type Manifest = {
       project: string;
@@ -541,14 +548,20 @@
             {/if}
          </div>
          <nav class="docs-nav">
-            {#each manifest.sections as s}
+            {#each manifest.sections as s, i}
+               {#if s.group && (i === 0 || manifest.sections[i - 1]?.group !== s.group)}
+                  <div class="docs-nav-group" class:docs-nav-group--lab={s.group === "Lab LangGraph"}>
+                     {s.group}
+                  </div>
+               {/if}
                <button
                   type="button"
                   class="docs-nav-item"
+                  class:docs-nav-item--lab={!!s.group}
                   class:active={activeSlug === s.slug}
                   on:click={() => loadSection(s.slug)}
                >
-                  <span class="docs-nav-num">{(s.slug.split("/").pop() ?? s.slug).split("-")[0]}</span>
+                  <span class="docs-nav-num">{s.slug.startsWith("lab-") ? s.slug.split("-")[1] : (s.slug.split("/").pop() ?? s.slug).split("-")[0]}</span>
                   <span class="docs-nav-text">{s.title}</span>
                </button>
             {/each}
@@ -734,6 +747,31 @@
    .md-cm-host :global(.CodeMirror) {
       height: 100% !important;
       font-size: 0.82rem;
+   }
+
+   .docs-nav-group {
+      margin-top: 0.75rem;
+      margin-bottom: 0.25rem;
+      padding: 0.35rem 0.5rem 0.15rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--is-text-muted, #8b9cb3);
+      border-top: 1px solid var(--is-border, #2d3a4f);
+   }
+
+   .docs-nav-group:first-child {
+      margin-top: 0;
+      border-top: none;
+   }
+
+   .docs-nav-group--lab {
+      color: #c9a227;
+   }
+
+   .docs-nav-item--lab .docs-nav-num {
+      color: #c9a227;
    }
 
    .docs-nav {

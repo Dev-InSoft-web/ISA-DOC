@@ -3,6 +3,7 @@
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
 	import Accordion from "$comps/ui/containers/Accordion.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
+	import Gpt5AdjuntosDiscovery from "../bitacora/Gpt5AdjuntosDiscovery.svelte";
 	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import md_2026_06_01_resumen from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/01-resumen-2026-06-01.md?raw";
 	import md_2026_05_29_instrucciones_cleanup from "../../lib/features/patyia/060-bitacora/daily/2026-05/29/01-instrucciones-listado-y-limpieza.md?raw";
@@ -21,6 +22,9 @@
 	import md_2026_06_01_tk1431662 from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/02-tk1431662-modelo-por-instruccion.md?raw";
 	import md_2026_06_01_prompts_ultra from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/03-prompts-ultra-tdconsulta.md?raw";
 	import md_2026_06_01_conversacion_log from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/04-conversacion-log-tabla.md?raw";
+	import md_2026_06_01_tk1432903 from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/05-tk1432903-cierre.md?raw";
+	import md_2026_06_03_resumen from "../../lib/features/patyia/060-bitacora/daily/2026-06/03/01-resumen-2026-06-03.md?raw";
+	import md_2026_06_03_gpt5_adjuntos from "../../lib/features/patyia/060-bitacora/daily/2026-06/03/05-gpt5-nano-vs-mini-adjuntos-multimedia.md?raw";
 
 	// PatyIA tiene su propia BD (AYUDASCP_IA) — los endpoints de ejecución y
 	// ping están bifurcados respecto a los de ClientesIS para que el banner
@@ -50,11 +54,35 @@
 	dbPingUrl="/api/patyia/db/ping"
 	dbLabelOk="BD PatyIA conectada"
 >
-	<!-- 2026-06-01 (hoy) — entrada diaria (mes actual no agrupado) -->
+	<!-- 2026-06-03 (hoy) — entrada diaria (mes actual no agrupado) -->
+	<Accordion
+		title="2026-06-03 — PatyIA: gpt-5-nano vs gpt-5-mini (adjuntos multimedia, TK-1431662)"
+		titleIcon="mdi:calendar"
+		open={true}
+	>
+		<Accordion
+			title="Resumen del día"
+			titleIcon="mdi:notebook-edit-outline"
+			inner
+		>
+			<BitacoraNote flat mdSource={md_2026_06_03_resumen} />
+		</Accordion>
+
+		<Accordion
+			title="gpt-5-nano vs gpt-5-mini · adjuntos en respuesta"
+			titleIcon="mdi:image-multiple-outline"
+			inner
+		>
+			<Gpt5AdjuntosDiscovery />
+			<BitacoraNote flat mdSource={md_2026_06_03_gpt5_adjuntos} />
+		</Accordion>
+	</Accordion>
+
+	<!-- 2026-06-01 — entrada diaria (mes actual no agrupado) -->
 	<Accordion
 		title="2026-06-01 — PatyIA: TK-1431163, TK-1431662 (modelo por instrucción), prompts Ultra y limpieza Groq"
 		titleIcon="mdi:calendar"
-		open={true}
+		open={false}
 		checkKeys={["2026-06-01.patyia.instruccion.modelo-nano", "2026-06-01.patyia.seed-prompts-ultra"]}
 	>
 		<Accordion
@@ -85,12 +113,13 @@
 		</Accordion>
 
 		<Accordion
-			title="CONVERSACION_LOG · tabla JSON (métricas por conversación)"
+			title="TK-1432903 · CONVERSACION_LOG (log por turno)"
 			titleIcon="mdi:database-plus-outline"
 			inner
-			checkKey="2026-06-01.patyia.conversacion-log.ddl"
+			checkKeys={["2026-06-01.patyia.conversacion-log.ddl", "tickets.TK-1432903"]}
 		>
 			<BitacoraNote flat mdSource={md_2026_06_01_conversacion_log} />
+			<BitacoraNote flat mdSource={md_2026_06_01_tk1432903} />
 			<SqlExecCard
 				title="AYUDASCP_IA_STAGING · CREATE TABLE CONVERSACION_LOG (solo DDL)"
 				sql={sqlCreateConversacionLog}

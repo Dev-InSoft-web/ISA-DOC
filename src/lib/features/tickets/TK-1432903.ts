@@ -30,11 +30,11 @@ export async function buildBodyTK1432903(): Promise<string> {
 	const alcance = noteList(
 		await note(
 			"mdi:file-document-outline",
-			"Cada turno persiste el JSON en <code>CONVERSACION_LOG</code> (staging) al guardar <code>logs/conversaciones/conv-*.json</code>, con el mismo contenido. Desactivar con <code>CONV_LOG_PERSIST_DB=false</code> si solo se quiere archivo local.",
+			"Cada turno con <code>iconversacion</code> persiste el mismo JSON en archivo <code>conv-*.json</code> y en <code>CONVERSACION_LOG</code> (MERGE por <code>ICONVERSACION</code>). Variable <code>CONV_LOG_PERSIST_DB=false</code> desactiva solo la BD.",
 		),
 		await note(
 			"mdi:link-variant",
-			"Complementa el registro por turno ya usado en métricas de conversación (TK-1431163, TK-1431662); aquí se busca persistencia estructurada y consultable en BD.",
+			"Complementa TK-1431163/TK-1431662 (métricas por mensaje). Consulta: ISA-DOC <code>GET /api/patyia/conversacion/{id}/log</code>. Turnos fallidos incluyen <code>stream_ok: false</code> y mensaje de error.",
 		),
 	);
 

@@ -11,3 +11,4 @@ Feature PatyIA dentro de la arquitectura Bulletproof de `src/lib`. Capas numerad
 | `050-prompts/` | Catálogo `.md` (`catalog/`), utilidades de prompts |
 | `060-bitacora/` | Diario de avance (`daily/`) |
 | `070-sql/` | Scripts DDL/DML para AYUDASCP_IA |
+| `080-lab-langgraph/` | Enlace al experimento FitDocs RAG (`lab-langgraph`, no producción) |

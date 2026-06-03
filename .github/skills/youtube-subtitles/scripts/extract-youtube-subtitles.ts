@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 interface CliOptions {
 	input: string;
@@ -10,7 +11,7 @@ interface CliOptions {
 	maxChars: number;
 }
 
-interface CaptionSegment {
+export interface CaptionSegment {
 	startMs: number | null;
 	durationMs: number | null;
 	text: string;
@@ -61,7 +62,7 @@ interface OEmbedResponse {
 	provider_name?: string;
 }
 
-interface ExtractionResult {
+export interface ExtractionResult {
 	videoId: string;
 	videoUrl: string;
 	metadata: {
@@ -392,7 +393,7 @@ function parseVtt(text: string): CaptionSegment[] {
 	return segments;
 }
 
-function parseCaptionPayload(text: string): CaptionSegment[] {
+export function parseCaptionPayload(text: string): CaptionSegment[] {
 	const trimmed = text.trim();
 	if (!trimmed) return [];
 	if (trimmed.startsWith("{")) return parseJson3(trimmed);
@@ -401,7 +402,7 @@ function parseCaptionPayload(text: string): CaptionSegment[] {
 	return [];
 }
 
-function transcriptFromSegments(segments: CaptionSegment[]): string {
+export function transcriptFromSegments(segments: CaptionSegment[]): string {
 	return normalizeText(segments.map((segment) => segment.text).join(" "));
 }
 
@@ -422,9 +423,12 @@ async function tryExtractFromTracks(tracks: TrackInfo[], videoId: string, prefer
 	return { segments: [] };
 }
 
-async function main(): Promise<void> {
-	const options = parseArgs(process.argv.slice(2));
-	const videoId = extractVideoId(options.input);
+/** Extrae subtítulos/transcripción de un video (sin descargar el MP4). */
+export async function extractYoutubeSubtitles(
+	input: string,
+	preferredLang = "es",
+): Promise<ExtractionResult> {
+	const videoId = extractVideoId(input);
 	const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
 	const oEmbedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(videoUrl)}&format=json`;
 	const watchUrl = `${videoUrl}&hl=es-419&persist_hl=1`;
@@ -439,12 +443,12 @@ async function main(): Promise<void> {
 	const playerResponses = extractPlayerResponses(watchResponse.text);
 	const player = playerResponses.find((item) => item.captions) ?? playerResponses.find((item) => item.videoDetails) ?? playerResponses[0] ?? {};
 
-	const directTracks: TrackInfo[] = [options.preferredLang, "es", "es-419", "en"].map((languageCode) => ({ languageCode, source: "direct" }));
+	const directTracks: TrackInfo[] = [preferredLang, "es", "es-419", "en"].map((languageCode) => ({ languageCode, source: "direct" }));
 	const tracks = uniqueTracks([...playerTracks(player), ...timedTextListTracks(listResponse.text), ...directTracks]);
-	const extracted = await tryExtractFromTracks(tracks, videoId, options.preferredLang);
+	const extracted = await tryExtractFromTracks(tracks, videoId, preferredLang);
 	const transcript = transcriptFromSegments(extracted.segments);
 
-	const result: ExtractionResult = {
+	return {
 		videoId,
 		videoUrl,
 		metadata: {
@@ -472,6 +476,11 @@ async function main(): Promise<void> {
 			playerResponseWithCaptionsCount: playerResponses.filter((item) => Boolean(item.captions)).length,
 		},
 	};
+}
+
+async function main(): Promise<void> {
+	const options = parseArgs(process.argv.slice(2));
+	const result = await extractYoutubeSubtitles(options.input, options.preferredLang);
 
 	if (options.outFile) {
 		await mkdir(dirname(options.outFile), { recursive: true });
@@ -484,18 +493,24 @@ async function main(): Promise<void> {
 	}
 
 	console.log(JSON.stringify({ ...result.metadata, videoId, videoUrl, tracks: tracks.map((track) => ({ source: track.source, languageCode: track.languageCode, kind: track.kind, name: track.nameText, isTranslatable: track.isTranslatable })), selectedTrack: result.selectedTrack, method: result.method, transcriptChars: result.transcriptChars, diagnostics: result.diagnostics, outFile: options.outFile }, null, 2));
-	if (!transcript) {
+	if (!result.transcript) {
 		console.error("No se pudo extraer transcript por endpoints. Si YouTube muestra 'Mostrar transcripción', usa el fallback Playwright de la skill.");
 		process.exitCode = 2;
 		return;
 	}
 
 	console.log("---TRANSCRIPT_START---");
-	console.log(options.raw ? transcript : transcript.slice(0, options.maxChars));
+	console.log(options.raw ? result.transcript : result.transcript.slice(0, options.maxChars));
 	console.log("---TRANSCRIPT_END---");
 }
 
-main().catch((error: unknown) => {
-	console.error(error instanceof Error ? error.message : String(error));
-	process.exit(1);
-});
+const isDirectRun =
+	process.argv[1]?.replace(/\\/g, "/").includes("extract-youtube-subtitles") ||
+	fileURLToPath(import.meta.url).replace(/\\/g, "/") === process.argv[1]?.replace(/\\/g, "/");
+
+if (isDirectRun) {
+	main().catch((error: unknown) => {
+		console.error(error instanceof Error ? error.message : String(error));
+		process.exit(1);
+	});
+}

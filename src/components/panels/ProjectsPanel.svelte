@@ -40,7 +40,7 @@
 		description: string;
 		icon: string;
 		cwd: string;
-		group?: "clientesis" | "contapymeu" | "shared";
+		group?: "clientesis" | "contapymeu" | "shared" | "patyia";
 		actions: ProjectAction[];
 	}
 
@@ -62,8 +62,9 @@
 		return projects.find((p) => p.id === id);
 	}
 
-	const OUTER_TABS: { key: "clientesis" | "shared"; label: string }[] = [
+	const OUTER_TABS: { key: "clientesis" | "shared" | "patyia"; label: string }[] = [
 		{ key: "clientesis", label: "ClientesIS" },
+		{ key: "patyia", label: "PatyIA · Lab" },
 		{ key: "shared", label: "Compartidos" },
 	];
 
@@ -78,7 +79,7 @@
 	}
 
 	let projects: ProjectEntry[] = [];
-	let projectsByGroup: Record<string, ProjectEntry[]> = { clientesis: [], contapymeu: [], shared: [] };
+	let projectsByGroup: Record<string, ProjectEntry[]> = { clientesis: [], contapymeu: [], shared: [], patyia: [] };
 
 	// Acción general "Descargar iconos" que encadena los iconify de ISP-SC, ISW e ISA.
 	const base = "C:/Users/JAGUDELOE/Documents/Contapyme";
@@ -234,7 +235,7 @@
 		socket.on("connect", () => {
 			socket?.emit("projects:list", (data: ProjectEntry[]) => {
 				projects = data ?? [];
-				const grp: Record<string, ProjectEntry[]> = { clientesis: [], contapymeu: [], shared: [] };
+				const grp: Record<string, ProjectEntry[]> = { clientesis: [], contapymeu: [], shared: [], patyia: [] };
 				for (const p of projects) {
 					const g = p.group ?? "shared";
 					(grp[g] ??= []).push(p);
@@ -289,7 +290,21 @@
 		{#each OUTER_TABS as outer (outer.key)}
 			<TabItem title={outer.label} bind:open={outerOpen[outer.key]}>
 				<div class="tab-content">
-					{#if outer.key === "shared"}
+					{#if outer.key === "patyia"}
+						<Text color="neutral" style="margin: 0 0 0.75rem; opacity: 0.85;">
+							Experimento <strong>lab-langgraph</strong> (FitDocs RAG). No ejecuta ni despliega PatyIA producción (<code>AYUDASCP-IA</code>).
+						</Text>
+						<ProjectGroupList
+							projects={projectsByGroup.patyia ?? []}
+							{runningActions}
+							{outputs}
+							{hosts}
+							bind:openMap
+							onRun={execAction}
+							onStop={killAction}
+							onRestart={restartAction}
+						/>
+					{:else if outer.key === "shared"}
 						<ProjectGroupList
 							projects={projectsByGroup.shared ?? []}
 							{runningActions}

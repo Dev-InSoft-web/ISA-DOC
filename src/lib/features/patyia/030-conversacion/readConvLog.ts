@@ -14,7 +14,6 @@ export type ConvLogPayload = Record<string, unknown>;
 
 export interface ConvLogOthers {
 	itdconsulta?: string;
-	premisas?: string[];
 	nombre_usuario?: string;
 	nombre_usado_en_respuesta?: boolean;
 	modelo_configurado?: string;
@@ -27,6 +26,8 @@ export interface ConvLogOthers {
 	vector_store_ids?: string[];
 	operativa_key?: string;
 	operativa_engine?: string;
+	stream_ok?: boolean;
+	stream_error?: string;
 }
 
 export interface ConvLogMensaje {
@@ -101,8 +102,9 @@ export function flattenConvLogMensaje(m: ConvLogMensaje): Record<string, unknown
 		if (o.engine) flat.engine = o.engine;
 	}
 	if (o.itdconsulta) flat.itdconsulta = o.itdconsulta;
-	if (o.premisas) flat.premisas = o.premisas;
 	if (o.nombre_usuario) flat.nombre_usuario = o.nombre_usuario;
+	if (o.stream_ok === false) flat.stream_ok = false;
+	if (o.stream_error) flat.stream_error = o.stream_error;
 	if (o.nombre_usado_en_respuesta !== undefined) flat.nombre_usado_en_respuesta = o.nombre_usado_en_respuesta;
 	if (o.modelo_configurado) flat.modelo_configurado = o.modelo_configurado;
 	if (o.prompt_chars !== undefined) flat.prompt_chars = o.prompt_chars;

@@ -1,16 +1,25 @@
-# CONVERSACION_LOG (DDL · staging)
+# TK-1432903 — CONVERSACION_LOG y log por turno
 
+## Estado
 
+- **DDL:** `070-sql/create-conversacion-log.sql` (y variante SSMS) en **AYUDASCP_IA_STAGING**.
+- **Motor PatyIA:** cada turno con `iconversacion` llama `appendConvTurno` → archivo `logs/conversaciones/conv-{id}.json` + **MERGE** en `dbo.CONVERSACION_LOG` (`UlConvLogDb.persistConvLogToDb`).
+- **Lectura:** ISA-DOC `GET /api/patyia/conversacion/{id}/log` fusiona archivo + BD (`readConvLogMerged`).
+- **Desactivar BD:** `CONV_LOG_PERSIST_DB=false` (solo archivo local).
 
-Tabla en **AYUDASCP_IA_STAGING** para persistir, en un futuro TK, el JSON de métricas por conversación (mismo esquema que `conv-*.json` en PatyIA). **Solo creación de tabla**; sin carga ni relleno de filas.
+## Contenido del JSON (por turno)
 
+- Usuario: `send` (request Responses), `others` (`itdconsulta`, `nombre_usuario`, `vector_store_ids`, `jailbreak`).
+- Operativas: clasificación y demás (`role: operativa`, `operativa_key`).
+- Asistente: `receive`, tokens, costo, `latency_ms`; si el stream falla: `others.stream_ok: false` y `stream_error`.
 
+## QA recomendado
 
-- **SqlExec:** `create-conversacion-log.sql` — conexión a `AYUDASCP_IA_STAGING`, idempotente, sin constraints.
-- **Agentes:** regla fija en `.cursor/rules/patyia-sql-ddl.mdc` y `src/lib/features/patyia/070-sql/README.md`.
+1. Ejecutar DDL en staging (acordeón bitácora) si la tabla no existe.
+2. Enviar un mensaje por `POST /conversacion` (PatyIA local) con conversación nueva.
+3. Verificar fila en `SELECT ICONVERSACION, LEN(CONTENT) FROM dbo.CONVERSACION_LOG WHERE ICONVERSACION = @id`.
+4. Abrir log en ISA-DOC: `/api/patyia/conversacion/{id}/log` o panel Actions.
 
-- **SSMS:** `create-conversacion-log-ssms.sql`.
+---
 
-- **PatyIA:** integración pendiente de ticket.
-
-
+`Registrado por:` Jeff-Aporta

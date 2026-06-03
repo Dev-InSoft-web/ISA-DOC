@@ -110,7 +110,15 @@ export const TICKETS: TicketRegistro[] = [
 		get body(): Promise<string> {
 			return buildBodyTK1433179();
 		},
-		commits: [],
+		commits: [
+			{
+				hash: "1d0c754",
+				descripcion:
+					"feat(TK-1433179): Habilita análisis de imágenes adjuntas en el chat con normalización de archivos, modo abierto y procesamiento multimodal en la respuesta del asistente.",
+				repo: "PatyIA",
+				fecha: "2026-06-03T12:59:47-05:00",
+			},
+		],
 		normativa: { ...NORMATIVA_DEFAULT, medioAtencion: "Asistencia remota", tipoSolicitud: "1 - PQR proyecto (para uso AT e ING únicamente)" },
 		proyecto: "PatyIA",
 	},
@@ -120,12 +128,37 @@ export const TICKETS: TicketRegistro[] = [
 		solicitante: "Área funcional",
 		fechaSolicitud: "02/jun./2026 02:30:29 pm",
 		noMaquillarFechas: true,
+		estimacionMinutos: 90,
+		diligenciaMinutos: 45,
 		resumen:
-			"Log de peticiones Paty IA V4 con trazabilidad del ciclo (tiempos, consumo, clasificación, configuración y errores). DDL CONVERSACION_LOG en staging; integración en motor pendiente.",
+			"Log estructurado por turno: archivo conv-*.json + CONVERSACION_LOG (staging) vía appendConvTurno/UlConvLogDb; métricas, operativas, errores de stream; lectura en ISA-DOC GET conversacion/{id}/log.",
 		get body(): Promise<string> {
 			return buildBodyTK1432903();
 		},
-		commits: [],
+		commits: [
+			{
+				hash: "1205fc7",
+				descripcion:
+					"feat(TK-1432903): Registra turnos fallidos del asistente y unifica el flujo de respuesta en streaming con indicadores de éxito y error.",
+				repo: "PatyIA",
+				fecha: "2026-06-03T12:59:47-05:00",
+			},
+			{
+				hash: "89210f8",
+				descripcion:
+					"feat(TK-1432903): Implementa persistencia dual del log de conversación con métricas por turno, depuración y fusión entre archivo y base de datos.",
+				repo: "PatyIA",
+				fecha: "2026-06-03T12:59:46-05:00",
+			},
+			{
+				hash: "9a4b0ea",
+				descripcion:
+					"refactor(TK-1432903): Reorganiza modelos y controladores en subcarpetas con capa de sistema y documentación de índices para la trazabilidad del log de conversación.",
+				repo: "PatyIA",
+				fecha: "2026-06-03T12:59:46-05:00",
+			},
+			{ hash: "6327c2c", descripcion: "feat(TK-1431163): historial de conversación con operativas y request/response", repo: "PatyIA", fecha: "2026-06-02T10:52:22-05:00" },
+		],
 		cambiosBd: [
 			{
 				tabla: "CONVERSACION_LOG (staging)",

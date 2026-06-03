@@ -18,7 +18,7 @@ La conexión debe apuntar a **AYUDASCP_IA_STAGING** (`paty_namedb` en `.env`). L
 
 | Script | Uso |
 |--------|-----|
-| `create-conversacion-log.sql` | DDL `CONVERSACION_LOG` (sin constraints) |
+| `create-conversacion-log.sql` | DDL `CONVERSACION_LOG` (TK-1432903; motor PatyIA escribe CONTENT vía `appendConvTurno`) |
 | `add-modelo-instruccion.sql` | Columna `MODELO` en `INSTRUCCION` |
 | `update-instruccion-modelo-gpt5-nano.sql` | Calibración masiva `MODELO` |
 | `seed-prompts-ultra-tdconsulta.sql` | MERGE prompts Ultra |
