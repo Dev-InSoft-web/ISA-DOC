@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { join } from "node:path";
-import { EMPTY_LOCAL_META, ensureDir, escribirJson, findFileDir, leerJson, type LocalFileMeta } from "../../../../../../lib/patyia/storage.ts";
+import { EMPTY_LOCAL_META, ensureDir, escribirJson, findFileDir, leerJson, type LocalFileMeta } from "../../../../../../lib/features/patyia/040-openai/storage.ts";
 
 export const prerender = false;
 

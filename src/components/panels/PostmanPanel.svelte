@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { io, type Socket } from "socket.io-client";
-	import { STATIC_MODE } from "../../lib/runtime/staticMode";
+	import { STATIC_MODE } from "../../lib/integrations/runtime/staticMode";
 	import { marked } from "marked";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
 	import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
-	import { createUrlB64Tabs, onUrlStateChange } from "../../lib/urlState";
+	import { createUrlB64Tabs, onUrlStateChange } from "../../lib/core/url/query-params";
 	import {
 		Card, Button, H2, H4, Text, Loading, Modal,
 		Toaster, toastError, toastSuccess,
@@ -918,7 +918,7 @@
 			</label>
 			<Text color="neutral"><small>
 				{#if proyecto === "patyia"}
-					Por defecto <code>http://localhost:7071</code>. Token leído desde <code>token.patyia.json</code> (o <code>PATYIA_TOKEN</code>).
+					Por defecto <code>http://localhost:7071</code>. Token desde <code>secrets/tokens/token.patyia.json</code> (o <code>PATYIA_TOKEN</code>).
 					Script: <code>scripts/verify-api-patyia/verify_api.ts</code>.
 				{:else}
 					Por defecto <code>http://localhost:20040</code>. Token leído desde <code>doc/test/token.json</code> (o <code>VERIFY_API_TOKEN</code>).

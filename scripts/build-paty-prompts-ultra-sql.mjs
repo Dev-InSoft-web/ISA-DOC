@@ -5,8 +5,8 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const promptsDir = resolve(__dirname, "..", "src", "lib", "patyia", "prompts", "Ultra");
-const outFile = resolve(__dirname, "..", "src", "lib", "patyia", "sql", "seed-prompts-ultra-tdconsulta.sql");
+const promptsDir = resolve(__dirname, "..", "src", "lib", "features", "patyia", "050-prompts", "catalog", "Ultra");
+const outFile = resolve(__dirname, "..", "src", "lib", "features", "patyia", "070-sql", "seed-prompts-ultra-tdconsulta.sql");
 
 const fileToTipo = (name) => name.replace(/^PROMPT_/, "").replace(/\.md$/, "");
 
@@ -26,7 +26,7 @@ const rows = files.map((f) => {
 const head = `-- =====================================================================
 -- Carga de prompts Ultra por tipo de consulta (reemplazo compacto)
 -- BD: AYUDASCP_IA / AYUDASCP_IA_STAGING  (PatyIA)
--- Fuente: src/lib/patyia/prompts/Ultra/PROMPT_<TIPO>.md
+-- Fuente: src/lib/features/patyia/050-prompts/catalog/Ultra/PROMPT_<TIPO>.md
 --
 -- Estrategia (idempotente):
 --   1) MERGE en INSTRUCCION (iinstruccion = '<TIPO>', ninstruccion = 'PROMPT_<TIPO>')

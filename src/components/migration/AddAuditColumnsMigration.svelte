@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
-	import AccordionActions from "$comps/containers/AccordionActions.svelte";
+	import AccordionActions from "$comps/ui/containers/AccordionActions.svelte";
 	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import mdIntro from "../../lib/bitacora/topics/audit/intro.md?raw";
-	import sqlAddAuditColumns from "../../lib/migration/sql/add-audit-columns.sql?raw";
+	import mdIntro from "../../lib/features/bitacora/topics/audit/intro.md?raw";
+	import sqlAddAuditColumns from "../../lib/sql/migration/sql/add-audit-columns.sql?raw";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
 	export let inner: boolean = false;

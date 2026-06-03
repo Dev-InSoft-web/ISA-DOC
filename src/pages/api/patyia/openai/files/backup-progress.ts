@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { BACKUP_PROGRESS, escribirJson, leerJson } from "../../../../../lib/patyia/storage.ts";
+import { BACKUP_PROGRESS, escribirJson, leerJson } from "../../../../../lib/features/patyia/040-openai/storage.ts";
 
 export const prerender = false;
 

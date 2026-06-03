@@ -3,7 +3,7 @@ import {
 	baseUrl,
 	requestMaxRetries,
 	requestRetryBaseDelayMs,
-	tokenFileCandidates,
+	patyiaTokenFiles,
 	useIgnoreAuth,
 } from "./config.ts";
 import { setToken, state } from "./state.ts";
@@ -26,7 +26,7 @@ export function loadToken(): boolean {
 		console.log(`[AUTH] Token cargado desde env PATYIA_TOKEN (${envToken.length} chars). ✅`);
 		return true;
 	}
-	for (const file of tokenFileCandidates) {
+	for (const file of patyiaTokenFiles) {
 		if (!file || !fs.existsSync(file)) continue;
 		try {
 			const raw = fs.readFileSync(file, "utf8");
@@ -40,7 +40,7 @@ export function loadToken(): boolean {
 			console.error(`⛔ Error leyendo ${file}: ${(e as Error).message}`);
 		}
 	}
-	console.error("⛔ Sin token PatyIA. Defina PATYIA_TOKEN o cree token.patyia.json con { \"token\": \"…\" } en la raíz del repo.");
+	console.error("⛔ Sin token PatyIA. PATYIA_TOKEN o secrets/tokens/token.patyia.json con { \"token\": \"…\" }.");
 
 	return false;
 }

@@ -107,6 +107,25 @@ export async function renderMermaidToBuffer(mmdText) {
 	return fetchBuffer(mermaidInkUrl(mmdText, "img"), "mermaid.ink/img");
 }
 
+/**
+ * Diagrama textual → PNG vía Kroki (p. ej. PlantUML). El lienzo suele ajustarse al contenido
+ * mejor que mermaid.ink para secuencias.
+ * @param {string} diagramSource
+ * @param {string} [diagramType='plantuml']
+ */
+export async function renderKrokiToBuffer(diagramSource, diagramType = "plantuml") {
+	const res = await fetch(`https://kroki.io/${diagramType}/png`, {
+		method: "POST",
+		headers: { "Content-Type": "text/plain" },
+		body: diagramSource,
+	});
+	if (!res.ok) {
+		const err = await res.text().catch(() => "");
+		throw new Error(`kroki.io/${diagramType}: HTTP ${res.status} ${err.slice(0, 200)}`);
+	}
+	return Buffer.from(await res.arrayBuffer());
+}
+
 /** Ruta a `dot` (PATH o instalación típica en Windows). */
 export function resolveDotExecutable() {
 	if (process.env.GRAPHVIZ_DOT) return process.env.GRAPHVIZ_DOT;
@@ -265,7 +284,7 @@ export async function uploadImgbb(pngName, buf) {
 
 /**
  * @param {string} ticketId ej. TK-1431163
- * @param {Array<{ id: string, kind: 'mermaid'|'graphviz'|'quickchart'|'chart-graphviz'|'capture', source: string, png: string, removeBg?: boolean|'canvas', render?: object, mermaidFallback?: string, chartFallback?: string, graphvizFallback?: string }>} assets
+ * @param {Array<{ id: string, kind: 'mermaid'|'kroki'|'graphviz'|'quickchart'|'chart-graphviz'|'capture', source: string, png: string, krokiType?: string, removeBg?: boolean|'canvas', render?: object, mermaidFallback?: string, chartFallback?: string, graphvizFallback?: string }>} assets
  */
 export async function buildTicketAssets(ticketId, assets) {
 	const ticketDir = path.join(ASSETS_ROOT, ticketId);
@@ -279,7 +298,12 @@ export async function buildTicketAssets(ticketId, assets) {
 
 		let buf;
 		let graphvizRendered = false;
-		if (asset.kind === "mermaid") {
+		if (asset.kind === "kroki") {
+			const src = await fs.readFile(srcPath, "utf8");
+			const krokiType = asset.krokiType ?? "plantuml";
+			console.log(`◇ ${ticketId} · kroki.io/${krokiType} ← ${asset.source}`);
+			buf = await renderKrokiToBuffer(src, krokiType);
+		} else if (asset.kind === "mermaid") {
 			const mmd = await fs.readFile(srcPath, "utf8");
 			console.log(`◇ ${ticketId} · mermaid.ink/img ← ${asset.source}`);
 			try {

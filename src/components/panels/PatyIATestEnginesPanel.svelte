@@ -10,7 +10,7 @@
 		toastError,
 		toastSuccess,
 	} from "@ingenieria_insoft/ispsveltecomponents";
-	import ConfirmDialog from "$comps/overlays/ConfirmDialog.svelte";
+	import ConfirmDialog from "$comps/ui/overlays/ConfirmDialog.svelte";
 
 	type TestType = "responses" | "agents-poc" | null;
 

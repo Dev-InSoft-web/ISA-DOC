@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from "svelte";
 	import { Switch } from "@ingenieria_insoft/ispsveltecomponents";
 	import Self from "./DetailSpecNode.svelte";
-	import type { DetailNode, RelationDef, ResourceConfig } from "../../../lib/codeGen/types.ts";
+	import type { DetailNode, RelationDef, ResourceConfig } from "../../../lib/sql/codegen/types.ts";
 
 	export let node: DetailNode;
 	export let targetCfg: ResourceConfig | undefined;

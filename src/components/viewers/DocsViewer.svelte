@@ -2,11 +2,12 @@
    import { onMount, tick } from "svelte";
    import { ButtonIconify } from "@ingenieria_insoft/ispsveltecomponents";
    import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
-   import { STATIC_MODE, withBase } from "../../lib/runtime/staticMode";
-   import { renderMermaidBlocks } from "../../lib/mermaid/render";
+   import { STATIC_MODE, withBase } from "../../lib/integrations/runtime/staticMode";
+   import { renderMermaidBlocks } from "../../lib/integrations/mermaid/render";
    import PatyIAPrompts from "../panels/PatyIAPrompts.svelte";
    import OpenAIPricingPanel from "../panels/OpenAIPricingPanel.svelte";
    import PatyIALocalEndpoints from "../panels/PatyIALocalEndpoints.svelte";
+   import { decodeJsonState, encodeJsonState } from "../../lib/features/patyia/010-config/stateB64";
 
    export let project: string = "contapymeu";
 
@@ -270,30 +271,19 @@
    }
 
    function readStateFromUrl(): string {
-      try {
-         const raw = new URLSearchParams(window.location.search).get("state");
-         if (!raw) return "";
-         const decoded = JSON.parse(atob(raw));
-
-         return typeof decoded?.slug === "string" ? decoded.slug : "";
-      } catch {
-         return "";
-      }
+      const raw = new URLSearchParams(window.location.search).get("state");
+      const decoded = decodeJsonState(raw);
+      return typeof decoded.slug === "string" ? decoded.slug : "";
    }
 
    function writeStateToUrl(slug: string): void {
       try {
          const url = new URL(window.location.href);
-         const raw = url.searchParams.get("state");
-         let st: Record<string, unknown> = {};
-         if (raw) {
-            try { st = JSON.parse(atob(raw)); } catch { st = {}; }
-         }
+         const st = decodeJsonState(url.searchParams.get("state"));
          const prevSlug = typeof st.slug === "string" ? st.slug : "";
          st.slug = slug;
-         // Si cambia el slug, descartar el sub-estado del panel anterior.
          if (prevSlug && prevSlug !== slug) delete st.sub;
-         url.searchParams.set("state", btoa(JSON.stringify(st)));
+         url.searchParams.set("state", encodeJsonState(st));
          window.history.replaceState({}, "", url.toString());
       } catch {
          /* ignore */
@@ -316,7 +306,7 @@
          return;
       }
       try {
-         const docsPath = STATIC_MODE ? `/static-api/docs/${project}/${slug}.md` : `/docs/${project}/${slug}.md`;
+         const docsPath = STATIC_MODE ? `/static-api/docs/${project}/${slug}.md` : `/content/docs/${project}/${slug}.md`;
          const res = await fetch(docsPath, { cache: "no-cache" });
          if (!res.ok) throw new Error(`HTTP ${res.status}`);
          let md = await res.text();
@@ -435,7 +425,7 @@
 
    async function buildJoinedMd(): Promise<string> {
       if (!manifest) return "";
-      const baseDir = STATIC_MODE ? `/static-api/docs/${project}` : `/docs/${project}`;
+      const baseDir = STATIC_MODE ? `/static-api/docs/${project}` : `/content/docs/${project}`;
       const parts: string[] = [];
       const header = `# ${manifest.title}\n\n${manifest.description ?? ""}`.trim();
       parts.push(header);
@@ -503,7 +493,7 @@
 
    onMount(async () => {
       try {
-         const res = await fetch(`/docs/${project}/_index.json`, { cache: "no-cache" });
+         const res = await fetch(`/content/docs/${project}/_index.json`, { cache: "no-cache" });
          if (!res.ok) throw new Error(`No se encontró _index.json (HTTP ${res.status})`);
          manifest = await res.json();
          await Promise.all([loadMarked(), loadCodeMirror()]);

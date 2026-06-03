@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { readFile, writeFile } from "node:fs/promises";
-import { sqlFilePath, parseSql, joinFragments, type SqlFragment, type SqlFragmentKind } from "../../../lib/sqlFragments.ts";
-import { broadcastFragmentsInvalidated } from "../../../lib/socket-server.ts";
+import { sqlFilePath, parseSql, joinFragments, type SqlFragment, type SqlFragmentKind } from "../../../lib/sql/schema/fragments.ts";
+import { broadcastFragmentsInvalidated } from "../../../lib/core/realtime/socket-server.ts";
 
 const VALID_KINDS: readonly SqlFragmentKind[] = ["table", "index", "fk", "seed", "raw"] as const;
 

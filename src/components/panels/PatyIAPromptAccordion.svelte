@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { FlexLayout, TabItem, Tabs } from "@ingenieria_insoft/ispsveltecomponents";
-	import Accordion from "$comps/containers/Accordion.svelte";
+	import Accordion from "$comps/ui/containers/Accordion.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 
 	type Version = "original" | "ultra" | "wenyan" | "comparativa";

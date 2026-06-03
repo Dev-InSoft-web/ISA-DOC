@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { resolverIdentidades } from "../../../../lib/patyia/identidadesCache.ts";
-import { jsonResponse } from "../../../../lib/patyia/openaiKey.ts";
+import { resolverIdentidades } from "../../../../lib/features/patyia/020-api/identidadesCache.ts";
+import { jsonResponse } from "../../../../lib/features/patyia/040-openai/openaiKey.ts";
 
 export const prerender = false;
 

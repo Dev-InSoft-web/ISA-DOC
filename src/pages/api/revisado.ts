@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { readAll, writeMany } from "../../lib/bitacora/revisadoServer";
-import { broadcastRevisadoChanged } from "../../lib/socket-server";
+import { readAll, writeMany } from "../../lib/features/bitacora/revisadoServer";
+import { broadcastRevisadoChanged } from "../../lib/core/realtime/socket-server";
 
 export const prerender = false;
 

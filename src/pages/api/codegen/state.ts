@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { codegenDir } from "../../../lib/codeGen/paths.js";
+import { codegenDir } from "../../../lib/sql/codegen/paths.js";
 
 const STATE_FILE = path.join(codegenDir, "_state.json");
 

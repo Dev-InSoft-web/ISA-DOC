@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { readPersistedTree, readColumnsTree } from "../../../lib/tablesStore.server.ts";
+import { readPersistedTree, readColumnsTree } from "../../../lib/sql/stores/tablesStore.server.ts";
 
 /**
  * Devuelve documentación contextual.

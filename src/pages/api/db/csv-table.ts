@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { getPool } from "../../../lib/db.ts";
-import { REBUILD_TABLES, type RebuildTableConfig } from "../../../lib/migration/oldRebuildTables.ts";
+import { getPool } from "../../../lib/core/database/clientesis-pool.ts";
+import { REBUILD_TABLES, type RebuildTableConfig } from "../../../lib/sql/migration/oldRebuildTables.ts";
 
 export const prerender = false;
 

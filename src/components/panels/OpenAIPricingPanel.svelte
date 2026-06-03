@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { FlexLayout, GridLayout, Input, SelectEnum } from "@ingenieria_insoft/ispsveltecomponents";
 	import { marked } from "marked";
-	import pricing from "../../lib/patyia/openai-models-pricing.json";
+	import pricing from "../../lib/features/patyia/040-openai/openai-models-pricing.json";
 
 	type ModelEntry = {
 		familia: string;
@@ -135,7 +135,7 @@
 	{/if}
 
 	<p style="margin-top: 1rem; color: #aaa; font-size: 0.75rem;">
-		Total: {filtered.length} modelos · JSON: <code>src/lib/patyia/openai-models-pricing.json</code>
+		Total: {filtered.length} modelos · JSON: <code>src/lib/features/patyia/040-openai/openai-models-pricing.json</code>
 	</p>
 </FlexLayout>
 

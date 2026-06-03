@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { readConvLogFile, ordenarMensajesConvLog } from "../../../../../lib/patyia/readConvLog.ts";
+import { readConvLogMerged, ordenarMensajesConvLog } from "../../../../../lib/features/patyia/030-conversacion/readConvLog.ts";
 
 export const prerender = false;
 
@@ -9,9 +9,9 @@ export const GET: APIRoute = async ({ params }) => {
 		return json({ ok: false, error: "iconversacion inválido" }, 400);
 	}
 
-	const log = await readConvLogFile(iconversacion);
+	const log = await readConvLogMerged(iconversacion);
 	if (!log) {
-		return json({ ok: false, error: `Log conv-${iconversacion}.json no encontrado` }, 404);
+		return json({ ok: false, error: `Log conv-${iconversacion} no encontrado (archivo ni CONVERSACION_LOG)` }, 404);
 	}
 
 	return json({

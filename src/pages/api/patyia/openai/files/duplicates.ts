@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { join } from "node:path";
-import { escribirJson, leerJson, STORAGE_ROOT } from "../../../../../lib/patyia/storage.ts";
-import { scanDuplicates, type DuplicatesReport } from "../../../../../lib/patyia/duplicates.ts";
+import { escribirJson, leerJson, STORAGE_ROOT } from "../../../../../lib/features/patyia/040-openai/storage.ts";
+import { scanDuplicates, type DuplicatesReport } from "../../../../../lib/features/patyia/040-openai/duplicates.ts";
 
 export const prerender = false;
 

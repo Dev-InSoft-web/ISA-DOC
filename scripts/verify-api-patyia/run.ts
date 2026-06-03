@@ -68,7 +68,7 @@ async function ensureToken(): Promise<boolean> {
 	console.error("⛔ No fue posible obtener un token. La cadena no puede continuar.");
 	console.error("   Tips:");
 	console.error("    · Defina PATYIA_TOKEN=<jwt-valido-para-patyia-local>");
-	console.error("    · O cree token.patyia.json en la raíz del proyecto");
+	console.error("    · O cree secrets/tokens/token.patyia.json");
 
 	return false;
 }

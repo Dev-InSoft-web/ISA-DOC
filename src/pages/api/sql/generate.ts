@@ -1,9 +1,9 @@
 import type { APIRoute } from "astro";
 import { readFile, writeFile } from "node:fs/promises";
-import { sqlFilePath, parseSql, joinFragments } from "../../../lib/sqlFragments.ts";
-import { readTablesDoc } from "../../../lib/tablesStore.server.ts";
-import { emitTablesAsBody } from "../../../lib/tableSchema.ts";
-import { broadcastFragmentsInvalidated } from "../../../lib/socket-server.ts";
+import { sqlFilePath, parseSql, joinFragments } from "../../../lib/sql/schema/fragments.ts";
+import { readTablesDoc } from "../../../lib/sql/stores/tablesStore.server.ts";
+import { emitTablesAsBody } from "../../../lib/sql/schema/tableSchema.ts";
+import { broadcastFragmentsInvalidated } from "../../../lib/core/realtime/socket-server.ts";
 
 /**
  * Regenera los fragmentos kind="table" del init_capacitacion.sql a partir de

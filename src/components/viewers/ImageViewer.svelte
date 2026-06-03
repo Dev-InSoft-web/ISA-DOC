@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Modal } from "@ingenieria_insoft/ispsveltecomponents";
-	import { formatearUsd } from "../../lib/patyia/openaiPricing";
+	import { formatearUsd } from "../../lib/features/patyia/040-openai/openaiPricing";
 
 	export let bshow: boolean = false;
 	export let src: string = "";

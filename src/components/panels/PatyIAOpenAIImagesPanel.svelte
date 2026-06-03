@@ -4,16 +4,21 @@
 	import ChatMensajesView, { type MsgVista, type ArchivoCita, type OpenFileDetail } from "./ChatMensajesView.svelte";
 	import { marked } from "marked";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
-	import Accordion from "$comps/containers/Accordion.svelte";
+	import Accordion from "$comps/ui/containers/Accordion.svelte";
 	import TsViewer from "../viewers/TsViewer.svelte";
 	import ImageViewer from "../viewers/ImageViewer.svelte";
 	import StorageActionsPanel from "./StorageActionsPanel.svelte";
 	import PatyIATestEnginesPanel from "./PatyIATestEnginesPanel.svelte";
-	import { PROMPT_MOCKUPS, type PromptMockup } from "../../lib/patyia/promptMockups";
-	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/patyia/openaiPricing";
-	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/patyia/patyiaPersist";
-	import { resolveLocalEndpoint, type ApiMethod } from "../../lib/patyia/apiEndpoints";
-	import { leerState, escribirState, migrarLegacy } from "../../lib/patyia/urlState";
+	import { PROMPT_MOCKUPS, type PromptMockup } from "../../lib/features/patyia/050-prompts/promptMockups";
+	import { calcularCostoTexto, calcularCostoImagen, formatearUsd, filasPricingTexto, filasPricingImagen, type UsageTexto, type FilaPricingTexto, type FilaPricingImagen } from "../../lib/features/patyia/040-openai/openaiPricing";
+	import { loadJson, saveJson, STORAGE_KEYS } from "../../lib/features/patyia/010-config/patyiaPersist";
+	import {
+		MODELO_CONVERSACION_DEFAULT,
+		TModeloConversacion,
+		normalizarModeloConversacion,
+	} from "../../lib/features/patyia/030-conversacion/conversationModels";
+	import { resolveLocalEndpoint, type ApiMethod } from "../../lib/features/patyia/020-api/apiEndpoints";
+	import { leerState, escribirState, migrarLegacy } from "../../lib/features/patyia/010-config/urlState";
 	type AppStatePartial = { nivel?: unknown; subPruebas?: unknown; subStorage?: unknown; subConv?: unknown; interConvId?: unknown };
 
 	interface ImageItem {
@@ -162,7 +167,7 @@
 				{ campo: "Test Responses", tipo: "botón", significado: "Ejecuta 10 turnos de conversación con el engine Responses usando gpt-5-mini. Se mostrará una advertencia con detalles antes de ejecutar." },
 				{ campo: "Test Agents PoC", tipo: "botón", significado: "Ejecuta 10 turnos de conversación con el engine Agents PoC usando gpt-5-mini. Se mostrará una advertencia con detalles antes de ejecutar." },
 				{ campo: "Costo estimado", tipo: "info", significado: "Responses: $0.05–$0.07. Agents PoC: $0.04–$0.06 (varía según tokens efectivos)." },
-				{ campo: "Duración estimada", tipo: "info", significado: "Ambos: 3–5 minutos. Los resultados se acumulan en ISA-DOC/src/lib/patyia/daily/." },
+				{ campo: "Duración estimada", tipo: "info", significado: "Ambos: 3–5 minutos. Los resultados se acumulan en ISA-DOC/src/lib/features/patyia/060-bitacora/daily/." },
 			],
 		},
 		imagenes: {
@@ -356,6 +361,34 @@ const data = await r.json();
 		const ep = resolveLocalEndpoint(path, method);
 		return ep ? ep.localUrl : path;
 	}
+	const PATH_STG_CONV_NEW = "/api/patyia/staging/conversacion/new";
+	const PATH_STG_CONV_JAILBREAK = "/api/patyia/staging/conversacion/jailbreak";
+	const TInterModoConv = {
+		"Paty (jailed)": "jailed",
+		"Libre (jailbreak)": "jailbreak",
+	} as const;
+	type InterModoConv = (typeof TInterModoConv)[keyof typeof TInterModoConv];
+	let interModoConv: InterModoConv = loadJson<InterModoConv>(STORAGE_KEYS.interModoConv, "jailbreak");
+	let interModelo: string = normalizarModeloConversacion(
+		loadJson<string | null>(STORAGE_KEYS.interModelo, null),
+	);
+	$: saveJson(STORAGE_KEYS.interModelo, interModelo);
+	/** Modo fijado al iniciar la conversación (mensajes siguientes). */
+	let interModoConvActivo: InterModoConv | null = null;
+	$: saveJson(STORAGE_KEYS.interModoConv, interModoConv);
+	function interModoEfectivo(): InterModoConv {
+		return interModoConvActivo ?? interModoConv;
+	}
+	function interConversacionPostPath(): string {
+		return interModoEfectivo() === "jailbreak" ? PATH_STG_CONV_JAILBREAK : PATH_STG_CONV_NEW;
+	}
+	/** PatyIA Functions (7071) con SSE; jailed en origin usa staging/new JSON. */
+	function interUsaPatyiaSse(): boolean {
+		return apiHost === "local" || interModoEfectivo() === "jailbreak";
+	}
+	function interModeloBody(): { modelo: string } {
+		return { modelo: (interModelo ?? "").trim() || MODELO_CONVERSACION_DEFAULT };
+	}
 	let patyiaToken: string = "";
 	let patyiaTokenError: string = "";
 	async function ensurePatyiaToken(): Promise<string> {
@@ -387,6 +420,7 @@ const data = await r.json();
 		const headers = await apiHeaders(baseHeaders);
 		return fetch(url, { ...(init ?? {}), method, headers });
 	}
+
 	function localEndpointName(
 		host: "origin" | "local",
 		path: string,
@@ -437,6 +471,100 @@ const data = await r.json();
 		const tmp = document.createElement("div");
 		tmp.innerHTML = html;
 		return (tmp.textContent ?? "").trim();
+	}
+
+	interface AdjuntoInter {
+		name: string;
+		dataUrl: string;
+	}
+
+	const MAX_INTER_ADJUNTOS = 8;
+	const MAX_ADJUNTO_BYTES = 5_000_000;
+
+	let interAdjuntos: AdjuntoInter[] = [];
+	let interFileInput: HTMLInputElement | null = null;
+
+	function extraerImagenesDeHtml(html: string): string[] {
+		const urls: string[] = [];
+		const seen = new Set<string>();
+		for (const m of html.matchAll(/<img[^>]+src=["']([^"']+)["']/gi)) {
+			const u = m[1].trim();
+			if (!u || seen.has(u) || !/^data:image\/(png|jpe?g|webp|gif);base64,/i.test(u)) continue;
+			seen.add(u);
+			urls.push(u);
+		}
+		return urls;
+	}
+
+	function prepararEnvioInter(html: string, adjuntos: AdjuntoInter[]): { texto: string; imagenes: string[]; mensajeHtml: string } {
+		const texto = htmlAPlano(html);
+		const seen = new Set<string>();
+		const imagenes: string[] = [];
+		const add = (u: string) => {
+			const n = u.trim();
+			if (!n || seen.has(n)) return;
+			seen.add(n);
+			imagenes.push(n);
+		};
+		for (const u of extraerImagenesDeHtml(html)) add(u);
+		for (const a of adjuntos) add(a.dataUrl);
+		const textoFinal = texto || (imagenes.length ? "Analiza la(s) imagen(es) adjunta(s)." : "");
+		return { texto: textoFinal, imagenes: imagenes.slice(0, MAX_INTER_ADJUNTOS), mensajeHtml: html };
+	}
+
+	/** Reactivo: interTieneContenido() en template no re-ejecutaba al editar Quill. */
+	$: interPuedeEnviar = (() => {
+		const { texto, imagenes } = prepararEnvioInter(interInputHtml, interAdjuntos);
+		return !!texto.trim() || imagenes.length > 0;
+	})();
+
+	function contenidoVistaConImagenes(texto: string, imagenes: string[]): string {
+		if (!imagenes.length) return texto;
+		const imgs = imagenes.map((src, i) => `![Adjunto ${i + 1}](${src})`).join("\n\n");
+		return texto ? `${texto}\n\n${imgs}` : imgs;
+	}
+
+	function abrirSelectorImagenesInter(): void {
+		interFileInput?.click();
+	}
+
+	async function onInterArchivosSeleccionados(ev: Event): Promise<void> {
+		const input = ev.target as HTMLInputElement;
+		const files = input.files;
+		if (!files?.length) return;
+		interError = "";
+		const nuevos: AdjuntoInter[] = [];
+		for (const f of Array.from(files)) {
+			if (!/^image\/(png|jpeg|jpg|webp|gif)$/i.test(f.type)) {
+				interError = "Solo imágenes PNG, JPEG, WEBP o GIF.";
+				continue;
+			}
+			if (f.size > MAX_ADJUNTO_BYTES) {
+				interError = "Cada imagen debe pesar menos de 5 MB.";
+				continue;
+			}
+			if (interAdjuntos.length + nuevos.length >= MAX_INTER_ADJUNTOS) {
+				interError = `Máximo ${MAX_INTER_ADJUNTOS} imágenes por mensaje.`;
+				break;
+			}
+			const dataUrl = await new Promise<string>((resolve, reject) => {
+				const r = new FileReader();
+				r.onload = () => resolve(String(r.result ?? ""));
+				r.onerror = () => reject(new Error("No se pudo leer el archivo"));
+				r.readAsDataURL(f);
+			});
+			nuevos.push({ name: f.name, dataUrl });
+		}
+		interAdjuntos = [...interAdjuntos, ...nuevos];
+		input.value = "";
+	}
+
+	function quitarAdjuntoInter(idx: number): void {
+		interAdjuntos = interAdjuntos.filter((_, i) => i !== idx);
+	}
+
+	function limpiarAdjuntosInter(): void {
+		interAdjuntos = [];
 	}
 
 	// --- Imágenes ---
@@ -871,16 +999,20 @@ const data = await r.json();
 		if (interDb !== "staging") { interError = "Solo se permite crear conversaciones en staging."; return; }
 		const par = parIdentidadActual();
 		if (!par) { interError = "Selecciona un tercero/contacto."; return; }
-		const mensajeUser = htmlAPlano(interInputHtml).trim();
-		if (!mensajeUser) { interError = "Escribe el primer mensaje."; return; }
+		const { texto: mensajeUser, imagenes, mensajeHtml } = prepararEnvioInter(interInputHtml, interAdjuntos);
+		if (!mensajeUser && !imagenes.length) { interError = "Escribe el primer mensaje o adjunta una imagen."; return; }
 		interLoading = true;
-		interMensajes = [...interMensajes, nuevoMsgVista("user", mensajeUser)];
+		interMensajes = [...interMensajes, nuevoMsgVista("user", contenidoVistaConImagenes(mensajeUser, imagenes))];
+		const htmlGuardado = interInputHtml;
+		const adjuntosGuardados = interAdjuntos;
 		interInputHtml = "";
+		limpiarAdjuntosInter();
 		try {
 			const ident = interIdentidades.find((it) => it.itercero === par.itercero && it.icontacto === par.icontacto);
 			const nombre = (ident?.nombreTercero ?? "").trim();
-			if (apiHost === "local") {
-				await iniciarConversacionLocalSSE(par, mensajeUser);
+			if (interUsaPatyiaSse()) {
+				interModoConvActivo = interModoConv;
+				await iniciarConversacionLocalSSE(par, mensajeUser, imagenes, mensajeHtml);
 			} else {
 				const r = await fetch(apiUrl("/api/patyia/staging/conversacion/new", "POST"), {
 					method: "POST",
@@ -889,7 +1021,10 @@ const data = await r.json();
 						itercero: par.itercero,
 						icontacto: par.icontacto,
 						primerMensaje: mensajeUser,
+						primerMensajeHtml: mensajeHtml,
+						imagenes,
 						nombre: nombre || undefined,
+						...interModeloBody(),
 					}),
 				});
 				const data = await r.json() as { ok: boolean; iconversacion?: number; hilo?: string; respuesta?: { texto?: string }; error?: string };
@@ -900,12 +1035,19 @@ const data = await r.json();
 			}
 		} catch (err) {
 			interError = err instanceof Error ? err.message : String(err);
+			interInputHtml = htmlGuardado;
+			interAdjuntos = adjuntosGuardados;
 		} finally {
 			interLoading = false;
 		}
 	}
 
-	async function iniciarConversacionLocalSSE(par: { itercero: string; icontacto: string }, prompt: string): Promise<void> {
+	async function iniciarConversacionLocalSSE(
+		par: { itercero: string; icontacto: string },
+		prompt: string,
+		imagenes: string[],
+		promptHtml: string,
+	): Promise<void> {
 		const titulo = prompt.slice(0, 80);
 		const body = {
 			itercero: par.itercero,
@@ -913,9 +1055,12 @@ const data = await r.json();
 			imodulo: "isa-doc",
 			titulo,
 			prompt,
+			imagenes,
+			prompt_html: promptHtml,
+			...interModeloBody(),
 		};
 		const headers = await apiHeaders({ "content-type": "application/json" });
-		const url = apiUrl("/api/patyia/staging/conversacion/new", "POST");
+		const url = apiUrl(interConversacionPostPath(), "POST");
 		const r = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
 		if (!r.ok || !r.body) throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`);
 		const asistente = nuevoMsgVista("assistant", "");
@@ -991,18 +1136,25 @@ const data = await r.json();
 		interError = "";
 		if (interDb !== "staging") { interError = "Solo se permite enviar mensajes en staging."; return; }
 		if (!interConvId) { interError = "No hay conversación activa."; return; }
-		const mensajeUser = htmlAPlano(interInputHtml).trim();
-		if (!mensajeUser) return;
+		const { texto: mensajeUser, imagenes, mensajeHtml } = prepararEnvioInter(interInputHtml, interAdjuntos);
+		if (!mensajeUser && !imagenes.length) return;
 		interSendLoading = true;
-		interMensajes = [...interMensajes, nuevoMsgVista("user", mensajeUser)];
+		interMensajes = [...interMensajes, nuevoMsgVista("user", contenidoVistaConImagenes(mensajeUser, imagenes))];
 		const asistente = nuevoMsgVista("assistant", "");
 		interMensajes = [...interMensajes, asistente];
+		const htmlGuardado = interInputHtml;
+		const adjuntosGuardados = interAdjuntos;
 		interInputHtml = "";
+		limpiarAdjuntosInter();
 		try {
+			if (interUsaPatyiaSse()) {
+				await enviarMensajeLocalSSE(interConvId, mensajeUser, imagenes, mensajeHtml, asistente);
+				return;
+			}
 			const r = await fetch(apiUrl(`/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST"), {
 				method: "POST",
 				headers: { "content-type": "application/json" },
-				body: JSON.stringify({ mensaje: mensajeUser }),
+				body: JSON.stringify({ mensaje: mensajeUser, mensajeHtml, imagenes, ...interModeloBody() }),
 			});
 			if (!r.ok || !r.body) throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`);
 			const reader = r.body.getReader();
@@ -1044,8 +1196,70 @@ const data = await r.json();
 			}
 		} catch (err) {
 			interError = err instanceof Error ? err.message : String(err);
+			interInputHtml = htmlGuardado;
+			interAdjuntos = adjuntosGuardados;
 		} finally {
 			interSendLoading = false;
+		}
+	}
+
+	async function enviarMensajeLocalSSE(
+		iconversacion: number,
+		prompt: string,
+		imagenes: string[],
+		promptHtml: string,
+		asistente: MsgVista,
+	): Promise<void> {
+		const par = parIdentidadActual();
+		const body = {
+			iconversacion,
+			itercero: par?.itercero ?? "",
+			icontacto: par?.icontacto ?? "",
+			prompt,
+			imagenes,
+			prompt_html: promptHtml,
+			...interModeloBody(),
+		};
+		const headers = await apiHeaders({ "content-type": "application/json" });
+		const url = apiUrl(interConversacionPostPath(), "POST");
+		const r = await fetch(url, { method: "POST", headers, body: JSON.stringify(body) });
+		if (!r.ok || !r.body) throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0, 200)}`);
+		const reader = r.body.getReader();
+		const dec = new TextDecoder();
+		let buffer = "";
+		let ultimaRespuesta = "";
+		while (true) {
+			const { value, done } = await reader.read();
+			if (done) break;
+			buffer += dec.decode(value, { stream: true });
+			const blocks = buffer.split("\n\n");
+			buffer = blocks.pop() ?? "";
+			for (const block of blocks) {
+				let evento = "";
+				let datos = "";
+				for (const ln of block.split("\n")) {
+					if (ln.startsWith("event:")) evento = ln.slice(6).trim();
+					else if (ln.startsWith("data:")) datos += ln.slice(5).trim();
+				}
+				if (!datos) continue;
+				let parsed: Record<string, unknown>;
+				try { parsed = JSON.parse(datos) as Record<string, unknown>; }
+				catch { continue; }
+				if (evento === "message" || evento === "end") {
+					const resp = String(parsed.respuesta ?? "");
+					if (resp && resp !== ultimaRespuesta) {
+						ultimaRespuesta = resp;
+						asistente.contenido = resp;
+						interMensajes = [...interMensajes];
+					}
+				} else if (evento === "error") {
+					interError = String(parsed.error ?? parsed.mensaje ?? "error");
+				}
+			}
+		}
+		if (iconversacion) {
+			const desdeLog = await cargarMensajesDesdeLog(iconversacion);
+			if (desdeLog?.length) interMensajes = desdeLog;
 		}
 	}
 
@@ -1054,10 +1268,12 @@ const data = await r.json();
 		interHilo = "";
 		interMensajes = [];
 		interInputHtml = "";
+		limpiarAdjuntosInter();
 		interError = "";
 		interStreamBuffer = "";
 		interHistorialCargado = false;
 		interConvIdInput = null;
+		interModoConvActivo = null;
 	}
 
 	async function recuperarONueva(): Promise<void> {
@@ -2034,19 +2250,24 @@ const data = await r.json();
 									</FlexLayout>
 								{/key}
 								<FlexLayout items="end">
+									<SelectEnum bind:value={interModoConv} enumValue={TInterModoConv} label="Modo conversación" readonly={interConvId !== null && interModoConvActivo !== null} title={interModoConv === "jailbreak" ? "Respuesta libre (sin clasificador Paty). Ideal para probar imágenes." : "Flujo Paty: clasificador + instrucciones."} />
 									<SelectEnum bind:value={interDb} enumValue={TBaseDatos} label="Base de datos" />
-									<div
-										style="flex: 1 1 auto; min-width: 0;"
-										on:keydown={(e) => {
-											if (e.key !== "Enter") return;
-											if (interRecuperarLoading || interLoading || interSendLoading) return;
-											e.preventDefault();
-											recuperarONueva();
-										}}
-										role="presentation"
-									>
-										<InputNumber bind:value={interConvIdInput} label="iconversacion" required={false} />
-									</div>
+								</FlexLayout>
+							</GridLayout>
+							<GridLayout cells={3} items="end">
+								<div
+									on:keydown={(e) => {
+										if (e.key !== "Enter") return;
+										if (interRecuperarLoading || interLoading || interSendLoading) return;
+										e.preventDefault();
+										recuperarONueva();
+									}}
+									role="presentation"
+								>
+									<InputNumber bind:value={interConvIdInput} label="iconversacion" required={false} />
+								</div>
+								<SelectEnum bind:value={interModelo} enumValue={TModeloConversacion} label="Modelo (POST)" title="Se envía como modelo en cada POST a PatyIA / staging para probar si el problema de adjuntos depende del modelo." />
+								<FlexLayout items="end" justify="end">
 									<ButtonIconify
 										icon={interConvIdInput && interConvIdInput > 0 ? "mdi:cloud-download-outline" : "mdi:plus-circle-outline"}
 										onClick={recuperarONueva}
@@ -2070,7 +2291,18 @@ const data = await r.json();
 								<div class="inter-meta sub">
 									<span><strong>iconversacion:</strong> <code>{interConvId}</code></span>
 									<span><strong>HILO:</strong> <code>{interHilo}</code></span>
+									<span><strong>modo:</strong> <code>{interModoEfectivo()}</code></span>
+									<span><strong>modelo POST:</strong> <code>{interModelo}</code></span>
 								</div>
+							{:else}
+								<p class="sub" style="margin: 0.25rem 0 0;">
+									Modo <strong>{interModoConv}</strong>
+									{interModoConv === "jailbreak"
+										? "· POST jailbreak (sin Paty: clasificador ni instrucciones BD)"
+										: apiHost === "local"
+											? "· POST /api/conversacion (Paty completo; imágenes en el turno con visión + instrucciones)"
+											: "· POST staging/new (Paty vía ISA-DOC)"}
+								</p>
 							{/if}
 
 							{#if interMensajes.length}
@@ -2084,15 +2316,40 @@ const data = await r.json();
 							{/if}
 
 							<div class="inter-input">
-								<RichEditor bind:value={interInputHtml} label={interConvId === null ? "Primer mensaje del tercero" : "Escribe el siguiente mensaje"} />
-								<FlexLayout justify="end" items="center">
-									<Button variant="soft" style="width: fit-content;" onClick={() => (interInputHtml = "¿Cómo actualizar ContaPyme a la última versión disponible?")} title="Inserta el prompt fijo de prueba de saludo">Plantilla prueba</Button>
-									{#if interConvId === null}
-										<Button onClick={iniciarConversacionStg} disabled={interLoading || interDb !== "staging" || !interIdentidadValue || !htmlAPlano(interInputHtml).trim()} loading={interLoading} title={tituloLocal(apiHost, "/api/patyia/staging/conversacion/new", "POST", "Iniciar conversación")} color={colorLocal(apiHost, "/api/patyia/staging/conversacion/new", "POST")}>Iniciar conversación</Button>
-									{:else}
-										<Button onClick={enviarMensajeStg} disabled={interSendLoading || interDb !== "staging" || !htmlAPlano(interInputHtml).trim()} loading={interSendLoading} title={tituloLocal(apiHost, `/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST", "Enviar mensaje")} color={colorLocal(apiHost, `/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST")}>Enviar mensaje</Button>
+								<div class="inter-input-main">
+									<RichEditor
+										bind:value={interInputHtml}
+										onChange={() => { interInputHtml = interInputHtml; }}
+										label={interConvId === null ? "Primer mensaje del tercero" : "Escribe el siguiente mensaje"}
+									/>
+									<input
+										type="file"
+										accept="image/png,image/jpeg,image/webp,image/gif"
+										multiple
+										class="inter-file-input"
+										bind:this={interFileInput}
+										on:change={onInterArchivosSeleccionados}
+									/>
+									{#if interAdjuntos.length}
+										<div class="inter-adjuntos">
+											{#each interAdjuntos as adj, idx}
+												<div class="inter-adjunto-thumb">
+													<img src={adj.dataUrl} alt={adj.name} title={adj.name} />
+													<ButtonIconify icon="mdi:close" onClick={() => quitarAdjuntoInter(idx)} title="Quitar imagen" />
+												</div>
+											{/each}
+										</div>
 									{/if}
-								</FlexLayout>
+								</div>
+								<div class="inter-input-actions">
+									<Button variant="soft" onClick={abrirSelectorImagenesInter} title="Adjuntar imágenes (PNG, JPEG, WEBP, GIF)">Adjuntar imagen</Button>
+									<Button variant="soft" onClick={() => (interInputHtml = "<p>¿Cómo actualizar ContaPyme a la última versión disponible?</p>")} title="Inserta el prompt fijo de prueba de saludo">Plantilla prueba</Button>
+									{#if interConvId === null}
+										<Button onClick={iniciarConversacionStg} disabled={interLoading || interDb !== "staging" || !interIdentidadValue || !interPuedeEnviar} loading={interLoading} title={tituloLocal(apiHost, interConversacionPostPath(), "POST", "Iniciar conversación")} color={colorLocal(apiHost, interConversacionPostPath(), "POST")}>Iniciar conversación</Button>
+									{:else}
+										<Button onClick={enviarMensajeStg} disabled={interSendLoading || interDb !== "staging" || !interPuedeEnviar} loading={interSendLoading} title={interUsaPatyiaSse() ? tituloLocal(apiHost, interConversacionPostPath(), "POST", "Enviar mensaje") : tituloLocal(apiHost, `/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST", "Enviar mensaje")} color={interUsaPatyiaSse() ? colorLocal(apiHost, interConversacionPostPath(), "POST") : colorLocal(apiHost, `/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST")}>Enviar mensaje</Button>
+									{/if}
+								</div>
 							</div>
 						</div>
 					{/if}
@@ -2594,6 +2851,67 @@ const data = await r.json();
 	}
 	.inter-input {
 		flex-shrink: 0;
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		gap: 0.75rem;
+	}
+	.inter-input-main {
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+	.inter-input-main :global(.richeditor) {
+		min-height: 5.5rem;
+	}
+	.inter-input-main :global(.ql-editor) {
+		min-height: 3.25rem;
+		font-size: 0.9rem;
+		line-height: 1.4;
+	}
+	.inter-input-main :global(.ql-toolbar.ql-snow) {
+		padding: 0.2rem 0.35rem;
+	}
+	.inter-input-actions {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0.45rem;
+		flex: 0 0 auto;
+		width: 10.5rem;
+		padding-top: 1.35rem;
+	}
+	.inter-input-actions :global(button) {
+		width: 100%;
+		justify-content: center;
+		white-space: normal;
+		text-align: center;
+	}
+	.inter-file-input {
+		display: none;
+	}
+	.inter-adjuntos {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 0.5rem;
+	}
+	.inter-adjunto-thumb {
+		position: relative;
+		width: 72px;
+		height: 72px;
+		border-radius: 6px;
+		overflow: hidden;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+	}
+	.inter-adjunto-thumb img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.inter-adjunto-thumb :global(button) {
+		position: absolute;
+		top: 2px;
+		right: 2px;
 	}
 	.inter-meta {
 		display: flex;

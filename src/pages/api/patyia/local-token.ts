@@ -1,7 +1,6 @@
 import type { APIRoute } from "astro";
 import { readFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
-import path from "node:path";
+import { findTokenFile } from "$lib/core/secrets/tokenPaths.ts";
 
 export const prerender = false;
 
@@ -13,9 +12,9 @@ export const GET: APIRoute = async () => {
 			headers: { "content-type": "application/json" },
 		});
 	}
-	const file = path.resolve(process.cwd(), "token.patyia.json");
-	if (!existsSync(file)) {
-		return new Response(JSON.stringify({ ok: false, error: "token.patyia.json no encontrado" }), {
+	const file = findTokenFile("patyia");
+	if (!file) {
+		return new Response(JSON.stringify({ ok: false, error: "token PatyIA no encontrado (secrets/tokens/token.patyia.json)" }), {
 			status: 404,
 			headers: { "content-type": "application/json" },
 		});

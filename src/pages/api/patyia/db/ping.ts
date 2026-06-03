@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { pingPatyDb } from "../../../../lib/dbPaty.ts";
+import { pingPatyDb } from "../../../../lib/core/database/paty-pool.ts";
 
 export const prerender = false;
 

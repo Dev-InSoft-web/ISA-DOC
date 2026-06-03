@@ -1,9 +1,9 @@
 import type { APIRoute } from "astro";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { resolveOpenAIKey } from "../../../../../lib/patyia/openaiKey.ts";
-import { BACKUP_PROGRESS, ensureDir, escribirJson, fileDir, FILES_CACHE, leerJson, safeExt, STORAGE_ROOT } from "../../../../../lib/patyia/storage.ts";
-import { backupOne, listarArchivosVS, type OpenAIFileMetaLite } from "../../../../../lib/patyia/openaiBackup.ts";
+import { resolveOpenAIKey } from "../../../../../lib/features/patyia/040-openai/openaiKey.ts";
+import { BACKUP_PROGRESS, ensureDir, escribirJson, fileDir, FILES_CACHE, leerJson, safeExt, STORAGE_ROOT } from "../../../../../lib/features/patyia/040-openai/storage.ts";
+import { backupOne, listarArchivosVS, type OpenAIFileMetaLite } from "../../../../../lib/features/patyia/040-openai/openaiBackup.ts";
 
 export const prerender = false;
 

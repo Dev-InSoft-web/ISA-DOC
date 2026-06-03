@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
-import { readTablesDoc, writeTablesDoc, type TablesDoc } from "../../lib/tablesStore.server.ts";
-import type { ParsedTable } from "../../lib/tableSchema.ts";
+import { readTablesDoc, writeTablesDoc, type TablesDoc } from "../../lib/sql/stores/tablesStore.server.ts";
+import type { ParsedTable } from "../../lib/sql/schema/tableSchema.ts";
 
 function isParsedTable(x: unknown): x is ParsedTable {
 	if (!x || typeof x !== "object") return false;

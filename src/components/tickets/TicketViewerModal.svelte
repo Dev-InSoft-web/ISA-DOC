@@ -1,15 +1,33 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import { Modal, Switch, FlexLayout, GridLayout } from "@ingenieria_insoft/ispsveltecomponents";
 	import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
-	import { getTicketHtml, getTicketTotalEstimadoMin, type TicketRegistro } from "../../lib/tickets";
-	import { formatHtml } from "../../lib/format-html";
+	import { getTicketHtml, getTicketTotalEstimadoMin, type TicketRegistro } from "../../lib/features/tickets";
+	import { formatHtml } from "../../lib/shared/format-html";
 	import HtmlViewer from "../viewers/HtmlViewer.svelte";
+	import {
+		loadTicketViewerPrefs,
+		saveTicketViewerPrefs,
+		TICKET_VIEWER_DEFAULTS,
+	} from "../../lib/features/tickets/ticketViewerPrefs";
 
 	export let ticket: TicketRegistro | null = null;
 	export let bshow: boolean = false;
 
-	let whiteBg: boolean = false;
-	let showCode: boolean = false;
+	let whiteBg: boolean = TICKET_VIEWER_DEFAULTS.whiteBg;
+	let showCode: boolean = TICKET_VIEWER_DEFAULTS.showCode;
+	let prefsHydrated = false;
+
+	onMount(() => {
+		const prefs = loadTicketViewerPrefs();
+		whiteBg = prefs.whiteBg;
+		showCode = prefs.showCode;
+		prefsHydrated = true;
+	});
+
+	$: if (prefsHydrated) {
+		saveTicketViewerPrefs({ whiteBg, showCode });
+	}
 
 	type TicketView = { html: string; prettyHtml: string; totalMin: number };
 

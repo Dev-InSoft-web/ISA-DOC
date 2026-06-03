@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getPool } from "../../../lib/db.ts";
+import { getPool } from "../../../lib/core/database/clientesis-pool.ts";
 
 export const prerender = false;
 

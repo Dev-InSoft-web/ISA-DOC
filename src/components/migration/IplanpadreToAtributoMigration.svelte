@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
-	import AccordionActions from "$comps/containers/AccordionActions.svelte";
+	import AccordionActions from "$comps/ui/containers/AccordionActions.svelte";
 	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import mdIntro from "../../lib/bitacora/topics/iplan/intro.md?raw";
-	import mdFase1 from "../../lib/bitacora/topics/iplan/fase1.md?raw";
-	import mdFase2a from "../../lib/bitacora/topics/iplan/fase2a.md?raw";
-	import mdFase2 from "../../lib/bitacora/topics/iplan/fase2.md?raw";
-	import mdFase3 from "../../lib/bitacora/topics/iplan/fase3.md?raw";
-	import mdFase4 from "../../lib/bitacora/topics/iplan/fase4.md?raw";
-	import mdFase5 from "../../lib/bitacora/topics/iplan/fase5.md?raw";
+	import mdIntro from "../../lib/features/bitacora/topics/iplan/intro.md?raw";
+	import mdFase1 from "../../lib/features/bitacora/topics/iplan/fase1.md?raw";
+	import mdFase2a from "../../lib/features/bitacora/topics/iplan/fase2a.md?raw";
+	import mdFase2 from "../../lib/features/bitacora/topics/iplan/fase2.md?raw";
+	import mdFase3 from "../../lib/features/bitacora/topics/iplan/fase3.md?raw";
+	import mdFase4 from "../../lib/features/bitacora/topics/iplan/fase4.md?raw";
+	import mdFase5 from "../../lib/features/bitacora/topics/iplan/fase5.md?raw";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
 	export let date: string = "";

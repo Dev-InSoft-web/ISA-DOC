@@ -9,7 +9,7 @@
 	import CopyButtonIconify from "./CopyButtonIconify.svelte";
 	import RunButton from "./RunButton.svelte";
 	import RevisadoCheck from "./RevisadoCheck.svelte";
-	import ConfirmDialog from "../overlays/ConfirmDialog.svelte";
+	import ConfirmDialog from "../ui/overlays/ConfirmDialog.svelte";
 
 	export let title: string;
 	export let sql: string;

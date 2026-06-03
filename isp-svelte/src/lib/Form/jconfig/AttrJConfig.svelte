@@ -1,9 +1,9 @@
 <script context="module" lang="ts">
    import { TObject } from "@ingenieria_insoft/ispgen";
    import { CatalogoGen, FlexLayout, Input, InputNumber, RichEditor, SelectObject } from "@ingenieria_insoft/ispsveltecomponents";
-   import BtnRef2 from "../../especial/BtnRef2.svelte";
-   import SwitchField from "../../especial/_Switch.svelte";
-   import TipInfo from "../../overlays/TipInfo.svelte";
+   import BtnRef2 from "../../ui/widgets/BtnRef2.svelte";
+   import SwitchField from "../../ui/widgets/_Switch.svelte";
+   import TipInfo from "../../ui/overlays/TipInfo.svelte";
    import ObjJConfig, { Adapter, type CatalogoController, type ControlDef, type Controllers, type FieldDef, type InputKind } from "./ObjJConfig.svelte";
    import type { ICtxBtnRef } from "@ingenieria_insoft/ispsveltecomponents";
 

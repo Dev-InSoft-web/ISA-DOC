@@ -3,13 +3,13 @@
 		Card, ButtonIconify, H4, Text, Toaster, toastError, toastSuccess,
 		FlexLayout,
 	} from "@ingenieria_insoft/ispsveltecomponents";
-	import AccordionActions from "$comps/containers/AccordionActions.svelte";
+	import AccordionActions from "$comps/ui/containers/AccordionActions.svelte";
 	import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
 	import SqlViewer from "../viewers/SqlViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
 	import RunButton from "$comps/actions/RunButton.svelte";
-	import ConfirmDialog from "$comps/overlays/ConfirmDialog.svelte";
-	import { PERMISOS_CSV } from "../../lib/permisosCsv.ts";
+	import ConfirmDialog from "$comps/ui/overlays/ConfirmDialog.svelte";
+	import { PERMISOS_CSV } from "../../lib/sql/permisos/csv.ts";
 
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
 	export let tableName: string = "PERMISOS";

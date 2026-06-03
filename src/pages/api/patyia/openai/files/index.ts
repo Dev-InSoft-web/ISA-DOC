@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { resolveOpenAIKey } from "../../../../../lib/patyia/openaiKey.ts";
+import { resolveOpenAIKey } from "../../../../../lib/features/patyia/040-openai/openaiKey.ts";
 
 export const prerender = false;
 

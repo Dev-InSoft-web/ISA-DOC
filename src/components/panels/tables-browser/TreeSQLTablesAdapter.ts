@@ -1,4 +1,4 @@
-﻿import {
+import {
 	createEmptyDomain as createEmptyDomainFn,
 	deriveDomainName,
 	loadChildPrefixes,
@@ -18,13 +18,13 @@
 	type DomainsMap,
 	type PrefixOrderMap,
 	type TopLevelEntry
-} from "../../../lib/codeGen/domains.ts";
+} from "../../../lib/sql/codegen/domains.ts";
 import { toastError } from "@ingenieria_insoft/ispsveltecomponents";
-import type { ParsedTable } from "../../../lib/tableSchema";
-import { effectiveTableName } from "../../../lib/tableSchema";
-import { TreeAdapterCatalogoStub } from "$comps/TreeViewLegacy/_treeAdapter/CatalogoStub";
-import type { TreeViewProps } from "$comps/TreeViewLegacy/TreeRowView.svelte";
-import { TreeRowViewAdapterLegacy } from "$comps/TreeViewLegacy/TreeRowView.svelte";
+import type { ParsedTable } from "../../../lib/sql/schema/tableSchema";
+import { effectiveTableName } from "../../../lib/sql/schema/tableSchema";
+import { TreeAdapterCatalogoStub } from "$comps/tree/TreeViewLegacy/_treeAdapter/CatalogoStub";
+import type { TreeViewProps } from "$comps/tree/TreeViewLegacy/TreeRowView.svelte";
+import { TreeRowViewAdapterLegacy } from "$comps/tree/TreeViewLegacy/TreeRowView.svelte";
 import { TTableNodeUX } from "./TTableNodeUX";
 
 export type TablesBrowserChangeFn = (next: TablesBrowserState) => void;

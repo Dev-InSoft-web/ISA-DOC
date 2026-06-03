@@ -1,19 +1,12 @@
 <script lang="ts">
 	import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
+	import { decodeJsonState, encodeJsonState } from "../../lib/features/patyia/010-config/stateB64";
 
 	type ShareState = Record<string, unknown> & { nonav?: boolean };
 
-	const decodeState = (raw: string | null): ShareState => {
-		if (!raw) return {};
-		try {
-			const value = JSON.parse(decodeURIComponent(escape(atob(raw))));
-			return value && typeof value === "object" && !Array.isArray(value) ? value as ShareState : {};
-		} catch {
-			return {};
-		}
-	};
+	const decodeState = (raw: string | null): ShareState => decodeJsonState(raw) as ShareState;
 
-	const encodeState = (state: ShareState): string => btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+	const encodeState = (state: ShareState): string => encodeJsonState(state);
 
 	function buildShareUrl(): string {
 		const url = new URL(window.location.href);

@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { pingDb } from "../../../lib/db.ts";
+import { pingDb } from "../../../lib/core/database/clientesis-pool.ts";
 
 export const prerender = false;
 

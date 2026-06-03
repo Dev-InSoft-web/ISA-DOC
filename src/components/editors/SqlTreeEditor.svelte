@@ -10,27 +10,27 @@
 -->
 <script context="module" lang="ts">
    import { TObject } from "@ingenieria_insoft/ispgen";
-   import type { FlexOptionsInput } from "$comps/Options/FlexOptions.svelte";
-   import { TreeCustomsBase, type ITreeRuntime, type RowOf } from "$comps/TreeView/contracts";
+   import type { FlexOptionsInput } from "$comps/options/FlexOptions.svelte";
+   import { TreeCustomsBase, type ITreeRuntime, type RowOf } from "$comps/tree/TreeView/contracts";
    import type {
       ContainmentRole,
       INode,
       MobilityRole,
       TopologyRole,
-   } from "$comps/TreeView/_treeAdapter/_defgen/00-tree-data";
+   } from "$comps/tree/TreeView/_treeAdapter/_defgen/00-tree-data";
    import type {
       ParsedTable,
       TableColumn,
       TableOptional,
       TableRow,
       TableSection,
-   } from "../../lib/tableSchema";
+   } from "../../lib/sql/schema/tableSchema";
    import {
       isAnySectionRow,
       isOptionalRow,
       isSectionEndRow,
       isSectionRow,
-   } from "../../lib/tableSchema";
+   } from "../../lib/sql/schema/tableSchema";
 
    export type SqlNodeKind = "section" | "column" | "optional";
 
@@ -311,8 +311,8 @@
 <script lang="ts">
    import { onDestroy } from "svelte";
    import { FlexLayout, GridLayout, Iconify, Switch, Text, SelectEnum } from "@ingenieria_insoft/ispsveltecomponents";
-   import TreeView, { type TreeAdapter } from "$comps/TreeView/TreeRowView.svelte";
-   import { COMMON_COLUMN_TYPES } from "../../lib/tableSchema";
+   import TreeView, { type TreeAdapter } from "$comps/tree/TreeView/TreeRowView.svelte";
+   import { COMMON_COLUMN_TYPES } from "../../lib/sql/schema/tableSchema";
 
    export let table: ParsedTable;
    export let prefix: string = "";

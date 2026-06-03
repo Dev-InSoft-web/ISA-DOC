@@ -5,6 +5,7 @@ Norma ISA-DOC para diagramas y gráficos en tickets:
 | Tipo | Fuente editable | HTML en ticket |
 |------|-----------------|----------------|
 | **Mermaid** (flujos detallados, ER) | `.mmd` en `assets/<TK-ID>/` | PNG en **imgbb** vía `ticketImg()` |
+| **Kroki** (p. ej. PlantUML secuencia) | `.puml` + `kind: kroki` | PNG en imgbb (`kroki.io`; lienzo ajustado) |
 | **Graphviz** (flujos simples) | `.dot` | PNG en imgbb (WASM `dot` o binario local) |
 | **chart-graphviz** (barras Chart.js + marco GV) | `.chart.json` + `kind: chart-graphviz` | QuickChart → nodo `image` en DOT → PNG |
 | **QuickChart** (solo chart, sin marco) | `.chart.json` + `kind: quickchart` | PNG en imgbb |
@@ -21,7 +22,7 @@ A partir de `width`/`height` que devuelve imgbb (`imgbb-map.json`):
 - Si **ancho &lt; 400** o **alto &lt; 500**: escalar **hacia arriba** manteniendo proporción.
 - Si no: mostrar al **80%** del tamaño nativo, **centrado** con margen lateral (~5%).
 
-Lógica en `src/lib/tickets/imgDims.ts`.
+Lógica en `src/lib/features/tickets/imgDims.ts`.
 
 ## Por ticket con imágenes de API
 
@@ -34,7 +35,7 @@ node scripts/tickets/build-TK-1431666-assets.mjs
 Cada script:
 
 1. Lee `assets/<TK-ID>/manifest.json`
-2. Genera PNG según `kind` del manifest (mermaid.ink, Graphviz, quickchart.io)
+2. Genera PNG según `kind` del manifest (mermaid.ink, kroki.io, Graphviz, quickchart.io)
 3. Sube a imgbb si el archivo cambió
 4. Actualiza `assets/imgbb-map.json`
 

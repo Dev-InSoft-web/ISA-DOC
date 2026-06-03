@@ -1,12 +1,12 @@
-// Genera src/lib/patyia/sql/seed-prompts-tdconsulta.sql desde prompts/PROMPT_<TIPO>.md
+// Genera src/lib/features/patyia/070-sql/seed-prompts-tdconsulta.sql desde prompts/PROMPT_<TIPO>.md
 
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const promptsDir = resolve(__dirname, "..", "src", "lib", "patyia", "prompts");
-const outFile = resolve(__dirname, "..", "src", "lib", "patyia", "sql", "seed-prompts-tdconsulta.sql");
+const promptsDir = resolve(__dirname, "..", "src", "lib", "features", "patyia", "050-prompts", "catalog");
+const outFile = resolve(__dirname, "..", "src", "lib", "features", "patyia", "070-sql", "seed-prompts-tdconsulta.sql");
 
 const fileToTipo = (name) => name.replace(/^PROMPT_/, "").replace(/\.md$/, "");
 
@@ -26,7 +26,7 @@ const rows = files.map((f) => {
 const head = `-- =====================================================================
 -- Carga de prompts especificos por tipo de consulta
 -- BD: AYUDASCP_IA  (microservicio AYUDASCP-IA / PatyIA)
--- Fuente: src/lib/patyia/prompts/PROMPT_<TIPO>.md
+-- Fuente: src/lib/features/patyia/050-prompts/catalog/PROMPT_<TIPO>.md
 --
 -- Estrategia (idempotente):
 --   1) MERGE en INSTRUCCION (clave iinstruccion = '<TIPO>') con el

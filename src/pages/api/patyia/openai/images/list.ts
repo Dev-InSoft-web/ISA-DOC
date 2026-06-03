@@ -4,7 +4,7 @@ import { resolve, join } from "node:path";
 
 export const prerender = false;
 
-const PUBLIC_DIR = "public/patyia/openai/images";
+const PUBLIC_DIR = "public/generated/patyia/openai/images";
 const PUBLIC_URL = "/patyia/openai/images";
 
 export const GET: APIRoute = async () => {

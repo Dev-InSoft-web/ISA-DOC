@@ -1,8 +1,8 @@
 <script lang="ts">
 	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import noteMd from "../../lib/bitacora/daily/2026-05/04/migrate-from-old.md?raw";
-	import type { RebuildTableConfig } from "../../lib/migration/oldRebuildTables.ts";
+	import noteMd from "../../lib/features/bitacora/daily/2026-05/04/migrate-from-old.md?raw";
+	import type { RebuildTableConfig } from "../../lib/sql/migration/oldRebuildTables.ts";
 
 	export let config: RebuildTableConfig;
 	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;

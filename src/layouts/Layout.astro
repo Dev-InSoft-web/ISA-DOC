@@ -89,7 +89,7 @@ function isSubActive(t: SubTab): boolean {
             if (!RAW_BASE || RAW_BASE === "/") return;
             var BASE_NO_SLASH = RAW_BASE.endsWith("/") ? RAW_BASE.slice(0, -1) : RAW_BASE;
             var origFetch = window.fetch.bind(window);
-            var ASSET_PREFIXES = ["/icons/", "/imgs/", "/docs/", "/bd/", "/db/", "/static-api/"];
+            var ASSET_PREFIXES = ["/assets/icons/", "/assets/imgs/", "/content/docs/", "/data/codegen/", "/data/clientesis/", "/data/sql/", "/generated/", "/static-api/"];
             /** @param {string} p */
             function defaultForPath(p) {
                if (p === "tables") return { ok: true, version: 1, tables: [] };
@@ -142,7 +142,7 @@ function isSubActive(t: SubTab): boolean {
             // los tags img, a, link, script y source apunten al base path estatico.
             // Necesario porque el shim de fetch no intercepta requests originados
             // por atributos HTML (navegador los hace directamente).
-            var ATTR_PREFIXES = ["/icons/", "/imgs/", "/docs/", "/bd/", "/db/", "/static-api/"];
+            var ATTR_PREFIXES = ["/assets/icons/", "/assets/imgs/", "/content/docs/", "/data/codegen/", "/data/clientesis/", "/data/sql/", "/generated/", "/static-api/"];
             /** @param {string | null} v */
             function matchesPrefix(v) {
                if (!v || typeof v !== "string") return false;

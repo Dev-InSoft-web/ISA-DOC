@@ -4,7 +4,7 @@ Lee un manifiesto JSON por stdin con la forma::
 
     [{ "key": "<sha1>", "lang": "typescript", "src": "..." }, ...]
 
-Escribe cada PNG en ``src/lib/tickets/assets/code/<key>.png``. Las
+Escribe cada PNG en ``src/lib/features/tickets/assets/code/<key>.png``. Las
 opciones quedan fijas conforme la directriz: tema vscode, fondo negro,
 sin paddings, sin window controls, fuente Hack 14px, exportSize 2x.
 

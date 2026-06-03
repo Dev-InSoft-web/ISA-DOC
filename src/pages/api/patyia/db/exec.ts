@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getPatyPool } from "../../../../lib/dbPaty.ts";
+import { getPatyPool } from "../../../../lib/core/database/paty-pool.ts";
 
 export const prerender = false;
 

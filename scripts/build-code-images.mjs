@@ -1,9 +1,9 @@
 // @ts-nocheck
 // build-code-images.mjs — descubre todos los snippets que requieren imagen
 // (llamadas a `codeBlock(src, lang?)` y `compareTable({ kind:"code", before, after, lang })`
-// en los archivos `src/lib/tickets/TK-*.ts`), invoca `render-code.py`
+// en los archivos `src/lib/features/tickets/TK-*.ts`), invoca `render-code.py`
 // (carbon-api → carbon.now.sh), sube cada PNG a imgbb y actualiza el mapa
-// `src/lib/tickets/assets/code-imgs.json`.
+// `src/lib/features/tickets/assets/code-imgs.json`.
 //
 // Uso (desde la raíz de ISA-DOC):
 //   npm run code-images:build

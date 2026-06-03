@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
-import { getPatyPool } from "../../../../lib/dbPaty.ts";
-import { resolverIdentidades } from "../../../../lib/patyia/identidadesCache.ts";
-import { jsonResponse } from "../../../../lib/patyia/openaiKey.ts";
+import { getPatyPool } from "../../../../lib/core/database/paty-pool.ts";
+import { resolverIdentidades } from "../../../../lib/features/patyia/020-api/identidadesCache.ts";
+import { jsonResponse } from "../../../../lib/features/patyia/040-openai/openaiKey.ts";
 
 export const prerender = false;
 

@@ -11,8 +11,8 @@
 		toastError,
 		toastSuccess,
 	} from "@ingenieria_insoft/ispsveltecomponents";
-	import ConfirmDialog from "$comps/overlays/ConfirmDialog.svelte";
-	import { leerState, escribirState, migrarLegacy } from "../../lib/patyia/urlState";
+	import ConfirmDialog from "$comps/ui/overlays/ConfirmDialog.svelte";
+	import { leerState, escribirState, migrarLegacy } from "../../lib/features/patyia/010-config/urlState";
 
 	interface OpenAIFile {
 		id: string;

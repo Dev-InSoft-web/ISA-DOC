@@ -2,7 +2,7 @@
 import { writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ultraByTypeBarChartConfig, ultraTotalsBarChartConfig } from "../src/lib/tickets/patyia-prompt-metrics.ts";
+import { ultraByTypeBarChartConfig, ultraTotalsBarChartConfig } from "../src/lib/features/tickets/patyia-prompt-metrics.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const assets = resolve(__dirname, "..", "src", "lib", "tickets", "assets", "TK-1431666");

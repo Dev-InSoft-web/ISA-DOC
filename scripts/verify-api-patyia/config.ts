@@ -1,5 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { tokenFileCandidates } from "../../src/lib/core/secrets/tokenPaths.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,12 +18,9 @@ export const envName = process.env.VERIFY_API_ENV || "local";
  * Búsqueda en orden:
  *   1. process.env.PATYIA_TOKEN
  *   2. process.env.PATYIA_TOKEN_FILE (ruta absoluta a JSON `{ "token": "…" }`)
- *   3. <isaRoot>/token.patyia.json
+ *   3. secrets/tokens/token.patyia.json (o legado en raíz)
  */
-export const tokenFileCandidates: string[] = [
-	process.env.PATYIA_TOKEN_FILE || "",
-	path.join(isaRoot, "token.patyia.json"),
-].filter(Boolean);
+export const patyiaTokenFiles: string[] = tokenFileCandidates("patyia", isaRoot);
 
 /** Credenciales para /api/JWT cuando no haya token pre-emitido. */
 export const controlKey = process.env.PATYIA_CONTROLKEY || "5130489773";

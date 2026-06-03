@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
-import { getPatyPool } from "../../../../../lib/dbPaty.ts";
-import { jsonResponse, resolveOpenAIKey } from "../../../../../lib/patyia/openaiKey.ts";
+import { getPatyPool } from "../../../../../lib/core/database/paty-pool.ts";
+import { jsonResponse, resolveOpenAIKey } from "../../../../../lib/features/patyia/040-openai/openaiKey.ts";
+import { buildOpenAIResponsesInput, extractVisionFromMessage, parseImagenesField } from "../../../../../lib/features/patyia/030-conversacion/visionInput.ts";
 
 export const prerender = false;
 
@@ -10,6 +11,8 @@ interface Body {
 	itercero?: string;
 	icontacto?: string;
 	primerMensaje?: string;
+	primerMensajeHtml?: string;
+	imagenes?: unknown;
 	imodulo?: string;
 	modelo?: string;
 	titulo?: string;
@@ -61,9 +64,12 @@ export const POST: APIRoute = async ({ request }) => {
 
 	const itercero = (body.itercero ?? "").toString().trim();
 	const icontacto = (body.icontacto ?? "").toString().trim();
-	const primerMensaje = (body.primerMensaje ?? "").toString();
+	const primerMensajeRaw = (body.primerMensaje ?? "").toString();
+	const primerMensajeHtml = (body.primerMensajeHtml ?? "").toString();
+	const extraImg = parseImagenesField(body.imagenes);
+	const { text: primerMensaje, imageUrls } = extractVisionFromMessage(primerMensajeRaw, primerMensajeHtml, extraImg);
 	if (!itercero) return jsonResponse({ ok: false, error: "itercero requerido" }, 400);
-	if (!primerMensaje.trim()) return jsonResponse({ ok: false, error: "primerMensaje vacío" }, 400);
+	if (!primerMensaje && !imageUrls.length) return jsonResponse({ ok: false, error: "primerMensaje vacío" }, 400);
 	if (primerMensaje.length > 20_000) return jsonResponse({ ok: false, error: "primerMensaje excede 20k caracteres" }, 400);
 
 	const apiKey = await resolveOpenAIKey();
@@ -104,8 +110,9 @@ export const POST: APIRoute = async ({ request }) => {
 			method: "POST",
 			headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
 			body: JSON.stringify({
+				model: modelo,
 				prompt: { id: promptId, variables },
-				input: primerMensaje,
+				input: buildOpenAIResponsesInput(primerMensaje, imageUrls.length ? imageUrls : undefined, primerMensajeHtml),
 				conversation: hilo,
 				store: true,
 				max_output_tokens: 4000,

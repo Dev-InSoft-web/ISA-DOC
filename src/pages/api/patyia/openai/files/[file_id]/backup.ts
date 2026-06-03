@@ -1,8 +1,8 @@
 import type { APIRoute } from "astro";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { resolveOpenAIKey } from "../../../../../../lib/patyia/openaiKey.ts";
-import { ensureDir, escribirJson, fileDir, safeExt } from "../../../../../../lib/patyia/storage.ts";
+import { resolveOpenAIKey } from "../../../../../../lib/features/patyia/040-openai/openaiKey.ts";
+import { ensureDir, escribirJson, fileDir, safeExt } from "../../../../../../lib/features/patyia/040-openai/storage.ts";
 
 export const prerender = false;
 

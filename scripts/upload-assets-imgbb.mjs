@@ -1,5 +1,5 @@
-// Sube los archivos de src/lib/tickets/assets/ a imgbb y escribe
-// src/lib/tickets/assets/imgbb-map.json con la relación nombre → URL pública.
+// Sube los archivos de src/lib/features/tickets/assets/ a imgbb y escribe
+// src/lib/features/tickets/assets/imgbb-map.json con la relación nombre → URL pública.
 //
 // Uso:
 //   IMGBB_API_KEY=xxxxxxxx node scripts/upload-assets-imgbb.mjs

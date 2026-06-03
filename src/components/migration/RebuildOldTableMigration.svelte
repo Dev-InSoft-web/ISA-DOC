@@ -2,17 +2,17 @@
 	import {
 		Card, H4, Text, Toaster, FlexLayout, Button, Modal, Iconify,
 	} from "@ingenieria_insoft/ispsveltecomponents";
-	import AccordionActions from "$comps/containers/AccordionActions.svelte";
+	import AccordionActions from "$comps/ui/containers/AccordionActions.svelte";
 	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import SwitchComp from "$comps/especial/_Switch.svelte";
-	import type { RebuildTableConfig, RebuildColumn } from "../../lib/migration/oldRebuildTables.ts";
-	import noteMd from "../../lib/bitacora/daily/2026-05/04/rebuild-old-table.md?raw";
+	import SwitchComp from "$comps/ui/widgets/_Switch.svelte";
+	import type { RebuildTableConfig, RebuildColumn } from "../../lib/sql/migration/oldRebuildTables.ts";
+	import noteMd from "../../lib/features/bitacora/daily/2026-05/04/rebuild-old-table.md?raw";
 
 	interface Snapshot { file: string; date: string; content: string; }
 
-	const tsvModules = import.meta.glob("../../lib/migration/tsv/**/*.tsv", {
+	const tsvModules = import.meta.glob("../../lib/sql/migration/tsv/**/*.tsv", {
 		query: "?raw",
 		import: "default",
 		eager: true,
@@ -285,7 +285,7 @@
 				<Text color="error">{parseError}</Text>
 			{:else}
 				<FlexLayout items="center" justify="between">
-					<Text color="neutral"><small>{rows.length} filas · {headers.length} columnas{selectedFile ? ` · src/lib/migration/tsv/${selectedFile}` : ""}</small></Text>
+					<Text color="neutral"><small>{rows.length} filas · {headers.length} columnas{selectedFile ? ` · src/lib/sql/migration/tsv/${selectedFile}` : ""}</small></Text>
 					{#if !csvHeaderMatches && headers.length > 0}
 						<Text color="warning">
 							<small>El encabezado no coincide con las columnas destino esperadas.</small>

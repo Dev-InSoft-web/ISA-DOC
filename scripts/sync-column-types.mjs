@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Sincroniza el campo `type` de cada columna en
-// public/db/clientesis/columns/<TABLE>.json contra los tipos reales en la BD
+// public/data/clientesis/columns/<TABLE>.json contra los tipos reales en la BD
 // (INFORMATION_SCHEMA.COLUMNS) vía el endpoint local /api/db/query.
 //
 // Uso: node scripts/sync-column-types.mjs [--dry] [--api=http://localhost:4400]

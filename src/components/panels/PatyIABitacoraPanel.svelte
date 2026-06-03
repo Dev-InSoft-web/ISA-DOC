@@ -1,26 +1,26 @@
 <script lang="ts">
 	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
-	import Accordion from "$comps/containers/Accordion.svelte";
+	import Accordion from "$comps/ui/containers/Accordion.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
-	import md_2026_06_01_resumen from "../../lib/patyia/daily/2026-06/01/01-resumen-2026-06-01.md?raw";
-	import md_2026_05_29_instrucciones_cleanup from "../../lib/patyia/daily/2026-05/29/01-instrucciones-listado-y-limpieza.md?raw";
-	import md_2026_05_29_reunion_mejoras from "../../lib/patyia/daily/2026-05/29/02-reunion-propuesta-mejora-patyia.md?raw";
-	import md_2026_05_28_saludo_diag from "../../lib/patyia/daily/2026-05/28/01-saludo-perdido-diagnostico.md?raw";
-	import md_2026_05_28_compare_engines from "../../lib/patyia/daily/2026-05/28/02-comparativa-engines-responses-vs-agents.md?raw";
-	import md_2026_05_25_prompts_intro from "../../lib/patyia/daily/2026-05/25/01-prompts-tdconsulta-intro.md?raw";
-	import sqlSelectAllInstrucciones from "../../lib/patyia/sql/select-all-instrucciones.sql?raw";
-	import sqlCleanupInstruccionesVacias from "../../lib/patyia/sql/cleanup-instrucciones-vacias.sql?raw";
-	import sqlSeedPromptsTdConsulta from "../../lib/patyia/sql/seed-prompts-tdconsulta.sql?raw";
-	import sqlUpdateDescripcionesInstruccion from "../../lib/patyia/sql/update-descripciones-instruccion.sql?raw";
-	import sqlUpdateNombresInstruccion from "../../lib/patyia/sql/update-nombres-instruccion.sql?raw";
-	import sqlSeedPromptsUltraTdConsulta from "../../lib/patyia/sql/seed-prompts-ultra-tdconsulta.sql?raw";
-	import sqlUpdateInstruccionModeloGpt5Nano from "../../lib/patyia/sql/update-instruccion-modelo-gpt5-nano.sql?raw";
-	import sqlCreateConversacionLog from "../../lib/patyia/sql/create-conversacion-log.sql?raw";
-	import md_2026_06_01_tk1431662 from "../../lib/patyia/daily/2026-06/01/02-tk1431662-modelo-por-instruccion.md?raw";
-	import md_2026_06_01_prompts_ultra from "../../lib/patyia/daily/2026-06/01/03-prompts-ultra-tdconsulta.md?raw";
-	import md_2026_06_01_conversacion_log from "../../lib/patyia/daily/2026-06/01/04-conversacion-log-tabla.md?raw";
+	import md_2026_06_01_resumen from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/01-resumen-2026-06-01.md?raw";
+	import md_2026_05_29_instrucciones_cleanup from "../../lib/features/patyia/060-bitacora/daily/2026-05/29/01-instrucciones-listado-y-limpieza.md?raw";
+	import md_2026_05_29_reunion_mejoras from "../../lib/features/patyia/060-bitacora/daily/2026-05/29/02-reunion-propuesta-mejora-patyia.md?raw";
+	import md_2026_05_28_saludo_diag from "../../lib/features/patyia/060-bitacora/daily/2026-05/28/01-saludo-perdido-diagnostico.md?raw";
+	import md_2026_05_28_compare_engines from "../../lib/features/patyia/060-bitacora/daily/2026-05/28/02-comparativa-engines-responses-vs-agents.md?raw";
+	import md_2026_05_25_prompts_intro from "../../lib/features/patyia/060-bitacora/daily/2026-05/25/01-prompts-tdconsulta-intro.md?raw";
+	import sqlSelectAllInstrucciones from "../../lib/features/patyia/070-sql/select-all-instrucciones.sql?raw";
+	import sqlCleanupInstruccionesVacias from "../../lib/features/patyia/070-sql/cleanup-instrucciones-vacias.sql?raw";
+	import sqlSeedPromptsTdConsulta from "../../lib/features/patyia/070-sql/seed-prompts-tdconsulta.sql?raw";
+	import sqlUpdateDescripcionesInstruccion from "../../lib/features/patyia/070-sql/update-descripciones-instruccion.sql?raw";
+	import sqlUpdateNombresInstruccion from "../../lib/features/patyia/070-sql/update-nombres-instruccion.sql?raw";
+	import sqlSeedPromptsUltraTdConsulta from "../../lib/features/patyia/070-sql/seed-prompts-ultra-tdconsulta.sql?raw";
+	import sqlUpdateInstruccionModeloGpt5Nano from "../../lib/features/patyia/070-sql/update-instruccion-modelo-gpt5-nano.sql?raw";
+	import sqlCreateConversacionLog from "../../lib/features/patyia/070-sql/create-conversacion-log.sql?raw";
+	import md_2026_06_01_tk1431662 from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/02-tk1431662-modelo-por-instruccion.md?raw";
+	import md_2026_06_01_prompts_ultra from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/03-prompts-ultra-tdconsulta.md?raw";
+	import md_2026_06_01_conversacion_log from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/04-conversacion-log-tabla.md?raw";
 
 	// PatyIA tiene su propia BD (AYUDASCP_IA) — los endpoints de ejecución y
 	// ping están bifurcados respecto a los de ClientesIS para que el banner
@@ -104,7 +104,7 @@
 		</Accordion>
 
 		<Accordion
-			title="Prompts Ultra · MERGE PROMPT_&lt;TIPO&gt; en INSTRUCCION (13 tipos)"
+			title={"Prompts Ultra · MERGE (13 tipos, ejemplos con {{var}})"}
 			titleIcon="mdi:text-box-check-outline"
 			inner
 			checkKeys={["2026-06-01.patyia.seed-prompts-ultra", "2026-06-01.patyia.instruccion.modelo-nano"]}
@@ -113,7 +113,7 @@
 			<SqlExecCard
 				title="AYUDASCP_IA · MERGE prompts Ultra (INSTRUCCION + TDCONSULTAXINSTRUCCION)"
 				sql={sqlSeedPromptsUltraTdConsulta}
-				desc="MERGE idempotente desde prompts/Ultra/PROMPT_&lt;TIPO&gt;.md: ninstruccion, instruccion (texto compacto), version 2.0-ultra y enlace TDCONSULTAXINSTRUCCION. Regenerar con node scripts/build-paty-prompts-ultra-sql.mjs tras editar los .md. Cierra con SELECT (13 filas, LEN(instruccion))."
+				desc={"MERGE idempotente: texto Ultra con placeholders {{nombre_usuario}} en ejemplos (se resuelven en runtime). Tras editar los .md: node scripts/build-paty-prompts-ultra-sql.mjs y re-ejecutar. Cierra con SELECT (13 filas)."}
 				{executeSql}
 				checkKey="2026-06-01.patyia.seed-prompts-ultra"
 				confirmKind="warning"

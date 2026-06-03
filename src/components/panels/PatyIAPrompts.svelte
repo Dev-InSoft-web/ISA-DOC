@@ -2,30 +2,29 @@
 	import { onMount, tick } from "svelte";
 	import { FlexLayout } from "@ingenieria_insoft/ispsveltecomponents";
 	import { encode } from "gpt-tokenizer/model/gpt-5";
-	import Accordion from "$comps/containers/Accordion.svelte";
+	import Accordion from "$comps/ui/containers/Accordion.svelte";
 	import PatyIAPromptAccordion from "./PatyIAPromptAccordion.svelte";
 	import {
 		PATY_PROMPT_TIPOS,
 		WENYAN_LEGACY_BY_TIPO,
 		promptMdFilename,
 		type PatyPromptTipo,
-	} from "../../lib/patyia/prompt-files";
-	import md90 from "../../lib/patyia/prompts/90-general.md?raw";
-	import md91 from "../../lib/patyia/prompts/91-consolidacion.md?raw";
-	import md90u from "../../lib/patyia/prompts/ultra/90-general.md?raw";
-	import md91u from "../../lib/patyia/prompts/ultra/91-consolidacion.md?raw";
+	} from "../../lib/features/patyia/050-prompts/prompt-files";
+	import { decodeJsonState, encodeJsonState } from "../../lib/features/patyia/010-config/stateB64";
+	import md90 from "../../lib/features/patyia/050-prompts/catalog/90-general.md?raw";
+	import md91 from "../../lib/features/patyia/050-prompts/catalog/91-consolidacion.md?raw";
 
-	const baseGlob = import.meta.glob("../../lib/patyia/prompts/PROMPT_*.md", {
+	const baseGlob = import.meta.glob("../../lib/features/patyia/050-prompts/catalog/PROMPT_*.md", {
 		query: "?raw",
 		import: "default",
 		eager: true,
 	}) as Record<string, string>;
-	const ultraGlob = import.meta.glob("../../lib/patyia/prompts/Ultra/PROMPT_*.md", {
+	const ultraGlob = import.meta.glob("../../lib/features/patyia/050-prompts/catalog/Ultra/PROMPT_*.md", {
 		query: "?raw",
 		import: "default",
 		eager: true,
 	}) as Record<string, string>;
-	const wenyanGlob = import.meta.glob("../../lib/patyia/prompts/wenyan-ultra/*.md", {
+	const wenyanGlob = import.meta.glob("../../lib/features/patyia/050-prompts/catalog/wenyan-ultra/*.md", {
 		query: "?raw",
 		import: "default",
 		eager: true,
@@ -80,8 +79,8 @@
 
 	const prompts: ReadonlyArray<Prompt> = [
 		...tipoPrompts,
-		{ title: "90. GENERAL", icon: "mdi:shield-account-outline", md: md90, mdUltra: md90u, mdWenyan: md90u },
-		{ title: "91. CONSOLIDACION", icon: "mdi:merge", md: md91, mdUltra: md91u, mdWenyan: md91u },
+		{ title: "90. GENERAL", icon: "mdi:shield-account-outline", md: md90, mdUltra: md90, mdWenyan: md90 },
+		{ title: "91. CONSOLIDACION", icon: "mdi:merge", md: md91, mdUltra: md91, mdWenyan: md91 },
 	];
 
 	let versiones: Version[] = prompts.map(() => "comparativa");
@@ -138,14 +137,8 @@
 	const isVersion = (value: unknown): value is Version => value === "original" || value === "ultra" || value === "wenyan" || value === "comparativa";
 
 	function readStateFromUrl(): PromptUrlState {
-		try {
-			const raw = new URLSearchParams(window.location.search).get("state");
-			if (!raw) return {};
-			const value: unknown = JSON.parse(atob(raw));
-			return value && typeof value === "object" ? value as PromptUrlState : {};
-		} catch {
-			return {};
-		}
+		const raw = new URLSearchParams(window.location.search).get("state");
+		return decodeJsonState(raw) as PromptUrlState;
 	}
 
 	function normalizePromptIndexes(value: unknown): number[] {
@@ -196,7 +189,7 @@
 			const st = readStateFromUrl();
 			if (Object.keys(nextSub).length) st.sub = nextSub;
 			else delete st.sub;
-			if (Object.keys(st).length) url.searchParams.set("state", btoa(JSON.stringify(st)));
+			if (Object.keys(st).length) url.searchParams.set("state", encodeJsonState(st));
 			else url.searchParams.delete("state");
 			window.history.replaceState({}, "", url.toString());
 			window.dispatchEvent(new CustomEvent(PARAM_CHANGED, { detail: { name: "state", value: url.searchParams.get("state") } }));

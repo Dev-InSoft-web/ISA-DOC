@@ -1,13 +1,12 @@
 import type { APIRoute } from "astro";
 import { copyFile } from "node:fs/promises";
 import path from "node:path";
-import { codegenDir } from "../../../lib/codeGen/paths.js";
+import { codegenDir } from "../../../lib/sql/codegen/paths.js";
 
 const STATE_FILE = path.join(codegenDir, "_state.json");
 const STATE_BASELINE = path.join(codegenDir, "_state.baseline.json");
-// db dir (tables-tree.json y tables-tree.baseline.json) está en /public/db/clientesis.
-// codegenDir resuelve a /public/bd/codegen, subimos dos niveles y bajamos a db/clientesis.
-const TABLES_DIR = path.resolve(codegenDir, "..", "..", "db", "clientesis");
+// Árbol de tablas en public/data/clientesis (tables-tree*.json).
+const TABLES_DIR = path.resolve(codegenDir, "..", "clientesis");
 const TABLES_FILE = path.join(TABLES_DIR, "tables-tree.json");
 const TABLES_BASELINE = path.join(TABLES_DIR, "tables-tree.baseline.json");
 

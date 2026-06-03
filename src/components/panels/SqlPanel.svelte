@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Toaster } from "@ingenieria_insoft/ispsveltecomponents";
 	import TablesBrowserPanel from "./TreeSQLTables.svelte";
-	import { clientesIsProvider } from "../../lib/sqlProviders/clientesIsProvider.ts";
-	import { patyiaProvider } from "../../lib/sqlProviders/patyiaProvider.ts";
-	import type { SqlDataProvider } from "../../lib/sqlProviders/types.ts";
+	import { clientesIsProvider } from "../../lib/sql/providers/clientesIsProvider.ts";
+	import { patyiaProvider } from "../../lib/sql/providers/patyiaProvider.ts";
+	import type { SqlDataProvider } from "../../lib/sql/providers/types.ts";
 
 	export let scope: "clientesis" | "patyia" = "clientesis";
 	export let provider: SqlDataProvider | null = null;

@@ -4,17 +4,35 @@ dist-gh-pages/
 .gh-pages-skip/
 .astro/
 .env
-public/static-api/
-public/patyia/openai/images/
+
+# artefactos locales / basura
+tmp/
+tmp-*.png
+-w
+
+# runtime generado
+public/generated/patyia/openai/images/*.png
+public/generated/patyia/openai/images/*.webp
+public/generated/patyia/openai/images/*.jpg
 
 # secretos (NUNCA versionar)
 .agent/
+secrets/api-keys.env
+secrets/tokens/
 *.npmrc
+
+# datos voluminosos o locales
+data/openai-storage/
+debug-logs/
+
+# logs de scripts de verificación
+scripts/verify-api/logs/
+scripts/verify-api-patyia/logs/
 
 # carpeta de backups (local.settings, npmrc, etc.)
 backups/
 
-# JWT tokens (NUNCA versionar � uno por aplicativo)
+# JWT tokens (legado en raíz — preferir secrets/tokens/)
 token.json
 token.patyia.json
 token.clientesis.json

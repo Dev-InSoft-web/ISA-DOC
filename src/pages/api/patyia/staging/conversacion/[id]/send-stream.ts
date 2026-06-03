@@ -1,12 +1,24 @@
 import type { APIRoute } from "astro";
-import { getPatyPool } from "../../../../../../lib/dbPaty.ts";
-import { resolveOpenAIKey } from "../../../../../../lib/patyia/openaiKey.ts";
+import { getPatyPool } from "../../../../../../lib/core/database/paty-pool.ts";
+import { resolveOpenAIKey } from "../../../../../../lib/features/patyia/040-openai/openaiKey.ts";
+import { buildOpenAIResponsesInput, extractVisionFromMessage, parseImagenesField } from "../../../../../../lib/features/patyia/030-conversacion/visionInput.ts";
 
 export const prerender = false;
 
 const DB = "AYUDASCP_IA_STAGING";
 
-interface Body { mensaje?: string; nombre?: string; variables?: Record<string, string> }
+interface Body {
+	mensaje?: string;
+	mensajeHtml?: string;
+	imagenes?: unknown;
+	modelo?: string;
+	nombre?: string;
+	variables?: Record<string, string>;
+}
+
+function defaultModelo(): string {
+	return ((process.env.paty_openai_model ?? process.env.OPENAI_MODEL ?? "gpt-4o-mini").trim() || "gpt-4o-mini").slice(0, 64);
+}
 
 function defaultPromptId(): string {
 	return (process.env.paty_pr_general ?? process.env.PR_GENERAL ?? "pmpt_69f9f701508c81978d82393f74030eac0fc02a771228ab14").trim();
@@ -28,8 +40,11 @@ export const POST: APIRoute = async ({ params, request }) => {
 	let body: Body;
 	try { body = (await request.json()) as Body; }
 	catch { return new Response("JSON inválido", { status: 400 }); }
-	const mensaje = (body.mensaje ?? "").toString();
-	if (!mensaje.trim()) return new Response("mensaje vacío", { status: 400 });
+	const mensajeRaw = (body.mensaje ?? "").toString();
+	const mensajeHtml = (body.mensajeHtml ?? "").toString();
+	const extraImg = parseImagenesField(body.imagenes);
+	const { text: mensaje, imageUrls } = extractVisionFromMessage(mensajeRaw, mensajeHtml, extraImg);
+	if (!mensaje && !imageUrls.length) return new Response("mensaje vacío", { status: 400 });
 
 	const apiKey = await resolveOpenAIKey();
 	if (!apiKey) return new Response("OPENAI_API_KEY no encontrada", { status: 500 });
@@ -46,6 +61,7 @@ export const POST: APIRoute = async ({ params, request }) => {
 		nombre_usuario: (body.nombre ?? "").trim() || `Tercero ${row.ITERCERO ?? ""}`.trim(),
 		...(body.variables ?? {}),
 	};
+	const modelo = (body.modelo ?? "").trim() || defaultModelo();
 
 	const encoder = new TextEncoder();
 	const stream = new ReadableStream<Uint8Array>({
@@ -59,8 +75,9 @@ export const POST: APIRoute = async ({ params, request }) => {
 					method: "POST",
 					headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
 					body: JSON.stringify({
+						model: modelo,
 						prompt: { id: defaultPromptId(), variables },
-						input: mensaje,
+						input: buildOpenAIResponsesInput(mensaje, imageUrls.length ? imageUrls : undefined, mensajeHtml),
 						conversation: hilo,
 						store: true,
 						stream: true,

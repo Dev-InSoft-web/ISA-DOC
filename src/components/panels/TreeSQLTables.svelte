@@ -2,18 +2,18 @@
    import { Button, ButtonIconify, Card, FlexLayout, H2, H4, Iconify, Modal, SelectEnum, Text, Toaster, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
    import { marked } from "marked";
    import { onMount, tick } from "svelte";
-   import { generateResourcesFromTables } from "../../lib/codeGen/autogen.ts";
-   import { findDomainOf, getSlaves, isMaster as isMasterFn, type DomainsMap } from "../../lib/codeGen/domains.ts";
-   import { genAzureFn, genClient, genModelo, genServer } from "../../lib/codeGen/generators.ts";
-   import { getCached, loadStateFromServer, onStateChanged, reloadStateFromServer, setCached } from "../../lib/codeGen/stateClient.ts";
-   import type { FieldDef, RelationDef, ResourceConfig } from "../../lib/codeGen/types.ts";
-   import { renderMermaidSvg } from "../../lib/mermaid/render.ts";
-   import { isRealtimeEnabled } from "../../lib/realtimeFlag.ts";
-   import { effectiveTableName, emitDropTable, emitTable, isSqlSnippetEnabled, newTableId, tableColumns, type ParsedTable } from "../../lib/tableSchema.ts";
-   import { clientesIsProvider } from "../../lib/sqlProviders/clientesIsProvider.ts";
-   import type { SqlDataProvider } from "../../lib/sqlProviders/types.ts";
-   import SwitchComp from "$comps/especial/_Switch.svelte";
-   import TreeView from "$comps/TreeViewLegacy/TreeRowView.svelte";
+   import { generateResourcesFromTables } from "../../lib/sql/codegen/autogen.ts";
+   import { findDomainOf, getSlaves, isMaster as isMasterFn, type DomainsMap } from "../../lib/sql/codegen/domains.ts";
+   import { genAzureFn, genClient, genModelo, genServer } from "../../lib/sql/codegen/generators.ts";
+   import { getCached, loadStateFromServer, onStateChanged, reloadStateFromServer, setCached } from "../../lib/sql/codegen/stateClient.ts";
+   import type { FieldDef, RelationDef, ResourceConfig } from "../../lib/sql/codegen/types.ts";
+   import { renderMermaidSvg } from "../../lib/integrations/mermaid/render.ts";
+   import { isRealtimeEnabled } from "../../lib/core/realtime/flag.ts";
+   import { effectiveTableName, emitDropTable, emitTable, isSqlSnippetEnabled, newTableId, tableColumns, type ParsedTable } from "../../lib/sql/schema/tableSchema.ts";
+   import { clientesIsProvider } from "../../lib/sql/providers/clientesIsProvider.ts";
+   import type { SqlDataProvider } from "../../lib/sql/providers/types.ts";
+   import SwitchComp from "$comps/ui/widgets/_Switch.svelte";
+   import TreeView from "$comps/tree/TreeViewLegacy/TreeRowView.svelte";
    import SqlTreeEditor from "../editors/SqlTreeEditor.svelte";
    import CodeModal from "../viewers/CodeModal.svelte";
    import CodeViewer from "../viewers/CodeViewer.svelte";
@@ -928,11 +928,11 @@
 
    async function fetchCachedDer(domain: string, expectedHash: string): Promise<string | null> {
       try {
-         const metaRes = await fetch(`/bd/codegen/der/${domain}.json`, { cache: "no-store" });
+         const metaRes = await fetch(`/data/codegen/der/${domain}.json`, { cache: "no-store" });
          if (!metaRes.ok) return null;
          const meta = (await metaRes.json()) as { hash?: string };
          if (meta?.hash !== expectedHash) return null;
-         const svgRes = await fetch(`/bd/codegen/der/${domain}.svg`, { cache: "no-store" });
+         const svgRes = await fetch(`/data/codegen/der/${domain}.svg`, { cache: "no-store" });
          if (!svgRes.ok) return null;
          return await svgRes.text();
       } catch {

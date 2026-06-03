@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { resolve, join } from "node:path";
+import { loadApiKeysFromSecretsFile } from "../../../../../lib/core/secrets/loadApiKeys.ts";
 
 export const prerender = false;
 
@@ -31,6 +32,7 @@ interface OpenAIImagesResponse {
 let cachedKey: string | null = null;
 
 async function resolveApiKey(): Promise<string> {
+	loadApiKeysFromSecretsFile();
 	const fromEnv = (process.env.paty_openai_api_key ?? process.env.OPENAI_API_KEY ?? "").trim();
 	if (fromEnv) return fromEnv;
 	if (cachedKey) return cachedKey;
@@ -58,8 +60,8 @@ const ALLOWED_SIZES = new Set([
 
 const DEFAULT_URL = "https://api.openai.com/v1/images/generations";
 const DEFAULT_MODEL = "gpt-image-1-mini";
-const PUBLIC_DIR = "public/patyia/openai/images";
-const PUBLIC_URL = "/patyia/openai/images";
+const PUBLIC_DIR = "public/generated/patyia/openai/images";
+const PUBLIC_URL = "/generated/patyia/openai/images";
 
 export const POST: APIRoute = async ({ request }) => {
 	const apiKey = await resolveApiKey();

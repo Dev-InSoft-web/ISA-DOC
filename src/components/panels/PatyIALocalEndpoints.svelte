@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Text } from "@ingenieria_insoft/ispsveltecomponents";
-	import { ALL_LOCAL_ENDPOINTS, LOCAL_ENDPOINT_ROUTES } from "../../lib/patyia/apiEndpoints";
+	import { ALL_LOCAL_ENDPOINTS, LOCAL_ENDPOINT_ROUTES } from "../../lib/features/patyia/020-api/apiEndpoints";
 
 	const wiredNames = new Set(LOCAL_ENDPOINT_ROUTES.map((r) => r.name));
 	const rows = ALL_LOCAL_ENDPOINTS.map((e) => ({
@@ -24,7 +24,7 @@
 		</header>
 		<p class="run-meta">
 			Corrida contra <code>http://localhost:7071</code> con <code>codigotk=TKV999991</code>.
-			Token cargado desde <code>token.patyia.json</code>. Cleanup aplicado sobre la conversación creada por la prueba.
+			Token desde <code>secrets/tokens/token.patyia.json</code>. Cleanup aplicado sobre la conversación creada por la prueba.
 		</p>
 		<ol class="run-steps">
 			<li><span class="ok">✅</span> POST <code>/api/JWT</code> — autenticación</li>

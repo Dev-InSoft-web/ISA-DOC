@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { renderMermaidBlocks } from '../../lib/mermaid/render';
+	import { renderMermaidBlocks } from '../../lib/integrations/mermaid/render';
 
 	export let src: string;
 	export let title: string = '';

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
 	import { io, type Socket } from "socket.io-client";
-	import { STATIC_MODE } from "../../lib/runtime/staticMode";
+	import { STATIC_MODE } from "../../lib/integrations/runtime/staticMode";
 	import {
 		Card,
 		Button,
@@ -19,7 +19,7 @@
 	} from "@ingenieria_insoft/ispsveltecomponents";
 	import ProjectGroupList from "../projects/ProjectGroupList.svelte";
 	import ProjectActionCard from "../projects/ProjectActionCard.svelte";
-	import { createUrlTabs, onUrlStateChange } from "../../lib/urlState";
+	import { createUrlTabs, onUrlStateChange } from "../../lib/core/url/query-params";
 
 	interface ProjectAction {
 		id: string;

@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
-import { getPatyPool } from "../../../lib/dbPaty.ts";
-import { jsonResponse } from "../../../lib/patyia/openaiKey.ts";
-import { leerConvsCache, guardarConvsCache, type ConvCacheItem } from "../../../lib/patyia/conversacionesCache.ts";
+import { getPatyPool } from "../../../lib/core/database/paty-pool.ts";
+import { jsonResponse } from "../../../lib/features/patyia/040-openai/openaiKey.ts";
+import { leerConvsCache, guardarConvsCache, type ConvCacheItem } from "../../../lib/features/patyia/020-api/conversacionesCache.ts";
 
 export const prerender = false;
 

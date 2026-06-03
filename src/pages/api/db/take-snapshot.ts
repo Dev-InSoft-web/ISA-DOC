@@ -2,8 +2,8 @@ import type { APIRoute } from "astro";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { getPool } from "../../../lib/db.ts";
-import { REBUILD_TABLES, type RebuildTableConfig } from "../../../lib/migration/oldRebuildTables.ts";
+import { getPool } from "../../../lib/core/database/clientesis-pool.ts";
+import { REBUILD_TABLES, type RebuildTableConfig } from "../../../lib/sql/migration/oldRebuildTables.ts";
 
 export const prerender = false;
 
@@ -12,7 +12,7 @@ interface Body {
 	all?: boolean;
 }
 
-const TSV_DIR = path.resolve(fileURLToPath(new URL("../../../lib/migration/tsv/", import.meta.url)));
+const TSV_DIR = path.resolve(fileURLToPath(new URL("../../../lib/sql/migration/tsv/", import.meta.url)));
 
 function todayStamp(): string {
 	const d = new Date();

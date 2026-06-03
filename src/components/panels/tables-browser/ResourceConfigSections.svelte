@@ -15,10 +15,10 @@
 	   DetailNode,
 	   RelationDef,
 	   ResourceConfig,
-	} from "../../../lib/codeGen/types.ts";
-	import FloatingCard from "$comps/containers/FloatingCard.svelte";
-	import Button_ from "$comps/especial/Button_.svelte";
-	import Switch_ from "$comps/especial/_Switch.svelte";
+	} from "../../../lib/sql/codegen/types.ts";
+	import FloatingCard from "$comps/ui/containers/FloatingCard.svelte";
+	import Button_ from "$comps/ui/widgets/Button_.svelte";
+	import Switch_ from "$comps/ui/widgets/_Switch.svelte";
 	import DetailSpecNode from "./DetailSpecNode.svelte";
 	import HookBodyModal from "../../viewers/HookBodyModal.svelte";
 

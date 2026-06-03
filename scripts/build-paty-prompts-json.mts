@@ -7,7 +7,7 @@ import {
 	WENYAN_LEGACY_BY_TIPO,
 	promptMdFilename,
 	type PatyPromptTipo,
-} from "../src/lib/patyia/prompt-files.ts";
+} from "../src/lib/features/patyia/050-prompts/prompt-files.ts";
 
 type VersionKey = "original" | "ultra" | "wenyan";
 type Count = { chars: number; tokens: number };
@@ -31,7 +31,7 @@ type Totals = {
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
-const promptsRoot = resolve(root, "src", "lib", "patyia", "prompts");
+const promptsRoot = resolve(root, "src", "lib", "features", "patyia", "050-prompts", "catalog");
 const outFile = resolve(root, "public", "static-api", "patyia", "prompts", "comparativa.json");
 
 function unixRel(path: string): string {

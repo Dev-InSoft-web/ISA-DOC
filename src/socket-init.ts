@@ -1,4 +1,4 @@
-import { initSocketServer } from "./lib/socket-server.js";
+import { initSocketServer } from "./lib/core/realtime/socket-server.js";
 
 initSocketServer(4401);
 
@@ -7,8 +7,8 @@ initSocketServer(4401);
 interface ImportMetaHot { accept: (deps: string | string[], cb: (mods: unknown) => void) => void }
 const hot = (import.meta as { hot?: ImportMetaHot }).hot;
 if (hot) {
-	hot.accept(["./lib/socket-server.ts"], async () => {
-		const mod = await import(`./lib/socket-server.ts?t=${Date.now()}`) as { initSocketServer: (p: number) => unknown };
+	hot.accept(["./lib/core/realtime/socket-server.ts"], async () => {
+		const mod = await import(`./lib/core/realtime/socket-server.ts?t=${Date.now()}`) as { initSocketServer: (p: number) => unknown };
 		mod.initSocketServer(4401);
 		console.log("[Socket.IO] handlers recargados vía HMR");
 	});

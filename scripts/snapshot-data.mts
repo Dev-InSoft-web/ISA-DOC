@@ -23,13 +23,34 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
 const OUT = resolve(root, "public", "static-api");
 const WORKSPACE_ROOT = resolve(root, "..", "..");
-const DOCS_DIR = resolve(root, "public", "docs");
+const DOCS_DIR = resolve(root, "public", "content", "docs");
 
 function writeJson(rel: string, data: unknown): void {
 	const dst = join(OUT, rel);
 	mkdirSync(dirname(dst), { recursive: true });
 	writeFileSync(dst, JSON.stringify(data), "utf8");
 	console.log(`[snap] ${rel}`);
+}
+
+const POSTMAN_SECRET_KEYS = new Set(["CONTROLKEY", "token", "password", "api_key", "API_KEY"]);
+
+/** Vacía valores sensibles en snapshots versionados bajo static-api/. */
+function sanitizePostmanEnvs(envs: unknown): unknown {
+	if (!envs || typeof envs !== "object") return envs;
+	const doc = envs as {
+		environments?: Array<{ values?: Array<{ key?: string; value?: string; type?: string }> }>;
+	};
+	return {
+		...doc,
+		environments: doc.environments?.map((env) => ({
+			...env,
+			values: env.values?.map((v) => {
+				const secret =
+					v.type === "secret" || POSTMAN_SECRET_KEYS.has((v.key ?? "").trim());
+				return secret ? { ...v, value: "" } : v;
+			}),
+		})),
+	};
 }
 
 function copyJson(srcRel: string, dstRel: string): void {
@@ -43,7 +64,7 @@ function copyJson(srcRel: string, dstRel: string): void {
 
 async function snapshotTables(): Promise<void> {
 	try {
-		const mod = await import("../src/lib/tablesStore.server.ts");
+		const mod = await import("../src/lib/sql/stores/tablesStore.server.ts");
 		const doc = await mod.readTablesDoc();
 		writeJson("tables.json", { ok: true, ...doc });
 	} catch (e) {
@@ -53,7 +74,7 @@ async function snapshotTables(): Promise<void> {
 
 async function snapshotSqlFragments(): Promise<void> {
 	try {
-		const mod = await import("../src/lib/sqlFragments.ts");
+		const mod = await import("../src/lib/sql/schema/fragments.ts");
 		const raw = readFileSync(mod.sqlFilePath, "utf8");
 		const fragments = mod.parseSql(raw);
 		writeJson("sql/fragments.json", { fragments, full: raw });
@@ -74,7 +95,7 @@ async function snapshotTsFragments(): Promise<void> {
 
 async function snapshotCodegenState(): Promise<void> {
 	try {
-		const pathsMod = await import("../src/lib/codeGen/paths.ts");
+		const pathsMod = await import("../src/lib/sql/codegen/paths.ts");
 		const stateFile = join(pathsMod.codegenDir, "_state.json");
 		if (existsSync(stateFile)) {
 			let raw = readFileSync(stateFile, "utf8");
@@ -91,13 +112,13 @@ async function snapshotCodegenState(): Promise<void> {
 
 async function snapshotPostman(): Promise<void> {
 	try {
-		const mod = await import("../src/lib/postman/store.ts");
+		const mod = await import("../src/lib/integrations/postman/store.ts");
 
-		const snap = (prefix: string, store: import("../src/lib/postman/store.ts").PostmanStore): void => {
+		const snap = (prefix: string, store: import("../src/lib/integrations/postman/store.ts").PostmanStore): void => {
 			const meta = store.loadCollectionMeta();
 			if (meta) writeJson(`${prefix}/list.json`, meta);
 			const envs = store.loadEnvironments();
-			writeJson(`${prefix}/envs.json`, envs);
+			writeJson(`${prefix}/envs.json`, sanitizePostmanEnvs(envs));
 			const full = store.loadFullCollection();
 			if (full) writeJson(`${prefix}/full.json`, full);
 			if (meta) {
@@ -236,7 +257,7 @@ function snapshotResolvedDocs(): void {
 
 async function snapshotPatyiaStagingIdentidades(): Promise<void> {
 	try {
-		const mod = await import("../src/lib/dbPaty.ts");
+		const mod = await import("../src/lib/core/database/paty-pool.ts");
 		const pool = await mod.getPatyPool();
 		const sql = `SELECT TOP 100 ITERCERO, ICONTACTO, COUNT(*) AS QCONV, MAX(FHCRE) AS ULT_FH
 			FROM [AYUDASCP_IA_STAGING].dbo.CONVERSACIONES
@@ -255,7 +276,7 @@ async function snapshotPatyiaStagingIdentidades(): Promise<void> {
 		}));
 
 		try {
-			const helper = await import("../src/lib/patyia/identidadesCache.ts");
+			const helper = await import("../src/lib/features/patyia/020-api/identidadesCache.ts");
 			const { terceros, contactos } = await helper.resolverIdentidades(items.map((it) => ({ itercero: it.itercero, icontacto: it.icontacto })));
 			for (const it of items) {
 				it.nombreTercero = terceros[it.itercero] ?? "";

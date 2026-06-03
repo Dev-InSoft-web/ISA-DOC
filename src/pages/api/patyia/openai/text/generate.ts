@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { resolveOpenAIKey, jsonResponse } from "../../../../../lib/patyia/openaiKey";
+import { resolveOpenAIKey, jsonResponse } from "../../../../../lib/features/patyia/040-openai/openaiKey";
 
 export const prerender = false;
 
