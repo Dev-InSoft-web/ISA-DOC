@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-06-04T17:51:36.648Z",
+  "folder": "clientesis/05/05/TK-1420755",
+  "assets": [
+    {
+      "filename": "columnPickerAudit.jpg",
+      "ticketId": "TK-1420755",
+      "url": "https://i.ibb.co/spMkKSWx/column-Picker-Audit.jpg",
+      "sha1": "69dbfdc76e7777d598644249338a9b324c24a17e",
+      "width": 290,
+      "height": 540
+    },
+    {
+      "filename": "cursosListado.jpg",
+      "ticketId": "TK-1420755",
+      "url": "https://i.ibb.co/ccq1VGwy/cursos-Listado.jpg",
+      "sha1": "9a4df1bbc49b20957713c5ef0faf9a5fa401fa12",
+      "width": 900,
+      "height": 391
+    }
+  ]
+}

@@ -23,17 +23,21 @@ let connecting: Promise<sql.ConnectionPool> | null = null;
 let lastError: string | null = null;
 
 function readConfig(): DbConfig | { error: string } {
-	const host = process.env.hostdb ?? "";
-	const port = Number(process.env.portdb ?? "1433");
-	const user = process.env.userdb ?? "";
-	const pass = process.env.passdb ?? "";
-	const name = process.env.namedb ?? "";
+	const host = process.env.CLIENTESIS_MSSQL_HOST ?? process.env.hostdb ?? "";
+	const port = Number(process.env.CLIENTESIS_MSSQL_PORT ?? process.env.portdb ?? "1433");
+	const user = process.env.CLIENTESIS_MSSQL_USER ?? process.env.userdb ?? "";
+	const pass = process.env.CLIENTESIS_MSSQL_PASS ?? process.env.passdb ?? "";
+	const name = process.env.CLIENTESIS_MSSQL_DB ?? process.env.namedb ?? "";
 	const missing: string[] = [];
-	if (!host) missing.push("hostdb");
-	if (!user) missing.push("userdb");
-	if (!pass) missing.push("passdb");
-	if (!name) missing.push("namedb");
-	if (missing.length) return { error: `Variables faltantes: ${missing.join(", ")}` };
+	if (!host) missing.push("CLIENTESIS_MSSQL_HOST");
+	if (!user) missing.push("CLIENTESIS_MSSQL_USER");
+	if (!pass) missing.push("CLIENTESIS_MSSQL_PASS");
+	if (!name) missing.push("CLIENTESIS_MSSQL_DB");
+	if (missing.length) {
+		return {
+			error: `MSSQL ClientesIS: configure ${missing.join(", ")} en lab-langgraph/local.settings.json (GET /api/config/connections)`,
+		};
+	}
 	if (!Number.isFinite(port)) return { error: "portdb no es número válido" };
 	return { host, port, user, pass, name };
 }

@@ -69,6 +69,6 @@ Preferir la ruta nueva en código nuevo.
 
 | Script | Ajuste |
 |--------|--------|
-| `build-paty-prompts-*.mjs` | `src/lib/features/patyia/050-prompts/catalog` |
-| `snapshot-data.mts` | `sql/stores/tablesStore.server`, `sql/codegen/paths`, `integrations/postman/store` |
-| `sync-ticket-*.mjs` | `features/tickets/index.ts` |
+| `patyia/prompts/build-paty-prompts-*` | `src/lib/features/patyia/050-prompts/catalog` |
+| `publish/snapshot-data.mts` | `sql/stores/tablesStore.server`, `sql/codegen/paths`, `integrations/postman/store` |
+| `tickets/sync-ticket-*.mjs` | `features/tickets/index.ts` |

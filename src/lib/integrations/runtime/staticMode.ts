@@ -86,9 +86,16 @@ export function installStaticFetchShim(): void {
 		const apiIdx = url.indexOf("/api/");
 		const apiPath = url.slice(apiIdx + "/api/".length).replace(/\?.*$/, "").replace(/\/$/, "");
 
-		// Escrituras: no se contacta nada; se finge exito para que la UI mantenga
-		// el estado local sin enviar nada al server (modo "estado congelado").
-		if (method !== "GET") return writeOkResponse();
+		// Escrituras: revisado persiste en localStorage vía revisadoStore; el resto finge ok.
+		if (method !== "GET") {
+			if (apiPath === "revisado") {
+				return new Response(JSON.stringify({ ok: true, static: true }), {
+					status: 200,
+					headers: { "content-type": "application/json" },
+				});
+			}
+			return writeOkResponse();
+		}
 
 		// Lecturas: intenta snapshot estatico; si no, default segun la forma del endpoint.
 		const target = `${BASE_NO_SLASH}/static-api/${apiPath}.json`;

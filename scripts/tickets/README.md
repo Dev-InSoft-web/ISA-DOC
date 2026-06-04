@@ -41,6 +41,13 @@ Cada script:
 
 Capturas locales (sin API): tras colocar JPG/PNG en `assets/`, usar `npm run assets:upload`.
 
+## Mantenimiento git
+
+| Script | Uso |
+| --- | --- |
+| `sync-ticket-commit-descriptions.mjs` | Alinea `descripcion` en `index.ts` con `git show` |
+| `check-commit-desc-duplicates.mjs` | Detecta descripciones duplicadas |
+
 ## npm
 
 ```bash

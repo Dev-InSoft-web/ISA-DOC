@@ -9,6 +9,13 @@ import {
 	type GroqKeyPool,
 } from "../../_shared/groq-api-keys.ts";
 import {
+	createGroqRetryHintTracker,
+	headersFromFetchResponse,
+	logProgress,
+	recordGroqRetryHints,
+	type GroqRetryHintTracker,
+} from "../../_shared/retry-wait.ts";
+import {
 	dedupeRollingCaptionSegments,
 	TRANSCRIPT_DEDUPE_VERSION,
 } from "../lib/dedupe-segments.ts";
@@ -34,6 +41,8 @@ export type WhisperGroqOpts = {
 	maxChunkBytes?: number;
 	/** Total rutas (2 Groq + MiniMax) para logs `1/3`. */
 	routeTotal?: number;
+	/** Acumula el mayor `try again in …` entre chunks/keys del mismo intento. */
+	retryHint?: GroqRetryHintTracker;
 };
 
 type GroqSegment = { start?: number; end?: number; text?: string };
@@ -97,26 +106,21 @@ function logGroqApiPayload(params: {
 	rawBody: string;
 	parsed?: GroqVerboseJson;
 }): void {
+	if (params.status === 200 && params.parsed) {
+		const segs = params.parsed.segments ?? [];
+		const lastEnd = segs.length ? (segs[segs.length - 1]?.end ?? 0).toFixed(0) : "0";
+		logProgress(
+			`    Groq OK · ${params.keyDisplay} · ${params.chunkName} · ${segs.length} segmentos · hasta ${lastEnd}s`,
+		);
+		return;
+	}
 	console.log("");
 	console.log(
 		`    ┌─ Groq API · HTTP ${params.status} · ${params.keyDisplay} · ${params.chunkName}`,
 	);
-	if (params.parsed) {
-		console.log(JSON.stringify(params.parsed, null, 2));
-	} else {
-		const trimmed = params.rawBody.trim();
-		console.log(trimmed.length ? trimmed : "(cuerpo vacío)");
-	}
+	const trimmed = params.rawBody.trim();
+	console.log(trimmed.length ? trimmed : "(cuerpo vacío)");
 	console.log("    └─");
-}
-
-/** Tiempo sugerido por Groq en cuerpo 429 (`try again in XmYs`). */
-export function parseGroqRetryHintMs(body: string): number | undefined {
-	const m = body.match(/try again in (?:(\d+)m)?([\d.]+)s/i);
-	if (!m) return undefined;
-	const min = Number(m[1] || 0);
-	const sec = Number(m[2] || 60);
-	return Math.ceil((min * 60 + sec) * 1000) + 2000;
 }
 
 function groqRouteKeyDisplay(pool: GroqKeyPool, routeTotal?: number): string {
@@ -165,6 +169,9 @@ async function transcribeOneFile(
 			return json.segments ?? [];
 		}
 		if (res.status === 429) {
+			if (opts.retryHint) {
+				recordGroqRetryHints(opts.retryHint, text, headersFromFetchResponse(res));
+			}
 			logGroqApiPayload({
 				status: res.status,
 				keyDisplay,
@@ -174,11 +181,11 @@ async function transcribeOneFile(
 			if (pool.size > 1 && keysTriedWithoutWait < pool.size - 1) {
 				pool.rotateOn429();
 				keysTriedWithoutWait += 1;
+				logProgress(`    Groq 429 · reintento chunk con ${pool.currentKeyDisplay()}`);
 				continue;
 			}
-			// Ambas keys Groq agotadas → router en transcribe.ts (MiniMax 3/3 o espera).
-			console.warn(
-				`    Groq 429 · keys ${pool.size}/${pool.size} agotadas en chunk · ${opts.routeTotal && opts.routeTotal > pool.size ? "siguiente: MiniMax" : "sin MINIMAX_API_KEY"}`,
+			logProgress(
+				`    Groq 429 · ${pool.size}/${pool.size} keys agotadas en chunk · espera y reinicio 1/${pool.size}`,
 			);
 			throw new Error(`Groq Whisper 429: ${text.slice(0, 400)}`);
 		}
@@ -228,10 +235,12 @@ export async function transcribeAudioWithGroq(
 		language: opts?.language ?? "es",
 		chunkSeconds: chunkSec,
 		maxChunkBytes: maxBytes,
+		routeTotal: opts?.routeTotal,
+		retryHint: opts?.retryHint,
 	};
 
 	const chunkDir = join(cacheRoot, "whisper-chunks", videoId);
-	await rm(chunkDir, { recursive: true, force: true });
+	await safeRmChunkDir(chunkDir);
 	const parts = await splitAudioIfNeeded(audioPath, chunkDir, maxBytes, chunkSec);
 
 	const merged: CaptionSegment[] = [];
@@ -248,8 +257,22 @@ export async function transcribeAudioWithGroq(
 		}
 	}
 
-	await rm(chunkDir, { recursive: true, force: true });
+	await safeRmChunkDir(chunkDir);
 	return dedupeRollingCaptionSegments(merged);
+}
+
+/** Windows: evita EBUSY al borrar chunks si ffmpeg/Groq aún tienen el archivo. */
+async function safeRmChunkDir(dir: string, maxTries = 6): Promise<void> {
+	for (let t = 0; t < maxTries; t += 1) {
+		try {
+			await rm(dir, { recursive: true, force: true });
+			return;
+		} catch (e) {
+			const msg = e instanceof Error ? e.message : String(e);
+			if (!/EBUSY|resource busy|locked|EPERM/i.test(msg) || t >= maxTries - 1) throw e;
+			await new Promise((r) => setTimeout(r, 2000 * (t + 1)));
+		}
+	}
 }
 
 export function applyWhisperTranscriptToRecord(

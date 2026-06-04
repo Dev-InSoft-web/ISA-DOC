@@ -50,6 +50,11 @@ export default defineConfig({
 	],
 	vite: {
 		plugins: [inlineImagePlugin()],
+		define: {
+			"import.meta.env.PUBLIC_LAB_LANGGRAPH_URL": JSON.stringify(
+				process.env.PUBLIC_LAB_LANGGRAPH_URL ?? process.env.LAB_LANGGRAPH_URL ?? "",
+			),
+		},
 		resolve: {
 			alias: {
 				$lib: path.join(ROOT, "src/lib"),

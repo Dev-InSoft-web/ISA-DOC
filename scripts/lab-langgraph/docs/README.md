@@ -9,4 +9,4 @@
 | [whisper-groq.md](./whisper-groq.md) | Fallback audio, dos API keys, reintentos |
 | [rag-and-db.md](./rag-and-db.md) | Index PGVector, schema, PatyIA PG |
 
-Datos (no versionados en git): `ISA-DOC/data/lab-langgraph/vectorize/`.
+Datos corpus (no versionados en git): `lab-langgraph/data/vectorize/`.

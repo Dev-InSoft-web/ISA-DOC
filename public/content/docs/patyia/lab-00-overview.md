@@ -30,13 +30,15 @@ Usa el menú lateral bajo **Lab LangGraph**:
 
 1. **Lab · API y operación** (`lab-01-fitdocs-rag`) — API, arranque local, credenciales.
 2. **Lab · Volatilidad Azure Fn** (`lab-02-volatilidad-azure`) — Límites y comportamiento delicado en Azure Functions.
-3. **Lab · Corpus YouTube** (`lab-03-youtube-corpus`) — Transcripciones del canal ContaPyme para vectorizar (`data/lab-langgraph/vectorize/`).
+3. **Lab · Corpus YouTube** (`lab-03-youtube-corpus`) — Transcripciones del canal ContaPyme (`lab-langgraph/data/vectorize/`).
 
-## Secretos (ISA-DOC)
+## Secretos
 
-Archivo local (no versionar): `secrets/patyia/lab-langgraph.env`  
-Plantilla: `secrets/patyia/lab-langgraph.env.example` (`GROQ_API_KEY`, `GROQ_API_KEY_2`, `MINIMAX_API_KEY`, `HUGGINGFACE_API_KEY`)
+| Repo | Archivo | Contenido |
+| --- | --- | --- |
+| **ISA-DOC** | `secrets/patyia/lab-client.env` | Solo `LAB_LANGGRAPH_URL` (scripts batch llaman al servidor) |
+| **lab-langgraph** | `secrets/patyia/lab-langgraph.env` o `local.settings.json` | API keys (Groq, MiniMax, Cerebras, Gemini, …) |
 
-La misma `MINIMAX_API_KEY` alimenta Whisper (STT, ruta 3/3) y proofread LangGraph en **ISA-DOC** y **lab-langgraph**.
+Pruebas de inventario por proveedor: `lab-langgraph/testing/data/*-model-samples` — ver `testing/README.md` en el repo del lab.
 
-En el repo del lab: `lab-langgraph/local.settings.json` (también gitignored; ver `local.settings.json.example`).
+En el repo del lab: plantilla `local.settings.json.example`.

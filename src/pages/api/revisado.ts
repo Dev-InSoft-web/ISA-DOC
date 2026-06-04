@@ -1,11 +1,11 @@
 import type { APIRoute } from "astro";
-import { readAll, writeMany } from "../../lib/features/bitacora/revisadoServer";
+import { readRevisadoMap, writeRevisadoMap } from "../../lib/core/persistence/backend.ts";
 import { broadcastRevisadoChanged } from "../../lib/core/realtime/socket-server";
 
 export const prerender = false;
 
 export const GET: APIRoute = async () => {
-	const map = await readAll();
+	const map = await readRevisadoMap();
 	return new Response(JSON.stringify(map), { status: 200, headers: { "content-type": "application/json" } });
 };
 
@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request }) => {
 	for (const [k, v] of Object.entries(body as Record<string, unknown>)) {
 		if (typeof k === "string" && k.length > 0) updates[k] = !!v;
 	}
-	const next = await writeMany(updates);
+	const next = await writeRevisadoMap(updates);
 	try { broadcastRevisadoChanged(updates); } catch { /* noop */ }
 	return new Response(JSON.stringify(next), { status: 200, headers: { "content-type": "application/json" } });
 };

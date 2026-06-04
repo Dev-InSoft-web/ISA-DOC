@@ -2,14 +2,15 @@
 	import { onMount } from "svelte";
 	import { Modal, Switch, FlexLayout, GridLayout } from "@ingenieria_insoft/ispsveltecomponents";
 	import CopyButtonIconify from "$comps/actions/CopyButtonIconify.svelte";
-	import { getTicketHtml, getTicketTotalEstimadoMin, type TicketRegistro } from "../../lib/features/tickets";
+	import { getTicketHtml, getTicketTotalEstimadoMin } from "../../lib/features/tickets/index.js";
+	import type { TicketRegistro } from "../../lib/features/tickets/types.js";
 	import { formatHtml } from "../../lib/shared/format-html";
 	import HtmlViewer from "../viewers/HtmlViewer.svelte";
 	import {
 		loadTicketViewerPrefs,
 		saveTicketViewerPrefs,
 		TICKET_VIEWER_DEFAULTS,
-	} from "../../lib/features/tickets/ticketViewerPrefs";
+	} from "../../lib/features/tickets/lib/ticketViewerPrefs";
 
 	export let ticket: TicketRegistro | null = null;
 	export let bshow: boolean = false;

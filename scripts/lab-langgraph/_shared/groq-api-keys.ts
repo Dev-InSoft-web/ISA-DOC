@@ -1,4 +1,5 @@
 import { loadLabEnv } from "./load-lab-env.ts";
+import { logProgress } from "./retry-wait.ts";
 
 /** Espera tras agotar todas las API keys Groq (429). */
 export const GROQ_RATE_LIMIT_WAIT_MS = 60_000;
@@ -99,7 +100,7 @@ export class GroqKeyPool {
 	rotateOn429(): boolean {
 		if (this.index >= this.entries.length - 1) return false;
 		this.index += 1;
-		console.warn(`  Groq · cambio a API key ${this.currentKeyDisplay()}`);
+		logProgress(`  Groq · cambio a API key ${this.currentKeyDisplay()}`);
 		return true;
 	}
 
@@ -107,6 +108,13 @@ export class GroqKeyPool {
 	resetToFirst(): void {
 		if (this.index === 0) return;
 		this.index = 0;
-		console.warn(`  Groq · reinicio de API keys → ${this.currentKeyDisplay()}`);
+		logProgress(`  Groq · reinicio de API keys → ${this.currentKeyDisplay()}`);
+	}
+
+	/** Siguiente reintento del mismo video: alterna 1/2 → 2/2 → 1/2 (no repetir la misma key). */
+	rotateForRetry(): void {
+		if (this.entries.length <= 1) return;
+		this.rotate();
+		logProgress(`  Groq · siguiente key en reintento → ${this.currentKeyDisplay()}`);
 	}
 }

@@ -158,7 +158,7 @@ try {
 	/* */
 }
 
-console.log("═══ Estado vectorización (ISA-DOC data/lab-langgraph/vectorize) ═══\n");
+console.log("═══ Estado vectorización (lab-langgraph data/vectorize) ═══\n");
 
 console.log("## YouTube · contapyme-software-contable");
 console.log(`  JSON en disco:        ${yt.total} (manifest: ${manifestYt.videoCount ?? "?"})`);

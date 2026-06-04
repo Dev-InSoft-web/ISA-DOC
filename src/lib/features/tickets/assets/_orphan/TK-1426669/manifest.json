@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-06-04T17:51:18.094Z",
+  "folder": "_orphan/TK-1426669",
+  "assets": [
+    {
+      "filename": "seguridad-form-crear.png",
+      "ticketId": "TK-1426669",
+      "url": "https://i.ibb.co/5h7nvwhy/seguridad-form-crear.png",
+      "sha1": "d0ec2b3445d27eb1779828b9ba745eabb9dc799f",
+      "width": 1218,
+      "height": 943
+    },
+    {
+      "filename": "seguridad-form-view.png",
+      "ticketId": "TK-1426669",
+      "url": "https://i.ibb.co/7JT7njtS/seguridad-form-view.png",
+      "sha1": "73f4883a65dcc8a9c014adfcc2eb6792722abae0",
+      "width": 1218,
+      "height": 943
+    },
+    {
+      "filename": "seguridad-lista.png",
+      "ticketId": "TK-1426669",
+      "url": "https://i.ibb.co/FkXmNWFy/seguridad-lista.png",
+      "sha1": "3eb54c9eda4f2b603ab34beb11b1ea1204c87c90",
+      "width": 1218,
+      "height": 943
+    }
+  ]
+}

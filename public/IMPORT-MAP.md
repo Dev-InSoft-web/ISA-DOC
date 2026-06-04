@@ -10,7 +10,7 @@
 | `src/pages/api/codegen/reset.ts` | `public/data/clientesis` (relativo) |
 | `src/pages/api/patyia/openai/images/generate.ts` | `public/generated/patyia/openai/images/` |
 | `config/downloadIconify.js` | `public/assets/icons/iconify/` |
-| `scripts/snapshot-data.mts` | lee `content/docs`, escribe `static-api/` |
+| `scripts/publish/snapshot-data.mts` | lee `content/docs`, escribe `static-api/` |
 
 ## UI / fetch en navegador
 

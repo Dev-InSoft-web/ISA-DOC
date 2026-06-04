@@ -1,0 +1,30 @@
+{
+  "generatedAt": "2026-06-04T17:51:18.080Z",
+  "folder": "_orphan/TK-1423165",
+  "assets": [
+    {
+      "filename": "formularioEtiquetasCapitulo.jpg",
+      "ticketId": "TK-1423165",
+      "url": "https://i.ibb.co/27Pk8hKn/formulario-Etiquetas-Capitulo.jpg",
+      "sha1": "8efaeda4594cdbcb8dc7af3eecb8b0e4e559a816",
+      "width": 1242,
+      "height": 866
+    },
+    {
+      "filename": "formularioEtiquetasTitulo.jpg",
+      "ticketId": "TK-1423165",
+      "url": "https://i.ibb.co/V087dQCq/formulario-Etiquetas-Titulo.jpg",
+      "sha1": "8395e8c95cd76a24300e0ecac7780324a33f98a0",
+      "width": 1242,
+      "height": 866
+    },
+    {
+      "filename": "treeContenidos.jpg",
+      "ticketId": "TK-1423165",
+      "url": "https://i.ibb.co/VdPcc3f/tree-Contenidos.jpg",
+      "sha1": "4f071731a5202844d2991ff1e389b5f048d194af",
+      "width": 924,
+      "height": 897
+    }
+  ]
+}

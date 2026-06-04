@@ -1,12 +1,12 @@
 # Scripts lab-langgraph (ISA-DOC)
 
-Orquestación de corpus y operaciones sobre `data/lab-langgraph/`. La lógica de runtime vive en **`../lab-langgraph`** (`npm run build`); estos scripts coordinan datos y tareas batch.
+Orquestación de corpus y operaciones sobre **`../lab-langgraph/data/vectorize/`**. La lógica de runtime vive en lang-lab (`npm run build`); estos scripts batch leen/escriben corpus en el repo del lab (sin API keys en ISA-DOC).
 
 ## Estructura
 
 | Carpeta | Contenido |
 | --- | --- |
-| `_shared/` | Raíz ISA-DOC, env, build lab, Groq + MiniMax API keys |
+| `_shared/` | Cliente HTTP a lang-lab (`LAB_LANGGRAPH_URL`), rutas corpus — **sin API keys** |
 | `youtube/lib/` | Corpus paths, fetch, dedupe, RAG, MD |
 | `youtube/whisper/` | Groq Whisper fallback |
 | `youtube/scripts/` | Entradas `npm run lab:yt:*` |
@@ -32,7 +32,9 @@ Orquestación de corpus y operaciones sobre `data/lab-langgraph/`. La lógica de
 | `lab:yt:repunctuate` | `youtube/scripts/repunctuate-youtube-corpus.mts` |
 | `lab:yt:index-rag` | `rag/index-youtube-corpus.mts` |
 
-Whisper / proofread: secretos en `secrets/patyia/lab-langgraph.env` — `GROQ_API_KEY`, `GROQ_API_KEY_2`, `MINIMAX_API_KEY` (rotación 1/3→2/3→3/3). Ver `docs/whisper-groq.md`. Requiere `ffmpeg` y `python -m yt_dlp` para audio.
+Whisper / proofread: consumen **solo** la API en `:5500` (orquestador PG en lang-lab). ISA-DOC: `secrets/patyia/lab-client.env` con `LAB_LANGGRAPH_URL`. Keys en `lab-langgraph/secrets/patyia/lab-langgraph.env`. Requiere `ffmpeg` y `python -m yt_dlp` para audio.
+
+Inventario de modelos (Gemini / Cerebras / MiniMax): `lab-langgraph/testing/` — `npm run test:gemini:all`, etc.
 
 ## Corpus web / gov
 
@@ -59,4 +61,4 @@ npm run build
 npm run start
 ```
 
-Puerto **5500**. Secretos: `ISA-DOC/.env` y `secrets/patyia/lab-langgraph.env`.
+Puerto **5500**. Secretos del servidor: `lab-langgraph/secrets/patyia/lab-langgraph.env` (o `local.settings.json`).

@@ -8,6 +8,7 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { loadLabEnv } from "../../_shared/load-lab-env.ts";
+import { capRetryWaitMs, MAX_RETRY_WAIT_MS } from "../../_shared/retry-wait.ts";
 import { savePage, type GovPageRecord } from "../lib/crawl.ts";
 import { convertPdfFileToRecord } from "../lib/pdf-to-md.ts";
 import { listAllGovPageJson, resolveGovStorage } from "../lib/paths.ts";
@@ -55,21 +56,20 @@ async function listPdfJobs(): Promise<Array<{ pageId: string; record: GovPageRec
 }
 
 const jobs = await listPdfJobs();
-let done = 0;
+let processed = 0;
 let ok = 0;
 let skip = 0;
 
 console.log(
-	`PDFs con página+archivo: ${jobs.length} · uploadImages=${uploadImages} · dryRun=${opts.dryRun}`,
+	`PDFs con página+archivo: ${jobs.length} · uploadImages=${uploadImages} · dryRun=${opts.dryRun} · modo: un PDF hasta OK`,
 );
 
 for (const { pageId, record, pdfPath } of jobs) {
-	if (opts.limit != null && done >= opts.limit) break;
+	if (opts.limit != null && processed >= opts.limit) break;
 
 	let attempt = 0;
 	while (true) {
 		attempt += 1;
-		done += 1;
 		console.log(`\n▶ PDF ${pageId} (${record.corpus}) · intento ${attempt}`);
 		try {
 			const updated = await convertPdfFileToRecord(
@@ -94,17 +94,21 @@ for (const { pageId, record, pdfPath } of jobs) {
 				`  ok    ${updated.storageRel ?? "?"}/${pageId} · ${updated.sections?.length ?? 0} § · ${imgN} img · imgbb=${hasImgbb}`,
 			);
 			ok += 1;
+			processed += 1;
 			break;
 		} catch (e) {
 			const msg = e instanceof Error ? e.message : String(e);
-			console.warn(`  retry ${pageId}: ${msg.slice(0, 120)}`);
+			const waitMs = capRetryWaitMs(MAX_RETRY_WAIT_MS);
+			console.log(`  retry ${pageId} en ${waitMs / 1000}s: ${msg.slice(0, 120)}`);
+			await new Promise((r) => setTimeout(r, waitMs));
 			if (attempt >= 20) {
 				console.error(`  FAIL  ${pageId}: ${msg}`);
 				skip += 1;
+				processed += 1;
 				break;
 			}
 		}
 	}
 }
 
-console.log(`\nListo · ok=${ok} skip=${skip} · procesados=${done}`);
+console.log(`\nListo · ok=${ok} skip=${skip} · procesados=${processed}`);

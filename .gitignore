@@ -24,12 +24,7 @@ secrets/tokens/
 
 # datos voluminosos o locales
 data/openai-storage/
-# Corpus YouTube FitDocs (~1000+ videos; generar con npm run lab:yt:transcripts)
-data/lab-langgraph/vectorize/youtube/**/videos/
-data/lab-langgraph/vectorize/youtube/**/fetch-cache/
-data/lab-langgraph/vectorize/youtube/**/corpus.md
-data/lab-langgraph/vectorize/youtube/**/manifest.json
-data/lab-langgraph/vectorize/youtube/**/run.log
+# Corpus vectorización: ver lab-langgraph/data/vectorize/ (gitignore en repo del lab)
 tmp/yt-sub-test/
 debug-logs/
 
@@ -44,7 +39,5 @@ backups/
 token.json
 token.patyia.json
 token.clientesis.json
-data/lab-langgraph/minimax-model-samples/
-data/lab-langgraph/minimax-model-samples/
-data/lab-langgraph/vectorize/youtube/contapyme-software-contable/audio-cache/
-data/lab-langgraph/vectorize/youtube/contapyme-software-contable/whisper-chunks/
+# PatyIA lab prompts locales (si aplica)
+data/lab-langgraph/patyia/

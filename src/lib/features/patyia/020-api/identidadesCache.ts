@@ -1,6 +1,5 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
 import { getPool } from "../../../core/database/clientesis-pool.ts";
+import { readJsonStore, writeJsonStore, useLabPersistence } from "../../../core/persistence/backend.ts";
 
 export interface IdentidadesCache {
 	terceros: Record<string, { nombre: string }>;
@@ -8,36 +7,26 @@ export interface IdentidadesCache {
 	updatedAt?: string;
 }
 
-const CACHE_PATH = path.resolve(process.cwd(), "data", "patyia", "identidades-cache.json");
+const LOCAL = "data/patyia/identidades-cache.json";
+const LAB_REL = "patyia/caches/identidades-cache.json";
+
 let memo: IdentidadesCache | null = null;
-let writing: Promise<void> | null = null;
 
 function vacio(): IdentidadesCache {
 	return { terceros: {}, contactos: {} };
 }
 
 export async function loadCache(): Promise<IdentidadesCache> {
-	if (memo) return memo;
-	try {
-		const raw = await fs.readFile(CACHE_PATH, "utf8");
-		const j = JSON.parse(raw) as IdentidadesCache;
-		memo = { terceros: j.terceros ?? {}, contactos: j.contactos ?? {}, updatedAt: j.updatedAt };
-	} catch {
-		memo = vacio();
-	}
-
+	if (memo && !useLabPersistence()) return memo;
+	const j = await readJsonStore<IdentidadesCache>(LOCAL, LAB_REL);
+	memo = { terceros: j?.terceros ?? {}, contactos: j?.contactos ?? {}, updatedAt: j?.updatedAt };
 	return memo;
 }
 
 export async function saveCache(cache: IdentidadesCache): Promise<void> {
 	memo = cache;
 	cache.updatedAt = new Date().toISOString();
-	if (writing) await writing;
-	writing = (async () => {
-		await fs.mkdir(path.dirname(CACHE_PATH), { recursive: true });
-		await fs.writeFile(CACHE_PATH, JSON.stringify(cache, null, "\t"), "utf8");
-	})();
-	try { await writing; } finally { writing = null; }
+	await writeJsonStore(LOCAL, LAB_REL, cache);
 }
 
 async function consultarNombres(iterceros: string[], icontactos: string[]): Promise<{ terceros: Map<string, string>; contactos: Map<string, string> }> {
@@ -67,8 +56,9 @@ async function consultarNombres(iterceros: string[], icontactos: string[]): Prom
 				}
 			}
 		}
-	} catch (e) { console.warn(`[cache] consultarNombres fallo: ${(e as Error).message}`); }
-
+	} catch (e) {
+		console.warn(`[cache] consultarNombres fallo: ${(e as Error).message}`);
+	}
 	return { terceros: tMap, contactos: cMap };
 }
 
@@ -86,8 +76,14 @@ export async function resolverIdentidades(pares: Array<{ itercero: string; icont
 	if (faltanT.size || faltanC.size) {
 		const { terceros, contactos } = await consultarNombres(Array.from(faltanT), Array.from(faltanC));
 		let cambios = false;
-		for (const [k, v] of terceros) { cache.terceros[k] = { nombre: v }; cambios = true; }
-		for (const [k, v] of contactos) { cache.contactos[k] = { nombre: v }; cambios = true; }
+		for (const [k, v] of terceros) {
+			cache.terceros[k] = { nombre: v };
+			cambios = true;
+		}
+		for (const [k, v] of contactos) {
+			cache.contactos[k] = { nombre: v };
+			cambios = true;
+		}
 		if (cambios) await saveCache(cache);
 	}
 	const outT: Record<string, string> = {};
@@ -96,6 +92,5 @@ export async function resolverIdentidades(pares: Array<{ itercero: string; icont
 		if (itercero) outT[itercero] = cache.terceros[itercero]?.nombre ?? "";
 		if (icontacto) outC[icontacto] = cache.contactos[icontacto]?.nombre ?? "";
 	}
-
 	return { terceros: outT, contactos: outC };
 }

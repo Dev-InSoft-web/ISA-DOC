@@ -1,0 +1,665 @@
+// Helpers (snippets) que construyen HTML "email-safe":
+// - Sin flex/grid, sin variables CSS, sin selectores complejos.
+// - Solo etiquetas básicas + estilos inline + tablas.
+// La idea es que cada snippet devuelva un string de HTML autocontenido,
+// para componer el body de un ticket y que el resultado pueda copiarse
+// directo a un correo.
+
+// ---------------------------------------------------------------- método/badge
+
+type Method = "GET" | "POST" | "PUT" | "DELETE" | "DEL" | "OPT" | "PATCH";
+
+const METHOD_COLORS: Record<Method, string> = {
+	GET: "#2EAD56",
+	POST: "#E2A03F",
+	PUT: "#3F8AE0",
+	DELETE: "#D9534F",
+	DEL: "#D9534F",
+	OPT: "#7C5CC1",
+	PATCH: "#5BC0DE",
+};
+
+// Badge HTTP estilo "pill" (email-safe). Ancho mínimo amplio para que
+// GET/POST/PUT/DELETE queden alineados en columnas.
+export function methodBadge(method: Method): string {
+	const bg = METHOD_COLORS[method];
+	return (
+		`<span style="display:inline-block;min-width:54px;padding:2px 8px;` +
+		`background-color:${bg};color:#ffffff;font-weight:bold;font-size:11px;` +
+		`text-align:center;border-radius:10px;letter-spacing:0.5px;` +
+		`text-shadow:none;line-height:1.2;">${method}</span>`
+	);
+}
+
+// Badge genérico (texto/color libre). Útil para etiquetas de entidad,
+// estados, categorías, etc. Mantiene look consistente con methodBadge.
+export function badge(text: string, color: string = "#6c757d"): string {
+	return (
+		`<span style="display:inline-block;padding:2px 8px;` +
+		`background-color:${color};color:#ffffff;font-weight:bold;font-size:11px;` +
+		`text-align:center;border-radius:10px;letter-spacing:0.3px;` +
+		`text-shadow:none;line-height:1.2;">${text}</span>`
+	);
+}
+
+// Icono de iconify embebido vía <img> (email-safe). Altura por defecto 1rem
+// (= 16px); se setean atributos width/height además del style por compat
+// con clientes de correo que ignoran CSS.
+//
+//   icon("mdi:school")
+//   icon("mdi:school", { size: 20, color: "#3F8AE0" })
+export interface IconOpts {
+	size?: number;          // px; default 16
+	color?: string;          // hex sin '#' o con '#'; aplica ?color= a la URL de iconify
+	alt?: string;
+	style?: string;          // estilos extra inline
+}
+
+export function icon(name: string, opts: IconOpts = {}): string {
+	const size = opts.size ?? 16;
+	const altText = opts.alt ?? "";
+	// Iconify requiere el '#' en el color (codificado como %23). Sin el '#'
+	// la API responde el SVG en su color original (negro).
+	const colorParam = opts.color
+		? `?color=${encodeURIComponent(opts.color.startsWith("#") ? opts.color : `#${opts.color}`)}`
+		: "";
+	const safeName = name.replace(":", "/");
+	const src = `https://api.iconify.design/${safeName}.svg${colorParam}`;
+	// width/height fijos + min/max para que clientes de correo no reescalen
+	// la imagen según viewport (Outlook web, Gmail mobile estiran <img> sin
+	// width fijo o sin max-width si el contenedor es más ancho).
+	const baseStyle = `width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;vertical-align:middle;display:inline-block;`;
+	const fullStyle = opts.style ? baseStyle + opts.style : baseStyle;
+	return (
+		`<img src="${src}" alt="${escapeHtml(altText)}" ` +
+		`width="${size}" height="${size}" style="${fullStyle}">`
+	);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// iconSvg(name, opts) — versión asíncrona que **inserta el SVG inline** en
+// el HTML resultante. Usa `loadIcon` de ispsveltecomponents (cache global +
+// fallback iconify.design). Los SVG monocromáticos de Iconify usan
+// `currentColor`, por lo que el color se hereda del ancestro vía CSS
+// (`color:` en el `<span>` envolvente). Esto evita el truco del `?color=…`
+// y deja que el visor renderice la pieza de forma nativa.
+// ─────────────────────────────────────────────────────────────────────────
+function injectSvgAttrs(svg: string, size: number, altText: string, extraStyle: string, hardColor?: string): string {
+	// 1) Quitar width/height/style fijos del SVG raíz para no chocar con los nuestros.
+	// 2) Inyectar width/height + style con tamaño/alineación y aria.
+	// 3) Si recibimos `hardColor`, reemplazar `currentColor` por ese hex (algunos
+	//    visores no resuelven `currentColor` ni `inherit` correctamente).
+	const baseStyle = `height:${size}px;width:${size}px;vertical-align:middle;display:inline-block;${extraStyle}`;
+	const patched = hardColor
+		? svg.replace(/currentColor/g, hardColor)
+		: svg;
+	const fillAttr = hardColor ? ` fill="${hardColor}"` : "";
+	return patched.replace(/<svg\b([^>]*)>/i, (_m, attrs) => {
+		const cleaned = String(attrs)
+			.replace(/\swidth="[^"]*"/i, "")
+			.replace(/\sheight="[^"]*"/i, "")
+			.replace(/\sstyle="[^"]*"/i, "")
+			.replace(/\sfill="[^"]*"/i, "");
+		const aria = altText ? ` role="img" aria-label="${escapeHtml(altText)}"` : ` aria-hidden="true" focusable="false"`;
+		return `<svg${cleaned} width="${size}" height="${size}" style="${baseStyle}"${aria}${fillAttr}>`;
+	});
+}
+
+const ICON_FALLBACK_CACHE = new Map<string, Promise<string>>();
+async function fetchIconSvgRaw(name: string): Promise<string> {
+	if (ICON_FALLBACK_CACHE.has(name)) return ICON_FALLBACK_CACHE.get(name)!;
+	const p = import("@ingenieria_insoft/ispsveltecomponents")
+		.then((m) => m.loadIcon(name))
+		.catch(() => "");
+	ICON_FALLBACK_CACHE.set(name, p);
+	return p;
+}
+
+export async function iconSvg(name: string, opts: IconOpts = {}): Promise<string> {
+	const size = opts.size ?? 16;
+	const altText = opts.alt ?? "";
+	const extra = opts.style ? `;${opts.style}` : "";
+	const raw = await fetchIconSvgRaw(name);
+	if (raw && raw.includes("<svg")) return injectSvgAttrs(raw, size, altText, extra, opts.color);
+	// Fallback final: <img> con ?color= cuando exista.
+	return icon(name, { size, alt: altText, style: opts.style, color: opts.color });
+}
+
+export function statusBadge(status: string | number): string {
+	const code = String(status);
+	const n = parseInt(code, 10);
+	let bg = "#6c757d";
+	if (n >= 200 && n < 300) bg = "#2EAD56";
+	else if (n >= 400 && n < 500) bg = "#D9534F";
+	else if (n >= 500) bg = "#8E44AD";
+	return (
+		`<span style="display:inline-block;min-width:34px;padding:1px 6px;` +
+		`background-color:${bg};color:#ffffff;font-weight:bold;font-size:10px;` +
+		`text-align:center;border-radius:3px;letter-spacing:0.5px;">${code}</span>`
+	);
+}
+
+// --------------------------------------------------------------- árbol Postman
+
+export interface PostmanResponse {
+	status: string | number;
+	label: string;
+}
+
+export interface PostmanRequest {
+	kind: "request";
+	method: Method;
+	label: string;
+	responses?: PostmanResponse[];
+}
+
+export interface PostmanFolder {
+	kind: "folder";
+	label: string;
+	children: PostmanNode[];
+}
+
+export type PostmanNode = PostmanFolder | PostmanRequest;
+
+const ROW_STYLE =
+	"padding:2px 0;font-family:Tahoma,Arial,sans-serif;font-size:12px;color:#222;";
+const INDENT_STYLE =
+	"margin-left:14px;padding-left:10px;border-left:1px solid #d0d7de;";
+
+function renderResponse(r: PostmanResponse): string {
+	return (
+		`<div style="${ROW_STYLE}">` +
+		statusBadge(r.status) +
+		`&nbsp;<span style="color:#555;">${r.label}</span>` +
+		`</div>`
+	);
+}
+
+function renderRequest(req: PostmanRequest): string {
+	const head =
+		`<div style="${ROW_STYLE}">` +
+		methodBadge(req.method) +
+		`&nbsp;<span>${req.label}</span>` +
+		`</div>`;
+	if (!req.responses || req.responses.length === 0) return head;
+	const inner = req.responses.map(renderResponse).join("");
+	return head + `<div style="${INDENT_STYLE}">${inner}</div>`;
+}
+
+function renderFolder(f: PostmanFolder): string {
+	const head =
+		`<div style="${ROW_STYLE}">` +
+		`<span style="color:#E2A03F;">&#128193;</span>&nbsp;` +
+		`<strong>${f.label}</strong>` +
+		`</div>`;
+	const inner = f.children.map(renderNode).join("");
+	return head + `<div style="${INDENT_STYLE}">${inner}</div>`;
+}
+
+function renderNode(n: PostmanNode): string {
+	return n.kind === "folder" ? renderFolder(n) : renderRequest(n);
+}
+
+export function postmanTree(title: string, nodes: PostmanNode[]): string {
+	const header =
+		`<div style="${ROW_STYLE}font-weight:bold;letter-spacing:1px;color:#666;">` +
+		title.toUpperCase() +
+		`</div>`;
+	const body = nodes.map(renderNode).join("");
+	return (
+		`<div style="border:1px solid #d0d7de;border-radius:4px;padding:10px 12px;` +
+		`background-color:#fafbfc;margin:10px 0;">` +
+		header +
+		body +
+		`</div>`
+	);
+}
+
+// ----------------------------------------------------------- código (inline + bloque)
+// Inline: color sostenido SteelBlue (sin tokenizar).
+// Bloque: highlight con la API de CodeMirror/Lezer (parser por lenguaje) y
+// tema VSCode Dark+ aplicado como estilos inline (email-safe).
+
+import { highlightTree, tagHighlighter, tags as t } from "@lezer/highlight";
+import { javascriptLanguage, typescriptLanguage } from "@codemirror/lang-javascript";
+import { jsonLanguage } from "@codemirror/lang-json";
+import { htmlLanguage } from "@codemirror/lang-html";
+import { StandardSQL } from "@codemirror/lang-sql";
+import type { LRLanguage } from "@codemirror/language";
+
+const INLINE_CODE_COLOR = "steelblue";
+
+const CODE_INLINE_STYLE =
+	"font-family:Consolas,'Courier New',monospace;font-size:0.92em;" +
+	"padding:1px 4px;margin:0;border-radius:3px;" +
+	"background-color:rgba(70,130,180,0.10);" +
+	"border:1px solid rgba(70,130,180,0.25);" +
+	`color:${INLINE_CODE_COLOR};text-shadow:none;font-weight:600;`;
+
+// VSCode Dark+ palette (subset suficiente para JS/TS/JSON/SQL/HTML).
+const VSDARK_BG = "#1e1e1e";
+const VSDARK_FG = "#d4d4d4";
+const CODE_BLOCK_PRE_STYLE =
+	`background-color:${VSDARK_BG};color:${VSDARK_FG};` +
+	"border:1px solid #333;border-radius:6px;" +
+	"margin:8px 0;padding:10px 12px;" +
+	"font-family:Tahoma,Arial,Calibri,sans-serif !important;font-size:0.92em;" +
+	"line-height:1.45;text-shadow:none;" +
+	"white-space:pre-wrap;overflow:auto;max-width:100%;";
+const CODE_BLOCK_INNER_STYLE =
+	`color:${VSDARK_FG};background:transparent;` +
+	"font-family:Tahoma,Arial,Calibri,sans-serif !important;font-size:inherit;";
+
+// El "class" del Highlighter se inyecta literalmente en el atributo style del
+// <span> que generamos, así que aquí van CSS rules en lugar de class names.
+const vsdarkHighlighter = tagHighlighter([
+	{ tag: t.comment, class: "color:#6a9955;font-style:italic" },
+	{ tag: t.lineComment, class: "color:#6a9955;font-style:italic" },
+	{ tag: t.blockComment, class: "color:#6a9955;font-style:italic" },
+	{ tag: t.docComment, class: "color:#6a9955;font-style:italic" },
+	{ tag: t.keyword, class: "color:#569cd6;font-weight:600" },
+	{ tag: t.controlKeyword, class: "color:#c586c0;font-weight:600" },
+	{ tag: t.moduleKeyword, class: "color:#c586c0;font-weight:600" },
+	{ tag: t.operatorKeyword, class: "color:#569cd6" },
+	{ tag: t.definitionKeyword, class: "color:#569cd6;font-weight:600" },
+	{ tag: t.modifier, class: "color:#569cd6" },
+	{ tag: t.string, class: "color:#ce9178" },
+	{ tag: t.special(t.string), class: "color:#ce9178" },
+	{ tag: t.regexp, class: "color:#d16969" },
+	{ tag: t.escape, class: "color:#d7ba7d" },
+	{ tag: t.number, class: "color:#b5cea8" },
+	{ tag: t.bool, class: "color:#569cd6" },
+	{ tag: t.null, class: "color:#569cd6" },
+	{ tag: t.atom, class: "color:#569cd6" },
+	{ tag: t.typeName, class: "color:#4ec9b0" },
+	{ tag: t.className, class: "color:#4ec9b0" },
+	{ tag: t.namespace, class: "color:#4ec9b0" },
+	{ tag: t.labelName, class: "color:#c8c8c8" },
+	{ tag: t.function(t.variableName), class: "color:#dcdcaa" },
+	{ tag: t.function(t.propertyName), class: "color:#dcdcaa" },
+	{ tag: t.definition(t.function(t.variableName)), class: "color:#dcdcaa" },
+	{ tag: t.macroName, class: "color:#dcdcaa" },
+	{ tag: t.propertyName, class: "color:#9cdcfe" },
+	{ tag: t.attributeName, class: "color:#9cdcfe" },
+	{ tag: t.variableName, class: "color:#9cdcfe" },
+	{ tag: t.local(t.variableName), class: "color:#9cdcfe" },
+	{ tag: t.special(t.variableName), class: "color:#9cdcfe" },
+	{ tag: t.definition(t.variableName), class: "color:#9cdcfe" },
+	{ tag: t.constant(t.variableName), class: "color:#4fc1ff" },
+	{ tag: t.tagName, class: "color:#569cd6" },
+	{ tag: t.angleBracket, class: "color:#808080" },
+	{ tag: t.bracket, class: "color:#d4d4d4" },
+	{ tag: t.brace, class: "color:#d4d4d4" },
+	{ tag: t.paren, class: "color:#d4d4d4" },
+	{ tag: t.squareBracket, class: "color:#d4d4d4" },
+	{ tag: t.punctuation, class: "color:#d4d4d4" },
+	{ tag: t.separator, class: "color:#d4d4d4" },
+	{ tag: t.operator, class: "color:#d4d4d4" },
+	{ tag: t.derefOperator, class: "color:#d4d4d4" },
+	{ tag: t.updateOperator, class: "color:#d4d4d4" },
+	{ tag: t.arithmeticOperator, class: "color:#d4d4d4" },
+	{ tag: t.logicOperator, class: "color:#d4d4d4" },
+	{ tag: t.bitwiseOperator, class: "color:#d4d4d4" },
+	{ tag: t.compareOperator, class: "color:#d4d4d4" },
+	{ tag: t.heading, class: "color:#569cd6;font-weight:bold" },
+	{ tag: t.emphasis, class: "font-style:italic" },
+	{ tag: t.strong, class: "font-weight:bold" },
+	{ tag: t.link, class: "color:#569cd6;text-decoration:underline" },
+	{ tag: t.url, class: "color:#569cd6;text-decoration:underline" },
+	{ tag: t.invalid, class: "color:#f44747" },
+]);
+
+function escapeHtml(s: string): string {
+	return s
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;");
+}
+
+export type CodeLang = "ts" | "typescript" | "js" | "javascript" | "json" | "sql" | "html";
+
+function pickLanguage(lang?: CodeLang): LRLanguage {
+	switch (lang) {
+		case "json": return jsonLanguage;
+		case "sql": return StandardSQL.language;
+		case "html": return htmlLanguage;
+		case "js":
+		case "javascript": return javascriptLanguage;
+		case "ts":
+		case "typescript":
+		default: return typescriptLanguage;
+	}
+}
+
+// Resalta `src` usando el parser Lezer del lenguaje indicado y el highlighter
+// vsdark (estilos inline en cada <span>). Devuelve sólo el contenido (sin
+// envoltorio <pre>/<code>); el caller decide la presentación.
+function highlightCode(src: string, lang?: CodeLang): string {
+	const tree = pickLanguage(lang).parser.parse(src);
+	let out = "";
+	let pos = 0;
+	highlightTree(tree, vsdarkHighlighter, (from, to, classes) => {
+		if (pos < from) out += escapeHtml(src.slice(pos, from));
+		const slice = escapeHtml(src.slice(from, to));
+		out += classes
+			? `<span style="${classes}">${slice}</span>`
+			: slice;
+		pos = to;
+	});
+	if (pos < src.length) out += escapeHtml(src.slice(pos));
+	return out;
+}
+
+// Inline: color SteelBlue sostenido (sin highlight de tokens). Email-safe:
+// fondo y borde sutiles para distinguirlo del párrafo.
+export function code(src: string): string {
+	return `<code style="${CODE_INLINE_STYLE}">${escapeHtml(src)}</code>`;
+}
+
+// Devuelve el contenido resaltado y email-safe (sin envoltorio `<pre>/<code>`),
+// con saltos `<br>` y espacios de indentación `&nbsp;`.
+function renderCodeInner(src: string, lang?: CodeLang): string {
+	const highlighted = highlightCode(src, lang);
+	return highlighted
+		.split("\n")
+		.map((line) => line.replace(/^ +/, (m) => "&nbsp;".repeat(m.length)))
+		.join("<br>");
+}
+
+import { prepareMermaidDiagram } from "../../../integrations/mermaid/config";
+import { lookupCodeImage, type CodeImageInfo } from "./codeImage";
+import { stripFragmentComments } from "./stripFragmentComments.js";
+
+const CODE_BLOCK_DEFAULT_W = 720;
+const CODE_BLOCK_COMPARE_W = 360;
+
+function renderCodeImg(info: CodeImageInfo, targetW: number): string {
+	let w = info.width;
+	let h = info.height;
+	if (w > targetW) {
+		h = Math.round((h * targetW) / w);
+		w = targetW;
+	}
+	return (
+		`<a href="${info.url}" target="_blank" rel="noopener noreferrer" ` +
+		`style="display:block;margin:8px 0;text-decoration:none;">` +
+		`<img src="${info.url}" alt="" width="${w}" height="${h}" ` +
+		`style="display:block;width:${w}px;height:${h}px;` +
+		`min-width:${w}px;max-width:${w}px;min-height:${h}px;max-height:${h}px;` +
+		`border:0;border-radius:6px;background-color:#000;cursor:zoom-in;">` +
+		`</a>`
+	);
+}
+
+function renderCodeFallbackPre(src: string, lang: CodeLang): string {
+	return (
+		`<pre style="${CODE_BLOCK_PRE_STYLE}"><code style="${CODE_BLOCK_INNER_STYLE}"><small>` +
+		renderCodeInner(src, lang) +
+		`</small></code></pre>`
+	);
+}
+
+// Bloque multilínea. Si existe imagen pre-generada (carbon-api → imgbb) en
+// `assets/code-imgs.json`, devuelve `<img>`. Si no, devuelve el fallback
+// `<pre><code>` con highlight Lezer (mismo aspecto vsdark) — esto permite
+// que la página funcione antes de correr el script de build de imágenes.
+export async function codeBlock(
+	src: string,
+	lang: CodeLang = "typescript",
+	targetW: number = CODE_BLOCK_DEFAULT_W,
+): Promise<string> {
+	const clean = stripFragmentComments(src, lang);
+	const info = await lookupCodeImage(clean, lang);
+	return info ? renderCodeImg(info, targetW) : renderCodeFallbackPre(clean, lang);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// compareTable — tabla email-safe con dos columnas "Antes / Después".
+// Si `kind:"code"`, las celdas usan el fondo vsdark (#1e1e1e) y se aplica
+// highlight como en `codeBlock` (sin el wrapper `<pre>` para que la celda
+// ocupe el fondo entero, sin doble borde ni doble padding).
+// Si `kind:"html"`, las celdas usan fondo claro y se renderiza el HTML tal
+// cual (útil para texto/listas).
+// ─────────────────────────────────────────────────────────────────────────
+
+export interface ComparePair {
+	before: string;
+	after: string;
+	kind?: "code" | "html";
+	lang?: CodeLang;
+	beforeLabel?: string;
+	afterLabel?: string;
+}
+
+export async function compareTable(pair: ComparePair): Promise<string> {
+	const kind = pair.kind ?? "code";
+	const beforeLabel = pair.beforeLabel ?? "Antes";
+	const afterLabel = pair.afterLabel ?? "Después";
+	const lang = pair.lang ?? "typescript";
+
+	const isCode = kind === "code";
+	const headerBg = isCode ? "#000000" : "#f5f5f5";
+	const headerFg = isCode ? "#d4d4d4" : "#333333";
+	const headerBorder = isCode ? "#333333" : "#dddddd";
+	const cellBg = isCode ? VSDARK_BG : "#ffffff";
+	const cellFg = isCode ? VSDARK_FG : "#333333";
+	const cellBorder = isCode ? "#333333" : "#dddddd";
+	const fontFamily = "Tahoma,Arial,Calibri,sans-serif";
+
+	const headerStyle =
+		`background-color:${headerBg};color:${headerFg};` +
+		`border:1px solid ${headerBorder};` +
+		`padding:6px 12px;font-family:${fontFamily};font-size:0.92em;` +
+		`font-weight:bold;text-align:left;width:50%;`;
+
+	const renderCell = async (src: string): Promise<{ html: string; isImg: boolean }> => {
+		if (!isCode) return { html: src, isImg: false };
+		const clean = stripFragmentComments(src, lang);
+		const info = await lookupCodeImage(clean, lang);
+		if (info) return { html: renderCodeImg(info, CODE_BLOCK_COMPARE_W), isImg: true };
+		return { html: `<small>${renderCodeInner(clean, lang)}</small>`, isImg: false };
+	};
+
+	const cellStyle = (isImg: boolean): string =>
+		`background-color:${cellBg};color:${cellFg};` +
+		`border:1px solid ${cellBorder};border-top:none;` +
+		`padding:${isImg ? "0" : "10px 12px"};font-family:${fontFamily} !important;` +
+		`font-size:0.92em;line-height:1.45;vertical-align:top;` +
+		`width:50%;word-break:break-word;overflow-wrap:anywhere;`;
+
+	const [beforeCell, afterCell] = await Promise.all([renderCell(pair.before), renderCell(pair.after)]);
+
+	return (
+		`<table cellpadding="0" cellspacing="0" border="0" ` +
+		`style="border-collapse:collapse;width:100%;max-width:100%;` +
+		`table-layout:fixed;margin:8px 0;">` +
+		`<thead><tr>` +
+		`<th style="${headerStyle}">${escapeHtml(beforeLabel)}</th>` +
+		`<th style="${headerStyle};border-left:none;">${escapeHtml(afterLabel)}</th>` +
+		`</tr></thead>` +
+		`<tbody><tr>` +
+		`<td style="${cellStyle(beforeCell.isImg)}">${beforeCell.html}</td>` +
+		`<td style="${cellStyle(afterCell.isImg)};border-left:none;">${afterCell.html}</td>` +
+		`</tr></tbody>` +
+		`</table>`
+	);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// ticketImg / img / imgFull — imgbb + dimensiones en `imgbb-map.json`.
+// Reglas en `imgDims.ts`: si natW<400 o natH<500 escalar arriba; si no, 80% centrado.
+// ─────────────────────────────────────────────────────────────────────────
+
+import { imgInfo } from "./assetsRemote";
+import { computeTicketImgDims, ticketImgHtml } from "./imgDims";
+import { TICKET_BORDER_ROW, TICKET_TEXT_BODY, TICKET_TEXT_MUTED, TICKET_TEXT_STEP_BG } from "./ticketColors";
+
+/** Base64 UTF-8 compatible con navegador y Node (sin depender de `Buffer`). */
+export function utf8ToBase64(text: string): string {
+	const bytes = new TextEncoder().encode(text);
+	let b64: string;
+	if (typeof Buffer !== "undefined") {
+		b64 = Buffer.from(bytes).toString("base64");
+	} else {
+		let bin = "";
+		for (const b of bytes) bin += String.fromCharCode(b);
+		b64 = btoa(bin);
+	}
+	// mermaid.ink espera base64 en ruta URL (caracteres + / rompen la URL).
+	return b64.replace(/\+/g, "-").replace(/\//g, "_");
+}
+
+/** Serializa config Chart.js omitiendo funciones (p. ej. formatter de plugins). */
+export function chartConfigToJson(chartConfig: Record<string, unknown>): string {
+	return JSON.stringify(chartConfig, (_k, v) => (typeof v === "function" ? undefined : v));
+}
+
+/** URL mermaid.ink (diagrama → PNG/JPEG embebible). */
+export function mermaidInkUrl(diagram: string): string {
+	return `https://mermaid.ink/img/${utf8ToBase64(prepareMermaidDiagram(diagram))}`;
+}
+
+/** Imagen remota (Mermaid/QuickChart en vivo). Respeta `computeTicketImgDims` si se pasan dimensiones nativas. */
+export function remoteDiagramImg(
+	src: string,
+	opts?: { width?: number; height?: number; fullWidth?: boolean; nativeW?: number; nativeH?: number },
+): string {
+	const natW = opts?.nativeW ?? opts?.width ?? 820;
+	const natH = opts?.nativeH ?? opts?.height ?? 440;
+	if (opts?.nativeW != null && opts?.nativeH != null) {
+		return ticketImgHtml(src, natW, natH);
+	}
+	const width = opts?.width ?? 820;
+	const height = opts?.height ?? 440;
+	const full = opts?.fullWidth ?? false;
+	const imgStyle = full
+		? `display:block;width:100%;max-width:100%;height:auto;margin:0 auto;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:zoom-in;`
+		: `display:block;width:100%;max-width:${width}px;height:auto;margin:0 auto;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:zoom-in;`;
+	const dimAttrs = full ? `width="${width}" height="${height}"` : `width="${width}"`;
+	return (
+		`<div style="text-align:center;margin:0.75rem auto;padding:0 5%;max-width:100%;box-sizing:border-box;overflow:hidden;">` +
+		`<a href="${src}" target="_blank" rel="noopener noreferrer" ` +
+		`style="display:inline-block;max-width:100%;text-decoration:none;border-radius:4px;">` +
+		`<img src="${src}" alt="" ${dimAttrs} style="${imgStyle}">` +
+		`</a></div>`
+	);
+}
+
+/**
+ * Imagen de ticket vía imgbb (`imgbb-map.json`). Usar para capturas SSMS u offline/email.
+ * Diagramas editables: `ticketDiagramAssets.ts` → `mermaidImg` / `chartImg`.
+ */
+export function ticketImg(filename: string, opts?: import("./imgDims").TicketImgHtmlOpts): string {
+	const info = imgInfo(filename);
+	return ticketImgHtml(info.url, info.width, info.height, opts);
+}
+
+/** Diagrama publicado en imgbb con transparencia (PNG alpha). */
+export function ticketImgTransparent(filename: string): string {
+	return ticketImg(filename, { transparentBg: true });
+}
+
+/** Diagrama Mermaid en vivo (mermaid.ink). Fuente: `.mmd` importado con `?raw`. */
+export function mermaidImg(
+	diagram: string,
+	opts?: { width?: number; height?: number; fullWidth?: boolean },
+): string {
+	return remoteDiagramImg(mermaidInkUrl(diagram), {
+		width: opts?.width ?? 900,
+		height: opts?.height ?? 520,
+		fullWidth: opts?.fullWidth ?? true,
+	});
+}
+
+/** Gráfico Chart.js vía QuickChart (imagen, no código). */
+export function chartImg(
+	chartConfig: Record<string, unknown>,
+	width = 820,
+	height = 440,
+	plugins = "datalabels",
+): string {
+	const plug = plugins ? `&plugins=${encodeURIComponent(plugins)}` : "";
+	const src = `https://quickchart.io/chart?w=${width}&h=${height}${plug}&c=${encodeURIComponent(chartConfigToJson(chartConfig))}`;
+	return remoteDiagramImg(src, { width, height, fullWidth: false });
+}
+
+/** Chart.js ancho completo vía QuickChart. */
+export function chartImgFull(
+	chartConfig: Record<string, unknown>,
+	width = 900,
+	height = 480,
+	plugins = "datalabels",
+): string {
+	const plug = plugins ? `&plugins=${encodeURIComponent(plugins)}` : "";
+	const src = `https://quickchart.io/chart?w=${width}&h=${height}${plug}&c=${encodeURIComponent(chartConfigToJson(chartConfig))}`;
+	return remoteDiagramImg(src, { width, height, fullWidth: true });
+}
+
+/** Captura o diagrama en imgbb (misma norma de tamaño que `ticketImg`). */
+export function img(filename: string, _legacyTargetW?: number): string {
+	void _legacyTargetW;
+	return ticketImg(filename);
+}
+
+/** Alias de `ticketImg` (diagramas Mermaid/QuickChart publicados en imgbb). */
+export function imgFull(filename: string): string {
+	return ticketImg(filename);
+}
+
+// simpleTable — tabla email-safe homogénea con el mismo estilo que la tabla
+// de "Commits relacionados" de la bitácora (header fondo negro, font Tahoma,
+// celdas con borde inferior gris). Acepta celdas como HTML ya escapado.
+//
+// Uso:
+//   simpleTable(["#", "Acción", "Resultado"], [
+//     ["1", "Crear", "OK"],
+//     ["2", "Eliminar", "OK"],
+//   ]);
+//
+// Las celdas son HTML — el llamador es responsable de escapar el texto si
+// proviene de fuentes externas (los TKs construyen contenido literal).
+export function simpleTable(
+	headers: string[],
+	rows: string[][],
+	opts?: {
+		aligns?: Array<"left" | "right" | "center">;
+		firstColIsStep?: boolean;
+		widths?: Array<string | undefined>;
+		/** Fondo por fila (p. ej. #fde2e8 para resaltar advertencias). Misma longitud que `rows`. */
+		rowBackgrounds?: string[];
+	},
+): string {
+	const aligns = opts?.aligns ?? [];
+	const widths = opts?.widths ?? [];
+	const rowBackgrounds = opts?.rowBackgrounds ?? [];
+	const thBase = "padding:0.25rem 0.5rem;vertical-align:bottom;background:#000;color:#fff;font-family:Tahoma;font-size:9pt;font-weight:600;";
+	const tdBase = `padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid ${TICKET_BORDER_ROW};font-family:Tahoma;font-size:10pt;color:${TICKET_TEXT_BODY};`;
+	const tdStep = `padding:0.3rem 0.5rem;vertical-align:top;border-bottom:1px solid ${TICKET_BORDER_ROW};font-family:Consolas,Menlo,monospace;font-size:9pt;color:${TICKET_TEXT_MUTED};text-align:center;background:${TICKET_TEXT_STEP_BG};width:36px;`;
+	const alignOf = (i: number): string => `text-align:${aligns[i] ?? "left"};`;
+	const widthOf = (i: number): string => (widths[i] ? `width:${widths[i]};` : "");
+
+	const colgroup = widths.length
+		? `<colgroup>${headers.map((_, i) => `<col${widths[i] ? ` style="width:${widths[i]};"` : ""}>`).join("")}</colgroup>`
+		: "";
+
+	const head = `<tr>`
+		+ headers.map((h, i) => `<th style="${thBase}${alignOf(i)}${widthOf(i)}">${h}</th>`).join("")
+		+ `</tr>`;
+
+	const body = rows.map((row, rowIdx) => {
+		const rowBg = rowBackgrounds[rowIdx] ? `background:${rowBackgrounds[rowIdx]};` : "";
+		return `<tr>`
+			+ row.map((cell, i) => {
+				if (i === 0 && opts?.firstColIsStep) return `<td style="${tdStep}${rowBg}">${cell}</td>`;
+				return `<td style="${tdBase}${rowBg}${alignOf(i)}${widthOf(i)}">${cell}</td>`;
+			}).join("")
+			+ `</tr>`;
+	}).join("");
+
+	return `<table class="ticket-table" style="border-collapse:collapse;width:100%;font-family:Tahoma;margin:8px 0;${widths.length ? "table-layout:fixed;" : ""}">`
+		+ colgroup
+		+ `<thead>${head}</thead>`
+		+ `<tbody>${body}</tbody>`
+		+ `</table>`;
+}

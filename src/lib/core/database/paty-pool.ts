@@ -1,9 +1,11 @@
 import sql from "mssql";
 import { config as loadDotenv } from "dotenv";
+import { loadLabLocalSettings } from "../load-lab-local-settings.ts";
 import { getPool as getMainPool } from "./clientesis-pool.ts";
 
 // Carga `.env` por si el módulo se importa antes que `db.ts`.
 loadDotenv();
+loadLabLocalSettings();
 
 // Pool independiente para la BD de PatyIA (`AYUDASCP_IA`). Convive con el
 // pool principal de ClientesIS (`db.ts`) y se configura con un prefijo
@@ -29,19 +31,23 @@ let connecting: Promise<sql.ConnectionPool> | null = null;
 let lastError: string | null = null;
 
 function readPatyConfig(): DbConfig | { error: string } | { reuseMain: true } {
-	const host = process.env.paty_hostdb ?? "";
-	const user = process.env.paty_userdb ?? "";
-	const pass = process.env.paty_passdb ?? "";
-	const name = process.env.paty_namedb ?? "";
-	const portRaw = process.env.paty_portdb ?? "";
+	const host = process.env.PATY_MSSQL_HOST ?? process.env.paty_hostdb ?? "";
+	const user = process.env.PATY_MSSQL_USER ?? process.env.paty_userdb ?? "";
+	const pass = process.env.PATY_MSSQL_PASS ?? process.env.paty_passdb ?? "";
+	const name = process.env.PATY_MSSQL_DB ?? process.env.paty_namedb ?? "";
+	const portRaw = process.env.PATY_MSSQL_PORT ?? process.env.paty_portdb ?? "";
 	if (!host && !user && !pass && !name && !portRaw) return { reuseMain: true };
 	const port = Number(portRaw || "1433");
 	const missing: string[] = [];
-	if (!host) missing.push("paty_hostdb");
-	if (!user) missing.push("paty_userdb");
-	if (!pass) missing.push("paty_passdb");
-	if (!name) missing.push("paty_namedb");
-	if (missing.length) return { error: `Variables faltantes: ${missing.join(", ")}` };
+	if (!host) missing.push("PATY_MSSQL_HOST");
+	if (!user) missing.push("PATY_MSSQL_USER");
+	if (!pass) missing.push("PATY_MSSQL_PASS");
+	if (!name) missing.push("PATY_MSSQL_DB");
+	if (missing.length) {
+		return {
+			error: `MSSQL PatyIA: configure ${missing.join(", ")} en lab-langgraph/local.settings.json`,
+		};
+	}
 	if (!Number.isFinite(port)) return { error: "paty_portdb no es número válido" };
 	return { host, port, user, pass, name };
 }

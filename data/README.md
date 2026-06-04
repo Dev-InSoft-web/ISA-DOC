@@ -1,29 +1,22 @@
-# `data/` — estado editable fuera de `public/`
+# `data/` en ISA-DOC (legado / migración)
 
-No confundir con `public/data/` (árbol SQL ClientesIS servido por HTTP).
+**La persistencia operativa vive en lab-langgraph.** Esta carpeta queda para:
 
-## Subcarpetas
+- Copias locales temporales durante desarrollo sin lab levantado
+- Sincronización hacia el backend: `cd ../lab-langgraph && npm run data:migrate-from-isa`
 
-| Ruta | Uso |
-|------|-----|
-| `postman/clientesis/` | Colección + envs ClientesIS (monolítico) |
-| `postman/patyia/` | Entidades fragmentadas + `collection.json` join |
-| `patyia/` | Caches locales (`conversaciones-cache.json`, etc.) |
-| `openai-storage/` | Mirror de archivos vector store (grande — gitignored) |
-| `lab-langgraph/vectorize/` | Corpus para FitDocs RAG (transcripciones YouTube ContaPyme, etc.) |
-| `revisado.json` | Estado bitácora “revisado” → copiado a `static-api/revisado.json` |
+## Qué se movió al backend
 
-## Postman
+| Aquí (legado) | lab-langgraph |
+|---------------|---------------|
+| `postman/` | `data/postman/` |
+| `patyia/*-cache.json` | `data/patyia/caches/` |
+| `revisado.json` | `data/bitacora/revisado.json` |
+| `openai-storage/` | `data/openai-storage/` |
+| — | `data/api-catalog.json`, `data/clientesis-schema/`, `data/codegen/`, `data/sql/` |
 
-Edición vía UI (`PostmanPanel`). Regenerar snapshot:
+## Front estático
 
-```bash
-npm run snapshot:gh-pages
-```
+Con `PUBLIC_LAB_LANGGRAPH_URL` el navegador lee/escribe vía lab (`/api/revisado`, `/api/persistence/...`, `/api/agent/postman-ui`).
 
-Los `CONTROLKEY` en `environments.json` deben quedar vacíos en git; rellenar solo en local.
-
-## Legado eliminado
-
-- `iss-postman/` — sustituido por `postman/clientesis/collection.json`
-- `patyia-postman-environments.json` en raíz — sustituido por `postman/patyia/environments.json`
+Ver `../lab-langgraph/docs/PERSISTENCE-INVENTORY.md`.

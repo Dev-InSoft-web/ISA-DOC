@@ -16,6 +16,18 @@ alwaysApply: false
 
 Ejemplo vigente: `CONVERSACION_LOG` → `ICONVERSACION BIGINT`, `CONTENT NVARCHAR(MAX)`.
 
+## Ejecución controlada (bitácora)
+
+| Motor | Canal | Confirmación |
+| --- | --- | --- |
+| MSSQL Paty / ClientesIS | `SqlExecCard` → `/api/patyia/db/exec` o `/api/db/exec` | **Siempre** (candado + `ConfirmDialog`) |
+| PostgreSQL `paty.*` / `lab.*` / `clientesis.*` (Render) | `POST /api/patyia/prompts/sync-pg`, scripts lab `npm run db:apply-pg-ops`, `pool.query` | **Automático** (sin modal) |
+| PostgreSQL (lab-langgraph) | Ver skill `lab-langgraph/.cursor/skills/pg-direct-exec/SKILL.md` | **Automático** — los agentes aplican DDL/DML PG sin pedir confirmación |
+
+No enlazar scripts CLI que ejecuten MSSQL sin pasar por SqlExecCard en flujos operativos AT.
+
+**PostgreSQL:** ejecutar directamente (scripts, API sync, migraciones). **MSSQL:** nunca omitir SqlExecCard + confirmación.
+
 ## SqlExec (`/api/patyia/db/exec`)
 
 - Scripts en `src/lib/features/patyia/070-sql/*.sql`: sin `GO`, sin `USE`; una sola tanda ejecutable.

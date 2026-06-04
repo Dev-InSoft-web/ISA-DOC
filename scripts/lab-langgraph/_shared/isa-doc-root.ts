@@ -7,6 +7,7 @@ export const LAB_SCRIPTS_ROOT = resolve(_DIR, "..");
 export const ISA_DOC_ROOT = resolve(LAB_SCRIPTS_ROOT, "../..");
 export const LAB_REPO_ROOT = resolve(ISA_DOC_ROOT, "../lab-langgraph");
 
+/** Datos de vectorización y corpus: solo en repo lab-langgraph (`data/vectorize/`). */
 export function labDataPath(...segments: string[]): string {
-	return join(ISA_DOC_ROOT, "data", "lab-langgraph", ...segments);
+	return join(LAB_REPO_ROOT, "data", ...segments);
 }

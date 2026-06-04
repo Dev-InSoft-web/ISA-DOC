@@ -9,6 +9,11 @@ import {
 	minimaxKeyDisplay,
 	type MinimaxConfig,
 } from "../../_shared/minimax-config.ts";
+import {
+	createRateLimitHintTracker,
+	logProgress,
+	type RateLimitHintTracker,
+} from "../../_shared/retry-wait.ts";
 export type WhisperTranscribeProvider = "groq" | "minimax";
 
 /** STT YouTube: solo Groq; MiniMax no tiene API STT en api.minimax.io. */
@@ -20,6 +25,7 @@ export type WhisperRouteState = {
 	pool: GroqKeyPool;
 	minimax: MinimaxConfig | null;
 	provider: WhisperTranscribeProvider;
+	retryHint: RateLimitHintTracker;
 };
 
 export function createWhisperRouteState(): WhisperRouteState {
@@ -31,6 +37,7 @@ export function createWhisperRouteState(): WhisperRouteState {
 		pool,
 		minimax,
 		provider: "groq",
+		retryHint: createRateLimitHintTracker(),
 	};
 }
 
@@ -58,7 +65,7 @@ export function rotateWhisperRouteOnQuota(
 		if (state.pool.rotateOn429()) return "groq-key";
 		if (state.minimax) {
 			state.provider = "minimax";
-			console.warn(`  Whisper · cambio a ${whisperRouteDisplay(state)}`);
+			logProgress(`  Whisper · cambio a ${whisperRouteDisplay(state)}`);
 			return "minimax";
 		}
 		return "wait";
@@ -66,38 +73,25 @@ export function rotateWhisperRouteOnQuota(
 	// MiniMax agotado o error → vuelta a Groq 1
 	state.provider = "groq";
 	state.pool.resetToFirst();
-	console.warn(`  Whisper · vuelta a ${whisperRouteDisplay(state)}`);
+	logProgress(`  Whisper · vuelta a ${whisperRouteDisplay(state)}`);
 	return "groq-key";
 }
 
 export function resetWhisperRouteAfterWait(state: WhisperRouteState): void {
 	state.provider = "groq";
 	state.pool.resetToFirst();
+	state.retryHint = createRateLimitHintTracker();
 }
 
-/**
- * Tras un fallo reintentable (yt-dlp, red, etc.): siguiente ruta 1/2→2/2→1/2.
- * Distinto de rotateWhisperRouteOnQuota (solo ante 429 dentro de transcribe).
- */
-export function advanceWhisperRouteOnRetry(state: WhisperRouteState): void {
-	if (state.provider === "groq") {
-		if (state.pool.currentIndex < state.pool.size - 1) {
-			state.pool.rotateOn429();
-			console.warn(`  Whisper · siguiente ruta ${whisperRouteDisplay(state)}`);
-			return;
-		}
-		if (state.minimax) {
-			state.provider = "minimax";
-			console.warn(`  Whisper · siguiente ruta ${whisperRouteDisplay(state)}`);
-			return;
-		}
-		state.pool.resetToFirst();
-		console.warn(`  Whisper · siguiente ruta ${whisperRouteDisplay(state)}`);
+/** Tras fallo local (EBUSY) no rota key; otros errores alternan Groq. */
+export function advanceWhisperRouteOnRetry(state: WhisperRouteState, errorMessage?: string): void {
+	state.provider = "groq";
+	if (errorMessage && /EBUSY|resource busy|locked/i.test(errorMessage)) {
+		logProgress(`  Whisper · EBUSY · misma API key tras espera`);
 		return;
 	}
-	state.provider = "groq";
-	state.pool.resetToFirst();
-	console.warn(`  Whisper · siguiente ruta ${whisperRouteDisplay(state)}`);
+	state.pool.rotateForRetry();
+	logProgress(`  Whisper · reintento ${whisperRouteDisplay(state)}`);
 }
 
 /** Sin pausa tras MiniMax (STT desactivado; cascada solo Groq). */

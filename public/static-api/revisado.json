@@ -79,5 +79,18 @@
   "2026-05-26.patyia.ninstruccion.update": true,
   "tickets.TK-1429349": true,
   "tickets.TK-1429262": true,
-  "2026-05-29.patyia.instrucciones.cleanup": true
+  "2026-05-29.patyia.instrucciones.cleanup": true,
+  "2026-05-29.patyia.instrucciones.select": true,
+  "2026-06-01.patyia.seed-prompts-ultra": true,
+  "2026-06-01.patyia.instruccion.modelo-nano": true,
+  "2026-06-01.patyia.conversacion-log.ddl": true,
+  "tickets.TK-1431163": true,
+  "tickets.TK-1431662": true,
+  "tickets.TK-1431666": true,
+  "2026-06-04.patyia.seed-prompts-ultra-tk1433943": true,
+  "tickets.TK-1433943": true,
+  "tickets.TK-1433179": false,
+  "tickets.TK-1432903": false,
+  "tickets.TK-1430975": false,
+  "tickets.TK-1430974": false
 }

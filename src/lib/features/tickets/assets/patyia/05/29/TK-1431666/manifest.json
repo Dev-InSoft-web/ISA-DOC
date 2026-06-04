@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-06-04T17:51:36.681Z",
+  "folder": "patyia/05/29/TK-1431666",
+  "assets": [
+    {
+      "filename": "tk1431666-tokens-totales.png",
+      "ticketId": "TK-1431666",
+      "url": "https://i.ibb.co/vCgdbVz8/tk1431666-tokens-totales.png",
+      "sha1": "a443a64c2975b84f35b4973a25332419defb87cd",
+      "width": 1988,
+      "height": 1188
+    },
+    {
+      "filename": "tk1431666-tokens-por-tipo.png",
+      "ticketId": "TK-1431666",
+      "url": "https://i.ibb.co/rG8kzc3n/tk1431666-tokens-por-tipo.png",
+      "sha1": "8bbf656c4c769d7ce0c375c2c04f6ff94739dcac",
+      "width": 2148,
+      "height": 1588
+    },
+    {
+      "filename": "tk1431666-carga-ultra.png",
+      "ticketId": "TK-1431666",
+      "url": "https://i.ibb.co/gbD2b415/tk1431666-carga-ultra.png",
+      "sha1": "dd6491d0c1630546c54d1d9a1b59e3a5ae7f6e5c",
+      "width": 380,
+      "height": 606
+    },
+    {
+      "filename": "tk1431666-carga-ultra.jpg",
+      "ticketId": "TK-1431666",
+      "url": "https://i.ibb.co/mFyjnT4N/tk1431666-carga-ultra.jpg",
+      "sha1": "0b240c0acc2f4f300feb54bd8afc1e3d2440a4b7",
+      "width": 304,
+      "height": 590
+    }
+  ]
+}

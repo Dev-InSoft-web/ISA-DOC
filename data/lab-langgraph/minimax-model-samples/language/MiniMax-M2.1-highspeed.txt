@@ -1,4 +1,0 @@
-model: MiniMax-M2.1-highspeed
-http: 200
-base_resp: 0 
-reply: OK

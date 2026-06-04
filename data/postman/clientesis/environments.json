@@ -1,6 +1,21 @@
 {
-	"active": "desarrollo",
+	"active": "staging",
 	"environments": [
+		{
+			"id": "staging",
+			"name": "2. Staging (Azure)",
+			"values": [
+				{ "key": "token", "value": "", "type": "secret", "enabled": true },
+				{ "key": "uuidtoken", "value": "", "type": "secret", "enabled": true },
+				{ "key": "host_soporte", "value": "https://clientesis-soporte.azurewebsites.net", "enabled": true },
+				{ "key": "host_titulosgen", "value": "https://clientesis-titulosgen.azurewebsites.net", "enabled": true },
+				{ "key": "host_terceros", "value": "https://clientesis-terceros.azurewebsites.net", "enabled": true },
+				{ "key": "host_contactos", "value": "https://clientesis-contactos.azurewebsites.net", "enabled": true },
+				{ "key": "host_seguridad", "value": "https://clientesis-seguridad.azurewebsites.net", "enabled": true },
+				{ "key": "host_general", "value": "https://clientesis-general.azurewebsites.net", "enabled": true },
+				{ "key": "host_contapymeu", "value": "https://clientesis-contapymeu.azurewebsites.net", "enabled": true }
+			]
+		},
 		{
 			"id": "desarrollo",
 			"name": "1. Desarrollo",

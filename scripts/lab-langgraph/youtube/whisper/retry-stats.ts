@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { GROQ_RATE_LIMIT_WAIT_MS } from "../../_shared/groq-api-keys.ts";
+import { GROQ_RATE_LIMIT_WAIT_MS } from "./fallback-core.ts";
+import { capRetryWaitMs } from "../../_shared/retry-wait.ts";
 
 export type WhisperStatsSnapshot = {
 	okMs: number[];
@@ -83,16 +84,17 @@ export class WhisperRetryStats {
 		let wait = GROQ_RATE_LIMIT_WAIT_MS;
 		if (apiHintMs) wait = Math.max(wait, apiHintMs);
 		if (avg) wait = Math.max(wait, Math.round(avg * 1.08));
-		return wait;
+		return capRetryWaitMs(wait);
 	}
 
-	/** Espera tras otros errores (descarga, red, 0 segmentos). */
+	/** Espera tras otros errores; mínimo 15s (evita reintentos de 5–7s en ráfaga). */
 	suggestedRetryMs(): number {
+		const avgWait = this.avgMs(this.waitMs);
 		const avgErr = this.avgMs(this.errorMs);
-		const avgOk = this.avgMs(this.okMs);
-		if (avgErr) return Math.max(8_000, Math.min(120_000, Math.round(avgErr * 0.6)));
-		if (avgOk) return Math.max(8_000, Math.min(60_000, Math.round(avgOk * 0.25)));
-		return 15_000;
+		let wait = 15_000;
+		if (avgWait) wait = Math.max(wait, Math.round(avgWait * 0.85));
+		if (avgErr) wait = Math.max(wait, Math.round(avgErr * 0.6));
+		return Math.min(wait, 120_000);
 	}
 
 	toSnapshot(): WhisperStatsSnapshot {
@@ -193,10 +195,10 @@ function formatOkList(ok: WhisperOkEntry[], maxShow = 8): string {
 }
 
 function formatPendingList(ids: string[], maxShow = 6): string {
-	if (!ids.length) return "—";
+	if (!ids.length) return "0 pendientes";
 	const shown = ids.slice(0, maxShow);
 	const extra = ids.length > maxShow ? ` (+${ids.length - maxShow} más)` : "";
-	return shown.join(", ") + extra;
+	return `${ids.length} en corpus · ${shown.join(", ")}${extra}`;
 }
 
 /** Resumen visible al inicio de cada intento o antes de esperar un reintento. */
@@ -224,11 +226,14 @@ export function logWhisperAttemptStatus(params: {
 		`  ┌─ ${params.phase === "intento" ? "Intento" : "Reintento"} #${params.attempt} · ${params.vid} · API key ${params.apiKeyDisplay}`,
 	);
 	console.log(
-		`  │ OK sesión: ${params.sessionOk.length} · faltan global: ${params.pendingGlobal} · lote ${params.batchDone}/${params.batchTotal} hechos · pendientes en lote: ${params.pendingInBatch}`,
+		`  │ OK sesión: ${params.sessionOk.length} · pendientes corpus: ${params.pendingGlobal} · lote ${params.batchDone}/${params.batchTotal} guardados · cola lote: ${params.pendingInBatch}`,
 	);
 	console.log(`  │ Videos OK: ${okLine}`);
+	console.log(
+		`  │ En curso: ${params.vid} · la lista de abajo solo baja al guardar el JSON del video (no por chunk Groq)`,
+	);
 	if (params.pendingIds?.length) {
-		console.log(`  │ Faltan (ids): ${formatPendingList(params.pendingIds)}`);
+		console.log(`  │ Cola corpus: ${formatPendingList(params.pendingIds)}`);
 	}
 
 	if (params.waitMs != null && params.waitMs > 0) {

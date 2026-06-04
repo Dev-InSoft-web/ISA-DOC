@@ -2,7 +2,7 @@
 
 ## Datos
 
-`data/lab-langgraph/vectorize/web/government/`
+`lab-langgraph/data/vectorize/web/government/`
 
 - `pages/{corpus}/{año}/{pageId}.json|.md`
 - `pdfs/{corpus}/{año}/{pageId}.pdf`

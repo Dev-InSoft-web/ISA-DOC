@@ -20,14 +20,10 @@
  */
 import { appendFile, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { importLab } from "../../_shared/ensure-lab-build.mts";
+import { resolve } from "node:path";
 import { loadLabEnv } from "../../_shared/load-lab-env.ts";
-import {
-	isMinimaxConfigured,
-	loadMinimaxConfigFromEnv,
-	minimaxKeyDisplay,
-} from "../../_shared/minimax-config.ts";
-import { getGroqKeyPool } from "../../_shared/groq-api-keys.ts";
+import { labLanggraphBaseUrl, proofreadVideoViaLab } from "../../_shared/lab-api-client.ts";
+import { capRetryWaitMs, MAX_RETRY_WAIT_MS } from "../../_shared/retry-wait.ts";
 import {
 	CORPUS_BASE,
 	listAllVideoJsonRefs,
@@ -39,20 +35,14 @@ import type { CaptionSegment, VideoCorpusRecord } from "../lib/types.ts";
 
 loadLabEnv();
 
-const { proofreadVideo } = await importLab<{
-	proofreadVideo: (o: {
-		videoId: string;
-		force?: boolean;
-		allowOpenAi?: boolean;
-	}) => Promise<
-		| { ok: true; skipped: boolean; segmentsChanged: number; provider: string; model: string }
-		| { ok: false; error: string; retryAfterMinutes?: number }
-	>;
-}>("src/lib/youtube/proofread/run.js");
-
-const { isPlausibleProofreadFix } = await importLab<{
-	isPlausibleProofreadFix: (o: string, f: string, brands?: string[]) => boolean;
-}>("src/lib/youtube/proofread/validate-fix.js");
+function isPlausibleProofreadFix(original: string, fixed: string, _brands?: string[]): boolean {
+	const o = original.trim();
+	const f = fixed.trim();
+	if (!f || f === o) return true;
+	if (f.length < o.length * 0.35) return false;
+	if (f.length > o.length * 2.8) return false;
+	return true;
+}
 
 function parseArgs(argv: string[]) {
 	let limit: number | null = 1;
@@ -196,20 +186,8 @@ console.log(`Orden: videos → streams → shorts (solo pendientes si --resume)`
 console.log(
 	`Pendientes: videos=${pendingByKind.videos} · streams=${pendingByKind.streams} · shorts=${pendingByKind.shorts}`,
 );
-const groqPool = getGroqKeyPool();
-console.log(`Groq: ${groqPool.size} keys · ${groqPool.currentKeyDisplay()}`);
-const mmCfg = loadMinimaxConfigFromEnv();
-const routeN = groqPool.size + (isMinimaxConfigured() ? 1 : 0);
-if (mmCfg) {
-	console.log(
-		`Rutas proofread: ${routeN} · MiniMax ${minimaxKeyDisplay(mmCfg)} (3/3 = chat, no STT)`,
-	);
-} else {
-	console.log(`Rutas proofread: ${routeN} · MiniMax no configurado (MINIMAX_API_KEY en lab-langgraph.env)`);
-}
-console.log(
-	`Modo: por video hasta OK · cascada Groq 1/${routeN}→2/${routeN}→MiniMax (sin espera tras MiniMax)`,
-);
+console.log(`Lab LangGraph: ${labLanggraphBaseUrl()}`);
+console.log(`Modo: proofread vía API · orquestador PG en servidor (Groq→Cerebras→MiniMax)`);
 console.log(`Videos en lote: ${slice.length} / ${refs.length} (offset=${opts.offset})`);
 if (opts.limit === 1 && !opts.videoId) {
 	console.log("Piloto: --limit 1 (pasa la prueba y relanza con --all o lab:yt:proofread-resume)");
@@ -229,9 +207,11 @@ for (const ref of slice) {
 	let segmentsBefore: CaptionSegment[] = [];
 
 	console.log(`\n▶ proofread ${vid} (${ref.kind}/${ref.year})`);
-	groqPool.resetToFirst();
+	let corpusJsonPath: string | undefined;
 	try {
 		const beforeRecord = await loadRecord(vid);
+		const { json } = await resolveVideoArtifacts(vid);
+		corpusJsonPath = resolve(json);
 		segmentsBefore = beforeRecord.transcript.segments.map((s) => ({ ...s }));
 		console.log(`  segmentos: ${segmentsBefore.length}`);
 	} catch (e) {
@@ -245,21 +225,23 @@ for (const ref of slice) {
 	let attempt = 0;
 	while (true) {
 		attempt += 1;
-		const result = await proofreadVideo({
+		const result = await proofreadVideoViaLab({
 			videoId: vid,
 			force: opts.force,
 			allowOpenAi: opts.allowOpenAi,
+			corpusJsonPath,
 		});
 		if (result.ok) {
-			if (result.skipped) {
+			if ("skipped" in result && result.skipped) {
 				skipped += 1;
 				console.log(`  skip ${vid} (API: ya corregido)`);
 				await appendFile(logPath, `SKIP ${vid} api-skipped\n`);
 			} else {
 				processed += 1;
-				segmentsChangedTotal += result.segmentsChanged;
+				const changed = result.segmentsChanged ?? 0;
+				segmentsChangedTotal += changed;
 				console.log(
-					`  ok   ${vid} · ${result.segmentsChanged} segmentos · ${result.provider}/${result.model}`,
+					`  ok   ${vid} · ${changed} segmentos · ${result.provider ?? "?"}/${result.model ?? "?"}`,
 				);
 				const compareBlock = logProofreadComparisons(
 					vid,
@@ -276,19 +258,21 @@ for (const ref of slice) {
 			break;
 		}
 
-		console.warn(`  retry ${vid} intento ${attempt} (cascada reinicia, sin espera):`);
+		const waitMs = capRetryWaitMs(MAX_RETRY_WAIT_MS);
+		console.log(`  retry ${vid} intento ${attempt} · espera ${waitMs / 1000}s (cascada reinicia):`);
 		const attempts = "providerAttempts" in result ? result.providerAttempts : undefined;
 		if (attempts?.length) {
 			for (const a of attempts) {
-				console.warn(`    ${a.api}: ${a.error.slice(0, 220)}`);
+				console.log(`    ${a.api}: ${a.error.slice(0, 220)}`);
 			}
 		} else {
-			console.warn(`    ${result.error.slice(0, 200)}`);
+			console.log(`    ${result.error.slice(0, 200)}`);
 		}
 		const logLine =
 			attempts?.map((a) => `${a.api}=${a.error.slice(0, 80)}`).join(" | ") ??
 			result.error.slice(0, 200);
 		await appendFile(logPath, `RETRY ${vid} ${logLine}\n`);
+		await sleep(waitMs);
 	}
 
 	if (opts.delayMs > 0) await sleep(opts.delayMs);

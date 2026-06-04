@@ -1,46 +1,39 @@
 /**
- * Proofread de un video (LangGraph / API :5500).
+ * Proofread de un video vía lab-langgraph API.
  * Uso: npm run lab:yt:proofread -- <videoId>
- *      npm run lab:yt:proofread:promote -- <videoId>
  */
-import { importLab } from "../../_shared/ensure-lab-build.mts";
+import { resolve } from "node:path";
+import { loadLabEnv } from "../../_shared/load-lab-env.ts";
+import { labLanggraphBaseUrl, proofreadVideoViaLab } from "../../_shared/lab-api-client.ts";
+import { resolveVideoArtifacts } from "../lib/corpus-paths.ts";
+
+loadLabEnv();
 
 const args = process.argv.slice(2);
 const promote = args.includes("--promote");
 const force = args.includes("--force");
-const apiMode = args[0] === "--api";
-const apiBase = apiMode ? args[1]?.replace(/\/$/, "") : null;
-const videoId = (apiMode ? args[2] : args.filter((a) => !a.startsWith("--"))[0])?.trim();
+const videoId = args.filter((a) => !a.startsWith("--"))[0]?.trim();
 
 if (!videoId) {
-	console.error("Uso: npm run lab:yt:proofread -- <videoId> | lab:yt:proofread:promote -- <id> | --api <base> <id>");
+	console.error("Uso: npm run lab:yt:proofread -- <videoId>");
 	process.exit(1);
 }
 
-async function viaHttp(base: string, id: string, isPromote: boolean): Promise<void> {
-	const q = new URLSearchParams({ videoId: id });
-	if (isPromote) q.set("promote", "true");
-	const res = await fetch(`${base}/youtube/proofread?${q}`, { method: "POST" });
-	const body = await res.json();
-	console.log(JSON.stringify(body, null, 2));
-	if (!res.ok) process.exit(1);
-}
-
-if (apiMode && apiBase) {
-	await viaHttp(apiBase, videoId, promote);
-	process.exit(0);
-}
-
-const { promoteProofreadTest, proofreadVideo } = await importLab<{
-	promoteProofreadTest: (id: string) => Promise<void>;
-	proofreadVideo: (o: { videoId: string; force?: boolean }) => Promise<{ ok: boolean }>;
-}>("src/lib/youtube/proofread/run.js");
-
 if (promote) {
-	await promoteProofreadTest(videoId);
-	console.log(`Promovido ${videoId}-test → ${videoId}`);
-} else {
-	const result = await proofreadVideo({ videoId, force });
+	const result = await proofreadVideoViaLab({ videoId, promote: true });
 	console.log(JSON.stringify(result, null, 2));
-	if (!result.ok) process.exit(1);
+	process.exit(result.ok ? 0 : 1);
 }
+
+let corpusJsonPath: string | undefined;
+try {
+	const { json } = await resolveVideoArtifacts(videoId);
+	corpusJsonPath = resolve(json);
+} catch {
+	/* el servidor resuelve por videoId */
+}
+
+const result = await proofreadVideoViaLab({ videoId, force, corpusJsonPath });
+console.log(JSON.stringify(result, null, 2));
+console.log(`Lab: ${labLanggraphBaseUrl()}`);
+if (!result.ok) process.exit(1);

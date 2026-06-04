@@ -2,7 +2,7 @@
 
 # Corpus YouTube · un archivo por video
 
-Cada video del canal [ContaPyme Software Contable](https://www.youtube.com/@ContaPymeSoftwareContable/videos) se materializa en **ISA-DOC** con metadatos completos; el **join** (`corpus.md`) se usa después para embedding en `lab-langgraph`.
+Cada video del canal [ContaPyme Software Contable](https://www.youtube.com/@ContaPymeSoftwareContable/videos) se materializa con metadatos completos en **`lab-langgraph/data/vectorize/`**; el **join** (`corpus.md`) se usa después para embedding en PGVector.
 
 ## Por video (obligatorio)
 
@@ -19,7 +19,7 @@ Cada video del canal [ContaPyme Software Contable](https://www.youtube.com/@Cont
 | `corpus.md` | Concatenación resumida de todos los videos OK (métricas + transcripción) |
 | `manifest.json` | Índice: estado, vistas, likes, comentarios, rutas |
 
-Ruta base: `data/lab-langgraph/vectorize/youtube/contapyme-software-contable/` (local; carpeta en `.gitignore` para no inflar el repo).
+Ruta base: `lab-langgraph/data/vectorize/youtube/contapyme-software-contable/` (local; gitignored en el repo del lab).
 
 ## Fuentes de datos
 

@@ -6,7 +6,7 @@
  *   npm run lab:yt:whisper-fallback
  *   npm run lab:yt:whisper-fallback -- --video-id 3eoQ0_2MYLM
  */
-import { getGroqKeyPool } from "../../_shared/groq-api-keys.ts";
+import { labHealthCheck, labLanggraphBaseUrl } from "../../_shared/lab-api-client.ts";
 import {
 	AUDIO_CACHE,
 	loadWhisperStats,
@@ -21,8 +21,8 @@ const jobs = await listWhisperJobs(opts.videoId);
 const slice = opts.limit > 0 ? jobs.slice(0, opts.limit) : jobs;
 
 console.log(`Videos sin transcripción: ${jobs.length} · a procesar: ${slice.length}`);
-const pool = getGroqKeyPool();
-console.log(`Groq API keys: ${pool.size} · activa: ${pool.currentKeyDisplay()}`);
+const health = await labHealthCheck().catch(() => ({ ok: false }));
+console.log(`Lab: ${labLanggraphBaseUrl()} · health=${health.ok ? "ok" : "FAIL"}`);
 console.log(`Audio cache: ${AUDIO_CACHE}`);
 console.log(`Stats: ${STATS_PATH}`);
 

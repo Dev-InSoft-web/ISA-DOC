@@ -18,7 +18,7 @@ Idempotente: re-ejecutar sobrescribe `instruccion` sin duplicar filas.
 ## Regenerar el SQL
 
 ```bash
-node scripts/build-paty-prompts-ultra-sql.mjs
+node scripts/patyia/prompts/build-paty-prompts-ultra-sql.mjs
 npm run patyia:prompts:metrics
 ```
 

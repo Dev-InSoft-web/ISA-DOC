@@ -7,7 +7,7 @@ import { importLab } from "../../_shared/ensure-lab-build.mts";
 const replace = !process.argv.includes("--append");
 
 const { preloadIsaDocSecrets } = await importLab<{ preloadIsaDocSecrets: () => void }>(
-	"src/lib/secrets.js",
+	"src/lib/core/secrets.js",
 );
 const { loadYoutubeCorpusDocuments } = await importLab<{
 	loadYoutubeCorpusDocuments: (dir: string) => Promise<{

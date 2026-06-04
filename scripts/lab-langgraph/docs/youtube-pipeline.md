@@ -2,7 +2,7 @@
 
 ## Datos
 
-`data/lab-langgraph/vectorize/youtube/contapyme-software-contable/`
+`lab-langgraph/data/vectorize/youtube/contapyme-software-contable/`
 
 - `videos|shorts|streams/{año}/{videoId}.json|.md`
 - `manifest.json`, `corpus.md`, `fetch-cache/`, `subs-cache/`, `audio-cache/`

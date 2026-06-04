@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-06-04T17:51:36.677Z",
+  "folder": "patyia/05/25/TK-1429262",
+  "assets": [
+    {
+      "filename": "tk1429262-mermaid-er-recursos.png",
+      "ticketId": "TK-1429262",
+      "url": "https://i.ibb.co/nM1y1rGK/tk1429262-mermaid-er-recursos.png",
+      "sha1": "bf17ded56fcd019bdac76295e481d24fc94e239c",
+      "width": 1568,
+      "height": 1420
+    },
+    {
+      "filename": "tk1429262-mermaid-hoja-de-ruta.png",
+      "ticketId": "TK-1429262",
+      "url": "https://i.ibb.co/84Bbw3ZF/tk1429262-mermaid-hoja-de-ruta.jpg",
+      "sha1": "0419eabc8cdb158ac093ed811246acf00071aba3",
+      "width": 1030,
+      "height": 118
+    }
+  ]
+}

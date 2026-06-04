@@ -4,6 +4,7 @@
 	import Accordion from "$comps/ui/containers/Accordion.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import Gpt5AdjuntosDiscovery from "../bitacora/Gpt5AdjuntosDiscovery.svelte";
+	import PatyPgPromptsSync from "../bitacora/PatyPgPromptsSync.svelte";
 	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import md_2026_06_01_resumen from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/01-resumen-2026-06-01.md?raw";
 	import md_2026_05_29_instrucciones_cleanup from "../../lib/features/patyia/060-bitacora/daily/2026-05/29/01-instrucciones-listado-y-limpieza.md?raw";
@@ -25,6 +26,9 @@
 	import md_2026_06_01_tk1432903 from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/05-tk1432903-cierre.md?raw";
 	import md_2026_06_03_resumen from "../../lib/features/patyia/060-bitacora/daily/2026-06/03/01-resumen-2026-06-03.md?raw";
 	import md_2026_06_03_gpt5_adjuntos from "../../lib/features/patyia/060-bitacora/daily/2026-06/03/05-gpt5-nano-vs-mini-adjuntos-multimedia.md?raw";
+	import md_2026_06_04_resumen from "../../lib/features/patyia/060-bitacora/daily/2026-06/04/01-resumen-2026-06-04.md?raw";
+	import md_2026_06_04_tk1433943 from "../../lib/features/patyia/060-bitacora/daily/2026-06/04/02-tk1433943-prompts-ultra-hoy.md?raw";
+	import md_2026_06_04_tk1433968 from "../../lib/features/patyia/060-bitacora/daily/2026-06/04/03-tk1433968-prompts-openai.md?raw";
 
 	// PatyIA tiene su propia BD (AYUDASCP_IA) — los endpoints de ejecución y
 	// ping están bifurcados respecto a los de ClientesIS para que el banner
@@ -54,11 +58,51 @@
 	dbPingUrl="/api/patyia/db/ping"
 	dbLabelOk="BD PatyIA conectada"
 >
-	<!-- 2026-06-03 (hoy) — entrada diaria (mes actual no agrupado) -->
+	<!-- 2026-06-04 (hoy) — TK-1433943 + TK-1433968 -->
 	<Accordion
-		title="2026-06-03 — PatyIA: gpt-5-nano vs gpt-5-mini (adjuntos multimedia, TK-1431662)"
+		title="2026-06-04 — PatyIA: TK-1433943 (Ultra BD) · TK-1433968 (pmpt obsoletos)"
 		titleIcon="mdi:calendar"
 		open={true}
+		checkKeys={["2026-06-04.patyia.seed-prompts-ultra-tk1433943", "tickets.TK-1433943"]}
+	>
+		<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" inner>
+			<BitacoraNote flat mdSource={md_2026_06_04_resumen} />
+		</Accordion>
+
+		<Accordion
+			title="TK-1433943 · Prompts Ultra reforzados (13 tipos)"
+			titleIcon="mdi:text-box-check-outline"
+			inner
+			checkKeys={["2026-06-04.patyia.seed-prompts-ultra-tk1433943", "tickets.TK-1433943"]}
+		>
+			<BitacoraNote flat mdSource={md_2026_06_04_tk1433943} />
+			<PatyPgPromptsSync autoOnMount={true} />
+			<SqlExecCard
+				title="AYUDASCP_IA_STAGING · MERGE Ultra (INSTRUCCION + TDCONSULTAXINSTRUCCION)"
+				sql={sqlSeedPromptsUltraTdConsulta}
+				desc="MSSQL directo (ISA-DOC /api/patyia/db/exec → AYUDASCP_IA_STAGING). No usa lab-langgraph. Candado + confirmación. Tras editar .md: node scripts/patyia/prompts/build-paty-prompts-ultra-sql.mjs. Verificación: 13 filas PROMPT_%."
+				{executeSql}
+				checkKey="2026-06-04.patyia.seed-prompts-ultra-tk1433943"
+				confirmKind="warning"
+				confirmMessage={`Se actualizarán los 13 textos Ultra en INSTRUCCION (2.0-ultra, TK-1433943).\n\nMSSQL requiere confirmación explícita.\n\n¿Continuar en AYUDASCP_IA_STAGING?`}
+				height="360px"
+			/>
+		</Accordion>
+
+		<Accordion
+			title="TK-1433968 · Objetos Prompt OpenAI obsoletos (pmpt_*)"
+			titleIcon="mdi:alert-decagram-outline"
+			inner
+		>
+			<BitacoraNote flat mdSource={md_2026_06_04_tk1433968} />
+		</Accordion>
+	</Accordion>
+
+	<!-- 2026-06-03 — gpt-5 nano vs mini -->
+	<Accordion
+		title="2026-06-03 — PatyIA: gpt-5-nano vs gpt-5-mini (adjuntos multimedia)"
+		titleIcon="mdi:calendar"
+		open={false}
 	>
 		<Accordion
 			title="Resumen del día"
@@ -76,6 +120,7 @@
 			<Gpt5AdjuntosDiscovery />
 			<BitacoraNote flat mdSource={md_2026_06_03_gpt5_adjuntos} />
 		</Accordion>
+
 	</Accordion>
 
 	<!-- 2026-06-01 — entrada diaria (mes actual no agrupado) -->
@@ -142,7 +187,7 @@
 			<SqlExecCard
 				title="AYUDASCP_IA · MERGE prompts Ultra (INSTRUCCION + TDCONSULTAXINSTRUCCION)"
 				sql={sqlSeedPromptsUltraTdConsulta}
-				desc={"MERGE idempotente: texto Ultra con placeholders {{nombre_usuario}} en ejemplos (se resuelven en runtime). Tras editar los .md: node scripts/build-paty-prompts-ultra-sql.mjs y re-ejecutar. Cierra con SELECT (13 filas)."}
+				desc={"MERGE idempotente: texto Ultra con placeholders {{nombre_usuario}} en ejemplos (se resuelven en runtime). Tras editar los .md: node scripts/patyia/prompts/build-paty-prompts-ultra-sql.mjs y re-ejecutar. Cierra con SELECT (13 filas)."}
 				{executeSql}
 				checkKey="2026-06-01.patyia.seed-prompts-ultra"
 				confirmKind="warning"

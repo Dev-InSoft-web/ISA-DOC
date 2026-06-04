@@ -11,7 +11,7 @@
  * Para sincronizar el paquete instalado en consumidores locales, usar:
  *   doc/ISA-DOC/scripts/PS1/sync-local-isp-clientesis.ps1
  *
- * Uso desde ISA-DOC: node ./scripts/isp-svelte-burn/burn-card.mjs
+ * Uso: node scripts/isp-svelte-burn/burn-card.mjs
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";

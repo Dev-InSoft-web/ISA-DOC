@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-06-04T17:51:18.084Z",
+  "folder": "_orphan/TK-1424809",
+  "assets": [
+    {
+      "filename": "cursosAccionesCompletas.jpg",
+      "ticketId": "TK-1424809",
+      "url": "https://i.ibb.co/7trqDYRr/cursos-Acciones-Completas.jpg",
+      "sha1": "59c80303488fe3010ee1fdca42f0f9f56ba17a04",
+      "width": 1317,
+      "height": 943
+    },
+    {
+      "filename": "cursosMenuContextual.jpg",
+      "ticketId": "TK-1424809",
+      "url": "https://i.ibb.co/FbhXkz4z/cursos-Menu-Contextual.jpg",
+      "sha1": "cdd203e5f8708ea7b7c46937ac3adc27b89507fb",
+      "width": 1317,
+      "height": 943
+    }
+  ]
+}

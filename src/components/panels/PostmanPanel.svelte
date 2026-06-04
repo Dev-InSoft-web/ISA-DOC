@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from "svelte";
 	import { io, type Socket } from "socket.io-client";
 	import { STATIC_MODE } from "../../lib/integrations/runtime/staticMode";
+	import { labApiEnabled, fetchLabPostmanUi } from "../../lib/core/lab-api/postman.ts";
 	import { marked } from "marked";
 	import JsonViewer from "../viewers/JsonViewer.svelte";
 	import CodeModal from "../viewers/CodeModal.svelte";
@@ -64,7 +65,13 @@
 	$: verifyPrefix = proyecto === "patyia" ? "patyiaVerifyApi" : "verifyApi";
 	$: staticBase = proyecto === "patyia" ? "patyia-postman" : "postman";
 	$: downloadName = proyecto === "patyia" ? "patyia-postman-collection.json" : "postman-collection.json";
-	$: sourceLabel = proyecto === "patyia" ? "data/postman/patyia/collection.json (join de data/postman/patyia/entities/*.json)" : "data/postman/clientesis/collection.json";
+	$: sourceLabel = labPostmanMode
+		? `lab-langgraph · api-catalog (${proyecto})`
+		: proyecto === "patyia"
+			? "data/postman/patyia/collection.json (join de entities)"
+			: "data/postman/clientesis/collection.json";
+	let labPostmanMode = false;
+	let labEntities: Record<string, EntityFile> = {};
 	let loading = true;
 	let meta: CollectionMeta | null = null;
 	let selectedSlug: string | null = null;
@@ -530,6 +537,29 @@
 		}
 	}
 
+	async function loadLabPostman(): Promise<void> {
+		try {
+			const data = await fetchLabPostmanUi(proyecto);
+			if (!data.ok) throw new Error("Respuesta inválida de lab-langgraph");
+			meta = data.meta as CollectionMeta;
+			envs = data.envs as EnvironmentsFile;
+			activeEnvId = data.envs.active;
+			fullCollection = data.full;
+			labEntities = data.entities as Record<string, EntityFile>;
+			labPostmanMode = true;
+			if (!selectedSlug && meta.entities.length) {
+				const firstSlug = meta.entities[0].slug;
+				const ent = labEntities[firstSlug];
+				if (ent) { selectedSlug = firstSlug; entity = ent; }
+			}
+		} catch (e) {
+			toastError(`lab-langgraph: ${(e as Error).message}`);
+			meta = null;
+		} finally {
+			loading = false;
+		}
+	}
+
 	async function loadStaticPostman(): Promise<void> {
 		const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "/";
 		const baseNoSlash = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -560,6 +590,14 @@
 
 	async function selectSlugStatic(slug: string): Promise<void> {
 		if (entityDirty && !confirm("Hay cambios sin guardar. ¿Descartar?")) return;
+		if (labPostmanMode && labEntities[slug]) {
+			selectedSlug = slug;
+			entity = labEntities[slug];
+			entityDirty = false;
+			expandedItem = -1;
+			expandedResponse = {};
+			return;
+		}
 		const base = (import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? "/";
 		const baseNoSlash = base.endsWith("/") ? base.slice(0, -1) : base;
 		try {
@@ -593,6 +631,7 @@
 			openPruebas = sel === "pruebas";
 			openEstado = sel === "estado";
 		});
+		if (STATIC_MODE && labApiEnabled()) { loadLabPostman(); return; }
 		if (STATIC_MODE) { loadStaticPostman(); return; }
 		const url = `http://${location.hostname}:4401`;
 		socket = io(url, { transports: ["websocket"] });
