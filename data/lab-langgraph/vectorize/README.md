@@ -9,12 +9,16 @@ Corpus en **ISA-DOC** → embeddings **Hugging Face** en `lab-langgraph` → **P
 ```
 youtube/contapyme-software-contable/
   manifest.json
-  corpus.md              ← join de todos los OK (para embedding)
-  videos/
-    {videoId}.md         ← documento completo (métricas, desc, comentarios, transcripción)
-    {videoId}.json       ← registro estructurado schema v2
-    {videoId}.info.json  ← dump crudo yt-dlp
+  corpus.md
+  videos/{año}/          ← videos largos del canal
+  shorts/{año}/          ← YouTube Shorts
+  streams/{año}/         ← directos / replays
+  subs-cache/{videoId}/
 ```
+
+`npm run lab:yt:transcripts` lista **/videos**, **/shorts** y **/streams**.
+
+Migrar o reordenar: `npm run lab:yt:organize-by-year`
 
 ### Generar
 
@@ -28,13 +32,20 @@ npm run lab:yt:transcripts
 | --- | --- |
 | `--limit N` | Solo N videos |
 | `--offset N` | Saltar los primeros N |
+| `--only-kind K` | Solo `videos`, `shorts` o `streams` (repetible) |
 | `--delay MS` | Pausa entre videos (default 1500) |
 | `--max-comments N` | Comentarios por video (default 100) |
 | `--no-comments` | Sin comentarios (más rápido) |
 | `--no-resume` | Regenerar aunque exista JSON v2 |
 | `--no-corpus` | No actualizar `corpus.md` |
 
-Requisito: `python -m yt_dlp` (`pip install yt-dlp`).
+Requisito: `python -m yt_dlp` (`pip install yt-dlp`) y **Node.js** en PATH (`--js-runtimes node`).
+
+`shorts/` y `streams/` quedan vacíos hasta que el fetch los procese (van **después** de ~1021 videos en la lista global). Para llenarlos ya:
+
+```powershell
+npm run lab:yt:transcripts -- --only-kind shorts --only-kind streams
+```
 
 **Descripciones:** van en `## Descripción` del `.md`, en `corpus.md` (sección completa) y en `plainText` del `.json` (prefijo antes de la transcripción). Si yt-dlp no las trae, se obtienen de la página del video.
 
@@ -67,17 +78,25 @@ Si Groq y HF fallan: HTTP 503 con `retryAfterMinutes` (default 5, env `PROOFREAD
 
 ### Lote: puntuación y marcas (sin LLM, todo el corpus)
 
+Requiere **lab-langgraph** en marcha (`npm run start` → `:5500`). El orquestador vive en ISA-DOC y llama `POST /api/youtube/punctuate`.
+
 ```powershell
+# Terminal 1
 cd C:\Users\JAGUDELOE\Documents\Contapyme\lab-langgraph
-npm run batch:yt:punctuation
-# o desde ISA-DOC:
+npm run build && npm run start
+
+# Terminal 2 (ISA-DOC)
+cd C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC
 npm run lab:yt:batch-punctuation
 
 # Prueba: 5 videos, sin escribir
-npm run batch:yt:punctuation -- --dry-run --limit 5
+npm run lab:yt:batch-punctuation -- --dry-run --limit 5
 
 # Reprocesar aunque ya tengan flag
-npm run batch:yt:punctuation -- --force
+npm run lab:yt:batch-punctuation -- --force
+
+# Un video vía API
+Invoke-RestMethod -Method POST "http://localhost:5500/api/youtube/punctuate?videoId=-FsBdhIguyM"
 ```
 
 Escribe `batch-accentuation-punctuation.log` y `batch-accentuation-punctuation-summary.json` en `contapyme-software-contable/`.
@@ -101,9 +120,22 @@ En cada `videos/{id}.json`:
 
 ```powershell
 npm run lab:yt:index-rag
-# o en lab-langgraph: RAG_PROFILE=contapyme npm run index:youtube
 ```
 
 3. Preguntar en FitDocs (`lab-langgraph` en :5500): cada cita lleva enlace YouTube al segundo del video.
 
 Variable en `lab-langgraph`: `RAG_PROFILE=contapyme` (default) o `fitdocs` para PDFs.
+
+## Web · DIAN y portales oficiales
+
+Ver `web/README.md`. Crawl: `npm run lab:gov:fetch`. Index: `npm run lab:gov:index-rag`.
+
+### Filtros en `/api/ask`
+
+Cada chunk lleva `corpus` y `tipo` en metadata. Ejemplo:
+
+```json
+{ "question": "...", "corpus": "dian", "k": 6 }
+```
+
+Valores: `contapyme`, `agrowin`, `dian`, `legal`, `minhacienda`, `supersociedades`, `fitdocs`. Alias: `tags`. Subfiltro: `tipo`: `youtube`, `pdf`, `web`, `normativa`.

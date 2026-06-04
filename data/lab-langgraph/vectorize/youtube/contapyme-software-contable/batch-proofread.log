@@ -1,0 +1,1166 @@
+
+--- batch-proofread 2026-06-04T05:37:06.808Z n=1 ---
+OK HnWEfL_i8Lg changed=6 groq
+
+--- batch-proofread 2026-06-04T05:37:18.900Z n=1068 ---
+OK EWI0D0MJwNI changed=1 groq
+OK GTWINQBhgL8 changed=1 groq
+SKIP HnWEfL_i8Lg ya corregido
+OK KWCd8CNGb9s changed=1 groq
+OK XcFBqgqFbrs changed=7 groq
+SKIP -N4pN2xsHC4 sin segmentos
+
+--- batch-proofread 2026-06-04T05:40:07.125Z n=1020 ---
+OK i4z9KX-5taQ changed=6 groq
+
+  ══ Comparación i4z9KX-5taQ (videos/2009) ══
+  [0] ANTES : Qué son las rutas
+  [0] DESPUÉS: ¿Qué son las rutas
+
+  [1] ANTES : principales en el presente video conoceremos Qué son las rutas
+  [1] DESPUÉS: qué son las rutas principales en ContaPyme
+
+  [2] ANTES : principales y para qué sirven hablaremos sobre el explorador gráfico de la
+  [2] DESPUÉS: las rutas principales son los caminos que seguimos para realizar las diferentes tareas en el software.
+
+  [3] ANTES : empresa el maestro de plan de cuentas el maestro de terceros y el manejador de
+  [3] DESPUÉS: empresa el maestro de plan de cuentas el maestro de terceros, y el manejador de
+
+  [4] ANTES : la base de la actividad contable es el comprobante de
+  [4] DESPUÉS: la? base de la actividad contable es el comprobante de
+
+  [33] ANTES : la empresa el maestro de plan de cuentas el maestro de terceros y el manejador de
+  [33] DESPUÉS: la empresa el maestro de plan de cuentas el maestro de terceros, y el manejador de
+
+  → 6 renglón(es) distinto(s)
+OK rxIoVbLWlAg changed=11 groq
+
+  ══ Comparación rxIoVbLWlAg (videos/2009) ══
+  [0] ANTES : terceros. La ventana del maestro de terceros se puede abrir de dos maneras.
+  [0] DESPUÉS: En este video, vamos a ver el maestro de terceros en ContaPyme
+
+  [1] ANTES : La primera es a través del menú programas terceros y seleccionamos el
+  [1] DESPUÉS: la primera es a través del menú programas terceros y seleccionamos el
+
+  [3] ANTES : clic directamente sobre el botón del maestro de terceros.
+  [3] DESPUÉS: para agregar un nuevo tercero, debemos hacer clic en el botón 'Nuevo'
+
+  [4] ANTES : El maestro de terceros, al igual que todos los maestros, es dinámico, lo cual
+  [4] DESPUÉS: el maestro de terceros, al igual que todos los maestros, es dinámico, lo cual
+
+  [21] ANTES : terceros. exportar sus datos a otras aplicaciones,
+  [21] DESPUÉS: terceros. Exportar sus datos a otras aplicaciones,
+
+  [22] ANTES : etcétera. Acciones disponibles sobre el maestro de terceros.
+  [22] DESPUÉS: etcétera. Acciones disponibles sobre el maestro de terceros
+
+  [23] ANTES : Para visualizar y ejecutar las acciones disponibles para un tercero en
+  [23] DESPUÉS: para visualizar y ejecutar las acciones disponibles para un tercero en
+
+  [32] ANTES : teléfono, fax, celular. correo electrónico, página web, dirección,
+  [32] DESPUÉS: teléfono, fax, celular. Correo electrónico, página web, dirección,
+
+  [37] ANTES : www.com, www.com y www.agrowin.com.
+  [37] DESPUÉS: www.com, www.com y www.AgroWin.com
+
+  [38] ANTES : Si desea atención más personalizada, puede comunicarse con nosotros a través
+  [38] DESPUÉS: si desea atención más personalizada, puede comunicarse con nosotros a través
+
+  [42] ANTES : gestión@insoftweb.com. Esperamos que este video haya sido de utilidad.
+  [42] DESPUÉS: gestión@insoftweb.com. Esperamos que este video haya sido de utilidad
+
+  → 11 renglón(es) distinto(s)
+OK X2KGaSuHljY changed=9 groq
+
+  ══ Comparación X2KGaSuHljY (videos/2009) ══
+  [0] ANTES : el explorador gráfico de la
+  [0] DESPUÉS: El explorador gráfico de la
+
+  [1] ANTES : empresa podemos ingresar al explorador gráfico de tres maneras la primera es a
+  [1] DESPUÉS: empresa, podemos ingresar al explorador gráfico de tres maneras la primera es a
+
+  [2] ANTES : través del menú programas y hacemos clic en la opción del explorador gráfico de
+  [2] DESPUÉS: para acceder al explorador gráfico, debemos dirigirnos al menú principal de ContaPyme y seleccionar la opción correspondiente.
+
+  [3] ANTES : empresas la segunda forma es presionando las teclas control
+  [3] DESPUÉS: Empresas la segunda forma es presionando las teclas control
+
+  [17] ANTES : fijos entre otros el explorador gráfico incluye un conjunto amplio de
+  [17] DESPUÉS: fijos entre otros el explorador gráfico, incluye un conjunto amplio de
+
+  [23] ANTES : particular se debe seguir el siguiente procedimiento seleccionamos el elemento
+  [23] DESPUÉS: particular se debe seguir el siguiente procedimiento, seleccionamos el elemento
+
+  [24] ANTES : deseado hacemos clic derecho sobre dicho elemento y finalmente elegimos la acción
+  [24] DESPUÉS: deseado hacemos clic derecho sobre dicho elemento, y finalmente elegimos la acción
+
+  [28] ANTES : particular se debe seguir el siguiente procedimiento seleccionamos el elemento
+  [28] DESPUÉS: particular se debe seguir el siguiente procedimiento, seleccionamos el elemento
+
+  [34] ANTES : se hace clic derecho y finalmente se selecciona la opción
+  [34] DESPUÉS: se hace clic derecho, y finalmente se selecciona la opción
+
+  → 9 renglón(es) distinto(s)
+OK _G8tblQTIB0 changed=14 groq
+
+  ══ Comparación _G8tblQTIB0 (videos/2011) ══
+  [0] ANTES : bienvenidos nuevamente estamos en compañía del ingeniero Alejandro toro
+  [0] DESPUÉS: Bienvenidos nuevamente estamos en compañía del ingeniero Alejandro toro
+
+  [3] ANTES : cont pime adelante Alejandro Gracias Lady Efectivamente contapyme es el único
+  [3] DESPUÉS: cont pime adelante Alejandro Gracias Lady Efectivamente ContaPyme es el único.
+
+  [4] ANTES : sistema erp que cuenta con un sistema de seguridad a nivel de tipo de datos Lady
+  [4] DESPUÉS: Sistema erp que cuenta con un sistema de seguridad a nivel de tipo de datos Lady
+
+  [5] ANTES : Mira hay dos tipos de seguridad que se pueden manejar en los sistemas miremos
+  [5] DESPUÉS: mira hay dos tipos de seguridad que se pueden manejar en los sistemas miremos
+
+  [9] ANTES : etcétera por ejemplo podemos limitar al usuario el acceso a los productos del
+  [9] DESPUÉS: etcétera por ejemplo, podemos limitar al usuario el acceso a los productos del
+
+  [17] ANTES : el catálogo de terceros tenemos múltiples registros de personas con las
+  [17] DESPUÉS: el catálogo de terceros, tenemos múltiples registros de personas con las
+
+  [23] ANTES : ciertos conjuntos por ejemplo podemos limitar al
+  [23] DESPUÉS: ciertos conjuntos por ejemplo, podemos limitar al
+
+  [25] ANTES : proveedores contapyme es el único sistema erp en su
+  [25] DESPUÉS: proveedores ContaPyme es el único sistema erp en su
+
+  [31] ANTES : de datos podemos darle acceso al auxiliar de ventas solo al segmento de
+  [31] DESPUÉS: de datos, podemos darle acceso al auxiliar de ventas solo al segmento de
+
+  [35] ANTES : Nuestra Empresa con este esquema de seguridad a
+  [35] DESPUÉS: nuestra Empresa con este esquema de seguridad a
+
+  [36] ANTES : nivel de tipo de datos podemos darle acceso al personal de cada una de las
+  [36] DESPUÉS: nivel de tipo de datos, podemos darle acceso al personal de cada una de las
+
+  [53] ANTES : de no revelar los secretos y la información contable de su empresa
+  [53] DESPUÉS: de no revelar los secretos, y la información contable de su empresa
+
+  [54] ANTES : Muchas gracias Alejandro y muchas gracias a todos los que nos escuchan nos
+  [54] DESPUÉS: muchas gracias Alejandro y muchas gracias a todos los que nos escuchan nos.
+
+  [55] ANTES : ocasión will you come Run When I
+  [55] DESPUÉS: Ocasión will you come Run When I
+
+  → 14 renglón(es) distinto(s)
+OK _zZ0Mtll7gE changed=11 groq
+
+  ══ Comparación _zZ0Mtll7gE (videos/2011) ══
+  [0] ANTES : presentación paquetes de licenciamiento si miramos dentro de la página web
+  [0] DESPUÉS: Bienvenidos a la presentación de los paquetes de licenciamiento de ContaPyme
+
+  [1] ANTES : www.fifa.com dentro de la opción tour por conta pyme en el enlace paquetes de
+  [1] DESPUÉS: www.fifa.com dentro de la opción tour por ContaPyme en el enlace paquetes de
+
+  [12] ANTES : allí tenemos el paquete de gestión comercial básico tenemos el paquete de
+  [12] DESPUÉS: allí, tenemos el paquete de gestión comercial básico, tenemos el paquete de
+
+  [13] ANTES : gestión comercial y contable y el paquete de gestión comercial full
+  [13] DESPUÉS: gestión comercial y contable, y el paquete de gestión comercial full
+
+  [16] ANTES : el paquete empresarial full y el paquete empresarial costos de producción
+  [16] DESPUÉS: el paquete empresarial full, y el paquete empresarial costos de producción
+
+  [30] ANTES : ahora nos menciona que incluye dice incluye automatización de documentos
+  [30] DESPUÉS: ahora nos menciona que incluye dice, incluye automatización de documentos
+
+  [32] ANTES : podemos ver también los precios que cada paquete contiene en este caso vemos los
+  [32] DESPUÉS: podemos ver también los precios que cada paquete contiene. En este caso vemos los
+
+  [39] ANTES : fecha de creación de este vídeo y la fecha de consulta que usted haga en
+  [39] DESPUÉS: fecha de creación de este vídeo, y la fecha de consulta que usted haga en
+
+  [40] ANTES : nuestra página web por lo tanto le recomendamos ponerse en contacto con
+  [40] DESPUÉS: nuestra página web, por lo tanto le recomendamos ponerse en contacto con
+
+  [44] ANTES : comercial y la cotización formal con los precios vigentes
+  [44] DESPUÉS: comercial, y la cotización formal con los precios vigentes
+
+  [51] ANTES : precios podemos dar clic en el recuadro que dice precios por módulos
+  [51] DESPUÉS: precios, podemos dar clic en el recuadro que dice precios por módulos
+
+  → 11 renglón(es) distinto(s)
+
+--- batch-proofread 2026-06-04T05:41:38.179Z n=1015 ---
+OK --8abV5HPEs changed=8 groq
+
+  ══ Comparación --8abV5HPEs (videos/2011) ══
+  [0] ANTES : a growing método de costeo completo o por absorción
+  [0] DESPUÉS: En este video, vamos a hablar sobre el método de costos completos o por absorción en AgroWin
+
+  [6] ANTES : tiempos en este vídeo trataremos el primero de ellos el método de costos
+  [6] DESPUÉS: tiempos. En este vídeo trataremos el primero de ellos el método de costos
+
+  [50] ANTES : lotes mientras que los costos de poscosecha pueden estar más relacionados
+  [50] DESPUÉS: lotes. Mientras que los costos de poscosecha pueden estar más relacionados
+
+  [53] ANTES : costos auxiliar y que por lo tanto hay que definir uno de estos criterios con
+  [53] DESPUÉS: costos auxiliar y que, por lo tanto hay que definir uno de estos criterios con
+
+  [77] ANTES : indirectos en este caso estaríamos incluyendo los centros auxiliares de
+  [77] DESPUÉS: indirectos. En este caso estaríamos incluyendo los centros auxiliares de
+
+  [79] ANTES : empresariales como puede ser la administración en este caso la
+  [79] DESPUÉS: empresariales como puede ser la administración. En este caso la
+
+  [104] ANTES : sobre los centros de puestos productivos esto es todo sobre el método de costos
+  [104] DESPUÉS: sobre los centros de puestos productivos esto es todo sobre el método de costos.
+
+  [105] ANTES : completos o por absorción gracias por su atención
+  [105] DESPUÉS: Esto es todo sobre el método de costos completos o por absorción.
+
+  → 8 renglón(es) distinto(s)
+OK -ahhWTqb8RI changed=20 groq
+
+  ══ Comparación -ahhWTqb8RI (videos/2011) ══
+  [0] ANTES : facilidades de la edición en la operación de movimiento contable la
+  [0] DESPUÉS: En el sistema contable ContaPyme, la edición de la operación de movimiento contable es muy sencilla.
+
+  [1] ANTES : operación de movimiento contable al igual que todas las demás operaciones
+  [1] DESPUÉS: Aquí, podemos ver los comandos de edición disponibles en la operación de movimiento contable
+
+  [4] ANTES : edición de las operaciones que se utilizan en el sistema una de las
+  [4] DESPUÉS: la edición se realiza de manera intuitiva, permitiendo una fácil comprensión y manejo de los datos.
+
+  [5] ANTES : opciones de edición dispon es la opción de copiar la cual nos permite llevar al
+  [5] DESPUÉS: Opciones de edición dispon es la opción de copiar la cual nos permite llevar al
+
+  [11] ANTES : diferentes terceros tenemos disponible la utilidad de las opciones de edición
+  [11] DESPUÉS: diferentes terceros, tenemos disponible la utilidad de las opciones de edición
+
+  [13] ANTES : para uno de los terceros seleccionamos las celdas que
+  [13] DESPUÉS: para uno de los terceros, seleccionamos las celdas que
+
+  [14] ANTES : información y la vamos a copiar con alguna de las comandos de edición que
+  [14] DESPUÉS: información, y la vamos a copiar con alguna de las comandos de edición que
+
+  [15] ANTES : mencionamos recordemos que el comando de copiar es control c también podemos
+  [15] DESPUÉS: mencionamos, recordemos que el comando de copiar es control c también, podemos
+
+  [24] ANTES : El Comando se adiciona la información y simplemente debemos
+  [24] DESPUÉS: el Comando se adiciona la información y simplemente debemos
+
+  [25] ANTES : entonces de cambiar el tercero al cual vamos a
+  [25] DESPUÉS: entonces de cambiar el tercero al cual, vamos a
+
+  [31] ANTES : renglón seleccionamos las demás celdas donde necesitamos ese tercero y debemos
+  [31] DESPUÉS: renglón, seleccionamos las demás celdas donde necesitamos ese tercero y debemos
+
+  [35] ANTES : renglón superior también podemos arrastrarla
+  [35] DESPUÉS: renglón superior también, podemos arrastrarla
+
+  [41] ANTES : renglón Superior y el comando para duplicar la información es control
+  [41] DESPUÉS: renglón Superior, y el comando para duplicar la información es control
+
+  [43] ANTES : superior también podemos duplicar la información por medio del botón de
+  [43] DESPUÉS: superior también, podemos duplicar la información por medio del botón de
+
+  [44] ANTES : duplicar que se encuentra en la barra de botones y la última opción de edición
+  [44] DESPUÉS: duplicar que se encuentra en la barra de botones, y la última opción de edición
+
+  [49] ANTES : tenerla disponible y usarla más adelante podemos cortar la información de ese
+  [49] DESPUÉS: tenerla disponible y usarla más adelante, podemos cortar la información de ese
+
+  [50] ANTES : renglón recordemos que debíamos tener seleccionado el rango que que queríamos
+  [50] DESPUÉS: renglón, recordemos que debíamos tener seleccionado el rango que que queríamos
+
+  [52] ANTES : información como la información quedó disponible en el portapapeles podemos
+  [52] DESPUÉS: información como la información quedó disponible en el portapapeles, podemos
+
+  [55] ANTES : encuentra en la barra de botones recordemos que las opciones de
+  [55] DESPUÉS: encuentra en la barra de botones, recordemos que las opciones de
+
+  [59] ANTES : operación de movimiento contable esto es todo sobre facilidades de la edición en
+  [59] DESPUÉS: operación de movimiento contable esto es todo sobre facilidades de la edición en.
+
+  → 20 renglón(es) distinto(s)
+OK --8abV5HPEs changed=8 groq
+
+  ══ Comparación --8abV5HPEs (videos/2011) ══
+  [0] ANTES : a growing método de costeo completo o por absorción
+  [0] DESPUÉS: En este video, vamos a hablar sobre el método de costos completos o por absorción en AgroWin
+
+  [6] ANTES : tiempos en este vídeo trataremos el primero de ellos el método de costos
+  [6] DESPUÉS: tiempos. En este vídeo trataremos el primero de ellos el método de costos
+
+  [50] ANTES : lotes mientras que los costos de poscosecha pueden estar más relacionados
+  [50] DESPUÉS: lotes. Mientras que los costos de poscosecha pueden estar más relacionados
+
+  [53] ANTES : costos auxiliar y que por lo tanto hay que definir uno de estos criterios con
+  [53] DESPUÉS: costos auxiliar y que, por lo tanto hay que definir uno de estos criterios con
+
+  [77] ANTES : indirectos en este caso estaríamos incluyendo los centros auxiliares de
+  [77] DESPUÉS: indirectos. En este caso estaríamos incluyendo los centros auxiliares de
+
+  [79] ANTES : empresariales como puede ser la administración en este caso la
+  [79] DESPUÉS: empresariales como puede ser la administración. En este caso la
+
+  [104] ANTES : sobre los centros de puestos productivos esto es todo sobre el método de costos
+  [104] DESPUÉS: sobre los centros de puestos productivos esto es todo sobre el método de costos.
+
+  [105] ANTES : completos o por absorción gracias por su atención
+  [105] DESPUÉS: Completos o por absorción gracias por su atención.
+
+  → 8 renglón(es) distinto(s)
+SKIP -ahhWTqb8RI api-skipped
+OK -sn-3irB7NM changed=16 groq
+
+  ══ Comparación -sn-3irB7NM (videos/2011) ══
+  [0] ANTES : ejemplo uno operación movimiento contable pago de
+  [0] DESPUÉS: En este ejemplo, vamos a registrar el pago de honorarios en ContaPyme
+
+  [3] ANTES : realizaremos mediante la operación de movimiento contable será el pago de
+  [3] DESPUÉS: a continuación, debemos seleccionar la cuenta contable correspondiente al pago de honorarios
+
+  [8] ANTES : visualiza la operación para registrar la transacción es importante mencionar que
+  [8] DESPUÉS: visualiza la operación para registrar la transacción, es importante mencionar que
+
+  [26] ANTES : asesoría financiera y el sistema automáticamente
+  [26] DESPUÉS: asesoría financiera, y el sistema automáticamente
+
+  [29] ANTES : seleccionar recordemos que todos los campos en blanco independientemente de
+  [29] DESPUÉS: seleccionar, recordemos que todos los campos en blanco independientemente de
+
+  [36] ANTES : registraremos el movimiento según la naturaleza de la cuenta recordemos que
+  [36] DESPUÉS: registraremos el movimiento según la naturaleza de la cuenta, recordemos que
+
+  [43] ANTES : Osorio contador de la empresa MP computadores
+  [43] DESPUÉS: osorio contador de la empresa MP computadores
+
+  [44] ANTES : computadores seleccionar recordemos que al contador
+  [44] DESPUÉS: computadores seleccionar, recordemos que al contador
+
+  [51] ANTES : crédito es decir que si deseamos aumentarla debemos registrar un
+  [51] DESPUÉS: crédito es decir que. Si deseamos aumentarla debemos registrar un
+
+  [65] ANTES : teórico y el sistema automáticamente nos ubicará en la cuenta
+  [65] DESPUÉS: teórico, y el sistema automáticamente nos ubicará en la cuenta
+
+  [68] ANTES : 500,000 relacionado al mismo valor base y el mismo tercero en transacción Pedro
+  [68] DESPUÉS: 500,000 relacionado al mismo valor base, y el mismo tercero en transacción Pedro
+
+  [69] ANTES : Osorio por último haremos la contrapartida de este impuesto con la
+  [69] DESPUÉS: osorio por último haremos la contrapartida de este impuesto con la
+
+  [77] ANTES : Popular 111501
+  [77] DESPUÉS: popular 111501
+
+  [87] ANTES : botón de búsqueda podemos seleccionar el tipo de documento de impresión
+  [87] DESPUÉS: botón de búsqueda, podemos seleccionar el tipo de documento de impresión
+
+  [90] ANTES : movimiento contable como podemos visualizar en el
+  [90] DESPUÉS: movimiento contable como, podemos visualizar en el
+
+  [94] ANTES : contabilidad esto es todo en cuanto al registro de pagos de honor en una
+  [94] DESPUÉS: contabilidad esto es todo en cuanto al registro de pagos de honor en una.
+
+  → 16 renglón(es) distinto(s)
+OK 0kCZyiQF68U changed=5 groq
+
+  ══ Comparación 0kCZyiQF68U (videos/2011) ══
+  [0] ANTES : duplicación de un tercero esta acción la podemos utilizar cuando
+  [0] DESPUÉS: Duplicación de un tercero esta acción la podemos utilizar cuando
+
+  [2] ANTES : tengamos creado para duplicar un tercero Nos dirigimos al catálogo de terceros y
+  [2] DESPUÉS: una vez allí, seleccionamos el tercero que deseamos duplicar
+
+  [4] ANTES : duplicar la acción duplicar la podemos encontrar
+  [4] DESPUÉS: el sistema ContaPyme nos pedirá confirmar si realmente queremos duplicar el tercero
+
+  [6] ANTES : por ejemplo vamos a duplicar el tercero Mario Sánchez
+  [6] DESPUÉS: por ejemplo, vamos a duplicar el tercero Mario Sánchez
+
+  [14] ANTES : Estas son las acciones para duplicar un tercero
+  [14] DESPUÉS: estas son las acciones para duplicar un tercero
+
+  → 5 renglón(es) distinto(s)
+OK -sn-3irB7NM changed=15 groq
+
+  ══ Comparación -sn-3irB7NM (videos/2011) ══
+  [0] ANTES : ejemplo uno operación movimiento contable pago de
+  [0] DESPUÉS: En este ejemplo, vamos a registrar el pago de honorarios en ContaPyme
+
+  [8] ANTES : visualiza la operación para registrar la transacción es importante mencionar que
+  [8] DESPUÉS: visualiza la operación para registrar la transacción, es importante mencionar que
+
+  [26] ANTES : asesoría financiera y el sistema automáticamente
+  [26] DESPUÉS: asesoría financiera, y el sistema automáticamente
+
+  [29] ANTES : seleccionar recordemos que todos los campos en blanco independientemente de
+  [29] DESPUÉS: seleccionar, recordemos que todos los campos en blanco independientemente de
+
+  [36] ANTES : registraremos el movimiento según la naturaleza de la cuenta recordemos que
+  [36] DESPUÉS: registraremos el movimiento según la naturaleza de la cuenta, recordemos que
+
+  [43] ANTES : Osorio contador de la empresa MP computadores
+  [43] DESPUÉS: osorio contador de la empresa MP computadores
+
+  [44] ANTES : computadores seleccionar recordemos que al contador
+  [44] DESPUÉS: computadores seleccionar, recordemos que al contador
+
+  [51] ANTES : crédito es decir que si deseamos aumentarla debemos registrar un
+  [51] DESPUÉS: crédito es decir que. Si deseamos aumentarla debemos registrar un
+
+  [65] ANTES : teórico y el sistema automáticamente nos ubicará en la cuenta
+  [65] DESPUÉS: teórico, y el sistema automáticamente nos ubicará en la cuenta
+
+  [68] ANTES : 500,000 relacionado al mismo valor base y el mismo tercero en transacción Pedro
+  [68] DESPUÉS: 500,000 relacionado al mismo valor base, y el mismo tercero en transacción Pedro
+
+  [69] ANTES : Osorio por último haremos la contrapartida de este impuesto con la
+  [69] DESPUÉS: osorio por último haremos la contrapartida de este impuesto con la
+
+  [77] ANTES : Popular 111501
+  [77] DESPUÉS: popular 111501
+
+  [87] ANTES : botón de búsqueda podemos seleccionar el tipo de documento de impresión
+  [87] DESPUÉS: botón de búsqueda, podemos seleccionar el tipo de documento de impresión
+
+  [90] ANTES : movimiento contable como podemos visualizar en el
+  [90] DESPUÉS: movimiento contable como, podemos visualizar en el
+
+  [94] ANTES : contabilidad esto es todo en cuanto al registro de pagos de honor en una
+  [94] DESPUÉS: contabilidad esto es todo en cuanto al registro de pagos de honor en una.
+
+  → 15 renglón(es) distinto(s)
+SKIP 0kCZyiQF68U api-skipped
+OK 0qCsDO9zI3g changed=10 groq
+
+  ══ Comparación 0qCsDO9zI3g (videos/2011) ══
+  [0] ANTES : personalización de la barra de herramientas de acceso
+  [0] DESPUÉS: Personalización de la barra de herramientas de acceso
+
+  [7] ANTES : operaciones damos clic en el icono de más operaciones de la barra de
+  [7] DESPUÉS: operaciones, damos clic en el icono de más operaciones de la barra de
+
+  [19] ANTES : Donde están todas las operaciones disponibles para el
+  [19] DESPUÉS: donde están todas las operaciones disponibles para el
+
+  [22] ANTES : barra y también tenemos operaciones a las cuales podemos activar para que
+  [22] DESPUÉS: barra y también, tenemos operaciones a las cuales, podemos activar para que
+
+  [25] ANTES : facturación facturación y ventas podemos hacer que el acceso a dicha
+  [25] DESPUÉS: facturación facturación y ventas, podemos hacer que el acceso a dicha
+
+  [26] ANTES : operación se encuentre en esta barra de herramientas para ello ingresamos por la
+  [26] DESPUÉS: operación se encuentre en esta barra de herramientas para ello, ingresamos por la
+
+  [30] ANTES : ventas igual sucede si deseamos ocultar el acceso a una operación que no
+  [30] DESPUÉS: ventas igual sucede. Si deseamos ocultar el acceso a una operación que no
+
+  [44] ANTES : mene de esta manera podemos tener en la barra de herramientas del manejador de
+  [44] DESPUÉS: mene de esta manera, podemos tener en la barra de herramientas del manejador de
+
+  [46] ANTES : el usuario esto es todo acerca de la personalización de la barra de
+  [46] DESPUÉS: el usuario esto es todo acerca de la personalización de la barra de.
+
+  [47] ANTES : herramientas de acceso rápido
+  [47] DESPUÉS: Herramientas de acceso rápido
+
+  → 10 renglón(es) distinto(s)
+OK 0qCsDO9zI3g changed=10 groq
+
+  ══ Comparación 0qCsDO9zI3g (videos/2011) ══
+  [0] ANTES : personalización de la barra de herramientas de acceso
+  [0] DESPUÉS: Personalización de la barra de herramientas de acceso
+
+  [7] ANTES : operaciones damos clic en el icono de más operaciones de la barra de
+  [7] DESPUÉS: operaciones, damos clic en el icono de más operaciones de la barra de
+
+  [19] ANTES : Donde están todas las operaciones disponibles para el
+  [19] DESPUÉS: donde están todas las operaciones disponibles para el
+
+  [22] ANTES : barra y también tenemos operaciones a las cuales podemos activar para que
+  [22] DESPUÉS: barra y también, tenemos operaciones a las cuales, podemos activar para que
+
+  [25] ANTES : facturación facturación y ventas podemos hacer que el acceso a dicha
+  [25] DESPUÉS: facturación facturación y ventas, podemos hacer que el acceso a dicha
+
+  [26] ANTES : operación se encuentre en esta barra de herramientas para ello ingresamos por la
+  [26] DESPUÉS: operación se encuentre en esta barra de herramientas para ello, ingresamos por la
+
+  [30] ANTES : ventas igual sucede si deseamos ocultar el acceso a una operación que no
+  [30] DESPUÉS: ventas igual sucede. Si deseamos ocultar el acceso a una operación que no
+
+  [44] ANTES : mene de esta manera podemos tener en la barra de herramientas del manejador de
+  [44] DESPUÉS: mene de esta manera, podemos tener en la barra de herramientas del manejador de
+
+  [46] ANTES : el usuario esto es todo acerca de la personalización de la barra de
+  [46] DESPUÉS: el usuario esto es todo acerca de la personalización de la barra de.
+
+  [47] ANTES : herramientas de acceso rápido
+  [47] DESPUÉS: Herramientas de acceso rápido
+
+  → 10 renglón(es) distinto(s)
+OK 0YhWMGLG9wI changed=21 groq
+
+  ══ Comparación 0YhWMGLG9wI (videos/2011) ══
+  [0] ANTES : generación de plantilla para importación de terceros desde Excel esta acción
+  [0] DESPUÉS: Bienvenidos a este tutorial de ContaPyme, donde aprenderemos a generar una plantilla de importación desde Excel.
+
+  [1] ANTES : permite generar una hoja de cálculo con la estructura requerida para la
+  [1] DESPUÉS: Permite generar una hoja de cálculo con la estructura requerida para la
+
+  [2] ANTES : importación de datos esta plantilla se utiliza Generalmente cuando necesitamos
+  [2] DESPUÉS: importación de datos esta plantilla, se utiliza Generalmente cuando necesitamos
+
+  [4] ANTES : archivo de Excel para luego importarlo en el catálogo de terceros o también
+  [4] DESPUÉS: aquí, podemos generar una plantilla de importación para registrar nuevos terceros de manera rápida y eficiente.
+
+  [5] ANTES : podemos utilizar la plantilla cuando necesitamos cargar los terceros de otro
+  [5] DESPUÉS: Podemos utilizar la plantilla cuando necesitamos cargar los terceros de otro
+
+  [6] ANTES : aplicativo para generar la plantilla de de terceros desde Excel debemos de
+  [6] DESPUÉS: la plantilla se genera automáticamente en formato Excel, lo que nos permite registrar nuevos terceros de manera sencilla.
+
+  [7] ANTES : ubicarnos en el catálogo de terceros que recordemos que es el icono llamado
+  [7] DESPUÉS: Una vez que hayamos generado la plantilla, podemos proceder a registrar los nuevos terceros en nuestro catálogo de ContaPyme.
+
+  [8] ANTES : terceros allí damos clic derecho en cualquier parte del
+  [8] DESPUÉS: Terceros allí, damos clic derecho en cualquier parte del
+
+  [12] ANTES : la la plantilla y la ubicación donde la vamos a guardar vamos a dejarle el
+  [12] DESPUÉS: la la plantilla, y la ubicación donde la vamos a guardar, vamos a dejarle el
+
+  [15] ANTES : escritorio damos clic en el botón de guardar para fin finalizar el proceso de
+  [15] DESPUÉS: escritorio, damos clic en el botón de guardar para fin finalizar el proceso de
+
+  [20] ANTES : datos en la plantilla damos clic en el botón de
+  [20] DESPUÉS: datos en la plantilla, damos clic en el botón de
+
+  [21] ANTES : aceptar y se nos Abre una nueva ventana que nos pregunta si deseamos abrir el
+  [21] DESPUÉS: aceptar y se nos Abre una nueva ventana que nos pregunta. Si deseamos abrir el
+
+  [22] ANTES : archivo que acabamos de generar vamos a decirle que
+  [22] DESPUÉS: archivo que acabamos de generar, vamos a decirle que
+
+  [37] ANTES : plantilla vamos a registrar la información de un tercero en la
+  [37] DESPUÉS: plantilla, vamos a registrar la información de un tercero en la
+
+  [39] ANTES : llamada avanis recordemos que la hoja de
+  [39] DESPUÉS: llamada avanis, recordemos que la hoja de
+
+  [44] ANTES : solicitada en la plantilla recordemos que para saber qué
+  [44] DESPUÉS: solicitada en la plantilla, recordemos que para saber qué
+
+  [45] ANTES : información debe de ir en cada uno de los campos podemos verlo en la última
+  [45] DESPUÉS: información debe de ir en cada uno de los campos, podemos verlo en la última
+
+  [53] ANTES : tercero en este campo de init que es donde debemos de indicar el código del
+  [53] DESPUÉS: tercero. En este campo de init que es donde debemos de indicar el código del
+
+  [56] ANTES : contacto que vamos a ligar al tercero específico y también tenemos otra hoja
+  [56] DESPUÉS: contacto que vamos a ligar al tercero específico y también, tenemos otra hoja
+
+  [59] ANTES : específico cuando se registra la información necesaria vamos a tener
+  [59] DESPUÉS: específico cuando se registra la información necesaria, vamos a tener
+
+  [62] ANTES : desde Excel esto es todo sobre generación de plantilla para importación
+  [62] DESPUÉS: desde Excel esto es todo sobre generación de plantilla para importación.
+
+  → 21 renglón(es) distinto(s)
+OK 0YhWMGLG9wI changed=19 groq
+
+  ══ Comparación 0YhWMGLG9wI (videos/2011) ══
+  [0] ANTES : generación de plantilla para importación de terceros desde Excel esta acción
+  [0] DESPUÉS: En este video, aprenderás a generar una plantilla de importación desde Excel en el sistema contable ContaPyme.
+
+  [1] ANTES : permite generar una hoja de cálculo con la estructura requerida para la
+  [1] DESPUÉS: Permite generar una hoja de cálculo con la estructura requerida para la
+
+  [2] ANTES : importación de datos esta plantilla se utiliza Generalmente cuando necesitamos
+  [2] DESPUÉS: importación de datos esta plantilla, se utiliza Generalmente cuando necesitamos
+
+  [6] ANTES : aplicativo para generar la plantilla de de terceros desde Excel debemos de
+  [6] DESPUÉS: una vez que hayas generado la plantilla, podrás importar los datos de tus terceros desde Excel.
+
+  [7] ANTES : ubicarnos en el catálogo de terceros que recordemos que es el icono llamado
+  [7] DESPUÉS: Ubicarnos en el catálogo de terceros que recordemos que es el icono llamado
+
+  [8] ANTES : terceros allí damos clic derecho en cualquier parte del
+  [8] DESPUÉS: terceros allí, damos clic derecho en cualquier parte del
+
+  [12] ANTES : la la plantilla y la ubicación donde la vamos a guardar vamos a dejarle el
+  [12] DESPUÉS: la la plantilla, y la ubicación donde la vamos a guardar, vamos a dejarle el
+
+  [15] ANTES : escritorio damos clic en el botón de guardar para fin finalizar el proceso de
+  [15] DESPUÉS: escritorio, damos clic en el botón de guardar para fin finalizar el proceso de
+
+  [20] ANTES : datos en la plantilla damos clic en el botón de
+  [20] DESPUÉS: datos en la plantilla, damos clic en el botón de
+
+  [21] ANTES : aceptar y se nos Abre una nueva ventana que nos pregunta si deseamos abrir el
+  [21] DESPUÉS: aceptar y se nos Abre una nueva ventana que nos pregunta. Si deseamos abrir el
+
+  [22] ANTES : archivo que acabamos de generar vamos a decirle que
+  [22] DESPUÉS: archivo que acabamos de generar, vamos a decirle que
+
+  [37] ANTES : plantilla vamos a registrar la información de un tercero en la
+  [37] DESPUÉS: plantilla, vamos a registrar la información de un tercero en la
+
+  [39] ANTES : llamada avanis recordemos que la hoja de
+  [39] DESPUÉS: llamada avanis, recordemos que la hoja de
+
+  [44] ANTES : solicitada en la plantilla recordemos que para saber qué
+  [44] DESPUÉS: solicitada en la plantilla, recordemos que para saber qué
+
+  [45] ANTES : información debe de ir en cada uno de los campos podemos verlo en la última
+  [45] DESPUÉS: información debe de ir en cada uno de los campos, podemos verlo en la última
+
+  [53] ANTES : tercero en este campo de init que es donde debemos de indicar el código del
+  [53] DESPUÉS: tercero. En este campo de init que es donde debemos de indicar el código del
+
+  [56] ANTES : contacto que vamos a ligar al tercero específico y también tenemos otra hoja
+  [56] DESPUÉS: contacto que vamos a ligar al tercero específico y también, tenemos otra hoja
+
+  [59] ANTES : específico cuando se registra la información necesaria vamos a tener
+  [59] DESPUÉS: específico cuando se registra la información necesaria, vamos a tener
+
+  [62] ANTES : desde Excel esto es todo sobre generación de plantilla para importación
+  [62] DESPUÉS: desde Excel esto es todo sobre generación de plantilla para importación.
+
+  → 19 renglón(es) distinto(s)
+OK 1fDwY6x36h8 changed=24 groq
+
+  ══ Comparación 1fDwY6x36h8 (videos/2011) ══
+  [0] ANTES : creación de un documento de soporte el sistema nos ofrece un
+  [0] DESPUÉS: Bienvenidos a este tutorial de ContaPyme, donde aprenderemos a crear un documento de soporte
+
+  [9] ANTES : factura de venta así que en este caso de factura de
+  [9] DESPUÉS: factura de venta así que. En este caso de factura de
+
+  [11] ANTES : documento adicional que maneje en este caso la factura de venta a
+  [11] DESPUÉS: documento adicional que maneje. En este caso la factura de venta a
+
+  [14] ANTES : cualquier registro seleccionamos la opción crear o de igual manera podemos
+  [14] DESPUÉS: cualquier registro, seleccionamos la opción crear o de igual manera, podemos
+
+  [22] ANTES : soporte el primer dato a digitar es el nombre del nuevo documento en este caso
+  [22] DESPUÉS: soporte el primer dato a digitar es el nombre del nuevo documento. En este caso
+
+  [24] ANTES : crédito tenemos diferentes pestañas para indicar la información del nuevo
+  [24] DESPUÉS: crédito, tenemos diferentes pestañas para indicar la información del nuevo
+
+  [34] ANTES : permitir que el número de la factura que estamos creando en este caso pueda ser
+  [34] DESPUÉS: permitir que el número de la factura que estamos creando. En este caso pueda ser
+
+  [37] ANTES : Generalmente a la factura enviada por el proveed
+  [37] DESPUÉS: generalmente a la factura enviada por el proveed
+
+  [42] ANTES : operación en la parte inferior de esta pestaña tenemos la opción para
+  [42] DESPUÉS: operación en la parte inferior de esta pestaña, tenemos la opción para
+
+  [45] ANTES : cada documento tenemos múltiples
+  [45] DESPUÉS: cada documento, tenemos múltiples
+
+  [48] ANTES : soporte para continuar con el siguiente paso damos clic en el botón siguiente o
+  [48] DESPUÉS: soporte para continuar con el siguiente paso, damos clic en el botón siguiente o
+
+  [50] ANTES : de este documento vamos a poder configurar un máximo número y una máxima
+  [50] DESPUÉS: de este documento, vamos a poder configurar un máximo número y una máxima
+
+  [53] ANTES : establecido también podemos indicar Si queremos permitir que el sistema auto
+  [53] DESPUÉS: establecido también, podemos indicar. Si queremos permitir que el sistema auto
+
+  [54] ANTES : incremente el número del documento Cuando tenemos activa esta opción y se
+  [54] DESPUÉS: incremente el número del documento Cuando, tenemos activa esta opción y se
+
+  [71] ANTES : operación en este caso tenemos las opciones de no Mostrar ningún
+  [71] DESPUÉS: operación. En este caso, tenemos las opciones de no Mostrar ningún
+
+  [76] ANTES : documento para continuar con el siguiente paso Vamos a dar clic en el
+  [76] DESPUÉS: documento para continuar con el siguiente paso, Vamos a dar clic en el
+
+  [83] ANTES : contado tipo de incremento para lo cual tenemos tres
+  [83] DESPUÉS: contado tipo de incremento para lo cual, tenemos tres
+
+  [90] ANTES : incremento debemos indicar En qué número vamos a iniciar la
+  [90] DESPUÉS: incremento debemos indicar En qué número, vamos a iniciar la
+
+  [92] ANTES : incrementarse para continuar damos clic en el botón de
+  [92] DESPUÉS: incrementarse para continuar, damos clic en el botón de
+
+  [97] ANTES : máximo número de impresiones por operación podemos
+  [97] DESPUÉS: máximo número de impresiones por operación, podemos
+
+  [106] ANTES : documentos finalmente tenemos la opción de blindar registros esta opción protege
+  [106] DESPUÉS: documentos finalmente, tenemos la opción de blindar registros esta opción protege
+
+  [111] ANTES : creación del documento de soporte damos clic en el botón
+  [111] DESPUÉS: creación del documento de soporte, damos clic en el botón
+
+  [115] ANTES : las operaciones esto es todo acerca de la
+  [115] DESPUÉS: las operaciones esto es todo acerca de la.
+
+  [116] ANTES : creación de un documento de soporte
+  [116] DESPUÉS: Creación de un documento de soporte
+
+  → 24 renglón(es) distinto(s)
+OK 1LGFE8vaLNY changed=3 groq
+
+  ══ Comparación 1LGFE8vaLNY (videos/2011) ══
+  [1] ANTES : La Liga de Jesucristo de los Santos de los D
+  [1] DESPUÉS: la Liga de Jesucristo de los Santos de los D
+
+  [2] ANTES : La Iglesia de Jesucristo de los Santos de los Últimos Días
+  [2] DESPUÉS: la Iglesia de Jesucristo de los Santos de los Últimos Días
+
+  [3] ANTES : ¡Gracias!
+  [3] DESPUÉS: gracias!
+
+  → 3 renglón(es) distinto(s)
+OK 1VufNqroxSo changed=26 groq
+
+  ══ Comparación 1VufNqroxSo (videos/2011) ══
+  [0] ANTES : explicación de la definición de la máscara del documento de
+  [0] DESPUÉS: Explicación de la definición de la máscara del documento de
+
+  [12] ANTES : contabilidad y el comprobante de egreso cada uno de estos documentos en
+  [12] DESPUÉS: contabilidad, y el comprobante de egreso cada uno de estos documentos en
+
+  [18] ANTES : dígitos sin embargo hay documentos cuya numeración es un poco más compleja como
+  [18] DESPUÉS: dígitos, sin embargo hay documentos cuya numeración es un poco más compleja como
+
+  [21] ANTES : numeración incluye los dos últimos dígitos del año los dos últimos dígitos
+  [21] DESPUÉS: numeración, incluye los dos últimos dígitos del año los dos últimos dígitos
+
+  [27] ANTES : incluir los dígitos del año para ello tenemos varias opciones lo primero que
+  [27] DESPUÉS: incluir los dígitos del año para ello, tenemos varias opciones lo primero que
+
+  [28] ANTES : debemos tener en cuenta es que el carácter a utilizar en este caso es la
+  [28] DESPUÉS: debemos tener en cuenta es que el carácter a utilizar. En este caso es la
+
+  [35] ANTES : catálogo de documentos de soporte luego seleccionamos el documento
+  [35] DESPUÉS: catálogo de documentos de soporte luego, seleccionamos el documento
+
+  [36] ANTES : que queremos configurar y con clic derecho seleccionamos modificar en este
+  [36] DESPUÉS: que queremos configurar y con clic derecho, seleccionamos modificar. En este
+
+  [37] ANTES : contabilidad podemos ver que este documento cuenta con un prefijo y un
+  [37] DESPUÉS: contabilidad, podemos ver que este documento cuenta con un prefijo y un
+
+  [38] ANTES : consecutivo con respecto al prefijo es importante aclarar que el sistema nos
+  [38] DESPUÉS: consecutivo con respecto al prefijo, es importante aclarar que el sistema nos
+
+  [60] ANTES : la configuración de la nota de contabilidad vamos a después de los
+  [60] DESPUÉS: la configuración de la nota de contabilidad, vamos a después de los
+
+  [64] ANTES : en la fecha de trabajo general ente cuando se utiliza
+  [64] DESPUÉS: en la fecha de trabajo general ente cuando, se utiliza
+
+  [67] ANTES : identificar el mes a qué año corresponde También tenemos la
+  [67] DESPUÉS: identificar el mes a qué año corresponde. También, tenemos la
+
+  [70] ANTES : semana nuevamente ubicados en la nota de contabilidad vamos a omitir los dígitos
+  [70] DESPUÉS: semana nuevamente ubicados en la nota de contabilidad, vamos a omitir los dígitos
+
+  [71] ANTES : del año pero vamos a dejar los caracteres an fersan para indicarnos el
+  [71] DESPUÉS: del año pero, vamos a dejar los caracteres an fersan para indicarnos el
+
+  [72] ANTES : mes en este caso después del mes Vamos a agregar dos veces el signo de pesos
+  [72] DESPUÉS: mes. En este caso después del mes Vamos a agregar dos veces el signo de pesos
+
+  [74] ANTES : semana en este caso el día 6 de enero corresponde a la primera semana del año
+  [74] DESPUÉS: semana. En este caso el día 6 de enero corresponde a la primera semana del año
+
+  [84] ANTES : menor vamos a disminuir los dígitos del consecutivo solamente a cuatro Si antes
+  [84] DESPUÉS: menor, vamos a disminuir los dígitos del consecutivo solamente a cuatro Si antes
+
+  [85] ANTES : interrogación podemos guardar los cambios realizados en la
+  [85] DESPUÉS: interrogación, podemos guardar los cambios realizados en la
+
+  [88] ANTES : llamado al documento recibo de caja menor vamos a encontrar que el sistema
+  [88] DESPUÉS: llamado al documento recibo de caja menor, vamos a encontrar que el sistema
+
+  [89] ANTES : nos muestra el prefijo y el pero nos permite adicionar cualquier
+  [89] DESPUÉS: nos muestra el prefijo, y el pero nos permite adicionar cualquier
+
+  [90] ANTES : carácter antes del consecutivo en este caso podría ser una
+  [90] DESPUÉS: carácter antes del consecutivo. En este caso podría ser una
+
+  [93] ANTES : menor finalmente tenemos los los dígitos para el manejo del
+  [93] DESPUÉS: menor finalmente, tenemos los los dígitos para el manejo del
+
+  [96] ANTES : indicamos que solo tiene tres dígitos Entonces vamos a poder manejar un
+  [96] DESPUÉS: indicamos que solo tiene tres dígitos Entonces, vamos a poder manejar un
+
+  [101] ANTES : la empresa esto es todo acerca de la explicación de la definición de la
+  [101] DESPUÉS: la empresa esto es todo acerca de la explicación de la definición de la.
+
+  [102] ANTES : máscara de un documento de soporte
+  [102] DESPUÉS: Máscara de un documento de soporte
+
+  → 26 renglón(es) distinto(s)
+RETRY 1fDwY6x36h8 Groq y Hugging Face no están disponibles (groq: Connection error.; minimax: fetch failed; hf: fetch failed). Reintenta e
+OK 2aUL4B-5r90 changed=17 groq
+
+  ══ Comparación 2aUL4B-5r90 (videos/2011) ══
+  [0] ANTES : agrowin informe de costos de
+  [0] DESPUÉS: AgroWin informe de costos de
+
+  [1] ANTES : producción objetivo y enfoque del informe de costos de
+  [1] DESPUÉS: este informe nos permite conocer los costos totales de producción de nuestros cultivos o ganados.
+
+  [2] ANTES : producción al término del proceso productivo cuando se ha producido y
+  [2] DESPUÉS: Producción al término del proceso productivo cuando se ha producido y
+
+  [12] ANTES : presupuestal y la perspectiva administrativa desde el punto de vista
+  [12] DESPUÉS: presupuestal, y la perspectiva administrativa desde el punto de vista
+
+  [22] ANTES : producido expresado por ejemplo como pesos por kilogramo y el costo por
+  [22] DESPUÉS: producido expresado por ejemplo como pesos por kilogramo, y el costo por
+
+  [25] ANTES : producción no no depende del ciclo contable y por lo tanto no se altera con
+  [25] DESPUÉS: producción no no depende del ciclo contable y, por lo tanto no se altera con
+
+  [27] ANTES : producción es diferente e independiente del ciclo contable Mientras que el ciclo
+  [27] DESPUÉS: producción es diferente e independiente del ciclo contable. Mientras que el ciclo
+
+  [37] ANTES : de costos al final de cada cosecha y el inicio de un nuevo ciclo de producción y
+  [37] DESPUÉS: de costos al final de cada cosecha, y el inicio de un nuevo ciclo de producción y
+
+  [38] ANTES : costeo en este momento el informe de costos de producción se
+  [38] DESPUÉS: costeo. En este momento el informe de costos de producción se
+
+  [52] ANTES : el sistema calcula el costo unitario de producción y el costo unitario de
+  [52] DESPUÉS: el sistema calcula el costo unitario de producción, y el costo unitario de
+
+  [57] ANTES : el lote la cantidad bruta producida y la cantidad efectivamente en bodeg para la
+  [57] DESPUÉS: el lote la cantidad bruta producida, y la cantidad efectivamente en bodeg para la
+
+  [65] ANTES : insumos aplicados con su cantidad y la maquinaria utilizada con el número de
+  [65] DESPUÉS: insumos aplicados con su cantidad, y la maquinaria utilizada con el número de
+
+  [68] ANTES : producido en la diapositiva se presenta el detalle esquemático del informe de
+  [68] DESPUÉS: producido en la diapositiva, se presenta el detalle esquemático del informe de
+
+  [72] ANTES : bodegad el costo total y el costo por kilo en el primer
+  [72] DESPUÉS: bodegad el costo total, y el costo por kilo en el primer
+
+  [76] ANTES : y de costos indirectos en este caso 1350,000 p de mano de obra 58,000 p de
+  [76] DESPUÉS: y de costos indirectos. En este caso 1350,000 p de mano de obra 58,000 p de
+
+  [83] ANTES : planta y por kilo continúa con los insumos aplicados en este caso el
+  [83] DESPUÉS: planta y por kilo continúa con los insumos aplicados. En este caso el
+
+  [106] ANTES : costos de producción gracias por su atención an
+  [106] DESPUÉS: costos de producción gracias por su atención an.
+
+  → 17 renglón(es) distinto(s)
+SKIP 1fDwY6x36h8 api-skipped
+SKIP 1LGFE8vaLNY api-skipped
+SKIP 1VufNqroxSo api-skipped
+SKIP 2aUL4B-5r90 api-skipped
+OK 2gg3EKQ5w5c changed=9 groq
+
+  ══ Comparación 2gg3EKQ5w5c (videos/2011) ══
+  [0] ANTES : orden de visualización de las operaciones
+  [0] DESPUÉS: Orden de visualización de las operaciones
+
+  [5] ANTES : para iniciar analicemos que las operaciones se basan en dos fechas para
+  [5] DESPUÉS: también, podemos filtrar las operaciones por un rango de fechas específico
+
+  [11] ANTES : está procesando la operación el sistema tomará esta fecha y la registrará como
+  [11] DESPUÉS: está procesando la operación el sistema tomará esta fecha, y la registrará como
+
+  [12] ANTES : ahora que ya hemos hecho la aclaración con respecto a las fechas es importante
+  [12] DESPUÉS: ahora que ya hemos hecho la aclaración con respecto a las fechas, es importante
+
+  [16] ANTES : amarillo vamos a realizar un ejemplo para que
+  [16] DESPUÉS: amarillo, vamos a realizar un ejemplo para que
+
+  [18] ANTES : para ello vamos a crear una nota de contabilidad con fecha del 13 de enero
+  [18] DESPUÉS: para ello, vamos a crear una nota de contabilidad con fecha del 13 de enero
+
+  [19] ANTES : si procesamos nuestra operación veremos que ella se ha incluido en este
+  [19] DESPUÉS: si procesamos nuestra operación veremos que ella se ha incluido. En este
+
+  [31] ANTES : vamos en este caso vamos a desprocesar las dos operaciones
+  [31] DESPUÉS: vamos. En este caso, vamos a desprocesar las dos operaciones
+
+  [40] ANTES : esto es todo acerca del orden de visualización de las operaciones
+  [40] DESPUÉS: esto es todo acerca del orden de visualización de las operaciones.
+
+  → 9 renglón(es) distinto(s)
+OK 2LuqQJn1h-c changed=6 groq
+
+  ══ Comparación 2LuqQJn1h-c (videos/2011) ══
+  [0] ANTES : presentación requerimientos del sistema si miramos dentro de la página web
+  [0] DESPUÉS: Bienvenidos a la presentación de los requerimientos del sistema ContaPyme
+
+  [1] ANTES : www.ine.es en la opción tour por conta pyme en el enlace de requerimientos
+  [1] DESPUÉS: www.ine.es en la opción tour por ContaPyme en el enlace de requerimientos
+
+  [6] ANTES : menos con una disponibilidad de una giga y el monitor pues con una resolución de
+  [6] DESPUÉS: menos con una disponibilidad de una giga, y el monitor pues con una resolución de
+
+  [7] ANTES : que nosotros tengamos podemos tener sistema operativo de windows 7 vista xp
+  [7] DESPUÉS: que nosotros tengamos, podemos tener sistema operativo de windows 7 vista xp
+
+  [15] ANTES : la plataforma y sistema operativo que se van a utilizar por lo tanto les
+  [15] DESPUÉS: la plataforma y sistema operativo que se van a utilizar, por lo tanto les
+
+  [34] ANTES : esto es todo acerca de requerimientos del sistema
+  [34] DESPUÉS: esto es todo acerca de requerimientos del sistema.
+
+  → 6 renglón(es) distinto(s)
+OK 2miYHmHOQlA changed=25 groq
+
+  ══ Comparación 2miYHmHOQlA (videos/2011) ══
+  [0] ANTES : ejemplo uno abono a cuenta por cobrar un abono a una cuenta por cobrar
+  [0] DESPUÉS: En este ejemplo, vamos a abonar una cuenta por cobrar por ingreso causado en ContaPyme
+
+  [2] ANTES : Empresa estos abonos lo podemos registrar en el sistema dependiendo del
+  [2] DESPUÉS: empresa estos abonos lo podemos registrar en el sistema dependiendo del
+
+  [6] ANTES : documentos podemos registrar esta transacción en una operación
+  [6] DESPUÉS: documentos, podemos registrar esta transacción en una operación
+
+  [7] ANTES : especializada para los abonos de cuentas por cobrar en este video nos enfocaremos
+  [7] DESPUÉS: especializada para los abonos de cuentas por cobrar. En este video nos enfocaremos
+
+  [11] ANTES : 7221 en donde se realizó una venta de asistencia técnica a crédito antes de
+  [11] DESPUÉS: 7221, en donde se realizó una venta de asistencia técnica a crédito antes de
+
+  [12] ANTES : realizar la operación vamos a generar un informe de cartera para consultar el
+  [12] DESPUÉS: realizar la operación, vamos a generar un informe de cartera para consultar el
+
+  [16] ANTES : cuentas por cobrar en donde indicaremos que la fecha de referencia será el 7 de
+  [16] DESPUÉS: cuentas por cobrar, en donde indicaremos que la fecha de referencia será el 7 de
+
+  [20] ANTES : reporte como podemos observar el sistema nos ha generado el informe detalle de
+  [20] DESPUÉS: reporte como, podemos observar el sistema nos ha generado el informe detalle de
+
+  [21] ANTES : cuentas por cobrar en donde nos indica que existe una cartera para la señora
+  [21] DESPUÉS: cuentas por cobrar, en donde nos indica que existe una cartera para la señora
+
+  [22] ANTES : esperanza gelo de la factura de venta 7221 en donde tiene un saldo por cobrar
+  [22] DESPUÉS: esperanza gelo de la factura de venta 7221, en donde tiene un saldo por cobrar
+
+  [26] ANTES : diciembre recordemos que en uno de los ejemplos anteriores se realizó el
+  [26] DESPUÉS: diciembre, recordemos que en uno de los ejemplos anteriores se realizó el
+
+  [28] ANTES : pesos el cual Fue cancelado en efectivo 80.000 pesos y el resto se quedó
+  [28] DESPUÉS: pesos el cual Fue cancelado en efectivo 80.000 pesos, y el resto se quedó
+
+  [33] ANTES : para este tercero realizaremos ahora el abono a cuentas por cobrar por lo tanto
+  [33] DESPUÉS: para este tercero realizaremos ahora el abono a cuentas por cobrar, por lo tanto
+
+  [39] ANTES : seleccionaremos el documento requerido en este caso el comprobante de ingreso
+  [39] DESPUÉS: seleccionaremos el documento requerido. En este caso el comprobante de ingreso
+
+  [43] ANTES : observación de la operación por lo tanto indicaremos
+  [43] DESPUÉS: observación de la operación, por lo tanto indicaremos
+
+  [56] ANTES : que el valor del abono es de 30.000 pes como podemos visualizar el sistema
+  [56] DESPUÉS: que el valor del abono es de 30.000 pes como, podemos visualizar el sistema
+
+  [70] ANTES : Med ante el botón de búsqueda podemos seleccionar el tipo de documento de
+  [70] DESPUÉS: med ante el botón de búsqueda, podemos seleccionar el tipo de documento de
+
+  [72] ANTES : Cancelar para finalizar la operación haremos un clic en el botón
+  [72] DESPUÉS: cancelar para finalizar la operación haremos un clic en el botón
+
+  [76] ANTES : contable recordemos que para su generación debemos ubicarnos en la
+  [76] DESPUÉS: contable, recordemos que para su generación debemos ubicarnos en la
+
+  [79] ANTES : cobrar en donde indicaremos que la fecha inicial será el 28 de
+  [79] DESPUÉS: cobrar, en donde indicaremos que la fecha inicial será el 28 de
+
+  [83] ANTES : reporte como podemos observar el sistema nos ha generado el informe movimiento de
+  [83] DESPUÉS: reporte como, podemos observar el sistema nos ha generado el informe movimiento de
+
+  [84] ANTES : cuentas por cobrar en donde nos indica que para la cuenta
+  [84] DESPUÉS: cuentas por cobrar, en donde nos indica que para la cuenta
+
+  [88] ANTES : se realizó un comprobante de ingreso número cuatro en donde se realizó un
+  [88] DESPUÉS: se realizó un comprobante de ingreso número cuatro, en donde se realizó un
+
+  [91] ANTES : 29,200 pes esto es todo sobre la operación a
+  [91] DESPUÉS: 29,200 pes esto es todo sobre la operación a.
+
+  [92] ANTES : bonos de cuentas por cobrar por automatización de
+  [92] DESPUÉS: Bonos de cuentas por cobrar por automatización de
+
+  → 25 renglón(es) distinto(s)
+OK 2nBGykWp_sk changed=9 groq
+
+  ══ Comparación 2nBGykWp_sk (videos/2011) ══
+  [0] ANTES : concepto de centro de costos los también llamados centros
+  [0] DESPUÉS: Concepto de centro de costos los también llamados centros
+
+  [3] ANTES : Los costos gastos e ingresos que se le pueden cargar directamente a esa parte
+  [3] DESPUÉS: en ContaPyme, el centro de costos es una herramienta fundamental para llevar un control efectivo de los gastos.
+
+  [4] ANTES : de la empresa un ejemplo común de los centros de costos son los departamentos
+  [4] DESPUÉS: Con el centro de costos, puedes asignar gastos a diferentes áreas de tu empresa, como inventario, nómina, etc.
+
+  [5] ANTES : en los cuales se divide un empresa en nuestro caso la empresa MP computadores
+  [5] DESPUÉS: En los cuales se divide un empresa en nuestro caso la empresa MP computadores
+
+  [9] ANTES : Empresa en el sistema un departamento administrativo un departamento comercial
+  [9] DESPUÉS: empresa en el sistema un departamento administrativo un departamento comercial
+
+  [17] ANTES : como podemos verlo en la estructura de Nuestra
+  [17] DESPUÉS: como, podemos verlo en la estructura de Nuestra
+
+  [18] ANTES : Nuestra Empresa departamento administrativo y
+  [18] DESPUÉS: nuestra Empresa departamento administrativo y
+
+  [26] ANTES : decisiones es importante que los centros de costos en los que vamos a dividir la
+  [26] DESPUÉS: decisiones, es importante que los centros de costos en los que vamos a dividir la
+
+  [35] ANTES : empresa esto es todo acerca del concepto de centro de
+  [35] DESPUÉS: empresa esto es todo acerca del concepto de centro de.
+
+  → 9 renglón(es) distinto(s)
+RETRY 0n0AZwtxoQw Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"
+OK 3atP3wnhJTs changed=13 groq
+
+  ══ Comparación 3atP3wnhJTs (videos/2011) ══
+  [0] ANTES : catálogo de países departamentos y ciudades tanto en la creación o
+  [0] DESPUÉS: En el módulo de catálogos de ContaPyme, podemos encontrar el catálogo de países, departamentos y ciudades.
+
+  [1] ANTES : modificación de la como la creación o modificación de un tercero en la pestaña
+  [1] DESPUÉS: Modificación de la como la creación o modificación de un tercero en la pestaña
+
+  [5] ANTES : ciudades en la pestaña básico botón terceros seleccionamos el
+  [5] DESPUÉS: ciudades en la pestaña básico botón terceros, seleccionamos el
+
+  [11] ANTES : Colombia Colombia tiene varios
+  [11] DESPUÉS: colombia Colombia tiene varios
+
+  [12] ANTES : departamentos podemos ver como su como el código del país tiene
+  [12] DESPUÉS: departamentos, podemos ver como su como el código del país tiene
+
+  [13] ANTES : asignado un código de departamento en este caso
+  [13] DESPUÉS: asignado un código de departamento. En este caso
+
+  [14] ANTES : Antioquia a su vez Antioquia tiene n ciudades podemos apreciar la manera en
+  [14] DESPUÉS: antioquia a su vez Antioquia tiene n ciudades, podemos apreciar la manera en
+
+  [16] ANTES : Medellín si algún país no tiene esta distribución política Puede crear sus
+  [16] DESPUÉS: medellín si algún país no tiene esta distribución política Puede crear sus
+
+  [18] ANTES : Estado las acciones para personalizar este catálogo de países departamentos y
+  [18] DESPUÉS: estado las acciones para personalizar este catálogo de países departamentos y
+
+  [20] ANTES : que notemos que en una sola opción podemos crear
+  [20] DESPUÉS: que notemos que en una sola opción, podemos crear
+
+  [30] ANTES : digitar el código y el nombre que lo identifica por defecto aparecen todos
+  [30] DESPUÉS: digitar el código, y el nombre que lo identifica por defecto aparecen todos
+
+  [32] ANTES : montaje fuera de Colombia esto es todo sobre el catálogo
+  [32] DESPUÉS: montaje fuera de Colombia esto es todo sobre el catálogo.
+
+  [33] ANTES : ciudades
+  [33] DESPUÉS: Ciudades
+
+  → 13 renglón(es) distinto(s)
+OK 3cR3sv_emSE changed=10 groq
+
+  ══ Comparación 3cR3sv_emSE (videos/2011) ══
+  [0] ANTES : cambio a un área de trabajo en otro dominio
+  [0] DESPUÉS: En este video, vamos a mostrar cómo cambiar el área de trabajo en ContaPyme
+
+  [1] ANTES : el área de trabajo a la cual vamos a conectarnos está en un dominio diferente
+  [1] DESPUÉS: el área de trabajo a la cual, vamos a conectarnos está en un dominio diferente
+
+  [3] ANTES : empresas de gestión de pymes estando conectados en un área de trabajo
+  [3] DESPUÉS: luego, seleccionamos el área de trabajo que deseamos cambiar
+
+  [8] ANTES : El dominio donde se encuentra el área de trabajo a la cual deseamos conectarnos
+  [8] DESPUÉS: el dominio donde se encuentra el área de trabajo a la cual deseamos conectarnos
+
+  [9] ANTES : en este caso vamos a indicar que El dominio se llama Grupo Alianza
+  [9] DESPUÉS: en este caso, vamos a indicar que El dominio se llama Grupo Alianza
+
+  [11] ANTES : vamos a conectarnos en este caso vamos a indicarle que al área de trabajo de
+  [11] DESPUÉS: vamos a conectarnos. En este caso, vamos a indicarle que al área de trabajo de
+
+  [15] ANTES : y de ser necesario indicamos el usuario y la contraseña
+  [15] DESPUÉS: y de ser necesario indicamos el usuario, y la contraseña
+
+  [16] ANTES : y finalmente damos clic en el botón conectar
+  [16] DESPUÉS: y finalmente, damos clic en el botón conectar
+
+  [21] ANTES : del dominio al que nos hemos conectado y el nombre del área de trabajo activa
+  [21] DESPUÉS: del dominio al que nos hemos conectado, y el nombre del área de trabajo activa
+
+  [23] ANTES : dominio esto es todo acerca de cambio a un área de trabajo en otro dominio
+  [23] DESPUÉS: dominio esto es todo acerca de cambio a un área de trabajo en otro dominio.
+
+  → 10 renglón(es) distinto(s)
+OK 3MtHyNQ6RO8 changed=4 groq
+
+  ══ Comparación 3MtHyNQ6RO8 (videos/2011) ══
+  [0] ANTES : qué es el catálogo de cuentas el catálogo de cuentas es una ventana
+  [0] DESPUÉS: Bienvenidos al sistema de contabilidad ContaPyme, componente catálogo de cuentas
+
+  [17] ANTES : usadas por la empresa vamos a poder duplicar cuentas
+  [17] DESPUÉS: usadas por la empresa, vamos a poder duplicar cuentas
+
+  [19] ANTES : cuenta también vamos a poder trasladar saldos entre cuentas y muchas otras
+  [19] DESPUÉS: cuenta también, vamos a poder trasladar saldos entre cuentas y muchas otras
+
+  [21] ANTES : esto es todo acerca de qué es el catálogo de cuentas
+  [21] DESPUÉS: esto es todo acerca de qué es el catálogo de cuentas.
+
+  → 4 renglón(es) distinto(s)
+RETRY 2gg3EKQ5w5c Groq y Hugging Face no están disponibles (groq: Connection error.; minimax: MiniMax error 2049: invalid api key; hf: fet
+SKIP 2gg3EKQ5w5c api-skipped
+SKIP 2LuqQJn1h-c api-skipped
+SKIP 2miYHmHOQlA api-skipped
+SKIP 2nBGykWp_sk api-skipped
+SKIP 3atP3wnhJTs api-skipped
+SKIP 3cR3sv_emSE api-skipped
+SKIP 3MtHyNQ6RO8 api-skipped
+RETRY 0n0AZwtxoQw Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"
+
+--- batch-proofread 2026-06-04T06:08:38.210Z n=1 ---
+RETRY 3cR3sv_emSE Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"m
+OK 3cR3sv_emSE changed=8 groq
+
+  ══ Comparación 3cR3sv_emSE (videos/2011) ══
+  (mismo índice [N] = mismo renglón en transcript.segments; no se cruzan líneas)
+  [0] @0:00
+  [0] ANTES : cambio a un área de trabajo en otro dominio
+  [0] DESPUÉS: Cambio a un área de trabajo en otro dominio
+
+  [1] @0:04
+  [1] ANTES : el área de trabajo a la cual vamos a conectarnos está en un dominio diferente
+  [1] DESPUÉS: el área de trabajo a la cual, vamos a conectarnos está en un dominio diferente
+
+  [8] @0:57
+  [8] ANTES : El dominio donde se encuentra el área de trabajo a la cual deseamos conectarnos
+  [8] DESPUÉS: el dominio donde se encuentra el área de trabajo a la cual deseamos conectarnos
+
+  [9] @1:04
+  [9] ANTES : en este caso vamos a indicar que El dominio se llama Grupo Alianza
+  [9] DESPUÉS: en este caso, vamos a indicar que El dominio se llama Grupo Alianza
+
+  [11] @1:22
+  [11] ANTES : vamos a conectarnos en este caso vamos a indicarle que al área de trabajo de
+  [11] DESPUÉS: vamos a conectarnos. En este caso, vamos a indicarle que al área de trabajo de
+
+  [15] @1:46
+  [15] ANTES : y de ser necesario indicamos el usuario y la contraseña
+  [15] DESPUÉS: y de ser necesario indicamos el usuario, y la contraseña
+
+  [16] @1:56
+  [16] ANTES : y finalmente damos clic en el botón conectar
+  [16] DESPUÉS: y finalmente, damos clic en el botón conectar
+
+  [21] @2:28
+  [21] ANTES : del dominio al que nos hemos conectado y el nombre del área de trabajo activa
+  [21] DESPUÉS: del dominio al que nos hemos conectado, y el nombre del área de trabajo activa
+
+  → 8 renglón(es) distinto(s)
+RETRY 3z_V4Nig2Ik Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"
+RETRY 3z_V4Nig2Ik Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"
+RETRY 0n0AZwtxoQw Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"

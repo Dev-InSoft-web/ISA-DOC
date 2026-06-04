@@ -72,9 +72,9 @@ Cada **segmento** del JSON → un embedding con `startMs` → cita con `watch?v=
 No indexar el bloque `plainText` del `.md` (concatena frases); usar `transcript.segments`.
 
 ```powershell
-cd lab-langgraph
-RAG_PROFILE=contapyme npm run index:youtube
-# API: POST http://127.0.0.1:5500/api/index/youtube?replace=true
+cd ISA-DOC
+npm run lab:yt:index-rag
+# API (lab en :5500): POST http://127.0.0.1:5500/api/index/youtube?replace=true
 ```
 
 `YOUTUBE_CORPUS_VIDEOS_DIR` → ruta a `videos/` si no está en la ruta por defecto.

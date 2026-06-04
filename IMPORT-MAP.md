@@ -16,7 +16,7 @@ Definidos en `config/astro.config.ts` (re-export `astro.config.ts` en raíz para
 |------------|----------------|
 | `patyiaLocalToken.ts`, `/api/patyia/local-token` | `findTokenFile("patyia")` |
 | `openaiKey.ts` | `secrets/api-keys.env` |
-| Lab LangGraph (FitDocs RAG) | `GROQ_API_KEY` + `HUGGINGFACE_API_KEY` en `secrets/api-keys.env` / `.env` → `lab-langgraph/local.settings.json` |
+| Lab LangGraph (FitDocs RAG) | `secrets/patyia/lab-langgraph.env`: `GROQ_API_KEY`, `GROQ_API_KEY_2`, `MINIMAX_API_KEY`, `HUGGINGFACE_API_KEY` (también `lab-langgraph/local.settings.json`) |
 | `scripts/verify-api-patyia/*` | `tokenFileCandidates("patyia")` |
 
 ## Datos → UI

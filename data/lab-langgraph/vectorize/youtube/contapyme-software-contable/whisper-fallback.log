@@ -1,0 +1,364 @@
+
+--- whisper 2026-06-04T04:33:04.862Z n=1 ---
+FAIL 3eoQ0_2MYLM yt-dlp audio 3eoQ0_2MYLM: WARNING: [youtube] 3eoQ0_2MYLM: Some android_vr client https formats have been skipped as they are missing a URL. YouTube may have enabled the SABR-only streaming experiment for the current session. See  https://github.com/yt-dlp/yt-dlp/issues/12482  for more details
+ERROR: [youtube] 3eoQ0_2MYLM: Requested format is not available. Use --list-formats for a list of available formats
+[youtube] Extracting URL: https://www.youtube.com/watch?v=3eoQ0_2MYLM
+[youtube] 3eoQ0_2MYLM: Downloading webpage
+[youtube] 3eoQ0_2MYLM: Downloading android vr player API JSON
+[youtube] 3eoQ0_2MYLM: Downloading web player API JSON
+[youtube] 3eoQ0_2MYLM: Downloading web safari player API JSON
+
+
+--- whisper 2026-06-04T04:33:28.352Z n=1 ---
+FAIL 3eoQ0_2MYLM yt-dlp audio 3eoQ0_2MYLM: WARNING: [youtube] 3eoQ0_2MYLM: Some android_vr client https formats have been skipped as they are missing a URL. YouTube may have enabled the SABR-only streaming experiment for the current session. See  https://github.com/yt-dlp/yt-dlp/issues/12482  for more details
+ERROR: [youtube] 3eoQ0_2MYLM: Requested format is not available. Use --list-formats for a list of available formats
+[youtube] Extracting URL: https://www.youtube.com/watch?v=3eoQ0_2MYLM
+[youtube] 3eoQ0_2MYLM: Downloading webpage
+[youtube] 3eoQ0_2MYLM: Downloading android vr player API JSON
+[youtube] 3eoQ0_2MYLM: Downloading web player API JSON
+[youtube] 3eoQ0_2MYLM: Downloading web safari player API JSON
+
+
+--- whisper 2026-06-04T04:34:09.534Z n=1 ---
+OK 3eoQ0_2MYLM segs=1944 220s
+
+--- whisper 2026-06-04T04:38:00.193Z n=73 ---
+OK VbPShqrWGlw segs=2 8s
+OK KWCd8CNGb9s segs=1 7s
+FAIL whFcS6Q3CCI Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6936, Requested 574. Please try again in 2m35s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL EWI0D0MJwNI Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6910, Requested 599. Please try again in 2m34.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL GTWINQBhgL8 Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6885, Requested 431. Please try again in 58s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL YKKsyPQuKcU Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6859, Requested 574. Please try again in 1m56.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL XcFBqgqFbrs Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6819, Requested 574. Please try again in 1m36.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL HnWEfL_i8Lg Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6782, Requested 599. Please try again in 1m30.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL MRTZ4oWSfoA Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6756, Requested 574. Please try again in 1m5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+OK urO261_GYvk segs=18 30s
+FAIL 1LGFE8vaLNY Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6755, Requested 599. Please try again in 1m17s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL sHmKrO-_oAw Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6717, Requested 599. Please try again in 58s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL cvT3rNwehAY Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6647, Requested 574. Please try again in 10.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+
+--- whisper 2026-06-04T04:41:54.053Z n=70 ---
+OK whFcS6Q3CCI segs=2 1s
+OK EWI0D0MJwNI segs=1 2s
+OK eTzuLRKij80 segs=5 27s
+FAIL _fy8f_C-L1Q Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6792, Requested 574. Please try again in 1m23s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL -QOg7DC0628 Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6759, Requested 574. Please try again in 1m6.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+OK W_P3wJP745M segs=22 14s
+FAIL EYEN3x2zMDs Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6899, Requested 599. Please try again in 2m29s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL 4tF9BEeeeCU Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6865, Requested 574. Please try again in 1m59.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL xxnZPmgHRhM Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6828, Requested 599. Please try again in 1m53.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL 5e3PFxCYr0s Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6792, Requested 599. Please try again in 1m35.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL vNjWtDqNXUY Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6761, Requested 599. Please try again in 1m20s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+
+--- whisper 2026-06-04T04:44:49.843Z n=66 ---
+OK GTWINQBhgL8 segs=1 3s
+FAIL oK41iGOdAJo Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6712, Requested 574. Please try again in 43s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL vE2Vu5bod7U Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6664, Requested 574. Please try again in 19s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+OK H_7yUt3EeSU segs=2 20s
+FAIL BO51cFTS4_M Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 7009, Requested 574. Please try again in 3m11.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL iZRJZZX2nW8 Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6962, Requested 599. Please try again in 3m0.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL 4B40cbJ_gt4 Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6898, Requested 563. Please try again in 2m10.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL sgUvUASS8-8 Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6807, Requested 534. Please try again in 1m10.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+FAIL 7ZtACA9GMIs Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6715, Requested 732. Please try again in 2m3.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+
+--- whisper 2026-06-04T04:48:49.009Z n=64 ---
+OK YKKsyPQuKcU segs=1 2s
+OK XcFBqgqFbrs segs=7 1s
+OK HnWEfL_i8Lg segs=9 3s
+OK MRTZ4oWSfoA segs=1 1s
+OK 1LGFE8vaLNY segs=4 2s
+OK sHmKrO-_oAw segs=5 2s
+FAIL 9-75keLoZwg Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6594, Requested 732. Please try again in 1m3s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+OK cvT3rNwehAY segs=4 2s
+OK _fy8f_C-L1Q segs=31 2s
+FAIL OiUdzC2OCuk Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6523, Requested 1713. Please try again in 8m38s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+OK -QOg7DC0628 segs=25 3s
+OK EYEN3x2zMDs segs=4 2s
+OK GTWINQBhgL8 segs=1 544s
+OK 4tF9BEeeeCU segs=8 2s
+OK YKKsyPQuKcU segs=1 2s
+OK xxnZPmgHRhM segs=8 2s
+FAIL 0n0AZwtxoQw Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6486, Requested 3074. Please try again in 19m40s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+OK XcFBqgqFbrs segs=7 2s
+OK 5e3PFxCYr0s segs=36 2s
+OK HnWEfL_i8Lg segs=9 2s
+OK vNjWtDqNXUY segs=33 3s
+OK MRTZ4oWSfoA segs=1 2s
+OK 1LGFE8vaLNY segs=4 2s
+OK oK41iGOdAJo segs=42 8s
+
+--- whisper 2026-06-04T04:53:11.241Z n=49 untilSuccess ---
+OK vE2Vu5bod7U segs=61 chars=4340 4s attempts=1
+OK vE2Vu5bod7U segs=61 5s
+FAIL Ie6s_NTGgzo Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 7018, Requested 732. Please try again in 4m35s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+OK BO51cFTS4_M segs=39 3s
+OK iZRJZZX2nW8 segs=74 4s
+OK 4B40cbJ_gt4 segs=63 7s
+OK sgUvUASS8-8 segs=83 5s
+FAIL L4LQfVISn-A Groq Whisper 429: {"error":{"message":"Rate limit reached for model `whisper-large-v3-turbo` in organization `org_01j7427b2re4nb6ccjzhrs5f9p` service tier `on_demand` on seconds of audio per hour (ASPH): Limit 7200, Used 6830, Requested 871. Please try again in 4m10.5s. Need more tokens? Upgrade to Dev Tier today at https://console.groq.com/settings/billing","type":"seconds","code":"rate_limit_exceeded"}}
+
+OK 7ZtACA9GMIs segs=114 22s
+OK 9-75keLoZwg segs=124 22s
+
+--- whisper 2026-06-04T05:00:58.931Z n=42 untilSuccess ---
+
+--- whisper 2026-06-04T05:01:32.504Z n=42 untilSuccess ---
+
+--- whisper 2026-06-04T05:02:00.240Z n=42 untilSuccess ---
+OK OiUdzC2OCuk segs=258 chars=22879 178.3s attempts=1
+OK 0n0AZwtxoQw segs=609 chars=50190 780.1s attempts=1
+
+--- whisper 2026-06-04T05:32:44.319Z n=40 untilSuccess ---
+
+--- whisper 2026-06-04T05:38:54.775Z n=40 untilSuccess ---
+OK Ie6s_NTGgzo provider=groq segs=809 chars=56560 45.8s attempts=1
+
+--- whisper 2026-06-04T05:41:34.827Z n=39 untilSuccess ---
+OK L4LQfVISn-A provider=groq segs=1098 chars=59881 489.5s attempts=1
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY L4LQfVISn-A ENOENT: no such file or directory, open 'C:\Users\JAGUDELOE\Documents\Contapyme\ISA-DOC\data\lab-langgraph\vectorize\you wait=120s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+
+--- whisper 2026-06-04T05:52:42.267Z n=38 untilSuccess ---
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+OK L4LQfVISn-A provider=groq segs=1098 chars=59881 1159.7s attempts=2
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=120s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=120s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=116s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=94s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=80s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=70s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=8s
+RETRY nVwE2nVc8ww yt-dlp audio nVwE2nVc8ww: audio-only: sin archivo | mp4-18+ffmpeg: sin archivo | best-progressive+ffmpeg: sin archivo wait=62s

@@ -35,6 +35,8 @@ Usa el menú lateral bajo **Lab LangGraph**:
 ## Secretos (ISA-DOC)
 
 Archivo local (no versionar): `secrets/patyia/lab-langgraph.env`  
-Plantilla: `secrets/patyia/lab-langgraph.env.example`
+Plantilla: `secrets/patyia/lab-langgraph.env.example` (`GROQ_API_KEY`, `GROQ_API_KEY_2`, `MINIMAX_API_KEY`, `HUGGINGFACE_API_KEY`)
 
-En el repo del lab: `lab-langgraph/local.settings.json` (también gitignored).
+La misma `MINIMAX_API_KEY` alimenta Whisper (STT, ruta 3/3) y proofread LangGraph en **ISA-DOC** y **lab-langgraph**.
+
+En el repo del lab: `lab-langgraph/local.settings.json` (también gitignored; ver `local.settings.json.example`).

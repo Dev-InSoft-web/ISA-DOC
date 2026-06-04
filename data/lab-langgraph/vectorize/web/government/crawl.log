@@ -1,0 +1,687 @@
+
+--- crawl 2026-06-04T02:37:28.786Z limit=3 resume=false ---
+OK https://www.dian.gov.co/ 37a8089d3ef590aa
+OK https://www.dian.gov.co/normatividad/Paginas/Inicio.aspx 57824e1e0e8d6a6b
+FAIL https://www.dian.gov.co/normatividad/normatividad/Paginas/Inicio.aspx HTTP 404
+
+--- crawl 2026-06-04T03:24:59.509Z limit=12000 resume=true ---
+FAIL https://www.dian.gov.co/normatividad/compilacion/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/normatividad/resoluciones/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/normatividad/circulares/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/normatividad/conceptos/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/normatividad/jurisprudencia/Paginas/Inicio.aspx HTTP 404
+OK https://www.dian.gov.co/impuestos/Paginas/Inicio.aspx 13e4d54e1ae31963
+FAIL https://www.dian.gov.co/impuestos/renta/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/impuestos/iva/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/impuestos/retencion/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/impuestos/patrimonio/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/impuestos/ganancias-ocasionales/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/impuestos/timbre/Paginas/Inicio.aspx HTTP 404
+OK https://www.dian.gov.co/aduanas/Paginas/Inicio.aspx 1ba8b2bf8af196d9
+FAIL https://www.dian.gov.co/aduanas/importacion/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/aduanas/exportacion/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/tramitesseninternet/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/tramitesseninternet/factura-electronica/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/tramitesseninternet/nomina-electronica/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/tramitesseninternet/documento-soporte/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/tramitesseninternet/declaraciones/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/tramitesseninternet/certificados/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/tramitesseninternet/RUT/Paginas/Inicio.aspx HTTP 404
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Inicio.aspx 81f653d41bb45b5e
+FAIL https://www.dian.gov.co/atencionciudadano/preguntas-frecuentes/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/atencionciudadano/calendario/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/atencionciudadano/tasas-aranceles/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/atencionciudadano/formularios-instructivos/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/atencionciudadano/guias-tutoriales/Paginas/Inicio.aspx HTTP 404
+FAIL https://www.dian.gov.co/estadisticas/Paginas/Inicio.aspx HTTP 404
+OK https://www.minhacienda.gov.co/ a455abb14d2c2c68
+FAIL https://www.minhacienda.gov.co/webcenter/portal/Minhacienda HTTP 403
+FAIL https://www.minhacienda.gov.co/webcenter/portal/Minhacienda/atencion-ciudadana HTTP 403
+FAIL https://www.minhacienda.gov.co/webcenter/portal/Minhacienda/atencion-ciudadana/normatividad HTTP 403
+OK https://www.supersociedades.gov.co/ aa4ebf250925130d
+FAIL https://www.supersociedades.gov.co/web/supersociedades HTTP 404
+FAIL https://www.supersociedades.gov.co/web/supersociedades/normatividad HTTP 404
+FAIL https://www.supersociedades.gov.co/web/supersociedades/informacion-del-mercado HTTP 404
+FAIL https://www.suin-juriscol.gov.co/ fetch failed
+FAIL https://www.suin-juriscol.gov.co/viewDocument.asp fetch failed
+OK https://muisca.dian.gov.co/WebArquitectura/DefLogin.faces 52fcc20945e58c59
+OK https://muisca.dian.gov.co/WebArquitectura/DefNuevosUsuarios.faces c3ed00afc51cf2aa
+OK https://muisca.dian.gov.co/WebDilUsuariosNoRegistrados 2d4d47ff851a2ee2
+OK https://www.dian.gov.co/Paginas/Inicio.aspx 37536d47d4e02cb5
+OK https://normograma.dian.gov.co/dian 22d1ff3e6d8b2d97
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Transparencia.aspx 3a1e05d74520d1b8
+OK https://www.dian.gov.co/atencionciudadano/portal_de_ninos/Videojuego_MisionC/Paginas/default.aspx 7089b3567b7e2b3d
+OK https://www.dian.gov.co/Paginas/CalendarioTributario.aspx e976bb6cc431ac6b
+OK https://www.dian.gov.co/Paginas/CalendarioCambiario.aspx c5d5ee0fa58960b6
+OK https://www.dian.gov.co/atencionciudadano/Agendamiento-de-Citas/Paginas/Inicio.aspx cd66ab3c91c4ada5
+OK https://www.dian.gov.co/atencionciudadano/notificacion/Paginas/default.aspx db20eb7e08e31d7b
+OK https://muisca.dian.gov.co/WebCmnNotificaciones 52866e308e5a45f6
+OK https://muisca.dian.gov.co/WebComunicaciones/DefVerificarCorreoDian.faces 37b4fb878c6ce8d9
+OK https://webazure.dian.gov.co/comunicaciones/busqueda/verificacion 8aeb80dea7b69b82
+OK https://www.dian.gov.co/atencionciudadano/Seguridad-de-la-Informacion/Paginas/Inicio.aspx aa0a0a7a1208522c
+OK https://www.dian.gov.co/atencionciudadano/PQSRD/Paginas/Inicio.aspx 2cdf72899692d8ea
+OK https://www.dian.gov.co/impuestos/Paginas/Pongase-al-dia-con-la-DIAN.aspx 03dc6bf5817f01f8
+FAIL https://micrositios.dian.gov.co/sistema-de-facturacion-electronica fetch failed
+OK https://catalogo-vpfe-hab.dian.gov.co/User/Login 990974913019d266
+OK https://catalogo-vpfe.dian.gov.co/User/Login 00bdad441cbb9c86
+OK https://www.dian.gov.co/impuestos/RUT/Paginas/Inicio.aspx 3a2964b8911ae5ae
+OK https://muisca.dian.gov.co/WebRutVirtualInscripcion 282c91fd4f1ccb7e
+OK https://www.dian.gov.co/tramitesservicios/tramites-y-servicios/tributarios/Paginas/RUT.aspx f1f5d6bfc2ccab03
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion 095d436f7184c140
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/default.aspx e566a09da4916969
+OK https://www.dian.gov.co/tramitesservicios/tramites-y-servicios/Paginas/default.aspx 0a85cd8b829566d3
+OK https://muisca.dian.gov.co/WebArquitectura/DefLoginOld.faces 39d4fe51fb1966ee
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Habilitacion-y-recuperacion-de-cuenta-de-usuario-y-generacion-de-firma-electronica.aspx 650b298a743e9e97
+OK https://www.dian.gov.co/Contribuyentes-Plus/Paginas/Inicio.aspx 5fec58d2b8c48cbc
+OK https://salidademercancias.dian.gov.co/WebArquitectura/DefLogin.faces 41398003e146beb1
+OK https://webazure.dian.gov.co/importacionestemporales/validate-email c04ccc1e9e43a419
+OK https://certificadosdeorigen.dian.gov.co/Verifica/indexmex.php 6f8732fc6828cb37
+OK https://importacionescarga.dian.gov.co/WebArquitectura/DefLogin.faces 88b0ee1115c5f5c7
+OK https://transitoaduanero.dian.gov.co/WebArquitectura/DefLogin.faces 8bdc7e419a595091
+OK https://importaciones.dian.gov.co/ d4cf7ec3c14f003c
+OK https://muisca.dian.gov.co/WebArancel/DefMenuConsultas.faces 87b4b5c7e9aca9e7
+OK https://muisca.dian.gov.co/WebParametrizacion/DefSelProcesoTblsParametricas.faces 1bfc56d7fdb84225
+OK https://muisca.dian.gov.co/WebArancel/DefControlCupo.faces 5f372550e050dcc9
+OK https://muisca.dian.gov.co/WebRutMuisca/DefConsultaEstadoRUT.faces f976be9618e22f62
+OK https://muisca.dian.gov.co/WebArquitectura/DefPasswordRecuperacion.faces 257ddd8ab820cb39
+OK https://muisca.dian.gov.co/WebGestionmasiva/DefSelPublicacionesExterna.faces 4bb5f776eb826153
+OK https://muisca.dian.gov.co/WebArquitectura/DefLoginMb.faces a18e0406f59ded27
+OK https://devolucion.dian.gov.co/WebArquitectura/DefLogin.faces 372df5a91ec0812d
+OK https://muisca.dian.gov.co/WebRutMuisca/DefActualizarActividadesCIIU.faces f127e3ff22a80b45
+OK https://muisca.dian.gov.co/WebArquitectura/DefFormulariosGratuitos.faces 75bf2d1816d4f3a5
+OK https://www.dian.gov.co/impuestos/sociedades/ExogenaTributaria/Prevalidadores/Paginas/default.aspx f7bfdfead4229a65
+OK https://www.dian.gov.co/Transaccional/Paginas/Prevalidadores.aspx 7fdbfe2a828abc98
+OK https://www.dian.gov.co/atencionciudadano/PQSRD/Paginas/PQSR.aspx b776fbd8edc56782
+OK https://www.dian.gov.co/atencionciudadano/contactenos/Paginas/puntosdecontacto.aspx 88021af6670b679f
+OK https://www.dian.gov.co/atencionciudadano/PQSRD/Paginas/Denuncias-TAC.aspx 2400e3b41b6cf700
+OK https://www.dian.gov.co/atencionciudadano/PQSRD/Paginas/ITRC.aspx 5a28479b36ab82b5
+OK https://www.dian.gov.co/Documents/POLITICA_GENERAL_DE_SEGURIDAD_Y_PRIVACIDAD_DE_LA_INFORMACION.pdf d525414f802073d8
+OK https://www.dian.gov.co/Paginas/Privacidad.aspx c92f8b4ed5d5576e
+EMPTY https://www.dian.gov.co/normatividad/Normatividad/Circular-000001-de-25-01-2019.pdf
+OK https://www.dian.gov.co/Paginas/Notificaciones-Judiciales-Formulario.aspx 8d9e43dc2f97c6e3
+OK http://www.minhacienda.gov.co/ 7f2aaf6e8764e1a9
+OK https://www.dian.gov.co/dian/Paginas/Inicio.aspx d29df4b5c1d19efa
+OK https://www.dian.gov.co/fizcalizacioncontrol/Paginas/Inicio.aspx 1300f56691dce303
+OK https://www.dian.gov.co/Transaccional/Paginas/Transaccional.aspx ac30da9d605c626e
+OK https://www.dian.gov.co/dian/entidad/Paginas/Participa.aspx bec26bc313a73acc
+OK https://www.dian.gov.co/Prensa/Paginas/Inicio.aspx 4353c05126dc3de3
+EMPTY https://normograma.dian.gov.co/
+OK https://www.dian.gov.co/normatividad/Publicaciones-Juridicas/Paginas/DoctriFlash.aspx f46d4864c8b5baeb
+OK https://www.dian.gov.co/normatividad/Publicaciones-Juridicas/Paginas/Boletin-Actualidad-Juridica-DIAN.aspx f54359f2b6c6540a
+OK https://www.dian.gov.co/normatividad/Publicaciones-Juridicas/Paginas/Judiciales.aspx b4d43a3c1655685f
+OK https://www.dian.gov.co/normatividad/Documents/Manual-escritura-tributaria-version-para-comentarios.pdf a20a415713750c05
+OK https://www.dian.gov.co/normatividad/convenios/Paginas/ConveniosBilaterales.aspx e57c10e9859b513f
+OK https://www.dian.gov.co/normatividad/convenios/Paginas/ConveniosMultilaterales.aspx 24c4c8f9f35b48e3
+OK https://www.dian.gov.co/normatividad/convenios/Paginas/ConveniosInterinstitucionales.aspx ef4beab97afdf829
+OK https://www.dian.gov.co/normatividad/convenios/Paginas/ConveniosTributariosInternacionales.aspx 782b160678c7be51
+OK https://www.dian.gov.co/atencionciudadano/LMDP/Planeacion-Estrategia-y-Control/Tributacion-Internacional/Cartillas/CT-PEC-0106_E.pdf a1e605f0e1552af1
+OK https://www.dian.gov.co/atencionciudadano/LMDP/Planeacion-Estrategia-y-Control/Tributacion-Internacional/Cartillas/CT-PEC-0106_I.pdf 437d10b0cbc7461d
+OK https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_0085_2020.htm 2ee46baf93b9fa1f
+OK https://www.dian.gov.co/Paginas/Intercambio-Internacional-de-Informacion.aspx 573a7597818bba66
+OK https://www.dian.gov.co/normatividad/Paginas/normas.aspx 95608b3721d617c6
+OK https://www.dian.gov.co/normatividad/Paginas/Agenda-reglamentaria.aspx cba0903734d70e8a
+OK https://www.dian.gov.co/normatividad/Paginas/ProyectosNormas.aspx 040bffc18eb252ff
+OK https://www.dian.gov.co/normatividad/Paginas/Procesos-Judiciales-contra-Normas-y-Conceptos.aspx 13c8a7512e612a95
+OK https://www.dian.gov.co/Paginas/MapaDelSitio.aspx 0bdd173f55908641
+OK https://www.dian.gov.co/atencionciudadano/contactenos/Paginas/PuntosContacto.aspx c4de280851ba675c
+OK https://www.dian.gov.co/impuestos/Autorretenedores adbc5231d605cf80
+OK https://www.dian.gov.co/impuestos/Paginas/beneficios-de-la-ley-de-crecimento-2019.aspx c4d3e6c1f6d11a10
+OK https://www.dian.gov.co/normatividad/Documents/LEY_1943_28122018.pdf 4f489f4efc93c4e2
+OK https://www.dian.gov.co/impuestos/Paginas/RefTribuEstructu.aspx fa10d949f2643fde
+FAIL https://micrositios.dian.gov.co/ruta-de-la-formalizacion fetch failed
+OK https://www.dian.gov.co/impuestos/RUT fe7bcb5562f2cb53
+OK https://www.dian.gov.co/impuestos/RUB bb191b067993e045
+OK https://www.dian.gov.co/impuestos/Convocatoria-operadora-de-pagos-devolucion-de-IVA-a-turistas-extranjeros 36c7855bfb49667a
+OK https://www.dian.gov.co/Documents/Obligaciones-fiscales-de-los-partidos-politicos-2026.pdf 904d098da10496d9
+OK https://micrositios.dian.gov.co/renta-personas-naturales-ag-2024 090fa2431f1872ff
+OK https://www.dian.gov.co/impuestos/personas/Paginas/impuestosacargo.aspx 5d5a1bcd62507230
+OK https://www.dian.gov.co/impuestos/personas/Paginas/Historico-Renta-Personas-Naturales.aspx fd556057486a9c16
+OK https://www.dian.gov.co/impuestos/sociedades/Paginas/obligaciones.aspx 404b1248a2ed4152
+OK https://www.dian.gov.co/impuestos/sociedades/Paginas/impuestoacargo.aspx 223c4b4d2528bbfe
+OK https://www.dian.gov.co/impuestos/sociedades/Paginas/serviciosytramites.aspx bfb6b5586006c2dc
+OK https://www.dian.gov.co/impuestos/sociedades/ExogenaTributaria 108b3d6cfc7bbac9
+OK https://www.dian.gov.co/impuestos/sociedades/Regimen-Tributario-Especial-RTE 21ba7240b4267829
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Paginas/default.aspx 91846424c9e90c5e
+OK https://www.dian.gov.co/aduanas/Paginas/Beneficios-de-la-Ley-de-Retorno.aspx 909e5a135eb7239c
+OK https://www.dian.gov.co/aduanas/Paginas/Impuestos-Saludables.aspx 3e7e673ffd3e430a
+OK https://www.dian.gov.co/aduanas/Paginas/Reparto-Inspeccion-Aduanera.aspx 03d55584c2d6cbe1
+OK https://www.dian.gov.co/aduanas/Paginas/Declaracion-Especial-de-Importacion.aspx 069adae1d1ea5010
+OK https://www.dian.gov.co/aduanas/Documents/CT-COA-0125-VR1-2022.pdf f6377624dcbdc88b
+OK https://www.dian.gov.co/aduanas/Paginas/Consumo-de-Cupos-de-Vehiculos-Acuerdo-AC72-e-Hibridos.aspx 9dba35d24f9e81ff
+OK https://www.dian.gov.co/Viajeros-y-Servicios-aduaneros/Paginas/Modalidad-de-trafico-postal-y-envios-urgentes.aspx 658c2c081300e472
+OK https://www.dian.gov.co/Viajeros-y-Servicios-aduaneros/Paginas/Inicio.aspx 28d852f761afe554
+EMPTY https://www.dian.gov.co/Viajeros-y-Servicios-aduaneros/Documents/Infografia-Tips-Viajeros.pdf
+OK https://www.dian.gov.co/Viajeros-y-Servicios-aduaneros/Documents/Guia-para-que-sus-envios-a-Colombia-lleguen-sin-problemas.pdf 357e470900ffcb24
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Documents/ABC-Donaciones.pdf a9841d05b8f623b0
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Documents/ABC-Modalidad-Entregas-Urgentes.pdf dd98c4f527660d38
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Documents/ABC-Importacion-Franquicia-Diplomaticos.pdf 219ee21b6c715479
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Documents/ABC-Usuarios-Tramite-Simplificado.pdf 0203f583ba010008
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Documents/Abece-Importacion-Menaje-Domestico.pdf 4383034d04da670b
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Documents/Abece-Declaracion-Andina-de-Valor-DAV.pdf 8ccc708b368f405c
+OK https://www.dian.gov.co/aduanas/Documents/Abece-Diligencia-de-inspeccion-en-el-control-simultaneo.pdf 7af900a58b179413
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Documents/Abece-Nuevo-regimen-aduanero-v3.pdf cefeb6f9cd0022d6
+OK https://www.dian.gov.co/aduanas/Documents/Abece-Plasticos-un-solo-uso.pdf cb3de8504a85123f
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Documents/ABC-Aspectos-basicos-Exportacion.pdf 0393036b0af71bb6
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Documents/Paso-a-paso-Agencias-de-Aduanas-Suspendidas-o-Canceladas.pdf 1b917e9960833ace
+OK https://www.dian.gov.co/aduanas/Regimen-de-Aduanas/Documents/ABC-Dispositivos-trazabilidad-carga.pdf 07c6894ad822af2e
+OK https://www.dian.gov.co/aduanas/Paginas/solicitudes-dispositivos-electronicos-de-seguridad.aspx 927d5e1479497b06
+OK https://www.dian.gov.co/aduanas/Paginas/Estudio-de-tiempos-de-despacho-de-mercancias-.aspx d77d22c310f10ada
+OK https://www.dian.gov.co/aduanas/Documents/CT-COA-0148.pdf 0854e6aa9089c326
+OK https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000193%20de%2021-02-2025.pdf e9d02ace32d74de7
+OK https://www.dian.gov.co/normatividad/Decretos/Decreto-175-14022025.pdf 526b59961f48cfcf
+OK https://www.dian.gov.co/aduanas/Documents/Presentacion-Impuesto-Especial-para-el-Catatumbo.pdf ad95162068325f3c
+OK https://www.dian.gov.co/atencionciudadano/formulariosinstructivos/Formularios/2025/Formulario_690_2025.pdf 0f1061f8e6e4d8d2
+OK https://www.dian.gov.co/aduanas/Documents/ABC-Zona-Regimen-Aduanero-Especial-Region-Uraba-Tumaco-Guapi.pdf 461c6f036831f9a5
+OK https://www.dian.gov.co/aduanas/Documents/ABC-Zona-de-Regimen-Aduanero-Especial-Maicao-Uribia-Manaure.pdf eac6987fe7601154
+OK https://www.dian.gov.co/aduanas/Documents/ABC-Zona-Regimen-Aduanero-Especial-Leticia.pdf 442049ffbcb74aa0
+OK https://www.dian.gov.co/aduanas/Documents/ABC-Puerto-Libre-San-Andres-Providencia-y-Santa-Catalina.pdf 4094f52ee40f4abb
+OK https://www.dian.gov.co/aduanas/Paginas/Encuentros-Aduana-Empresa.aspx 54d1e65cd5d19b14
+OK https://www.dian.gov.co/aduanas/Paginas/Plan-Canguro-Exportador.aspx b94e65442d4484a5
+OK https://www.dian.gov.co/aduanas/Paginas/Centros-de-Excelencia.aspx 4f1c81b5139699cb
+OK https://www.dian.gov.co/aduanas/Paginas/Estrategia-Aduanas-Verdes.aspx 2526beeec3e97def
+OK https://www.dian.gov.co/aduanas/aspectecmercancias/Paginas/OrigenMercancias.aspx ced65fcba62d06ed
+OK https://www.dian.gov.co/normatividad/doctrina/Paginas/Tecnicaaduanera.aspx f8c258f508ed1257
+OK https://www.dian.gov.co/aduanas/Documents/Boletin-Arancelario-II-2025.pdf d1716bdb8258ffe2
+OK https://www.dian.gov.co/aduanas/Documents/Boletin-Arancelario-I-2025.pdf 28148f60c3826bc9
+OK https://www.dian.gov.co/aduanas/Documents/Abece-importacion-unidad-funcional.pdf f9c1a96f8cfac97c
+OK https://normograma.dian.gov.co/dian/compilacion/docs/decreto_1881_2021.htm 6bf118f3781fa1d9
+OK https://www.dian.gov.co/aduanas/aspectecmercancias/SARP/Paginas/Resoluciones-Anticipadas-de-Arancel.aspx 94ad524bb18788f8
+OK https://www.dian.gov.co/aduanas/Documents/Manual-clasificacion-arancelaria.pdf f6f366af7fb08798
+OK https://www.dian.gov.co/aduanas/Documents/Correlativas-Colombia-2022-2017.pdf 605378df1665d4cb
+OK https://www.dian.gov.co/aduanas/aspectecmercancias/valoracion_de_mercancias/Paginas/default.aspx b512c2479eeab8c7
+OK https://www.dian.gov.co/aduanas/opecomeexterior/Paginas/Usuarios-Aduaneros.aspx fa3ec28b0ee54384
+OK https://www.dian.gov.co/aduanas/opecomeexterior/Paginas/agenciaaduanera-.aspx 8c1fecfbab22b461
+OK https://www.dian.gov.co/atencionciudadano/infoconsulta/Paginas/Obligados-Aduaneros.aspx 59beabb36af20ab0
+OK https://www.dian.gov.co/aduanas/Documents/Abece-Regimen-Sancionatorio-Aduanero.pdf b4c701431b824528
+OK https://www.dian.gov.co/aduanas/Paginas/Contingencia-de-los-SIE-Aduaneros.aspx 095bc5a0aa358ab5
+OK https://www.dian.gov.co/Transaccional/Paginas/ServiciosAduaneros.aspx dce16e7826a6e458
+OK https://www.dian.gov.co/aduanas/Paginas/Modernizacion-de-la-Aduana.aspx c8d5b0e0eed601ca
+OK https://www.dian.gov.co/tramitesservicios/tramites-y-servicios/Paginas/tramites-aduaneros.aspx 443f9285e771690c
+OK https://www.dian.gov.co/dian/entidad/Paginas/FuncionariosDirectivos.aspx 3c5553ddf049ce26
+OK https://www.dian.gov.co/atencionciudadano/contactenos/Paginas/buzoneselectronicos.aspx dacfa78bb81a06a3
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Comunicacion-Publicacion-y-Notificaciones.aspx 677c928be49e5e5c
+OK https://www.dian.gov.co/fizcalizacioncontrol/Paginas/Sistema-de-Informacion-Denuncias-de-Fiscalizacion.aspx 58da3c64bb3e1049
+OK https://www.dian.gov.co/atencionciudadano/formulariosinstructivos/Paginas/default.aspx ada26d307ef0094f
+OK https://www.dian.gov.co/atencionciudadano/Documents/Carta-de-trato-digno-ciudadanos-2.pdf 1725abfba1f86a2a
+OK https://www.dian.gov.co/atencionciudadano/promesaservicio/Paginas/caracterinstituclientes.aspx 1172f97de05f5a68
+OK https://www.dian.gov.co/atencionciudadano/promesaservicio/Paginas/indicadores-generales-de-gestion.aspx f486d619902e97df
+OK https://www.dian.gov.co/atencionciudadano/promesaservicio/Documents/Politica-de-Servicio-DIAN.pdf 1d1920984dfd26e5
+OK https://www.dian.gov.co/atencionciudadano/promesaservicio/Documents/Lineamientos-Relacionamiento-con-el-ciudadano.pdf 79b9ab172322222c
+OK https://www.dian.gov.co/atencionciudadano/LMDP/Cercania-al-Ciudadano/Asistencia-al-Usuario/Cartillas/CT-CAC-0054.pdf 926b9cf62da840e8
+OK https://www.dian.gov.co/atencionciudadano/promesaservicio/Paginas/Procedimientos-para-la-Atencion-al-Ciudadano.aspx 8416fec0fe3d90ec
+OK https://www.dian.gov.co/atencionciudadano/infoconsulta/Paginas/PreguntasFrecuentes.aspx 35b9bc494d7b0f37
+OK https://www.dian.gov.co/atencionciudadano/infoconsulta/Atencin%20en%20Bancos/Atencion_en_bancos.pdf 6464843b21f34653
+OK https://www.dian.gov.co/atencionciudadano/infoconsulta/Paginas/estatutoaduanero.aspx b075355472476b88
+OK https://micrositios.dian.gov.co/cultura-de-contribucion 7bf924fde376959e
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Datos-Abiertos.aspx 61ec86001aaffd2d
+OK https://www.dian.gov.co/atencionciudadano/participacionciudadana/Paginas/estrategiaparticipacion.aspx 3cfcb9961d8e0180
+OK https://www.dian.gov.co/atencionciudadano/portal_de_ninos/Paginas/default.aspx 7a48d37128e567e9
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Convocatorias.aspx b2e6d9d8febcee23
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Entes-de-control-que-vigilan-al-sujeto-obligado-y-mecanismos-de-supervision.aspx 75d44f9cdc80dca3
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Plan-de-gasto-publico.aspx 39af6ce204d531aa
+OK https://www.supersociedades.gov.co/inicio afb513490621700a
+FAIL https://www.supersociedades.gov.co/web/guest/login HTTP 500
+OK https://www.supersociedades.gov.co/transparencia-y-acceso-a-la-informacion-publica 4ae742e7e4fe493c
+OK https://www.supersociedades.gov.co/atencion-y-servicios-a-la-ciudadania 160a1a86246b2ae1
+OK https://www.supersociedades.gov.co/tramites-opa-y-consulta-de-informacion 87c55562ff4aaaec
+OK https://www.supersociedades.gov.co/autoagendamiento-pida-una-cita 7eddae7054191498
+OK https://www.supersociedades.gov.co/canales-de-atencion a3dd389be0816cd7
+OK https://www.supersociedades.gov.co/canal-virtual a8abc9a0e2518b42
+OK https://www.supersociedades.gov.co/canal-de-correspondencia 4b4aa2d613ab5797
+OK https://www.supersociedades.gov.co/canal-presencial 743e03de38e701c6
+OK https://www.supersociedades.gov.co/canal-telefonico 2c664a077785752b
+OK https://www.supersociedades.gov.co/inicio_pqrsd 2eae4774d96b151d
+OK https://www.supersociedades.gov.co/notificaciones d61656bde9f0fdf4
+OK https://www.supersociedades.gov.co/preguntas-y-respuestas-frecuentes 0765bf4aedb8f72b
+OK https://www.supersociedades.gov.co/portal-de-pagos 3689193e6304638d
+OK https://www.supersociedades.gov.co/participa b9bb4b965ce1e8be
+OK https://www.supersociedades.gov.co/participacion-para-el-diagnostico-de-necesidades 7520acdd63be9bec
+OK https://www.supersociedades.gov.co/planeacion-y-presupuesto-participativo 9e7135e9860b5db1
+OK https://www.supersociedades.gov.co/consulta-ciudadana 2d206b014794de3c
+OK https://www.supersociedades.gov.co/colaboracion-e-innovacion-abierta 5b6a254d6bebcbc8
+OK https://www.supersociedades.gov.co/rendicion-cuentas-landing 6178449412c34a1d
+OK https://www.supersociedades.gov.co/control-social da0d4e86b7bc6f1b
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/quienes-somos 5c7e4c341970ecbb
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/despacho-del-superintendente 30ff04c3fb092909
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/estructura-organica ebaea4dd3c199b5f
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/funciones-y-deberes 1f25475c16e43be4
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/procesos-procedimientos-y-organigramas f0db2953340c7264
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/directorio-de-servidores-publicos-y-contratistas 49e09a68a6297699
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/directorio-de-entidades dc2fbb1d401a5fb5
+OK https://www.supersociedades.gov.co/documents/20122/9128797/ListadoAgremiacionesAsociaciones_GruposInteres.xlsx 3a178671b1acab22
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/oferta-empleo d6ec1461e54b30e2
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/acuerdos-de-gestion bf6ef879c9a9bece
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/gestion-del-rendimiento-laboral 2a84e4be5365d782
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/talento-humano cb53dbd89953d919
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/normativa 3df254dd7735354b
+OK https://www.supersociedades.gov.co/documents/107391/897146/Decreto-Unico-Reglamentario-Sectorial-1074-de-2015.pdf ed2048f532a67108
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/circulares-basicas-interactivas 6bacabdbfc2c0157
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/politicas-lineamientos-y-manuales 1deeb1981081eb08
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/proyectos-de-normatividad 01f4196abec263b6
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/presupuesto c1fc44893ef9e625
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/presupuesto-general 0fd0600ad4d532ee
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/estados-financieros-de-la-entidad c240ead3b19a6d25
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/ejecucion-presupuestal-historica-anual 178131e49a67dff7
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/cuentas-reciprocas 44635864d075a594
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/participacion-ciudadana-en-iniciativas-financieras 66a78221a21ffb3a
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/planeaci%C3%B3n f64ae577b427b4c1
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/programas-y-proyectos-en-ejecucion e819bab08e60e193
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/metas-objetivos-e-indicadores-de-gestion 0895eaabce682b20
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/informes-anuales fde4a334d7654702
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/arquitectura-empresarial 7563605607f69bff
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/planeacion-estrategica-y-dofa cedb97a361f92c08
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/plan-anticorrupcion-y-de-atencion-al-ciudadano 5a5736f82f79b1ef
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/sgi e29e79a7bdfae07d
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/control dc9ec91e4d60fc92
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/control-interno 013cad08af6ec5c6
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/informes-de-gestion-evaluacion-y-auditoria 1a56398471265396
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/planes-de-mejoramiento 66d409633f0e9f43
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/entes-de-control-que-vigilan-a-la-superintendencia-y-mecanismos-de-supervision 4779ce0fa2852b89
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/defensa-judicial b7e2bd93b6e11bed
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/informacion-para-la-poblacion-vulnerable 0bee12be2ba60ef3
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/contratacion 0bd2b33c693033c8
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/Gestion-contractual ede8a48fd8c7164a
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/avisos-de-convocatorias-publicas 10e331782bdca0d1
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/normativa-en-materia-de-adquisiciones e53d5764f94697e9
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/plan-anual-de-adquisiciones ab028add30c35a44
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/bienes-tItulo-gratuito d839fa1913f866ee
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/radicacion-tramites-internos ddfd2b3872c4b6cc
+OK https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/objetivos 788baa4549cee47b
+OK https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/estructura be1336210b0f45e3
+OK https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/funciones ae5244b8afe3f532
+OK https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/auxiliares-de-la-justicia 3ad3cf701ab5b6df
+OK https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/avisos-landing 4a6e2c5c9bacc6a7
+OK https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/informes-pbi bee5d509ef7ecbc7
+OK https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/informes-de-procesos-de-insolvencia-en-juzgados ab9ca085cba7e502
+FAIL https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/m%C3%B3dulo-de-insolvencia fetch failed
+OK https://www.supersociedades.gov.co/procedimientos-mercantiles f7fa518fc1eaedac
+OK https://www.supersociedades.gov.co/web/procedimientos-mercantiles/como-litigar-ante-la-delegatura da8f67c142aaf8c8
+OK https://www.supersociedades.gov.co/web/procedimientos-mercantiles/avisos-de-procesos-especiales 2a7c8894a2f5df47
+FAIL https://servicios.supersociedades.gov.co/barandaVirtual fetch failed
+OK https://www.supersociedades.gov.co/calendario_de_audiencias 56326dedadc49b51
+OK https://www.supersociedades.gov.co/web/procedimientos-mercantiles/estructura db61edf8ed845c5f
+FAIL https://expediente.supersociedades.gov.co/Paginas/Home.aspx fetch failed
+OK https://www.supersociedades.gov.co/web/procedimientos-mercantiles/funciones 1eca8cea7286398c
+OK https://www.supersociedades.gov.co/web/procedimientos-mercantiles/instrucciones-y-modelos-para-presentar-demandas 7e57f0b26b3c8f2a
+OK https://www.supersociedades.gov.co/web/procedimientos-mercantiles/objetivo bb82963cc0024e1c
+FAIL https://tesauro.supersociedades.gov.co/ fetch failed
+OK https://www.supersociedades.gov.co/web/procedimientos-mercantiles/pautas-legales-tesauro 7c25d59afc39181e
+OK https://www.supersociedades.gov.co/supervision-societaria d40a0f9459c390d1
+OK https://www.supersociedades.gov.co/web/supervision-societaria/objetivo bb1e3ea4ec068e13
+OK https://www.supersociedades.gov.co/web/supervision-societaria/estructura d55f8f0a9be3686b
+OK https://www.supersociedades.gov.co/web/supervision-societaria/funciones 9cdc56483c8ca8e5
+OK https://www.supersociedades.gov.co/solucion-de-conflictos-societarios 32a0375f2fe642e5
+OK https://www.supersociedades.gov.co/web/supervision-societaria/avisos-y-otros 3706796b82b0077a
+OK https://www.supersociedades.gov.co/web/asuntos-economicos-societarios e9ffa8b2fd5473ce
+OK https://www.supersociedades.gov.co/web/asuntos-economicos-societarios/objetivo f891565126309ee9
+OK https://www.supersociedades.gov.co/web/asuntos-economicos-societarios/estructura 0370ccad0a4a094c
+OK https://www.supersociedades.gov.co/web/asuntos-economicos-societarios/funciones 8440945b11681c4c
+OK https://www.supersociedades.gov.co/web/asuntos-economicos-societarios/informes-de-estudios-empresariales 265c0de608217d5c
+OK https://www.supersociedades.gov.co/web/asuntos-economicos-societarios/denuncias-soborno-trasnacional a035d7622f3ec227
+OK https://www.supersociedades.gov.co/web/asuntos-economicos-societarios/normatividad 4448fe559a004c5a
+OK https://www.supersociedades.gov.co/web/intervencion-y-asuntos-financieros-especiales/objetivo d12a37eef618824b
+OK https://www.supersociedades.gov.co/web/intervencion-y-asuntos-financieros-especiales/estructura 95aa3e6530b257ba
+OK https://www.supersociedades.gov.co/web/intervencion-y-asuntos-financieros-especiales/funciones 51d9a4cf096ff235
+OK https://www.supersociedades.gov.co/web/intervencion-y-asuntos-financieros-especiales/publicaciones 8693f13883a4f4e8
+OK https://www.supersociedades.gov.co/web/intervencion-y-asuntos-financieros-especiales/avisos 8d3bb86a0497d42a
+OK https://www.supersociedades.gov.co/doctrina 5f26e8e5e869ef74
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/conceptos-contables ed6aee17d32bfca1
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/conceptos-juridicos 894190a6587080bf
+OK https://www.supersociedades.gov.co/jurisprudencia 1e8d3f56daff8b6e
+OK https://www.supersociedades.gov.co/web/procedimientos-mercantiles/jurisprudencia-mercantiles cdd9d8468fba555f
+OK https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/jurisprudencia-insolvencia 9ca8644ea4668c60
+OK https://www.supersociedades.gov.co/proyecto-centro-estudios-societarios_v2 25aaedbc765a906b
+OK https://www.supersociedades.gov.co/zona-transaccional b3e417bacb9e0ae9
+OK https://www.supersociedades.gov.co/noticias 45390b1ce0796159
+OK https://www.supersociedades.gov.co/boletines-conceptos-juridicos 9e86d948b1db34a9
+OK https://www.supersociedades.gov.co/es/noticias-supersociedades/-/asset_publisher/atwl/content/supersociedades-advierte-retos-de-sostenibilidad-y-brechas-regionales-en-el-sistema-cameral-colombiano?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_atwl_assetEntryId=9850633&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_atwl_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Fes%2Fnoticias-supersociedades%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_atwl%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_atwl_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_atwl_assetEntryId%3D9850633 a005829eeb7a060e
+OK https://www.supersociedades.gov.co/documents/20122/9829447/LIBRO%20PRONUNCIAMIENTOS%202026.pdf/17f0ea16-e9ba-3162-1f9e-6a8598ee9399?t=1778778593141 e8d82461b7dce301
+OK https://www.supersociedades.gov.co/documents/20122/9782370/jpg-judicatura-PASANTES-2005.jpg/c7577b4b-cf56-0cc1-c0e6-97cefd02c00f?t=1779310741048 847ab16ad68e737b
+OK https://www.supersociedades.gov.co/documents/20122/9782370/mailing-30JUNIO.jpg/f01145fe-1653-9b55-6f61-1991453b00ee?t=1778873603487 f0b342990c547852
+OK https://www.supersociedades.gov.co/servicios-digitales 541e20dee0cde34f
+OK https://supersociedades.gov.co/web/guest/proyecto-centro-estudios-societarios_v2 6fb6646eed6f6568
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/intendencias-regionales eccc2bf230265f7a
+OK https://www.supersociedades.gov.co/web/asuntos-economicos-societarios/grupo-de-estudios-empresariales e4063650f2c08cb6
+OK https://www.supersociedades.gov.co/documents/80312/330927/Calendario-No-Financieros-corte-2025.pdf/b4b17fc8-c6c4-20ea-e447-afc34664c5ae a00c79c7ded5e4cb
+OK https://www.supersociedades.gov.co/empresas d0ec9ae4053c3fd3
+OK https://www.supersociedades.gov.co/es/web/supervision-societaria/supervision-camaras-de-comercio b60acd3ec4171e13
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/sostenibilidad 84482e90f630326e
+OK https://www.supersociedades.gov.co/es/web/asuntos-economicos-societarios/denuncias-soborno-transnacional 5a6419e1f8c0ba2b
+OK https://www.supersociedades.gov.co/audiencias-virtuales 0e6eea7f8fa4bbdd
+OK https://www.supersociedades.gov.co/web/asuntos-economicos-societarios/estados-financieros-2025 0586d15d101d8cab
+OK https://www.supersociedades.gov.co/web/nuestra-entidad/efr 687d9ffa20ec08ec
+OK https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/medidas-especiales-en-materia-de-insolvencia 6401dac19980b09d
+OK https://www.supersociedades.gov.co/web/procedimientos-de-insolvencia/modulo-de-insolvencia-mi 65b9c33ea6a17260
+OK https://www.supersociedades.gov.co/runf e8103dfb37222e4f
+FAIL https://siis.ia.supersociedades.gov.co/ fetch failed
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/ebyn/content/superintendencia-de-sociedades-reconoce-providencias-extranjeras-y-autoriza-grav%C3%A1menes-prioritarios-en-el-proceso-de-canacol?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_assetEntryId=9858024&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_assetEntryId%3D9858024 1c37901b2658e979
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/ebyn/content/supersociedades-advierte-retos-de-sostenibilidad-y-brechas-regionales-en-el-sistema-cameral-colombiano?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_assetEntryId=9850633&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_assetEntryId%3D9850633 61cfab2db9ca0568
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/ebyn/content/supersociedades-formula-cargos-a-la-sociedad-extranjera-bre-colombia-hydro-holdings-l.p.-matriz-de-isagen-s.a.-e.s.p.-por-no-revelar-oportunamente-el-control?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_assetEntryId=9846278&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_assetEntryId%3D9846278 76f40130ac72d40e
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/ebyn/content/superintendencia-de-sociedades-confirm%C3%B3-acuerdo-de-reorganizaci%C3%B3n-de-la-sociedad-luis-eduardo-caicedo-s.a.-lec-lee-?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_assetEntryId=9844862&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_assetEntryId%3D9844862 bf11645dabd6ede0
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/ebyn/content/supersociedades-presenta-informe-sobre-grupos-empresariales-y-sociedades-colombianas-controlados-por-matrices-extranjeras?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_assetEntryId=9830067&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_ebyn_assetEntryId%3D9830067 b3c44c62b629bb67
+OK https://www.supersociedades.gov.co/web/guest/noticias ee68b26bbeb4547b
+OK https://www.supersociedades.gov.co/calendario-de-eventos 6c33f298743e02c3
+OK https://www.supersociedades.gov.co/web/guest/ley-de-proteccion-de-datos 65ec9ddfd828ba7c
+OK https://superwas.supersociedades.gov.co/ActualizacionDatosSociedades/loginNaturales.jsp 38a45b34ddbf0e65
+OK https://superwas.supersociedades.gov.co/ActualizacionDatosSociedades/login.jsp 67747b265c453d1b
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/osdr/content/presentaci%C3%B3n-del-informe-de-c%C3%A1maras-de-comercio?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_assetEntryId=9858668&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_assetEntryId%3D9858668 b292fe7487a599b0
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/osdr/content/grupos-empresariales-y-sociedades-en-colombia-controlados-por-matrices-extranjeras?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_assetEntryId=9839440&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_assetEntryId%3D9839440 b028a121b9b5545f
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/osdr/content/reformas-estatutarias-principales-causas-y-soluciones-pr%C3%A1cticas?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_assetEntryId=9839428&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_assetEntryId%3D9839428 60af3fd2d1c830f9
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/osdr/content/capacitaci%C3%B3n-presentaci%C3%B3n-del-informe-67-sociedades-bic-corte-a-31-de-diciembre-del-2025?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_assetEntryId=9839416&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_assetEntryId%3D9839416 e34f68e6e7fa9299
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/osdr/content/seminario-administraci%C3%B3n-responsable-deberes-y-alertas-financieras?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_assetEntryId=9796836&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_osdr_assetEntryId%3D9796836 c14d6f507052a773
+OK https://www.supersociedades.gov.co/web/guest/videos1 ae7d154cacef2324
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/eptc/content/vi-congreso-de-derecho-societario-y-comercial?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_assetEntryId=9858623&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_assetEntryId%3D9858623 9a0823600558be91
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/eptc/content/balance-y-desempe%C3%B1o-financiero-de-las-c%C3%A1maras-de-comercio-en-colombia?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_assetEntryId=9858611&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_assetEntryId%3D9858611 e0ac62bf536fd157
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/eptc/content/supersociedades-y-supertransporte-fortalecen-alianza-contra-la-corrupci%C3%B3n-y-el-lavado-de-activos?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_assetEntryId=9858599&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_assetEntryId%3D9858599 b0fc18bb4a2eeb4d
+OK https://www.supersociedades.gov.co/inicio/-/asset_publisher/eptc/content/promoci%C3%B3n-de-empresas-en-pasto-2?_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_assetEntryId=9846613&_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_redirect=https%3A%2F%2Fwww.supersociedades.gov.co%2Finicio%3Fp_p_id%3Dcom_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc%26p_p_lifecycle%3D0%26p_p_state%3Dnormal%26p_p_mode%3Dview%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_cur%3D0%26p_r_p_resetCur%3Dfalse%26_com_liferay_asset_publisher_web_portlet_AssetPublisherPortlet_INSTANCE_eptc_assetEntryId%3D9846613 71f7d76d803086bc
+OK https://www.supersociedades.gov.co/web/sitiokids a43226d37d5a2e7c
+OK https://www.supersociedades.gov.co/web/asuntos-economicos-societarios/construccion-conjunta ee96d7e52e14fc43
+FAIL https://www.jcc.gov.co/ fetch failed
+FAIL https://servicios.supersociedades.gov.co/barandavirtual fetch failed
+OK https://www.supersociedades.gov.co/denuncias 447a8bbb01014c4e
+OK https://www.supersociedades.gov.co/web/guest/inicio_pqrsd 096de9d493f57240
+OK https://www.supersociedades.gov.co/chat a76c1d4bcd00f939
+OK https://www.supersociedades.gov.co/glosario 04fc84fa75cf1440
+OK https://www.supersociedades.gov.co/politicas-de-seguridad-de-la-informacion-y-proteccion-de-datos-personales 0102ea351d5eeae2
+OK https://www.supersociedades.gov.co/mapa_del_sitio abeec980c79a70f6
+FAIL https://www.dian.gov.co/_layouts/15/listform.aspx?ListId=%7BDB3D2604%2DC554%2D4072%2DBE48%2DAC9789C533E9%7D&PageType=0 HTTP 403
+OK https://www.dian.gov.co/Prensa/Paginas/Noticias.aspx 4b413dd466af4d12
+OK https://www.dian.gov.co/Transaccional 911b201b9bccb2b5
+FAIL https://micrositios.dian.gov.co/sistema-de-facturacion-electronica/calendario fetch failed
+OK https://www.dian.gov.co/Paginas/AgendaEventos.aspx de694eb75a2bacc1
+OK https://www.dian.gov.co/impuestos/RUT/Paginas/Consultas-RUT.aspx 0cbee79e1cbb6115
+OK https://www.dian.gov.co/Transaccional/Paginas/Prevalidadores-Informacion-Tributaria.aspx 6038f641a345adc5
+OK https://www.dian.gov.co/normatividad/Paginas/Resolucion-000227-del-23092025.aspx 1b4d37edf7c69a9e
+OK https://www.dian.gov.co/aduanas/aspectecmercancias/Paginas/TemasInteres.aspx b9e9aaa24b910d27
+OK https://www.dian.gov.co/Prensa/Paginas/NG-Comunicado-de-Prensa-070-2026.aspx 7af6074e234b77b6
+FAIL https://normograma.dian.gov.co/index.html HTTP 404
+FAIL https://normograma.dian.gov.co/compilacion/herramientas_busqueda.html HTTP 404
+FAIL https://normograma.dian.gov.co/compilacion/novedades_boletines.html HTTP 404
+FAIL https://normograma.dian.gov.co/compilacion/tributario.html?q=TRIBUTARIO HTTP 404
+FAIL https://normograma.dian.gov.co/compilacion/aduanero.html?q=ADUANERO HTTP 404
+FAIL https://normograma.dian.gov.co/compilacion/cambiario.html?q=CAMBIARIO HTTP 404
+FAIL https://normograma.dian.gov.co/compilacion/normatividad_institucional_dian.html?q=INSTITUCIONAL HTTP 404
+FAIL https://normograma.dian.gov.co/compilacion/enlaces_aux_DIAN.html HTTP 404
+FAIL https://normograma.dian.gov.co/compilacion/control_versiones.html HTTP 404
+FAIL https://normograma.dian.gov.co/compilacion/creditos.html HTTP 404
+OK https://www.dian.gov.co/atencionciudadano/contactenos/Paginas/PqrsDenuncias.aspx ec6d65858e2220d2
+FAIL https://www.dian.gov.co/normatividad/Normatividad/Circular%20000001%20de%2025-01-2019.pdf HTTP 404
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Transparencia-2018-2024.aspx 462e0741e82522bf
+OK https://www.dian.gov.co/dian/entidad/Documents/Certificado-Accesibilidad_2025_DIAN.pdf ea09118cf4b229f1
+EMPTY https://www.dian.gov.co/dian/entidad/MisionVision/Mision-Vision-2024-2026.pdf
+OK https://www.dian.gov.co/dian/entidad/Paginas/Presentacion.aspx cc71b45b7bef5db1
+OK https://www.dian.gov.co/dian/entidad/Paginas/Organigrama.aspx 49b905df0df9d156
+OK https://www.dian.gov.co/dian/entidad/Paginas/mapaprocesos.aspx f0c924c8cfd194cb
+OK https://www.dian.gov.co/atencionciudadano/Documents/1-3-Procedimientos-30042026.xlsx 7f354e5b14ed51bc
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Listado-maestro-de-documentos-publicos.aspx cfd14069e0391c3a
+OK https://www.dian.gov.co/atencionciudadano/Documents/Matriz-de-Riesgos-de-Corrupcion-DIAN-2026.xlsx ccb5f8985b820e9c
+OK https://www.dian.gov.co/atencionciudadano/Documents/Matriz-de-Riesgos-de-Corrupcion-DIAN-2025.xlsx 4a28b15e47d07a32
+OK https://www.dian.gov.co/atencionciudadano/Documents/Contratistas_DIAN_2025.xlsx bacc3aeb0acf2f58
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Directorio-de-entidades-adscritas.aspx 795beee54a87f5e9
+OK https://www.dian.gov.co/dian/entidad/Paginas/Directorio-de-agremiaciones-o-asociaciones.aspx a8f82ffe88658976
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Evaluacion-de-la-Calidad-del-Servicio.aspx 6c63fbeb179ddfa7
+OK https://www.minhacienda.gov.co/normativa/decreto-unico-regulatorio-en-materia-tributaria 721362af8afb2842
+OK https://www.dian.gov.co/dian/entidad/Documents/Politica-de-Gestion-de-Riesgos-DIAN.pdf daf54f1443755dc0
+OK https://www.dian.gov.co/dian/entidad/Paginas/Manual_de_Funciones_2020_2022.aspx d23a57dc8f343724
+OK https://www.dian.gov.co/dian/entidad/MisionVision/Codigo-de-Buen-Gobierno-DIAN.pdf e17f394d44f3eca0
+OK https://www.minhacienda.gov.co/normativa/agenda-regulatoria-2025 fa003e4d2193f2c7
+OK https://www.dian.gov.co/dian/contratacion/Paginas/ProcesosSecop.aspx 1a66dbb267ae68bf
+OK https://www.dian.gov.co/dian/contratacion/Paginas/ContrataciondelasvigenciasAnteriores.aspx 2d5b56d1877985a5
+OK https://www.dian.gov.co/dian/contratacion/Paginas/Contrataciondelavigencia.aspx 077bc9ae63661a8b
+OK https://www.dian.gov.co/dian/contratacion/Contratacion/MN-ADF-0013.pdf ab52b9ba358c727f
+OK https://www.dian.gov.co/dian/presupuestos/Paginas/Presupuesto-General-Asignado.aspx f0ef99716d85c7b0
+OK https://www.dian.gov.co/dian/presupuestos/Paginas/Ingresos.aspx 362fbe33608ccd3c
+OK https://www.dian.gov.co/dian/presupuestos/Paginas/Historico.aspx 7334d248862abd75
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Planes-Institucionales-2026.aspx afcaa5d8c83ea8ff
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Planes-Institucionales-2025.aspx 14e22e714631dcdd
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Planes-Institucionales-2024.aspx fb6d3c85b57b3ece
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/Plan-de-Accion-DIAN-2025-V1-31ENE2025.xlsx 088f51c21cdf4222
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/Plan-Estrategico-Institucional-2026-V3.pdf d10e6480985a75b7
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/Plan-Estrategico-Institucional-2026-V2.pdf fc09da0e75ff8882
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/Plan-Estrategico-Institucional-2026-V1.pdf ecf88d1eb4d8057e
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/0-Planeacion-Estrategica-2023.pdf 5fd80e6bd02184e8
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/7-Planeacion-Estrategica-2024-V2-septiembre-2024.pdf c650a2a8bf4e4436
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/7-Planeacion-Estrategica-2024-Documento-descriptores-elementos-de-la-planeacion-V1-septiembre-2022.pdf e66ced25d7c3138e
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/7-Plan-Estrategico-Institucional-2024.pdf da210eee7fee8d3d
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/8-Plan-Estrategico-Institucional-2025-V1.pdf 1ca28375527f53bf
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/16-Plan-Estrategico-de-Talento-Humano-2025.pdf d22282c882152c33
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/Modelo-de-Gestion-Institucional-DIAN.pdf b3033783017b666b
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/Contexto-Estrategico-DIAN-2025.pdf 57b9e3719a8be806
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/Plan-Estrategico-Sectorial-2023-2026-VF-2026.xlsx 3b0b5f7ed8045f50
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/Plan-Estrategico-Sectorial-2023-2026-VF-2025.xlsx 48abce931c7f6c42
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/Plan-Estrategico-Sectorial-2024.pdf fe40ec3b3dd7f3f3
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/Plan-Estrategico-Sectorial-2023.pdf abf3ab8d3c4472ff
+OK https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/8-Plan-de-Sistema-de-Gestion-de-Seguridad-y-Salud-en-el-trabajo-2025.pdf 6167ede3a349cb8f
+EMPTY https://www.dian.gov.co/dian/entidad/PlanEvalInstitucional/8-1-Anexo1-Plan-de-Trabajo-Anual-en-Seguridad-y-Salud-en-el-trabajo-2025.pdf
+OK https://www.dian.gov.co/atencionciudadano/Documents/Rendicion-de-Cuentas-del-SGSS-DIAN-2024.pdf 26572ca8595cdffc
+OK https://www.dian.gov.co/dian/entidad/Paginas/Planeacion.aspx d9db767d38d9ff89
+OK https://www.dian.gov.co/dian/entidad/Paginas/Evaluacion.aspx 65b68e4855846873
+OK https://www.dian.gov.co/dian/entidad/Acta%20Informes%20de%20Gestin/ACTA_IG_2024_2025.pdf de044a300b737459
+OK https://www.dian.gov.co/dian/entidad/Acta%20Informes%20de%20Gestin/ACTA_IG_2022_2024.pdf 3b4513e250dd51b1
+OK https://www.dian.gov.co/atencionciudadano/Documents/Informe-de-Gestion-DIAN-2025-30012026-V2.pdf 5e157aeef304249a
+OK https://www.dian.gov.co/atencionciudadano/Documents/INFORME-DE-GESTION-DIAN-2025-VFinal-24ENE2025.pdf 541447900c975236
+OK https://www.dian.gov.co/atencionciudadano/Documents/Informe-evaluacion-estrategia-participacion-ciudadana-DIAN-2024.pdf fc1c875044f367e9
+OK https://www.dian.gov.co/atencionciudadano/Documents/4-7-2-Acuse-de-Aceptacion-de-Rendicion-CGR.pdf f5062ecf6f1ea65e
+OK https://www.dian.gov.co/dian/entidad/Paginas/PlaneacionEvaluacionInstitucional.aspx 30f86f4d13fdf6eb
+OK https://www.dian.gov.co/dian/rendicioncuentas/Paginas/Historico-rendicion-cuentas-DIAN.aspx 18592098c4e360cb
+OK https://www.dian.gov.co/dian/entidad/EvaluacionInstitucional/Informe-de-Rendicion-de-Cuentas-PAZ-2025.pdf 5aa1045f00af8c31
+OK https://www.dian.gov.co/dian/rendicioncuentas/SistemaControlInterno/Informe-Seguimiento-PM-CGR-31122024.pdf d97b7e457ede889a
+OK https://www.dian.gov.co/dian/rendicioncuentas/SistemaControlInterno/Informe-Seguimiento-PM-CGR-30062025.pdf 7b36f46a6c8b653e
+OK https://www.dian.gov.co/dian/entidad/Paginas/PlanesMejoramiento.aspx 50f73242a6464f71
+OK https://www.dian.gov.co/atencionciudadano/Documents/Informe-final-plan-de-choque-contra-la-evasion-y-el-contrabando-2024.pdf 53fc3c626e01cc19
+OK https://www.dian.gov.co/dian/rendicioncuentas/Paginas/InformescontrolInterno.aspx 8f267cb33b5d4ec0
+OK https://www.dian.gov.co/atencionciudadano/Documents/7_6_Certificacion_actividad_litigiosa_del_estado_30062024.pdf 14761b49f0c2da98
+OK https://www.dian.gov.co/atencionciudadano/Documents/4-9-1-Informe-sobre-demandas-contra-la-entidad.pdf cdf29b6aa874a292
+OK https://normograma.dian.gov.co/dian/compilacion/docs/resolucion_dian_11016_2023.htm e618b52f2c31c1bd
+OK https://www.dian.gov.co/atencionciudadano/Documents/4-9-4-Informe-de-Gestion-del-CCDJ.pdf f3b383f8f428f543
+OK https://www.dian.gov.co/atencionciudadano/contactenos/Paginas/Registro-Publico-PQSR-y-Denuncias.aspx 8e2df3190ad09004
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Registro-de-activos-de-informacion.aspx 9ba05b7e2399f60a
+OK https://www.dian.gov.co/atencionciudadano/Paginas/Indice-de-informacion-clasificada-y-reservada.aspx e1a29693344ebd08
+OK https://www.dian.gov.co/atencionciudadano/Documents/10_4._Esquema_de_Publicacion_de_Informacion.xlsx f30c34c6a648c4f4
+OK https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000033%20de%2008-06-2017.pdf 790ef5168aa2eb07
+OK https://www.dian.gov.co/atencionciudadano/Documents/7-1-5-Programa-de-Gestion-Documental-PGD.pdf af2c2bddc45de638
+EMPTY https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000222%20de%2006-08-2025.pdf
+OK https://www.dian.gov.co/dian/entidad/Paginas/GDocumental.aspx f04a64db5995c9a2
+EMPTY https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000200%20de%2019-03-2025.pdf
+OK https://www.dian.gov.co/atencionciudadano/Documents/Modelo-de-requisitos-gestion-de-documentos-electronicos.pdf b8bc3ea44259ed6e
+OK https://www.dian.gov.co/dian/entidad/Paginas/Informacion-para-mujeres.aspx 1b8dcc21ff6ca92e
+OK https://www.dian.gov.co/Contadores_Sancionados_DIAN/Contadores_Sancionados_por_la_DIAN_y_UAE_JCC_20_08_2025.pdf 9b03b586aaa4889b
+OK https://www.dian.gov.co/Proveedores_Ficticios/Proveedores-Ficticios-20-08-2025.pdf accefd9851695557
+OK https://www.dian.gov.co/atencionciudadano/portal_de_ninos/Videojuego_MisionC 8fef336726d90dbb
+OK https://www.dian.gov.co/atencionciudadano/portal_de_ninos/Semilleros_de_legalidad/Paginas/default.aspx 67b6048896ed9e6d
+EMPTY https://misionc.dian.gov.co/
+OK https://www.dian.gov.co/Calendarios/Calendario_Tributario_2026.pdf db20d31547a51e6b
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-junio-2026.aspx 71efd33f140fcce7
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-mayo-2026.aspx 65f56703b4edf223
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-abril-2026.aspx 0118b8532af4af47
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-marzo-2026.aspx a1e58467c2e3bbbc
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-febrero-2026.aspx d0c5e8e6c6284ba6
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-enero-2026.aspx 46138bac4b8261c3
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-diciembre-2025.aspx 6bea75db0efb9ad1
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-noviembre-2025.aspx 381feb0bf2ffda22
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-octubre-2025.aspx 16225ad911d3e9ea
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-septiembre-2025.aspx 6a07796162f37963
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-agosto-2025.aspx 93f363eff42fb5df
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-julio-2025.aspx a1af54b79dbc53fc
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-junio-2025.aspx 80422c3eaaa2e0d4
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-mayo-2025.aspx 9776807f3d78ffdf
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-abril-2025.aspx fc2dff6deeb8301d
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-marzo-2025.aspx d461e6d0704e2692
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-febrero-2025.aspx 114e40bc2534baae
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-enero-2025.aspx e191bad8043b95b6
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-diciembre-2024.aspx 17e54e4144b3f5d5
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-noviembre-2024.aspx a21ee95ab2d5f986
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-octubre-2024.aspx 22e1f5d99dba09b0
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-septiembre-2024.aspx 0d858c43b97cd0bb
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-agosto-2024.aspx d5daaeb2b2c5488d
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-julio-2024.aspx 292d2b9328490d95
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-junio-2024.aspx eccc9f696422af5e
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-mayo-2024.aspx e4f5895784ace75e
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-abril-2024.aspx 26eaa4d373cf5bf2
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-marzo-2024.aspx c28fd49744dcc766
+OK https://www.dian.gov.co/Paginas/Vencimientos-tributarios-febrero-2024.aspx 87d023592a51f0ae
+OK https://www.dian.gov.co/Calendarios/Calendario-GMF-2025.pdf 73bb14ae24760661
+EMPTY https://www.dian.gov.co/Calendarios/Calendario-GMF-2024.pdf
+OK https://www.dian.gov.co/Paginas/HistoricoCalendarios.aspx 0054a2ef8bc67098
+OK https://www.dian.gov.co/Calendarios/Calendario-Cambiario-2026.pdf 69b80036db5b3657
+OK https://www.dian.gov.co/Calendarios/Calendario_cambiario_2024.pdf 5e516ed93011835a
+OK https://www.dian.gov.co/Calendarios/Calendario_cambiario_2023.pdf fd1b635b74d1a03b
+OK https://www.dian.gov.co/atencionciudadano/Agendamiento-de-Citas 0c12c3770fe22b27
+OK https://www.dian.gov.co/atencionciudadano/Agendamiento-de-Citas/Paginas/Generalidades.aspx 4fb436b824f1ad75
+OK https://www.dian.gov.co/atencionciudadano/Agendamiento-de-Citas/Paginas/Atencion-presencial.aspx e50a2d5d99b85260
+OK https://www.dian.gov.co/atencionciudadano/Agendamiento-de-Citas/Paginas/Atencion-no-presencial.aspx 5a71e1a9de3b7fad
+FAIL https://agendamiento.dian.gov.co/ HTTP 400
+OK https://www.dian.gov.co/tramitesservicios/Tramites_Impuestos/RUT/Documents/Actualiza_RUT_2020.pdf 164a20782d9192ef
+OK https://www.dian.gov.co/atencionciudadano/Seguridad-de-la-Informacion daf7c213510bb399
+OK https://www.dian.gov.co/atencionciudadano/Seguridad-de-la-Informacion/Paginas/Proteccion-de-datos-personales.aspx 00cc15248494e827
+OK https://www.dian.gov.co/atencionciudadano/Seguridad-de-la-Informacion/Paginas/Verificacion-de-correos.aspx 02629e926e329622
+OK https://www.dian.gov.co/atencionciudadano/Seguridad-de-la-Informacion/Paginas/Ciberseguridad.aspx c9540e7ba5205c4a
+OK https://www.dian.gov.co/atencionciudadano/Seguridad-de-la-Informacion/Paginas/Preguntas-frecuentes.aspx 69069178ec1cd977
+OK https://www.dian.gov.co/atencionciudadano/Seguridad-de-la-Informacion/Paginas/Videos.aspx c1270254bf59a446
+OK https://www.dian.gov.co/atencionciudadano/PQSRD d4dd3c09ac518a59
+OK https://pqrsportal.dian.gov.co/ 1c7fcb1d78b18d56
+OK https://muisca.dian.gov.co/WebDenunciasfiscalizacion/paginas/DerechosDeberesDenunciante.xhtml 743b41622b86a7cd
+OK https://www.dian.gov.co/impuestos/Documents/Abece-facilidades-de-pago.pdf 4e59f206720ece72
+OK https://www.dian.gov.co/tramitesservicios/tramites-y-servicios/tributarios/Paginas/tramites-tributarios.aspx 84008fded59c33f4
+OK https://www.dian.gov.co/Prensa/Paginas/NG-Comunicado-de-Prensa-015-2025.aspx 9d87955480d20213
+OK https://www.dian.gov.co/Prensa/Paginas/NG-Comunicado-de-Prensa-020-2025.aspx 74a313a8408fd5be
+OK https://www.dian.gov.co/Prensa/Paginas/NG-Comunicado-de-Prensa-037-2025.aspx aca8ca6391825e67
+OK https://www.dian.gov.co/Prensa/Paginas/NG-Comunicado-de-Prensa-067-2025.aspx 227fb68656be64ca
+OK https://catalogo-vpfe-hab.dian.gov.co/ c2f929e1755b8186
+OK https://catalogo-vpfe-hab.dian.gov.co/User/CompanyLogin c96be04942409be5
+OK https://catalogo-vpfe-hab.dian.gov.co/User/PersonLogin 0cef83c443675e9a
+OK https://catalogo-vpfe-hab.dian.gov.co/User/NotObligedInvoice e21d3f609597f54d
+OK https://catalogo-vpfe-hab.dian.gov.co/User/SearchDocument 141afb554738e6e1
+OK https://catalogo-vpfe.dian.gov.co/ 2e724a88e49e55aa
+OK https://catalogo-vpfe.dian.gov.co/User/CompanyLogin af227483b3991ae0
+OK https://catalogo-vpfe.dian.gov.co/User/PersonLogin c9926c482582c84e
+OK https://catalogo-vpfe.dian.gov.co/User/NotObligedInvoice f5ca53203530a7a4
+OK https://catalogo-vpfe.dian.gov.co/User/SearchDocument 249333a84329d5dc
+OK https://www.dian.gov.co/impuestos/RUT/Paginas/Conozca-el-RUT.aspx 31d215a805ce726b
+EMPTY https://www.dian.gov.co/impuestos/RUT/Documents/Tenga-en-cuenta-sobre-el-RUT.pdf
+OK https://www.dian.gov.co/impuestos/RUT/Paginas/Inscripcion-y-actualizacion-RUT.aspx e32ebb9ba851548c
+OK https://www.dian.gov.co/impuestos/RUT/Paginas/Inscripcion-o-actualizacion-RUT-personas-naturales-en-el-exterior.aspx d76080ee801055e9
+OK https://www.dian.gov.co/impuestos/RUT/Paginas/Lo-que-debe-saber.aspx 77c69b8e0c2f598b
+OK https://www.dian.gov.co/impuestos/RUT/Paginas/Su-actividad-economica.aspx 5f0aaa9014bce06b
+OK https://www.dian.gov.co/impuestos/RUT/Paginas/Servicios-y-tramites.aspx 1274fb8f5f7c4190
+OK https://www.dian.gov.co/impuestos/RUT/Paginas/Contactenos.aspx 2796f7e4bd1f2879
+OK https://www.dian.gov.co/impuestos/RUT/Paginas/Firma-electronica.aspx 05ed78dc2cc8b2f4
+OK https://www.dian.gov.co/tramitesservicios/tramites-y-servicios/tributarios f4e4ed5c1b8bc69a
+OK https://www.dian.gov.co/tramitesservicios/tramites-y-servicios/Paginas/tramites-cambiarios.aspx 34296463929cd052
+OK https://muisca.dian.gov.co/WebIdentidadLogin 973aee3bf5be0f9b
+OK https://www.dian.gov.co/impuestos/Documents/Paso-a-paso-actualizacion-en-linea-RUT.pdf 8acd2a3014a93775
+OK https://www.dian.gov.co/Prensa/Paginas/BlogDetails.aspx?DianId=10 1004e092a1a63ef5
+OK https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000114%20de%2021-12-2020.pdf 74e8676d7e7bec73
+OK https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000005%20de%2022-01-2021.pdf 3bedd707a986a6ab
+EMPTY https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20001232%20de%2016-09-2022.pdf
+EMPTY https://www.dian.gov.co/normatividad/Normatividad/Resoluci%C3%B3n%20000086%20de%2024-05-2023.pdf
+OK https://www.dian.gov.co/impuestos/Documents/Abece-Actividades-Economicas.pdf ba0fa6a299e38d90
+FAIL https://www.dian.gov.co/impuestos/personas/Documents/Abece-pensionados.pdf HTTP 404
+OK https://www.dian.gov.co/tramitesservicios/Impuestos/RUT/Paginas/autossuspensionRUT.aspx e25aa97e30140ada
+OK https://www.dian.gov.co/tramitesservicios/Paginas/correoelectronico.aspx dd8ffe1d41012562
+OK https://www.dian.gov.co/tramitesservicios/Paginas/Oficiosdevueltospordireccion.aspx 5c05e2523bee74da
+OK https://www.dian.gov.co/tramitesservicios/tramites-y-servicios/tributarios/Paginas/cancelacion-oficio-rut.aspx b6de9af4cebd7a5b
+FAIL http://www.dian.gov.co/micrositios/niif/novedades.html HTTP 404
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/beneficios 8d91cb60ad53dd9c
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/tarifas-rst c2fb77e3daa85913
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/obligaciones-contribuyentes-del-rst f7b66822bb7c5e86
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/municipios a748ccf8df92093c
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/lo-que-deberias-saber e1165842e897f2bd
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/quienes-pueden-optar-por-el-simple 3d2bc13d40f27554
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/quienes-no-pueden-optar-por-el-regimen-simple-de-tributacion-rst eeb2466ace3ed6d7
+OK https://www.dian.gov.co/impuestos/Regimen-Simple-de-Tributacion-RST/Documents/Beneficios-de-la-formalidad.pdf b714b420c68172c0
+OK https://www.dian.gov.co/impuestos/Regimen-Simple-de-Tributacion-RST/Documents/RST-2024.pdf 85c0c764b488f016
+OK https://www.dian.gov.co/impuestos/Regimen-Simple-de-Tributacion-RST/Documents/RST-2024-impresion.pdf a7a422363f5969be
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/declara-y-paga de3b5df9ba3d7cc2
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/asi-vamos-en-el-rst bb2b52709c1d3e60
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/normas ce1d15382b24331f
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/evaluacion-de-requisitos-para-mantener-inscripcion-al-rst 087d8be5cfb183ce
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/preguntas-frecuentes fc697fcb0f896f1a
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/inscripcion-al-rst-si-no-tienes-rut c976c94adf29e22b
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/inscripcion-al-rst-si-tienes-rut 0ff89a492d10b12b
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/inscripcion-por-actualizacion-rut f1b37befca2f5bb6
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/inscribirse-en-el-rst-a-traves-del-rut-en-linea 7dc7a37c073213c5
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/como-diligenciar-el-formulario-2593-para-el-pago-de-anticipo-bimestral-del-rst c4224b671c76898d
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/recomendaciones-para-diligenciar-el-formulario-260 008e6154c2b82a4e
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/personas-naturales-y-juridicas 79774449177436d9
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/como-presentar-la-declaracion-anual-consolidada-de-iva cfd127a1a82597c5
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/calendario 1b2fd07f9f68fe9e
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/recomendaciones-para-diligenciar-el-formulario-260-periodo-2019 3873c9fe7e90c046
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/como-diligenciar-el-formulario-2593-para-el-pago-de-anticipo-bimestral-del-rst-2024 10121ebd896e3db1
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/como-diligenciar-el-formulario-2593-para-el-pago-de-anticipo-bimestral-del-rst-2023 643a39895b6bf43e
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/como-liquidar-el-impuesto-de-ica-ante-los-municipios-que-reportaron-la-tarifa 41e6f61cac05e68f
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/como-liquidar-el-impuesto-de-ica-consolidado-ante-los-municipios-que-no-reportarion-la-tarifa 160d7b519f78d2dc
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/como-diligenciar-el-formulario-2593-para-los-anticipos-bimestrales-del-rst a00097cab1d1f627
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/liquidacion-para-municipios-que-adoptaron-la-tarifa-del-ica-consolidado-y-los-que-no-adoptaron a16fc9dca8f6b6d1
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/anulacion-formulario-2593 3c32f2b92fae00dd
+OK https://micrositios.dian.gov.co/regimen-simple-tributacion/evite-errores-comunes-en-el-pago-del-anticipo 6155d69c156eccad
+OK https://www.dian.gov.co/aduanas/oea/inicio 98d136fcf15cd757
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/UsuariosAutorizados.aspx 49b43d903cbbd05b
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/autoevaluaci%C3%B3n.aspx c05c52e1c479e130
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/beneficiosOEA.aspx 56de9c3faac784e1
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/solicitudautorizacion.aspx 4e4b3ab7b1314288
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/noticias.aspx 88103ef54cf2158a
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/marconormativo.aspx e37c831a498bd369
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/PreguntasFrecuentes.aspx 93bb75579485ac5d
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/SolicitantesOEA.aspx 79cd71c5a3a4529f
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/acuerdoscomerciales.aspx 2449a3ff1af7842d
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/reconocimientomutuo.aspx b93b86a7e23aca69
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/documentosdeinteres.aspx 8a7c65ebb27adfef
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/enlaces.aspx 95d0b8f2b4294520
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/Contactenos.aspx ba8845ce5d049fc1
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/Tramite-de-Autorizacion-OEA.aspx dced2201039fb532
+OK https://www.dian.gov.co/aduanas/oea/inicio/Paginas/Congreso-OEA.aspx d7c4448a2b88ebf0
+OK https://www.dian.gov.co/aduanas/oea/english/Paginas/default.aspx 3a5fd80b50d15ace
+OK https://www.dian.gov.co/aduanas/oea/english/Paginas/ingles.aspx f841b16280d9797f
+OK https://www.dian.gov.co/aduanas/oea/Paginas/default.aspx c129b587e2befe49
+OK https://www.dian.gov.co/aduanas/oea/inicio/Documents/Comunicado-Usuarios-Condicion-6-1-10-Procuraduria.pdf 7e67445c271ced33
+OK https://www.dian.gov.co/tramitesservicios/tramites-y-servicios 35f96144b218fb56
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3 48dcbda272c1a42e
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/RUT.aspx e92cc0b28c81d6bd
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Firma-Electronica.aspx 811d830671e61c94
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/APP.aspx 7b7437c2e5b081dd
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Agendamiento-Citas.aspx d1ea19994d8a28e3
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Canales-Autogestion.aspx 8b068672be8ec969
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Devoluciones-de-saldos-a-favor-y-o-compensaciones.aspx 752d81d49243756c
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Portal-Transaccional-DIAN.aspx 6a2bf93506f600bf
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Sucesiones-Iliquidas.aspx af4795f6df822afb
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Declaracion-Sugerida-IVA.aspx 950ef330b87b55d9
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Rebajas-Fiscales.aspx 981fc912385da5fc
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Sistema-de-Factura-Electronica.aspx 21a445eca16489ce
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Dia-sin-IVA.aspx 6dd286db5f0a3f2f
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Recibos-sugeridos-RST.aspx aafaaaef6b393bd3
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Ley-de-Inversion-Social.aspx 127b10d6655ac5e2
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Operacion-Aduanera.aspx 00aa3f759b836cb7
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Medios-de-pago-de-impuestos.aspx a3f4ea6d35c40fc6
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Regimen-Tributario-Especial-RTE.aspx 971a6b7a0817a792
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Remates-Virtuales.aspx 83ddf1ea4a07a632
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/Impuesto-Nacional-al-Consumo-INC.aspx 0da04e72d8efd51d
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/SI-Zona-Economica-y-Social-Especial-ZESE.aspx 246c1e181ecaa58b
+OK https://www.dian.gov.co/Prensa/Aprendelo-en-un-DIAN-X3/Paginas/default.aspx 1a1dbf35b82997c4
+OK https://www.dian.gov.co/Transaccional/GuaServiciosLinea/Paso-a-paso-habilitacion-de-cuenta-e-ingreso-como-usuario-registrado.pdf 8ce30066d7efce37
+OK https://www.dian.gov.co/Transaccional/GuaServiciosLinea/Paso-a-paso-recuperacion-de-contrasena.pdf 95e5f7f4df0bdd9e
+OK https://www.dian.gov.co/Contribuyentes-Plus 530a4adf4a67edd3
+OK https://www.dian.gov.co/Contribuyentes-Plus/Paginas/Lo-que-debe-saber.aspx 77fad526ffcb007d
+OK https://www.dian.gov.co/Contribuyentes-Plus/Paginas/Conozcanos.aspx d4961b24ebe28f62
+OK https://www.dian.gov.co/Contribuyentes-Plus/Paginas/Normatividad.aspx e3a1f9070614f940
+OK https://www.dian.gov.co/Contribuyentes-Plus/Paginas/Agenda-y-actualidad.aspx fb4bcefe6e37b93d
+OK https://www.dian.gov.co/Contribuyentes-Plus/Paginas/Calendario-de-obligaciones.aspx 9b0a2858d9704a33
+OK https://www.dian.gov.co/Contribuyentes-Plus/Paginas/Embajadas-y-Organismos-Internacionales.aspx 592afff332ac323a
+OK https://www.dian.gov.co/Contribuyentes-Plus/Paginas/Enlaces-de-interes.aspx e7aecb10cab02e0c
+OK https://www.dian.gov.co/Contribuyentes-Plus/Paginas/taxpayers-plus.aspx 90c9bdff55e82597
+OK https://certificadosdeorigen.dian.gov.co/Verifica/indexmex2.php d72b253f39af1539
+OK https://certificadosdeorigen.dian.gov.co/corigen_digital/CargueCertImport/index.php 1649a1da95598275
+OK http://muisca.dian.gov.co/WebRutMuisca/DefInscripcionRutPortal.faces a54efd1a76e1fbe8
+OK http://muisca.dian.gov.co/WebArquitectura/DefNuevosUsuarios.faces 1656572af4d2cec7
+OK http://muisca.dian.gov.co/WebArquitectura/DefLogin.faces 9fdde66383c968da
+FAIL http://www.dian.gov.co/contenidos/servicios/guia.html HTTP 404
+FAIL http://www.dian.gov.co/contenidos/otros/consulta_de_arancel.html HTTP 404
+FAIL http://www.dian.gov.co/contenidos/otros/prevalidadores.html HTTP 404
+FAIL http://websiex.dian.gov.co/ fetch failed
+OK http://muisca.dian.gov.co/WebArancel/DefMenuConsultas.faces dc6736690f6ab358
+OK http://muisca.dian.gov.co/WebParametrizacion/DefSelProcesoTblsParametricas.faces 251280b7c553922b
+OK http://muisca.dian.gov.co/WebRutMuisca/DefConsultaEstadoRUT.faces 9addebb0478957fb
+OK http://muisca.dian.gov.co/WebGestionmasiva/DefSelPublicacionesExterna.faces a64a37b0b5b0c7f2
+OK https://certificadosdeorigen.dian.gov.co/autocalificacion/Admonform03/scripts_php/consulta.php eeaf48554c7d6153
+OK http://muisca.dian.gov.co/WebArquitectura/DefVerificarSistema.faces 56ed56b63be49bda
+OK http://muisca.dian.gov.co/WebArquitectura/mecanismodigital/DescargaFirmaDigital.html ce48c89e780fd03b

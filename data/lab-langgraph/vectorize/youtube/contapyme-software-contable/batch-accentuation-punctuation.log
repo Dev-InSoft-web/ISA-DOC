@@ -1,0 +1,6 @@
+
+--- batch 2026-06-04T02:15:40.315Z · videos=1 api=http://localhost:5500/api force=false dryRun=false ---
+SKIP -j1oaghiy3U ya corregido (local)
+
+--- batch 2026-06-04T02:15:58.362Z · videos=1 api=http://localhost:5500/api force=true dryRun=false ---
+OK -j1oaghiy3U changed=0/71
