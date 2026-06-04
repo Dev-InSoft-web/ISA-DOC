@@ -1,5 +1,5 @@
 /**
- * Lote LangGraph: tildes, puntuación y marcas (Groq → HF; sin OpenAI por defecto).
+ * Lote LangGraph: tildes, puntuación y marcas (Groq → MiniMax; sin OpenAI por defecto).
  * Omite JSON ya marcados con accentuationPunctuationCorrected / proofreadVersion.
  *
  * Uso (desde ISA-DOC):
@@ -14,9 +14,9 @@
  *   --force        Igual que --no-resume
  *   --limit N      Máximo N videos
  *   --offset N     Saltar los primeros N del listado
- *   --delay MS     Pausa entre videos
+ *   --delay MS     Pausa entre videos (default 0)
  *   --videoId ID   Solo ese video
- *   --allow-openai Permite OpenAI si Groq y HF fallan
+ *   --allow-openai Permite OpenAI si Groq y MiniMax fallan
  */
 import { appendFile, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -57,7 +57,7 @@ const { isPlausibleProofreadFix } = await importLab<{
 function parseArgs(argv: string[]) {
 	let limit: number | null = 1;
 	let offset = 0;
-	let delayMs = 2000;
+	let delayMs = 0;
 	let resume = true;
 	let videoId: string | null = null;
 	let allowOpenAi = false;
@@ -201,11 +201,15 @@ console.log(`Groq: ${groqPool.size} keys · ${groqPool.currentKeyDisplay()}`);
 const mmCfg = loadMinimaxConfigFromEnv();
 const routeN = groqPool.size + (isMinimaxConfigured() ? 1 : 0);
 if (mmCfg) {
-	console.log(`Rutas proofread: ${routeN} · MiniMax ${minimaxKeyDisplay(mmCfg)} (slot 3/3)`);
+	console.log(
+		`Rutas proofread: ${routeN} · MiniMax ${minimaxKeyDisplay(mmCfg)} (3/3 = chat, no STT)`,
+	);
 } else {
 	console.log(`Rutas proofread: ${routeN} · MiniMax no configurado (MINIMAX_API_KEY en lab-langgraph.env)`);
 }
-console.log(`Modo: LangGraph · Groq 1/3→2/3 → MiniMax 3/3 → HF · validador anti-reescritura (dist compilado)`);
+console.log(
+	`Modo: por video hasta OK · cascada Groq 1/${routeN}→2/${routeN}→MiniMax (sin espera tras MiniMax)`,
+);
 console.log(`Videos en lote: ${slice.length} / ${refs.length} (offset=${opts.offset})`);
 if (opts.limit === 1 && !opts.videoId) {
 	console.log("Piloto: --limit 1 (pasa la prueba y relanza con --all o lab:yt:proofread-resume)");
@@ -225,6 +229,7 @@ for (const ref of slice) {
 	let segmentsBefore: CaptionSegment[] = [];
 
 	console.log(`\n▶ proofread ${vid} (${ref.kind}/${ref.year})`);
+	groqPool.resetToFirst();
 	try {
 		const beforeRecord = await loadRecord(vid);
 		segmentsBefore = beforeRecord.transcript.segments.map((s) => ({ ...s }));
@@ -271,18 +276,19 @@ for (const ref of slice) {
 			break;
 		}
 
-		const waitMs = (result.retryAfterMinutes ?? 1) * 60_000;
-		console.warn(`  retry ${vid} intento ${attempt}: ${result.error.slice(0, 100)}`);
-		await appendFile(logPath, `RETRY ${vid} ${result.error.slice(0, 120)}\n`);
-		if (attempt >= 8) {
-			failed += 1;
-			errors.push({ videoId: vid, error: result.error });
-			console.error(`  FAIL ${vid}: ${result.error}`);
-			await appendFile(logPath, `FAIL ${vid} ${result.error}\n`);
-			break;
+		console.warn(`  retry ${vid} intento ${attempt} (cascada reinicia, sin espera):`);
+		const attempts = "providerAttempts" in result ? result.providerAttempts : undefined;
+		if (attempts?.length) {
+			for (const a of attempts) {
+				console.warn(`    ${a.api}: ${a.error.slice(0, 220)}`);
+			}
+		} else {
+			console.warn(`    ${result.error.slice(0, 200)}`);
 		}
-		console.warn(`  espera ${Math.round(waitMs / 1000)}s…`);
-		await sleep(waitMs);
+		const logLine =
+			attempts?.map((a) => `${a.api}=${a.error.slice(0, 80)}`).join(" | ") ??
+			result.error.slice(0, 200);
+		await appendFile(logPath, `RETRY ${vid} ${logLine}\n`);
 	}
 
 	if (opts.delayMs > 0) await sleep(opts.delayMs);

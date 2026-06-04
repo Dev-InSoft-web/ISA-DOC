@@ -110,7 +110,8 @@ function logGroqApiPayload(params: {
 	console.log("    └─");
 }
 
-function parseGroqRetryHintMs(body: string): number | undefined {
+/** Tiempo sugerido por Groq en cuerpo 429 (`try again in XmYs`). */
+export function parseGroqRetryHintMs(body: string): number | undefined {
 	const m = body.match(/try again in (?:(\d+)m)?([\d.]+)s/i);
 	if (!m) return undefined;
 	const min = Number(m[1] || 0);

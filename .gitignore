@@ -44,3 +44,7 @@ backups/
 token.json
 token.patyia.json
 token.clientesis.json
+data/lab-langgraph/minimax-model-samples/
+data/lab-langgraph/minimax-model-samples/
+data/lab-langgraph/vectorize/youtube/contapyme-software-contable/audio-cache/
+data/lab-langgraph/vectorize/youtube/contapyme-software-contable/whisper-chunks/

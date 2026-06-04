@@ -1,11 +1,21 @@
 /**
  * Prueba hola mundo por modelo MiniMax y guarda artefactos + reporte.
- * Uso: npm run lab:yt:test-minimax-all
+ * Relee report.json: modelos con ok:true se omiten (salvo --force).
+ * Uso: npm run lab:yt:test-minimax-all [--only speech|image|music|video|language] [--force]
+ * Catálogo: https://platform.minimax.io/docs/guides/models-intro → catalog.json + MODELS.md
  */
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { labDataPath } from "../../_shared/isa-doc-root.ts";
 import { loadLabEnv } from "../../_shared/load-lab-env.ts";
+import {
+	buildMinimaxFullCatalog,
+	IMAGE_MODEL_ID,
+	LANGUAGE_MODELS,
+	MUSIC_MODELS,
+	SPEECH_MODELS,
+	VIDEO_MODELS,
+} from "../../_shared/minimax-models-catalog.ts";
 import {
 	loadMinimaxConfigFromEnv,
 	minimaxKeyDisplay,
@@ -21,29 +31,6 @@ const PROMPT_IMAGE = "A simple blue circle on white background, minimal.";
 const PROMPT_VIDEO = "A calm blue sky with one white cloud, static shot.";
 const PROMPT_MUSIC = "calm instrumental";
 const LYRICS = "[verse]\nla la la";
-
-const LLM_MODELS = [
-	"MiniMax-M3",
-	"MiniMax-M2.7",
-	"MiniMax-M2.7-highspeed",
-	"MiniMax-M2.5",
-	"MiniMax-M2.5-highspeed",
-	"MiniMax-M2.1",
-	"MiniMax-M2.1-highspeed",
-	"MiniMax-M2",
-];
-
-const SPEECH_MODELS = [
-	"speech-2.8-hd",
-	"speech-2.8-turbo",
-	"speech-2.6-hd",
-	"speech-2.6-turbo",
-	"speech-02-hd",
-	"speech-02-turbo",
-];
-
-const VIDEO_MODELS = ["MiniMax-Hailuo-2.3", "MiniMax-Hailuo-02"];
-const MUSIC_MODELS = ["music-2.6", "music-2.5"];
 
 type SampleResult = {
 	modality: string;
@@ -96,9 +83,29 @@ function baseResp(j: Record<string, unknown>): { code: number; msg: string } {
 	return { code: br?.status_code ?? -1, msg: br?.status_msg ?? "" };
 }
 
-async function saveHexAudio(hex: string, path: string): Promise<void> {
-	const buf = Buffer.from(hex.replace(/\s/g, ""), "hex");
+async function saveAudioPayload(payload: string, path: string): Promise<void> {
+	const raw = payload.replace(/\s/g, "");
+	let buf: Buffer;
+	if (/^[0-9a-fA-F]+$/.test(raw) && raw.length % 2 === 0) {
+		buf = Buffer.from(raw, "hex");
+	} else {
+		buf = Buffer.from(raw, "base64");
+	}
+	if (!buf.length) throw new Error("audio vacío");
 	await writeFile(path, buf);
+}
+
+async function fetchWithRetry(url: string, init: RequestInit, tries = 4): Promise<Response> {
+	let last: unknown;
+	for (let i = 0; i < tries; i += 1) {
+		try {
+			return await fetch(url, init);
+		} catch (e) {
+			last = e;
+			await sleep(2000 * (i + 1));
+		}
+	}
+	throw last;
 }
 
 async function testLlm(model: string): Promise<SampleResult> {
@@ -106,7 +113,7 @@ async function testLlm(model: string): Promise<SampleResult> {
 	const dir = join(OUT_DIR, "language");
 	await mkdir(dir, { recursive: true });
 	const url = withGroupId(`${cfg!.apiBase}/v1/text/chatcompletion_v2`);
-	const res = await fetch(url, {
+	const res = await fetchWithRetry(url, {
 		method: "POST",
 		headers: authHeaders(),
 		body: JSON.stringify({
@@ -152,7 +159,7 @@ async function testTts(model: string): Promise<SampleResult> {
 	const t0 = Date.now();
 	const dir = join(OUT_DIR, "speech");
 	await mkdir(dir, { recursive: true });
-	const res = await fetch(withGroupId(`${cfg!.apiBase}/v1/t2a_v2`), {
+	const res = await fetchWithRetry(withGroupId(`${cfg!.apiBase}/v1/t2a_v2`), {
 		method: "POST",
 		headers: authHeaders(),
 		body: JSON.stringify({
@@ -170,9 +177,23 @@ async function testTts(model: string): Promise<SampleResult> {
 	const artifact = join(dir, `${safeName(model)}.mp3`);
 	let ok = res.ok && code === 0 && !!data?.audio;
 	if (ok && data?.audio) {
-		await saveHexAudio(data.audio, artifact);
+		try {
+			await saveAudioPayload(data.audio, artifact);
+		} catch (e) {
+			await writeFile(artifact.replace(".mp3", ".json"), text.slice(0, 4000), "utf8");
+			ok = false;
+			return {
+				modality: "speech",
+				model,
+				ok: false,
+				baseCode: code,
+				baseMsg: String(e),
+				artifact: `speech/${safeName(model)}.json`,
+				elapsedMs: Date.now() - t0,
+			};
+		}
 	} else {
-		await writeFile(artifact.replace(".mp3", ".json"), text.slice(0, 2000), "utf8");
+		await writeFile(artifact.replace(".mp3", ".json"), text.slice(0, 4000), "utf8");
 		ok = false;
 	}
 	return {
@@ -192,7 +213,7 @@ async function testImage(): Promise<SampleResult> {
 	const t0 = Date.now();
 	const dir = join(OUT_DIR, "image");
 	await mkdir(dir, { recursive: true });
-	const res = await fetch(withGroupId(`${cfg!.apiBase}/v1/image_generation`), {
+	const res = await fetchWithRetry(withGroupId(`${cfg!.apiBase}/v1/image_generation`), {
 		method: "POST",
 		headers: authHeaders(),
 		body: JSON.stringify({
@@ -209,16 +230,20 @@ async function testImage(): Promise<SampleResult> {
 	const metaPath = join(dir, `${safeName(model)}.json`);
 	await writeFile(metaPath, JSON.stringify(j, null, 2), "utf8");
 	let ok = res.ok && code === 0;
-	if (ok && data?.image_urls?.[0]) {
+	const urlFile = join(dir, `${safeName(model)}-url.txt`);
+	if (data?.image_urls?.[0]) {
+		await writeFile(urlFile, data.image_urls[0], "utf8");
 		try {
-			const img = await fetch(data.image_urls[0]);
+			const img = await fetchWithRetry(data.image_urls[0], {});
 			if (img.ok) {
-				await writeFile(join(dir, `${safeName(model)}.png`), Buffer.from(await img.arrayBuffer()));
-			} else ok = false;
+				const ext = data.image_urls[0].includes(".jpeg") ? ".jpeg" : ".png";
+				await writeFile(join(dir, `${safeName(model)}${ext}`), Buffer.from(await img.arrayBuffer()));
+			}
 		} catch {
-			ok = false;
+			/* URL guardada; descarga opcional */
 		}
 	}
+	ok = ok && !!data?.image_urls?.[0];
 	return {
 		modality: "image",
 		model,
@@ -235,7 +260,7 @@ async function testMusic(model: string): Promise<SampleResult> {
 	const t0 = Date.now();
 	const dir = join(OUT_DIR, "music");
 	await mkdir(dir, { recursive: true });
-	const res = await fetch(withGroupId(`${cfg!.apiBase}/v1/music_generation`), {
+	const res = await fetchWithRetry(withGroupId(`${cfg!.apiBase}/v1/music_generation`), {
 		method: "POST",
 		headers: authHeaders(),
 		body: JSON.stringify({
@@ -251,9 +276,14 @@ async function testMusic(model: string): Promise<SampleResult> {
 	const artifact = join(dir, `${safeName(model)}.mp3`);
 	let ok = res.ok && code === 0 && !!data?.audio;
 	if (ok && data?.audio) {
-		await saveHexAudio(data.audio, artifact);
+		try {
+			await saveAudioPayload(data.audio, artifact);
+		} catch {
+			await writeFile(join(dir, `${safeName(model)}.json`), text.slice(0, 4000), "utf8");
+			ok = false;
+		}
 	} else {
-		await writeFile(join(dir, `${safeName(model)}.json`), text.slice(0, 2000), "utf8");
+		await writeFile(join(dir, `${safeName(model)}.json`), text.slice(0, 4000), "utf8");
 		ok = false;
 	}
 	return {
@@ -271,7 +301,7 @@ async function testMusic(model: string): Promise<SampleResult> {
 async function pollVideoTask(taskId: string, maxMs = 300_000): Promise<Record<string, unknown>> {
 	const start = Date.now();
 	while (Date.now() - start < maxMs) {
-		const res = await fetch(
+		const res = await fetchWithRetry(
 			withGroupId(`${cfg!.apiBase}/v1/query/video_generation?task_id=${encodeURIComponent(taskId)}`),
 			{ headers: authHeaders(false) },
 		);
@@ -284,20 +314,120 @@ async function pollVideoTask(taskId: string, maxMs = 300_000): Promise<Record<st
 	return { status: "timeout", task_id: taskId };
 }
 
+function videoPaths(model: string): { dir: string; metaPath: string; mp4Path: string } {
+	const dir = join(OUT_DIR, "video");
+	const base = safeName(model);
+	return {
+		dir,
+		metaPath: join(dir, `${base}.json`),
+		mp4Path: join(dir, `${base}.mp4`),
+	};
+}
+
+function fileIdFromVideoMeta(meta: Record<string, unknown>): string | undefined {
+	const polled = meta.polled as { file_id?: string | number } | undefined;
+	if (polled?.file_id != null) return String(polled.file_id);
+	const create = meta.create as { file_id?: string | number } | undefined;
+	if (create?.file_id != null) return String(create.file_id);
+	return undefined;
+}
+
+async function retrieveVideoDownloadUrl(fileId: string): Promise<string> {
+	const url = withGroupId(
+		`${cfg!.apiBase}/v1/files/retrieve?file_id=${encodeURIComponent(fileId)}`,
+	);
+	const res = await fetchWithRetry(url, { headers: authHeaders(false) });
+	const text = await res.text();
+	const j = parseJson(text);
+	const { code, msg } = baseResp(j);
+	if (!res.ok || code !== 0) {
+		throw new Error(`files/retrieve ${res.status} base ${code} ${msg}: ${text.slice(0, 200)}`);
+	}
+	const downloadUrl = (j.file as { download_url?: string } | undefined)?.download_url;
+	if (!downloadUrl) throw new Error(`files/retrieve sin download_url: ${text.slice(0, 200)}`);
+	return downloadUrl;
+}
+
+async function downloadMinimaxVideoMp4(fileId: string, mp4Path: string): Promise<void> {
+	const downloadUrl = await retrieveVideoDownloadUrl(fileId);
+	const res = await fetchWithRetry(downloadUrl, {});
+	if (!res.ok) throw new Error(`descarga MP4 HTTP ${res.status}`);
+	const buf = Buffer.from(await res.arrayBuffer());
+	if (!buf.length) throw new Error("MP4 vacío");
+	await writeFile(mp4Path, buf);
+}
+
+async function tryDownloadVideoFromMeta(model: string): Promise<boolean> {
+	const { metaPath, mp4Path } = videoPaths(model);
+	try {
+		await access(mp4Path);
+		return true;
+	} catch {
+		/* sin MP4 local */
+	}
+	let raw: string;
+	try {
+		raw = await readFile(metaPath, "utf8");
+	} catch {
+		return false;
+	}
+	const meta = JSON.parse(raw) as Record<string, unknown>;
+	const fileId = fileIdFromVideoMeta(meta);
+	if (!fileId) return false;
+	await downloadMinimaxVideoMp4(fileId, mp4Path);
+	return true;
+}
+
+async function loadFirstFrameDataUrl(): Promise<string | undefined> {
+	for (const name of ["image-01.jpeg", "image-01.png"]) {
+		const p = join(OUT_DIR, "image", name);
+		try {
+			const buf = await readFile(p);
+			const mime = name.endsWith(".png") ? "image/png" : "image/jpeg";
+			return `data:${mime};base64,${buf.toString("base64")}`;
+		} catch {
+			/* */
+		}
+	}
+	const urlPath = join(OUT_DIR, "image", "image-01-url.txt");
+	try {
+		const url = (await readFile(urlPath, "utf8")).trim();
+		if (url.startsWith("http")) return url;
+	} catch {
+		/* */
+	}
+	return undefined;
+}
+
 async function testVideo(model: string): Promise<SampleResult> {
 	const t0 = Date.now();
 	const dir = join(OUT_DIR, "video");
 	await mkdir(dir, { recursive: true });
-	const res = await fetch(withGroupId(`${cfg!.apiBase}/v1/video_generation`), {
+	const needsImage =
+		model === "MiniMax-Hailuo-2.3-Fast" || model.includes("I2V");
+	const firstFrame = needsImage ? await loadFirstFrameDataUrl() : undefined;
+	if (needsImage && !firstFrame) {
+		return {
+			modality: "video",
+			model,
+			ok: false,
+			detail: "requiere first_frame_image (--only image antes)",
+			elapsedMs: Date.now() - t0,
+		};
+	}
+	const body: Record<string, unknown> = {
+		model,
+		prompt: PROMPT_VIDEO,
+		duration: 6,
+		resolution: "768P",
+		prompt_optimizer: false,
+	};
+	if (firstFrame) body.first_frame_image = firstFrame;
+
+	const res = await fetchWithRetry(withGroupId(`${cfg!.apiBase}/v1/video_generation`), {
 		method: "POST",
 		headers: authHeaders(),
-		body: JSON.stringify({
-			model,
-			prompt: PROMPT_VIDEO,
-			duration: 6,
-			resolution: "768P",
-			prompt_optimizer: false,
-		}),
+		body: JSON.stringify(body),
 	});
 	const createText = await res.text();
 	const created = parseJson(createText);
@@ -322,56 +452,107 @@ async function testVideo(model: string): Promise<SampleResult> {
 	const pCode = baseResp(polled).code;
 	const status = String(polled.status ?? "");
 	const fileId = polled.file_id as string | undefined;
-	const ok =
+	const genOk =
 		(status.toLowerCase() === "success" || pCode === 0) && !!fileId;
+	let artifact = `video/${safeName(model)}.json`;
+	let detail = fileId ? `file_id=${fileId}` : status;
+	if (genOk && fileId) {
+		const { mp4Path } = videoPaths(model);
+		try {
+			await downloadMinimaxVideoMp4(String(fileId), mp4Path);
+			artifact = `video/${safeName(model)}.mp4`;
+			detail = `file_id=${fileId} · MP4 local`;
+		} catch (e) {
+			const msg = e instanceof Error ? e.message : String(e);
+			detail = `file_id=${fileId} · sin MP4: ${msg.slice(0, 80)}`;
+		}
+	}
 	return {
 		modality: "video",
 		model,
-		ok,
+		ok: genOk,
 		baseCode: pCode,
 		baseMsg: String(polled.base_resp ? baseResp(polled).msg : status),
-		artifact: `video/${safeName(model)}.json`,
-		detail: fileId ? `file_id=${fileId}` : status,
-		elapsedMs: Date.now() - t0,
-	};
-}
-
-async function testStt(): Promise<SampleResult> {
-	const model = cfg!.sttModel;
-	const t0 = Date.now();
-	const res = await fetch(withGroupId(`${cfg!.sttApiBase}/v1/stt/create`), {
-		method: "POST",
-		headers: { Authorization: `Bearer ${cfg!.apiKey}` },
-		body: new FormData(),
-	});
-	const text = await res.text();
-	const dir = join(OUT_DIR, "stt");
-	await mkdir(dir, { recursive: true });
-	await writeFile(join(dir, "probe.json"), text, "utf8");
-	return {
-		modality: "stt",
-		model,
-		ok: res.ok && res.status !== 404,
-		httpStatus: res.status,
-		detail: res.status === 404 ? "no en API oficial" : text.slice(0, 100),
-		artifact: "stt/probe.json",
+		artifact,
+		detail,
 		elapsedMs: Date.now() - t0,
 	};
 }
 
 async function fetchListedLlms(): Promise<string[]> {
 	try {
-		const res = await fetch(withGroupId(`${cfg!.apiBase}/v1/models`), {
+		const res = await fetchWithRetry(withGroupId(`${cfg!.apiBase}/v1/models`), {
 			headers: authHeaders(false),
 		});
-		if (!res.ok) return LLM_MODELS;
+		if (!res.ok) return [...LANGUAGE_MODELS];
 		const j = parseJson(await res.text());
 		const data = j.data as Array<{ id?: string }> | undefined;
-		if (!Array.isArray(data) || !data.length) return LLM_MODELS;
-		return data.map((m) => m.id!).filter(Boolean);
+		if (!Array.isArray(data) || !data.length) return [...LANGUAGE_MODELS];
+		const fromApi = data.map((m) => m.id!).filter(Boolean);
+		const merged = [...fromApi];
+		for (const m of LANGUAGE_MODELS) {
+			if (!merged.includes(m)) merged.push(m);
+		}
+		return merged;
 	} catch {
-		return LLM_MODELS;
+		return [...LANGUAGE_MODELS];
 	}
+}
+
+function resultKey(modality: string, model: string): string {
+	return `${modality}:${model}`;
+}
+
+function mergePriorIntoMap(prior: SampleResult[], byKey: Map<string, SampleResult>): void {
+	for (const r of prior) {
+		const k = resultKey(r.modality, r.model);
+		const existing = byKey.get(k);
+		if (!existing || (r.ok && !existing.ok)) byKey.set(k, r);
+		else if (!existing.ok && !r.ok) byKey.set(k, r);
+	}
+}
+
+function buildResultsList(byKey: Map<string, SampleResult>, llms: string[]): SampleResult[] {
+	const out: SampleResult[] = [];
+	const add = (modality: string, model: string) => {
+		const r = byKey.get(resultKey(modality, model));
+		if (r) out.push(r);
+	};
+	for (const model of llms) add("language", model);
+	for (const model of SPEECH_MODELS) add("speech", model);
+	add("image", IMAGE_MODEL_ID);
+	for (const model of MUSIC_MODELS) add("music", model);
+	for (const model of VIDEO_MODELS) add("video", model);
+	return out;
+}
+
+function renderModelsCatalogMd(): string {
+	const catalog = buildMinimaxFullCatalog();
+	const lines = [
+		"# MiniMax — catálogo de modelos y herramientas",
+		"",
+		"Fuente: [models-intro](https://platform.minimax.io/docs/guides/models-intro) · orden **más nuevo → legacy**.",
+		"",
+		"| Tier | Modality | Model | Test batch | Descripción |",
+		"|------|----------|-------|------------|-------------|",
+	];
+	for (const e of catalog) {
+		lines.push(
+			`| ${e.tier} | ${e.modality} | ${e.model} | ${e.testable ? "sí" : "—"} | ${e.description || "—"} |`,
+		);
+	}
+	lines.push("");
+	return lines.join("\n");
+}
+
+async function persistCatalog(): Promise<void> {
+	const catalog = buildMinimaxFullCatalog();
+	await writeFile(
+		join(OUT_DIR, "catalog.json"),
+		`${JSON.stringify({ source: "https://platform.minimax.io/docs/guides/models-intro", catalog }, null, 2)}\n`,
+		"utf8",
+	);
+	await writeFile(join(OUT_DIR, "MODELS.md"), `${renderModelsCatalogMd()}\n`, "utf8");
 }
 
 function renderSummary(results: SampleResult[]): string {
@@ -391,62 +572,195 @@ function renderSummary(results: SampleResult[]): string {
 	return lines.join("\n");
 }
 
+const only = process.argv.includes("--only")
+	? process.argv[process.argv.indexOf("--only") + 1]?.trim()
+	: null;
+const force = process.argv.includes("--force");
+const downloadVideosOnly = process.argv.includes("--download-videos");
+
+async function loadPriorResults(): Promise<SampleResult[]> {
+	try {
+		const { readFile } = await import("node:fs/promises");
+		const raw = await readFile(join(OUT_DIR, "report.json"), "utf8");
+		const j = JSON.parse(raw) as { results?: SampleResult[] };
+		return Array.isArray(j.results) ? j.results : [];
+	} catch {
+		return [];
+	}
+}
+
+async function persistReport(results: SampleResult[]): Promise<void> {
+	const report = {
+		at: new Date().toISOString(),
+		key: minimaxKeyDisplay(cfg!),
+		outDir: OUT_DIR,
+		results,
+	};
+	await writeFile(join(OUT_DIR, "report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
+	await writeFile(join(OUT_DIR, "SUMMARY.md"), `${renderSummary(results)}\n`, "utf8");
+}
+
 console.log(`MiniMax all-models test → ${OUT_DIR}`);
 console.log(`  ${minimaxKeyDisplay(cfg)}`);
+if (only) console.log(`  Modo: solo ${only}`);
+if (force) console.log("  --force: re-ejecutar aunque report.json diga OK");
+else console.log("  Resume: omitir modelos ya OK en report.json (--force para repetir)");
+if (downloadVideosOnly) console.log("  --download-videos: solo descargar MP4 desde JSON/file_id existente");
 await mkdir(OUT_DIR, { recursive: true });
+await persistCatalog();
+console.log(`  Catálogo: ${join(OUT_DIR, "catalog.json")} · MODELS.md (${buildMinimaxFullCatalog().length} entradas)`);
 
-const results: SampleResult[] = [];
+if (downloadVideosOnly) {
+	console.log(`\nDescarga MP4 (${VIDEO_MODELS.length})…`);
+	for (const model of VIDEO_MODELS) {
+		try {
+			const ok = await tryDownloadVideoFromMeta(model);
+			console.log(ok ? `  OK ${model} · MP4` : `  SKIP ${model} (sin JSON/file_id o ya existe)`);
+		} catch (e) {
+			const msg = e instanceof Error ? e.message : String(e);
+			console.log(`  FAIL ${model} ${msg.slice(0, 120)}`);
+			console.warn(
+				"    (MiniMax: download_url caduca ~9 h; si expiró, --force --only video para regenerar)",
+			);
+		}
+	}
+	process.exit(0);
+}
+
+const byKey = new Map<string, SampleResult>();
+mergePriorIntoMap(await loadPriorResults(), byKey);
+const priorOk = [...byKey.values()].filter((r) => r.ok).length;
+if (priorOk && !force) console.log(`  Previos OK en report: ${priorOk}`);
+
 const llms = await fetchListedLlms();
-console.log(`\nLanguage (${llms.length})…`);
-for (const model of llms) {
-	const r = await testLlm(model);
-	results.push(r);
-	console.log(`  ${r.ok ? "OK" : "FAIL"} ${model} ${r.detail ?? r.baseMsg ?? ""}`);
-	await sleep(1500);
+
+let results: SampleResult[] = buildResultsList(byKey, llms);
+let skippedRun = 0;
+
+async function saveProgress(): Promise<void> {
+	results = buildResultsList(byKey, llms);
+	await persistReport(results);
 }
 
-console.log(`\nSpeech (${SPEECH_MODELS.length})…`);
-for (const model of SPEECH_MODELS) {
-	const r = await testTts(model);
-	results.push(r);
-	console.log(`  ${r.ok ? "OK" : "FAIL"} ${model}`);
-	await sleep(1500);
+function shouldSkip(modality: string, model: string): boolean {
+	if (force) return false;
+	return byKey.get(resultKey(modality, model))?.ok === true;
 }
 
-console.log("\nImage…");
-results.push(await testImage());
-console.log(`  ${results.at(-1)?.ok ? "OK" : "FAIL"} image-01`);
-
-console.log(`\nMusic (${MUSIC_MODELS.length})…`);
-for (const model of MUSIC_MODELS) {
-	const r = await testMusic(model);
-	results.push(r);
-	console.log(`  ${r.ok ? "OK" : "FAIL"} ${model}`);
-	await sleep(2000);
+if (!only || only === "language") {
+	console.log(`\nLanguage (${llms.length})…`);
+	for (const model of llms) {
+		if (shouldSkip("language", model)) {
+			skippedRun += 1;
+			console.log(`  SKIP ${model} (ya OK)`);
+			continue;
+		}
+		const r = await testLlm(model);
+		byKey.set(resultKey("language", model), r);
+		console.log(`  ${r.ok ? "OK" : "FAIL"} ${model} ${r.detail ?? r.baseMsg ?? ""}`);
+		await saveProgress();
+		await sleep(1200);
+	}
 }
 
-console.log(`\nVideo (${VIDEO_MODELS.length}) — puede tardar varios min…`);
-for (const model of VIDEO_MODELS) {
-	const r = await testVideo(model);
-	results.push(r);
-	console.log(`  ${r.ok ? "OK" : "FAIL"} ${model} ${r.detail ?? r.baseMsg ?? ""}`);
+if (!only || only === "speech") {
+	console.log(`\nSpeech (${SPEECH_MODELS.length})…`);
+	for (const model of SPEECH_MODELS) {
+		if (shouldSkip("speech", model)) {
+			skippedRun += 1;
+			console.log(`  SKIP ${model} (ya OK)`);
+			continue;
+		}
+		const r = await testTts(model);
+		byKey.set(resultKey("speech", model), r);
+		console.log(`  ${r.ok ? "OK" : "FAIL"} ${model}`);
+		await saveProgress();
+		await sleep(1200);
+	}
 }
 
-console.log("\nSTT probe…");
-results.push(await testStt());
-console.log(`  ${results.at(-1)?.ok ? "OK" : "skip"} ${cfg.sttModel}`);
+if (!only || only === "image") {
+	console.log("\nImage…");
+	if (shouldSkip("image", IMAGE_MODEL_ID)) {
+		skippedRun += 1;
+		console.log(`  SKIP ${IMAGE_MODEL_ID} (ya OK)`);
+	} else {
+		const r = await testImage();
+		byKey.set(resultKey("image", IMAGE_MODEL_ID), r);
+		console.log(`  ${r.ok ? "OK" : "FAIL"} image-01`);
+		await saveProgress();
+	}
+}
 
-const report = {
-	at: new Date().toISOString(),
-	key: minimaxKeyDisplay(cfg),
-	outDir: OUT_DIR,
-	results,
-};
-await writeFile(join(OUT_DIR, "report.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
-await writeFile(join(OUT_DIR, "SUMMARY.md"), `${renderSummary(results)}\n`, "utf8");
+if (!only || only === "music") {
+	console.log(`\nMusic (${MUSIC_MODELS.length})…`);
+	for (const model of MUSIC_MODELS) {
+		if (shouldSkip("music", model)) {
+			skippedRun += 1;
+			console.log(`  SKIP ${model} (ya OK)`);
+			continue;
+		}
+		const r = await testMusic(model);
+		byKey.set(resultKey("music", model), r);
+		console.log(`  ${r.ok ? "OK" : "FAIL"} ${model}`);
+		await saveProgress();
+		await sleep(1500);
+	}
+}
+
+if (!only || only === "video") {
+	console.log(`\nVideo (${VIDEO_MODELS.length}) — puede tardar varios min…`);
+	for (const model of VIDEO_MODELS) {
+		if (shouldSkip("video", model)) {
+			try {
+				const gotMp4 = await tryDownloadVideoFromMeta(model);
+				if (gotMp4) {
+					const prev = byKey.get(resultKey("video", model));
+					if (prev) {
+						byKey.set(resultKey("video", model), {
+							...prev,
+							artifact: `video/${safeName(model)}.mp4`,
+							detail: `${prev.detail ?? ""} · MP4 local`.replace(/^ · /, ""),
+						});
+						await saveProgress();
+					}
+					console.log(`  OK ${model} · MP4 descargado (tarea ya OK en report)`);
+					continue;
+				}
+			} catch (e) {
+				const msg = e instanceof Error ? e.message : String(e);
+				console.warn(`  AVISO ${model}: retrieve/descarga falló (${msg.slice(0, 80)})`);
+			}
+			skippedRun += 1;
+			console.log(`  SKIP ${model} (ya OK en report)`);
+			continue;
+		}
+		try {
+			const r = await testVideo(model);
+			byKey.set(resultKey("video", model), r);
+			console.log(`  ${r.ok ? "OK" : "FAIL"} ${model} ${r.detail ?? r.baseMsg ?? ""}`);
+		} catch (e) {
+			const msg = e instanceof Error ? e.message : String(e);
+			byKey.set(resultKey("video", model), {
+				modality: "video",
+				model,
+				ok: false,
+				detail: msg,
+				elapsedMs: 0,
+			});
+			console.log(`  FAIL ${model} ${msg}`);
+		}
+		await saveProgress();
+	}
+}
+
+results = buildResultsList(byKey, llms);
+await persistReport(results);
+await persistCatalog();
 
 const failed = results.filter((r) => !r.ok);
 console.log(`\nListo: ${results.length - failed.length}/${results.length} OK`);
+if (skippedRun) console.log(`Omitidos esta pasada: ${skippedRun} (ya OK; --force para repetir)`);
 console.log(`Carpeta: ${OUT_DIR}`);
 if (failed.length) {
 	console.log("Fallos:", failed.map((f) => `${f.modality}/${f.model}`).join(", "));

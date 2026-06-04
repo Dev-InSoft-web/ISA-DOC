@@ -1,5 +1,5 @@
 /**
- * Prueba rápida MiniMax: chat hola mundo + sondeo STT.
+ * Prueba rápida MiniMax: chat hola mundo (proofread / language).
  * Uso: npm run lab:yt:test-minimax
  */
 import { loadLabEnv } from "../../_shared/load-lab-env.ts";
@@ -77,26 +77,6 @@ async function testChat(cfg: MinimaxConfig): Promise<void> {
 	process.exitCode = 1;
 }
 
-async function testSttProbe(cfg: MinimaxConfig): Promise<void> {
-	const url = withGroupId(`${cfg.sttApiBase}/v1/stt/create`, cfg);
-	const res = await fetch(url, {
-		method: "POST",
-		headers: { Authorization: `Bearer ${cfg.apiKey}` },
-		body: new FormData(),
-	});
-	const text = await res.text();
-	console.log(`\n[stt] ${cfg.sttModel} @ ${cfg.sttApiBase}/v1/stt/create`);
-	console.log(`  HTTP ${res.status}`);
-	if (res.status === 404) {
-		console.log("  → STT no disponible en API oficial (esperado); Whisper debe usar Groq o gateway STT");
-	} else if (res.status === 401 || res.status === 403) {
-		console.log(`  Body: ${text.slice(0, 300)}`);
-		console.log("  → Key rechazada en STT");
-	} else {
-		console.log(`  Body: ${text.slice(0, 300)}`);
-	}
-}
-
 const cfg = loadMinimaxConfigFromEnv();
 if (!cfg) {
 	console.error("MINIMAX_API_KEY no cargada desde secrets/patyia/lab-langgraph.env");
@@ -105,7 +85,6 @@ if (!cfg) {
 
 console.log("MiniMax API test");
 console.log(`  ${minimaxKeyDisplay(cfg)}`);
-console.log(`  MINIMAX_STT_MODE=${cfg.sttMode}`);
 if (cfg.groupId) console.log(`  MINIMAX_GROUP_ID=${cfg.groupId}`);
 if (cfg.keyKind === "paygo") {
 	console.log(
@@ -114,6 +93,5 @@ if (cfg.keyKind === "paygo") {
 }
 
 await testChat(cfg);
-await testSttProbe(cfg);
 
 if (!process.exitCode) process.exitCode = 0;

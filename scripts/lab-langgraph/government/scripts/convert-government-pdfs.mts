@@ -65,33 +65,45 @@ console.log(
 
 for (const { pageId, record, pdfPath } of jobs) {
 	if (opts.limit != null && done >= opts.limit) break;
-	done += 1;
 
-	try {
-		const updated = await convertPdfFileToRecord(
-			pdfPath,
-			{
-				url: record.url,
-				corpus: record.corpus,
-				audience: record.audience,
-				fetchedAt: record.fetchedAt,
-			},
-			{ uploadImages, dryRun: opts.dryRun },
-		);
-		if (!updated) {
-			console.log(`  empty ${pageId}`);
-			skip += 1;
-			continue;
+	let attempt = 0;
+	while (true) {
+		attempt += 1;
+		done += 1;
+		console.log(`\n▶ PDF ${pageId} (${record.corpus}) · intento ${attempt}`);
+		try {
+			const updated = await convertPdfFileToRecord(
+				pdfPath,
+				{
+					url: record.url,
+					corpus: record.corpus,
+					audience: record.audience,
+					fetchedAt: record.fetchedAt,
+				},
+				{ uploadImages, dryRun: opts.dryRun },
+			);
+			if (!updated) {
+				console.log(`  empty ${pageId}`);
+				skip += 1;
+				break;
+			}
+			if (!opts.dryRun) await savePage(updated);
+			const imgN = updated.images?.length ?? 0;
+			const hasImgbb = (updated.markdown ?? "").includes("imgbb");
+			console.log(
+				`  ok    ${updated.storageRel ?? "?"}/${pageId} · ${updated.sections?.length ?? 0} § · ${imgN} img · imgbb=${hasImgbb}`,
+			);
+			ok += 1;
+			break;
+		} catch (e) {
+			const msg = e instanceof Error ? e.message : String(e);
+			console.warn(`  retry ${pageId}: ${msg.slice(0, 120)}`);
+			if (attempt >= 20) {
+				console.error(`  FAIL  ${pageId}: ${msg}`);
+				skip += 1;
+				break;
+			}
 		}
-		if (!opts.dryRun) await savePage(updated);
-		console.log(
-			`  ok    ${updated.storageRel ?? "?"}/${pageId} · ${updated.sections?.length ?? 0} § · ${updated.images?.length ?? 0} img`,
-		);
-		ok += 1;
-	} catch (e) {
-		const msg = e instanceof Error ? e.message : String(e);
-		console.error(`  FAIL  ${pageId}: ${msg}`);
-		skip += 1;
 	}
 }
 

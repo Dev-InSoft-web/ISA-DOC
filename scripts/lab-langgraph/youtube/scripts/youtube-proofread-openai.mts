@@ -1,5 +1,5 @@
 /**
- * @deprecated Usar lab-langgraph: POST /api/youtube/proofread (LangGraph: Groq → HF).
+ * @deprecated Usar lab-langgraph: POST /api/youtube/proofread (LangGraph: Groq → MiniMax).
  * Prueba histórica OpenAI. Salida: videos/{videoId}-test.json y {videoId}-test.md
  *
  * Uso: npm run lab:yt:proofread -- <videoId>   (desde ISA-DOC, vía lab-langgraph)

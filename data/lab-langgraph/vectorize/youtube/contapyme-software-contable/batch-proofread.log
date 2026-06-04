@@ -1164,3 +1164,442 @@ OK 3cR3sv_emSE changed=8 groq
 RETRY 3z_V4Nig2Ik Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"
 RETRY 3z_V4Nig2Ik Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"
 RETRY 0n0AZwtxoQw Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"
+RETRY 3z_V4Nig2Ik Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"
+RETRY 3z_V4Nig2Ik Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"
+RETRY 0n0AZwtxoQw Groq y Hugging Face no están disponibles (groq: Groq rate limit (1/2 · GROQ_API_KEY · ···7Jtm: 429 {"error":{"message":"
+
+--- batch-proofread 2026-06-04T06:38:42.563Z n=999 ---
+OK 3z_V4Nig2Ik changed=14 groq
+
+  ══ Comparación 3z_V4Nig2Ik (videos/2011) ══
+  (mismo índice [N] = mismo renglón en transcript.segments; no se cruzan líneas)
+  [0] @0:00
+  [0] ANTES : Cómo exportar un documento de
+  [0] DESPUÉS: ¿Cómo exportar un documento de
+
+  [1] @0:04
+  [1] ANTES : impresión la herramienta de exportar documentos de impresión en el sistema
+  [1] DESPUÉS: impresión? la herramienta de exportar documentos de impresión en el sistema
+
+  [5] @0:26
+  [5] ANTES : imágenes nuevas columnas o nuevos Campos recordemos que en el sistema en donde
+  [5] DESPUÉS: imágenes nuevas columnas o nuevos Campos, recordemos que en el sistema, en donde
+
+  [10] @0:53
+  [10] ANTES : impresión es importante mencionar que al realizar dicho traslado en diferentes
+  [10] DESPUÉS: impresión, es importante mencionar que al realizar dicho traslado en diferentes
+
+  [16] @1:25
+  [16] ANTES : documentos a continuación vamos a realizar el proceso de exportación del
+  [16] DESPUÉS: documentos a continuación, vamos a realizar el proceso de exportación del
+
+  [19] @1:51
+  [19] ANTES : soluciones al hacer clic derecho podemos visualizar todas las acciones
+  [19] DESPUÉS: soluciones al hacer clic derecho, podemos visualizar todas las acciones
+
+  [23] @2:09
+  [23] ANTES : registros e inmediatamente el sistema nos consulta si deseamos exportar el
+  [23] DESPUÉS: registros e inmediatamente el sistema nos consulta. Si deseamos exportar el
+
+  [33] @3:15
+  [33] ANTES : seleccionado y el sistema automáticamente nos despliega una
+  [33] DESPUÉS: seleccionado, y el sistema automáticamente nos despliega una
+
+  [34] @3:19
+  [34] ANTES : ventana en donde nos indica seleccionar la ruta donde deseamos guardar el
+  [34] DESPUÉS: ventana, en donde nos indica seleccionar la ruta donde deseamos guardar el
+
+  [37] @3:37
+  [37] ANTES : documentos en la parte inferior del asistente podemos Modificar el nombre
+  [37] DESPUÉS: documentos en la parte inferior del asistente, podemos Modificar el nombre
+
+  [40] @3:53
+  [40] ANTES : Excel o en Tablas dedatos Bin es muy importante tener en cuenta que al
+  [40] DESPUÉS: excel o en Tablas dedatos Bin es muy importante tener en cuenta que al
+
+  [55] @5:18
+  [55] ANTES : a generar será en archivo de tablas de datos.
+  [55] DESPUÉS: a generar será en archivo de tablas de datos
+
+  [59] @5:40
+  [59] ANTES : satisfactoriamente indicándonos la ruta en donde quedaron guardados los archivos
+  [59] DESPUÉS: satisfactoriamente indicándonos la ruta, en donde quedaron guardados los archivos
+
+  [70] @6:34
+  [70] ANTES : almacenará el listado de las operaciones en donde se puede aplicar el diseño y el
+  [70] DESPUÉS: almacenará el listado de las operaciones, en donde se puede aplicar el diseño y el
+
+  → 14 renglón(es) distinto(s)
+RETRY 4B40cbJ_gt4 Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4B40cbJ_gt4 Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+OK 4B40cbJ_gt4 changed=59 groq
+
+  ══ Comparación 4B40cbJ_gt4 (videos/2011) ══
+  (mismo índice [N] = mismo renglón en transcript.segments; no se cruzan líneas)
+  [0] @0:00
+  [0] ANTES : Encabezado de una operación.
+  [0] DESPUÉS: Encabezado de una operación
+
+  [1] @0:03
+  [1] ANTES : En videos anteriores comentamos que una operación es un asistente que el sistema nos ofrece para el registro de un hecho o evento administrativo que se presenta en la empresa.
+  [1] DESPUÉS: en videos anteriores comentamos que una operación es un asistente que el sistema nos ofrece para el registro de un hecho o evento administrativo que se presenta en la empresa
+
+  [2] @0:14
+  [2] ANTES : El sistema nos ofrece una gran variedad de operaciones a realizar dependiendo del tipo de licenciamiento del cual dispongamos y del tipo de hecho o evento administrativo que vayamos a registrar.
+  [2] DESPUÉS: el sistema nos ofrece una gran variedad de operaciones a realizar dependiendo del tipo de licenciamiento del cual dispongamos y del tipo de hecho o evento administrativo que vayamos a registrar
+
+  [3] @0:36
+  [3] ANTES : Todas estas operaciones independiente del módulo al que pertenezcan tienen algo en común.
+  [3] DESPUÉS: todas estas operaciones independiente del módulo al que pertenezcan tienen algo en común
+
+  [4] @0:44
+  [4] ANTES : Y es que todas solicitan la misma información en su encabezado.
+  [4] DESPUÉS: y es que todas solicitan la misma información en su encabezado
+
+  [5] @0:53
+  [5] ANTES : Si miramos el asistente de una operación de movimiento contable,
+  [5] DESPUÉS: si miramos el asistente de una operación de movimiento contable,
+
+  [6] @1:01
+  [6] ANTES : vamos a encontrar en la parte superior de la operación el encabezado de la operación.
+  [6] DESPUÉS: vamos a encontrar en la parte superior de la operación el encabezado de la operación
+
+  [7] @1:10
+  [7] ANTES : Allí el sistema nos solicita una serie de información vital para registrar la operación
+  [7] DESPUÉS: allí el sistema nos solicita una serie de información vital para registrar la operación
+
+  [8] @1:19
+  [8] ANTES : Información como el tipo de documento de soporte
+  [8] DESPUÉS: información como el tipo de documento de soporte
+
+  [9] @1:24
+  [9] ANTES : El número del documento
+  [9] DESPUÉS: el número del documento
+
+  [10] @1:28
+  [10] ANTES : Centro de costos base
+  [10] DESPUÉS: centro de costos base
+
+  [11] @1:31
+  [11] ANTES : Detalle de la operación
+  [11] DESPUÉS: detalle de la operación
+
+  [12] @1:35
+  [12] ANTES : Clase de operación
+  [12] DESPUÉS: clase de operación
+
+  [13] @1:38
+  [13] ANTES : y fecha de soporte.
+  [13] DESPUÉS: y fecha de soporte
+
+  [14] @1:43
+  [14] ANTES : Si abrimos una operación de gastos,
+  [14] DESPUÉS: si abrimos una operación de gastos,
+
+  [16] @1:54
+  [16] ANTES : en la parte superior solicita la misma información de encabezado.
+  [16] DESPUÉS: en la parte superior solicita la misma información de encabezado
+
+  [17] @2:04
+  [17] ANTES : Igual, si realizamos una operación,
+  [17] DESPUÉS: igual, si realizamos una operación,
+
+  [18] @2:08
+  [18] ANTES : De facturaci y venta ella tiene en la parte superior el mismo encabezado Analicemos entonces qu informaci se debe digitar en el encabezado de una operaci
+  [18] DESPUÉS: de facturaci y venta ella tiene en la parte superior el mismo encabezado Analicemos entonces qu informaci se debe digitar en el encabezado de una operaci
+
+  [19] @2:27
+  [19] ANTES : El primer dato que debemos registrar es el documento de soporte.
+  [19] DESPUÉS: el primer dato que debemos registrar es el documento de soporte
+
+  [20] @2:34
+  [20] ANTES : Este es el documento en el cual justificaremos el hecho o evento administrativo que estamos registrando.
+  [20] DESPUÉS: este es el documento en el cual justificaremos el hecho o evento administrativo que estamos registrando
+
+  [21] @2:42
+  [21] ANTES : El sistema nos ofrece un completo listado de los documentos de soporte necesarios en una empresa para justificar las operaciones.
+  [21] DESPUÉS: el sistema nos ofrece un completo listado de los documentos de soporte necesarios en una empresa para justificar las operaciones
+
+  [22] @2:53
+  [22] ANTES : Por tanto, lo primero que debemos hacer es indicarle al sistema qué tipo de documento de soporte vamos a utilizar.
+  [22] DESPUÉS: por tanto, lo primero que debemos hacer es indicarle al sistema qué tipo de documento de soporte, vamos a utilizar
+
+  [23] @3:01
+  [23] ANTES : En caso de requerir un documento de soporte que no se encuentre en esta lista, debemos proceder a crearlo.
+  [23] DESPUÉS: en caso de requerir un documento de soporte que no se encuentre en esta lista, debemos proceder a crearlo
+
+  [24] @3:15
+  [24] ANTES : Para mayor información de cómo hacerlo, consulte el video Creación de un documento de soporte.
+  [24] DESPUÉS: para mayor información de cómo hacerlo, consulte el video Creación de un documento de soporte
+
+  [25] @3:22
+  [25] ANTES : Una vez hemos indicado el documento de soporte, el sistema nos indica el número del documento
+  [25] DESPUÉS: una vez hemos indicado el documento de soporte, el sistema nos indica el número del documento
+
+  [26] @3:33
+  [26] ANTES : Este número está relacionado con la configuración del documento de soporte que acabamos de seleccionar
+  [26] DESPUÉS: este número está relacionado con la configuración del documento de soporte que acabamos de seleccionar
+
+  [27] @3:44
+  [27] ANTES : Para mayor información sobre el formato de numeración del documento de soporte
+  [27] DESPUÉS: para mayor información sobre el formato de numeración del documento de soporte
+
+  [28] @3:52
+  [28] ANTES : consulte el video Explicación de la definición de la máscara de un documento de soporte.
+  [28] DESPUÉS: consulte el video Explicación de la definición de la máscara de un documento de soporte
+
+  [29] @4:01
+  [29] ANTES : Luego debemos indicar el centro de costos base.
+  [29] DESPUÉS: luego debemos indicar el centro de costos base
+
+  [30] @4:07
+  [30] ANTES : Este es opcional y nos permite especificar el código de un centro de costos de la empresa,
+  [30] DESPUÉS: este es opcional y nos permite especificar el código de un centro de costos de la empresa,
+
+  [31] @4:15
+  [31] ANTES : el cual será usado por la operación como base para la digitación de los centros de costos en el momento en el que se requiera.
+  [31] DESPUÉS: el cual será usado por la operación como base para la digitación de los centros de costos en el momento en el que se requiera
+
+  [32] @4:28
+  [32] ANTES : Ejemplo si indicamos como centro de costos base el centro de costos del departamento administrativo cuyo c es 1DA cuando en el cuerpo de la operaci vayamos a digitar el centro de costos
+  [32] DESPUÉS: ejemplo si indicamos como centro de costos base el centro de costos del departamento administrativo cuyo c es 1DA cuando en el cuerpo de la operaci vayamos a digitar el centro de costos
+
+  [34] @4:57
+  [34] ANTES : sin que sea necesario digitar el código completo.
+  [34] DESPUÉS: sin que sea necesario digitar el código completo
+
+  [35] @5:01
+  [35] ANTES : Es decir, podemos indicar sólo el código SA para la sección de administración, SP para la sección de personal o ST para la sección de tesorería.
+  [35] DESPUÉS: es decir, podemos indicar sólo el código SA para la sección de administración, SP para la sección de personal o ST para la sección de tesorería
+
+  [36] @5:19
+  [36] ANTES : Y vemos cómo el sistema nos completa el código tomando el código del centro de costos base.
+  [36] DESPUÉS: y vemos cómo el sistema nos completa el código tomando el código del centro de costos base
+
+  [37] @5:31
+  [37] ANTES : Esta opción también sirve para cuando vamos a seleccionar un centro de costos.
+  [37] DESPUÉS: esta opción también sirve para cuando, vamos a seleccionar un centro de costos
+
+  [38] @5:38
+  [38] ANTES : Al dar doble clic para seleccionar, vamos a ver que el sistema solo nos mostrará los centros de costos hijos del departamento administrativo.
+  [38] DESPUÉS: al dar doble clic para seleccionar, vamos a ver que el sistema solo nos mostrará los centros de costos hijos del departamento administrativo
+
+  [39] @5:50
+  [39] ANTES : El manejo del centro de costos base es una gran herramienta que nos facilita la digitación de la información en el sistema
+  [39] DESPUÉS: el manejo del centro de costos base es una gran herramienta que nos facilita la digitación de la información en el sistema
+
+  [40] @6:04
+  [40] ANTES : Especialmente en operaciones que pueden ser un poco complejas, como ejemplo la planilla de labores de trabajadores
+  [40] DESPUÉS: especialmente en operaciones que pueden ser un poco complejas, como ejemplo la planilla de labores de trabajadores
+
+  [41] @6:13
+  [41] ANTES : En el encabezado de la operación también debemos digitar el detalle de la operación
+  [41] DESPUÉS: en el encabezado de la operación también debemos digitar el detalle de la operación
+
+  [42] @6:25
+  [42] ANTES : El cual es muy importante
+  [42] DESPUÉS: el cual es muy importante
+
+  [43] @6:29
+  [43] ANTES : Ya que allí queda registrada información que va a estar visible en el manejador de operaciones
+  [43] DESPUÉS: ya que allí queda registrada información que va a estar visible en el manejador de operaciones
+
+  [44] @6:37
+  [44] ANTES : Lo que se pretende con el detalle de la operación es indicar el objetivo con el cual se está registrando la operación.
+  [44] DESPUÉS: lo que se pretende con el detalle de la operación es indicar el objetivo con el cual se está registrando la operación
+
+  [45] @6:48
+  [45] ANTES : Este campo, fuera de ser informativo, nos permitirá realizar algún tipo de búsqueda en el manejador de operaciones.
+  [45] DESPUÉS: este campo, fuera de ser informativo, nos permitirá realizar algún tipo de búsqueda en el manejador de operaciones
+
+  [46] @6:57
+  [46] ANTES : Adicional, debemos indicar la clase de operación.
+  [46] DESPUÉS: adicional, debemos indicar la clase de operación
+
+  [47] @7:17
+  [47] ANTES : Esta también es opcional y se utiliza para clasificar las operaciones.
+  [47] DESPUÉS: esta también es opcional y se utiliza para clasificar las operaciones
+
+  [48] @7:24
+  [48] ANTES : Esto se hace con diferentes objetivos
+  [48] DESPUÉS: esto se hace con diferentes objetivos
+
+  [49] @7:27
+  [49] ANTES : Uno de ellos puede ser utilizar este campo de clase de operación como filtro en el manejador de operaciones
+  [49] DESPUÉS: uno de ellos puede ser utilizar este campo de clase de operación como filtro en el manejador de operaciones
+
+  [50] @7:37
+  [50] ANTES : O también como filtro al general algún tipo de informe
+  [50] DESPUÉS: o también como filtro al general algún tipo de informe
+
+  [51] @7:41
+  [51] ANTES : Un ejemplo del uso de las clases de operaciones
+  [51] DESPUÉS: un ejemplo del uso de las clases de operaciones
+
+  [52] @7:47
+  [52] ANTES : podría ser cuando en una sola base de datos se lleva la contabilidad de varias empresas relacionadas.
+  [52] DESPUÉS: podría ser cuando en una sola base de datos se lleva la contabilidad de varias empresas relacionadas
+
+  [53] @7:57
+  [53] ANTES : Podemos, a través de este campo, clasificar las operaciones por empresa
+  [53] DESPUÉS: podemos, a través de este campo, clasificar las operaciones por empresa
+
+  [55] @8:09
+  [55] ANTES : utilizar este campo como filtro.
+  [55] DESPUÉS: utilizar este campo como filtro
+
+  [56] @8:12
+  [56] ANTES : Para mayor información sobre la configuración de las clases de operación, consulte el video Clasificación de las operaciones.
+  [56] DESPUÉS: para mayor información sobre la configuración de las clases de operación, consulte el video Clasificación de las operaciones
+
+  [57] @8:25
+  [57] ANTES : Finalmente, en el encabezado tenemos la fecha de soporte.
+  [57] DESPUÉS: finalmente, en el encabezado, tenemos la fecha de soporte
+
+  [58] @8:32
+  [58] ANTES : Recordemos que el sistema siempre nos sugiere como fecha de soporte de las operaciones la fecha de trabajo que tenga configurada el sistema.
+  [58] DESPUÉS: recordemos que el sistema siempre nos sugiere como fecha de soporte de las operaciones la fecha de trabajo que tenga configurada el sistema
+
+  [59] @8:42
+  [59] ANTES : pero el usuario puede proceder a indicar la fecha en la cual requiere que se carguen los movimientos que va a generar esta operación.
+  [59] DESPUÉS: pero el usuario puede proceder a indicar la fecha en la cual requiere que se carguen los movimientos que va a generar esta operación
+
+  [60] @8:53
+  [60] ANTES : Como mencionamos inicialmente, este encabezado es común para todas las operaciones
+  [60] DESPUÉS: como mencionamos inicialmente, este encabezado es común para todas las operaciones
+
+  [62] @9:17
+  [62] ANTES : Esto es todo acerca del encabezado de una operación
+  [62] DESPUÉS: esto es todo acerca del encabezado de una operación
+
+  → 59 renglón(es) distinto(s)
+RETRY 4Ft6RqMHHYc Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4Ft6RqMHHYc Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4Ft6RqMHHYc Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+OK 4Ft6RqMHHYc changed=3 groq
+
+  ══ Comparación 4Ft6RqMHHYc (videos/2011) ══
+  (mismo índice [N] = mismo renglón en transcript.segments; no se cruzan líneas)
+  [0] @0:00
+  [0] ANTES : concepto de fecha de trabajo la fecha de trabajo representa la fecha
+  [0] DESPUÉS: Concepto de fecha de trabajo la fecha de trabajo representa la fecha
+
+  [1] @0:05
+  [1] ANTES : en la cual se trabajará en el sistema esta podemos ubicarla en la barra
+  [1] DESPUÉS: en la cual se trabajará en el sistema esta, podemos ubicarla en la barra
+
+  [6] @0:39
+  [6] ANTES : computador pero nosotros podemos indicarle la fecha de trabajo
+  [6] DESPUÉS: computador pero nosotros, podemos indicarle la fecha de trabajo
+
+  → 3 renglón(es) distinto(s)
+RETRY 4LzCUUKDGN8 Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4LzCUUKDGN8 Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4LzCUUKDGN8 Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4LzCUUKDGN8 Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+OK 4LzCUUKDGN8 changed=7 groq
+
+  ══ Comparación 4LzCUUKDGN8 (videos/2011) ══
+  (mismo índice [N] = mismo renglón en transcript.segments; no se cruzan líneas)
+  [0] @0:00
+  [0] ANTES : configuración del dígito de verificación en el sistema existe una configuración
+  [0] DESPUÉS: Configuración del dígito de verificación en el sistema existe una configuración
+
+  [1] @0:05
+  [1] ANTES : especial para el manejo del dígito de verificación donde podemos indicarle las
+  [1] DESPUÉS: especial para el manejo del dígito de verificación donde, podemos indicarle las
+
+  [2] @0:11
+  [2] ANTES : configuraciones necesarias para calcular el dígito de verificación y el tipo de
+  [2] DESPUÉS: configuraciones necesarias para calcular el dígito de verificación, y el tipo de
+
+  [5] @0:33
+  [5] ANTES : al dar clic en este icono se nos abre la ventana de configuración del catálogo de
+  [5] DESPUÉS: al dar clic. En este icono se nos abre la ventana de configuración del catálogo de
+
+  [14] @1:23
+  [14] ANTES : soporte de instrumentada para que se implemente en el sistema en este caso
+  [14] DESPUÉS: soporte de instrumentada para que se implemente en el sistema. En este caso
+
+  [22] @2:07
+  [22] ANTES : tercero recordemos que el código es el nyt la cédula o dependiendo del país el
+  [22] DESPUÉS: tercero, recordemos que el código es el nyt la cédula o dependiendo del país el
+
+  [32] @3:25
+  [32] ANTES : independiente recordemos que para tener disponible la
+  [32] DESPUÉS: independiente, recordemos que para tener disponible la
+
+  → 7 renglón(es) distinto(s)
+RETRY 4PDpd0p70po Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4PDpd0p70po Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4PDpd0p70po Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+OK 4PDpd0p70po changed=6 groq
+
+  ══ Comparación 4PDpd0p70po (videos/2011) ══
+  (mismo índice [N] = mismo renglón en transcript.segments; no se cruzan líneas)
+  [0] @0:00
+  [0] ANTES : concepto de proceso de una operación como vimos en el vídeo de que es una
+  [0] DESPUÉS: Concepto de proceso de una operación como vimos en el vídeo de que es una
+
+  [7] @0:36
+  [7] ANTES : un ejemplo es la operación de facturación y venta que tenemos en este
+  [7] DESPUÉS: un ejemplo es la operación de facturación y venta que tenemos. En este
+
+  [10] @0:52
+  [10] ANTES : la bodega el producto la cantidad y el valor
+  [10] DESPUÉS: la bodega el producto la cantidad, y el valor
+
+  [13] @1:24
+  [13] ANTES : del documento el detalle y el tercero entre otros datos
+  [13] DESPUÉS: del documento el detalle, y el tercero entre otros datos
+
+  [22] @2:22
+  [22] ANTES : genera movimientos de diferentes tipos tenemos muy generado movimiento contable
+  [22] DESPUÉS: genera movimientos de diferentes tipos, tenemos muy generado movimiento contable
+
+  [28] @2:59
+  [28] ANTES : para finalizar recordemos que solicitarle al sistema que procese una
+  [28] DESPUÉS: para finalizar, recordemos que solicitarle al sistema que procese una
+
+  → 6 renglón(es) distinto(s)
+RETRY 4Q8_081EmzY Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4Q8_081EmzY Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4Q8_081EmzY Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4Q8_081EmzY Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4Q8_081EmzY Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4Q8_081EmzY Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4Q8_081EmzY Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 4Q8_081EmzY Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+FAIL 4Q8_081EmzY Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{"message":"Rate limit reached for model `llama-3.3-70b-versatile` ); minimax: fetch failed; hf: Failed to perform inference: an HTTP error occurred when requesting the provider.). Reintenta en 1 minutos.
+OK 5e2FpNXs-TE changed=6 groq
+
+  ══ Comparación 5e2FpNXs-TE (videos/2011) ══
+  (mismo índice [N] = mismo renglón en transcript.segments; no se cruzan líneas)
+  [0] @0:01
+  [0] ANTES : introducción general registro de la
+  [0] DESPUÉS: Introducción general registro de la
+
+  [5] @0:25
+  [5] ANTES : Campos para la cuenta y los asientos débito crédito
+  [5] DESPUÉS: campos para la cuenta y los asientos débito crédito
+
+  [14] @1:12
+  [14] ANTES : etcétera por ejemplo en este módulo de ingresos y gastos tenemos operaciones
+  [14] DESPUÉS: etcétera por ejemplo. En este módulo de ingresos y gastos, tenemos operaciones
+
+  [33] @2:49
+  [33] ANTES : es la siguiente aquí tenemos un ejemplo típico de una planilla de labores en
+  [33] DESPUÉS: es la siguiente aquí, tenemos un ejemplo típico de una planilla de labores en
+
+  [39] @3:16
+  [39] ANTES : labor en sí misma y finalmente los datos cuantitativos cantidad de mano de obora
+  [39] DESPUÉS: labor en sí misma, y finalmente los datos cuantitativos cantidad de mano de obora
+
+  [50] @4:08
+  [50] ANTES : vendido su cantidad el precio de venta y el centro de costos generador de ese
+  [50] DESPUÉS: vendido su cantidad el precio de venta, y el centro de costos generador de ese
+
+  → 6 renglón(es) distinto(s)
+RETRY 5eJ8N4cLnNg Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 5eJ8N4cLnNg Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{
+RETRY 5eJ8N4cLnNg Groq, MiniMax y Hugging Face no están disponibles (groq: Groq rate limit (2/2 · GROQ_API_KEY_2 · ···CTse: 429 {"error":{

@@ -7,14 +7,18 @@ import {
 	getGroqKeyPool,
 	isGroqRateLimitError as isGroqQuotaError,
 } from "../../_shared/groq-api-keys.ts";
+import { parseGroqRetryHintMs } from "./groq.ts";
 import {
 	applyTranscriptToRecord,
 	transcribeAudioForCorpus,
 	type WhisperTranscribeProvider,
 } from "./transcribe.ts";
 import {
+	advanceWhisperRouteOnRetry,
 	createWhisperRouteState,
+	resetWhisperRouteAfterWait,
 	whisperRouteDisplay,
+	type WhisperRouteState,
 } from "./whisper-route.ts";
 import { rebuildCorpusFile } from "../scripts/fetch-contapyme-channel-transcripts.mts";
 import { segmentsToTimestampedLines, videoCorpusMarkdown } from "../lib/transcript-md.ts";
@@ -65,11 +69,13 @@ export type WhisperFallbackOpts = {
 	/** 0 = reintentar el mismo video hasta transcribir (default). */
 	maxAttemptsPerVideo?: number;
 	stats?: WhisperRetryStats | undefined;
+	/** Router Groq/MiniMax compartido entre reintentos del mismo video. */
+	route?: WhisperRouteState;
 };
 
 export function parseWhisperArgs(argv: string[]): Required<WhisperFallbackOpts> {
 	let limit = 0;
-	let delayMs = 15_000;
+	let delayMs = 0;
 	let videoId: string | null = null;
 	let forceAudio = false;
 	let skipRebuild = false;
@@ -211,6 +217,7 @@ export async function processWhisperJob(
 		model: DEFAULT_MODEL,
 		language: "es",
 		stats: opts.stats,
+		route: opts.route,
 	});
 	if (!segments.length) throw new Error("Whisper devolvió 0 segmentos");
 
@@ -277,13 +284,13 @@ export async function runWhisperFallback(opts: WhisperFallbackOpts): Promise<Whi
 		console.log(`\n[${i + 1}/${slice.length}] ${vid} · ${title} · ${dur} (${kind})`);
 		console.log(`  modo: no avanzar hasta transcribir`);
 
-		const routePreview = createWhisperRouteState();
+		const route = createWhisperRouteState();
 
 		while (true) {
 			attempt += 1;
 			const pending = await pendingSnapshot();
 			const pendingInBatch = slice.length - i;
-			const apiKeyDisplay = whisperRouteDisplay(routePreview);
+			const apiKeyDisplay = whisperRouteDisplay(route);
 			logWhisperAttemptStatus({
 				phase: "intento",
 				vid,
@@ -307,7 +314,7 @@ export async function runWhisperFallback(opts: WhisperFallbackOpts): Promise<Whi
 
 			const t0 = performance.now();
 			try {
-				const result = await processWhisperJob(record, cfg);
+				const result = await processWhisperJob(record, { ...cfg, route });
 				const elapsedSec = Number(((performance.now() - t0) / 1000).toFixed(1));
 				stats.recordOk(elapsedSec * 1000);
 				await saveWhisperStats(STATS_PATH, stats);
@@ -346,51 +353,46 @@ export async function runWhisperFallback(opts: WhisperFallbackOpts): Promise<Whi
 				const pendingAfter = await pendingSnapshot();
 				const pendingInBatch = slice.length - i;
 
-				if (
-					isGroqRateLimitError(msg) ||
-					msg.includes("MiniMax") ||
-					msg.includes("cuota") ||
-					isMinimaxUnavailableError(msg)
-				) {
+				if (isGroqRateLimitError(msg)) {
 					rateLimitWaits += 1;
-					const noMinimax = msg.includes("sin MiniMax");
-					const wait = noMinimax
-						? stats.suggestedWaitMs(cfg.rateLimitWaitMs)
-						: stats.suggestedWaitMs(cfg.rateLimitWaitMs);
-					stats.recordWait(wait);
-					await saveWhisperStats(STATS_PATH, stats);
-					getGroqKeyPool().resetToFirst();
-					logRetryPlan({
-						vid,
-						attempt,
-						reason: noMinimax
-							? `429 · MINIMAX_API_KEY ausente · espera ${Math.round(wait / 1000)}s`
-							: `429 · rutas agotadas (Groq+MiniMax) · espera ${Math.round(wait / 1000)}s`,
-						waitMs: wait,
-						stats,
-						sessionOk,
-						pendingGlobal: pendingAfter.count,
-						pendingInBatch,
-						batchDone: ok,
-						batchTotal: slice.length,
-						pendingIds: pendingAfter.ids,
-						apiKeyDisplay,
-					});
-					await appendFile(
-						LOG_PATH,
-						`WAIT ${vid} ${Math.round(wait / 1000)}s ${noMinimax ? "no_minimax" : "all_routes"} attempt=${attempt}\n`,
-					);
-					await sleep(wait);
+					const hint = parseGroqRetryHintMs(msg);
+					const wait = hint ?? 0;
+					if (wait > 0) {
+						stats.recordWait(wait);
+						await saveWhisperStats(STATS_PATH, stats);
+						logRetryPlan({
+							vid,
+							attempt,
+							reason: `429 · Groq ASPH · espera API ${Math.round(wait / 1000)}s`,
+							waitMs: wait,
+							stats,
+							sessionOk,
+							pendingGlobal: pendingAfter.count,
+							pendingInBatch,
+							batchDone: ok,
+							batchTotal: slice.length,
+							pendingIds: pendingAfter.ids,
+							apiKeyDisplay,
+						});
+						await appendFile(
+							LOG_PATH,
+							`WAIT ${vid} ${Math.round(wait / 1000)}s groq_hint attempt=${attempt}\n`,
+						);
+						await sleep(wait);
+					}
+					resetWhisperRouteAfterWait(route);
+					console.warn(`  Whisper · cascada reinicia ${whisperRouteDisplay(route)}`);
 					continue;
 				}
 
 				{
-					const wait = stats.suggestedRetryMs();
+					advanceWhisperRouteOnRetry(route);
+					const nextKeyDisplay = whisperRouteDisplay(route);
 					logRetryPlan({
 						vid,
 						attempt,
-						reason: `${msg.slice(0, 60)} · ${apiKeyDisplay}`,
-						waitMs: wait,
+						reason: `${msg.slice(0, 60)} · próximo ${nextKeyDisplay}`,
+						waitMs: 0,
 						stats,
 						sessionOk,
 						pendingGlobal: pendingAfter.count,
@@ -398,10 +400,9 @@ export async function runWhisperFallback(opts: WhisperFallbackOpts): Promise<Whi
 						batchDone: ok,
 						batchTotal: slice.length,
 						pendingIds: pendingAfter.ids,
-						apiKeyDisplay,
+						apiKeyDisplay: nextKeyDisplay,
 					});
-					await appendFile(LOG_PATH, `RETRY ${vid} ${msg.slice(0, 120)} wait=${Math.round(wait / 1000)}s\n`);
-					await sleep(wait);
+					await appendFile(LOG_PATH, `RETRY ${vid} ${msg.slice(0, 120)}\n`);
 					continue;
 				}
 			}

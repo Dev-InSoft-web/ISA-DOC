@@ -9,8 +9,12 @@ import {
 	minimaxKeyDisplay,
 	type MinimaxConfig,
 } from "../../_shared/minimax-config.ts";
-
 export type WhisperTranscribeProvider = "groq" | "minimax";
+
+/** STT YouTube: solo Groq; MiniMax no tiene API STT en api.minimax.io. */
+export function canUseMinimaxWhisperFallback(): boolean {
+	return false;
+}
 
 export type WhisperRouteState = {
 	pool: GroqKeyPool;
@@ -22,12 +26,7 @@ export function createWhisperRouteState(): WhisperRouteState {
 	loadLabEnv();
 	const pool = getGroqKeyPool();
 	pool.resetToFirst();
-	const minimax = loadMinimaxConfigFromEnv();
-	if (!minimax) {
-		console.warn(
-			"  Whisper · MINIMAX_API_KEY no cargada (secrets/patyia/lab-langgraph.env) · solo 2 rutas Groq",
-		);
-	}
+	const minimax = canUseMinimaxWhisperFallback() ? loadMinimaxConfigFromEnv() : null;
 	return {
 		pool,
 		minimax,
@@ -39,7 +38,7 @@ export function whisperRouteCount(state: WhisperRouteState): number {
 	return state.pool.size + (state.minimax ? 1 : 0);
 }
 
-/** Consola: `2/3 · GROQ_API_KEY_2 · ···CTse` o `3/3 · MINIMAX_API_KEY · ···1-pE` */
+/** Consola: `1/2 · GROQ_API_KEY · ···CTse` (solo Groq; MiniMax STT desactivado). */
 export function whisperRouteDisplay(state: WhisperRouteState): string {
 	const total = whisperRouteCount(state);
 	if (state.provider === "minimax" && state.minimax) {
@@ -76,8 +75,32 @@ export function resetWhisperRouteAfterWait(state: WhisperRouteState): void {
 	state.pool.resetToFirst();
 }
 
-/** Pausa fija tras intentar MiniMax antes de volver a Groq (default 30 s). */
+/**
+ * Tras un fallo reintentable (yt-dlp, red, etc.): siguiente ruta 1/2→2/2→1/2.
+ * Distinto de rotateWhisperRouteOnQuota (solo ante 429 dentro de transcribe).
+ */
+export function advanceWhisperRouteOnRetry(state: WhisperRouteState): void {
+	if (state.provider === "groq") {
+		if (state.pool.currentIndex < state.pool.size - 1) {
+			state.pool.rotateOn429();
+			console.warn(`  Whisper · siguiente ruta ${whisperRouteDisplay(state)}`);
+			return;
+		}
+		if (state.minimax) {
+			state.provider = "minimax";
+			console.warn(`  Whisper · siguiente ruta ${whisperRouteDisplay(state)}`);
+			return;
+		}
+		state.pool.resetToFirst();
+		console.warn(`  Whisper · siguiente ruta ${whisperRouteDisplay(state)}`);
+		return;
+	}
+	state.provider = "groq";
+	state.pool.resetToFirst();
+	console.warn(`  Whisper · siguiente ruta ${whisperRouteDisplay(state)}`);
+}
+
+/** Sin pausa tras MiniMax (STT desactivado; cascada solo Groq). */
 export function whisperAfterMinimaxDelayMs(): number {
-	const n = Number(process.env.WHISPER_AFTER_MINIMAX_MS?.trim());
-	return Number.isFinite(n) && n >= 0 ? n : 30_000;
+	return 0;
 }

@@ -305,6 +305,11 @@ async function transcribeChunkMultimodal(
 	if (!fileId) throw new Error(`MiniMax upload sin file_id: ${upText.slice(0, 300)}`);
 
 	const chatUrl = withGroupId(`${cfg.apiBase}/v1/text/chatcompletion_v2`, cfg);
+	const videoRef = `mm_file://${fileId}`;
+	const isM3 = cfg.chatModel.startsWith("MiniMax-M3");
+	const videoPart = isM3
+		? { type: "video_url", video_url: { url: videoRef } }
+		: { type: "input_video", video_url: videoRef };
 	const payload = {
 		model: cfg.chatModel,
 		messages: [
@@ -312,7 +317,7 @@ async function transcribeChunkMultimodal(
 				role: "user",
 				name: "user",
 				content: [
-					{ type: "input_video", video_url: `mm_file://${fileId}` },
+					videoPart,
 					{
 						type: "text",
 						text: "Transcribe el audio en español. Devuelve solo líneas [HH:MM:SS.mmm] texto, una frase por línea.",

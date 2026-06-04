@@ -59,7 +59,7 @@ Documentación: `public/content/docs/patyia/lab-03-youtube-corpus.md`.
 
 ### Corrección ortográfica (una vez por video)
 
-Orquestador **LangGraph** en `lab-langgraph` (Groq → Hugging Face; OpenAI solo con `allowOpenAi=true`).
+Orquestador **LangGraph** en `lab-langgraph` (Groq → MiniMax; OpenAI solo con `allowOpenAi=true`). **HF** solo para embeddings/index RAG.
 
 Historial: `youtube/contapyme-software-contable/proofread-history.json` (archivo, modelo, API, tokens, coste USD, lotes).
 

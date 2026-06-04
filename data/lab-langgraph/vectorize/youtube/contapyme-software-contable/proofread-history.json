@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-04T06:13:49.473Z",
+  "updatedAt": "2026-06-04T07:45:44.760Z",
   "runs": [
     {
       "at": "2026-06-03T17:56:04.529Z",
@@ -2960,6 +2960,343 @@
         }
       ],
       "durationMs": 58854
+    },
+    {
+      "at": "2026-06-04T06:45:26.656Z",
+      "videoId": "3z_V4Nig2Ik",
+      "sourceFile": "videos/3z_V4Nig2Ik.json",
+      "outputFile": "videos/3z_V4Nig2Ik.json",
+      "segmentCount": 79,
+      "segmentsChanged": 14,
+      "provider": "groq",
+      "model": "llama-3.3-70b-versatile",
+      "api": "groq",
+      "batches": 3,
+      "tokens": {
+        "input": 5239,
+        "output": 3559,
+        "total": 8798
+      },
+      "costUsd": {
+        "input": 0.00177267,
+        "output": 0.0041633799999999995,
+        "total": 0.00593605
+      },
+      "attempts": [
+        {
+          "batch": "1-35/79",
+          "api": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "ok": true,
+          "tokens": {
+            "input": 693,
+            "output": 262,
+            "total": 955
+          },
+          "costUsd": {
+            "input": 0.00040887,
+            "output": 0.00020698000000000003,
+            "total": 0.00061585
+          },
+          "durationMs": 143817
+        },
+        {
+          "batch": "36-70/79",
+          "api": "minimax",
+          "model": "MiniMax-M2.5",
+          "ok": true,
+          "tokens": {
+            "input": 1541,
+            "output": 1871,
+            "total": 3412
+          },
+          "costUsd": {
+            "input": 0.0004623,
+            "output": 0.0022452,
+            "total": 0.0027075000000000003
+          },
+          "durationMs": 134053
+        },
+        {
+          "batch": "71-79/79",
+          "api": "minimax",
+          "model": "MiniMax-M2.5",
+          "ok": true,
+          "tokens": {
+            "input": 3005,
+            "output": 1426,
+            "total": 4431
+          },
+          "costUsd": {
+            "input": 0.0009015,
+            "output": 0.0017112,
+            "total": 0.0026127
+          },
+          "durationMs": 126161
+        }
+      ],
+      "durationMs": 404089
+    },
+    {
+      "at": "2026-06-04T06:53:02.815Z",
+      "videoId": "4B40cbJ_gt4",
+      "sourceFile": "videos/4B40cbJ_gt4.json",
+      "outputFile": "videos/4B40cbJ_gt4.json",
+      "segmentCount": 63,
+      "segmentsChanged": 59,
+      "provider": "groq",
+      "model": "llama-3.3-70b-versatile",
+      "api": "groq",
+      "batches": 2,
+      "tokens": {
+        "input": 2325,
+        "output": 1620,
+        "total": 3945
+      },
+      "costUsd": {
+        "input": 0.00089325,
+        "output": 0.0018480600000000001,
+        "total": 0.00274131
+      },
+      "attempts": [
+        {
+          "batch": "1-35/63",
+          "api": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "ok": true,
+          "tokens": {
+            "input": 675,
+            "output": 234,
+            "total": 909
+          },
+          "costUsd": {
+            "input": 0.00039825,
+            "output": 0.00018486000000000002,
+            "total": 0.00058311
+          },
+          "durationMs": 23386
+        },
+        {
+          "batch": "36-63/63",
+          "api": "minimax",
+          "model": "MiniMax-M2.5",
+          "ok": true,
+          "tokens": {
+            "input": 1650,
+            "output": 1386,
+            "total": 3036
+          },
+          "costUsd": {
+            "input": 0.000495,
+            "output": 0.0016632,
+            "total": 0.0021582
+          },
+          "durationMs": 126568
+        }
+      ],
+      "durationMs": 149965
+    },
+    {
+      "at": "2026-06-04T07:01:05.536Z",
+      "videoId": "4Ft6RqMHHYc",
+      "sourceFile": "videos/4Ft6RqMHHYc.json",
+      "outputFile": "videos/4Ft6RqMHHYc.json",
+      "segmentCount": 17,
+      "segmentsChanged": 3,
+      "provider": "groq",
+      "model": "llama-3.3-70b-versatile",
+      "api": "groq",
+      "batches": 1,
+      "tokens": {
+        "input": 679,
+        "output": 397,
+        "total": 1076
+      },
+      "costUsd": {
+        "input": 0.00040061,
+        "output": 0.00031363,
+        "total": 0.00071424
+      },
+      "attempts": [
+        {
+          "batch": "1-17/17",
+          "api": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "ok": true,
+          "tokens": {
+            "input": 679,
+            "output": 397,
+            "total": 1076
+          },
+          "costUsd": {
+            "input": 0.00040061,
+            "output": 0.00031363,
+            "total": 0.00071424
+          },
+          "durationMs": 1526
+        }
+      ],
+      "durationMs": 1534
+    },
+    {
+      "at": "2026-06-04T07:14:03.876Z",
+      "videoId": "4LzCUUKDGN8",
+      "sourceFile": "videos/4LzCUUKDGN8.json",
+      "outputFile": "videos/4LzCUUKDGN8.json",
+      "segmentCount": 46,
+      "segmentsChanged": 7,
+      "provider": "groq",
+      "model": "llama-3.3-70b-versatile",
+      "api": "groq",
+      "batches": 2,
+      "tokens": {
+        "input": 2437,
+        "output": 3071,
+        "total": 5508
+      },
+      "costUsd": {
+        "input": 0.00093526,
+        "output": 0.003513,
+        "total": 0.00444826
+      },
+      "attempts": [
+        {
+          "batch": "1-35/46",
+          "api": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "ok": true,
+          "tokens": {
+            "input": 704,
+            "output": 420,
+            "total": 1124
+          },
+          "costUsd": {
+            "input": 0.00041536,
+            "output": 0.00033180000000000004,
+            "total": 0.00074716
+          },
+          "durationMs": 3416
+        },
+        {
+          "batch": "36-46/46",
+          "api": "minimax",
+          "model": "MiniMax-M2.5",
+          "ok": true,
+          "tokens": {
+            "input": 1733,
+            "output": 2651,
+            "total": 4384
+          },
+          "costUsd": {
+            "input": 0.0005199,
+            "output": 0.0031812,
+            "total": 0.0037010999999999997
+          },
+          "durationMs": 137791
+        }
+      ],
+      "durationMs": 141217
+    },
+    {
+      "at": "2026-06-04T07:22:07.202Z",
+      "videoId": "4PDpd0p70po",
+      "sourceFile": "videos/4PDpd0p70po.json",
+      "outputFile": "videos/4PDpd0p70po.json",
+      "segmentCount": 34,
+      "segmentsChanged": 6,
+      "provider": "groq",
+      "model": "llama-3.3-70b-versatile",
+      "api": "groq",
+      "batches": 1,
+      "tokens": {
+        "input": 675,
+        "output": 359,
+        "total": 1034
+      },
+      "costUsd": {
+        "input": 0.00039825,
+        "output": 0.00028361,
+        "total": 0.0006818600000000001
+      },
+      "attempts": [
+        {
+          "batch": "1-34/34",
+          "api": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "ok": true,
+          "tokens": {
+            "input": 675,
+            "output": 359,
+            "total": 1034
+          },
+          "costUsd": {
+            "input": 0.00039825,
+            "output": 0.00028361,
+            "total": 0.0006818600000000001
+          },
+          "durationMs": 4039
+        }
+      ],
+      "durationMs": 4048
+    },
+    {
+      "at": "2026-06-04T07:45:44.759Z",
+      "videoId": "5e2FpNXs-TE",
+      "sourceFile": "videos/5e2FpNXs-TE.json",
+      "outputFile": "videos/5e2FpNXs-TE.json",
+      "segmentCount": 55,
+      "segmentsChanged": 6,
+      "provider": "groq",
+      "model": "llama-3.3-70b-versatile",
+      "api": "groq",
+      "batches": 2,
+      "tokens": {
+        "input": 2137,
+        "output": 2768,
+        "total": 4905
+      },
+      "costUsd": {
+        "input": 0.00084149,
+        "output": 0.00325969,
+        "total": 0.004101179999999999
+      },
+      "attempts": [
+        {
+          "batch": "1-35/55",
+          "api": "groq",
+          "model": "llama-3.3-70b-versatile",
+          "ok": true,
+          "tokens": {
+            "input": 691,
+            "output": 151,
+            "total": 842
+          },
+          "costUsd": {
+            "input": 0.00040769,
+            "output": 0.00011929000000000002,
+            "total": 0.00052698
+          },
+          "durationMs": 692
+        },
+        {
+          "batch": "36-55/55",
+          "api": "minimax",
+          "model": "MiniMax-M2.5",
+          "ok": true,
+          "tokens": {
+            "input": 1446,
+            "output": 2617,
+            "total": 4063
+          },
+          "costUsd": {
+            "input": 0.0004338,
+            "output": 0.0031404,
+            "total": 0.0035741999999999996
+          },
+          "durationMs": 133259
+        }
+      ],
+      "durationMs": 133960
     }
   ]
 }
