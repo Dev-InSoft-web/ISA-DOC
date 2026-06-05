@@ -4,9 +4,7 @@ import { io as ioClient, type Socket } from "socket.io-client";
 
 import { STATIC_MODE, BASE_URL, withBase } from "../../integrations/runtime/staticMode";
 
-import { useLabPersistence } from "../../core/lab-api/persistence.ts";
-
-import { getLabApiBase } from "../../core/lab-api/client.ts";
+import { labGetRevisado, labPostRevisado, useLabPersistence } from "../../core/lab-api/persistence.ts";
 
 
 
@@ -18,27 +16,9 @@ const LS_KEY = "isa-doc-revisado-v1";
 
 
 
-function revisadoApiUrl(): string {
+function localRevisadoSources(): string[] {
 
-	if (useLabPersistence()) return `${getLabApiBase()}/api/revisado`;
-
-	return "/api/revisado";
-
-}
-
-
-
-function revisadoSources(): string[] {
-
-	const out: string[] = [];
-
-	if (useLabPersistence()) out.push(revisadoApiUrl());
-
-	out.push("/api/revisado");
-
-	out.push(withBase("/static-api/revisado.json"));
-
-	return out;
+	return ["/api/revisado", withBase("/static-api/revisado.json")];
 
 }
 
@@ -142,7 +122,17 @@ async function loadFromServer(): Promise<void> {
 
 	const parts: RevisadoMap[] = [readLocalStorage()];
 
-	for (const url of revisadoSources()) {
+	if (useLabPersistence()) {
+
+		try {
+
+			parts.push(await labGetRevisado());
+
+		} catch { /* lab apagado o login cancelado */ }
+
+	}
+
+	for (const url of localRevisadoSources()) {
 
 		const m = await fetchRevisadoMap(url);
 
@@ -198,6 +188,12 @@ if (typeof window !== "undefined" && !loaded) {
 
 	startSocket();
 
+	window.addEventListener("isa-doc:lab-auth-ready", () => {
+
+		void loadFromServer();
+
+	});
+
 }
 
 
@@ -222,11 +218,35 @@ async function pushToServer(updates: RevisadoMap): Promise<void> {
 
 
 
-	const urls = revisadoSources();
-
 	let last: RevisadoMap | null = null;
 
-	for (const url of urls) {
+	if (useLabPersistence()) {
+
+		try {
+
+			last = await labPostRevisado(updates);
+
+		} catch { /* fallback a fuentes locales */ }
+
+	}
+
+	if (last) {
+
+		revisadoStore.update((cur) => {
+
+			const merged = mergeMaps(cur, last);
+
+			writeLocalStorage(merged);
+
+			return merged;
+
+		});
+
+		return;
+
+	}
+
+	for (const url of localRevisadoSources()) {
 
 		try {
 
@@ -258,9 +278,15 @@ async function pushToServer(updates: RevisadoMap): Promise<void> {
 
 	if (last) {
 
-		revisadoStore.set(last);
+		revisadoStore.update((cur) => {
 
-		writeLocalStorage(last);
+			const merged = mergeMaps(cur, last);
+
+			writeLocalStorage(merged);
+
+			return merged;
+
+		});
 
 	}
 

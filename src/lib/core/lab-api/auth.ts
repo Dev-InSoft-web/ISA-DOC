@@ -38,16 +38,19 @@ export function clearStoredLabToken(): void {
 	localStorage.removeItem(STORAGE_EXP_KEY);
 }
 
+export function hasValidLabSession(): boolean {
+	const token = getStoredLabToken();
+	return Boolean(token && !labTokenExpired());
+}
+
 export function labTokenExpired(): boolean {
+	const token = getStoredLabToken();
+	if (!token) return true;
+	const payload = decodeJwtPayload(token);
+	if (payload?.exp) return Date.now() >= payload.exp * 1000;
 	const expIso = getStoredLabTokenExpiry();
-	if (!expIso) {
-		const token = getStoredLabToken();
-		if (!token) return true;
-		const payload = decodeJwtPayload(token);
-		if (payload?.exp) return Date.now() >= payload.exp * 1000;
-		return false;
-	}
-	return Date.now() >= new Date(expIso).getTime();
+	if (expIso) return Date.now() >= new Date(expIso).getTime();
+	return false;
 }
 
 function decodeJwtPayload(token: string): { exp?: number } | null {

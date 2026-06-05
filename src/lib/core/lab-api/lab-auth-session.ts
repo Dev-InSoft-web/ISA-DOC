@@ -11,9 +11,18 @@ type Pending = {
 
 let pending: Pending | null = null;
 
+function readValidToken(): string | null {
+	const token = getStoredLabToken();
+	if (!token || labTokenExpired()) return null;
+	return token;
+}
+
 export function openLabAuthModal(): Promise<string> {
-	const existing = getStoredLabToken();
-	if (existing && !labTokenExpired()) return Promise.resolve(existing);
+	const existing = readValidToken();
+	if (existing) {
+		labAuthModalOpen.set(false);
+		return Promise.resolve(existing);
+	}
 	if (pending) {
 		return new Promise((resolve, reject) => {
 			const prev = pending!;
@@ -31,7 +40,17 @@ export function openLabAuthModal(): Promise<string> {
 	}
 	return new Promise((resolve, reject) => {
 		pending = { resolve, reject };
-		labAuthModalOpen.set(true);
+		queueMicrotask(() => {
+			const token = readValidToken();
+			if (token) {
+				labAuthModalOpen.set(false);
+				pending?.resolve(token);
+				pending = null;
+				return;
+			}
+			if (!pending) return;
+			labAuthModalOpen.set(true);
+		});
 	});
 }
 
@@ -40,6 +59,9 @@ export function completeLabAuth(token: string, expiresAt?: string): void {
 	labAuthModalOpen.set(false);
 	pending?.resolve(token);
 	pending = null;
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(new CustomEvent("isa-doc:lab-auth-ready"));
+	}
 }
 
 export function cancelLabAuth(message = "Autenticación cancelada"): void {
@@ -70,8 +92,11 @@ export async function loginLabApi(username: string, password: string): Promise<L
 }
 
 export async function ensureLabToken(): Promise<string> {
-	const t = getStoredLabToken();
-	if (t && !labTokenExpired()) return t;
+	const t = readValidToken();
+	if (t) {
+		labAuthModalOpen.set(false);
+		return t;
+	}
 	return openLabAuthModal();
 }
 

@@ -4,7 +4,7 @@
  */
 
 import { labAuthHeaders, labTokenExpired, getStoredLabToken } from "./auth.ts";
-import { ensureLabToken, invalidateLabSession, openLabAuthModal } from "./lab-auth-session.ts";
+import { ensureLabToken, invalidateLabSession } from "./lab-auth-session.ts";
 
 const RAW =
 	(typeof import.meta !== "undefined" && import.meta.env?.PUBLIC_LAB_LANGGRAPH_URL) ||
@@ -29,9 +29,6 @@ function normalizePath(path: string): string {
 async function authHeadersForPath(path: string): Promise<Record<string, string>> {
 	const p = normalizePath(path);
 	if (PUBLIC_PATHS.has(p)) return {};
-	if (!getStoredLabToken() || labTokenExpired()) {
-		await ensureLabToken();
-	}
 	return labAuthHeaders();
 }
 
@@ -60,8 +57,10 @@ export async function labFetch<T = unknown>(
 		data = { raw: text };
 	}
 	if (res.status === 401 && retryOn401 && !PUBLIC_PATHS.has(normalizePath(path))) {
-		invalidateLabSession();
-		await openLabAuthModal();
+		if (auth.Authorization) {
+			invalidateLabSession();
+		}
+		await ensureLabToken();
 		return labFetch<T>(path, init, false);
 	}
 	if (!res.ok) {

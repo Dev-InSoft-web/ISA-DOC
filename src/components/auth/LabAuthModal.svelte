@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, FlexLayout, InputDecorated, Modal, Text, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, FlexLayout, Input, InputPass, Modal, Text, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
 	import {
 		cancelLabAuth,
 		completeLabAuth,
@@ -7,7 +7,7 @@
 		loginLabApi,
 	} from "../../lib/core/lab-api/lab-auth-session.ts";
 
-	let username = "JAGUDELOE";
+	let username = "";
 	let password = "";
 	let loading = false;
 
@@ -36,16 +36,18 @@
 	}
 </script>
 
-<Modal bshow={$labAuthModalOpen} loading={loading} showCloseHeader on:close={onClose}>
-	<FlexLayout direction="column" gap="md" style="min-width: 320px; max-width: 420px;">
-		<Text as="p">
-			La sesión con <strong>lab-langgraph</strong> expiró o no existe. Ingresa usuario y contraseña para obtener un JWT (30 días).
-		</Text>
-		<InputDecorated label="Usuario" bind:value={username} autocomplete="username" />
-		<InputDecorated label="Contraseña" type="password" bind:value={password} autocomplete="current-password" />
-		<FlexLayout gap="sm" justify="end">
-			<Button variant="outlined" onClick={onClose} disabled={loading}>Cancelar</Button>
-			<Button onClick={submit} disabled={loading}>Iniciar sesión</Button>
+{#if $labAuthModalOpen}
+	<Modal bshow={true} {loading} showCloseHeader on:close={onClose}>
+		<FlexLayout direction="column" gap="md" style="min-width: 320px; max-width: 420px;">
+			<Text as="p">
+				La sesión con <strong>lab-langgraph</strong> expiró o no existe. Ingresa usuario y contraseña para obtener un JWT (30 días).
+			</Text>
+			<Input label="Usuario" bind:value={username} required={false} />
+			<InputPass label="Contraseña" bind:value={password} required={false} />
+			<FlexLayout gap="sm" justify="end">
+				<Button variant="outlined" onClick={onClose} disabled={loading}>Cancelar</Button>
+				<Button onClick={submit} disabled={loading}>Iniciar sesión</Button>
+			</FlexLayout>
 		</FlexLayout>
-	</FlexLayout>
-</Modal>
+	</Modal>
+{/if}

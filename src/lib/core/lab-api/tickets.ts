@@ -28,13 +28,11 @@ export function ticketsStoreEnabled(): boolean {
 
 export async function fetchTicketsFromStore(limit = 500): Promise<TicketStoredRecord[] | null> {
 	if (!ticketsStoreEnabled()) return null;
-	try {
-		const res = await labFetch<IspgenList<TicketStoredRecord>>(`${SEGMENT}?limit=${limit}`);
-		if (!res.encabezado.resultado) return null;
-		return (res.respuesta.lista ?? []).map((r) => normalizeTicketFromStore(r as Record<string, unknown>));
-	} catch {
-		return null;
+	const res = await labFetch<IspgenList<TicketStoredRecord>>(`${SEGMENT}?limit=${limit}`);
+	if (!res.encabezado.resultado) {
+		throw new Error(res.encabezado.mensaje || "Error al listar tickets en lab-langgraph");
 	}
+	return (res.respuesta.lista ?? []).map((r) => normalizeTicketFromStore(r as Record<string, unknown>));
 }
 
 export async function fetchTicketFromStore(code: string): Promise<TicketStoredRecord | null> {

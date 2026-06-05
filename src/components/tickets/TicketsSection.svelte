@@ -3,6 +3,7 @@
 	import { Button, FlexLayout, Iconify, H3 } from "@ingenieria_insoft/ispsveltecomponents";
 	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import { loadTickets, type TicketRegistro } from "../../lib/features/tickets/ticketStore.js";
+	import { labApiEnabled } from "../../lib/core/lab-api/client.ts";
 	import TicketViewerModal from "./TicketViewerModal.svelte";
 
 	export let proyecto: "ClientesIS" | "PatyIA" = "ClientesIS";
@@ -12,18 +13,29 @@
 	let tickets: TicketRegistro[] = [];
 	let loading = true;
 	let source: "pg" | "static" = "static";
+	let loadError = "";
 
-	onMount(async () => {
+	async function refreshTickets(): Promise<void> {
+		loading = true;
+		loadError = "";
 		try {
-			const loaded = await loadTickets();
+			const loaded = await loadTickets(true);
 			tickets = loaded.tickets;
 			source = loaded.source;
 		} catch (err) {
 			console.error("[TicketsSection] loadTickets", err);
 			tickets = [];
+			loadError = err instanceof Error ? err.message : String(err);
 		} finally {
 			loading = false;
 		}
+	}
+
+	onMount(() => {
+		void refreshTickets();
+		const onLabAuth = () => void refreshTickets();
+		window.addEventListener("isa-doc:lab-auth-ready", onLabAuth);
+		return () => window.removeEventListener("isa-doc:lab-auth-ready", onLabAuth);
 	});
 
 	$: filtered = tickets.filter((t) => (t.proyecto ?? "ClientesIS") === proyecto);
@@ -46,9 +58,17 @@
 		</H3>
 	</FlexLayout>
 	{#if loading}
-		<small>Cargando tickets…</small>
+		<small>
+			{labApiEnabled() ? "Cargando tickets desde lab-langgraph…" : "Cargando tickets…"}
+		</small>
+	{:else if loadError}
+		<small style="color: var(--is-danger, #f87171);">{loadError}</small>
+		{#if labApiEnabled()}
+			<small style="opacity: 0.85;">Verifica que lab-langgraph esté en :5500 y completa el login del modal.</small>
+			<Button variant="outlined" onClick={() => refreshTickets()}>Reintentar</Button>
+		{/if}
 	{:else if filtered.length === 0}
-		<small>Sin tickets para {proyecto}.</small>
+		<small>Sin tickets para {proyecto}{source === "pg" ? " en PG" : ""}.</small>
 	{:else}
 		<FlexLayout direction="column">
 			{#each filtered as t (t.id)}

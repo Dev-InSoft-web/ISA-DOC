@@ -22,6 +22,7 @@
 	import sqlCreateConversacionLog from "../../lib/features/patyia/070-sql/create-conversacion-log.sql?raw";
 	import md_2026_06_01_tk1431662 from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/02-tk1431662-modelo-por-instruccion.md?raw";
 	import md_2026_06_01_prompts_ultra from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/03-prompts-ultra-tdconsulta.md?raw";
+	import md_2026_06_01_prompts_catalog from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/06-prompts-catalog-actualizacion.md?raw";
 	import md_2026_06_01_conversacion_log from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/04-conversacion-log-tabla.md?raw";
 	import md_2026_06_01_tk1432903 from "../../lib/features/patyia/060-bitacora/daily/2026-06/01/05-tk1432903-cierre.md?raw";
 	import md_2026_06_03_resumen from "../../lib/features/patyia/060-bitacora/daily/2026-06/03/01-resumen-2026-06-03.md?raw";
@@ -29,6 +30,7 @@
 	import md_2026_06_04_resumen from "../../lib/features/patyia/060-bitacora/daily/2026-06/04/01-resumen-2026-06-04.md?raw";
 	import md_2026_06_04_tk1433943 from "../../lib/features/patyia/060-bitacora/daily/2026-06/04/02-tk1433943-prompts-ultra-hoy.md?raw";
 	import md_2026_06_04_tk1433968 from "../../lib/features/patyia/060-bitacora/daily/2026-06/04/03-tk1433968-prompts-openai.md?raw";
+	import md_2026_06_05_prompts_catalog from "../../lib/features/patyia/060-bitacora/daily/2026-06/05/01-prompts-catalog-actualizacion.md?raw";
 
 	// PatyIA tiene su propia BD (AYUDASCP_IA) — los endpoints de ejecución y
 	// ping están bifurcados respecto a los de ClientesIS para que el banner
@@ -58,11 +60,38 @@
 	dbPingUrl="/api/patyia/db/ping"
 	dbLabelOk="BD PatyIA conectada"
 >
-	<!-- 2026-06-04 (hoy) — TK-1433943 + TK-1433968 -->
+	<!-- 2026-06-05 (hoy) — prompts catálogo base -->
+	<Accordion
+		title="2026-06-05 — PatyIA: actualización prompts catálogo base (13 tipos)"
+		titleIcon="mdi:calendar"
+		open={true}
+		checkKeys={["2026-06-05.patyia.seed-prompts-catalog"]}
+	>
+		<Accordion
+			title={"Prompts catálogo base · MERGE (catalog/PROMPT_*.md)"}
+			titleIcon="mdi:text-box-multiple-outline"
+			inner
+			checkKey="2026-06-05.patyia.seed-prompts-catalog"
+		>
+			<BitacoraNote flat mdSource={md_2026_06_05_prompts_catalog} />
+			<SqlExecCard
+				title="AYUDASCP_IA_STAGING · MERGE catálogo base (INSTRUCCION + TDCONSULTAXINSTRUCCION)"
+				sql={sqlSeedPromptsTdConsulta}
+				desc="MSSQL directo (/api/patyia/db/exec → AYUDASCP_IA_STAGING). MERGE idempotente: iinstruccion=&lt;TIPO&gt;, ninstruccion=PROMPT_&lt;TIPO&gt;, instruccion = texto literal de catalog/PROMPT_&lt;TIPO&gt;.md. Tras editar .md: node scripts/patyia/prompts/build-paty-prompts-sql.mjs. Verificación: 13 filas."
+				{executeSql}
+				checkKey="2026-06-05.patyia.seed-prompts-catalog"
+				confirmKind="warning"
+				confirmMessage={`Se actualizarán los 13 textos de INSTRUCCION con la versión catálogo base (PROMPT_&lt;TIPO&gt;.md, 1.0).\n\n¿Continuar en AYUDASCP_IA_STAGING?`}
+				height="360px"
+			/>
+		</Accordion>
+	</Accordion>
+
+	<!-- 2026-06-04 — TK-1433943 + TK-1433968 -->
 	<Accordion
 		title="2026-06-04 — PatyIA: TK-1433943 (Ultra BD) · TK-1433968 (pmpt obsoletos)"
 		titleIcon="mdi:calendar"
-		open={true}
+		open={false}
 		checkKeys={["2026-06-04.patyia.seed-prompts-ultra-tk1433943", "tickets.TK-1433943"]}
 	>
 		<Accordion title="Resumen del día" titleIcon="mdi:notebook-edit-outline" inner>
@@ -128,7 +157,7 @@
 		title="2026-06-01 — PatyIA: TK-1431163, TK-1431662 (modelo por instrucción), prompts Ultra y limpieza Groq"
 		titleIcon="mdi:calendar"
 		open={false}
-		checkKeys={["2026-06-01.patyia.instruccion.modelo-nano", "2026-06-01.patyia.seed-prompts-ultra"]}
+		checkKeys={["2026-06-01.patyia.instruccion.modelo-nano", "2026-06-01.patyia.seed-prompts-ultra", "2026-06-01.patyia.seed-prompts-catalog"]}
 	>
 		<Accordion
 			title="Resumen del día"
@@ -173,6 +202,25 @@
 				checkKey="2026-06-01.patyia.conversacion-log.ddl"
 				confirmKind="warning"
 				confirmMessage={`Se creará dbo.CONVERSACION_LOG en AYUDASCP_IA_STAGING (solo DDL, sin relleno).\n\n¿Continuar?`}
+				height="360px"
+			/>
+		</Accordion>
+
+		<Accordion
+			title={"Prompts catálogo base · MERGE (13 tipos, catalog/PROMPT_*.md)"}
+			titleIcon="mdi:text-box-multiple-outline"
+			inner
+			checkKey="2026-06-01.patyia.seed-prompts-catalog"
+		>
+			<BitacoraNote flat mdSource={md_2026_06_01_prompts_catalog} />
+			<SqlExecCard
+				title="AYUDASCP_IA · MERGE prompts catálogo (INSTRUCCION + TDCONSULTAXINSTRUCCION)"
+				sql={sqlSeedPromptsTdConsulta}
+				desc="MERGE idempotente sobre INSTRUCCION (iinstruccion=&lt;TIPO&gt;, ninstruccion=PROMPT_&lt;TIPO&gt;) con el contenido literal de cada .md en catalog/. Tras editar los .md: node scripts/patyia/prompts/build-paty-prompts-sql.mjs y re-ejecutar. Cierra con SELECT (13 filas)."
+				{executeSql}
+				checkKey="2026-06-01.patyia.seed-prompts-catalog"
+				confirmKind="warning"
+				confirmMessage={`Se actualizarán los 13 textos de INSTRUCCION con la versión catálogo base (PROMPT_&lt;TIPO&gt;.md, 1.0).\n\n¿Continuar en la BD PatyIA conectada?`}
 				height="360px"
 			/>
 		</Accordion>
