@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onDestroy, onMount } from "svelte";
 	import { Text } from "@ingenieria_insoft/ispsveltecomponents";
 	import BitacoraNode from "./BitacoraNode.svelte";
 	import {
@@ -8,6 +8,10 @@
 		type BitacoraBundle,
 	} from "../../lib/core/lab-api/bitacora.ts";
 	import { labApiEnabled, labMssqlExec } from "../../lib/core/lab-api/mssql.ts";
+	import {
+		registerResourceRefreshHandler,
+		setResourceActive,
+	} from "../../lib/core/realtime/resourceRefreshStore.ts";
 
 	export let project: "patyia" | "clientesis" = "patyia";
 	export let mssqlTarget: "paty" | "clientesis" = "paty";
@@ -15,6 +19,10 @@
 	let bundle: BitacoraBundle | null = null;
 	let error = "";
 	let loading = true;
+	let refreshing = false;
+
+	const viewKey = `bitacora:${project}`;
+	const bundleKey = `bitacora:${project}:bundle`;
 
 	async function executeSql(
 		sql: string,
@@ -37,19 +45,38 @@
 		}
 	}
 
-	onMount(async () => {
+	async function loadBundle(): Promise<void> {
 		if (!bitacoraStoreEnabled()) {
 			error = "PUBLIC_LAB_LANGGRAPH_URL no configurada";
-			loading = false;
 			return;
 		}
 		try {
 			bundle = await fetchBitacoraBundle(project);
+			error = "";
 		} catch (err) {
 			error = err instanceof Error ? err.message : String(err);
-		} finally {
-			loading = false;
 		}
+	}
+
+	async function refreshBundle(): Promise<void> {
+		refreshing = true;
+		await loadBundle();
+		refreshing = false;
+	}
+
+	let unregRefresh: (() => void) | undefined;
+
+	onMount(async () => {
+		setResourceActive(viewKey, true);
+		unregRefresh = registerResourceRefreshHandler(bundleKey, refreshBundle);
+		loading = true;
+		await loadBundle();
+		loading = false;
+	});
+
+	onDestroy(() => {
+		setResourceActive(viewKey, false);
+		unregRefresh?.();
 	});
 </script>
 
@@ -65,6 +92,9 @@
 		</small>
 	</Text>
 {:else if bundle}
+	{#if refreshing}
+		<Text color="neutral"><small>Actualizando bitácora…</small></Text>
+	{/if}
 	{#each bundle.layout.nodes as node (node)}
 		<BitacoraNode {node} {bundle} executeSql={executeSql} inner={false} />
 	{/each}

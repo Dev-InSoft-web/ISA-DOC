@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import ShareViewButton from "../components/navigation/ShareViewButton.svelte";
 import LabAuthRoot from "../components/auth/LabAuthRoot.svelte";
+import ResourceRefreshPrompt from "../components/realtime/ResourceRefreshPrompt.svelte";
 
 interface Props {
    title: string;
@@ -247,6 +248,7 @@ function isSubActive(t: SubTab): boolean {
          <LabAuthRoot client:load />
          <slot />
       </main>
+      <ResourceRefreshPrompt client:load />
    </body>
 </html>
 

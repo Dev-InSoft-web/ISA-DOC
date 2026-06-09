@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onDestroy } from "svelte";
 	import Self from "./BitacoraNode.svelte";
 	import Accordion from "$comps/ui/containers/Accordion.svelte";
 	import BitacoraNote from "./BitacoraNote.svelte";
@@ -12,6 +13,7 @@
 	import IplanpadreToAtributoMigration from "../migration/IplanpadreToAtributoMigration.svelte";
 	import ImagenDocumentoDriverMigration from "../migration/ImagenDocumentoDriverMigration.svelte";
 	import type { BitacoraBundle, BitacoraLayoutNode } from "../../lib/core/lab-api/bitacora.ts";
+	import { setResourceActive } from "../../lib/core/realtime/resourceRefreshStore.ts";
 
 	export let node: BitacoraLayoutNode;
 	export let bundle: BitacoraBundle;
@@ -24,6 +26,19 @@
 	function isContainer(n: BitacoraLayoutNode): n is Extract<BitacoraLayoutNode, { children: BitacoraLayoutNode[] }> {
 		return n.type === "day" || n.type === "group" || n.type === "section";
 	}
+
+	let segmentResourceId = "";
+	let prevSegmentResourceId = "";
+	$: segmentResourceId =
+		node.type === "md" || node.type === "sql" ? node.segmentId : "";
+	$: {
+		if (prevSegmentResourceId) setResourceActive(prevSegmentResourceId, false);
+		prevSegmentResourceId = segmentResourceId;
+		if (segmentResourceId) setResourceActive(segmentResourceId, true);
+	}
+	onDestroy(() => {
+		if (prevSegmentResourceId) setResourceActive(prevSegmentResourceId, false);
+	});
 </script>
 
 {#if isContainer(node)}

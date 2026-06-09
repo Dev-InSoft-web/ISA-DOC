@@ -1,49 +1,48 @@
 // TK-1433179 — Análisis de imágenes en Paty IA V4.
 
+import { getVisionReasoningMatrixHtml } from "../../../../../patyia/060-bitacora/share/vision-reasoning-matrix-html";
 import { h3Iconized, note, noteList } from "../../../../lib/tk-helpers";
 
-const CRITERIOS: Array<{ item: string }> = [
-	{ item: "Recibir correctamente la imagen enviada desde el chat." },
-	{ item: "Validar formato, tamaño y seguridad del archivo recibido." },
-	{ item: "Definir cómo enviar la imagen al modelo junto con el texto del usuario." },
-	{ item: "Integrar el uso de imagen sin afectar el flujo actual de preguntas solo texto." },
-	{ item: "Ejecutar pruebas técnicas y funcionales básicas con imagen." },
-	{ item: "Documentar limitaciones o consideraciones halladas en la implementación." },
-	{ item: "Presentar el resultado al equipo en reunión para validar el comportamiento de Paty con imágenes." },
-];
-
 const intro =
-	`<div>Se solicitó <b>análisis e implementación de imágenes</b> en Paty IA V4: procesar la imagen del chat junto con la consulta ` +
-	`del usuario y usarla como contexto en la respuesta del asistente.</div>`;
+	`<div>Se implementó y evaluó el <b>análisis de imágenes</b> en Paty IA (Responses API): ` +
+	`estrategia de envío, <code>vision_detail</code> y <code>reasoning_effort</code> sobre infografía real.</div>`;
 
 export async function buildBodyTK1433179(): Promise<string> {
-	const [h3Requerimiento, h3Criterios, h3Contexto] = await Promise.all([
-		h3Iconized("mdi:image-search-outline", "Requerimiento"),
-		h3Iconized("mdi:check-decagram", "Criterios de aceptación"),
-		h3Iconized("mdi:information-outline", "Contexto técnico"),
+	const [h3Conclusion, h3Parametros, h3Referencia] = await Promise.all([
+		h3Iconized("mdi:check-decagram", "Conclusión y matrices"),
+		h3Iconized("mdi:tune-variant", "Parámetros evaluados"),
+		h3Iconized("mdi:book-open-outline", "Referencia"),
 	]);
 
-	const requerimiento = noteList(
+	const matriz = getVisionReasoningMatrixHtml();
+
+	const parametros = noteList(
 		await note(
-			"mdi:chat-processing-outline",
-			"Analizar e implementar el manejo de imágenes recibidas desde el chat para que se procesen junto con la consulta del usuario y se usen como contexto al generar la respuesta de Paty.",
+			"mdi:image-multiple-outline",
+			"<code>vision_strategy</code>: <code>auto</code> (umbral ~1,5 MB), <code>data_url</code> (inline), <code>file_upload</code> (Files API).",
+		),
+		await note(
+			"mdi:aspect-ratio",
+			"<code>vision_detail</code>: <code>low</code> → API <code>low</code>; <code>medium</code> → <code>auto</code>; <code>high</code> → <code>high</code>.",
+		),
+		await note(
+			"mdi:brain",
+			"<code>reasoning_effort</code>: <code>low</code> | <code>medium</code> | <code>high</code> (27 celdas por bloque = 3×3×3).",
 		),
 	);
 
-	const criterios = noteList(
-		...(await Promise.all(
-			CRITERIOS.map((c, i) => note("mdi:checkbox-marked-circle-outline", `${i + 1}. ${c.item}`)),
-		)),
-	);
-
-	const contexto = noteList(
+	const referencia = noteList(
 		await note(
-			"mdi:flask-outline",
-			"En ISA-DOC existe panel de pruebas OpenAI/imágenes (<code>PatyIA · Actions</code>) para experimentar motores y adjuntos; este ticket formaliza el requisito productivo en el flujo del chat V4.",
+			"mdi:file-document-outline",
+			"Bitácora completa: <code>patyia/060-bitacora/daily/2026-06/09/01-vision-reasoning-estrategias.md</code>.",
+		),
+		await note(
+			"mdi:console",
+			"Reproducir: <code>node scripts/test-vision-reasoning-matrix.mjs</code> (PatyIA en <code>:7071</code>).",
 		),
 	);
 
-	return intro + h3Requerimiento + requerimiento + h3Criterios + criterios + h3Contexto + contexto;
+	return intro + h3Conclusion + matriz + h3Parametros + parametros + h3Referencia + referencia;
 }
 
 export const bodyTK1433179: Promise<string> = buildBodyTK1433179();

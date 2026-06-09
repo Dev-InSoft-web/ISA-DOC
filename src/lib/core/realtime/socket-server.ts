@@ -4,6 +4,8 @@ import { createServer } from "node:http";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { PROJECTS } from "../registry/projects.js";
+import type { ResourceUpdateEvent } from "./resourceTypes.ts";
+import { startResourceWatch } from "./resource-watch.ts";
 import {
 	loadCollectionMeta, loadEntity, saveEntity, saveCollectionVariables,
 	mergeCollection, splitCollection, loadEnvironments, saveEnvironments,
@@ -63,6 +65,7 @@ export function initSocketServer(port = 4401): Server | null {
 		previous.removeAllListeners("connection");
 		previous.on("connection", handleConnection);
 		io = previous;
+		startResourceWatch(process.cwd(), broadcastResourceUpdated);
 		console.log(`[Socket.IO] Handlers actualizados en puerto ${port}`);
 		return previous;
 	}
@@ -83,6 +86,7 @@ export function initSocketServer(port = 4401): Server | null {
 		});
 		httpServer.listen(port, () => {
 			console.log(`[Socket.IO] Servidor en puerto ${port}`);
+			startResourceWatch(process.cwd(), broadcastResourceUpdated);
 		});
 		state.io.current = next;
 		io = next;
@@ -111,7 +115,11 @@ function broadcast(event: string, payload: Record<string, unknown>): void {
 }
 
 export function broadcastFragmentsInvalidated(): void {
-	state.io.current?.emit("fragments:invalidated", { at: Date.now() });
+	broadcastResourceUpdated({ id: "sql:fragments", kind: "sql-fragments", at: Date.now() });
+}
+
+export function broadcastResourceUpdated(event: ResourceUpdateEvent): void {
+	state.io.current?.emit("resource:updated", event);
 }
 
 export function broadcastRevisadoChanged(updates: Record<string, boolean>): void {

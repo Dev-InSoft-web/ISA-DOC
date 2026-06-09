@@ -1,6 +1,10 @@
 import { writable, type Readable } from "svelte/store";
 import { io as ioClient, type Socket } from "socket.io-client";
 import { STATIC_MODE } from "../../integrations/runtime/staticMode";
+import {
+	registerResourceRefreshHandler,
+	setResourceActive,
+} from "../../core/realtime/resourceRefreshStore.ts";
 
 export type SqlFragmentKind = "table" | "index" | "fk" | "seed" | "raw";
 export interface SqlFragment {
@@ -82,15 +86,25 @@ export function setFragmentsAfterSave(fragments: SqlFragment[]): void {
 	});
 }
 
+let unregFragmentsHandler: (() => void) | undefined;
+
+export function setSqlFragmentsViewActive(active: boolean): void {
+	setResourceActive("sql:fragments", active);
+}
+
 export function startFragmentsSocket(): void {
 	if (STATIC_MODE) return;
 	if (socketStarted) return;
 	if (typeof window === "undefined") return;
 	socketStarted = true;
+	unregFragmentsHandler = registerResourceRefreshHandler("sql:fragments", () => refreshFragments());
 	const url = `http://${location.hostname}:4401`;
 	socket = ioClient(url, { transports: ["websocket"] });
 	socket.on("connect", () => { void refreshFragments(); });
 	socket.on("fragments:invalidated", () => { void refreshFragments(); });
+	socket.on("resource:updated", (msg: { id?: string }) => {
+		if (msg?.id === "sql:fragments") void refreshFragments();
+	});
 }
 
 export const fragmentsStore: Readable<FragmentsState> = store;

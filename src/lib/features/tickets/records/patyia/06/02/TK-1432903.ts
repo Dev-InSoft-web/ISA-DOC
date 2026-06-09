@@ -14,9 +14,10 @@ const intro =
 	`métricas y contexto técnico del ciclo (clasificación, modelo, tokens, tiempos y fallos) para seguimiento operativo.</div>`;
 
 export async function buildBodyTK1432903(): Promise<string> {
-	const [h3Objetivo, h3Alcance, h3Criterios] = await Promise.all([
+	const [h3Objetivo, h3Alcance, h3AppTool, h3Criterios] = await Promise.all([
 		h3Iconized("mdi:target", "Objetivo"),
 		h3Iconized("mdi:clipboard-text-outline", "Alcance"),
+		h3Iconized("mdi:web", "AppTool — visor de log (GH Pages)"),
 		h3Iconized("mdi:check-decagram", "Criterios de aceptación"),
 	]);
 
@@ -38,13 +39,32 @@ export async function buildBodyTK1432903(): Promise<string> {
 		),
 	);
 
+	const appTool = noteList(
+		await note(
+			"mdi:folder-outline",
+			"Mini-repo estático <code>PatyIA/apptools/patyia-apptools</code> (layout tipo ISA-DOC, React + MUI CDN). GH Pages: <a href=\"https://jeff-aporta.github.io/patyia-apptools/\" target=\"_blank\" rel=\"noopener\">jeff-aporta.github.io/patyia-apptools</a>.",
+		),
+		await note(
+			"mdi:chat-outline",
+			"<b>Visor de log:</b> recuperar por <code>iconversacion</code> (query <code>CONVERSACION_LOG</code> vía lab-langgraph Azure) o pegar <code>conv-*.json</code>. Hilo como Recuperar en ISA-DOC.",
+		),
+		await note(
+			"mdi:file-document-edit-outline",
+			"<b>Prompts → SQL:</b> pegar/subir <code>PROMPT_&lt;TIPO&gt;.md</code>, mapeo a <code>INSTRUCCION</code> + <code>TDCONSULTAXINSTRUCCION</code>, generación MERGE y <b>SQL Exec</b> a staging con login JWT (<code>/api/mssql/paty/exec</code>).",
+		),
+		await note(
+			"mdi:shield-check-outline",
+			"Parseo de logs y SQL en el cliente; solo query/exec van al lab Azure configurado en el header. Sin tocar PatyIA producción directamente.",
+		),
+	);
+
 	const criterios = noteList(
 		...(await Promise.all(
 			CRITERIOS.map((c, i) => note("mdi:checkbox-marked-circle-outline", `${i + 1}. ${c.item}`)),
 		)),
 	);
 
-	return intro + h3Objetivo + objetivo + h3Alcance + alcance + h3Criterios + criterios;
+	return intro + h3Objetivo + objetivo + h3Alcance + alcance + h3AppTool + appTool + h3Criterios + criterios;
 }
 
 export const bodyTK1432903: Promise<string> = buildBodyTK1432903();
