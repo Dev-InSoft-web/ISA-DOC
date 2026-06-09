@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { extractUserVisionFromSendInput, userContenidoFromConvLogSend } from "./convLogContent.ts";
 
 export interface ConvLogTokens {
 	input?: number;
@@ -72,7 +73,7 @@ export function textFromOpenAIReceive(rec?: ConvLogPayload): string {
 }
 
 export function convLogMensajeTexto(m: ConvLogMensaje): string {
-	if (m.role === "user") return typeof m.send?.input === "string" ? m.send.input : "";
+	if (m.role === "user") return userContenidoFromConvLogSend(m.send as Record<string, unknown> | undefined);
 	if (m.role === "assistant") return m.others?.response_text ?? textFromOpenAIReceive(m.receive);
 	return textFromOpenAIReceive(m.receive);
 }
@@ -83,7 +84,9 @@ export function flattenConvLogMensaje(m: ConvLogMensaje): Record<string, unknown
 	const o = m.others ?? {};
 	const flat: Record<string, unknown> = { ts: m.ts, tokens: m.tokens, usage: r?.usage, latency_ms: m.latency_ms, send: s, receive: r, others: m.others };
 	if (m.role === "user") {
-		if (typeof s?.input === "string") flat.text = flat.prompt_text = s.input;
+		const { text, images } = extractUserVisionFromSendInput(s?.input, typeof s?.text === "string" ? s.text : "");
+		if (text) flat.text = flat.prompt_text = text;
+		if (images.length) flat.imagenes = images;
 		const prompt = s?.prompt as { id?: string; variables?: Record<string, string> } | undefined;
 		if (prompt?.id) flat.prompt_id = prompt.id;
 		if (prompt?.variables) flat.prompt_variables = prompt.variables;

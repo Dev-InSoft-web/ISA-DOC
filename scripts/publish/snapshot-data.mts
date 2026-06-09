@@ -293,7 +293,9 @@ async function snapshotPatyiaStagingIdentidades(): Promise<void> {
 
 async function main(): Promise<void> {
 	mkdirSync(OUT, { recursive: true });
-	copyJson("data/revisado.json", "revisado.json");
+	if (existsSync(resolve(root, "data/revisado.json"))) {
+		copyJson("data/revisado.json", "revisado.json");
+	}
 	await snapshotTables();
 	await snapshotSqlFragments();
 	await snapshotTsFragments();

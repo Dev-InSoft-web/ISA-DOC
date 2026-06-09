@@ -48,7 +48,9 @@ function patyConfig(): sql.config {
 
 const sqlPath = resolve(
 	ISA_DOC_ROOT,
-	"src/lib/features/patyia/070-sql/seed-prompts-ultra-tdconsulta.sql",
+	"..",
+	"lab-langgraph",
+	"data/bitacora/patyia/sql/seed-prompts-ultra-tdconsulta.sql",
 );
 
 async function main(): Promise<void> {

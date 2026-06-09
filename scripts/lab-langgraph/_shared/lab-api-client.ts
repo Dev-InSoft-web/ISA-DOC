@@ -42,12 +42,22 @@ export function assertNoProviderKeysInEnv(): void {
 
 export type LabApiError = Error & { status?: number; waitMs?: number; body?: unknown };
 
+function labAuthHeaders(): Record<string, string> {
+	const token = process.env.LAB_AUTH_TOKEN?.trim();
+	if (!token) return {};
+	return { Authorization: `Bearer ${token}` };
+}
+
 async function labFetch<T>(path: string, init?: RequestInit): Promise<T> {
 	// Keys solo en lang-lab; no validar en cada fetch si ya se limpiaron en loadLabEnv.
 	const url = `${labLanggraphBaseUrl()}/api${path.startsWith("/") ? path : `/${path}`}`;
 	const res = await fetch(url, {
 		...init,
-		headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
+		headers: {
+			"Content-Type": "application/json",
+			...labAuthHeaders(),
+			...(init?.headers ?? {}),
+		},
 	});
 	const text = await res.text();
 	let body: unknown = {};

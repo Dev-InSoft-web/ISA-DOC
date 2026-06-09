@@ -1,11 +1,12 @@
 import { parseTableFragment, type ParsedTable } from "../../../sql/schema/tableSchema.ts";
+import { labApiEnabled, labMssqlQuery } from "../../../core/lab-api/mssql.ts";
 
 /**
  * Carga el esquema SQL Server de PatyIA y lo materializa como `ParsedTable[]`.
  *
  * - Consulta `INFORMATION_SCHEMA` y `sys.foreign_keys` para CADA base de datos
  *   en `DATABASES`, usando consultas calificadas `[DB].INFORMATION_SCHEMA.X`
- *   sobre la misma conexión expuesta por `/api/patyia/db/exec`.
+ *   sobre `/api/patyia/db/query` (SELECT, sin JWT) o lab `/api/mssql/paty/query`.
  * - Cada base de datos es un contenedor hermetico independiente; las tablas
  *   conservan su nombre original aunque coincida con otra BD. La distincion
  *   visual se hace mediante el nodo contenedor `bd` en el arbol.
@@ -46,14 +47,19 @@ interface RawDbSchema {
 }
 
 async function execSql<T>(sql: string): Promise<T[]> {
-   const resp = await fetch("/api/patyia/db/exec", {
+   if (labApiEnabled()) {
+      const data = await labMssqlQuery("paty", sql);
+      if (!data.ok) throw new Error(data.error ?? "Consulta fallida");
+      return (data.recordset ?? []) as T[];
+   }
+   const resp = await fetch("/api/patyia/db/query", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sql }),
    });
    const data = await resp.json();
    if (!resp.ok || !data?.ok) throw new Error(data?.error || `HTTP ${resp.status}`);
-   return (data.rows ?? []) as T[];
+   return (data.rows ?? data.recordset ?? []) as T[];
 }
 
 function formatType(c: ColumnRow): string {

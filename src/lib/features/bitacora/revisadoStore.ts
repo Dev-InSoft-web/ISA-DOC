@@ -17,9 +17,8 @@ const LS_KEY = "isa-doc-revisado-v1";
 
 
 function localRevisadoSources(): string[] {
-
+	if (useLabPersistence()) return [];
 	return ["/api/revisado", withBase("/static-api/revisado.json")];
-
 }
 
 

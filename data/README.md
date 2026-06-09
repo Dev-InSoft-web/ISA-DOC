@@ -11,7 +11,7 @@
 |---------------|---------------|
 | `postman/` | `data/postman/` |
 | `patyia/*-cache.json` | `data/patyia/caches/` |
-| `revisado.json` | `data/bitacora/revisado.json` |
+| `revisado.json` (eliminado) | PG `BD_ISADOC.BITACORA_REVISADO` vía lab `/api/revisado` |
 | `openai-storage/` | `data/openai-storage/` |
 | — | `data/api-catalog.json`, `data/clientesis-schema/`, `data/codegen/`, `data/sql/` |
 

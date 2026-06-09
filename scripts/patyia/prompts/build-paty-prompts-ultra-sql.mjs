@@ -1,11 +1,20 @@
-// Genera seed-prompts-ultra-tdconsulta.sql desde prompts/Ultra/PROMPT_<TIPO>.md
+// Genera lab-langgraph/data/bitacora/patyia/sql/seed-prompts-ultra-tdconsulta.sql desde Ultra/PROMPT_<TIPO>.md
 
-import { readFileSync, writeFileSync, readdirSync } from "node:fs";
-import { resolve } from "node:path";
+import { readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
+import { resolve, dirname } from "node:path";
 import { ISA_DOC_ROOT } from "../../_shared/isa-doc-root.mjs";
 
 const promptsDir = resolve(ISA_DOC_ROOT, "src", "lib", "features", "patyia", "050-prompts", "catalog", "Ultra");
-const outFile = resolve(ISA_DOC_ROOT, "src", "lib", "features", "patyia", "070-sql", "seed-prompts-ultra-tdconsulta.sql");
+const outFile = resolve(
+	ISA_DOC_ROOT,
+	"..",
+	"lab-langgraph",
+	"data",
+	"bitacora",
+	"patyia",
+	"sql",
+	"seed-prompts-ultra-tdconsulta.sql",
+);
 
 const fileToTipo = (name) => name.replace(/^PROMPT_/, "").replace(/\.md$/, "");
 
@@ -81,5 +90,6 @@ WHERE i.ninstruccion LIKE 'PROMPT[_]%'
 ORDER BY i.iinstruccion;
 `;
 
+mkdirSync(dirname(outFile), { recursive: true });
 writeFileSync(outFile, head + stmts + tail, "utf8");
 console.log(`[build-paty-prompts-ultra-sql] ${rows.length} prompts → ${outFile}`);

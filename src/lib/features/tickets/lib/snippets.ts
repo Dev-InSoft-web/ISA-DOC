@@ -487,11 +487,11 @@ export async function compareTable(pair: ComparePair): Promise<string> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// ticketImg / img / imgFull — imgbb + dimensiones en `imgbb-map.json`.
+// ticketImg / img / imgFull — placeholder `$archivo.png$`; resuelto en getTicketHtml (PG imgbb-asset).
 // Reglas en `imgDims.ts`: si natW<400 o natH<500 escalar arriba; si no, 80% centrado.
 // ─────────────────────────────────────────────────────────────────────────
 
-import { imgInfo } from "./assetsRemote";
+import { assetRef } from "./resolveAssetPlaceholders";
 import { computeTicketImgDims, ticketImgHtml } from "./imgDims";
 import { TICKET_BORDER_ROW, TICKET_TEXT_BODY, TICKET_TEXT_MUTED, TICKET_TEXT_STEP_BG } from "./ticketColors";
 
@@ -547,12 +547,11 @@ export function remoteDiagramImg(
 }
 
 /**
- * Imagen de ticket vía imgbb (`imgbb-map.json`). Usar para capturas SSMS u offline/email.
- * Diagramas editables: `ticketDiagramAssets.ts` → `mermaidImg` / `chartImg`.
+ * Referencia imgbb por nombre de archivo; el HTML se resuelve en `getTicketHtml` (PG / lab API).
+ * Publicar capturas y diagramas con lab-langgraph (`imgbb-asset` / `tickets/mermaid/publish`).
  */
 export function ticketImg(filename: string, opts?: import("./imgDims").TicketImgHtmlOpts): string {
-	const info = imgInfo(filename);
-	return ticketImgHtml(info.url, info.width, info.height, opts);
+	return assetRef(filename, opts);
 }
 
 /** Diagrama publicado en imgbb con transparencia (PNG alpha). */

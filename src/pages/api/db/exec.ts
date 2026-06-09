@@ -1,5 +1,10 @@
 import type { APIRoute } from "astro";
 import { getPool } from "../../../lib/core/database/clientesis-pool.ts";
+import {
+	forwardMssqlRemote,
+	mssqlRemoteToken,
+	resolveMssqlRemoteUrl,
+} from "../../../lib/core/lab-api/mssql-remote.ts";
 
 export const prerender = false;
 
@@ -9,13 +14,10 @@ interface Body {
 
 // Ejecuta SQL ad-hoc enviado por la pestaña Bitácora.
 //
-// Modos:
-//   1) Remoto (recomendado cuando el host local NO alcanza al MSSQL directo):
-//      Configurar `ISA_DB_REMOTE_URL` (URL absoluta del endpoint remoto que
-//      ejecuta el SQL contra la BD). Opcional: `ISA_DB_REMOTE_TOKEN` para
-//      enviar `Authorization: Bearer <token>`. Astro reenvía server-to-server.
-//   2) Local: si no hay `ISA_DB_REMOTE_URL`, abre el pool `mssql` con las
-//      variables `hostdb/portdb/userdb/passdb/namedb` del `.env`.
+// Modos (prioridad):
+//   1) Remoto lab-langgraph: `ISA_DB_REMOTE_URL` o `LAB_LANGGRAPH_URL` +
+//      `/api/mssql/clientesis/exec`. Bearer: `ISA_DB_REMOTE_TOKEN` o header del request.
+//   2) Local: pool `mssql` con `CLIENTESIS_MSSQL_*` en `.env` (legacy).
 export const POST: APIRoute = async ({ request }) => {
 	let payload: Body;
 	try {
@@ -26,8 +28,11 @@ export const POST: APIRoute = async ({ request }) => {
 	const sql = (payload.sql ?? "").trim();
 	if (!sql) return json({ ok: false, error: "SQL vacío" }, 400);
 
-	const remote = (process.env.ISA_DB_REMOTE_URL ?? "").trim();
-	if (remote) return forwardRemote(remote, sql);
+	const remote = resolveMssqlRemoteUrl(process.env.ISA_DB_REMOTE_URL, "clientesis", "exec");
+	if (remote) {
+		const token = mssqlRemoteToken(request.headers.get("authorization"));
+		return forwardMssqlRemote(remote, sql, token);
+	}
 
 	try {
 		const pool = await getPool();
@@ -55,22 +60,3 @@ function json(body: unknown, status = 200): Response {
 	});
 }
 
-async function forwardRemote(url: string, sql: string): Promise<Response> {
-	const token = (process.env.ISA_DB_REMOTE_TOKEN ?? "").trim();
-	const headers: Record<string, string> = { "content-type": "application/json" };
-	if (token) headers["authorization"] = `Bearer ${token}`;
-	try {
-		const r = await fetch(url, { method: "POST", headers, body: JSON.stringify({ sql }) });
-		const text = await r.text();
-		return new Response(text, {
-			status: r.status,
-			headers: {
-				"content-type": r.headers.get("content-type") ?? "application/json",
-				"cache-control": "no-store",
-			},
-		});
-	} catch (err) {
-		const msg = err instanceof Error ? err.message : String(err);
-		return json({ ok: false, error: `Reenvío a ${url} falló: ${msg}` }, 502);
-	}
-}

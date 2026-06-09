@@ -24,6 +24,22 @@ Con `PUBLIC_LAB_LANGGRAPH_URL` configurada:
 
 En ISA-DOC: `src/lib/core/lab-api/tickets.ts`, `lab-api/imgbb.ts` y `loadTickets()` en `ticketStore.ts`.
 
+## Diagramas Mermaid (PG + lab API)
+
+| Operación | HTTP |
+| --- | --- |
+| Leer (código + mermaid.ink + imgbb) | `GET /api/tickets/mermaid/{filename}` |
+| Publicar (idempotente por `mermaidInkUrl`) | `POST /api/tickets/mermaid/publish` `{ filename, source, ticketId? }` |
+| Subir URL remota a imgbb | `POST /api/imgbb/assets/upload` `{ filename, imageUrl, ticketId? }` |
+
+Flujo: el código Mermaid vive en `imgbb-asset` (`kind: mermaid`, `mermaidSource`, `mermaidInkUrl`). Si la URL mermaid.ink ya existe en PG, no se vuelve a subir a imgbb. imgbb acepta **URL directa** en el campo `image` (sin descargar buffer intermedio).
+
+Migrar `.mmd` locales → PG:
+
+```bash
+cd lab-langgraph && npm run tickets:migrate-mermaid
+```
+
 ## Imágenes imgbb (PG)
 
 | Operación | HTTP (lab-langgraph) |
@@ -39,17 +55,11 @@ npm run imgbb:migrate-map
 # o: npx tsx scripts/migrate-imgbb-map-to-store.mts --map=../ISA-DOC/.../imgbb-map.json
 ```
 
-Folderización de metadatos (manifest por TK, `asset-index.json`):
-
-```bash
-npm run tickets:assets:folderize
-```
-
-El visor usa PG si `PUBLIC_LAB_LANGGRAPH_URL` está activa (`preloadImgbbFromStore` en `getTicketHtml`); si no, `_meta/imgbb-map.json`.
+Imágenes en builders: `ticketImg("captura.png")` emite `$captura.png$`; `getTicketHtml` resuelve contra PG (`imgbb-asset`) vía lab API. Publicar con lab-langgraph (`imgbb:migrate-map`, `tickets:migrate-mermaid` o API upload). No mantener `manifest.json` ni `imgbb-map.json` en ISA-DOC.
 
 ## Migración desde registro estático
 
-1. Metadatos siguen en `staticRegistry.ts` (`TICKETS[]`) durante la transición.
+1. Metadatos en PG (`isa-doc/tickets/ticket`); `staticRegistry.ts` vacío. Snapshot: `lab-langgraph/data/tickets/ticket-registry.snapshot.json`.
 2. Ejecutar en **lab-langgraph**:
 
 ```bash

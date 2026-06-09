@@ -23,6 +23,10 @@ import { downloadIconifyIcons } from "@ingenieria_insoft/ispsveltecomponents/dow
 const PKG_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../");
 
 const scanDirs = [path.join(PKG_ROOT, "src")];
+const ispSvelteRoot = path.join(PKG_ROOT, "isp-svelte");
+if (fs.existsSync(ispSvelteRoot)) {
+	scanDirs.push(ispSvelteRoot);
+}
 const insoftRoot = path.join(PKG_ROOT, "node_modules", "@ingenieria_insoft");
 if (fs.existsSync(insoftRoot)) {
 	scanDirs.push(insoftRoot);

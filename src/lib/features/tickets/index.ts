@@ -1,4 +1,5 @@
 import { buildTicketHtml, tiempoTotalEstimadoMin } from "./lib/template";
+import { resolveAssetPlaceholders } from "./lib/resolveAssetPlaceholders.js";
 import { resolveTicketBody } from "./ticketStore.js";
 
 export type { TicketNormativa, TicketCommit, TicketDbChange, TicketRegistro } from "./types";
@@ -20,8 +21,7 @@ export {
 } from "../../core/lab-api/tickets.js";
 
 export async function getTicketHtml(t: import("./types").TicketRegistro): Promise<string> {
-	await import("./lib/assetsRemote.js").then((m) => m.preloadImgbbFromStore());
-	const bodyHtml = await resolveTicketBody(t);
+	const bodyHtml = await resolveAssetPlaceholders(await resolveTicketBody(t));
 	return buildTicketHtml(
 		bodyHtml,
 		t.commits ?? [],

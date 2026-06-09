@@ -11,9 +11,13 @@
 	import ConfirmDialog from "$comps/ui/overlays/ConfirmDialog.svelte";
 	import { PERMISOS_CSV } from "../../lib/sql/permisos/csv.ts";
 
-	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
-	export let tableName: string = "PERMISOS";
-	export let date: string = "";
+	type Props = {
+		executeSql?: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null;
+		tableName?: string;
+		date?: string;
+	};
+
+	let { executeSql = null, tableName = "PERMISOS", date = "" }: Props = $props();
 
 	type Row = Record<string, string>;
 

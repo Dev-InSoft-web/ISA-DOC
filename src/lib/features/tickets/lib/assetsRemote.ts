@@ -1,5 +1,4 @@
-// Mapa imgbb: PG (lab API) con fallback a `_meta/imgbb-map.json`.
-import staticMap from "../assets/_meta/imgbb-map.json";
+// Mapa imgbb: PG (lab API). Sin copia local en ISA-DOC.
 
 export type ImgbbEntry = {
 	sha1?: string;
@@ -12,7 +11,6 @@ export type ImgbbEntry = {
 };
 type ImgbbMap = Record<string, ImgbbEntry>;
 
-const fallback = staticMap as ImgbbMap;
 let runtimeMap: ImgbbMap | null = null;
 let preloadPromise: Promise<boolean> | null = null;
 
@@ -58,18 +56,24 @@ export async function preloadImgbbFromStore(): Promise<boolean> {
 }
 
 function currentMap(): ImgbbMap {
-	return runtimeMap ?? fallback;
+	return runtimeMap ?? {};
+}
+
+function missingAssetError(filename: string): Error {
+	return new Error(
+		`imgbb sin entrada para ${filename} (requiere PUBLIC_LAB_LANGGRAPH_URL y entidad imgbb-asset en PG)`,
+	);
 }
 
 export function imgUrl(filename: string): string {
 	const entry = currentMap()[filename];
-	if (!entry) throw new Error(`imgbb sin entrada para ${filename} (PG o imgbb-map.json)`);
+	if (!entry) throw missingAssetError(filename);
 	return entry.url;
 }
 
 export function imgInfo(filename: string): { url: string; width: number; height: number } {
 	const entry = currentMap()[filename];
-	if (!entry) throw new Error(`imgbb sin entrada para ${filename} (PG o imgbb-map.json)`);
+	if (!entry) throw missingAssetError(filename);
 	const url = entry.sha1 ? `${entry.url}?v=${entry.sha1.slice(0, 12)}` : entry.url;
 	return { url, width: entry.width, height: entry.height };
 }

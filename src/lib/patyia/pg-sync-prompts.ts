@@ -5,18 +5,22 @@ import { loadLabLocalSettings } from "../core/load-lab-local-settings.ts";
 import { PATY_AGENT_RAG_CORPUS } from "../features/patyia/patyia-agent-corpus.ts";
 import { PATY_PROMPT_TIPOS, promptMdFilename } from "../features/patyia/050-prompts/prompt-files.ts";
 
-const Q_INSTRUCCION = '"BD_PATY"."INSTRUCCION_INSTRUCCION"';
-const Q_TDCONSULTA = '"BD_PATY"."TDCONSULTA_TDCONSULTA"';
-const Q_TDCONSULTA_INSTRUCCION = '"BD_PATY"."TDCONSULTA_TDCONSULTAINSTRUCCION"';
-const Q_TDCONSULTA_CORPUS = '"BD_PATY"."TDCONSULTA_TDCONSULTACORPUS"';
+const PG_SCHEMA_LANGLAB = "BD_LANGLAB";
+const Q_INSTRUCCION = `"${PG_SCHEMA_LANGLAB}"."INSTRUCCION"`;
+const Q_TDCONSULTA = `"${PG_SCHEMA_LANGLAB}"."TDCONSULTA"`;
+const Q_TDCONSULTA_INSTRUCCION = `"${PG_SCHEMA_LANGLAB}"."TDCONSULTA_INSTRUCCION"`;
+const Q_TDCONSULTA_CORPUS = `"${PG_SCHEMA_LANGLAB}"."TDCONSULTA_CORPUS"`;
 
 function pgUrl(): string {
 	loadLabLocalSettings();
 	const url =
-		process.env.PATY_DATABASE_URL?.trim() || process.env.DATABASE_URL?.trim() || "";
+		process.env.LANGLAB_DATABASE_URL?.trim() ||
+		process.env.PATY_DATABASE_URL?.trim() ||
+		process.env.DATABASE_URL?.trim() ||
+		"";
 	if (!url) {
 		throw new Error(
-			"PATY_DATABASE_URL / DATABASE_URL no configurada (lab-langgraph/local.settings.json)",
+			"LANGLAB_DATABASE_URL no configurada (lab-langgraph/local.settings.json)",
 		);
 	}
 	return url;
@@ -87,7 +91,7 @@ async function setTdCorpus(client: pg.PoolClient, itdconsulta: string, corpusLis
 	}
 }
 
-/** Ultra desde ISA-DOC → BD_PATY (sin HTTP a lab-langgraph). */
+/** Ultra desde ISA-DOC → BD_LANGLAB (sin HTTP a lab-langgraph). */
 export async function syncPatyPromptsToPgFromIsaDoc(catalogRoot: string): Promise<{
 	agents: number;
 	syncedAt: string;

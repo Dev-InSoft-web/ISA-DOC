@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { getPool } from "../../../lib/core/database/clientesis-pool.ts";
+import { forwardMssqlRemote, resolveMssqlRemoteUrl } from "../../../lib/core/lab-api/mssql-remote.ts";
 
 export const prerender = false;
 
@@ -8,6 +9,7 @@ interface Body {
 }
 
 // Endpoint de diagnóstico: ejecuta SELECTs y devuelve recordset.
+// Reenvía a lab-langgraph si `LAB_LANGGRAPH_URL` está configurada (sin auth).
 export const POST: APIRoute = async ({ request }) => {
 	let payload: Body;
 	try {
@@ -17,6 +19,9 @@ export const POST: APIRoute = async ({ request }) => {
 	}
 	const sql = (payload.sql ?? "").trim();
 	if (!sql) return json({ ok: false, error: "SQL vacío" }, 400);
+
+	const remote = resolveMssqlRemoteUrl(process.env.ISA_DB_QUERY_REMOTE_URL, "clientesis", "query");
+	if (remote) return forwardMssqlRemote(remote, sql, "");
 
 	try {
 		const pool = await getPool();

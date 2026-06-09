@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { Card, FlexLayout, GridLayout, Iconify, Text } from "@ingenieria_insoft/ispsveltecomponents";
+	import { encodeJsonState } from "../../lib/features/patyia/010-config/stateB64.ts";
 
 	const rawBase: string = (import.meta.env.BASE_URL as string) || "/";
 	const base: string = rawBase.endsWith("/") ? rawBase.slice(0, -1) : rawBase;
 	const link = (p: string): string => base + p || "/";
 
+	const patyiaLabDocsPath = `/patyia/docs?state=${encodeJsonState({ slug: "lab-00-overview" })}`;
+
 	interface Tool {
+		id: string;
 		label: string;
 		path: string;
 		desc: string;
@@ -26,13 +30,13 @@
 			subtitle: "Documentacion, SQL, bitacora y herramientas del workspace ClientesIS",
 			color: "info",
 			tools: [
-				{ label: "SQL", path: "/clientesis/sql", icon: "mdi:database-outline", desc: "Explorador de fragmentos SQL, esquema de tablas y consultas." },
-				{ label: "Bitacora", path: "/clientesis/bitacora", icon: "mdi:notebook-outline", desc: "Diario de avance: resumenes diarios, tickets y commits." },
-				{ label: "Postman", path: "/clientesis/postman", icon: "mdi:email-fast-outline", desc: "Colecciones Postman renderizadas como documentacion navegable." },
-				{ label: "Docs ContaPymeU", path: "/clientesis/docs", icon: "mdi:book-open-page-variant-outline", desc: "Documentacion tecnica de ContaPymeU." },
-				{ label: "Actions", path: "/clientesis/actions", icon: "mdi:lightning-bolt-outline", desc: "Acciones de proyecto: iconify, builds y utilidades por subproyecto." },
-				{ label: "BDD Capacitacion", path: "/clientesis/db", icon: "mdi:table-cog", desc: "Esquema BDD del modulo de capacitacion." },
-				{ label: "Tests Capacitacion", path: "/clientesis/test", icon: "mdi:check-circle-outline", desc: "Verificacion de API del modulo de capacitacion." },
+				{ id: "cli-sql", label: "SQL", path: "/clientesis/sql", icon: "mdi:database-outline", desc: "Explorador de fragmentos SQL, esquema de tablas y consultas." },
+				{ id: "cli-bitacora", label: "Bitacora", path: "/clientesis/bitacora", icon: "mdi:notebook-outline", desc: "Diario de avance: resumenes diarios, tickets y commits." },
+				{ id: "cli-postman", label: "Postman", path: "/clientesis/postman", icon: "mdi:email-fast-outline", desc: "Colecciones Postman renderizadas como documentacion navegable." },
+				{ id: "cli-docs", label: "Docs ContaPymeU", path: "/clientesis/docs", icon: "mdi:book-open-page-variant-outline", desc: "Documentacion tecnica de ContaPymeU." },
+				{ id: "cli-actions", label: "Actions", path: "/clientesis/actions", icon: "mdi:lightning-bolt-outline", desc: "Acciones de proyecto: iconify, builds y utilidades por subproyecto." },
+				{ id: "cli-db", label: "BDD Capacitacion", path: "/clientesis/db", icon: "mdi:table-cog", desc: "Esquema BDD del modulo de capacitacion." },
+				{ id: "cli-test", label: "Tests Capacitacion", path: "/clientesis/test", icon: "mdi:check-circle-outline", desc: "Verificacion de API del modulo de capacitacion." },
 			],
 		},
 		{
@@ -41,13 +45,13 @@
 			subtitle: "Herramientas del workspace PatyIA con integraciones de OpenAI",
 			color: "secondary",
 			tools: [
-				{ label: "SQL", path: "/patyia/sql", icon: "mdi:database-outline", desc: "Esquema SQL y consultas para PatyIA." },
-				{ label: "Bitacora", path: "/patyia/bitacora", icon: "mdi:notebook-outline", desc: "Diario de avance especifico de PatyIA." },
-				{ label: "Postman", path: "/patyia/postman", icon: "mdi:email-fast-outline", desc: "Colecciones Postman de PatyIA." },
-				{ label: "Docs PatyIA", path: "/patyia/docs", icon: "mdi:book-open-page-variant-outline", desc: "PatyIA produccion + bloque Lab LangGraph (menu separado)." },
-				{ label: "Lab LangGraph (FitDocs)", path: "/patyia/docs", icon: "mdi:flask-outline", desc: "Experimento RAG PDF: ver seccion Lab LangGraph en documentacion." },
-				{ label: "Actions / OpenAI", path: "/patyia/actions", icon: "mdi:robot-outline", desc: "Generacion de imagenes, texto y conversaciones con OpenAI; historial persistente y pricing." },
-				{ label: "Test", path: "/patyia/test", icon: "mdi:flask-outline", desc: "Pagina de pruebas de PatyIA." },
+				{ id: "pat-sql", label: "SQL", path: "/patyia/sql", icon: "mdi:database-outline", desc: "Esquema SQL y consultas para PatyIA." },
+				{ id: "pat-bitacora", label: "Bitacora", path: "/patyia/bitacora", icon: "mdi:notebook-outline", desc: "Diario de avance especifico de PatyIA." },
+				{ id: "pat-postman", label: "Postman", path: "/patyia/postman", icon: "mdi:email-fast-outline", desc: "Colecciones Postman de PatyIA." },
+				{ id: "pat-docs", label: "Docs PatyIA", path: "/patyia/docs", icon: "mdi:book-open-page-variant-outline", desc: "Documentacion de PatyIA produccion (prompts, endpoints, arquitectura)." },
+				{ id: "pat-lab-langgraph", label: "Lab LangGraph (FitDocs)", path: patyiaLabDocsPath, icon: "mdi:flask-outline", desc: "Experimento RAG FitDocs: abre Lab · Vision FitDocs RAG en documentacion." },
+				{ id: "pat-actions", label: "Actions / OpenAI", path: "/patyia/actions", icon: "mdi:robot-outline", desc: "Generacion de imagenes, texto y conversaciones con OpenAI; historial persistente y pricing." },
+				{ id: "pat-test", label: "Test", path: "/patyia/test", icon: "mdi:flask-outline", desc: "Pagina de pruebas de PatyIA." },
 			],
 		},
 	];
@@ -72,7 +76,7 @@
 				</div>
 
 				<GridLayout cells={GRID_TEMPLATE} items="stretch">
-					{#each g.tools as t (t.path)}
+					{#each g.tools as t (t.id)}
 						<a class="tool-link" href={link(t.path)}>
 							<Card variant="solid" style="height: 100%;">
 								<FlexLayout direction="row" items="flex-start" style="gap: 0.75rem;">

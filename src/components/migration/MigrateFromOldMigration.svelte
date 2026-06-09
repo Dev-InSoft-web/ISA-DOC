@@ -1,11 +1,18 @@
 <script lang="ts">
 	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import noteMd from "../../lib/features/bitacora/daily/2026-05/04/migrate-from-old.md?raw";
+	import type { BitacoraBundle } from "../../lib/core/lab-api/bitacora.ts";
 	import type { RebuildTableConfig } from "../../lib/sql/migration/oldRebuildTables.ts";
 
-	export let config: RebuildTableConfig;
-	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
+	type Props = {
+		config: RebuildTableConfig;
+		bundle?: BitacoraBundle;
+		executeSql?: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null;
+	};
+
+	let { config, bundle = undefined, executeSql = null }: Props = $props();
+
+	const noteMd = $derived(bundle?.md["md.2026-05-04.migrate-from-old"]?.markdown ?? "");
 
 	function buildSelectExpr(name: string): string {
 		const ov = config.columnOverrides?.[name];
@@ -13,10 +20,10 @@
 		return `src.[${name}]`;
 	}
 
-	$: insertCols = config.columns.map((c) => `[${c.name}]`).join(", ");
-	$: selectExprs = config.columns.map((c) => "    " + buildSelectExpr(c.name)).join(",\n");
+	const insertCols = $derived(config.columns.map((c) => `[${c.name}]`).join(", "));
+	const selectExprs = $derived(config.columns.map((c) => "    " + buildSelectExpr(c.name)).join(",\n"));
 
-	$: sql = `-- =====================================================================
+	const sql = $derived(`-- =====================================================================
 -- Migrar ${config.tableName} desde ${config.oldTableName} (solo si está vacía)
 -- ---------------------------------------------------------------------
 -- Inserta directamente desde la tabla OLD si la tabla destino no tiene
@@ -41,7 +48,7 @@ FROM ${config.oldTableName} src;
 
 PRINT CONCAT(N'Filas insertadas en ${config.tableName}: ', @@ROWCOUNT);
 COMMIT TRAN;
-`;
+`);
 </script>
 
 <hr class="subtle-sep" />

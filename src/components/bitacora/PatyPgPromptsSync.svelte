@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
 	import { ButtonIconify, FlexLayout, Text, toastError, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
 
-	/** Sincroniza prompts Ultra a PostgreSQL (paty.*) sin modal de confirmación. */
+	/** Sincroniza prompts Ultra a PostgreSQL (BD_LANGLAB) sin modal de confirmación. */
 	export let autoOnMount = true;
 
 	let status: "idle" | "running" | "ok" | "error" = "idle";
@@ -10,7 +10,7 @@
 
 	async function syncPg(): Promise<void> {
 		status = "running";
-		detail = "Copiando catálogo y actualizando paty.instruccion en Render…";
+		detail = "Copiando catálogo Ultra y actualizando BD_LANGLAB.INSTRUCCION en Render…";
 		try {
 			const r = await fetch("/api/patyia/prompts/sync-pg", { method: "POST" });
 			const text = await r.text();
@@ -33,7 +33,7 @@
 			if (!r.ok || !data.ok) throw new Error(data.error ?? `HTTP ${r.status}`);
 			status = "ok";
 			detail = `${data.copiedUltra ?? 13} Ultra + PATY_BASE · ${data.agents ?? 13} agentes · ${data.syncedAt ?? ""}`;
-			toastSuccess("PostgreSQL paty.instruccion actualizado");
+			toastSuccess("PostgreSQL BD_LANGLAB.INSTRUCCION actualizado");
 		} catch (err) {
 			status = "error";
 			detail = err instanceof Error ? err.message : String(err);
@@ -50,7 +50,7 @@
 	<FlexLayout items="center" style="gap: 0.5rem;">
 		<Text color="neutral">
 			<small>
-				<b>PostgreSQL (Render)</b> — sync automático vía ISA-DOC (no lab-langgraph). Sin confirmación.
+				<b>PostgreSQL BD_LANGLAB (Render)</b> — sync Ultra vía ISA-DOC (no lab-langgraph). Sin confirmación.
 				El <b>MERGE MSSQL</b> de abajo va solo por SqlExecCard → /api/patyia/db/exec.
 			</small>
 		</Text>

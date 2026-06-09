@@ -9,6 +9,6 @@ Feature PatyIA dentro de la arquitectura Bulletproof de `src/lib`. Capas numerad
 | `030-conversacion/` | Modelos POST, logs de conversación, input visión |
 | `040-openai/` | API key, pricing, backup/storage de archivos OpenAI |
 | `050-prompts/` | Catálogo `.md` (`catalog/`), utilidades de prompts |
-| `060-bitacora/` | Diario de avance (`daily/`) |
-| `070-sql/` | Scripts DDL/DML para AYUDASCP_IA |
+| `060-bitacora/` | (vacío en repo) bitácora en PG vía lab `patyia/bitacora/*`; fuente `lab-langgraph/data/bitacora/patyia/` |
+| `070-sql/` | Scripts DDL/DML locales no migrados (variantes SSMS, one-offs) |
 | `080-lab-langgraph/` | Enlace al experimento FitDocs RAG (`lab-langgraph`, no producción) |

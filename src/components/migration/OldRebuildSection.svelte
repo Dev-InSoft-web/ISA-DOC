@@ -8,14 +8,21 @@
 	import MigrateFromOldMigration from "./MigrateFromOldMigration.svelte";
 	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import { REBUILD_TABLES } from "../../lib/sql/migration/oldRebuildTables.ts";
-	import sectionMd from "../../lib/features/bitacora/daily/2026-05/04/rebuild-section.md?raw";
+	import type { BitacoraBundle } from "../../lib/core/lab-api/bitacora.ts";
 
-	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
-	export let date: string = "2026-05-04";
-	export let inner: boolean = false;
+	type Props = {
+		bundle?: BitacoraBundle;
+		executeSql?: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null;
+		date?: string;
+		inner?: boolean;
+	};
+
+	let { bundle = undefined, executeSql = null, date = "2026-05-04", inner = false }: Props = $props();
 
 	const STEPS = ["drop", "create", "insert"] as const;
-	$: rebuildKeys = REBUILD_TABLES.flatMap((t) => STEPS.map((s) => `2026-05-04.rebuild.${t.tableName}.${s}`));
+	const rebuildKeys = $derived(
+		REBUILD_TABLES.flatMap((t) => STEPS.map((s) => `2026-05-04.rebuild.${t.tableName}.${s}`)),
+	);
 
 	const tsvModules = import.meta.glob("../../lib/sql/migration/tsv/**/*.tsv", {
 		query: "?raw",
@@ -49,9 +56,13 @@
 		return out;
 	})();
 
-	let selectedStamp: string = stamps[0] ?? "";
+	let selectedStamp = $state(stamps[0] ?? "");
 
-	let downloading: boolean = false;
+	let downloading = $state(false);
+
+	const sectionMd = $derived(
+		bundle?.md["md.2026-05-04.rebuild-section"]?.markdown ?? "",
+	);
 
 	async function downloadState(): Promise<void> {
 		if (downloading) return;
@@ -124,12 +135,12 @@
 	</FlexLayout>
 
 	{#each REBUILD_TABLES as cfg (cfg.tableName)}
-		<RebuildOldTableMigration config={cfg} {executeSql} stamp={selectedStamp}>
+		<RebuildOldTableMigration config={cfg} {bundle} {executeSql} stamp={selectedStamp}>
 			{#if cfg.oldTableName}
-				<MigrateFromOldMigration config={cfg} {executeSql} />
+				<MigrateFromOldMigration config={cfg} {bundle} {executeSql} />
 			{/if}
 			{#if cfg.tableName === "CAPAC_CURSOS"}
-				<DriverstructToIdriverMigration {executeSql} />
+				<DriverstructToIdriverMigration {bundle} {executeSql} />
 			{/if}
 		</RebuildOldTableMigration>
 	{/each}

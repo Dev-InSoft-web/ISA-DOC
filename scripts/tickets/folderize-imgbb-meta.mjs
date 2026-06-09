@@ -1,6 +1,6 @@
 /**
  * Folderización de metadatos imgbb (sin binarios): manifest por TK y asset-index.json.
- * Fechas desde staticRegistry (fechaSolicitud) + referencias en records/*.ts.
+ * Fechas desde ticket-registry.snapshot.json o staticRegistry + referencias en records/*.ts.
  *
  * Uso: node scripts/tickets/folderize-imgbb-meta.mjs
  */
@@ -29,9 +29,23 @@ function proyectoSlug(proyecto) {
 	return proyecto === "PatyIA" ? "patyia" : "clientesis";
 }
 
-async function parseStaticRegistryMeta() {
-	const raw = await fs.readFile(path.join(TICKETS, "staticRegistry.ts"), "utf8");
+async function parseTicketMeta() {
 	const meta = new Map();
+	const snapshot = path.join(ROOT, "..", "lab-langgraph", "data", "tickets", "ticket-registry.snapshot.json");
+	try {
+		const rows = JSON.parse(await fs.readFile(snapshot, "utf8"));
+		if (Array.isArray(rows) && rows.length > 0) {
+			for (const t of rows) {
+				if (!t?.id || !t.fechaSolicitud) continue;
+				meta.set(String(t.id), {
+					fecha: t.fechaSolicitud,
+					proyecto: t.proyecto ?? "ClientesIS",
+				});
+			}
+			return meta;
+		}
+	} catch { /* fallback registry */ }
+	const raw = await fs.readFile(path.join(TICKETS, "staticRegistry.ts"), "utf8");
 	const re = /\{\s*\n\t\tid:\s*"(TK-\d+)"([\s\S]*?)\n\t\},/g;
 	let m;
 	while ((m = re.exec(raw)) !== null) {
@@ -100,7 +114,7 @@ function pickPrimaryTicket(filename, usedBy, ticketMeta) {
 }
 
 async function main() {
-	const ticketMeta = await parseStaticRegistryMeta();
+	const ticketMeta = await parseTicketMeta();
 	const refs = await scanRecordImageRefs();
 	const map = JSON.parse(await fs.readFile(MAP_FILE, "utf8"));
 	const assetIndex = {};

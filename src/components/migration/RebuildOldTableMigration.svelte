@@ -8,7 +8,7 @@
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
 	import SwitchComp from "$comps/ui/widgets/_Switch.svelte";
 	import type { RebuildTableConfig, RebuildColumn } from "../../lib/sql/migration/oldRebuildTables.ts";
-	import noteMd from "../../lib/features/bitacora/daily/2026-05/04/rebuild-old-table.md?raw";
+	import type { BitacoraBundle } from "../../lib/core/lab-api/bitacora.ts";
 
 	interface Snapshot { file: string; date: string; content: string; }
 
@@ -31,30 +31,39 @@
 	}
 	for (const arr of Object.values(snapshotsByTable)) arr.sort((a, b) => b.date.localeCompare(a.date));
 
-	export let config: RebuildTableConfig;
-	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
-	export let stamp: string = "";
+	type Props = {
+		config: RebuildTableConfig;
+		bundle?: BitacoraBundle;
+		executeSql?: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null;
+		stamp?: string;
+	};
+
+	let { config, bundle = undefined, executeSql = null, stamp = "" }: Props = $props();
+
+	const noteMd = $derived(bundle?.md["md.2026-05-04.rebuild-old-table"]?.markdown ?? "");
 
 	type Row = Record<string, string>;
 
-	const snapshots: Snapshot[] = snapshotsByTable[config.tableName] ?? [];
+	const snapshots = $derived(snapshotsByTable[config.tableName] ?? []);
 
-	$: activeSnapshot = (() => {
+	const activeSnapshot = $derived.by(() => {
 		if (stamp) {
 			const hit = snapshots.find((s) => s.date === stamp);
 			if (hit) return hit;
 		}
 		return snapshots[0];
-	})();
-	$: tsvText = activeSnapshot?.content ?? config.csvDefault;
-	$: selectedFile = activeSnapshot?.file ?? "";
+	});
 
-	let parseError: string = "";
-	let headers: string[] = [];
-	let rows: Row[] = [];
+	const tsvText = $derived(activeSnapshot?.content ?? config.csvDefault);
+	const selectedFile = $derived(activeSnapshot?.file ?? "");
 
-	let mdModalShow: boolean = false;
-	let decorateMd: boolean = true;
+	const parsed = $derived(parseTsv(tsvText));
+	const headers = $derived(parsed.headers);
+	const rows = $derived(parsed.rows);
+	const parseError = $derived(parsed.error);
+
+	let mdModalShow = $state(false);
+	let decorateMd = $state(true);
 
 	function unescapeTsvCell(s: string): string {
 		// Inverso del escape del endpoint: \\ \t \r \n
@@ -90,13 +99,6 @@
 			data.push(row);
 		}
 		return { headers: hdrs, rows: data, error: "" };
-	}
-
-	$: {
-		const r = parseTsv(tsvText);
-		headers = r.headers;
-		rows = r.rows;
-		parseError = r.error;
 	}
 
 	function escapeStr(v: string): string {
@@ -215,26 +217,27 @@
 		return lines.join("\n");
 	}
 
-	$: dropSql = buildDropSql();
-	$: createSql = config.createSql;
-	$: insertSql = buildInsertSql();
+	const dropSql = $derived(buildDropSql());
+	const createSql = $derived(config.createSql);
+	const insertSql = $derived(buildInsertSql());
 
-	$: csvHeaderMatches =
+	const csvHeaderMatches = $derived(
 		headers.length === 0
-		|| (headers.length === config.columns.length
-			&& headers.every((h, i) => h === config.columns[i].name));
+			|| (headers.length === config.columns.length
+				&& headers.every((h, i) => h === config.columns[i].name)),
+	);
 
 	function mdEscape(s: string): string {
 		return (s ?? "").replace(/\|/g, "\\|").replace(/\n/g, " ");
 	}
 
-	$: csvAsMarkdown = (() => {
+	const csvAsMarkdown = $derived.by(() => {
 		if (!headers.length) return "_Sin datos_";
 		const head = `| ${headers.join(" | ")} |`;
 		const sep = `| ${headers.map(() => "---").join(" | ")} |`;
 		const body = rows.map((r) => `| ${headers.map((h) => mdEscape(r[h] ?? "")).join(" | ")} |`);
 		return [head, sep, ...body].join("\n");
-	})();
+	});
 </script>
 
 <Toaster />

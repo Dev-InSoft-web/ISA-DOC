@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from "svelte";
-	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, Modal, RichEditor, SelectEnum, TabItem, Tabs, Toaster } from "@ingenieria_insoft/ispsveltecomponents";
+	import { Button, ButtonIconify, FlexLayout, GridLayout, InputNumber, Modal, RichEditor, SelectEnum, TabItem, Tabs, Toaster, toastSuccess } from "@ingenieria_insoft/ispsveltecomponents";
 	import ChatMensajesView, { type MsgVista, type ArchivoCita, type OpenFileDetail } from "./ChatMensajesView.svelte";
 	import { marked } from "marked";
 	import ProjectSectionLayout from "./ProjectSectionLayout.svelte";
@@ -18,6 +18,7 @@
 		normalizarModeloConversacion,
 	} from "../../lib/features/patyia/030-conversacion/conversationModels";
 	import { resolveLocalEndpoint, type ApiMethod } from "../../lib/features/patyia/020-api/apiEndpoints";
+	import { userContenidoFromConvLogSend } from "../../lib/features/patyia/030-conversacion/convLogContent";
 	import { leerState, escribirState, migrarLegacy } from "../../lib/features/patyia/010-config/urlState";
 	type AppStatePartial = { nivel?: unknown; subPruebas?: unknown; subStorage?: unknown; subConv?: unknown; interConvId?: unknown };
 
@@ -167,7 +168,7 @@
 				{ campo: "Test Responses", tipo: "botón", significado: "Ejecuta 10 turnos de conversación con el engine Responses usando gpt-5-mini. Se mostrará una advertencia con detalles antes de ejecutar." },
 				{ campo: "Test Agents PoC", tipo: "botón", significado: "Ejecuta 10 turnos de conversación con el engine Agents PoC usando gpt-5-mini. Se mostrará una advertencia con detalles antes de ejecutar." },
 				{ campo: "Costo estimado", tipo: "info", significado: "Responses: $0.05–$0.07. Agents PoC: $0.04–$0.06 (varía según tokens efectivos)." },
-				{ campo: "Duración estimada", tipo: "info", significado: "Ambos: 3–5 minutos. Los resultados se acumulan en ISA-DOC/src/lib/features/patyia/060-bitacora/daily/." },
+				{ campo: "Duración estimada", tipo: "info", significado: "Ambos: 3–5 minutos. Bitácora en PG (lab-langgraph / patyia/bitacora)." },
 			],
 		},
 		imagenes: {
@@ -567,6 +568,71 @@ const data = await r.json();
 		interAdjuntos = [];
 	}
 
+	const PRUEBA_IMAGEN_7071_ASSET = "/assets/imgs/patyia/notebooklm/unnamed.png";
+	let interPruebaImagenRunning = false;
+
+	async function urlImagenADataUrl(url: string): Promise<string> {
+		const r = await fetch(url);
+		if (!r.ok) throw new Error(`No se pudo cargar la imagen de prueba (${r.status})`);
+		const blob = await r.blob();
+		return await new Promise<string>((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = () => resolve(String(reader.result ?? ""));
+			reader.onerror = () => reject(new Error("No se pudo leer la imagen de prueba"));
+			reader.readAsDataURL(blob);
+		});
+	}
+
+	/** Un turno de la secuencia automatizada (sin usar el RichEditor). */
+	async function enviarPasoPruebaInter(texto: string, imagenes: string[] = []): Promise<void> {
+		const par = parIdentidadActual();
+		if (!par) throw new Error("Selecciona un tercero/contacto.");
+		const mensajeHtml = `<p>${texto.replace(/</g, "&lt;")}</p>`;
+		interMensajes = [...interMensajes, nuevoMsgVista("user", contenidoVistaConImagenes(texto, imagenes))];
+		if (!interConvId) {
+			interModoConvActivo = interModoConv;
+			await iniciarConversacionLocalSSE(par, texto, imagenes, mensajeHtml);
+			return;
+		}
+		const asistente = nuevoMsgVista("assistant", "");
+		interMensajes = [...interMensajes, asistente];
+		await enviarMensajeLocalSSE(interConvId, texto, imagenes, mensajeHtml, asistente);
+	}
+
+	/**
+	 * Secuencia QA: Hola → imagen + ¿qué ves? → pregunta sobre la imagen → despedida.
+	 * Fuerza API local :7071 y modo jailbreak (Paty jailed no procesa visión aún).
+	 */
+	async function ejecutarPruebaImagenJailbreak7071(): Promise<void> {
+		if (interPruebaImagenRunning) return;
+		interPruebaImagenRunning = true;
+		interError = "";
+		try {
+			apiHost = "local";
+			interModoConv = "jailbreak";
+			interDb = "staging";
+			interModelo = normalizarModeloConversacion("gpt-5-mini");
+			if (!interIdentidadValue) {
+				await ponerIdentidadAlTope(LOCAL_DEFAULT_IDENT.itercero, LOCAL_DEFAULT_IDENT.icontacto);
+			}
+			reiniciarInteraccionStg();
+			interModoConv = "jailbreak";
+			const img = await urlImagenADataUrl(PRUEBA_IMAGEN_7071_ASSET);
+			await enviarPasoPruebaInter("Hola");
+			await enviarPasoPruebaInter("Adjunto una imagen. ¿Qué ves en ella?", [img]);
+			await enviarPasoPruebaInter("Con base en esa imagen, ¿qué elementos o texto identificas con más claridad?");
+			await enviarPasoPruebaInter("Gracias, hasta luego.");
+			if (interConvId) {
+				interConvIdInput = interConvId;
+				toastSuccess(`Prueba imagen 7071 · iconversacion ${interConvId}`);
+			}
+		} catch (err) {
+			interError = err instanceof Error ? err.message : String(err);
+		} finally {
+			interPruebaImagenRunning = false;
+		}
+	}
+
 	// --- Imágenes ---
 	let imgPromptHtml: string = "";
 	let imgSize: string = "1024x1024";
@@ -801,7 +867,7 @@ const data = await r.json();
 	type SqlRow = Record<string, unknown>;
 
 	let convId: number = 2864;
-	let convDb: "prod" | "staging" = "prod";
+	let convDb: "prod" | "staging" = "staging";
 	let convLoading: boolean = false;
 	let convModalOpen: boolean = false;
 	let tutorialOpen: boolean = false;
@@ -1666,7 +1732,7 @@ const data = await r.json();
 		const others = (m.others ?? {}) as Record<string, unknown>;
 		const contenido =
 			role === "user"
-				? String(typeof send?.input === "string" ? send.input : (send?.text ?? m.text ?? ""))
+				? userContenidoFromConvLogSend(send, String(send?.text ?? m.text ?? ""))
 				: String(others.response_text ?? textoDesdeReceive(receive) ?? m.text ?? "");
 		const opKey = others.operativa_key ?? send?.key ?? m.operativa_key;
 		const flat =
@@ -2344,10 +2410,19 @@ const data = await r.json();
 								<div class="inter-input-actions">
 									<Button variant="soft" onClick={abrirSelectorImagenesInter} title="Adjuntar imágenes (PNG, JPEG, WEBP, GIF)">Adjuntar imagen</Button>
 									<Button variant="soft" onClick={() => (interInputHtml = "<p>¿Cómo actualizar ContaPyme a la última versión disponible?</p>")} title="Inserta el prompt fijo de prueba de saludo">Plantilla prueba</Button>
+									<Button
+										variant="soft"
+										onClick={ejecutarPruebaImagenJailbreak7071}
+										disabled={interPruebaImagenRunning || interLoading || interSendLoading || interRecuperarLoading || interDb !== "staging" || !interIdentidadValue}
+										loading={interPruebaImagenRunning}
+										title="Secuencia automática: Hola → imagen + ¿qué ves? → pregunta sobre la imagen → despedida. API local :7071, modo Libre (jailbreak), modelo gpt-5-mini."
+									>
+										Prueba imagen 7071
+									</Button>
 									{#if interConvId === null}
-										<Button onClick={iniciarConversacionStg} disabled={interLoading || interDb !== "staging" || !interIdentidadValue || !interPuedeEnviar} loading={interLoading} title={tituloLocal(apiHost, interConversacionPostPath(), "POST", "Iniciar conversación")} color={colorLocal(apiHost, interConversacionPostPath(), "POST")}>Iniciar conversación</Button>
+										<Button onClick={iniciarConversacionStg} disabled={interPruebaImagenRunning || interLoading || interDb !== "staging" || !interIdentidadValue || !interPuedeEnviar} loading={interLoading} title={tituloLocal(apiHost, interConversacionPostPath(), "POST", "Iniciar conversación")} color={colorLocal(apiHost, interConversacionPostPath(), "POST")}>Iniciar conversación</Button>
 									{:else}
-										<Button onClick={enviarMensajeStg} disabled={interSendLoading || interDb !== "staging" || !interPuedeEnviar} loading={interSendLoading} title={interUsaPatyiaSse() ? tituloLocal(apiHost, interConversacionPostPath(), "POST", "Enviar mensaje") : tituloLocal(apiHost, `/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST", "Enviar mensaje")} color={interUsaPatyiaSse() ? colorLocal(apiHost, interConversacionPostPath(), "POST") : colorLocal(apiHost, `/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST")}>Enviar mensaje</Button>
+										<Button onClick={enviarMensajeStg} disabled={interPruebaImagenRunning || interSendLoading || interDb !== "staging" || !interPuedeEnviar} loading={interSendLoading} title={interUsaPatyiaSse() ? tituloLocal(apiHost, interConversacionPostPath(), "POST", "Enviar mensaje") : tituloLocal(apiHost, `/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST", "Enviar mensaje")} color={interUsaPatyiaSse() ? colorLocal(apiHost, interConversacionPostPath(), "POST") : colorLocal(apiHost, `/api/patyia/staging/conversacion/${interConvId}/send-stream`, "POST")}>Enviar mensaje</Button>
 									{/if}
 								</div>
 							</div>

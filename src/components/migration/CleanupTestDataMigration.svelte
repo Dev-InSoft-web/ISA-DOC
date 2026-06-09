@@ -4,75 +4,22 @@
 	import SqlExecCard from "$comps/actions/SqlExecCard.svelte";
 	import RevisadoCheck from "$comps/actions/RevisadoCheck.svelte";
 	import BitacoraNote from "../bitacora/BitacoraNote.svelte";
-	import mdIntro from "../../lib/features/bitacora/topics/cleanup/intro.md?raw";
-	import mdOutro from "../../lib/features/bitacora/topics/cleanup/outro.md?raw";
+	import type { BitacoraBundle } from "../../lib/core/lab-api/bitacora.ts";
 
-	export let executeSql: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null = null;
-	export let date: string = "";
-	export let inner: boolean = false;
+	type Props = {
+		bundle: BitacoraBundle;
+		executeSql?: ((sql: string) => Promise<{ ok: boolean; output?: string; error?: string }>) | null;
+		date?: string;
+		inner?: boolean;
+	};
 
-	const sqlCleanup: string = `-- =====================================================================
--- Limpieza · Drivers de prueba (conservar solo IDRIVER 1, 2, 3)
--- ---------------------------------------------------------------------
--- Elimina drivers con IDRIVER = 0 o IDRIVER > 3 y todas sus filas
--- dependientes en CAPAC_ATRIBUTOS_X_DRIVERS. Los IATRIBUTO de prueba
--- 901..999 se borran de paso (en CAPAC_ATRIBUTOS_PLANES y luego en
--- CAPAC_ATRIBUTOS_X_DRIVERS) por si quedaran huérfanos.
--- Orden: dependencias antes que CAPAC_DRIVERS.
--- =====================================================================
-SET XACT_ABORT ON;
-BEGIN TRAN;
+	let { bundle, executeSql = null, date = "", inner = false }: Props = $props();
 
--- 1) Valores en CAPAC_ATRIBUTOS_PLANES con atributos de prueba 9xx
-DELETE FROM CAPAC_ATRIBUTOS_PLANES
-WHERE IATRIBUTO BETWEEN 900 AND 999;
-
--- 2) Filas en CAPAC_ATRIBUTOS_X_DRIVERS de drivers que se eliminarán
-DELETE FROM CAPAC_ATRIBUTOS_X_DRIVERS
-WHERE IDRIVER = 0 OR IDRIVER > 3;
-
--- 3) Atributos de prueba residuales (9xx) en cualquier driver
-DELETE FROM CAPAC_ATRIBUTOS_X_DRIVERS
-WHERE IATRIBUTO BETWEEN 900 AND 999;
-
--- 4) Drivers de prueba
-DELETE FROM CAPAC_DRIVERS
-WHERE IDRIVER = 0 OR IDRIVER > 3;
-
-COMMIT TRAN;
-`;
-
-	const sqlCleanupAtributosPlanes: string = `-- =====================================================================
--- Limpieza · CAPAC_ATRIBUTOS_PLANES (filas vacías o de prueba 9xx)
--- ---------------------------------------------------------------------
--- Elimina filas que no aportan valor:
---   * VALOR es NULL o cadena en blanco (LTRIM(RTRIM(VALOR)) = '').
---   * IATRIBUTO entre 900 y 999 (atributos sintéticos de prueba).
--- Idempotente: si no hay filas que cumplan el filtro, no afecta nada.
--- =====================================================================
-SET XACT_ABORT ON;
-BEGIN TRAN;
-
-DELETE FROM CAPAC_ATRIBUTOS_PLANES
-WHERE VALOR IS NULL
-   OR LTRIM(RTRIM(CONVERT(NVARCHAR(MAX), VALOR))) = ''
-   OR IATRIBUTO BETWEEN 900 AND 999;
-
-COMMIT TRAN;
-`;
-
-	const sqlDropTablasObsoletas: string = `-- =====================================================================
--- Limpieza · Eliminar tablas obsoletas
--- ---------------------------------------------------------------------
--- CAPAC_TEMAS y CAPAC_PERMISOS ya no se usan con esas nomenclaturas.
--- Idempotente: solo dropea si la tabla existe.
--- =====================================================================
-IF OBJECT_ID('CAPAC_TEMAS', 'U') IS NOT NULL
-    DROP TABLE CAPAC_TEMAS;
-
-IF OBJECT_ID('CAPAC_PERMISOS', 'U') IS NOT NULL
-    DROP TABLE CAPAC_PERMISOS;
-`;
+	const mdIntro = $derived(bundle.md["md.topics.cleanup.intro"]?.markdown ?? "");
+	const mdOutro = $derived(bundle.md["md.topics.cleanup.outro"]?.markdown ?? "");
+	const sqlDrop = $derived(bundle.sql["sql.cleanup.drop-tablas"]);
+	const sqlDrivers = $derived(bundle.sql["sql.cleanup.drivers"]);
+	const sqlAtributos = $derived(bundle.sql["sql.cleanup.atributos-planes"]);
 </script>
 
 <Toaster />
@@ -86,38 +33,46 @@ IF OBJECT_ID('CAPAC_PERMISOS', 'U') IS NOT NULL
 	open={false}
 >
 	<RevisadoCheck slot="title-extra" keys={["2026-05-04.cleanup.run", "2026-05-04.cleanup.atributos_planes", "2026-05-04.cleanup.drop_obsoletas"]} />
-	<BitacoraNote flat mdSource={mdIntro} />
+	{#if mdIntro}<BitacoraNote flat mdSource={mdIntro} />{/if}
 
-	<SqlExecCard
-		title="Eliminar tablas obsoletas (CAPAC_TEMAS, CAPAC_PERMISOS)"
-		checkKey="2026-05-04.cleanup.drop_obsoletas"
-		sql={sqlDropTablasObsoletas}
-		desc="Elimina CAPAC_TEMAS y CAPAC_PERMISOS si existen (ya no se usan con esas nomenclaturas)."
-		confirmKind="danger"
-		confirmMessage={`Se eliminarán las tablas CAPAC_TEMAS y CAPAC_PERMISOS si existen.\n\n¿Continuar?`}
-		{executeSql}
-		height="200px"
-	/>
+	{#if sqlDrop}
+		<SqlExecCard
+			title="Eliminar tablas obsoletas (CAPAC_TEMAS, CAPAC_PERMISOS)"
+			checkKey="2026-05-04.cleanup.drop_obsoletas"
+			sql={sqlDrop.sql}
+			desc={sqlDrop.desc ?? ""}
+			confirmKind={sqlDrop.confirmKind ?? "danger"}
+			confirmMessage={sqlDrop.confirmMessage ?? ""}
+			{executeSql}
+			height={sqlDrop.height ?? "200px"}
+		/>
+	{/if}
 
-	<SqlExecCard
-		title="Limpieza datos de prueba"
-		checkKey="2026-05-04.cleanup.run"
-		sql={sqlCleanup}
-		desc="Conserva solo IDRIVER 1, 2 y 3. Elimina IDRIVER = 0 o > 3 y atributos 9xx residuales (idempotente)."
-		confirmKind="danger"
-		confirmMessage={`Se eliminarán los drivers IDRIVER = 0 o > 3 y todos los atributos 9xx (en CAPAC_ATRIBUTOS_PLANES y CAPAC_ATRIBUTOS_X_DRIVERS).\n\n¿Continuar?`}
-		{executeSql}
-	/>
+	{#if sqlDrivers}
+		<SqlExecCard
+			title={sqlDrivers.title}
+			checkKey={sqlDrivers.checkKey}
+			sql={sqlDrivers.sql}
+			desc={sqlDrivers.desc ?? ""}
+			confirmKind={sqlDrivers.confirmKind ?? "danger"}
+			confirmMessage={sqlDrivers.confirmMessage ?? ""}
+			{executeSql}
+			height={sqlDrivers.height}
+		/>
+	{/if}
 
-	<SqlExecCard
-		title="Limpieza CAPAC_ATRIBUTOS_PLANES (vacíos y 9xx)"
-		checkKey="2026-05-04.cleanup.atributos_planes"
-		sql={sqlCleanupAtributosPlanes}
-		desc="Elimina filas con VALOR NULL/'' o IATRIBUTO 900..999 (idempotente)."
-		confirmKind="danger"
-		confirmMessage={`Se eliminarán filas de CAPAC_ATRIBUTOS_PLANES con VALOR vacío o IATRIBUTO entre 900 y 999.\n\n¿Continuar?`}
-		{executeSql}
-	/>
+	{#if sqlAtributos}
+		<SqlExecCard
+			title={sqlAtributos.title}
+			checkKey={sqlAtributos.checkKey}
+			sql={sqlAtributos.sql}
+			desc={sqlAtributos.desc ?? ""}
+			confirmKind={sqlAtributos.confirmKind ?? "danger"}
+			confirmMessage={sqlAtributos.confirmMessage ?? ""}
+			{executeSql}
+			height={sqlAtributos.height}
+		/>
+	{/if}
 
-	<BitacoraNote flat mdSource={mdOutro} />
+	{#if mdOutro}<BitacoraNote flat mdSource={mdOutro} />{/if}
 </AccordionActions>
